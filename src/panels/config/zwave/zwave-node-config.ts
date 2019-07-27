@@ -45,13 +45,11 @@ export class ZwaveNodeConfig extends LitElement {
             "ui.panel.config.zwave.node_config.header"
           )}
         >
-          ${this.nodes[this.selectedNode].attributes.hasOwnProperty(
-            "wake_up_interval"
-          )
+          ${"wake_up_interval" in this.nodes[this.selectedNode].attributes
             ? html`
                 <div class="card-actions">
                   <paper-input
-                    float-label="${this.hass!.localize(
+                    .floatLabel="${this.hass!.localize(
                       "ui.panel.config.zwave.common.wakeup_interval"
                     )}"
                     type="number"
@@ -61,7 +59,7 @@ export class ZwaveNodeConfig extends LitElement {
                           "ui.panel.config.zwave.common.unknown"
                         )}
                     @value-changed=${this._onWakeupIntervalChanged}
-                    placeholder=${this.nodes[this.selectedNode].attributes
+                    .placeholder=${this.nodes[this.selectedNode].attributes
                       .wake_up_interval
                       ? this.nodes[this.selectedNode].attributes
                           .wake_up_interval
@@ -69,7 +67,7 @@ export class ZwaveNodeConfig extends LitElement {
                           "ui.panel.config.zwave.common.unknown"
                         )}
                   >
-                    <div suffix="">
+                    <div suffix>
                       ${this.hass!.localize(
                         "ui.panel.config.zwave.node_config.seconds"
                       )}
@@ -92,7 +90,7 @@ export class ZwaveNodeConfig extends LitElement {
             : ""}
           <div class="device-picker">
             <paper-dropdown-menu
-              label=${this.hass!.localize(
+              .label=${this.hass!.localize(
                 "ui.panel.config.zwave.node_config.config_parameter"
               )}
               dynamic-align
@@ -115,16 +113,16 @@ export class ZwaveNodeConfig extends LitElement {
           </div>
           ${this._configItem
             ? html`
-                ${["List"].includes(this._configItem.value.type)
+                ${this._configItem.value.type === "List"
                   ? html`
                       <div class="device-picker">
                         <paper-dropdown-menu
-                          label=${this.hass!.localize(
+                          .label=${this.hass!.localize(
                             "ui.panel.config.zwave.node_config.config_value"
                           )}
                           dynamic-align
                           class="flex"
-                          placeholder=${this._configItem.value.data}
+                          .placeholder=${this._configItem.value.data}
                         >
                           <paper-listbox
                             slot="dropdown-content"
@@ -145,11 +143,11 @@ export class ZwaveNodeConfig extends LitElement {
                   ? html`
                       <div class="card-actions">
                         <paper-input
-                          label=${this._configItem.value.data_items}
+                          .label=${this._configItem.value.data_items}
                           type="number"
-                          value=${this._configItem.value.data}
-                          max=${this._configItem.value.max}
-                          min=${this._configItem.value.min}
+                          .value=${this._configItem.value.data}
+                          .max=${this._configItem.value.max}
+                          .min=${this._configItem.value.min}
                           @value-changed=${this._configValueInputChanged}
                         >
                         </paper-input>
@@ -160,12 +158,12 @@ export class ZwaveNodeConfig extends LitElement {
                   ? html`
                       <div class="device-picker">
                         <paper-dropdown-menu
-                          label=${this.hass!.localize(
+                          .label=${this.hass!.localize(
                             "ui.panel.config.zwave.node_config.config_value"
                           )}
                           class="flex"
                           dynamic-align
-                          placeholder=${this._configItem.value.data}
+                          .placeholder=${this._configItem.value.data}
                         >
                           <paper-listbox
                             slot="dropdown-content"
@@ -261,7 +259,7 @@ export class ZwaveNodeConfig extends LitElement {
     ];
   }
 
-  protected firstUpdated(changedProps): void {
+  protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
     this.addEventListener("hass-service-called", (ev) =>
       this.serviceCalled(ev)
@@ -275,7 +273,7 @@ export class ZwaveNodeConfig extends LitElement {
     }
   }
 
-  private serviceCalled(ev) {
+  private serviceCalled(ev): void {
     if (ev.detail.success) {
       setTimeout(() => {
         this._refreshConfig(this.selectedNode);
@@ -283,7 +281,7 @@ export class ZwaveNodeConfig extends LitElement {
     }
   }
 
-  private _nodesChanged() {
+  private _nodesChanged(): void {
     if (!this.nodes) {
       return;
     }
