@@ -15,7 +15,7 @@ export interface ZWaveConfigItem {
   key: number;
   value: {
     data: any;
-    data_items: Array<any>;
+    data_items: any[];
     help: string;
     label: string;
     max: number;

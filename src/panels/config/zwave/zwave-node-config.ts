@@ -270,10 +270,12 @@ export class ZwaveNodeConfig extends LitElement {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
-    if (changedProps.has("selectedNode")) this._nodesChanged();
+    if (changedProps.has("selectedNode")) {
+      this._nodesChanged();
+    }
   }
 
-  serviceCalled(ev) {
+  public serviceCalled(ev) {
     if (ev.detail.success) {
       setTimeout(() => {
         this._refreshConfig(this.selectedNode);
@@ -281,8 +283,10 @@ export class ZwaveNodeConfig extends LitElement {
     }
   }
 
-  _nodesChanged() {
-    if (!this.nodes) return;
+  private _nodesChanged() {
+    if (!this.nodes) {
+      return;
+    }
     this._configItem = undefined;
     this._wakeupInput = this.nodes[this.selectedNode].attributes.hasOwnProperty(
       "wake_up_interval"
@@ -295,21 +299,26 @@ export class ZwaveNodeConfig extends LitElement {
     this._wakeupInput = value.detail!.value;
   }
 
-  _computeWakeupServiceData(wakeupInput: number) {
+  private _computeWakeupServiceData(wakeupInput: number) {
     return {
       node_id: this.nodes[this.selectedNode].attributes.node_id,
       value: wakeupInput,
     };
   }
 
-  _computeSetConfigParameterServiceData(): ZWaveConfigServiceData | boolean {
-    if (this.selectedNode === -1 || typeof this._configItem === "undefined")
+  private _computeSetConfigParameterServiceData():
+    | ZWaveConfigServiceData
+    | boolean {
+    if (this.selectedNode === -1 || typeof this._configItem === "undefined") {
       return false;
-    var valueData: number | string = "";
+    }
+    let valueData: number | string = "";
     if (["Short", "Byte", "Int"].includes(this._configItem!.value.type)) {
-      if (typeof this._selectedConfigValue === "string")
+      if (typeof this._selectedConfigValue === "string") {
         valueData = parseInt(this._selectedConfigValue, 10);
-      else valueData = this._selectedConfigValue;
+      } else {
+        valueData = this._selectedConfigValue;
+      }
     }
     if (["Bool", "Button", "List"].includes(this._configItem!.value.type)) {
       valueData = this._selectedConfigValue;
@@ -321,22 +330,26 @@ export class ZwaveNodeConfig extends LitElement {
     };
   }
 
-  _selectedConfigParameterChanged(event: ItemSelectedEvent): void {
-    if (event.target!.selected === -1) return;
+  private _selectedConfigParameterChanged(event: ItemSelectedEvent): void {
+    if (event.target!.selected === -1) {
+      return;
+    }
     this._selectedConfigParameter = event.target!.selected;
     this._configItem = this.config[event.target!.selected];
   }
 
-  _configValueSelectChanged(event: ItemSelectedEvent): void {
-    if (event.target!.selected === -1) return;
+  private _configValueSelectChanged(event: ItemSelectedEvent): void {
+    if (event.target!.selected === -1) {
+      return;
+    }
     this._selectedConfigValue = event.target!.selectedItem.textContent;
   }
 
-  _configValueInputChanged(value: ChangeEvent): void {
+  private _configValueInputChanged(value: ChangeEvent): void {
     this._selectedConfigValue = value.detail!.value;
   }
 
-  async _refreshConfig(selectedNode) {
+  private async _refreshConfig(selectedNode): Promise<void> {
     const configData: ZWaveConfigItem[] = [];
     const config = await fetchNodeConfig(
       this.hass,
@@ -345,7 +358,7 @@ export class ZwaveNodeConfig extends LitElement {
 
     Object.keys(config).forEach((key) => {
       configData.push({
-        key: parseInt(key),
+        key: parseInt(key, 10),
         value: config[key],
       });
     });
