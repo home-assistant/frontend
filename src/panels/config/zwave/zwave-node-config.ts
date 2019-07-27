@@ -275,7 +275,7 @@ export class ZwaveNodeConfig extends LitElement {
     }
   }
 
-  public serviceCalled(ev) {
+  private serviceCalled(ev) {
     if (ev.detail.success) {
       setTimeout(() => {
         this._refreshConfig(this.selectedNode);
@@ -314,11 +314,10 @@ export class ZwaveNodeConfig extends LitElement {
     }
     let valueData: number | string = "";
     if (["Short", "Byte", "Int"].includes(this._configItem!.value.type)) {
-      if (typeof this._selectedConfigValue === "string") {
-        valueData = parseInt(this._selectedConfigValue, 10);
-      } else {
-        valueData = this._selectedConfigValue;
-      }
+      valueData =
+        typeof this._selectedConfigValue === "string"
+          ? parseInt(this._selectedConfigValue, 10)
+          : this._selectedConfigValue;
     }
     if (["Bool", "Button", "List"].includes(this._configItem!.value.type)) {
       valueData = this._selectedConfigValue;
