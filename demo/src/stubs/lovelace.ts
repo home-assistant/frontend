@@ -1,4 +1,5 @@
 import "../custom-cards/ha-demo-card";
+import "../custom-cards/cast-demo-row";
 // Not duplicate, one is for typing.
 // tslint:disable-next-line
 import { HADemoCard } from "../custom-cards/ha-demo-card";
