@@ -535,7 +535,7 @@ class HaSidebar extends LitElement {
         left: 0;
         pointer-events: none;
         content: "";
-        background-color: var(--sidebar-selected-icon-color);
+        background-color: var(--sidebar-selected-background-color);
         opacity: 0.12;
         transition: opacity 15ms linear;
         will-change: opacity;
