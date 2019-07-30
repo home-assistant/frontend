@@ -214,10 +214,56 @@ const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
   };
 };
 
+const createCastConfig = ({ isProdBuild, latestBuild }) => {
+  const isStatsBuild = false;
+  const entry = {
+    launcher: "./cast/src/launcher/entrypoint.ts",
+  };
+
+  if (latestBuild) {
+    entry.receiver = "./cast/src/receiver/entrypoint.ts";
+  }
+
+  return {
+    mode: genMode(isProdBuild),
+    devtool: genDevTool(isProdBuild),
+    entry,
+    module: {
+      rules: [babelLoaderConfig({ latestBuild }), cssLoader, htmlLoader],
+    },
+    optimization: optimization(latestBuild),
+    plugins: [
+      new ManifestPlugin(),
+      new webpack.DefinePlugin({
+        __DEV__: !isProdBuild,
+        __BUILD__: JSON.stringify(latestBuild ? "latest" : "es5"),
+        __VERSION__: JSON.stringify(version),
+        __DEMO__: false,
+        __STATIC_PATH__: "/static/",
+        "process.env.NODE_ENV": JSON.stringify(
+          isProdBuild ? "production" : "development"
+        ),
+      }),
+      ...plugins,
+    ].filter(Boolean),
+    resolve,
+    output: {
+      filename: genFilename(isProdBuild),
+      chunkFilename: genChunkFilename(isProdBuild, isStatsBuild),
+      path: path.resolve(
+        paths.cast_root,
+        latestBuild ? "frontend_latest" : "frontend_es5"
+      ),
+      publicPath: latestBuild ? "/frontend_latest/" : "/frontend_es5/",
+    },
+  };
+};
+
 module.exports = {
   resolve,
   plugins,
   optimization,
   createAppConfig,
   createDemoConfig,
+  createCastConfig,
 };
