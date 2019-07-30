@@ -5,7 +5,11 @@ const webpack = require("webpack");
 const WebpackDevServer = require("webpack-dev-server");
 const log = require("fancy-log");
 const paths = require("../paths");
-const { createAppConfig, createDemoConfig } = require("../webpack");
+const {
+  createAppConfig,
+  createDemoConfig,
+  createCastConfig,
+} = require("../webpack");
 
 const handler = (done) => (err, stats) => {
   if (err) {
@@ -108,6 +112,56 @@ gulp.task(
             isProdBuild: true,
             latestBuild: true,
             isStatsBuild: false,
+          }),
+        ],
+        handler(resolve)
+      )
+    )
+);
+
+gulp.task("webpack-dev-server-cast", () => {
+  const compiler = webpack([
+    createCastConfig({
+      isProdBuild: false,
+      latestBuild: false,
+    }),
+    createCastConfig({
+      isProdBuild: false,
+      latestBuild: true,
+    }),
+  ]);
+
+  new WebpackDevServer(compiler, {
+    open: true,
+    watchContentBase: true,
+    contentBase: path.resolve(paths.cast_dir, "dist"),
+  }).listen(
+    8080,
+    // Accessible from the network, because that's how Cast hits it.
+    "0.0.0.0",
+    function(err) {
+      if (err) {
+        throw err;
+      }
+      // Server listening
+      log("[webpack-dev-server]", "http://localhost:8080");
+    }
+  );
+});
+
+gulp.task(
+  "webpack-prod-cast",
+  () =>
+    new Promise((resolve) =>
+      webpack(
+        [
+          createCastConfig({
+            isProdBuild: true,
+            latestBuild: false,
+          }),
+          createCastConfig({
+            isProdBuild: true,
+            latestBuild: true,
           }),
         ],
         handler(resolve)
