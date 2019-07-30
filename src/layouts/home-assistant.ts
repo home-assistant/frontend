@@ -1,18 +1,16 @@
 import "@polymer/app-route/app-location";
-import { html, LitElement, PropertyValues, css, property } from "lit-element";
+import { html, PropertyValues, property } from "lit-element";
 
 import "./home-assistant-main";
 import "./ha-init-page";
 import "../resources/ha-style";
+import "../resources/custom-card-support";
 import { registerServiceWorker } from "../util/register-service-worker";
 import { DEFAULT_PANEL } from "../common/const";
 
 import { Route, HomeAssistant } from "../types";
 import { navigate } from "../common/navigate";
 import { HassElement } from "../state/hass-element";
-
-(LitElement.prototype as any).html = html;
-(LitElement.prototype as any).css = css;
 
 export class HomeAssistantAppEl extends HassElement {
   @property() private _route?: Route;
