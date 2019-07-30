@@ -10,6 +10,27 @@ export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
       cards: [
         { type: "custom:ha-demo-card" },
         {
+          type: "entities",
+          title: localize("ui.panel.page-demo.config.arsaboo.labels.lights"),
+          entities: [
+            {
+              entity: "light.kitchen_lights",
+            },
+            {
+              entity: "light.living_room_lights",
+            },
+            {
+              entity: "switch.wemoporch",
+            },
+            "light.lifx5",
+          ],
+        },
+        {
+          type: "thermostat",
+          entity: "climate.upstairs",
+        },
+
+        {
           type: "picture-elements",
           image: "/assets/arsaboo/floorplans/main.png",
           elements: [
@@ -381,104 +402,7 @@ export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
             },
           ],
         },
-        {
-          type: "picture-elements",
-          image: "/assets/arsaboo/floorplans/second.png",
-          elements: [
-            {
-              type: "state-icon",
-              entity: "binary_sensor.motion_sensor_158d00016612af",
-              style: {
-                top: "40%",
-                left: "35%",
-              },
-            },
-            // {
-            //   type: "custom:thermostat-card",
-            //   entity: "climate.bedroom",
-            //   no_card: true,
-            //   hvac: {
-            //     attribute: "operation",
-            //   },
-            //   style: {
-            //     top: "79%",
-            //     left: "92%",
-            //     width: "50px",
-            //     height: "50px",
-            //   },
-            // },
-            {
-              type: "state-icon",
-              entity: "binary_sensor.motion_sensor_158d00016c53bf",
-              style: {
-                top: "55%",
-                left: "80%",
-              },
-            },
-            {
-              type: "state-label",
-              entity: "sensor.illumination_158d00016c53bf",
-              style: {
-                top: "78%",
-                left: "80%",
-                "text-align": "center",
-                "font-size": "12px",
-                color: "black",
-              },
-            },
-            {
-              type: "image",
-              entity: "light.master_lights",
-              tap_action: {
-                action: "toggle",
-              },
-              hold_action: {
-                action: "more-info",
-              },
-              image: "/assets/arsaboo/icons/light_bulb_off.png",
-              state_image: {
-                on: "/assets/arsaboo/icons/light_bulb_on.png",
-              },
-              state_filter: {
-                on:
-                  "brightness(130%) saturate(1.5) drop-shadow(0px 0px 10px gold)",
-                off: "brightness(80%) saturate(0.8)",
-              },
-              style: {
-                top: "70%",
-                left: "80%",
-                width: "7%",
-                padding: "10px",
-              },
-            },
-            {
-              type: "state-icon",
-              entity: "binary_sensor.water_leak_sensor_158d0001d77800",
-              style: {
-                top: "25%",
-                left: "66%",
-              },
-            },
-            // {
-            //   type: "custom:thermostat-card",
-            //   entity: "climate.upstairs",
-            //   no_card: true,
-            //   hvac: {
-            //     attribute: "operation",
-            //   },
-            //   style: {
-            //     top: "18%",
-            //     left: "15%",
-            //     width: "50px",
-            //     height: "50px",
-            //   },
-            // },
-          ],
-        },
-        {
-          type: "thermostat",
-          entity: "climate.upstairs",
-        },
+
         {
           type: "media-control",
           entity: "media_player.family_room_2",
@@ -496,44 +420,11 @@ export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
             "sensor.usdinr",
           ],
         },
-        {
-          type: "entities",
-          title: localize("ui.panel.page-demo.config.arsaboo.labels.lights"),
-          entities: [
-            {
-              entity: "light.gateway_light_34ce00813670",
-            },
-            {
-              entity: "light.lifx3",
-            },
-            {
-              entity: "light.lifxnrguest",
-            },
-            {
-              type: "section",
-              label: localize(
-                "ui.panel.page-demo.config.arsaboo.names.master_bedroom"
-              ),
-            },
-            {
-              entity: "light.hue_color_lamp_1",
-            },
-            {
-              entity: "light.hue_color_lamp_2",
-            },
-            {
-              entity: "light.hue_color_lamp_3",
-            },
-            {
-              entity: "switch.wemoswitch",
-            },
-          ],
-        },
 
         {
           type: "alarm-panel",
           entity: "alarm_control_panel.abode_alarm",
-          name: "Abode",
+          name: "Security",
           states: ["arm_home", "arm_away"],
         },
         {
@@ -554,7 +445,7 @@ export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
         },
         {
           type: "entities",
-          title: "Ring Doorbell",
+          title: "Doorbell",
           show_header_toggle: false,
           entities: [
             "binary_sensor.ring_front_door_ding",
