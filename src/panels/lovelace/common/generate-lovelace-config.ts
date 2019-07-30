@@ -4,7 +4,11 @@ import {
   LovelaceCardConfig,
   LovelaceViewConfig,
 } from "../../../data/lovelace";
-import { HassEntity, HassEntities } from "home-assistant-js-websocket";
+import {
+  HassEntity,
+  HassEntities,
+  HassConfig,
+} from "home-assistant-js-websocket";
 
 import extractViews from "../../../common/entity/extract_views";
 import getViewEntities from "../../../common/entity/get_view_entities";
@@ -47,12 +51,6 @@ const HIDE_DOMAIN = new Set([
   "geo_location",
 ]);
 
-interface Registries {
-  areas: AreaRegistryEntry[];
-  devices: DeviceRegistryEntry[];
-  entities: EntityRegistryEntry[];
-}
-
 let subscribedRegistries = false;
 
 interface SplittedByAreas {
@@ -61,20 +59,22 @@ interface SplittedByAreas {
 }
 
 const splitByAreas = (
-  registries: Registries,
+  areaEntries: AreaRegistryEntry[],
+  deviceEntries: DeviceRegistryEntry[],
+  entityEntries: EntityRegistryEntry[],
   entities: HassEntities
 ): SplittedByAreas => {
   const allEntities = { ...entities };
   const areasWithEntities: SplittedByAreas["areasWithEntities"] = [];
 
-  for (const area of registries.areas) {
+  for (const area of areaEntries) {
     const areaEntities: HassEntity[] = [];
     const areaDevices = new Set(
-      registries.devices
+      deviceEntries
         .filter((device) => device.area_id === area.area_id)
         .map((device) => device.id)
     );
-    for (const entity of registries.entities) {
+    for (const entity of entityEntries) {
       if (
         areaDevices.has(
           // @ts-ignore
@@ -172,25 +172,28 @@ const computeCards = (
   return cards;
 };
 
-const computeDefaultViewStates = (hass: HomeAssistant): HassEntities => {
+const computeDefaultViewStates = (entities: HassEntities): HassEntities => {
   const states = {};
-  Object.keys(hass.states).forEach((entityId) => {
-    const stateObj = hass.states[entityId];
+  Object.keys(entities).forEach((entityId) => {
+    const stateObj = entities[entityId];
     if (
       !stateObj.attributes.hidden &&
       !HIDE_DOMAIN.has(computeStateDomain(stateObj))
     ) {
-      states[entityId] = hass.states[entityId];
+      states[entityId] = entities[entityId];
     }
   });
   return states;
 };
 
-const generateDefaultViewConfig = (
-  hass: HomeAssistant,
-  registries: Registries
+export const generateDefaultViewConfig = (
+  areaEntries: AreaRegistryEntry[],
+  deviceEntries: DeviceRegistryEntry[],
+  entityEntries: EntityRegistryEntry[],
+  entities: HassEntities,
+  localize: LocalizeFunc
 ): LovelaceViewConfig => {
-  const states = computeDefaultViewStates(hass);
+  const states = computeDefaultViewStates(entities);
   const path = "default_view";
   const title = "Home";
   const icon = undefined;
@@ -204,10 +207,15 @@ const generateDefaultViewConfig = (
     }
   });
 
-  const splittedByAreas = splitByAreas(registries, states);
+  const splittedByAreas = splitByAreas(
+    areaEntries,
+    deviceEntries,
+    entityEntries,
+    states
+  );
 
   const config = generateViewConfig(
-    hass.localize,
+    localize,
     path,
     title,
     icon,
@@ -217,12 +225,15 @@ const generateDefaultViewConfig = (
 
   const areaCards: LovelaceCardConfig[] = [];
 
-  splittedByAreas.areasWithEntities.forEach(([area, entities]) => {
+  splittedByAreas.areasWithEntities.forEach(([area, areaEntities]) => {
     areaCards.push(
-      ...computeCards(entities.map((entity) => [entity.entity_id, entity]), {
-        title: area.name,
-        show_header_toggle: true,
-      })
+      ...computeCards(
+        areaEntities.map((entity) => [entity.entity_id, entity]),
+        {
+          title: area.name,
+          show_header_toggle: true,
+        }
+      )
     );
   });
 
@@ -315,14 +326,44 @@ const generateViewConfig = (
   return view;
 };
 
-export const generateLovelaceConfig = async (
-  hass: HomeAssistant,
+export const generateLovelaceConfigFromHass = async (hass: HomeAssistant) => {
+  // We want to keep the registry subscriptions alive after generating the UI
+  // so that we don't serve up stale data after changing areas.
+  if (!subscribedRegistries) {
+    subscribedRegistries = true;
+    subscribeAreaRegistry(hass.connection, () => undefined);
+    subscribeDeviceRegistry(hass.connection, () => undefined);
+    subscribeEntityRegistry(hass.connection, () => undefined);
+  }
+
+  const [areaEntries, deviceEntries, entityEntries] = await Promise.all([
+    subscribeOne(hass.connection, subscribeAreaRegistry),
+    subscribeOne(hass.connection, subscribeDeviceRegistry),
+    subscribeOne(hass.connection, subscribeEntityRegistry),
+  ]);
+
+  return generateLovelaceConfigFromData(
+    hass.config,
+    areaEntries,
+    deviceEntries,
+    entityEntries,
+    hass.states,
+    hass.localize
+  );
+};
+
+export const generateLovelaceConfigFromData = async (
+  config: HassConfig,
+  areaEntries: AreaRegistryEntry[],
+  deviceEntries: DeviceRegistryEntry[],
+  entityEntries: EntityRegistryEntry[],
+  entities: HassEntities,
   localize: LocalizeFunc
 ): Promise<LovelaceConfig> => {
-  const viewEntities = extractViews(hass.states);
+  const viewEntities = extractViews(entities);
 
   const views = viewEntities.map((viewEntity: GroupEntity) => {
-    const states = getViewEntities(hass.states, viewEntity);
+    const states = getViewEntities(entities, viewEntity);
 
     // In the case of a normal view, we use group order as specified in view
     const groupOrders = {};
@@ -340,7 +381,7 @@ export const generateLovelaceConfig = async (
     );
   });
 
-  let title = hass.config.location_name;
+  let title = config.location_name;
 
   // User can override default view. If they didn't, we will add one
   // that contains all entities.
@@ -348,26 +389,18 @@ export const generateLovelaceConfig = async (
     viewEntities.length === 0 ||
     viewEntities[0].entity_id !== DEFAULT_VIEW_ENTITY_ID
   ) {
-    // We want to keep the registry subscriptions alive after generating the UI
-    // so that we don't serve up stale data after changing areas.
-    if (!subscribedRegistries) {
-      subscribedRegistries = true;
-      subscribeAreaRegistry(hass.connection, () => undefined);
-      subscribeDeviceRegistry(hass.connection, () => undefined);
-      subscribeEntityRegistry(hass.connection, () => undefined);
-    }
-
-    const [areas, devices, entities] = await Promise.all([
-      subscribeOne(hass.connection, subscribeAreaRegistry),
-      subscribeOne(hass.connection, subscribeDeviceRegistry),
-      subscribeOne(hass.connection, subscribeEntityRegistry),
-    ]);
-    const registries = { areas, devices, entities };
-
-    views.unshift(generateDefaultViewConfig(hass, registries));
+    views.unshift(
+      generateDefaultViewConfig(
+        areaEntries,
+        deviceEntries,
+        entityEntries,
+        entities,
+        localize
+      )
+    );
 
     // Add map of geo locations to default view if loaded
-    if (hass.config.components.includes("geo_location")) {
+    if (config.components.includes("geo_location")) {
       if (views[0] && views[0].cards) {
         views[0].cards.push({
           type: "map",
@@ -380,12 +413,6 @@ export const generateLovelaceConfig = async (
     if (views.length > 1 && title === "Home") {
       title = "Home Assistant";
     }
-  }
-
-  if (__DEMO__) {
-    views[0].cards!.unshift({
-      type: "custom:ha-demo-card",
-    });
   }
 
   // User has no entities

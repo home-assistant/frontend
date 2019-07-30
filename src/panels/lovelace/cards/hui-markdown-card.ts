@@ -29,7 +29,9 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
   @property() private _config?: MarkdownCardConfig;
 
   public getCardSize(): number {
-    return this._config!.content.split("\n").length;
+    return (
+      this._config!.content.split("\n").length + (this._config!.title ? 1 : 0)
+    );
   }
 
   public setConfig(config: MarkdownCardConfig): void {
