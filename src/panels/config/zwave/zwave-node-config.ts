@@ -41,7 +41,7 @@ export class ZwaveNodeConfig extends LitElement {
     return html`
       <div class="content">
         <ha-card
-          header=${this.hass!.localize(
+          .header=${this.hass!.localize(
             "ui.panel.config.zwave.node_config.header"
           )}
         >
