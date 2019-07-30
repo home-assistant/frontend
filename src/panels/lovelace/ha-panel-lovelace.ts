@@ -20,7 +20,7 @@ import {
   property,
 } from "lit-element";
 import { showSaveDialog } from "./editor/show-save-config-dialog";
-import { generateLovelaceConfig } from "./common/generate-lovelace-config";
+import { generateLovelaceConfigFromHass } from "./common/generate-lovelace-config";
 import { showToast } from "../../util/toast";
 
 interface LovelacePanelConfig {
@@ -162,7 +162,7 @@ class LovelacePanel extends LitElement {
   }
 
   private async _regenerateConfig() {
-    const conf = await generateLovelaceConfig(this.hass!, this.hass!.localize);
+    const conf = await generateLovelaceConfigFromHass(this.hass!);
     this._setLovelaceConfig(conf, "generated");
     this._state = "loaded";
   }
@@ -241,7 +241,7 @@ class LovelacePanel extends LitElement {
         this._errorMsg = err.message;
         return;
       }
-      conf = await generateLovelaceConfig(this.hass!, this.hass!.localize);
+      conf = await generateLovelaceConfigFromHass(this.hass!);
       confMode = "generated";
     }
 

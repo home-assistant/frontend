@@ -352,6 +352,7 @@ class HUIRoot extends LitElement {
         }
         #view > * {
           flex: 1;
+          width: 100%;
         }
         paper-item {
           cursor: pointer;
