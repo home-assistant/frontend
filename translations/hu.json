@@ -141,7 +141,8 @@
             "high_demand": "Magas igénybevétel",
             "heat_pump": "Hőszivattyú",
             "gas": "Gáz",
-            "manual": "Manuális"
+            "manual": "Manuális",
+            "heat_cool": "Fűtés\/Hűtés"
         },
         "configurator": {
             "configure": "Beállítás",
@@ -319,10 +320,13 @@
                         "title": "Események"
                     },
                     "templates": {
-                        "title": "Sablonok"
+                        "title": "Sablon"
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "Infó"
                     }
                 }
             },
@@ -350,6 +354,23 @@
                         "core": {
                             "header": "Konfiguráció és szerver vezérlés",
                             "introduction": "Tudjuk, hogy a konfiguráció módosítása fárasztó folyamat lehet. Ez a rész megpróbálja egy kicsit könnyebbé tenni az életed.",
+                            "core_config": {
+                                "edit_requires_storage": "A szerkesztő le van tiltva, mert a konfiguráció a configuration.yaml fájlban van tárolva.",
+                                "location_name": "A Home Assistant rendszered neve",
+                                "latitude": "Szélesség",
+                                "longitude": "Hosszúság",
+                                "elevation": "Magasság",
+                                "elevation_meters": "méter",
+                                "time_zone": "Időzóna",
+                                "unit_system": "Egységrendszer",
+                                "unit_system_imperial": "Angolszász",
+                                "unit_system_metric": "Metrikus",
+                                "imperial_example": "Fahrenheit, font",
+                                "metric_example": "Celsius, kilogramm",
+                                "save_button": "Mentés"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Konfiguráció érvényesítés",
                                 "introduction": "Érvényesítsd a konfigurációt, ha nemrégiben módosítottad azt, és meg szeretnél bizonyosodni róla, hogy minden érvényes",
@@ -370,21 +391,6 @@
                                 "introduction": "Home Assistant szerver vezérlése... a Home Assistant-ból.",
                                 "restart": "Újraindítás",
                                 "stop": "Leállítás"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "A szerkesztő le van tiltva, mert a konfiguráció a configuration.yaml fájlban van tárolva.",
-                                "location_name": "A Home Assistant rendszered neve",
-                                "latitude": "Szélesség",
-                                "longitude": "Hosszúság",
-                                "elevation": "Magasság",
-                                "elevation_meters": "méter",
-                                "time_zone": "Időzóna",
-                                "unit_system": "Egységrendszer",
-                                "unit_system_imperial": "Angolszász",
-                                "unit_system_metric": "Metrikus",
-                                "imperial_example": "Fahrenheit, font",
-                                "metric_example": "Celsius, kilogramm",
-                                "save_button": "Mentés"
                             }
                         }
                     }
@@ -586,7 +592,36 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Z-Wave hálózat kezelése"
+                    "description": "Z-Wave hálózat kezelése",
+                    "network_management": {
+                        "header": "Z-Wave hálózat menedzsment"
+                    },
+                    "network_status": {
+                        "network_stopped": "Z-Wave hálózat leállt",
+                        "network_starting": "Z-Wave hálózat indítása...",
+                        "network_starting_note": "Ez eltarthat egy ideig a hálózat méretétől függően.",
+                        "network_started": "Z-Wave hálózat elindult",
+                        "network_started_note_some_queried": "Az elérhető csomópontok le lettek kérdezve. Az alvó csomópontok akkor lesznek lekérdezve, ha elérhetővé válnak.",
+                        "network_started_note_all_queried": "Minden csomópont le lett kérdezve."
+                    },
+                    "services": {
+                        "start_network": "Hálózat indítása",
+                        "stop_network": "Hálózat leállítása",
+                        "test_network": "Hálózat tesztelése",
+                        "save_config": "Konfiguráció mentése",
+                        "add_node_secure": "Biztonságos csomópont hozzáadása",
+                        "add_node": "Csomópont hozzáadása",
+                        "remove_node": "Csomópont eltávolítása",
+                        "cancel_command": "Parancs megszakítása"
+                    },
+                    "common": {
+                        "value": "Érték",
+                        "instance": "Példány",
+                        "index": "Index"
+                    },
+                    "values": {
+                        "header": "Csomópont értékek"
+                    }
                 },
                 "users": {
                     "caption": "Felhasználók",
@@ -779,6 +814,11 @@
                     "step_done": "{step} beállítás elvégezve",
                     "close": "Bezárás",
                     "submit": "Küldés"
+                },
+                "logout": "Kijelentkezés",
+                "force_narrow": {
+                    "header": "Mindig rejtse el az oldalsávot",
+                    "description": "Ez alapértelmezés szerint elrejti az oldalsávot, hasonlóan a mobil verzióhoz."
                 }
             },
             "page-authorize": {
@@ -1291,6 +1331,14 @@
                 "home": "Otthon",
                 "sleep": "Alvás",
                 "activity": "Tevékenység"
+            },
+            "hvac_action": {
+                "off": "Ki",
+                "heating": "Fűtés",
+                "cooling": "Hűtés",
+                "drying": "Szárítás",
+                "idle": "Tétlen",
+                "fan": "Ventilátor"
             }
         }
     },

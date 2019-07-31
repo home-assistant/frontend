@@ -350,6 +350,23 @@
                         "core": {
                             "header": "Konfigurace a správa serveru",
                             "introduction": "Moc dobře víme, že změna konfigurace může být velmi únavným procesem. Tato sekce se proto pokusí udělat váš život alespoň trochu jednodušší.",
+                            "core_config": {
+                                "edit_requires_storage": "Editori pois käytöstä, koska asetukset on määritelty configuration.yaml:ssä",
+                                "location_name": "Název instalace Home Assistant",
+                                "latitude": "Zeměpisná šířka",
+                                "longitude": "Zeměpisná délka",
+                                "elevation": "Nadmořská výška",
+                                "elevation_meters": "metrů",
+                                "time_zone": "Časové pásmo",
+                                "unit_system": "Systém jednotek",
+                                "unit_system_imperial": "Imperiální",
+                                "unit_system_metric": "Metrický",
+                                "imperial_example": "Stupně Fahrenheita, libry",
+                                "metric_example": "Stupně Celsia, kilogramy",
+                                "save_button": "Uložit"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Ověření konfigurace",
                                 "introduction": "Pokud jste nedávno provedli změny konfigurace a chcete se ujistit, že je vše v pořádku, můžete ji zde ověřit",
@@ -370,21 +387,6 @@
                                 "introduction": "Ovládejte svůj Home Assistant server... z Home Assistant.",
                                 "restart": "Restartovat",
                                 "stop": "Zastavit"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Editori pois käytöstä, koska asetukset on määritelty configuration.yaml:ssä",
-                                "location_name": "Název instalace Home Assistant",
-                                "latitude": "Zeměpisná šířka",
-                                "longitude": "Zeměpisná délka",
-                                "elevation": "Nadmořská výška",
-                                "elevation_meters": "metrů",
-                                "time_zone": "Časové pásmo",
-                                "unit_system": "Systém jednotek",
-                                "unit_system_imperial": "Imperiální",
-                                "unit_system_metric": "Metrický",
-                                "imperial_example": "Stupně Fahrenheita, libry",
-                                "metric_example": "Stupně Celsia, kilogramy",
-                                "save_button": "Uložit"
                             }
                         }
                     }
