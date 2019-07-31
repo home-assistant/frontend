@@ -354,6 +354,23 @@
                         "core": {
                             "header": "Configuración y control del servidor",
                             "introduction": "Cambiar tu configuración puede ser un proceso tedioso. Lo sabemos. Esta sección tratará de hacer tu vida un poco más fácil.",
+                            "core_config": {
+                                "edit_requires_storage": "Editor deshabilitado debido a la configuración almacenada en configuration.yaml.",
+                                "location_name": "Nombre de tu instalación de Home Assistant",
+                                "latitude": "Latitud",
+                                "longitude": "Longitud",
+                                "elevation": "Altitud",
+                                "elevation_meters": "metros",
+                                "time_zone": "Zona horaria",
+                                "unit_system": "Sistema de unidades",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Métrico",
+                                "imperial_example": "Fahrenheit, libras",
+                                "metric_example": "Celsius, kilogramos",
+                                "save_button": "Guardar"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Validación de la configuración",
                                 "introduction": "Valida tu configuración si has realizado cambios recientemente y quieres asegurarte de que son correctos",
@@ -374,21 +391,6 @@
                                 "introduction": "Controla tu servidor de Home Assistant ... desde Home Assistant.",
                                 "restart": "Reiniciar",
                                 "stop": "Detener"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Editor deshabilitado debido a la configuración almacenada en configuration.yaml.",
-                                "location_name": "Nombre de tu instalación de Home Assistant",
-                                "latitude": "Latitud",
-                                "longitude": "Longitud",
-                                "elevation": "Altitud",
-                                "elevation_meters": "metros",
-                                "time_zone": "Zona horaria",
-                                "unit_system": "Sistema de unidades",
-                                "unit_system_imperial": "Imperial",
-                                "unit_system_metric": "Métrico",
-                                "imperial_example": "Fahrenheit, libras",
-                                "metric_example": "Celsius, kilogramos",
-                                "save_button": "Guardar"
                             }
                         }
                     }
@@ -816,7 +818,11 @@
                     "close": "Cerrar",
                     "submit": "Enviar"
                 },
-                "logout": "Cerrar sesión"
+                "logout": "Cerrar sesión",
+                "force_narrow": {
+                    "header": "Ocultar siempre la barra lateral",
+                    "description": "Esto ocultará la barra lateral de forma predeterminada, similar a la experiencia móvil."
+                }
             },
             "page-authorize": {
                 "initializing": "Inicializando",
@@ -1323,10 +1329,19 @@
                 "none": "Ninguno",
                 "eco": "Eco",
                 "away": "Fuera de casa",
+                "boost": "Impulso",
                 "comfort": "Confort",
                 "home": "En casa",
                 "sleep": "Dormir",
                 "activity": "Actividad"
+            },
+            "hvac_action": {
+                "off": "Apagado",
+                "heating": "Calentando",
+                "cooling": "Enfriando",
+                "drying": "Secando",
+                "idle": "Inactivo",
+                "fan": "Ventilador"
             }
         }
     },

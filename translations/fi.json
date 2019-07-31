@@ -135,13 +135,14 @@
             "auto": "Automaatilla",
             "dry": "Kuivaus",
             "fan_only": "Tuuletus",
-            "eco": "Eko",
+            "eco": "Ekonominen",
             "electric": "Sähköinen",
             "performance": "Tehokas",
             "high_demand": "Täysi teho",
             "heat_pump": "Lämpöpumppu",
             "gas": "Kaasu",
-            "manual": "käsisäätöinen"
+            "manual": "käsisäätöinen",
+            "heat_cool": "Lämmitys\/jäähdytys"
         },
         "configurator": {
             "configure": "Määrittele",
@@ -237,20 +238,20 @@
             }
         },
         "weather": {
-            "clear-night": "Selkeää yöllä",
+            "clear-night": "Yö, selkeää",
             "cloudy": "Pilvistä",
             "fog": "Sumuista",
-            "hail": "Raekuuro",
-            "lightning": "Ukkosvaara",
+            "hail": "Raekuuroja",
+            "lightning": "Ukkoskuuroja",
             "lightning-rainy": "Ukkosvaara, sateista",
             "partlycloudy": "Osittain pilvistä",
-            "pouring": "Tihkuista",
+            "pouring": "Kaatosadetta",
             "rainy": "Sateista",
             "snowy": "Lumisadetta",
             "snowy-rainy": "Räntäsadetta",
-            "sunny": "Aurinkoinen",
-            "windy": "Tuulinen",
-            "windy-variant": "Tuulinen"
+            "sunny": "Aurinkoista",
+            "windy": "Tuulista",
+            "windy-variant": "Tuulista"
         },
         "vacuum": {
             "cleaning": "Imuroi",
@@ -350,6 +351,23 @@
                         "core": {
                             "header": "Asetusten ja palvelimen hallinta",
                             "introduction": "Tiedämme, että asetusten muuttaminen saattaa olla työlästä. Täältä löydät työkaluja, jotka toivottavasti helpottavat elämääsi.",
+                            "core_config": {
+                                "edit_requires_storage": "Editori on poistettu käytöstä, koska asetuksia on annettu configuration.yaml:ssa.",
+                                "location_name": "Home Assistant -järjestelmäsi nimi",
+                                "latitude": "Leveysaste",
+                                "longitude": "Pituusaste",
+                                "elevation": "Korkeus merenpinnasta",
+                                "elevation_meters": "metriä",
+                                "time_zone": "Aikavyöhyke",
+                                "unit_system": "Yksikköjärjestelmä",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metrinen",
+                                "imperial_example": "Fahrenheit, paunaa",
+                                "metric_example": "Celsius, kilogrammat",
+                                "save_button": "Tallenna"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Asetusten tarkistus",
                                 "introduction": "Voit tarkistaa asetuksesi varmistuaksesi, että niissä ei ole virheitä",
@@ -370,21 +388,6 @@
                                 "introduction": "Hallitse Home Assistantia... suoraan Home Assistantista",
                                 "restart": "Käynnistä uudelleen",
                                 "stop": "Pysäytä"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Editori on poistettu käytöstä, koska asetuksia on annettu configuration.yaml:ssa.",
-                                "location_name": "Home Assistant -järjestelmäsi nimi",
-                                "latitude": "Leveysaste",
-                                "longitude": "Pituusaste",
-                                "elevation": "Korkeus merenpinnasta",
-                                "elevation_meters": "metriä",
-                                "time_zone": "Aikavyöhyke",
-                                "unit_system": "Yksikköjärjestelmä",
-                                "unit_system_imperial": "Imperial",
-                                "unit_system_metric": "Metrinen",
-                                "imperial_example": "Fahrenheit, paunaa",
-                                "metric_example": "Celsius, kilogrammat",
-                                "save_button": "Tallenna"
                             }
                         }
                     }
@@ -586,7 +589,12 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Z-Wave -verkon asetukset"
+                    "description": "Z-Wave -verkon asetukset",
+                    "services": {
+                        "test_network": "Testaa verkkoyhteys",
+                        "save_config": "Tallenna asetukset",
+                        "cancel_command": "Peruuta komento"
+                    }
                 },
                 "users": {
                     "caption": "Käyttäjät",
@@ -640,7 +648,7 @@
                     "config_flow": {
                         "external_step": {
                             "description": "Tämä vaihe edellyttää, että vierailet ulkopuolisella verkkosivustolla.",
-                            "open_site": "Avaa verkkosivua"
+                            "open_site": "Avaa verkkosivusto"
                         }
                     }
                 },
@@ -665,7 +673,7 @@
                 },
                 "area_registry": {
                     "caption": "Aluerekisteri",
-                    "description": "Yleiskatsaus kaikki kotisi alueista.",
+                    "description": "Yleiskuva kaikista kotisi alueista.",
                     "picker": {
                         "header": "Aluekisteri",
                         "introduction": "Alueita käytetään laitteiden järjestämiseen. Näitä tietoja käytetään Home Assistantissa käyttöliittymän ja käyttöoikeuksien järjestämiseen sekä integroinnin muihin järjestelmiin.",
@@ -779,6 +787,10 @@
                     "step_done": "Asetus tehty {step}",
                     "close": "Sulje",
                     "submit": "Lähetä"
+                },
+                "logout": "Kirjaudu ulos",
+                "force_narrow": {
+                    "header": "Piilota sivupalkki aina"
                 }
             },
             "page-authorize": {
@@ -1070,25 +1082,25 @@
                     "humidity": "Kosteus",
                     "temperature": "Lämpötila",
                     "visibility": "Näkyvyys",
-                    "wind_speed": "Tuulennopeus"
+                    "wind_speed": "Tuuli"
                 },
                 "cardinal_direction": {
-                    "e": "E",
-                    "ene": "ENE",
-                    "ese": "ESE",
-                    "n": "N",
-                    "ne": "NE",
-                    "nne": "NNE",
-                    "nw": "NW",
-                    "nnw": "NNW",
-                    "s": "S",
-                    "se": "SE",
-                    "sse": "SSE",
-                    "ssw": "SSW",
-                    "sw": "SW",
-                    "w": "Länsi",
-                    "wnw": "WNW",
-                    "wsw": "WSW"
+                    "e": "itä",
+                    "ene": "itäkoillinen",
+                    "ese": "itäkaakko",
+                    "n": "pohjoinen",
+                    "ne": "koillinen",
+                    "nne": "pohjoiskoillinen",
+                    "nw": "luode",
+                    "nnw": "pohjoisluode",
+                    "s": "etelä",
+                    "se": "kaakko",
+                    "sse": "eteläkaakko",
+                    "ssw": "etelälounas",
+                    "sw": "lounas",
+                    "w": "länsi",
+                    "wnw": "länsiluode",
+                    "wsw": "länsilounas"
                 },
                 "forecast": "Sääennuste"
             },
@@ -1135,7 +1147,8 @@
                 "fan_mode": "Tuuletustila",
                 "swing_mode": "Heilutustila",
                 "away_mode": "Poissa kotoa -tila",
-                "aux_heat": "Lisälämpö"
+                "aux_heat": "Lisälämpö",
+                "preset_mode": "Esiasetus"
             },
             "lock": {
                 "code": "Koodi",
@@ -1271,15 +1284,30 @@
         "weather": {
             "humidity": "Kosteus",
             "visibility": "Näkyvyys",
-            "wind_speed": "Tuulennopeus"
+            "wind_speed": "Tuuli"
         }
     },
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "off": "Pois päältä",
+                "off": "Sammutettu",
                 "on": "Päällä",
                 "auto": "Auto"
+            },
+            "preset_mode": {
+                "none": "Asettamatta",
+                "eco": "Ekonominen",
+                "away": "Poissa",
+                "home": "Kotona",
+                "sleep": "Nukkumassa"
+            },
+            "hvac_action": {
+                "off": "Sammutettu",
+                "heating": "Lämmitys",
+                "cooling": "Jäähdytys",
+                "drying": "Kuivaus",
+                "idle": "Lepotilassa",
+                "fan": "Tuuletin"
             }
         }
     },

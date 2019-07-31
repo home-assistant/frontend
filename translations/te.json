@@ -314,7 +314,7 @@
                 "header": "కాన్ఫిగర్ Home Assistant",
                 "core": {
                     "section": {
-                        "core": {
+                        "server_control": {
                             "validation": {
                                 "check_config": "కాన్ఫిగరేషన్ను తనిఖీ చేయండి",
                                 "valid": "మంచి కాన్ఫిగరేషన్!",

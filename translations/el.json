@@ -350,6 +350,23 @@
                         "core": {
                             "header": "Ρύθμιση παραμέτρων και Έλεγχος του διακομιστή",
                             "introduction": "Αλλάζοντας τις ρυθμίσεις σας μπορεί να είναι μια κουραστική διαδικασία. Το γνωρίζουμε. Σε αυτή την ενότητα θα προσπαθήσουμε να κάνουμε τη ζωή σας λίγο πιο εύκολη.",
+                            "core_config": {
+                                "edit_requires_storage": "Ο επεξεργαστής απενεργοποιήθηκε επειδή οι ρυθμίσεις παραμέτρων αποθηκεύτηκαν στο αρχείο configuration.yaml.",
+                                "location_name": "Όνομα της εγκατάστασης του Home Assistant",
+                                "latitude": "Γεωγραφικό πλάτος",
+                                "longitude": "Γεωγραφικό μήκος",
+                                "elevation": "Ανύψωση",
+                                "elevation_meters": "μέτρα",
+                                "time_zone": "Ζώνη Ώρας",
+                                "unit_system": "Μονάδα Συστήματος",
+                                "unit_system_imperial": "Αυτοκρατορικός",
+                                "unit_system_metric": "Μετρικό",
+                                "imperial_example": "Φαρενάιτ, λίρες",
+                                "metric_example": "Κελσίου, κιλά",
+                                "save_button": "Αποθήκευση"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Επαλήθευση ρυθμίσεων",
                                 "introduction": "Επαληθεύστε τις ρυθμίσεις σας εάν κάνατε πρόσφατα κάποιες αλλαγές και θέλετε να βεβαιωθείτε ότι είναι όλες έγκυρες",
@@ -370,21 +387,6 @@
                                 "introduction": "Έλεγχος του διακομιστή Home Assistant... απο τον Home Assistant",
                                 "restart": "Επανεκκίνηση",
                                 "stop": "Στοπ"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Ο επεξεργαστής απενεργοποιήθηκε επειδή οι ρυθμίσεις παραμέτρων αποθηκεύτηκαν στο αρχείο configuration.yaml.",
-                                "location_name": "Όνομα της εγκατάστασης του Home Assistant",
-                                "latitude": "Γεωγραφικό πλάτος",
-                                "longitude": "Γεωγραφικό μήκος",
-                                "elevation": "Ανύψωση",
-                                "elevation_meters": "μέτρα",
-                                "time_zone": "Ζώνη Ώρας",
-                                "unit_system": "Μονάδα Συστήματος",
-                                "unit_system_imperial": "Αυτοκρατορικός",
-                                "unit_system_metric": "Μετρικό",
-                                "imperial_example": "Φαρενάιτ, λίρες",
-                                "metric_example": "Κελσίου, κιλά",
-                                "save_button": "Αποθήκευση"
                             }
                         }
                     }

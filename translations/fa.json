@@ -330,21 +330,6 @@
                         "core": {
                             "header": "پیکربندی و کنترل سرور",
                             "introduction": "تغییر پیکربندی شما می تواند یک روند خسته کننده باشد. ما میدانیم. این بخش سعی خواهد کرد زندگی شما را کمی ساده تر کند.",
-                            "validation": {
-                                "heading": "تایید  پیکربندی",
-                                "check_config": "بررسی پیکربندی"
-                            },
-                            "reloading": {
-                                "heading": "بارگذاری مجدد پیکربندی",
-                                "introduction": "برخی از قسمت های Home Assistant می توانند بدون نیاز به راه اندازی مجدد مجدد بارگیری شوند. برای بارگذاری مجدد ضربه بزنید. پیکربندی کنونی خود را بارگیری و اطلاعات جدید را بارگذاری می کند.",
-                                "core": "بارگذاری مجدد ",
-                                "group": "بارگذاری مجدد گروه ها",
-                                "automation": "بازنگری automations",
-                                "script": "بازنگری اسکریپت"
-                            },
-                            "server_management": {
-                                "introduction": "صفحه اصلی home assistant سرور خود را کنترل کنید ... از  home assistant"
-                            },
                             "core_config": {
                                 "edit_requires_storage": "ویرایشگر غیرفعال شده است چون پیکربندی ذخیره شده در configuration.yaml.",
                                 "location_name": "نام برای نصب صفحه اصلی دستیار شما",
@@ -359,6 +344,23 @@
                                 "imperial_example": "فارنهایت، پوند",
                                 "metric_example": "سانتیگراد، کیلوگرم",
                                 "save_button": "ذخیره"
+                            }
+                        },
+                        "server_control": {
+                            "validation": {
+                                "heading": "تایید  پیکربندی",
+                                "check_config": "بررسی پیکربندی"
+                            },
+                            "reloading": {
+                                "heading": "بارگذاری مجدد پیکربندی",
+                                "introduction": "برخی از قسمت های Home Assistant می توانند بدون نیاز به راه اندازی مجدد مجدد بارگیری شوند. برای بارگذاری مجدد ضربه بزنید. پیکربندی کنونی خود را بارگیری و اطلاعات جدید را بارگذاری می کند.",
+                                "core": "بارگذاری مجدد ",
+                                "group": "بارگذاری مجدد گروه ها",
+                                "automation": "بازنگری automations",
+                                "script": "بازنگری اسکریپت"
+                            },
+                            "server_management": {
+                                "introduction": "صفحه اصلی home assistant سرور خود را کنترل کنید ... از  home assistant"
                             }
                         }
                     }

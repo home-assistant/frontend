@@ -350,6 +350,22 @@
                         "core": {
                             "header": "Konfigurasjon og serverkontroll",
                             "introduction": "Vi veit at endringar i konfigurasjonen kan vere ein slitsam prosess. Denne delen vil forsøke å gjere livet ditt litt lettare.",
+                            "core_config": {
+                                "location_name": "Namnet på din Home Assistant installasjon",
+                                "latitude": "Breiddegrad",
+                                "longitude": "Lengdegrad",
+                                "elevation": "Høgde",
+                                "elevation_meters": "Meter",
+                                "time_zone": "Tidssone",
+                                "unit_system": "Måleining",
+                                "unit_system_imperial": "Imperisk",
+                                "unit_system_metric": "Metrisk",
+                                "imperial_example": "Fahrenheit, pund",
+                                "metric_example": "Celsius, kilogram",
+                                "save_button": "Spare"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Konfigurasjonsvalidering",
                                 "introduction": "Sjekk konfigurasjonen din dersom du nyleg har gjort endringar og ønsker å vere sikker på at den er gyldig ved å køyre ein valideringstest",
@@ -370,20 +386,6 @@
                                 "introduction": "Kontroller Home Assistant-serveren din... frå Home Assistant.",
                                 "restart": "Omstart",
                                 "stop": "Stopp"
-                            },
-                            "core_config": {
-                                "location_name": "Namnet på din Home Assistant installasjon",
-                                "latitude": "Breiddegrad",
-                                "longitude": "Lengdegrad",
-                                "elevation": "Høgde",
-                                "elevation_meters": "Meter",
-                                "time_zone": "Tidssone",
-                                "unit_system": "Måleining",
-                                "unit_system_imperial": "Imperisk",
-                                "unit_system_metric": "Metrisk",
-                                "imperial_example": "Fahrenheit, pund",
-                                "metric_example": "Celsius, kilogram",
-                                "save_button": "Spare"
                             }
                         }
                     }

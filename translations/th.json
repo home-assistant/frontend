@@ -350,6 +350,23 @@
                         "core": {
                             "header": "การกำหนดค่าและควบคุมเซิร์ฟเวอร์",
                             "introduction": "เรารู้นะว่าการตั้งค่าเนี่ยมันน่าเบื่อขนาดไหน ในส่วนนี้มันจะช่วยทำให้ชีวิตคุณง่ายขึ้นนิดหน่อย",
+                            "core_config": {
+                                "edit_requires_storage": "ตัวช่วยแก้ไขถูกปิดใช้งาน เนื่องจากการกำหนดค่าถูกกำหนดไว้ในไฟล์ configuration.yaml",
+                                "location_name": "ชื่อในการติดตั้ง Home Assistant ของคุณ",
+                                "latitude": "ละติจูด",
+                                "longitude": "ลองจิจูด",
+                                "elevation": "มุมเงย",
+                                "elevation_meters": "เมตร",
+                                "time_zone": "เขตเวลา",
+                                "unit_system": "ระบบหน่วย",
+                                "unit_system_imperial": "ของจักรพรรดิ",
+                                "unit_system_metric": "เมตริก",
+                                "imperial_example": "ฟาเรนไฮต์, ปอนด์",
+                                "metric_example": "เซลเซียส, กิโลกรัม",
+                                "save_button": "บันทึก"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "ตรวจสอบการกำหนดค่า",
                                 "introduction": "ตรวจสอบความถูกต้องการกำหนดค่าของคุณหากคุณเพิ่งทำการเปลี่ยนแปลงบางอย่างกับการกำหนดค่าของคุณและต้องการตรวจสอบให้แน่ใจว่าถูกต้องทั้งหมด",
@@ -370,21 +387,6 @@
                                 "introduction": "สำหรับควบคุมเซิร์ฟเวอร์ Home Assistant อีกทีนึงจาก Home Assistant อีกที",
                                 "restart": "เริ่มต้นใหม่",
                                 "stop": "หยุด"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "ตัวช่วยแก้ไขถูกปิดใช้งาน เนื่องจากการกำหนดค่าถูกกำหนดไว้ในไฟล์ configuration.yaml",
-                                "location_name": "ชื่อในการติดตั้ง Home Assistant ของคุณ",
-                                "latitude": "ละติจูด",
-                                "longitude": "ลองจิจูด",
-                                "elevation": "มุมเงย",
-                                "elevation_meters": "เมตร",
-                                "time_zone": "เขตเวลา",
-                                "unit_system": "ระบบหน่วย",
-                                "unit_system_imperial": "ของจักรพรรดิ",
-                                "unit_system_metric": "เมตริก",
-                                "imperial_example": "ฟาเรนไฮต์, ปอนด์",
-                                "metric_example": "เซลเซียส, กิโลกรัม",
-                                "save_button": "บันทึก"
                             }
                         }
                     }

@@ -354,6 +354,23 @@
                         "core": {
                             "header": "Configuration et contrôle du serveur",
                             "introduction": "Changer votre configuration peut être un processus fastidieux. Nous le savons. Cette section va essayer de vous rendre la vie un peu plus facile.",
+                            "core_config": {
+                                "edit_requires_storage": "L'éditeur est désactivé car la configuration est stockée dans configuration.yaml.",
+                                "location_name": "Nom de votre installation Home Assistant",
+                                "latitude": "Latitude",
+                                "longitude": "Longitude",
+                                "elevation": "Élévation",
+                                "elevation_meters": "mètres",
+                                "time_zone": "Fuseau horaire",
+                                "unit_system": "Système d'unité",
+                                "unit_system_imperial": "Impérial",
+                                "unit_system_metric": "Métrique",
+                                "imperial_example": "Fahrenheit, livres",
+                                "metric_example": "Celsius, kilogrammes",
+                                "save_button": "Enregistrer"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Validation de la configuration",
                                 "introduction": "Validez votre configuration si vous l'avez récemment modifiée et que vous voulez vous assurer que tout est valide",
@@ -374,21 +391,6 @@
                                 "introduction": "Contrôlez votre serveur Home Assistant... depuis Home Assistant.",
                                 "restart": "Redémarrer",
                                 "stop": "Arrêter"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "L'éditeur est désactivé car la configuration est stockée dans configuration.yaml.",
-                                "location_name": "Nom de votre installation Home Assistant",
-                                "latitude": "Latitude",
-                                "longitude": "Longitude",
-                                "elevation": "Élévation",
-                                "elevation_meters": "mètres",
-                                "time_zone": "Fuseau horaire",
-                                "unit_system": "Système d'unité",
-                                "unit_system_imperial": "Impérial",
-                                "unit_system_metric": "Métrique",
-                                "imperial_example": "Fahrenheit, livres",
-                                "metric_example": "Celsius, kilogrammes",
-                                "save_button": "Enregistrer"
                             }
                         }
                     }

@@ -338,6 +338,23 @@
                         "core": {
                             "header": "Rheoli ffurfweddu a gweinydd",
                             "introduction": "Gellir newid ffurfweddiad eich proses ddiflas. Rydym yn gwybod. Bydd yr adran hon yn ceisio gwneud eich bywyd ychydig yn haws.",
+                            "core_config": {
+                                "edit_requires_storage": "Golygydd wedi'i analluogi oherwydd bod ffurfwedd wedi'i storio mewn 'configuration.yaml'.",
+                                "location_name": "Enw eich gosodiad Home Assistant",
+                                "latitude": "Lledred",
+                                "longitude": "Hydred",
+                                "elevation": "Uchder",
+                                "elevation_meters": "metrau",
+                                "time_zone": "Parth Amser",
+                                "unit_system": "System Uned",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metrig",
+                                "imperial_example": "Fahrenheit, pwys",
+                                "metric_example": "Celsius, cilogramau",
+                                "save_button": "Arbed"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Dilysu ffurfweddu",
                                 "introduction": "Dilyswch eich ffurfweddiad os gwnaethoch rai newidiadau yn ddiweddar i'ch cyfluniad ac rydych eisiau gwneud yn siŵr ei fod yn hollol ddilys",
@@ -358,21 +375,6 @@
                                 "introduction": "Rheoli gweinydd eich Home Assistant ... o Home Assistant",
                                 "restart": "Ailgychwyn",
                                 "stop": "Stopio"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Golygydd wedi'i analluogi oherwydd bod ffurfwedd wedi'i storio mewn 'configuration.yaml'.",
-                                "location_name": "Enw eich gosodiad Home Assistant",
-                                "latitude": "Lledred",
-                                "longitude": "Hydred",
-                                "elevation": "Uchder",
-                                "elevation_meters": "metrau",
-                                "time_zone": "Parth Amser",
-                                "unit_system": "System Uned",
-                                "unit_system_imperial": "Imperial",
-                                "unit_system_metric": "Metrig",
-                                "imperial_example": "Fahrenheit, pwys",
-                                "metric_example": "Celsius, cilogramau",
-                                "save_button": "Arbed"
                             }
                         }
                     }

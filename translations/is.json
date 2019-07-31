@@ -314,6 +314,23 @@
                         "core": {
                             "header": "Stillingar og stjórnun þjóns",
                             "introduction": "Að breyta stillingum getur verið þreytandi ferli og við vitum það. Þetta svæði mun reyna að létta þér lífið hvað það varðar.",
+                            "core_config": {
+                                "edit_requires_storage": "Ritill er óvirkur af því að stillingar eru vistaðar í configuration.yaml.",
+                                "location_name": "Nafnið á Home Assistant uppsetningunni",
+                                "latitude": "Breiddargráða",
+                                "longitude": "Lengdargráða",
+                                "elevation": "Hækkun",
+                                "elevation_meters": "metrar",
+                                "time_zone": "Tímabelti",
+                                "unit_system": "Einingarkerfi",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metra",
+                                "imperial_example": "Fahrenheit, pund",
+                                "metric_example": "Celsíus, kílógrömm",
+                                "save_button": "Vista"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Staðfesta stillingar",
                                 "introduction": "Staðfestu stillingarnar þínar ef þú hefur gert breytingar á stillingum og vilt ganga úr skugga um að þær séu í lagi",
@@ -334,21 +351,6 @@
                                 "introduction": "Stjórna Home Assistant miðlara... frá Home Assistant.",
                                 "restart": "Endurræsa",
                                 "stop": "Stöðva"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Ritill er óvirkur af því að stillingar eru vistaðar í configuration.yaml.",
-                                "location_name": "Nafnið á Home Assistant uppsetningunni",
-                                "latitude": "Breiddargráða",
-                                "longitude": "Lengdargráða",
-                                "elevation": "Hækkun",
-                                "elevation_meters": "metrar",
-                                "time_zone": "Tímabelti",
-                                "unit_system": "Einingarkerfi",
-                                "unit_system_imperial": "Imperial",
-                                "unit_system_metric": "Metra",
-                                "imperial_example": "Fahrenheit, pund",
-                                "metric_example": "Celsíus, kílógrömm",
-                                "save_button": "Vista"
                             }
                         }
                     }
@@ -452,7 +454,7 @@
                                     "leave": "Brottför"
                                 }
                             },
-                            "learn_more": "Læra meira um gikki"
+                            "learn_more": "Læra meira um kveikjur"
                         },
                         "conditions": {
                             "header": "Skilyrði",
@@ -856,6 +858,7 @@
                     }
                 },
                 "integration": {
+                    "intro": "Tæki og þjónustur koma fram í Home Assistant sem samþættingar. Þú getur farið í uppsetningu á þeim núna eða síðar í gegnum stillingar skjáinn.",
                     "more_integrations": "Meira",
                     "finish": "Ljúka"
                 },

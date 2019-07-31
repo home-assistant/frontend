@@ -8,7 +8,7 @@
         "mailbox": "Posbus",
         "shopping_list": "Inkopielys",
         "dev-info": "Info",
-        "developer_tools": "Ontwikkelaar gereedskap",
+        "developer_tools": "Ontwikkelaar Hulpmiddels",
         "calendar": "Kalender",
         "profile": "Profiel"
     },
@@ -26,8 +26,8 @@
             "armed_away": "Gewapend weg",
             "armed_night": "Gewapend nag",
             "pending": "Hangende",
-            "arming": "Bewapen",
-            "disarming": "Ontwapen",
+            "arming": "Bewapen Tans",
+            "disarming": "Ontwapen Tans",
             "triggered": "Geaktiveer",
             "armed_custom_bypass": "Gewapende pasgemaakte omseil"
         },
@@ -77,7 +77,7 @@
                 "on": "Onveilige"
             },
             "presence": {
-                "off": "Afwesig",
+                "off": "Elders",
                 "on": "Tuis"
             },
             "battery": {
@@ -139,9 +139,10 @@
             "electric": "Elektries",
             "performance": "Prestasie",
             "high_demand": "Hoë aanvraag",
-            "heat_pump": "Hitte pomp",
+            "heat_pump": "Hittepomp",
             "gas": "Gas",
-            "manual": "Handmatig"
+            "manual": "Handmatig",
+            "heat_cool": "Verhit\/Verkoel"
         },
         "configurator": {
             "configure": "Stel op",
@@ -156,7 +157,7 @@
         },
         "device_tracker": {
             "home": "Tuis",
-            "not_home": "Afwesig"
+            "not_home": "Elders"
         },
         "fan": {
             "off": "Af",
@@ -166,7 +167,7 @@
             "off": "Af",
             "on": "Aan",
             "home": "Tuis",
-            "not_home": "Afwesig",
+            "not_home": "Elders",
             "open": "Oop",
             "opening": "Opening",
             "closed": "Toe",
@@ -192,10 +193,10 @@
         "media_player": {
             "off": "Af",
             "on": "Aan",
-            "playing": "Speel",
+            "playing": "Speel Tans",
             "paused": "Onderbreek",
             "idle": "Ledig",
-            "standby": "Staan by"
+            "standby": "Gereed"
         },
         "plant": {
             "ok": "OK",
@@ -264,12 +265,12 @@
         },
         "timer": {
             "active": "aktief",
-            "idle": "onaktiewe",
+            "idle": "onaktief",
             "paused": "Onderbreek"
         },
         "person": {
             "home": "Tuis",
-            "not_home": "Afwesig"
+            "not_home": "Elders"
         }
     },
     "state_badge": {
@@ -286,18 +287,18 @@
             "armed_away": "Gewapen",
             "armed_night": "Gewapen",
             "pending": "Hangend",
-            "arming": "Bewapen",
+            "arming": "Bewapen Tans",
             "disarming": "Ontwapen",
             "triggered": "Aktief",
             "armed_custom_bypass": "Gewapen"
         },
         "device_tracker": {
             "home": "Tuis",
-            "not_home": "Afwesig"
+            "not_home": "Elders"
         },
         "person": {
             "home": "Tuis",
-            "not_home": "Afwesig"
+            "not_home": "Elders"
         }
     },
     "ui": {
@@ -323,6 +324,9 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "Inligting"
                     }
                 }
             },
@@ -350,6 +354,23 @@
                         "core": {
                             "header": "Opstellings en bedienerbeheer",
                             "introduction": "As u opstellings verander, kan dit 'n vermoeiende proses wees. Ons weet. Hierdie afdeling sal probeer om u lewe 'n bietjie makliker te maak.",
+                            "core_config": {
+                                "edit_requires_storage": "Redakteur is gedeaktiveer omdat konfigurasie gestoor is in configuration.yaml.",
+                                "location_name": "Naam van u Home Assistant installasie",
+                                "latitude": "Breedtegraad",
+                                "longitude": "Lengtegraad",
+                                "elevation": "Hoogte",
+                                "elevation_meters": "Meter",
+                                "time_zone": "Tydsone",
+                                "unit_system": "Eenheidstelsel",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metrieke",
+                                "imperial_example": "Fahrenheit, pond",
+                                "metric_example": "Celsius, kilogram",
+                                "save_button": "Stoor"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Opstellings validering",
                                 "introduction": "Verifieer u opstellings as u onlangs 'n paar veranderinge aan u opstellings gemaak het en wil seker maak dat dit alles geldig is",
@@ -379,7 +400,7 @@
                     "description": "Pas u entiteite aan",
                     "picker": {
                         "header": "Pasgemaakte Instellings",
-                        "introduction": "Verfyn per-entiteit eienskappe. Bygevoegde \/ gewysigde aanpassings sal onmiddellik in werking tree. Verwyderde aanpassings sal in werkin tree wanneer die entiteit opgedateer word."
+                        "introduction": "Verfyn per-entiteit eienskappe. Bygevoegde \/ gewysigde aanpassings sal onmiddellik in werking tree. Verwyderde aanpassings sal in werking tree wanneer die entiteit opgedateer word."
                     }
                 },
                 "automation": {
@@ -525,7 +546,7 @@
                                     "zone": "Sone"
                                 }
                             },
-                            "learn_more": "Kom meer te wete oor die voorwaardes"
+                            "learn_more": "Kom meer te wete oor voorwaardes"
                         },
                         "actions": {
                             "header": "Aksies",
@@ -560,7 +581,9 @@
                                 }
                             },
                             "learn_more": "Kom meer te wete oor aksies"
-                        }
+                        },
+                        "load_error_not_editable": "Slegs outomatisasies in automations.yaml kan verander word.",
+                        "load_error_unknown": "Kon nie outomatisering laai nie ({err_no})."
                     }
                 },
                 "script": {
@@ -569,7 +592,39 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Bestuur u Z-Wave netwerk"
+                    "description": "Bestuur u Z-Wave netwerk",
+                    "network_management": {
+                        "header": "Bestuur Z-Wave Netwerk",
+                        "introduction": "Begin opdragte wat die Z-Wave-netwerk beïnvloed. U sal nie terugvoer kry of meeste opdragte slaag nie, maar u kan die OZW-logboek nagaan om dit uit te vind."
+                    },
+                    "network_status": {
+                        "network_stopped": "Z-Wave Netwerk het Gestop",
+                        "network_starting": "Skakel Tans Z-Wave Netwerk Aan...",
+                        "network_starting_note": "Afhangend van die grootte van u netwerk, kan dit 'n rukkie duur.",
+                        "network_started": "Z-Wave Netwerk is Aangeskakel",
+                        "network_started_note_some_queried": "Aktiewe Knooppunte is nagevra. Slapende Knooppunte sal nagevra word sodra hulle ontwaak.",
+                        "network_started_note_all_queried": "Alle knooppunte is nagevra"
+                    },
+                    "services": {
+                        "start_network": "Skakel Netwerk Aan",
+                        "stop_network": "Stop Netwerk",
+                        "heal_network": "Herstel Netwerk",
+                        "test_network": "Toets Netwerk",
+                        "soft_reset": "Sagte Herstel",
+                        "save_config": "Stoor Instellings",
+                        "add_node_secure": "Voeg Veilige Knooppunt By",
+                        "add_node": "Voeg Knooppunt By",
+                        "remove_node": "Verwyder Knooppunt",
+                        "cancel_command": "Kanselleer Opdrag"
+                    },
+                    "common": {
+                        "value": "Waarde",
+                        "instance": "Aktiwiteit",
+                        "index": "Indeks"
+                    },
+                    "values": {
+                        "header": "Knooppuntwaardes"
+                    }
                 },
                 "users": {
                     "caption": "Gebruikers",
@@ -617,7 +672,14 @@
                         "firmware": "Fermware: {version}",
                         "device_unavailable": "toestel nie beskikbaar nie",
                         "entity_unavailable": "entiteit nie beskikbaar nie",
-                        "no_area": "Geen Gebied"
+                        "no_area": "Geen Gebied",
+                        "hub": "Gekonnekteer via"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Hierdie stap vereis dat u 'n eksterne webwerf besoek om voltooi te word.",
+                            "open_site": "Maak webwerf oop"
+                        }
                     }
                 },
                 "zha": {
@@ -644,7 +706,7 @@
                     "description": "Oorsig van alle gebiede in u huis.",
                     "picker": {
                         "header": "Gebiedsregister",
-                        "introduction": "Gebiede word gebruik om toestelle te organiseer gebaseer op waar hulle is. Hierdie inligting sal deur die Home Assistant gebruik word om u te help om u koppelvlak, toestemmings en integrasies met ander stelsels te organiseer.",
+                        "introduction": "Gebiede word gebruik om toestelle te organiseer gebaseer op waar hulle is. Hierdie inligting sal regdeur Home Assistant gebruik word om u te help om u koppelvlak, toestemmings en integrasies met ander stelsels te organiseer.",
                         "introduction2": "Om toestelle in 'n gebied te plaas, gebruik die skakel hieronder om na die integrasies bladsy toe te gaan en klik dan op 'n opgestelde integrasie om na die toestelkaarte toe te gaan.",
                         "integrations_page": "Integrasies bladsy",
                         "no_areas": "Dit lyk asof u nog geen gebiede het nie!",
@@ -755,6 +817,11 @@
                     "step_done": "Opstelling gedoen vir {step}",
                     "close": "Toe",
                     "submit": "Dien in"
+                },
+                "logout": "Meld af",
+                "force_narrow": {
+                    "header": "Steek die sybalk altyd weg",
+                    "description": "Dit sal die sybalk by aanvang verberg, soortgelyk aan die mobiele ervaring."
                 }
             },
             "page-authorize": {
@@ -869,6 +936,19 @@
                         "required_fields": "Vul al die vereiste velde in",
                         "password_not_match": "Wagwoorde stem nie ooreen nie"
                     }
+                },
+                "integration": {
+                    "intro": "Toestelle en dienste word as integrasies in Home Assistant voorgestel. U kan dit nou opstel, of dit later doen vanaf die instellingskerm.",
+                    "more_integrations": "Meer",
+                    "finish": "Klaar"
+                },
+                "core-config": {
+                    "intro": "Hallo {name}, welkom by Home Assistant. Hoe wil u u huis vernoem?",
+                    "intro_location": "Ons wil graag weet waar u woon. Hierdie inligting sal help met die vertoon van inligting en die opstel van son-gebaseerde outomatisasies. Hierdie data word nooit buite u netwerk gedeel nie.",
+                    "intro_location_detect": "Ons kan u help om hierdie inligting in te vul deur 'n eenmalige versoek aan 'n eksterne diens te rig.",
+                    "location_name_default": "Tuis",
+                    "button_detect": "Ontdek",
+                    "finish": "Volgende"
                 }
             },
             "lovelace": {
@@ -927,7 +1007,7 @@
                         "raw_editor": "Plat opstellings-redigeerder"
                     },
                     "raw_editor": {
-                        "header": "Wysig Opstellings",
+                        "header": "Wysig Instellings",
                         "save": "Stoor",
                         "unsaved_changes": "Ongestoorde veranderinge",
                         "saved": "Gestoor"
@@ -942,6 +1022,54 @@
                 "warning": {
                     "entity_not_found": "Entiteit nie beskikbaar nie: {entity}",
                     "entity_non_numeric": "Entiteit is nie-numeriese: {entity}"
+                },
+                "changed_toast": {
+                    "message": "Die Lovelace-opstelling is opgedateer, wil u graag herlaai?",
+                    "refresh": "Herlaai"
+                },
+                "reload_lovelace": "Herlaai Lovelace"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "deur {name}",
+                        "next_demo": "Volgende demonstrasie",
+                        "introduction": "Welkom tuis! U het die Home Assistant demo bereik waar ons die beste UI's vertoon wat deur ons gemeenskap geskep is.",
+                        "learn_more": "Kom meer te wete oor Home Assistant"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "upstairs": "Boontoe",
+                            "family_room": "Sitkamer",
+                            "kitchen": "Kombuis",
+                            "patio": "Stoep",
+                            "hallway": "Gang",
+                            "master_bedroom": "Hoofslaapkamer",
+                            "left": "Links",
+                            "right": "Regs",
+                            "mirror": "Spieël"
+                        },
+                        "labels": {
+                            "lights": "Ligte",
+                            "information": "Inligting",
+                            "morning_commute": "Oggend Pendel",
+                            "commute_home": "Pendel na die huis",
+                            "entertainment": "Vermaak",
+                            "activity": "Aktiwiteit",
+                            "hdmi_input": "HDMI-toevoer",
+                            "hdmi_switcher": "HDMI-omskakelaar",
+                            "volume": "Volume",
+                            "total_tv_time": "Totale Televisie-tyd",
+                            "turn_tv_off": "Skakel televisie af",
+                            "air": "Lug"
+                        },
+                        "unit": {
+                            "watching": "Kyk Tans",
+                            "minutes_abbr": "min"
+                        }
+                    }
                 }
             }
         },
@@ -985,7 +1113,7 @@
                     "humidity": "Humiditeit",
                     "temperature": "Temperatuur",
                     "visibility": "Sigbaarheid",
-                    "wind_speed": "Wind spoed"
+                    "wind_speed": "Windspoed"
                 },
                 "cardinal_direction": {
                     "e": "O",
@@ -1011,8 +1139,8 @@
                 "code": "Kode",
                 "clear_code": "Maak skoon",
                 "disarm": "Skakel Af",
-                "arm_home": "Skakel tuis aan",
-                "arm_away": "Skakel weg aan",
+                "arm_home": "Bewapen Huis",
+                "arm_away": "Bewapen weg",
                 "arm_night": "Nag alarm",
                 "armed_custom_bypass": "Pasgemaakte omseil",
                 "arm_custom_bypass": "Pasgemaakte omseil"
@@ -1050,7 +1178,8 @@
                 "fan_mode": "Waaier modus",
                 "swing_mode": "Swaai modus",
                 "away_mode": "Wegmodus",
-                "aux_heat": "Aanvullende hitte"
+                "aux_heat": "Aanvullende hitte",
+                "preset_mode": "Voorafbepaalde"
             },
             "lock": {
                 "code": "Kode",
@@ -1186,7 +1315,7 @@
         "weather": {
             "humidity": "Humiditeit",
             "visibility": "Sigbaarheid",
-            "wind_speed": "Wind spoed"
+            "wind_speed": "Windspoed"
         }
     },
     "state_attributes": {
@@ -1195,6 +1324,24 @@
                 "off": "Af",
                 "on": "Aan",
                 "auto": "Outomatiese"
+            },
+            "preset_mode": {
+                "none": "Geen",
+                "eco": "Eko",
+                "away": "Elders",
+                "boost": "Hupstoot",
+                "comfort": "Gemak",
+                "home": "Tuis",
+                "sleep": "Slaap",
+                "activity": "Aktiwiteit"
+            },
+            "hvac_action": {
+                "off": "Af",
+                "heating": "Verhit",
+                "cooling": "Koel Af",
+                "drying": "Droog Uit",
+                "idle": "Onaktief",
+                "fan": "Waaier"
             }
         }
     },

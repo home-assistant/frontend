@@ -354,6 +354,23 @@
                         "core": {
                             "header": "Configuració i control del servidor",
                             "introduction": "Sabem que canviar la configuració pot ser un procés molest. Aquesta secció intenta facilitar-te una mica més la vida.",
+                            "core_config": {
+                                "edit_requires_storage": "L'editor està desactivat ja que la configuració es troba a configuration.yaml.",
+                                "location_name": "Nom de la instal·lació de Home Assistant",
+                                "latitude": "Latitud",
+                                "longitude": "Longitud",
+                                "elevation": "Altitud",
+                                "elevation_meters": "metres",
+                                "time_zone": "Zona horària",
+                                "unit_system": "Sistema d'unitats",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Mètric",
+                                "imperial_example": "Fahrenheit, lliures",
+                                "metric_example": "Celsius, quilograms",
+                                "save_button": "Desa"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Validació de la configuració",
                                 "introduction": "Valida la configuració si recentment has fet algun canvi a la configuració i vols assegurar-te de que no té problemes.",
@@ -374,21 +391,6 @@
                                 "introduction": "Controla el servidor de Home Assistant... des de Home Assistant.",
                                 "restart": "Reinicia",
                                 "stop": "Atura"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "L'editor està desactivat ja que la configuració es troba a configuration.yaml.",
-                                "location_name": "Nom de la instal·lació de Home Assistant",
-                                "latitude": "Latitud",
-                                "longitude": "Longitud",
-                                "elevation": "Altitud",
-                                "elevation_meters": "metres",
-                                "time_zone": "Zona horària",
-                                "unit_system": "Sistema d'unitats",
-                                "unit_system_imperial": "Imperial",
-                                "unit_system_metric": "Mètric",
-                                "imperial_example": "Fahrenheit, lliures",
-                                "metric_example": "Celsius, quilograms",
-                                "save_button": "Desa"
                             }
                         }
                     }
