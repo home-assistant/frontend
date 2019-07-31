@@ -605,7 +605,7 @@
         },
         "server_control": {
           "caption": "Server Control",
-          "description": "Validate your configuration file and control the server",
+          "description": "Restart and stop the Home Assistant server",
           "section": {
             "validation": {
               "heading": "Configuration validation",
