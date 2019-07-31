@@ -323,7 +323,9 @@
                     "caption": "Općenito",
                     "section": {
                         "core": {
-                            "header": "Konfiguracija i kontrola poslužitelja",
+                            "header": "Konfiguracija i kontrola poslužitelja"
+                        },
+                        "server_control": {
                             "validation": {
                                 "check_config": "Provjerite konfiguraciju",
                                 "valid": "Konfiguracija valjana!",

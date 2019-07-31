@@ -350,6 +350,23 @@
                         "core": {
                             "header": "Konfigurácia a ovládanie servera",
                             "introduction": "Zmena konfigurácie môže byť ťažkým procesom. My vieme. Táto sekcia sa Vám pokúsi zjednodušiť život.",
+                            "core_config": {
+                                "edit_requires_storage": "Editor je zablokovaný, pretože konfigurácia je uložená v configuration.yaml",
+                                "location_name": "Názov vašej Home Assistant inštalácie",
+                                "latitude": "Zemepisná šírka",
+                                "longitude": "Zemepisná dĺžka",
+                                "elevation": "Nadmorská výška",
+                                "elevation_meters": "metrov",
+                                "time_zone": "Časové pásmo",
+                                "unit_system": "Jednotková sústava",
+                                "unit_system_imperial": "Imperiálny",
+                                "unit_system_metric": "metrický",
+                                "imperial_example": "Fahrenheita, libry",
+                                "metric_example": "Celsia, kilogramy",
+                                "save_button": "Uložiť"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Kontrola konfigurácie",
                                 "introduction": "Overte svoju konfiguráciu, ak ste nedávno vykonali nejaké zmeny v konfigurácii a chcete sa uistiť, že je to všetko v poriadku",
@@ -370,21 +387,6 @@
                                 "introduction": "Ovládajte Váš Home Assistant server... z aplikácie Home Assistant.",
                                 "restart": "Reštartovať",
                                 "stop": "Zastaviť"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Editor je zablokovaný, pretože konfigurácia je uložená v configuration.yaml",
-                                "location_name": "Názov vašej Home Assistant inštalácie",
-                                "latitude": "Zemepisná šírka",
-                                "longitude": "Zemepisná dĺžka",
-                                "elevation": "Nadmorská výška",
-                                "elevation_meters": "metrov",
-                                "time_zone": "Časové pásmo",
-                                "unit_system": "Jednotková sústava",
-                                "unit_system_imperial": "Imperiálny",
-                                "unit_system_metric": "metrický",
-                                "imperial_example": "Fahrenheita, libry",
-                                "metric_example": "Celsia, kilogramy",
-                                "save_button": "Uložiť"
                             }
                         }
                     }
@@ -779,7 +781,8 @@
                     "step_done": "Nastavenie dokončené krok {step}",
                     "close": "Zavrieť",
                     "submit": "Odoslať"
-                }
+                },
+                "logout": "Logga ut"
             },
             "page-authorize": {
                 "initializing": "Inicializácia",

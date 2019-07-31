@@ -354,6 +354,23 @@
                         "core": {
                             "header": "Configuratie en serverbeheer",
                             "introduction": "Het aanpassen van je configuratie kan een moeizaam proces zijn. Dat weten we. Dit onderdeel probeert je het leven iets makkelijker te maken.",
+                            "core_config": {
+                                "edit_requires_storage": "Editor uitgeschakeld omdat de configuratie is opgeslagen in configuration.yaml",
+                                "location_name": "Naam van Home Assistant installatie",
+                                "latitude": "Breedtegraad",
+                                "longitude": "Lengtegraad",
+                                "elevation": "Hoogte",
+                                "elevation_meters": "meter",
+                                "time_zone": "Tijdzone",
+                                "unit_system": "Maatsysteem",
+                                "unit_system_imperial": "Imperiaal",
+                                "unit_system_metric": "Metrisch",
+                                "imperial_example": "Fahrenheit, ponden",
+                                "metric_example": "Celsius, kilogram",
+                                "save_button": "Opslaan"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Valideer configuratie",
                                 "introduction": "Controleer je configuratie als je onlangs wijzigingen hebt aangebracht en zeker wilt weten dat ze geldig zijn",
@@ -374,21 +391,6 @@
                                 "introduction": "Beheer je Home Assistant-server ... vanuit Home Assistant.",
                                 "restart": "Herstarten",
                                 "stop": "Stop"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Editor uitgeschakeld omdat de configuratie is opgeslagen in configuration.yaml",
-                                "location_name": "Naam van Home Assistant installatie",
-                                "latitude": "Breedtegraad",
-                                "longitude": "Lengtegraad",
-                                "elevation": "Hoogte",
-                                "elevation_meters": "meter",
-                                "time_zone": "Tijdzone",
-                                "unit_system": "Maatsysteem",
-                                "unit_system_imperial": "Imperiaal",
-                                "unit_system_metric": "Metrisch",
-                                "imperial_example": "Fahrenheit, ponden",
-                                "metric_example": "Celsius, kilogram",
-                                "save_button": "Opslaan"
                             }
                         }
                     }
@@ -600,7 +602,7 @@
                         "network_starting": "Z-Wave netwerk starten...",
                         "network_starting_note": "Dit kan een tijdje duren, afhankelijk van de grootte van uw netwerk.",
                         "network_started": "Z-Wave netwerk gestart",
-                        "network_started_note_some_queried": "Alle wakkere nodes zijn opgevraagd. Slapende nodes worden opgevraagd wanneer ze wakker worden.",
+                        "network_started_note_some_queried": "Alle actieve nodes zijn opgevraagd. Inactieve nodes worden opgevraagd wanneer ze actiefworden.",
                         "network_started_note_all_queried": "Alle nodes zijn opgevraagd."
                     },
                     "services": {
@@ -610,7 +612,7 @@
                         "test_network": "Test Netwerk",
                         "soft_reset": "Soft Reset",
                         "save_config": "Configuratie Opslaan",
-                        "add_node_secure": "Knooppunt veilig toevoegen",
+                        "add_node_secure": "Secure Node toevoegen",
                         "add_node": "Node toevoegen",
                         "remove_node": "Node verwijderen",
                         "cancel_command": "Opdracht annuleren"
@@ -816,7 +818,11 @@
                     "close": "Sluiten",
                     "submit": "Verzenden"
                 },
-                "logout": "Uitloggen"
+                "logout": "Uitloggen",
+                "force_narrow": {
+                    "header": "Zijbalk altijd verbergen",
+                    "description": "De zijbalk standaard verbergen, vergelijkbaar met de mobiele ervaring."
+                }
             },
             "page-authorize": {
                 "initializing": "Initialiseren",
@@ -1288,7 +1294,7 @@
         "notify": "Notificeer",
         "plant": "Plant",
         "proximity": "Nabijheid",
-        "remote": "Extern",
+        "remote": "Afstandsbediening",
         "scene": "Scène",
         "script": "Script",
         "sensor": "Sensor",
@@ -1328,6 +1334,14 @@
                 "home": "Thuis",
                 "sleep": "Slapen",
                 "activity": "Activiteit"
+            },
+            "hvac_action": {
+                "off": "Uit",
+                "heating": "Verwarmen",
+                "cooling": "Koelen",
+                "drying": "Ontvochtigen",
+                "idle": "Inactief",
+                "fan": "Ventilator"
             }
         }
     },

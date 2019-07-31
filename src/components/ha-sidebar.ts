@@ -597,7 +597,7 @@ class HaSidebar extends LitElement {
         box-sizing: border-box;
         border-radius: 50%;
         font-weight: 400;
-        background-color: var(--primary-color);
+        background-color: var(--accent-color);
         line-height: 20px;
         text-align: center;
         padding: 0px 6px;

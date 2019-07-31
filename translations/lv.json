@@ -334,6 +334,21 @@
                         "core": {
                             "header": "Konfigurācijas un servera pārvaldība",
                             "introduction": "Izmaiņas konfigurācijā var būt nogurdinošs process. Mēs zinām. Šai sadaļai vajadzētu padarīt dzīvi mazliet vieglāku.",
+                            "core_config": {
+                                "edit_requires_storage": "Redaktors ir atspējots, jo konfigurācija ir definēta configuration.yaml.",
+                                "location_name": "Jūsu Home Assistant instalācijas nosaukums",
+                                "elevation": "Augstums",
+                                "elevation_meters": "metri",
+                                "time_zone": "Laika josla",
+                                "unit_system": "Mērvienību sistēma",
+                                "unit_system_imperial": "Imperiālā",
+                                "unit_system_metric": "Metriskā",
+                                "imperial_example": "Fārenheita, mārciņas",
+                                "metric_example": "Celsija, kilogrami",
+                                "save_button": "Saglabāt"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Konfigurācijas pārbaude",
                                 "introduction": "Veiciet konfigurācijas pārbaudi, ja nesen esat veicis izmaiņas konfigurācijā un vēlaties pārliecināties, ka tā ir korekta.",
@@ -354,19 +369,6 @@
                                 "introduction": "Pārvaldiet Home Assistant serveri no Home Assistant saskarnes.",
                                 "restart": "Restartēt",
                                 "stop": "Apturēt"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Redaktors ir atspējots, jo konfigurācija ir definēta configuration.yaml.",
-                                "location_name": "Jūsu Home Assistant instalācijas nosaukums",
-                                "elevation": "Augstums",
-                                "elevation_meters": "metri",
-                                "time_zone": "Laika josla",
-                                "unit_system": "Mērvienību sistēma",
-                                "unit_system_imperial": "Imperiālā",
-                                "unit_system_metric": "Metriskā",
-                                "imperial_example": "Fārenheita, mārciņas",
-                                "metric_example": "Celsija, kilogrami",
-                                "save_button": "Saglabāt"
                             }
                         }
                     }

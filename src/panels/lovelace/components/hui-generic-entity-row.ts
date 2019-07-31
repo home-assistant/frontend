@@ -47,8 +47,9 @@ class HuiGenericEntityRow extends LitElement {
 
     return html`
       <state-badge
-        .stateObj="${stateObj}"
-        .overrideIcon="${this.config.icon}"
+        .hass=${this.hass}
+        .stateObj=${stateObj}
+        .overrideIcon=${this.config.icon}
       ></state-badge>
       <div class="flex">
         <div class="info">
@@ -63,8 +64,8 @@ class HuiGenericEntityRow extends LitElement {
               : this.config.secondary_info === "last-changed"
               ? html`
                   <ha-relative-time
-                    .hass="${this.hass}"
-                    .datetime="${stateObj.last_changed}"
+                    .hass=${this.hass}
+                    .datetime=${stateObj.last_changed}
                   ></ha-relative-time>
                 `
               : ""}

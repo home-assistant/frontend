@@ -1,15 +1,4 @@
 <meta charset="utf-8">
 <link rel='manifest' href='/manifest.json' crossorigin="use-credentials">
 <link rel='icon' href='/static/icons/favicon.ico'>
-<meta name='viewport' content='width=device-width, user-scalable=no'>
-<style>
-  body {
-    font-family: Roboto, sans-serif;
-    -moz-osx-font-smoothing: grayscale;
-    -webkit-font-smoothing: antialiased;
-    font-weight: 400;
-    margin: 0;
-    padding: 0;
-    height: 100vh;
-  }
-</style>
+<%= renderTemplate('_style_base') %>

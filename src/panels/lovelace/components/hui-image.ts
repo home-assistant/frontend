@@ -104,6 +104,10 @@ export class HuiImage extends LitElement {
       imageSrc = this.image;
     }
 
+    if (imageSrc) {
+      imageSrc = this.hass!.hassUrl(imageSrc);
+    }
+
     // Figure out filter to use
     let filter = this.filter || "";
 

@@ -350,6 +350,23 @@
                         "core": {
                             "header": "שליטה על הקונפיגורציה ועל השרת",
                             "introduction": "שינוי התצורה שלך יכול להיות תהליך מייגע. אנחנו יודעים. חלק זה ינסה להפוך את החיים שלך קצת יותר קלים.",
+                            "core_config": {
+                                "edit_requires_storage": "עורך מושבת משום שתצורה מאוחסנת ב- configuration.yaml.",
+                                "location_name": "שם ההתקנה של הבית שלך",
+                                "latitude": "קו רוחב",
+                                "longitude": "קו אורך",
+                                "elevation": "גובה",
+                                "elevation_meters": "מטר",
+                                "time_zone": "איזור זמן",
+                                "unit_system": "יחידת מידה",
+                                "unit_system_imperial": "אימפריאלי",
+                                "unit_system_metric": "מטרי",
+                                "imperial_example": "פרנהייט, פאונד",
+                                "metric_example": "צלזיוס, ק\"ג",
+                                "save_button": "שמור"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "בדיקת הקונפיגורציה",
                                 "introduction": "אמת את הקונפיגורציה שלך אם ביצעת לאחרונה שינויים מסוימים וברצונך לוודא שהיא תקניה",
@@ -370,21 +387,6 @@
                                 "introduction": "לשלוט על שרת הHome Assistant שלך... מHome Assistant.",
                                 "restart": "הפעלה מחדש",
                                 "stop": "עצור"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "עורך מושבת משום שתצורה מאוחסנת ב- configuration.yaml.",
-                                "location_name": "שם ההתקנה של הבית שלך",
-                                "latitude": "קו רוחב",
-                                "longitude": "קו אורך",
-                                "elevation": "גובה",
-                                "elevation_meters": "מטר",
-                                "time_zone": "איזור זמן",
-                                "unit_system": "יחידת מידה",
-                                "unit_system_imperial": "אימפריאלי",
-                                "unit_system_metric": "מטרי",
-                                "imperial_example": "פרנהייט, פאונד",
-                                "metric_example": "צלזיוס, ק\"ג",
-                                "save_button": "שמור"
                             }
                         }
                     }

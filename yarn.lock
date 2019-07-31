@@ -1570,6 +1570,16 @@
   resolved "https://registry.yarnpkg.com/@types/chalk/-/chalk-0.4.31.tgz#a31d74241a6b1edbb973cf36d97a2896834a51f9"
   integrity sha1-ox10JBprHtu5c8822XooloNKUfk=
 
+"@types/chromecast-caf-receiver@^3.0.12":
+  version "3.0.12"
+  resolved "https://registry.yarnpkg.com/@types/chromecast-caf-receiver/-/chromecast-caf-receiver-3.0.12.tgz#0172edc5e43a0b4f426b21a614a58e04e3df009d"
+  integrity sha512-GdR9nGOENDWYhF40FasB0Xnsy3c+e68K90sGVBZx1W1N3LP1NGOmCtaxgUpxk4IuHYmzGrW7I57zWZIbT3D5BQ==
+
+"@types/chromecast-caf-sender@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@types/chromecast-caf-sender/-/chromecast-caf-sender-1.0.1.tgz#da0047c41c2a7ecf2d5348715b27c4542ed9b579"
+  integrity sha512-/JuG+zrS+KCPwEiOrK9O7WrIMyiUEF7Ev9ywbzXcCOPkXin9tLX7w9zxCmxtnOPdgH9lZbtOvgo5IA4cEJknRg==
+
 "@types/clean-css@*":
   version "4.2.1"
   resolved "https://registry.yarnpkg.com/@types/clean-css/-/clean-css-4.2.1.tgz#cb0134241ec5e6ede1b5344bc829668fd9871a8d"
@@ -7303,10 +7313,10 @@ hoek@6.x.x:
   resolved "https://registry.yarnpkg.com/hoek/-/hoek-6.1.3.tgz#73b7d33952e01fe27a38b0457294b79dd8da242c"
   integrity sha512-YXXAAhmF9zpQbC7LEcREFtXfGq5K1fmd+4PHkBq8NUqmzW3G+Dq10bI/i0KucLRwss3YYFQ0fSfoxBZYiGUqtQ==
 
-home-assistant-js-websocket@^4.2.2:
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-4.2.2.tgz#e13b058a9e200bc56080e1b48fdeaaf1ed2e4e5f"
-  integrity sha512-4mXYbn2DCiDVBYGZROUSWLBDerSoDRJulw1GiQbhKEyrDhzFs5KQkcLdIu6k3CSDYQiiKQez5uAhOfb0Hr/M0A==
+home-assistant-js-websocket@4.3.1:
+  version "4.3.1"
+  resolved "https://registry.yarnpkg.com/home-assistant-js-websocket/-/home-assistant-js-websocket-4.3.1.tgz#be320672b070cb4fcae2f1709a0eba1845ef7b31"
+  integrity sha512-eVIRdisSmcIzYKNSgB3gqUCrZpQkSUKlluYTsM0NqpUc4W0hHmF2vd8bShl3URWJXPOI5XPdeHuAPPqc0gUj+Q==
 
 homedir-polyfill@^1.0.0, homedir-polyfill@^1.0.1:
   version "1.0.3"

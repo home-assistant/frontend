@@ -141,7 +141,8 @@
             "high_demand": "Visoka poraba",
             "heat_pump": "Toplotna črpalka",
             "gas": "Plin",
-            "manual": "Ročno"
+            "manual": "Ročno",
+            "heat_cool": "Gretje\/Hlajenje"
         },
         "configurator": {
             "configure": "Konfiguriraj",
@@ -323,6 +324,9 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "Info"
                     }
                 }
             },
@@ -350,6 +354,23 @@
                         "core": {
                             "header": "Konfiguracija in nadzor strežnika",
                             "introduction": "Spreminjanje konfiguracije je lahko zapleten proces. Vemo. Ta del bo poskušal narediti vaše življenje malo lažje.",
+                            "core_config": {
+                                "edit_requires_storage": "Urejevalnik je onemogočen, ker je konfiguracija shranjena v config.yaml.",
+                                "location_name": "Ime vašega instalacije vašega Home Assistant-a.",
+                                "latitude": "Zemljepisna širina",
+                                "longitude": "Zemljepisna dolžina",
+                                "elevation": "Nadmorska višina",
+                                "elevation_meters": "metrov",
+                                "time_zone": "Časovni pas",
+                                "unit_system": "Sistem enot",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metrično",
+                                "imperial_example": "Fahrenheit, funtov",
+                                "metric_example": "Celzija, kilogramov",
+                                "save_button": "Shrani"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Preverjanje konfiguracije",
                                 "introduction": "Potrdite svojo konfiguracijo, če ste nedavno spremenili svojo konfiguracijo in se prepričajte, da je vse veljavno",
@@ -370,21 +391,6 @@
                                 "introduction": "Nadzirajte strežnik Home Assistant ... iz Home Assistanta",
                                 "restart": "Ponovni zagon",
                                 "stop": "Ustavi"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Urejevalnik je onemogočen, ker je konfiguracija shranjena v config.yaml.",
-                                "location_name": "Ime vašega instalacije vašega Home Assistant-a.",
-                                "latitude": "Zemljepisna širina",
-                                "longitude": "Zemljepisna dolžina",
-                                "elevation": "Nadmorska višina",
-                                "elevation_meters": "metrov",
-                                "time_zone": "Časovni pas",
-                                "unit_system": "Sistem enot",
-                                "unit_system_imperial": "Imperial",
-                                "unit_system_metric": "Metrično",
-                                "imperial_example": "Fahrenheit, funtov",
-                                "metric_example": "Celzija, kilogramov",
-                                "save_button": "Shrani"
                             }
                         }
                     }
@@ -610,6 +616,14 @@
                         "add_node": "Dodaj vozlišče",
                         "remove_node": "Odstrani vozlišče",
                         "cancel_command": "Prekliči ukaz"
+                    },
+                    "common": {
+                        "value": "Vrednost",
+                        "instance": "Instanca",
+                        "index": "Indeks"
+                    },
+                    "values": {
+                        "header": "Vrednosti vozlišča"
                     }
                 },
                 "users": {
@@ -803,6 +817,11 @@
                     "step_done": "Nastavitev je bila opravljena za {step}",
                     "close": "Zapri",
                     "submit": "Pošlji"
+                },
+                "logout": "Odjava",
+                "force_narrow": {
+                    "header": "Vedno skrij stransko vrstico",
+                    "description": "To bo privzeto skrilo stransko vrstico, podobno kot pri mobilnih napravah."
                 }
             },
             "page-authorize": {
@@ -1315,6 +1334,14 @@
                 "home": "Doma",
                 "sleep": "Spanje",
                 "activity": "Dejavnost"
+            },
+            "hvac_action": {
+                "off": "Izključen",
+                "heating": "Ogrevanje",
+                "cooling": "Hlajenje",
+                "drying": "Sušenje",
+                "idle": "V pripravljenosti",
+                "fan": "Ventilator"
             }
         }
     },

@@ -274,7 +274,7 @@
             "config": {
                 "core": {
                     "section": {
-                        "core": {
+                        "server_control": {
                             "server_management": {
                                 "restart": "Neustart",
                                 "stop": "Stop"
