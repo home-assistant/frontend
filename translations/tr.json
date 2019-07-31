@@ -327,7 +327,9 @@
                     "section": {
                         "core": {
                             "header": "Yapılandırma ve sunucu kontrolü",
-                            "introduction": "Yapılandırmanızı değiştirmek, yorucu bir işlem olabilir. Biliyoruz. Bu bölüm hayatınızı biraz daha kolay hale getirmeye çalışacaktır.",
+                            "introduction": "Yapılandırmanızı değiştirmek, yorucu bir işlem olabilir. Biliyoruz. Bu bölüm hayatınızı biraz daha kolay hale getirmeye çalışacaktır."
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Yapılandırma doğrulaması",
                                 "introduction": "Yapılandırmanızda yakın bir zamanda değişiklikler yaptıysanız ve tümünün geçerli olduğundan emin olmak istiyorsanız yapılandırmanızı doğrulayın",

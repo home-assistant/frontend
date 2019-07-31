@@ -12,6 +12,8 @@ export type HvacMode =
   | "dry"
   | "fan_only";
 
+export const CLIMATE_PRESET_NONE = "none";
+
 export type HvacAction = "off" | "heating" | "cooling" | "drying" | "idle";
 
 export type ClimateEntity = HassEntityBase & {

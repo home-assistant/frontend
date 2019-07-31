@@ -198,8 +198,9 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         ${this._config!.show_icon !== false
           ? html`
               <state-badge
-                .stateObj="${stateObj}"
-                .overrideIcon="${entityConf.icon}"
+                .hass=${this.hass}
+                .stateObj=${stateObj}
+                .overrideIcon=${entityConf.icon}
               ></state-badge>
             `
           : ""}

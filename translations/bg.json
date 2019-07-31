@@ -141,7 +141,8 @@
             "high_demand": "Високо натоварване",
             "heat_pump": "Термопомпа",
             "gas": "Газ",
-            "manual": "Ръчен режим"
+            "manual": "Ръчен режим",
+            "heat_cool": "Отопление\/Охлаждане"
         },
         "configurator": {
             "configure": "Настройване",
@@ -323,6 +324,9 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "Информация"
                     }
                 }
             },
@@ -350,6 +354,23 @@
                         "core": {
                             "header": "Конфигуриране и управление на сървъра",
                             "introduction": "Промяната на конфигурацията може да бъде труден процес. Знаем това. Този раздел ще се опита да направи живота Ви малко по-лесен.",
+                            "core_config": {
+                                "edit_requires_storage": "Редакторът е деактивиран, защото конфигурацията е съхранена в configuration.yaml.",
+                                "location_name": "Име на Вашия Home Assistant",
+                                "latitude": "Географска ширина",
+                                "longitude": "Географска дължина",
+                                "elevation": "Надморска височина",
+                                "elevation_meters": "метра",
+                                "time_zone": "Часова зона",
+                                "unit_system": "Система единици",
+                                "unit_system_imperial": "Имперски единици",
+                                "unit_system_metric": "Метрични единици",
+                                "imperial_example": "Фаренхайт, паунд",
+                                "metric_example": "Целзий, килограми",
+                                "save_button": "Запази"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Проверка на конфигурацията",
                                 "introduction": "Проверете конфигурацията, ако скоро сте направили промени и искате да се уверите, че всичко работи",
@@ -370,21 +391,6 @@
                                 "introduction": "Управление на Home Assistant сървъра... от Home Assistant.",
                                 "restart": "Рестарт",
                                 "stop": "Спиране"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Редакторът е деактивиран, защото конфигурацията е съхранена в configuration.yaml.",
-                                "location_name": "Име на Вашия Home Assistant",
-                                "latitude": "Географска ширина",
-                                "longitude": "Географска дължина",
-                                "elevation": "Надморска височина",
-                                "elevation_meters": "метра",
-                                "time_zone": "Часова зона",
-                                "unit_system": "Система единици",
-                                "unit_system_imperial": "Имперски единици",
-                                "unit_system_metric": "Метрични единици",
-                                "imperial_example": "Фаренхайт, паунд",
-                                "metric_example": "Целзий, килограми",
-                                "save_button": "Запази"
                             }
                         }
                     }
@@ -586,7 +592,39 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Управлявайте своята Z-Wave мрежа"
+                    "description": "Управлявайте своята Z-Wave мрежа",
+                    "network_management": {
+                        "header": "Управление на Z-Wave мрежата",
+                        "introduction": "Изпълнение на команди, които засягат Z-Wave мрежата. Няма да получите обратна информация за това дали повечето команди са успели, но можете да проверите OZW лог файла, за да се опитате да разберете."
+                    },
+                    "network_status": {
+                        "network_stopped": "Z-Wave мрежата е спряна",
+                        "network_starting": "Стартиране на Z-Wave мрежа...",
+                        "network_starting_note": "Това може да отнеме известно време в зависимост от размера на мрежата Ви.",
+                        "network_started": "Z-Wave мрежата е стартирана",
+                        "network_started_note_some_queried": "Будните устройства бяха разпитани. Спящите устройства ще бъдат разпитани, когато са на линия.",
+                        "network_started_note_all_queried": "Всички устройства бяха разпитани."
+                    },
+                    "services": {
+                        "start_network": "Стартиране на мрежата",
+                        "stop_network": "Спиране на мрежата",
+                        "heal_network": "Оздравяване на мрежата",
+                        "test_network": "Тестване на мрежата",
+                        "soft_reset": "Soft Reset",
+                        "save_config": "Запазване на конфигурацията",
+                        "add_node_secure": "Добавяне на криптирано устройство",
+                        "add_node": "Добавяне на устройство",
+                        "remove_node": "Премахване на устройство",
+                        "cancel_command": "Отмени командата"
+                    },
+                    "common": {
+                        "value": "Стойност",
+                        "instance": "Устройство",
+                        "index": "Индекс"
+                    },
+                    "values": {
+                        "header": "Стойности на устройсто"
+                    }
                 },
                 "users": {
                     "caption": "Потребители",
@@ -779,6 +817,11 @@
                     "step_done": "Настройката е извършена за {step}",
                     "close": "Затвори",
                     "submit": "Изпращане"
+                },
+                "logout": "Изход",
+                "force_narrow": {
+                    "header": "Винаги скривай страничната лента",
+                    "description": "Това ще скрие страничната лента по подразбиране, подобно на изгледа в мобилната версия."
                 }
             },
             "page-authorize": {
@@ -1135,7 +1178,8 @@
                 "fan_mode": "Режим на вентилатора",
                 "swing_mode": "Режим на люлеене",
                 "away_mode": "Режим на отсъствие",
-                "aux_heat": "Помощен нагревател"
+                "aux_heat": "Помощен нагревател",
+                "preset_mode": "Предварително-зададени настройки"
             },
             "lock": {
                 "code": "Код",
@@ -1280,6 +1324,24 @@
                 "off": "Изключен",
                 "on": "Включен",
                 "auto": "Автоматичен"
+            },
+            "preset_mode": {
+                "none": "Без",
+                "eco": "Еко",
+                "away": "Отсъства",
+                "boost": "Ускорен",
+                "comfort": "Комфорт",
+                "home": "Вкъщи",
+                "sleep": "Сън",
+                "activity": "Дейност"
+            },
+            "hvac_action": {
+                "off": "Изключен",
+                "heating": "Отопление",
+                "cooling": "Охлаждане",
+                "drying": "Изсушаване",
+                "idle": "Неработещ",
+                "fan": "Вентилатор"
             }
         }
     },

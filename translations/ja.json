@@ -202,7 +202,7 @@
                     "caption": "一般",
                     "description": "設定ファイルの検証とサーバーの操作",
                     "section": {
-                        "core": {
+                        "server_control": {
                             "validation": {
                                 "heading": "設定の検証",
                                 "check_config": "設定を確認",

@@ -64,7 +64,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
           ),
         })}"
       >
-        <img src="${this._config.image}" />
+        <img src="${this.hass.hassUrl(this._config.image)}" />
       </ha-card>
     `;
   }
