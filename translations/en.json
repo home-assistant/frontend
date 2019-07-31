@@ -349,11 +349,28 @@
                 "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
                 "core": {
                     "caption": "General",
-                    "description": "Validate your configuration file and control the server",
+                    "description": "Change your general Home Assistant configuration",
                     "section": {
                         "core": {
-                            "header": "Configuration and Server Control",
+                            "header": "General Configuration",
                             "introduction": "Changing your configuration can be a tiresome process. We know. This section will try to make your life a little bit easier.",
+                            "core_config": {
+                                "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
+                                "location_name": "Name of your Home Assistant installation",
+                                "latitude": "Latitude",
+                                "longitude": "Longitude",
+                                "elevation": "Elevation",
+                                "elevation_meters": "meters",
+                                "time_zone": "Time Zone",
+                                "unit_system": "Unit System",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metric",
+                                "imperial_example": "Fahrenheit, pounds",
+                                "metric_example": "Celsius, kilograms",
+                                "save_button": "Save"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Configuration validation",
                                 "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid",
@@ -374,21 +391,6 @@
                                 "introduction": "Control your Home Assistant server… from Home Assistant.",
                                 "restart": "Restart",
                                 "stop": "Stop"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
-                                "location_name": "Name of your Home Assistant installation",
-                                "latitude": "Latitude",
-                                "longitude": "Longitude",
-                                "elevation": "Elevation",
-                                "elevation_meters": "meters",
-                                "time_zone": "Time Zone",
-                                "unit_system": "Unit System",
-                                "unit_system_imperial": "Imperial",
-                                "unit_system_metric": "Metric",
-                                "imperial_example": "Fahrenheit, pounds",
-                                "metric_example": "Celsius, kilograms",
-                                "save_button": "Save"
                             }
                         }
                     }
@@ -744,6 +746,33 @@
                         "device_tracker_intro": "Select the devices that belong to this person.",
                         "device_tracker_picked": "Track Device",
                         "device_tracker_pick": "Pick device to track"
+                    }
+                },
+                "server_control": {
+                    "caption": "Server Control",
+                    "description": "Restart and stop the Home Assistant server",
+                    "section": {
+                        "validation": {
+                            "heading": "Configuration validation",
+                            "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid",
+                            "check_config": "Check config",
+                            "valid": "Configuration valid!",
+                            "invalid": "Configuration invalid"
+                        },
+                        "reloading": {
+                            "heading": "Configuration reloading",
+                            "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.",
+                            "core": "Reload core",
+                            "group": "Reload groups",
+                            "automation": "Reload automations",
+                            "script": "Reload scripts"
+                        },
+                        "server_management": {
+                            "heading": "Server management",
+                            "introduction": "Control your Home Assistant server… from Home Assistant.",
+                            "restart": "Restart",
+                            "stop": "Stop"
+                        }
                     }
                 }
             },

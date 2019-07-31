@@ -263,7 +263,7 @@
                 "core": {
                     "caption": "Orokorra",
                     "section": {
-                        "core": {
+                        "server_control": {
                             "reloading": {
                                 "core": "Nukleoa birkargatu",
                                 "group": "Taldeak birkargatu",
@@ -275,7 +275,9 @@
                                 "introduction": "Zure Home Assistant zerbitzaria... Home Assistantetik kontrolatu",
                                 "restart": "Berrabiarazi",
                                 "stop": "Gelditu"
-                            },
+                            }
+                        },
+                        "core": {
                             "core_config": {
                                 "location_name": "Zure Home Assistant instalazioaren izena",
                                 "latitude": "Latitudea",
