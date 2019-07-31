@@ -354,6 +354,23 @@
                         "core": {
                             "header": "Einstellungen und Serversteuerung",
                             "introduction": "Die Konfiguration zu ändern ist ein mühsamer Prozess. Das wissen wir. Dieser Bereich versucht dir das Leben etwas leichter zu gestalten.",
+                            "core_config": {
+                                "edit_requires_storage": "Editor deaktiviert, da die Konfiguration in configuration.yaml gespeichert ist.",
+                                "location_name": "Name deiner Home Assistant Installation",
+                                "latitude": "Breitengrad",
+                                "longitude": "Längengrad",
+                                "elevation": "Höhe",
+                                "elevation_meters": "Meter",
+                                "time_zone": "Zeitzone",
+                                "unit_system": "Einheitensystem",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metrisch",
+                                "imperial_example": "Fahrenheit, Pfund",
+                                "metric_example": "Celsius, Kilogramm",
+                                "save_button": "Speichern"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Konfiguration überprüfen",
                                 "introduction": "Überprüfe deine Konfiguration, wenn du kürzlich Änderungen vorgenommen hast und sicherstellen möchtest, dass alles ordnungsgemäß ist",
@@ -374,21 +391,6 @@
                                 "introduction": "Verwalte den Home Assistant Server",
                                 "restart": "Neu starten",
                                 "stop": "Stoppen"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Editor deaktiviert, da die Konfiguration in configuration.yaml gespeichert ist.",
-                                "location_name": "Name deiner Home Assistant Installation",
-                                "latitude": "Breitengrad",
-                                "longitude": "Längengrad",
-                                "elevation": "Höhe",
-                                "elevation_meters": "Meter",
-                                "time_zone": "Zeitzone",
-                                "unit_system": "Einheitensystem",
-                                "unit_system_imperial": "Imperial",
-                                "unit_system_metric": "Metrisch",
-                                "imperial_example": "Fahrenheit, Pfund",
-                                "metric_example": "Celsius, Kilogramm",
-                                "save_button": "Speichern"
                             }
                         }
                     }
@@ -614,6 +616,14 @@
                         "add_node": "Knoten hinzufügen",
                         "remove_node": "Knoten entfernen",
                         "cancel_command": "Befehl abbrechen"
+                    },
+                    "common": {
+                        "value": "Wert",
+                        "instance": "Instanz",
+                        "index": "Index"
+                    },
+                    "values": {
+                        "header": "Knotenwerte"
                     }
                 },
                 "users": {
@@ -808,7 +818,11 @@
                     "close": "Schließen",
                     "submit": "Absenden"
                 },
-                "logout": "Abmelden"
+                "logout": "Abmelden",
+                "force_narrow": {
+                    "header": "Verstecke die Seitenleiste immer",
+                    "description": "Dies blendet die Seitenleiste standardmäßig aus, ähnlich der Nutzung auf Mobilgeräten."
+                }
             },
             "page-authorize": {
                 "initializing": "Initialisieren",
@@ -1320,6 +1334,14 @@
                 "home": "Zuhause",
                 "sleep": "Schlafen",
                 "activity": "Aktivität"
+            },
+            "hvac_action": {
+                "off": "Aus",
+                "heating": "Heizung",
+                "cooling": "Kühlung",
+                "drying": "Trocknen",
+                "idle": "Leerlauf",
+                "fan": "Ventilator"
             }
         }
     },

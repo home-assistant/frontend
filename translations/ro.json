@@ -354,6 +354,23 @@
                         "core": {
                             "header": "Configurație și control server",
                             "introduction": "Modificarea configurației poate fi un proces obositor. Noi stim. Această secțiune va încerca să vă facă viața un pic mai ușoară.",
+                            "core_config": {
+                                "edit_requires_storage": "Editorul a fost dezactivat deoarece configurația a fost stocata în configuration.yaml.",
+                                "location_name": "Numele instalarii Home Assistant",
+                                "latitude": "Latitudine",
+                                "longitude": "Longitudine",
+                                "elevation": "Altitudine",
+                                "elevation_meters": "metri",
+                                "time_zone": "Fus orar",
+                                "unit_system": "Unitatea De Sistem",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metric",
+                                "imperial_example": "Fahrenheit, livre",
+                                "metric_example": "Celsius, kilograme",
+                                "save_button": "Salvați"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Validare configurație",
                                 "introduction": "Validați configurația dvs, dacă ați făcut recent unele modificări și doriți să vă asigurați că aceasta este validă.",
@@ -374,21 +391,6 @@
                                 "introduction": "Controlează-ți serverul Home Assistant ... chiar din Home Assistant.",
                                 "restart": "Repornire",
                                 "stop": "Oprire"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Editorul a fost dezactivat deoarece configurația a fost stocata în configuration.yaml.",
-                                "location_name": "Numele instalarii Home Assistant",
-                                "latitude": "Latitudine",
-                                "longitude": "Longitudine",
-                                "elevation": "Altitudine",
-                                "elevation_meters": "metri",
-                                "time_zone": "Fus orar",
-                                "unit_system": "Unitatea De Sistem",
-                                "unit_system_imperial": "Imperial",
-                                "unit_system_metric": "Metric",
-                                "imperial_example": "Fahrenheit, livre",
-                                "metric_example": "Celsius, kilograme",
-                                "save_button": "Salvați"
                             }
                         }
                     }

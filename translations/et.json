@@ -349,6 +349,22 @@
                         "core": {
                             "header": "Seadete ja serveri kontroll",
                             "introduction": "Seadete muutmine võib olla väsitav tegevus. Me teame. See osa püüab su elu natuke hõlpsamaks teha.",
+                            "core_config": {
+                                "location_name": "Sinu Home Assistant paigalduse nimi",
+                                "latitude": "Laius",
+                                "longitude": "Pikkus",
+                                "elevation": "Kõrgus",
+                                "elevation_meters": "meetrit",
+                                "time_zone": "Ajavöönd",
+                                "unit_system": "Ühikute süsteem",
+                                "unit_system_imperial": "Imperiaalne süsteem",
+                                "unit_system_metric": "Meetermõõdustik",
+                                "imperial_example": "Fahrenheit, naelad",
+                                "metric_example": "Celsius, kilogrammid",
+                                "save_button": "Salvesta"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Seadete kontrollimine",
                                 "introduction": "Kontrolli oma seadeid kui oled neis hiljuti muutusi teinud ja tahad veenduda, et kõik on korrektne",
@@ -369,20 +385,6 @@
                                 "introduction": "Kontrolli oma Home Assistant serverit... Home Assistant-ist.",
                                 "restart": "Taaskäivita",
                                 "stop": "Peata"
-                            },
-                            "core_config": {
-                                "location_name": "Sinu Home Assistant paigalduse nimi",
-                                "latitude": "Laius",
-                                "longitude": "Pikkus",
-                                "elevation": "Kõrgus",
-                                "elevation_meters": "meetrit",
-                                "time_zone": "Ajavöönd",
-                                "unit_system": "Ühikute süsteem",
-                                "unit_system_imperial": "Imperiaalne süsteem",
-                                "unit_system_metric": "Meetermõõdustik",
-                                "imperial_example": "Fahrenheit, naelad",
-                                "metric_example": "Celsius, kilogrammid",
-                                "save_button": "Salvesta"
                             }
                         }
                     }

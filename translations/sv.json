@@ -141,7 +141,8 @@
             "high_demand": "Stort behov",
             "heat_pump": "Värmepump",
             "gas": "Gas",
-            "manual": "Manuell"
+            "manual": "Manuell",
+            "heat_cool": "Värme\/Kyla"
         },
         "configurator": {
             "configure": "Konfigurera",
@@ -323,6 +324,9 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "Info"
                     }
                 }
             },
@@ -350,6 +354,23 @@
                         "core": {
                             "header": "Konfiguration och serverhantering",
                             "introduction": "Att ändra din konfiguration kan vara en tröttsam process. Vi vet. Den här avdelningen försöker göra ditt liv lite enklare.",
+                            "core_config": {
+                                "edit_requires_storage": "Redigeraren är inaktiverad eftersom konfigurationen lagras i configuration.yaml.",
+                                "location_name": "Namn på din Home Assistant installation",
+                                "latitude": "Latitud",
+                                "longitude": "Longitud",
+                                "elevation": "Höjd över havet",
+                                "elevation_meters": "meter",
+                                "time_zone": "Tidszon",
+                                "unit_system": "Enhets system",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metrisk",
+                                "imperial_example": "Fahrenheit, pounds",
+                                "metric_example": "Celsius, kilogram",
+                                "save_button": "Spara"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Validering av konfiguration",
                                 "introduction": "Kontrollera din konfiguration om du nyligen gjort ändringar och vill säkerställa att den fortfarande är giltig",
@@ -370,21 +391,6 @@
                                 "introduction": "Hantera din Home Assistant server... från Home Assistant.",
                                 "restart": "Starta om",
                                 "stop": "Stoppa"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Redigeraren är inaktiverad eftersom konfigurationen lagras i configuration.yaml.",
-                                "location_name": "Namn på din Home Assistant installation",
-                                "latitude": "Latitud",
-                                "longitude": "Longitud",
-                                "elevation": "Höjd över havet",
-                                "elevation_meters": "meter",
-                                "time_zone": "Tidszon",
-                                "unit_system": "Enhets system",
-                                "unit_system_imperial": "Imperial",
-                                "unit_system_metric": "Metrisk",
-                                "imperial_example": "Fahrenheit, pounds",
-                                "metric_example": "Celsius, kilogram",
-                                "save_button": "Spara"
                             }
                         }
                     }
@@ -586,7 +592,23 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Hantera ditt Z-Wave nätverk"
+                    "description": "Hantera ditt Z-Wave nätverk",
+                    "network_status": {
+                        "network_stopped": "Z-Wave-nätverk stoppat",
+                        "network_starting": "Startar Z-Wave-nätverk...",
+                        "network_starting_note": "Detta kan ta ett tag beroende på storleken på ditt nätverk.",
+                        "network_started": "Z-Wave nätverk startat"
+                    },
+                    "services": {
+                        "start_network": "Starta Nätverket",
+                        "stop_network": "Stoppa nätverket",
+                        "cancel_command": "Avbryt kommandot"
+                    },
+                    "common": {
+                        "value": "Värde",
+                        "instance": "Instans",
+                        "index": "Index"
+                    }
                 },
                 "users": {
                     "caption": "Användare",
@@ -779,6 +801,11 @@
                     "step_done": "Inställningen klar för {step}",
                     "close": "Stäng",
                     "submit": "Skicka"
+                },
+                "logout": "Logga ut",
+                "force_narrow": {
+                    "header": "Göm alltid sidofältet",
+                    "description": "Detta kommer att dölja sidofältet som standard, liknande mobilupplevelsen."
                 }
             },
             "page-authorize": {
@@ -1280,6 +1307,20 @@
                 "off": "Av",
                 "on": "På",
                 "auto": "Auto"
+            },
+            "preset_mode": {
+                "away": "Borta",
+                "home": "Hemma",
+                "sleep": "Sover",
+                "activity": "Aktivitet"
+            },
+            "hvac_action": {
+                "off": "Av",
+                "heating": "Uppvärmning",
+                "cooling": "Kyla",
+                "drying": "Avfuktning",
+                "idle": "Inaktiv",
+                "fan": "Fläkt"
             }
         }
     },
