@@ -203,6 +203,25 @@ class CoverEntity extends Entity {
   }
 }
 
+class InputNumberEntity extends Entity {
+  public async handleService(
+    domain,
+    service,
+    // @ts-ignore
+    data
+  ) {
+    if (domain !== this.domain) {
+      return;
+    }
+
+    if (service === "set_value") {
+      this.update("" + data.value);
+    } else {
+      super.handleService(domain, service, data);
+    }
+  }
+}
+
 class ClimateEntity extends Entity {
   public async handleService(domain, service, data) {
     if (domain !== this.domain) {
@@ -256,6 +275,7 @@ const TYPES = {
   cover: CoverEntity,
   group: GroupEntity,
   input_boolean: ToggleEntity,
+  input_number: InputNumberEntity,
   light: LightEntity,
   lock: LockEntity,
   media_player: MediaPlayerEntity,

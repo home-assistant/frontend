@@ -354,6 +354,23 @@
                         "core": {
                             "header": "Konfiguratioun an Server Kontroll",
                             "introduction": "D'Ännere vun der Konfiguratioun kann e lästege Prozess sinn. Mir wëssen dat. Dës Sektioun probéiert fir Äert Liewen e bësse méi einfach ze maachen.",
+                            "core_config": {
+                                "edit_requires_storage": "Editeur ass desaktivéiert well d'Konfiguratioun an der configuration.yaml gespäichert ass.",
+                                "location_name": "Numm vun der Home Assistant Installatioun",
+                                "latitude": "Breedegrad",
+                                "longitude": "Längegrad",
+                                "elevation": "Héicht",
+                                "elevation_meters": "Meter",
+                                "time_zone": "Zäitzone",
+                                "unit_system": "Eenheetesystem",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metresch",
+                                "imperial_example": "Fahrenheit, Pënner",
+                                "metric_example": "Celsius, Kilogramm",
+                                "save_button": "Späicheren"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Validatioun vun der Konfiguratioun",
                                 "introduction": "Validéiert är Konfiguratioun wann Dir viru kuerzem e puer Ännerungen an ärer Konfiguratioun gemaacht hutt a wëllt sécher sinn datt alles gëlteg ass",
@@ -374,21 +391,6 @@
                                 "introduction": "Kontrolléiert ären Home Assistant Server ... vun Home Assistant aus.",
                                 "restart": "Neistart",
                                 "stop": "Stop"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Editeur ass desaktivéiert well d'Konfiguratioun an der configuration.yaml gespäichert ass.",
-                                "location_name": "Numm vun der Home Assistant Installatioun",
-                                "latitude": "Breedegrad",
-                                "longitude": "Längegrad",
-                                "elevation": "Héicht",
-                                "elevation_meters": "Meter",
-                                "time_zone": "Zäitzone",
-                                "unit_system": "Eenheetesystem",
-                                "unit_system_imperial": "Imperial",
-                                "unit_system_metric": "Metresch",
-                                "imperial_example": "Fahrenheit, Pënner",
-                                "metric_example": "Celsius, Kilogramm",
-                                "save_button": "Späicheren"
                             }
                         }
                     }
@@ -816,7 +818,11 @@
                     "close": "Zoumaachen",
                     "submit": "Ofschécken"
                 },
-                "logout": "Ausloggen"
+                "logout": "Ausloggen",
+                "force_narrow": {
+                    "header": "Säiteleescht ëmmer verstoppen",
+                    "description": "Dës Optioun verstoppt d'Säiteleescht, esou wéi op engem mobillen Apparat."
+                }
             },
             "page-authorize": {
                 "initializing": "Initialiséiert",
@@ -1328,6 +1334,14 @@
                 "home": "Doheem",
                 "sleep": "Schlofen",
                 "activity": "Aktivitéit"
+            },
+            "hvac_action": {
+                "off": "Aus",
+                "heating": "Hëtzen",
+                "cooling": "Ofkillen",
+                "drying": "Dréchnen",
+                "idle": "Waart",
+                "fan": "Ventilator"
             }
         }
     },

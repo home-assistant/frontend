@@ -141,7 +141,8 @@
             "high_demand": "Forte richiesta",
             "heat_pump": "Pompa di calore",
             "gas": "Gas",
-            "manual": "Manuale"
+            "manual": "Manuale",
+            "heat_cool": "Caldo\/Freddo"
         },
         "configurator": {
             "configure": "Configura",
@@ -350,6 +351,23 @@
                         "core": {
                             "header": "Configurazione e controllo del server",
                             "introduction": "Cambiare la configurazione può essere un processo faticoso. Lo sappiamo. Questa sezione cercherà di semplificarti la vita.",
+                            "core_config": {
+                                "edit_requires_storage": "Editor disabilitato perché la configurazione è memorizzata in configuration.yaml.",
+                                "location_name": "Nome della tua installazione di Home Assistant",
+                                "latitude": "Latitudine",
+                                "longitude": "Logitudine",
+                                "elevation": "Altitudine",
+                                "elevation_meters": "Metri",
+                                "time_zone": "Fuso orario",
+                                "unit_system": "Unità di misura",
+                                "unit_system_imperial": "Imperiale",
+                                "unit_system_metric": "metrico",
+                                "imperial_example": "Fahrenheit, libbre",
+                                "metric_example": "Celsius, chilogrammi",
+                                "save_button": "Salva"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Convalida della configurazione",
                                 "introduction": "Convalidare la configurazione se di recente sono state apportate alcune modifiche alla configurazione e si desidera assicurarsi che sia tutto valido",
@@ -370,21 +388,6 @@
                                 "introduction": "Controllare il server Home Assistant... da Home Assistant.",
                                 "restart": "Riavviare",
                                 "stop": "Stop"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Editor disabilitato perché la configurazione è memorizzata in configuration.yaml.",
-                                "location_name": "Nome della tua installazione di Home Assistant",
-                                "latitude": "Latitudine",
-                                "longitude": "Logitudine",
-                                "elevation": "Altitudine",
-                                "elevation_meters": "Metri",
-                                "time_zone": "Fuso orario",
-                                "unit_system": "Unità di misura",
-                                "unit_system_imperial": "Imperiale",
-                                "unit_system_metric": "metrico",
-                                "imperial_example": "Fahrenheit, libbre",
-                                "metric_example": "Celsius, chilogrammi",
-                                "save_button": "Salva"
                             }
                         }
                     }
@@ -586,7 +589,11 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Gestisci la tua rete Z-Wave"
+                    "description": "Gestisci la tua rete Z-Wave",
+                    "network_status": {
+                        "network_starting": "Inizializzazione della rete Z-Wave...",
+                        "network_started": "Rete Z-Wave inizializzata"
+                    }
                 },
                 "users": {
                     "caption": "Utenti",
@@ -779,6 +786,11 @@
                     "step_done": "Installazione completata per {step}",
                     "close": "Chiudi",
                     "submit": "Invia"
+                },
+                "logout": "Disconnetti",
+                "force_narrow": {
+                    "header": "Nascondi sempre la barra laterale",
+                    "description": "Questo nasconderà la barra laterale per impostazione predefinita, in modo simile all'esperienza mobile"
                 }
             },
             "page-authorize": {
@@ -1288,6 +1300,13 @@
                 "home": "Casa",
                 "sleep": "Sleep",
                 "activity": "Attività"
+            },
+            "hvac_action": {
+                "off": "Spento",
+                "cooling": "Raffreddamento",
+                "drying": "Asciugatura",
+                "idle": "Inattivo",
+                "fan": "Ventilatore"
             }
         }
     },

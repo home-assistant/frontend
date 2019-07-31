@@ -342,6 +342,11 @@
                         "core": {
                             "header": "Konfigurasi dan kontrol server",
                             "introduction": "Merubah konfigurasi bisa menjadi proses yang melelahkan. Kami tahu. Bagian ini akan mencoba membuatnya menjadi sedikit lebih mudah.",
+                            "core_config": {
+                                "save_button": "Simpan"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Validasi konfigurasi",
                                 "introduction": "Validasikan konfigurasi anda jika anda baru saja membuat beberapa perubahan pada konfigurasi anda dan ingin memastikan semuanya valid",
@@ -362,9 +367,6 @@
                                 "introduction": "Kontrol server Home Assistant anda ... dari Home Assistant.",
                                 "restart": "Ulang kembali",
                                 "stop": "Berhenti"
-                            },
-                            "core_config": {
-                                "save_button": "Simpan"
                             }
                         }
                     }

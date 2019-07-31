@@ -7,20 +7,21 @@ export interface EntityConfig {
   icon?: string;
 }
 export interface DividerConfig {
-  type: string;
+  type: "divider";
   style: string;
 }
 export interface SectionConfig {
-  type: string;
+  type: "section";
   label: string;
 }
 export interface WeblinkConfig {
-  type: string;
+  type: "weblink";
   name?: string;
   icon?: string;
   url: string;
 }
 export interface CallServiceConfig extends EntityConfig {
+  type: "call-service";
   action_name?: string;
   service: string;
   service_data?: { [key: string]: any };

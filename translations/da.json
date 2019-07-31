@@ -354,6 +354,23 @@
                         "core": {
                             "header": "Konfiguration og server kontrol",
                             "introduction": "Ændring af din konfiguration kan det være en trættende proces. Vi ved det. Dette afsnit vil forsøge at gøre dit liv en smule nemmere.",
+                            "core_config": {
+                                "edit_requires_storage": "Editor er deaktiveret, fordi config er gemt i configuration.yaml.",
+                                "location_name": "Navn på din Home Assistant-installation",
+                                "latitude": "Breddegrad",
+                                "longitude": "Længdegrad",
+                                "elevation": "Højde",
+                                "elevation_meters": "meter",
+                                "time_zone": "Tidszone",
+                                "unit_system": "Enheds system",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metriske",
+                                "imperial_example": "Fahrenheit, pund",
+                                "metric_example": "Celsius, kg",
+                                "save_button": "Gem"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Konfigurations validering",
                                 "introduction": "Validér din konfiguration, hvis du for nylig lavede nogle ændringer i din konfiguration og vil sikre dig, at alt er validt",
@@ -374,21 +391,6 @@
                                 "introduction": "Kontroller din Home Assistant server... fra Home Assistant.",
                                 "restart": "Genstart",
                                 "stop": "Stop"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Editor er deaktiveret, fordi config er gemt i configuration.yaml.",
-                                "location_name": "Navn på din Home Assistant-installation",
-                                "latitude": "Breddegrad",
-                                "longitude": "Længdegrad",
-                                "elevation": "Højde",
-                                "elevation_meters": "meter",
-                                "time_zone": "Tidszone",
-                                "unit_system": "Enheds system",
-                                "unit_system_imperial": "Imperial",
-                                "unit_system_metric": "Metriske",
-                                "imperial_example": "Fahrenheit, pund",
-                                "metric_example": "Celsius, kg",
-                                "save_button": "Gem"
                             }
                         }
                     }

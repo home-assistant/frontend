@@ -84,12 +84,12 @@ gulp.task("webpack-dev-server-demo", () => {
     open: true,
     watchContentBase: true,
     contentBase: path.resolve(paths.demo_dir, "dist"),
-  }).listen(8080, "localhost", function(err) {
+  }).listen(8090, "localhost", function(err) {
     if (err) {
       throw err;
     }
     // Server listening
-    log("[webpack-dev-server]", "http://localhost:8080");
+    log("[webpack-dev-server]", "http://localhost:8090");
   });
 });
 

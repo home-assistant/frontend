@@ -23,6 +23,7 @@ const PAGES: Array<{
   advanced?: boolean;
 }> = [
   { page: "core", core: true },
+  { page: "server_control", core: true },
   { page: "person" },
   { page: "entity_registry", core: true },
   { page: "area_registry", core: true },

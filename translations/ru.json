@@ -354,6 +354,23 @@
                         "core": {
                             "header": "Конфигурация и управление сервером",
                             "introduction": "Изменение конфигурации может быть утомительным процессом. Мы знаем. Этот раздел может немного упростить эту задачу.",
+                            "core_config": {
+                                "edit_requires_storage": "Редактор отключен, поскольку конфигурация уже хранится в файле configuration.yaml.",
+                                "location_name": "Название для Вашего Home Assistant",
+                                "latitude": "Широта",
+                                "longitude": "Долгота",
+                                "elevation": "Высота",
+                                "elevation_meters": "метров",
+                                "time_zone": "Часовой пояс",
+                                "unit_system": "Система мер",
+                                "unit_system_imperial": "Имперская",
+                                "unit_system_metric": "Метрическая",
+                                "imperial_example": "Градус Фаренгейта, фунт",
+                                "metric_example": "Градус Цельсия, килограмм",
+                                "save_button": "Сохранить"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Проверка конфигурации",
                                 "introduction": "Проверьте свою конфигурацию, если вы внесли в нее некоторые изменения и хотите убедиться в ее работоспособности",
@@ -374,21 +391,6 @@
                                 "introduction": "Управляйте Вашим сервером Home Assistant... из Home Assistant",
                                 "restart": "Перезапустить",
                                 "stop": "Остановить"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Редактор отключен, поскольку конфигурация уже хранится в файле configuration.yaml.",
-                                "location_name": "Название для Вашего Home Assistant",
-                                "latitude": "Широта",
-                                "longitude": "Долгота",
-                                "elevation": "Высота",
-                                "elevation_meters": "метров",
-                                "time_zone": "Часовой пояс",
-                                "unit_system": "Система мер",
-                                "unit_system_imperial": "Имперская",
-                                "unit_system_metric": "Метрическая",
-                                "imperial_example": "Градус Фаренгейта, фунт",
-                                "metric_example": "Градус Цельсия, килограмм",
-                                "save_button": "Сохранить"
                             }
                         }
                     }
@@ -524,8 +526,8 @@
                                     "label": "Солнце",
                                     "before": "До:",
                                     "after": "После:",
-                                    "before_offset": "Смещение до (опционально)",
-                                    "after_offset": "Смещение после (опционально)",
+                                    "before_offset": "Смещение (опционально)",
+                                    "after_offset": "Смещение (опционально)",
                                     "sunrise": "Восхода",
                                     "sunset": "Заката"
                                 },
@@ -558,7 +560,7 @@
                             "type": {
                                 "service": {
                                     "label": "Вызов службы",
-                                    "service_data": "Данные службы"
+                                    "service_data": "Данные"
                                 },
                                 "delay": {
                                     "label": "Задержка",
@@ -575,7 +577,7 @@
                                 "event": {
                                     "label": "Создание события",
                                     "event": "Событие:",
-                                    "service_data": "Данные службы"
+                                    "service_data": "Данные"
                                 }
                             },
                             "learn_more": "Узнайте больше о действиях"
@@ -819,7 +821,7 @@
                 "logout": "Выйти",
                 "force_narrow": {
                     "header": "Всегда скрывать боковую панель",
-                    "description": "По умолчанию боковая панель будет скрыта, аналогично мобильному интерфейсу."
+                    "description": "Боковая панель будет скрыта, аналогично мобильному интерфейсу."
                 }
             },
             "page-authorize": {

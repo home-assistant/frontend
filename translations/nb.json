@@ -354,6 +354,23 @@
                         "core": {
                             "header": "Konfigurasjon og serverkontroll",
                             "introduction": "Endring av konfigurasjonen kan være en slitsom prosess, det vet vi. Denne delen vil forsøke å gjøre livet ditt litt lettere.",
+                            "core_config": {
+                                "edit_requires_storage": "Redigering deaktivert da konfigurasjonen er lagret i configuration.yaml.",
+                                "location_name": "Navn på installasjonen av Home Assistant",
+                                "latitude": "Breddegrad",
+                                "longitude": "Lengdegrad",
+                                "elevation": "Høyde",
+                                "elevation_meters": "meter",
+                                "time_zone": "Tidssone",
+                                "unit_system": "Enhetssystem",
+                                "unit_system_imperial": "Imperisk",
+                                "unit_system_metric": "Metrisk",
+                                "imperial_example": "Fahrenheit, pund",
+                                "metric_example": "Celsius, kilogram",
+                                "save_button": "Lagre"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Konfigurasjonsvalidering",
                                 "introduction": "Sjekk konfigurasjon din hvis du nylig har gjort noen endringer og ønsker å være sikker på at den er gyldig ved å kjøre en valideringstest",
@@ -374,21 +391,6 @@
                                 "introduction": "Kontroller din Home Assistant server... fra Home Assistant.",
                                 "restart": "Start på nytt",
                                 "stop": "Stopp"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Redigering deaktivert da konfigurasjonen er lagret i configuration.yaml.",
-                                "location_name": "Navn på installasjonen av Home Assistant",
-                                "latitude": "Breddegrad",
-                                "longitude": "Lengdegrad",
-                                "elevation": "Høyde",
-                                "elevation_meters": "meter",
-                                "time_zone": "Tidssone",
-                                "unit_system": "Enhetssystem",
-                                "unit_system_imperial": "Imperisk",
-                                "unit_system_metric": "Metrisk",
-                                "imperial_example": "Fahrenheit, pund",
-                                "metric_example": "Celsius, kilogram",
-                                "save_button": "Lagre"
                             }
                         }
                     }
@@ -614,6 +616,14 @@
                         "add_node": "Legg til node",
                         "remove_node": "Fjern node",
                         "cancel_command": "Avbryt kommando"
+                    },
+                    "common": {
+                        "value": "Verdi",
+                        "instance": "Forekomst",
+                        "index": "Indeks"
+                    },
+                    "values": {
+                        "header": "Nodeverdier"
                     }
                 },
                 "users": {
@@ -808,7 +818,11 @@
                     "close": "Lukk",
                     "submit": "Send inn"
                 },
-                "logout": "Logg ut"
+                "logout": "Logg ut",
+                "force_narrow": {
+                    "header": "Skjul alltid sidepanelet",
+                    "description": "Dette vil skjule sidepanelet som standard, tilsvarende opplevelsen på en mobil."
+                }
             },
             "page-authorize": {
                 "initializing": "Initialiserer",
@@ -1320,6 +1334,14 @@
                 "home": "Hjem",
                 "sleep": "Sove",
                 "activity": "Aktivitet"
+            },
+            "hvac_action": {
+                "off": "Av",
+                "heating": "Oppvarming",
+                "cooling": "Kjøling",
+                "drying": "Tørking",
+                "idle": "Inaktiv",
+                "fan": "Vifte"
             }
         }
     },
