@@ -48,6 +48,11 @@ class HaPanelConfig extends HassRouterPage {
         load: () =>
           import(/* webpackChunkName: "panel-config-core" */ "./core/ha-config-core"),
       },
+      server_control: {
+        tag: "ha-config-server-control",
+        load: () =>
+          import(/* webpackChunkName: "panel-config-server-control" */ "./server_control/ha-config-server-control"),
+      },
       customize: {
         tag: "ha-config-customize",
         load: () =>

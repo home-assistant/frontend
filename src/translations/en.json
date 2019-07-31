@@ -580,10 +580,10 @@
         },
         "core": {
           "caption": "General",
-          "description": "Validate your configuration file and control the server",
+          "description": "Change your general Home Assistant configuration",
           "section": {
             "core": {
-              "header": "Configuration and Server Control",
+              "header": "General Configuration",
               "introduction": "Changing your configuration can be a tiresome process. We know. This section will try to make your life a little bit easier.",
               "core_config": {
                 "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
@@ -599,28 +599,34 @@
                 "imperial_example": "Fahrenheit, pounds",
                 "metric_example": "Celsius, kilograms",
                 "save_button": "Save"
-              },
-              "validation": {
-                "heading": "Configuration validation",
-                "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid",
-                "check_config": "Check config",
-                "valid": "Configuration valid!",
-                "invalid": "Configuration invalid"
-              },
-              "reloading": {
-                "heading": "Configuration reloading",
-                "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.",
-                "core": "Reload core",
-                "group": "Reload groups",
-                "automation": "Reload automations",
-                "script": "Reload scripts"
-              },
-              "server_management": {
-                "heading": "Server management",
-                "introduction": "Control your Home Assistant server… from Home Assistant.",
-                "restart": "Restart",
-                "stop": "Stop"
               }
+            }
+          }
+        },
+        "server_control": {
+          "caption": "Server Control",
+          "description": "Restart and stop the Home Assistant server",
+          "section": {
+            "validation": {
+              "heading": "Configuration validation",
+              "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid",
+              "check_config": "Check config",
+              "valid": "Configuration valid!",
+              "invalid": "Configuration invalid"
+            },
+            "reloading": {
+              "heading": "Configuration reloading",
+              "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.",
+              "core": "Reload core",
+              "group": "Reload groups",
+              "automation": "Reload automations",
+              "script": "Reload scripts"
+            },
+            "server_management": {
+              "heading": "Server management",
+              "introduction": "Control your Home Assistant server… from Home Assistant.",
+              "restart": "Restart",
+              "stop": "Stop"
             }
           }
         },
