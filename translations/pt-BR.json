@@ -141,7 +141,8 @@
             "high_demand": "Alta demanda",
             "heat_pump": "Bomba de calor",
             "gas": "Gás",
-            "manual": "Manual"
+            "manual": "Manual",
+            "heat_cool": "Quente\/Frio"
         },
         "configurator": {
             "configure": "Configurar",
@@ -297,7 +298,7 @@
         },
         "person": {
             "home": "Home",
-            "not_home": "Longe"
+            "not_home": "Ausente"
         }
     },
     "ui": {
@@ -353,6 +354,23 @@
                         "core": {
                             "header": "Configuração e Controle do Servidor",
                             "introduction": "Alterar sua configuração pode ser um processo cansativo. Nós sabemos. Esta seção tentará tornar sua vida um pouco mais fácil.",
+                            "core_config": {
+                                "edit_requires_storage": "Editor desativado porque a configuração está armazenada em configuration.yaml.",
+                                "location_name": "Nome da sua instalação do Home Assistant",
+                                "latitude": "Latitude",
+                                "longitude": "Longitude",
+                                "elevation": "Elevação",
+                                "elevation_meters": "metros",
+                                "time_zone": "Fuso horário",
+                                "unit_system": "Sistema de unidade",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Métrico",
+                                "imperial_example": "Fahrenheit, libras",
+                                "metric_example": "Celsius, quilogramas",
+                                "save_button": "Salvar"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "Validação de configuração",
                                 "introduction": "Valide seu código se você recentemente fez algumas mudanças na sua configuração e quer certificar-se de que tudo está correto.",
@@ -373,21 +391,6 @@
                                 "introduction": "Controle seu servidor do Home Assistant... A partir do Home Assistant.",
                                 "restart": "Reiniciar",
                                 "stop": "Parar"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "Editor desativado porque config armazenado em configuration.yaml.",
-                                "location_name": "Nome da sua instalação do Home Assistant",
-                                "latitude": "Latitude",
-                                "longitude": "Longitude",
-                                "elevation": "Elevação",
-                                "elevation_meters": "metros",
-                                "time_zone": "Fuso horário",
-                                "unit_system": "Sistema de unidade",
-                                "unit_system_imperial": "Imperial",
-                                "unit_system_metric": "Métrico",
-                                "imperial_example": "Fahrenheit, libras",
-                                "metric_example": "Celsius, quilogramas",
-                                "save_button": "Salvar"
                             }
                         }
                     }
@@ -605,7 +608,7 @@
                     "services": {
                         "start_network": "Iniciar Rede",
                         "stop_network": "Parar Rede",
-                        "heal_network": "Curar rede",
+                        "heal_network": "Reparar rede",
                         "test_network": "Teste de rede",
                         "soft_reset": "Soft Reset",
                         "save_config": "Salvar Configuração",
@@ -613,6 +616,14 @@
                         "add_node": "Adicionar Nó",
                         "remove_node": "Remover Nó",
                         "cancel_command": "Cancelar Comando"
+                    },
+                    "common": {
+                        "value": "Valor",
+                        "instance": "Instância",
+                        "index": "Índice"
+                    },
+                    "values": {
+                        "header": "Valores de nó"
                     }
                 },
                 "users": {
@@ -641,7 +652,7 @@
                     "caption": "Home Assistant Cloud",
                     "description_login": "Conectado como {email}",
                     "description_not_login": "Não logado",
-                    "description_features": "Controle fora de casa, integrar com Alexa e Google Assistant."
+                    "description_features": "Controle mesmo longe de casa, integrar com Alexa e Google Assistant."
                 },
                 "integrations": {
                     "caption": "Integrações",
@@ -666,7 +677,7 @@
                     },
                     "config_flow": {
                         "external_step": {
-                            "description": "Esta etapa exige que você visite um site externo para ser concluído.",
+                            "description": "Esta etapa exige que você visite um site externo para ser concluída.",
                             "open_site": "Abrir site"
                         }
                     }
@@ -676,17 +687,17 @@
                     "description": "Gerenciamento de rede Zigbee Home Automation",
                     "services": {
                         "reconfigure": "Reconfigure o dispositivo ZHA (curar dispositivo). Use isto se você estiver tendo problemas com o dispositivo. Se o dispositivo em questão for um dispositivo alimentado por bateria, certifique-se de que ele esteja ativo e aceitando comandos ao usar esse serviço.",
-                        "updateDeviceName": "Definir um nome personalizado para este dispositivo no registro do dispositivo.",
+                        "updateDeviceName": "Definir um nome personalizado para este dispositivo no registro de dispositivos.",
                         "remove": "Remova um dispositivo da rede ZigBee."
                     },
                     "device_card": {
                         "device_name_placeholder": "Nome dado pelo usuário",
                         "area_picker_label": "Área",
-                        "update_name_button": "Atualizar nome"
+                        "update_name_button": "Atualizar Nome"
                     },
                     "add_device_page": {
                         "header": "Zigbee Home Automation - Adicionar dispositivos",
-                        "spinner": "Procurando por dispositivos ZHA Zigbee ...",
+                        "spinner": "Procurando por dispositivos ZHA Zigbee…",
                         "discovery_text": "Dispositivos descobertos serão exibidos aqui. Siga as instruções para o(s) seu(s) dispositivo(s) e coloque o(s) dispositivo(s) no modo de emparelhamento."
                     }
                 },
@@ -717,7 +728,7 @@
                         "header": "Registro de Entidade",
                         "unavailable": "(indisponível)",
                         "introduction": "O Home Assistant mantém um registro de todas as entidades que já viu e que podem ser identificadas exclusivamente. Cada uma dessas entidades terá um ID de entidade atribuído, que será reservado apenas para essa entidade.",
-                        "introduction2": "Use o registro da entidade para substituir o nome, alterar o ID da entidade ou remover a entrada do Assistente Inicial. Observe que a remoção da entrada do registro de entidade não removerá a entidade. Para fazer isso, siga o link abaixo e remova-o da página de integrações.",
+                        "introduction2": "Use o registro da entidade para substituir o nome, alterar o ID da entidade ou remover a entrada do Home Assistant. Observe que a remoção do registro de entidade não removerá a entidade totalmente. Para fazer isso, siga o link abaixo e remova-o da página de integrações.",
                         "integrations_page": "Página de integrações"
                     },
                     "editor": {
@@ -807,7 +818,11 @@
                     "close": "Fechar",
                     "submit": "Enviar"
                 },
-                "logout": "Sair"
+                "logout": "Sair",
+                "force_narrow": {
+                    "header": "Sempre ocultar a barra lateral",
+                    "description": "Isto irá ocultar a barra lateral por padrão, semelhante à experiência móvel."
+                }
             },
             "page-authorize": {
                 "initializing": "Iniciando",
@@ -919,7 +934,7 @@
                     "create_account": "Criar Conta",
                     "error": {
                         "required_fields": "Preencha todos os campos obrigatórios",
-                        "password_not_match": "As senhas não correspondem"
+                        "password_not_match": "As senhas não coincidem"
                     }
                 },
                 "integration": {
@@ -1009,7 +1024,7 @@
                     "entity_non_numeric": "Entidade não é numérica: {entity}"
                 },
                 "changed_toast": {
-                    "message": "A configuração do Lovelace foi atualizada, você gostaria de atualizar?",
+                    "message": "A configuração do Lovelace foi atualizada, você gostaria de recarregar?",
                     "refresh": "Atualizar"
                 },
                 "reload_lovelace": "Recarregar Lovelace"
@@ -1027,7 +1042,7 @@
                     "arsaboo": {
                         "names": {
                             "upstairs": "Andar de cima",
-                            "family_room": "Quarto Familiar",
+                            "family_room": "Quarto da Família",
                             "kitchen": "Cozinha",
                             "patio": "Pátio",
                             "hallway": "Corredor",
@@ -1039,15 +1054,15 @@
                         "labels": {
                             "lights": "Luzes",
                             "information": "Informação",
-                            "morning_commute": "Comutação da manhã",
-                            "commute_home": "Comutar para casa",
+                            "morning_commute": "Indo para o Trabalho",
+                            "commute_home": "Indo para Casa",
                             "entertainment": "Entretenimento",
                             "activity": "Atividade",
                             "hdmi_input": "Entrada HDMI",
                             "hdmi_switcher": "Comutador HDMI",
                             "volume": "Volume",
                             "total_tv_time": "Tempo total de TV",
-                            "turn_tv_off": "Desligue a televisão",
+                            "turn_tv_off": "Desligar televisão",
                             "air": "Ar"
                         },
                         "unit": {
@@ -1319,6 +1334,14 @@
                 "home": "Home",
                 "sleep": "Suspender",
                 "activity": "Atividade"
+            },
+            "hvac_action": {
+                "off": "Desligado",
+                "heating": "Aquecimento",
+                "cooling": "Resfriamento",
+                "drying": "Secagem",
+                "idle": "Oscioso",
+                "fan": "Ventilador"
             }
         }
     },

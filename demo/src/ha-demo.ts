@@ -16,6 +16,8 @@ import { mockEvents } from "./stubs/events";
 import { mockMediaPlayer } from "./stubs/media_player";
 import { HomeAssistant } from "../../src/types";
 import { mockFrontend } from "./stubs/frontend";
+import { mockPersistentNotification } from "./stubs/persistent_notification";
+import { isNavigationClick } from "../../src/common/dom/is-navigation-click";
 
 class HaDemo extends HomeAssistantAppEl {
   protected async _initialize() {
@@ -43,6 +45,7 @@ class HaDemo extends HomeAssistantAppEl {
     mockEvents(hass);
     mockMediaPlayer(hass);
     mockFrontend(hass);
+    mockPersistentNotification(hass);
 
     // Once config is loaded AND localize, set entities and apply theme.
     Promise.all([selectedDemoConfig, localizePromise]).then(
@@ -58,49 +61,14 @@ class HaDemo extends HomeAssistantAppEl {
     document.body.addEventListener(
       "click",
       (e) => {
-        if (
-          e.defaultPrevented ||
-          e.button !== 0 ||
-          e.metaKey ||
-          e.ctrlKey ||
-          e.shiftKey
-        ) {
-          return;
-        }
+        const href = isNavigationClick(e);
 
-        const anchor = e
-          .composedPath()
-          .filter((n) => (n as HTMLElement).tagName === "A")[0] as
-          | HTMLAnchorElement
-          | undefined;
-        if (
-          !anchor ||
-          anchor.target ||
-          anchor.hasAttribute("download") ||
-          anchor.getAttribute("rel") === "external"
-        ) {
-          return;
-        }
-
-        let href = anchor.href;
-        if (!href || href.indexOf("mailto:") !== -1) {
-          return;
-        }
-
-        const location = window.location;
-        const origin =
-          location.origin || location.protocol + "//" + location.host;
-        if (href.indexOf(origin) !== 0) {
-          return;
-        }
-        href = href.substr(origin.length);
-
-        if (href === "#") {
+        if (!href) {
           return;
         }
 
         e.preventDefault();
-        navigate(this as any, href);
+        navigate(this, href);
       },
       { capture: true }
     );

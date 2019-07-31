@@ -141,7 +141,8 @@
             "high_demand": "高需求",
             "heat_pump": "热泵",
             "gas": "燃气",
-            "manual": "手动"
+            "manual": "手动",
+            "heat_cool": "制热\/制冷"
         },
         "configurator": {
             "configure": "设置",
@@ -323,6 +324,9 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "信息"
                     }
                 }
             },
@@ -350,6 +354,23 @@
                         "core": {
                             "header": "配置及服务器控制",
                             "introduction": "更改配置的过程可能有些抓狂，我们懂的。这部分将帮助你减轻一些工作。",
+                            "core_config": {
+                                "edit_requires_storage": "编辑器已禁用，因为配置存储于 configuration.yaml。",
+                                "location_name": "Home Assistant 安装的名称",
+                                "latitude": "纬度",
+                                "longitude": "经度",
+                                "elevation": "海拔",
+                                "elevation_meters": "米",
+                                "time_zone": "时区",
+                                "unit_system": "单位制",
+                                "unit_system_imperial": "英制",
+                                "unit_system_metric": "公制",
+                                "imperial_example": "华氏、磅",
+                                "metric_example": "摄氏、千克",
+                                "save_button": "保存"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "配置检查",
                                 "introduction": "此处可以帮助你检验最新修改的配置文件有效性",
@@ -370,21 +391,6 @@
                                 "introduction": "在这里即可控制 Home Assistant 服务。",
                                 "restart": "重启服务",
                                 "stop": "停止服务"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "编辑器已禁用，因为配置存储于 configuration.yaml。",
-                                "location_name": "Home Assistant 安装的名称",
-                                "latitude": "纬度",
-                                "longitude": "经度",
-                                "elevation": "海拔",
-                                "elevation_meters": "米",
-                                "time_zone": "时区",
-                                "unit_system": "单位制",
-                                "unit_system_imperial": "英制",
-                                "unit_system_metric": "公制",
-                                "imperial_example": "华氏、磅",
-                                "metric_example": "摄氏、千克",
-                                "save_button": "保存"
                             }
                         }
                     }
@@ -561,8 +567,8 @@
                                     "delay": "延迟"
                                 },
                                 "wait_template": {
-                                    "label": "延时",
-                                    "wait_template": "延时自定义值",
+                                    "label": "等待",
+                                    "wait_template": "等待模板",
                                     "timeout": "超时（可选）"
                                 },
                                 "condition": {
@@ -586,7 +592,20 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "管理 Z-Wave 网络"
+                    "description": "管理 Z-Wave 网络",
+                    "network_management": {
+                        "header": "Z-Wave网络管理"
+                    },
+                    "services": {
+                        "save_config": "保存配置",
+                        "add_node": "添加节点",
+                        "remove_node": "删除节点",
+                        "cancel_command": "取消命令"
+                    },
+                    "common": {
+                        "value": "值",
+                        "instance": "实例"
+                    }
                 },
                 "users": {
                     "caption": "用户",
@@ -779,6 +798,11 @@
                     "step_done": "{step} 设置完成",
                     "close": "关闭",
                     "submit": "提交"
+                },
+                "logout": "退出",
+                "force_narrow": {
+                    "header": "始终隐藏侧边栏",
+                    "description": "这将默认隐藏侧边栏，类似于移动设备上的体验。"
                 }
             },
             "page-authorize": {
@@ -1291,6 +1315,14 @@
                 "home": "在家",
                 "sleep": "睡眠",
                 "activity": "活动"
+            },
+            "hvac_action": {
+                "off": "关闭",
+                "heating": "制热",
+                "cooling": "制冷",
+                "drying": "除湿",
+                "idle": "空闲",
+                "fan": "风扇"
             }
         }
     },

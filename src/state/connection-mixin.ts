@@ -46,6 +46,7 @@ export const connectionMixin = (
         translationMetadata,
         dockedSidebar: "docked",
         moreInfoEntityId: null,
+        hassUrl: (path = "") => new URL(path, auth.data.hassUrl).toString(),
         callService: async (domain, service, serviceData = {}) => {
           if (__DEV__) {
             // tslint:disable-next-line: no-console

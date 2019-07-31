@@ -354,6 +354,23 @@
                         "core": {
                             "header": "設定和服務器控制",
                             "introduction": "更改設定常是個惱人過程。此區域將盡可能協助您，讓事情變得更輕鬆一些。",
+                            "core_config": {
+                                "edit_requires_storage": "由於 configuration.yaml 內已儲存設定，編輯功能已關閉。",
+                                "location_name": "Home Assistant 安裝名稱",
+                                "latitude": "緯度",
+                                "longitude": "經度",
+                                "elevation": "海拔",
+                                "elevation_meters": "公尺",
+                                "time_zone": "時區",
+                                "unit_system": "單位系統",
+                                "unit_system_imperial": "英制",
+                                "unit_system_metric": "公制",
+                                "imperial_example": "華氏、磅",
+                                "metric_example": "攝氏、公斤",
+                                "save_button": "儲存"
+                            }
+                        },
+                        "server_control": {
                             "validation": {
                                 "heading": "設定驗證",
                                 "introduction": "如果您對設定進行了一些更改，並且想要確保這些設定有無錯誤\n可以選擇先驗證您的設定內容。",
@@ -374,21 +391,6 @@
                                 "introduction": "控制 Home Assistant 伺服器。",
                                 "restart": "重啟",
                                 "stop": "停止"
-                            },
-                            "core_config": {
-                                "edit_requires_storage": "由於 configuration.yaml 內已儲存設定，編輯功能已關閉。",
-                                "location_name": "Home Assistant 安裝名稱",
-                                "latitude": "緯度",
-                                "longitude": "經度",
-                                "elevation": "海拔",
-                                "elevation_meters": "公尺",
-                                "time_zone": "時區",
-                                "unit_system": "單位系統",
-                                "unit_system_imperial": "英制",
-                                "unit_system_metric": "公制",
-                                "imperial_example": "華氏、磅",
-                                "metric_example": "攝氏、公斤",
-                                "save_button": "儲存"
                             }
                         }
                     }
@@ -816,7 +818,11 @@
                     "close": "關閉",
                     "submit": "傳送"
                 },
-                "logout": "登出"
+                "logout": "登出",
+                "force_narrow": {
+                    "header": "總是隱藏側邊列",
+                    "description": "將預設隱藏側邊列，類似於手機 App 使用方式。"
+                }
             },
             "page-authorize": {
                 "initializing": "初始化中",
@@ -1328,6 +1334,14 @@
                 "home": "在家",
                 "sleep": "睡眠",
                 "activity": "活動"
+            },
+            "hvac_action": {
+                "off": "關閉",
+                "heating": "暖氣",
+                "cooling": "冷氣",
+                "drying": "除濕",
+                "idle": "閒置",
+                "fan": "風速"
             }
         }
     },
