@@ -49,8 +49,7 @@ class LovelacePanel extends LitElement {
 
   private mqls?: MediaQueryList[];
 
-  private _ignoreNextUpdateEventBecauseOfSave = false;
-  private _ignoreUpdateUntilTime: number | undefined;
+  private _ignoreNextUpdateEvent = false;
 
   constructor() {
     super();
@@ -185,14 +184,8 @@ class LovelacePanel extends LitElement {
   }
 
   private _lovelaceChanged() {
-    if (
-      this._ignoreUpdateUntilTime &&
-      new Date().getTime() < this._ignoreUpdateUntilTime
-    ) {
-      return;
-    }
-    if (this._ignoreNextUpdateEventBecauseOfSave) {
-      this._ignoreNextUpdateEventBecauseOfSave = false;
+    if (this._ignoreNextUpdateEvent) {
+      this._ignoreNextUpdateEvent = false;
       return;
     }
     showToast(this, {
@@ -222,10 +215,10 @@ class LovelacePanel extends LitElement {
       llWindow.llConfProm = undefined;
     } else {
       // Refreshing a YAML config can trigger an update event. We will ignore
-      // all update events for a second after we refresh, as we already have
-      // the latest config in that case.
+      // all update events while fetching the config and for 2 seconds after the cnofig is back.
+      // We ignore because we already have the latest config.
       if (this.lovelace && this.lovelace.mode === "yaml") {
-        this._ignoreUpdateUntilTime = new Date().getTime() + 1000;
+        this._ignoreNextUpdateEvent = true;
       }
 
       confProm = fetchConfig(this.hass!.connection, forceDiskRefresh);
@@ -243,6 +236,13 @@ class LovelacePanel extends LitElement {
       }
       conf = await generateLovelaceConfigFromHass(this.hass!);
       confMode = "generated";
+    } finally {
+      // Ignore updates for another 2 seconds.
+      if (this.lovelace && this.lovelace.mode === "yaml") {
+        setTimeout(() => {
+          this._ignoreNextUpdateEvent = false;
+        }, 2000);
+      }
     }
 
     this._state = "loaded";
@@ -279,7 +279,7 @@ class LovelacePanel extends LitElement {
             config: newConfig,
             mode: "storage",
           });
-          this._ignoreNextUpdateEventBecauseOfSave = true;
+          this._ignoreNextUpdateEvent = true;
           await saveConfig(this.hass!, newConfig);
         } catch (err) {
           // tslint:disable-next-line
