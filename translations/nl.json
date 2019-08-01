@@ -349,7 +349,7 @@
                 "introduction": "Hier kun je je componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
                 "core": {
                     "caption": "Algemeen",
-                    "description": "Valideer je configuratiebestand en beheer de server",
+                    "description": "Wijzig je algemene Home Assistant configuratie",
                     "section": {
                         "core": {
                             "header": "Configuratie en serverbeheer",
@@ -746,6 +746,33 @@
                         "device_tracker_intro": "Selecteer de apparaten die bij deze persoon horen.",
                         "device_tracker_picked": "Volg apparaat",
                         "device_tracker_pick": "Kies apparaat om te volgen"
+                    }
+                },
+                "server_control": {
+                    "caption": "Serverbeheer",
+                    "description": "De Home Assistant-server opnieuw opstarten en stoppen",
+                    "section": {
+                        "validation": {
+                            "heading": "Valideer configuratie",
+                            "introduction": "Controleer je configuratie als je onlangs wijzigingen hebt aangebracht en zeker wilt weten dat ze geldig zijn",
+                            "check_config": "Controleer configuratie",
+                            "valid": "Geldige configuratie!",
+                            "invalid": "Ongeldige configuratie"
+                        },
+                        "reloading": {
+                            "heading": "Configuratie herladen",
+                            "introduction": "Sommige delen van Home Assistant kunnen opnieuw worden geladen zonder dat een herstart vereist is. Als je herladen gebruikt, wordt de huidige configuratie leeggemaakt en wordt de nieuwe geladen.",
+                            "core": "Herlaad kern",
+                            "group": "Herlaad groepen",
+                            "automation": "Herlaad automatiseringen",
+                            "script": "Herlaad scripts"
+                        },
+                        "server_management": {
+                            "heading": "Serverbeheer",
+                            "introduction": "Beheer je Home Assistant-server ... vanuit Home Assistant.",
+                            "restart": "Herstarten",
+                            "stop": "Stop"
+                        }
                     }
                 }
             },
