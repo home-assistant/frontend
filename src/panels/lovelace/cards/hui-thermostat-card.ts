@@ -169,7 +169,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                   : ""}
               </div>
               <div class="modes">
-                ${stateObj.attributes.hvac_modes
+                ${(stateObj.attributes.hvac_modes || [])
                   .concat()
                   .sort(compareClimateHvacModes)
                   .map((modeItem) => this._renderIcon(modeItem, mode))}
@@ -288,7 +288,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     let sliderValue: string | number | null;
     let uiValue: string;
 
-    if (
+    if (stateObj.state === "unavailable") {
+      sliderType = "min-range";
+      sliderValue = null;
+      uiValue = this.hass!.localize("state.default.unavailable");
+    } else if (
       stateObj.attributes.target_temp_low &&
       stateObj.attributes.target_temp_high
     ) {
