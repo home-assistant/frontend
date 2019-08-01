@@ -28,6 +28,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   @property() private _config?: MarkdownCardConfig;
   @property() private content?: string = "";
+  @property() private connection: (() => void) | null = null;
 
   public getCardSize(): number {
     return (
@@ -49,17 +50,19 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
   }
 
   public set hass(hass) {
-    if (!this.connection && hass) {
-      hass.connection.subscribeMessage(
-        (msg) => {
-          this.content = msg.result;
-        },
-        {
-          type: "render_template",
-          template: this._config.content,
-          entity_ids: this._config.entity_id,
-        }
-      ).then((con) => this.connection = con);
+    if (!this.connection && this._config && hass) {
+      hass.connection
+        .subscribeMessage(
+          (msg) => {
+            this.content = msg.result;
+          },
+          {
+            type: "render_template",
+            template: this._config.content,
+            entity_ids: this._config.entity_id,
+          }
+        )
+        .then((con) => (this.connection = con));
     }
   }
 

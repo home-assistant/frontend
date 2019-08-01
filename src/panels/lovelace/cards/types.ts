@@ -118,6 +118,7 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
   type: "markdown";
   content: string;
   title?: string;
+  entity_ids?: string | string[];
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
