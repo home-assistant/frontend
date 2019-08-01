@@ -128,7 +128,7 @@
         },
         "climate": {
             "off": "Off",
-            "on": "On",
+            "on": "Marche",
             "heat": "Chauffe",
             "cool": "Frais",
             "idle": "Inactif",
@@ -160,8 +160,8 @@
             "not_home": "Absent"
         },
         "fan": {
-            "off": "Off",
-            "on": "On"
+            "off": "Arrêt",
+            "on": "Marche"
         },
         "group": {
             "off": "Off",
@@ -179,20 +179,20 @@
             "problem": "Problème"
         },
         "input_boolean": {
-            "off": "Off",
-            "on": "On"
+            "off": "Arrêt",
+            "on": "Marche"
         },
         "light": {
-            "off": "Off",
-            "on": "On"
+            "off": "Éteinte",
+            "on": "Allumée"
         },
         "lock": {
             "locked": "Verrouillé",
             "unlocked": "Déverrouillé"
         },
         "media_player": {
-            "off": "Off",
-            "on": "On",
+            "off": "Arrêt",
+            "on": "Marche",
             "playing": "Lecture en cours",
             "paused": "En pause",
             "idle": "En veille",
@@ -203,7 +203,7 @@
             "problem": "Problème"
         },
         "remote": {
-            "off": "Off",
+            "off": "Arrêt",
             "on": "On"
         },
         "scene": {
@@ -265,7 +265,7 @@
         },
         "timer": {
             "active": "actif",
-            "idle": "En veille",
+            "idle": "en veille",
             "paused": "en pause"
         },
         "person": {
@@ -290,7 +290,7 @@
             "arming": "Activer",
             "disarming": "Désarmement",
             "triggered": "Déclenchée",
-            "armed_custom_bypass": "Activée"
+            "armed_custom_bypass": "Armée"
         },
         "device_tracker": {
             "home": "Maison",
@@ -320,7 +320,7 @@
                         "title": "Événements"
                     },
                     "templates": {
-                        "title": "Templates"
+                        "title": "Gabarit"
                     },
                     "mqtt": {
                         "title": "MQTT"
@@ -352,7 +352,7 @@
                     "description": "Validez votre fichier de configuration et contrôlez le serveur",
                     "section": {
                         "core": {
-                            "header": "Configuration et contrôle du serveur",
+                            "header": "Configuration générale",
                             "introduction": "Changer votre configuration peut être un processus fastidieux. Nous le savons. Cette section va essayer de vous rendre la vie un peu plus facile.",
                             "core_config": {
                                 "edit_requires_storage": "L'éditeur est désactivé car la configuration est stockée dans configuration.yaml.",
@@ -532,8 +532,8 @@
                                     "sunset": "Coucher du soleil"
                                 },
                                 "template": {
-                                    "label": "Template",
-                                    "value_template": "Contenu du template"
+                                    "label": "Gabarit",
+                                    "value_template": "Valeur du gabarit"
                                 },
                                 "time": {
                                     "label": "Heure",
@@ -555,7 +555,7 @@
                             "duplicate": "Dupliquer",
                             "delete": "Supprimer",
                             "delete_confirm": "Voulez-vous vraiment effacer ?",
-                            "unsupported_action": "Action non supportée : {action}",
+                            "unsupported_action": "Action non supportée : {action}",
                             "type_select": "Type d'action",
                             "type": {
                                 "service": {
@@ -593,20 +593,34 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Gérez votre réseau Z-Wave",
+                    "network_management": {
+                        "header": "Gestion de réseau Z-Wave"
+                    },
                     "network_status": {
                         "network_stopped": "Réseau Z-Wave arrêté",
                         "network_starting": "Démarrage du réseau Z-Wave...",
                         "network_starting_note": "Ceci peut prendre un certain temps en fonction du débit de votre réseau.",
-                        "network_started": "Le réseau Z-Wave a été démarré"
+                        "network_started": "Le réseau Z-Wave a été démarré",
+                        "network_started_note_all_queried": "Tous les nœuds ont été interrogés."
                     },
                     "services": {
                         "start_network": "Démarrer le réseau",
                         "stop_network": "Arrêter le réseau",
+                        "heal_network": "Soigner le réseau",
                         "test_network": "Tester le réseau",
                         "save_config": "Enregistrer la configuration",
                         "add_node_secure": "Ajouter un nœud sécurisé",
                         "add_node": "Ajouter un nœud",
-                        "remove_node": "Supprimer un nœud"
+                        "remove_node": "Supprimer un nœud",
+                        "cancel_command": "Annuler la commande"
+                    },
+                    "common": {
+                        "value": "Valeur",
+                        "instance": "Instance",
+                        "index": "Indice"
+                    },
+                    "values": {
+                        "header": "Valeurs des nœuds"
                     }
                 },
                 "users": {
@@ -730,6 +744,28 @@
                         "device_tracker_picked": "Appareil suivi",
                         "device_tracker_pick": "Choisissez le périphérique à suivre"
                     }
+                },
+                "server_control": {
+                    "section": {
+                        "validation": {
+                            "heading": "Validation de la configuration",
+                            "check_config": "Vérifiez la configuration",
+                            "valid": "Configuration valide !",
+                            "invalid": "Configuration invalide"
+                        },
+                        "reloading": {
+                            "heading": "Rechargement de la configuration",
+                            "core": "Recharger le noyau",
+                            "group": "Recharger les groupes",
+                            "automation": "Recharger les automatisations",
+                            "script": "Recharger les scripts"
+                        },
+                        "server_management": {
+                            "heading": "Gestion du serveur",
+                            "restart": "Redémarrer",
+                            "stop": "Arrêter"
+                        }
+                    }
                 }
             },
             "profile": {
@@ -801,7 +837,10 @@
                     "close": "Fermer",
                     "submit": "Envoyer"
                 },
-                "logout": "Déconnexion"
+                "logout": "Déconnexion",
+                "force_narrow": {
+                    "header": "Toujours cacher la barre latérale"
+                }
             },
             "page-authorize": {
                 "initializing": "Initialisation",
@@ -1218,7 +1257,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Sauvegarder",
-                "name": "Nom",
+                "name": "Surcharge du nom",
                 "entity_id": "ID de l'entité"
             },
             "more_info_control": {
@@ -1313,6 +1352,14 @@
                 "home": "Accueil",
                 "sleep": "Veille",
                 "activity": "Activité"
+            },
+            "hvac_action": {
+                "off": "Éteint",
+                "heating": "Chauffage",
+                "cooling": "Refroidissement",
+                "drying": "Séchage",
+                "idle": "Inactif",
+                "fan": "Ventilateur"
             }
         }
     },

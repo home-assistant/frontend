@@ -747,6 +747,33 @@
                         "device_tracker_picked": "Śledź urządzenie",
                         "device_tracker_pick": "Wybierz urządzenie do śledzenia"
                     }
+                },
+                "server_control": {
+                    "caption": "Kontrola serwera",
+                    "description": "Uruchom ponownie i zatrzymaj serwer Home Assistant",
+                    "section": {
+                        "validation": {
+                            "heading": "Sprawdzanie konfiguracji",
+                            "introduction": "Jeśli ostatnio wprowadzano zmiany w konfiguracji sprawdź jej poprawność",
+                            "check_config": "Sprawdź konfigurację",
+                            "valid": "Konfiguracja prawidłowa!",
+                            "invalid": "Konfiguracja nieprawidłowa"
+                        },
+                        "reloading": {
+                            "heading": "Przeładowanie konfiguracji",
+                            "introduction": "Niektóre części Home Assistant'a można przeładować bez konieczności ponownego uruchomienia. Kliknięcie przeładuj spowoduje ponowne wczytanie konfiguracji.",
+                            "core": "Przeładuj rdzeń",
+                            "group": "Przeładuj grupy",
+                            "automation": "Przeładuj automatyzacje",
+                            "script": "Przeładuj skrypty"
+                        },
+                        "server_management": {
+                            "heading": "Zarządzanie serwerem",
+                            "introduction": "Kontroluj swój serwer Home Assistant… z Home Assistant.",
+                            "restart": "Uruchom ponownie",
+                            "stop": "Zatrzymaj"
+                        }
+                    }
                 }
             },
             "profile": {
@@ -1138,10 +1165,10 @@
             "alarm_control_panel": {
                 "code": "Kod",
                 "clear_code": "Wyczyść",
-                "disarm": "Rozbrojenie",
-                "arm_home": "Uzbrojenie (w domu)",
-                "arm_away": "Uzbrojenie (nieobecny)",
-                "arm_night": "Uzbrojenie (noc)",
+                "disarm": "rozbrojenie",
+                "arm_home": "uzbrojenie (w domu)",
+                "arm_away": "uzbrojenie (nieobecny)",
+                "arm_night": "uzbrojenie (noc)",
                 "armed_custom_bypass": "Uzbrój (częściowo)",
                 "arm_custom_bypass": "Niestandardowy bypass"
             },

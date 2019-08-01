@@ -747,6 +747,33 @@
                         "device_tracker_picked": "Seguint dispositiu",
                         "device_tracker_pick": "Tria un dispositiu per fer-li el seguiment"
                     }
+                },
+                "server_control": {
+                    "caption": "Control del servidor",
+                    "description": "Reinicia o atura el servidor de Home Assistant",
+                    "section": {
+                        "validation": {
+                            "heading": "Validació de la configuració",
+                            "introduction": "Valida la configuració si recentment has fet algun canvi a la configuració i vols assegurar-te de que sigui vàlida.",
+                            "check_config": "Comprova la configuració",
+                            "valid": "Configuració vàlida!",
+                            "invalid": "Configuració invàlida"
+                        },
+                        "reloading": {
+                            "heading": "Tornant a carregar configuració",
+                            "introduction": "Algunes parts de la configuració de Home Assistant es poden recarregar sense necessitat de reiniciar. Els botons de sota esborraran la configuració antiga i en carregaran la nova.",
+                            "core": "Actualitza el nucli",
+                            "group": "Actualitza grups",
+                            "automation": "Actualitza automatismes",
+                            "script": "Actualitza programes"
+                        },
+                        "server_management": {
+                            "heading": "Gestió del servidor",
+                            "introduction": "Controla el servidor de Home Assistant... des de Home Assistant.",
+                            "restart": "Reinicia",
+                            "stop": "Atura"
+                        }
+                    }
                 }
             },
             "profile": {
