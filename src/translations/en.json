@@ -932,7 +932,9 @@
           "common": {
             "value": "Value",
             "instance": "Instance",
-            "index": "Index"
+            "index": "Index",
+            "unknown": "unknown",
+            "wakeup_interval": "Wakeup Interval"
           },
           "network_management": {
             "header": "Z-Wave Network Management",
@@ -945,6 +947,16 @@
             "network_started": "Z-Wave Network Started",
             "network_started_note_some_queried": "Awake nodes have been queried. Sleeping nodes will be queried when they wake.",
             "network_started_note_all_queried": "All nodes have been queried."
+          },
+          "node_config": {
+            "header": "Node Config Options",
+            "seconds": "seconds",
+            "set_wakeup": "Set Wakeup Interval",
+            "config_parameter": "Config Parameter",
+            "config_value": "Config Value",
+            "true": "True",
+            "false": "False",
+            "set_config_parameter": "Set Config Parameter"
           },
           "values": {
             "header": "Node Values"
