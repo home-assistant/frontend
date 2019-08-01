@@ -360,8 +360,8 @@
                                 "elevation_meters": "metriä",
                                 "time_zone": "Aikavyöhyke",
                                 "unit_system": "Yksikköjärjestelmä",
-                                "unit_system_imperial": "Imperial",
-                                "unit_system_metric": "Metrinen",
+                                "unit_system_imperial": "Brittiläinen yksikköjärjestelmä",
+                                "unit_system_metric": "Kansainvälinen yksikköjärjestelmä",
                                 "imperial_example": "Fahrenheit, paunaa",
                                 "metric_example": "Celsius, kilogrammat",
                                 "save_button": "Tallenna"
