@@ -320,7 +320,7 @@
                         "title": "Hendelser"
                     },
                     "templates": {
-                        "title": "Maler"
+                        "title": "Mal"
                     },
                     "mqtt": {
                         "title": "MQTT"
@@ -349,10 +349,10 @@
                 "introduction": "Her er det mulig å konfigurere dine komponenter og Home Assistant. Ikke alt er mulig å konfigurere fra brukergrensesnittet enda, men vi jobber med det.",
                 "core": {
                     "caption": "Generelt",
-                    "description": "Valider konfigurasjonsfilen din og kontroller serveren",
+                    "description": "Endre den generelle konfigurasjonen for Home Assistant",
                     "section": {
                         "core": {
-                            "header": "Konfigurasjon og serverkontroll",
+                            "header": "Generell konfigurasjon",
                             "introduction": "Endring av konfigurasjonen kan være en slitsom prosess, det vet vi. Denne delen vil forsøke å gjøre livet ditt litt lettere.",
                             "core_config": {
                                 "edit_requires_storage": "Redigering deaktivert da konfigurasjonen er lagret i configuration.yaml.",
@@ -746,6 +746,33 @@
                         "device_tracker_intro": "Velg enhetene som tilhører denne personen.",
                         "device_tracker_picked": "Spor enhet",
                         "device_tracker_pick": "Velg en enhet å spore"
+                    }
+                },
+                "server_control": {
+                    "caption": "Server-kontroll",
+                    "description": "Start på nytt og stopp Home Assistant-serveren",
+                    "section": {
+                        "validation": {
+                            "heading": "Validering av konfigurasjon",
+                            "introduction": "Valider konfigurasjonen hvis du nylig har gjort endringer i konfigurasjonen og vil forsikre deg om at det hele er gyldig",
+                            "check_config": "Sjekk konfigurasjonen",
+                            "valid": "Gyldig konfigurasjon",
+                            "invalid": "Ugyldig konfigurasjon"
+                        },
+                        "reloading": {
+                            "heading": "Konfigurasjon lastes på nytt",
+                            "introduction": "Noen deler av Home Assistant kan laste inn uten å kreve omstart. Hvis du trykker last på nytt, vil du bytte den nåværende konfigurasjonen med den nye.",
+                            "core": "Last inn kjernen på nytt",
+                            "group": "Last inn grupper på nytt",
+                            "automation": "Last inn automatiseringer på nytt",
+                            "script": "Last inn skript på nytt"
+                        },
+                        "server_management": {
+                            "heading": "Serveradministrasjon",
+                            "introduction": "Kontroller din Home Assistant server... fra Home Assistant.",
+                            "restart": "Omstart",
+                            "stop": "Stopp"
+                        }
                     }
                 }
             },
@@ -1329,7 +1356,7 @@
                 "none": "Ingen",
                 "eco": "Øko",
                 "away": "Borte",
-                "boost": "Turbo",
+                "boost": "Øke",
                 "comfort": "Komfort",
                 "home": "Hjem",
                 "sleep": "Sove",
