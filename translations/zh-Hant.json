@@ -349,10 +349,10 @@
                 "introduction": "此處為 Home Assistant 和元件相關配置區，目前尚未支援透過 UI 進行所有設定，我們正在努力改進中。",
                 "core": {
                     "caption": "一般設定",
-                    "description": "驗證設定內容及服務器控制",
+                    "description": "變更 Home Assistant 一般設定",
                     "section": {
                         "core": {
-                            "header": "設定和服務器控制",
+                            "header": "一般設定",
                             "introduction": "更改設定常是個惱人過程。此區域將盡可能協助您，讓事情變得更輕鬆一些。",
                             "core_config": {
                                 "edit_requires_storage": "由於 configuration.yaml 內已儲存設定，編輯功能已關閉。",
@@ -746,6 +746,33 @@
                         "device_tracker_intro": "選擇此人員所擁有的設備。",
                         "device_tracker_picked": "追蹤設備",
                         "device_tracker_pick": "選擇追蹤設備"
+                    }
+                },
+                "server_control": {
+                    "caption": "伺服器控制",
+                    "description": "重啟與停止 Home Assistant 伺服器",
+                    "section": {
+                        "validation": {
+                            "heading": "設定驗證",
+                            "introduction": "如果您對設定進行了一些更改、並且想確保設定有無錯誤，可以選擇驗證設定內容。",
+                            "check_config": "檢查設定內容",
+                            "valid": "設定檔內容檢查正確",
+                            "invalid": "設定無效"
+                        },
+                        "reloading": {
+                            "heading": "正在重新載入設定",
+                            "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。點選重新載入按鈕，即可重新載入最新設定。",
+                            "core": "重新載入核心設定",
+                            "group": "重新載入群組",
+                            "automation": "重新載入自動化",
+                            "script": "重新載入腳本"
+                        },
+                        "server_management": {
+                            "heading": "服務器管理",
+                            "introduction": "由 Home Assistant，控制 Home Assistant 伺服器。",
+                            "restart": "重啟",
+                            "stop": "停止"
+                        }
                     }
                 }
             },

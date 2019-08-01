@@ -15,6 +15,7 @@ import { configElementStyle } from "../config-elements/config-elements-style";
 
 import "../../components/hui-theme-select-editor";
 import { LovelaceViewConfig } from "../../../../data/lovelace";
+import { slugify } from "../../../../common/string/slugify";
 
 declare global {
   interface HASSDomEvents {
@@ -26,9 +27,10 @@ declare global {
 
 @customElement("hui-view-editor")
 export class HuiViewEditor extends LitElement {
-  @property() public hass?: HomeAssistant;
-
-  @property() private _config?: LovelaceViewConfig;
+  @property() public hass!: HomeAssistant;
+  @property() public isNew!: boolean;
+  @property() private _config!: LovelaceViewConfig;
+  private _suggestedPath = false;
 
   get _path(): string {
     if (!this._config) {
@@ -79,32 +81,33 @@ export class HuiViewEditor extends LitElement {
       <div class="card-config">
         <paper-input
           label="Title"
-          .value="${this._title}"
-          .configValue="${"title"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._title}
+          .configValue=${"title"}
+          @value-changed=${this._valueChanged}
+          @blur=${this._handleTitleBlur}
         ></paper-input>
         <paper-input
           label="Icon"
-          .value="${this._icon}"
-          .configValue="${"icon"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._icon}
+          .configValue=${"icon"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <paper-input
           label="URL Path"
-          .value="${this._path}"
-          .configValue="${"path"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._path}
+          .configValue=${"path"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <hui-theme-select-editor
-          .hass="${this.hass}"
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @theme-changed="${this._valueChanged}"
+          .hass=${this.hass}
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @theme-changed=${this._valueChanged}
         ></hui-theme-select-editor>
         <paper-toggle-button
-          ?checked="${this._panel !== false}"
-          .configValue="${"panel"}"
-          @change="${this._valueChanged}"
+          ?checked=${this._panel !== false}
+          .configValue=${"panel"}
+          @change=${this._valueChanged}
           >Panel Mode?</paper-toggle-button
         >
       </div>
@@ -112,10 +115,6 @@ export class HuiViewEditor extends LitElement {
   }
 
   private _valueChanged(ev: Event): void {
-    if (!this._config || !this.hass) {
-      return;
-    }
-
     const target = ev.currentTarget! as EditorTarget;
 
     if (this[`_${target.configValue}`] === target.value) {
@@ -133,6 +132,20 @@ export class HuiViewEditor extends LitElement {
     }
 
     fireEvent(this, "view-config-changed", { config: newConfig });
+  }
+
+  private _handleTitleBlur(ev) {
+    if (
+      !this.isNew ||
+      this._suggestedPath ||
+      this._config.path ||
+      !ev.currentTarget.value
+    ) {
+      return;
+    }
+
+    const config = { ...this._config, path: slugify(ev.currentTarget.value) };
+    fireEvent(this, "view-config-changed", { config });
   }
 }
 
