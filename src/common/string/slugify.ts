@@ -1,12 +1,12 @@
 // https://gist.github.com/hagemann/382adfc57adbd5af078dc93feef01fe1
-export const slugify = (string: string) => {
+export const slugify = (value: string) => {
   const a =
     "àáäâãåăæąçćčđďèéěėëêęğǵḧìíïîįłḿǹńňñòóöôœøṕŕřßşśšșťțùúüûǘůűūųẃẍÿýźžż·/_,:;";
   const b =
     "aaaaaaaaacccddeeeeeeegghiiiiilmnnnnooooooprrsssssttuuuuuuuuuwxyyzzz------";
   const p = new RegExp(a.split("").join("|"), "g");
 
-  return string
+  return value
     .toString()
     .toLowerCase()
     .replace(/\s+/g, "-") // Replace spaces with -
