@@ -93,6 +93,7 @@ export class HuiEditView extends LitElement {
       case "tab-settings":
         content = html`
           <hui-view-editor
+            .isNew=${this.viewIndex === undefined}
             .hass="${this.hass}"
             .config="${this._config}"
             @view-config-changed="${this._viewConfigChanged}"
