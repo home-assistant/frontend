@@ -747,6 +747,33 @@
                         "device_tracker_picked": "Verfolge Gerät",
                         "device_tracker_pick": "Wähle zu verfolgendes Gerät"
                     }
+                },
+                "server_control": {
+                    "caption": "Serversteuerung",
+                    "description": "Neustarten und Stoppen des Home Assistant-Servers",
+                    "section": {
+                        "validation": {
+                            "heading": "Konfiguration überprüfen",
+                            "introduction": "Überprüfe deine Konfiguration wenn du kürzlich Änderungen vorgenommen hast und sicherstellen möchtest, dass alle Änderungen gültig sind",
+                            "check_config": "Konfiguration prüfen",
+                            "valid": "Konfiguration in Ordnung",
+                            "invalid": "Konfiguration ungültig"
+                        },
+                        "reloading": {
+                            "heading": "Konfiguration neu laden",
+                            "introduction": "Einige Komponenten von Home Assistant können ohne einen Neustart neu geladen werden. \"Neu laden\" entlädt dabei die aktuelle Konfiguration und lädt die Neue.",
+                            "core": "Hauptsystem neu laden",
+                            "group": "Gruppen neu laden",
+                            "automation": "Automatisierungen neu laden",
+                            "script": "Skripte neu laden"
+                        },
+                        "server_management": {
+                            "heading": "Serververwaltung",
+                            "introduction": "Verwalte Home Assistant… von Home Assistant aus.",
+                            "restart": "Neu starten",
+                            "stop": "Stoppen"
+                        }
+                    }
                 }
             },
             "profile": {

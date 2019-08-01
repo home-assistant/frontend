@@ -747,6 +747,33 @@
                         "device_tracker_picked": "Sledi Napravi",
                         "device_tracker_pick": "Izberite napravo za sledenje"
                     }
+                },
+                "server_control": {
+                    "caption": "Nadzor strežnika",
+                    "description": "Znova zaženite in ustavite strežnik Home Assistant",
+                    "section": {
+                        "validation": {
+                            "heading": "Preverjanje konfiguracije",
+                            "introduction": "Potrdite svojo konfiguracijo, če ste nedavno spremenili svojo konfiguracijo in se prepričajte, da je vse veljavno",
+                            "check_config": "Preverite nastavitve",
+                            "valid": "Konfiguracija veljavna!",
+                            "invalid": "Konfiguracija ni veljavna"
+                        },
+                        "reloading": {
+                            "heading": "Ponovno nalaganje konfiguracije",
+                            "introduction": "Nekateri deli Home Assistanta se lahko znova naložijo brez potrebe po ponovnem zagonu. S pritiskom na \"ponovno naloži\" se bo naložila nova konfiguracija",
+                            "core": "Ponovno naloži jedro",
+                            "group": "Ponovno naloži skupine",
+                            "automation": "Ponovno naloži avtomatizacije",
+                            "script": "Ponovno naloži skripte"
+                        },
+                        "server_management": {
+                            "heading": "Upravljanje strežnika",
+                            "introduction": "Nadzirajte strežnik Home Assistant ... iz Home Assistant-a",
+                            "restart": "Ponovni zagon",
+                            "stop": "Ustavi"
+                        }
+                    }
                 }
             },
             "profile": {
