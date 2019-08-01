@@ -42,8 +42,9 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
     this._config = config;
 
-    if(this.connection)
+    if (this.connection) {
       this.connection();
+    }
     this.connection = null;
   }
 
@@ -56,6 +57,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         {
           type: "render_template",
           template: this._config.content,
+          entity_ids: this._config.entity_id,
         }
       ).then((con) => this.connection = con);
     }
