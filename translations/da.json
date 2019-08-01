@@ -349,7 +349,7 @@
                 "introduction": "Her er det muligt at konfigurere dine komponenter og Home Assistant. Ikke alt er muligt at konfigurere fra brugergrænsefladen endnu, men vi arbejder på det.",
                 "core": {
                     "caption": "Generelt",
-                    "description": "Valider din konfigurationsfil og kontroller serveren",
+                    "description": "Valider din konfigurationsfil og administrer serveren",
                     "section": {
                         "core": {
                             "header": "Konfiguration og server kontrol",
@@ -746,6 +746,33 @@
                         "device_tracker_intro": "Vælg de enheder, der tilhører denne person.",
                         "device_tracker_picked": "Spor enhed",
                         "device_tracker_pick": "Vælg en enhed, der skal spores"
+                    }
+                },
+                "server_control": {
+                    "caption": "Serveradministration",
+                    "description": "Genstart og stop Home Assistant serveren",
+                    "section": {
+                        "validation": {
+                            "heading": "Validering af konfiguration",
+                            "introduction": "Valider din konfiguration, hvis du for nylig har foretaget nogle ændringer i din konfiguration og vil sikre dig, at den er gyldig",
+                            "check_config": "Tjek konfiguration",
+                            "valid": "Konfiguration gyldig!",
+                            "invalid": "Konfiguration ugyldig"
+                        },
+                        "reloading": {
+                            "heading": "Genindlæser konfiguration",
+                            "introduction": "Nogle dele af Home Assistant kan genindlæses uden en genstart. Tryk på genindlæs for at aflæse den nuværende konfiguration og indlæse den nye.",
+                            "core": "Genindlæs system",
+                            "group": "Genindlæs grupper",
+                            "automation": "Genindlæs automatiseringer",
+                            "script": "Genindlæs scripts"
+                        },
+                        "server_management": {
+                            "heading": "Serveradministration",
+                            "introduction": "Administrer din Home Assistant server... fra Home Assistant.",
+                            "restart": "Genstart",
+                            "stop": "Stop"
+                        }
                     }
                 }
             },

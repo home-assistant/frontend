@@ -747,6 +747,33 @@
                         "device_tracker_picked": "Rastrear dispositivo",
                         "device_tracker_pick": "Seleccionar dispositivo para rastrear"
                     }
+                },
+                "server_control": {
+                    "caption": "Control del servidor",
+                    "description": "Reinicia y detiene el servidor de Home Assistant",
+                    "section": {
+                        "validation": {
+                            "heading": "Validación de la configuración",
+                            "introduction": "Valida tu configuración si has realizado cambios recientemente y quieres asegurarte de que son correctos",
+                            "check_config": "Verificar la configuración",
+                            "valid": "¡Configuración valida!",
+                            "invalid": "Configuración no válida"
+                        },
+                        "reloading": {
+                            "heading": "Recargando la configuración",
+                            "introduction": "Algunas partes de Home Assistant pueden recargarse sin necesidad de reiniciar. Al pulsar en recargar se descartará la configuración actual y se cargará la nueva.",
+                            "core": "Recargar núcleo",
+                            "group": "Recargar grupos",
+                            "automation": "Recargar automatizaciones",
+                            "script": "Recargar los scripts"
+                        },
+                        "server_management": {
+                            "heading": "Gestión del servidor",
+                            "introduction": "Controla tu servidor de Home Assistant ... desde Home Assistant.",
+                            "restart": "Reiniciar",
+                            "stop": "Detener"
+                        }
+                    }
                 }
             },
             "profile": {
