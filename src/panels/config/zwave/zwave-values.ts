@@ -104,12 +104,12 @@ export class ZwaveValues extends LitElement {
   }
 
   private _computeCaption(item) {
-    let html = `${item.value.label}`;
-    html += ` (${this.hass.localize("ui.panel.config.zwave.common.instance")}:`;
-    html += ` ${item.value.instance},`;
-    html += ` ${this.hass.localize("ui.panel.config.zwave.common.index")}:`;
-    html += ` ${item.value.index})`;
-    return html;
+    let out = `${item.value.label}`;
+    out += ` (${this.hass.localize("ui.panel.config.zwave.common.instance")}:`;
+    out += ` ${item.value.instance},`;
+    out += ` ${this.hass.localize("ui.panel.config.zwave.common.index")}:`;
+    out += ` ${item.value.index})`;
+    return out;
   }
 }
 
