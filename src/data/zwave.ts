@@ -5,10 +5,13 @@ export interface ZWaveNetworkStatus {
 }
 
 export interface ZWaveValue {
-  index: number;
-  instance: number;
-  label: string;
-  poll_intensity: number;
+  key: number;
+  value: {
+    index: number;
+    instance: number;
+    label: string;
+    poll_intensity: number;
+  };
 }
 
 export interface ZWaveConfigItem {
