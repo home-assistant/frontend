@@ -23,7 +23,7 @@ import { ZWaveValue } from "../../../data/zwave";
 @customElement("zwave-values")
 export class ZwaveValues extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() private _values: ZWaveValue[] = [];
+  @property() public values: ZWaveValue[] = [];
   @property() private _selectedValue: number = -1;
 
   protected render(): TemplateResult | void {
@@ -34,7 +34,7 @@ export class ZwaveValues extends LitElement {
         >
           <div class="device-picker">
             <paper-dropdown-menu
-              label=${this.hass.localize("ui.panel.config.zwave.common.value")}
+              .label=${this.hass.localize("ui.panel.config.zwave.common.value")}
               dynamic-align
               class="flex"
             >
@@ -42,19 +42,11 @@ export class ZwaveValues extends LitElement {
                 slot="dropdown-content"
                 .selected=${this._selectedValue}
               >
-                ${this._values.map(
+                ${this.values.map(
                   (item) => html`
-                    <paper-item
-                      >${item.label}
-                      (${this.hass.localize(
-                        "ui.panel.config.zwave.common.instance"
-                      )}:
-                      ${item.instance},
-                      ${this.hass.localize(
-                        "ui.panel.config.zwave.common.index"
-                      )}:
-                      ${item.index})</paper-item
-                    >
+                    <paper-item>
+                      ${this._computeCaption(item)}
+                    </paper-item>
                   `
                 )}
               </paper-listbox>
@@ -109,6 +101,15 @@ export class ZwaveValues extends LitElement {
         }
       `,
     ];
+  }
+
+  private _computeCaption(item) {
+    let out = `${item.value.label}`;
+    out += ` (${this.hass.localize("ui.panel.config.zwave.common.instance")}:`;
+    out += ` ${item.value.instance},`;
+    out += ` ${this.hass.localize("ui.panel.config.zwave.common.index")}:`;
+    out += ` ${item.value.index})`;
+    return out;
   }
 }
 
