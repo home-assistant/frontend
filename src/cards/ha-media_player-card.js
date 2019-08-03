@@ -317,6 +317,10 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   computeBannerClasses(playerObj, coverShowing, coverLoadError) {
     var cls = "banner";
 
+    if (!playerObj) {
+      return cls;
+    }
+
     if (playerObj.isOff || playerObj.isIdle) {
       cls += " is-off no-cover";
     } else if (
