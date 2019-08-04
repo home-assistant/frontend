@@ -63,6 +63,10 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
       `;
     }
 
+    return this.template(stateObj);
+  }
+
+  protected template(stateObj): TemplateResult {
     return html`
       <state-badge .stateObj="${stateObj}"></state-badge>
       <ha-paper-dropdown-menu

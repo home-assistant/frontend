@@ -45,14 +45,38 @@ class HuiGenericEntityRow extends LitElement {
       `;
     }
 
+    return this.template(stateObj);
+  }
+
+  protected template(stateObj): TemplateResult {
     return html`
-      <state-badge
-        .hass=${this.hass}
-        .stateObj=${stateObj}
-        .overrideIcon=${this.config.icon}
-      ></state-badge>
+      ${this.stateBadgeTemplate(stateObj)}
       <div class="flex">
         <div class="info">
+          ${this.infoTemplate(stateObj)}
+        </div>
+
+        <slot></slot>
+      </div>
+    `;
+  }
+
+  protected stateBadgeTemplate(stateObj): TemplateResult {
+    return !this.config
+      ? html``
+      : html`
+          <state-badge
+            .hass=${this.hass}
+            .stateObj=${stateObj}
+            .overrideIcon=${this.config.icon}
+          ></state-badge>
+        `;
+  }
+
+  protected infoTemplate(stateObj): TemplateResult {
+    return !this.config
+      ? html``
+      : html`
           ${this._computeName(stateObj)}
           <div class="secondary">
             ${!this.showSecondary
@@ -70,11 +94,7 @@ class HuiGenericEntityRow extends LitElement {
                 `
               : ""}
           </div>
-        </div>
-
-        <slot></slot>
-      </div>
-    `;
+        `;
   }
 
   protected updated(changedProps: PropertyValues): void {

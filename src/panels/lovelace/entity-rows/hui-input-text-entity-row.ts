@@ -52,6 +52,10 @@ class HuiInputTextEntityRow extends LitElement implements EntityRow {
       `;
     }
 
+    return this.template(stateObj);
+  }
+
+  protected template(stateObj): TemplateResult {
     return html`
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         <paper-input
