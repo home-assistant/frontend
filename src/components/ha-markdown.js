@@ -6,8 +6,10 @@ let loaded = null;
 /**
  * White list allowed svg tag.
  * Only put in the tag used in QR code, can be extend in future.
+ * Also white list ha-icon.
+ *
  */
-const svgWhiteList = ["svg", "path"];
+const svgWhiteList = ["svg", "path", "ha-icon"];
 
 /*
  * @appliesMixin EventsMixin
