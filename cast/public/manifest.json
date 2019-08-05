@@ -1,0 +1,18 @@
+{
+  "background_color": "#FFFFFF",
+  "description": "Show Home Assistant on your Chromecast or Google Assistant devices with a screen.",
+  "dir": "ltr",
+  "display": "standalone",
+  "icons": [
+    {
+      "src": "/images/ha-cast-icon.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "lang": "en-US",
+  "name": "Home Assistant Cast",
+  "short_name": "HA Cast",
+  "start_url": "/?homescreen=1",
+  "theme_color": "#03A9F4"
+}

@@ -349,10 +349,10 @@
                 "introduction": "여기에서 구성요소와  Home Assistant 를 설정 할 수 있습니다. 아직 여기서 모두 설정 할 수는 없지만, 모든 내용을 설정 할 수 있도록 작업 중입니다.",
                 "core": {
                     "caption": "일반",
-                    "description": "구성 내용 파일의 유효성을 검사하고 서버를 제어합니다",
+                    "description": "Home Assistant 일반 구성 내용을 편집합니다",
                     "section": {
                         "core": {
-                            "header": "구성 내용 설정 및 서버 제어",
+                            "header": "일반 구성",
                             "introduction": "구성 내용의 설정을 변경하는 것은 때때로 난해하고 귀찮은 작업입니다. 여기서 설정 변경을 좀 더 쉽게 하실 수 있습니다.",
                             "core_config": {
                                 "edit_requires_storage": "구성내용이 configuration.yaml 에 저장되어 있기 때문에 편집기가 비활성화 되었습니다.",
@@ -373,14 +373,14 @@
                         "server_control": {
                             "validation": {
                                 "heading": "구성 내용 유효성 검사",
-                                "introduction": "최근에 구성 내용을 추가 혹은 변경하셨다면, 설정 확인 버튼을 눌러 구성 내용이 올바른지 검사하고 Home Assistant 가 정상 작동 되는지 확인하실 수 있습니다.",
-                                "check_config": "설정 확인",
+                                "introduction": "최근에 구성 내용을 추가 혹은 변경하셨다면, 구성 내용 확인 버튼을 눌러 구성 내용이 올바른지 검사하고 Home Assistant 가 정상 작동 되는지 확인하실 수 있습니다.",
+                                "check_config": "구성 내용 확인",
                                 "valid": "구성 내용이 모두 올바릅니다!",
                                 "invalid": "구성 내용이 잘못되었습니다"
                             },
                             "reloading": {
                                 "heading": "구성 내용 새로고침",
-                                "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어들일 수 있습니다. 새로고침을 누르면 현재 구성 내용을 내리고 새로운 구성 내용을 읽어들입니다",
+                                "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어들일 수 있습니다. 새로고침을 누르면 현재 구성 내용을 내리고 새로운 구성 내용을 읽어들입니다.",
                                 "core": "코어 새로고침",
                                 "group": "그룹 새로고침",
                                 "automation": "자동화 새로고침",
@@ -388,7 +388,7 @@
                             },
                             "server_management": {
                                 "heading": "서버 관리",
-                                "introduction": "Home Assistant 서버를 제어합니다",
+                                "introduction": "Home Assistant 서버를 제어합니다.",
                                 "restart": "재시작",
                                 "stop": "중지"
                             }
@@ -620,10 +620,22 @@
                     "common": {
                         "value": "값",
                         "instance": "인스턴스",
-                        "index": "색인"
+                        "index": "색인",
+                        "unknown": "알 수 없슴",
+                        "wakeup_interval": "절전 모드 해제 간격"
                     },
                     "values": {
                         "header": "노드 값"
+                    },
+                    "node_config": {
+                        "header": "노드 구성 옵션",
+                        "seconds": "초",
+                        "set_wakeup": "절전 모드 해제 간격 설정",
+                        "config_parameter": "구성 파라메터",
+                        "config_value": "구성 값",
+                        "true": "참",
+                        "false": "거짓",
+                        "set_config_parameter": "구성 파라메터 설정"
                     }
                 },
                 "users": {
@@ -746,6 +758,33 @@
                         "device_tracker_intro": "이 구성원에게 속한 장치를 선택해주세요.",
                         "device_tracker_picked": "장치 추적 대상",
                         "device_tracker_pick": "추적 할 장치 선택"
+                    }
+                },
+                "server_control": {
+                    "caption": "서버 제어",
+                    "description": "Home Assistant 서버를 재시작 또는 중지합니다",
+                    "section": {
+                        "validation": {
+                            "heading": "구성 내용 유효성 검사",
+                            "introduction": "최근에 구성 내용을 추가 혹은 변경하셨다면, 구성 내용 확인 버튼을 눌러 구성 내용이 올바른지 검사하고 Home Assistant 가 정상 작동 되는지 확인하실 수 있습니다.",
+                            "check_config": "구성 내용 확인",
+                            "valid": "구성 내용이 모두 올바릅니다!",
+                            "invalid": "구성 내용이 잘못되었습니다"
+                        },
+                        "reloading": {
+                            "heading": "구성 내용 새로고침",
+                            "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어들일 수 있습니다. 새로고침을 누르면 현재 구성 내용을 내리고 새로운 구성 내용을 읽어들입니다.",
+                            "core": "코어 새로고침",
+                            "group": "그룹 새로고침",
+                            "automation": "자동화 새로고침",
+                            "script": "스크립트 새로 고침"
+                        },
+                        "server_management": {
+                            "heading": "서버 관리",
+                            "introduction": "Home Assistant 서버를 제어합니다.",
+                            "restart": "재시작",
+                            "stop": "중지"
+                        }
                     }
                 }
             },
@@ -1230,8 +1269,8 @@
             }
         },
         "notification_toast": {
-            "entity_turned_on": " {entity}이(가) 켜졌습니다.",
-            "entity_turned_off": " {entity}이(가) 꺼졌습니다.",
+            "entity_turned_on": "{entity} 이(가) 켜졌습니다.",
+            "entity_turned_off": "{entity} 이(가) 꺼졌습니다.",
             "service_called": "{service} 서비스가 호출되었습니다.",
             "service_call_failed": "{service} 서비스를 호출하지 못했습니다.",
             "connection_lost": "서버와 연결이 끊어졌습니다. 다시 연결 중..."
@@ -1262,7 +1301,7 @@
             "confirm": "로그인 저장하기"
         },
         "notification_drawer": {
-            "click_to_configure": "버튼을 클릭하여 구성하세요 {entity}",
+            "click_to_configure": "버튼을 클릭하여 {entity} 을(를) 구성",
             "empty": "알림 없음",
             "title": "알림"
         }
