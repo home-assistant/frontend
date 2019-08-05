@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Home Assistant Cast - FAQ</title>
+    <link rel="icon" href="/images/ha-cast-icon.png" type="image/png" />
+    <%= renderTemplate('_style_base') %>
+    <style>
+      body {
+        background-color: #e5e5e5;
+      }
+    </style>
+    <meta property="fb:app_id" content="338291289691179" />
+    <meta property="og:title" content="FAQ - Home Assistant Cast" />
+    <meta property="og:site_name" content="Home Assistant Cast" />
+    <meta property="og:url" content="https://cast.home-assistant.io/" />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:description"
+      content="Frequently asked questions about Home Assistant Cast."
+    />
+    <meta
+      property="og:image"
+      content="https://cast.home-assistant.io/images/google-nest-hub.png"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@home_assistant" />
+    <meta name="twitter:title" content="FAQ - Home Assistant Cast" />
+    <meta
+      name="twitter:description"
+      content="Frequently asked questions about Home Assistant Cast."
+    />
+    <meta
+      name="twitter:image"
+      content="https://cast.home-assistant.io/images/google-nest-hub.png"
+    />
+  </head>
+  <body>
+    <%= renderTemplate('_js_base') %>
+
+    <script type="module" crossorigin="use-credentials">
+      import "<%= latestLauncherJS %>";
+    </script>
+
+    <script nomodule>
+      (function() {
+        // // Safari 10.1 supports type=module but ignores nomodule, so we add this check.
+        if (!isS101) {
+          _ls("/static/polyfills/custom-elements-es5-adapter.js");
+          _ls("<%= es5LauncherJS %>");
+        }
+      })();
+    </script>
+
+    <hc-layout subtitle="FAQ">
+      <style>
+        a {
+          color: var(--primary-color);
+        }
+      </style>
+      <div class="card-content">
+        <p><a href="/">&laquo; Back to Home Assistant Cast</a></p>
+      </div>
+
+      <div class="section-header">What is Home Assistant Cast?</div>
+      <div class="card-content">
+        <p>
+          Home Assistant Cast allows you to show your Home Assistant data on a
+          Chromecast device and allows you to interact with Home Assistant on
+          Google Assistant devices with a screen.
+        </p>
+      </div>
+
+      <div class="section-header">
+        What are the Home Assistant Cast requirements?
+      </div>
+      <div class="card-content">
+        <p>
+          Home Assistant Cast requires a Home Assistant installation that is
+          accessible via HTTPS (the url starts with "https://").
+        </p>
+      </div>
+
+      <div class="section-header">What is Home Assistant?</div>
+      <div class="card-content">
+        <p>
+          Home Assistant is worlds biggest open source home automation platform
+          with a focus on privacy and local control. You can install Home
+          Assistant for free.
+        </p>
+        <p>
+          <a href="https://www.home-assistant.io" target="_blank"
+            >Visit the Home Assistant website.</a
+          >
+        </p>
+      </div>
+
+      <div class="section-header" id="https">
+        Why does my Home Assistant needs to be served using HTTPS?
+      </div>
+      <div class="card-content">
+        <p>
+          The Chromecast only works with websites served over HTTPS. This means
+          that the Home Assistant Cast app that runs on your Chromecast is
+          served over HTTPS. Websites served over HTTPS are restricted on what
+          content can be accessed on websites served over HTTP. This is called
+          mixed active content (<a
+            href="https://developer.mozilla.org/en-US/docs/Web/Security/Mixed_content#Mixed_active_content"
+            target="_blank"
+            >learn more @ MDN</a
+          >).
+        </p>
+        <p>
+          The easiest way to get your Home Assistant installation served over
+          HTTPS is by signing up for
+          <a href="https://www.nabucasa.com" target="_blank"
+            >Home Assistant Cloud by Nabu Casa</a
+          >.
+        </p>
+      </div>
+
+      <div class="section-header">How does Home Assistant Cast work?</div>
+      <div class="card-content">
+        <p>
+          Home Assistant Cast is a receiver application for the Chromecast. When
+          loaded, it will make a direct connection to your Home Assistant
+          instance.
+        </p>
+        <p>
+          Home Assistant Cast is able to render any of your Lovelace views on
+          your Chromecast. Things that work in Lovelace in Home Assistant will
+          work in Home Assistant Cast:
+        </p>
+        <ul>
+          <li>Render Lovelace views, including custom cards</li>
+          <li>
+            Real-time data stream will ensure the UI always shows the latest
+            state of your house
+          </li>
+          <li>Navigate between views using navigate actions or weblinks</li>
+          <li>
+            Instant updates of the casted Lovelace UI when you update your
+            Lovelace configuration.
+          </li>
+        </ul>
+        <p>Things that currently do not work:</p>
+        <ul>
+          <li>
+            Live videostreams using the streaming integration
+          </li>
+          <li>Specifying a view with a single card with "panel: true".</li>
+        </ul>
+      </div>
+
+      <div class="section-header" id="https">
+        How do I change what is shown on my Chromecast?
+      </div>
+      <div class="card-content">
+        <p>
+          Home Assistant Cast allows you to show your Lovelace view on your
+          Chromecast. So to edit what is shown, you need to edit your Lovelace
+          UI.
+        </p>
+        <p>
+          To edit your Lovelace UI, open Home Assistant, click on the three-dot
+          menu in the top right and click on "Configure UI".
+        </p>
+      </div>
+
+      <div class="section-header" id="browser">
+        What browsers are supported?
+      </div>
+      <div class="card-content">
+        <p>
+          Chromecast is a technology developed by Google, and is available on:
+        </p>
+        <ul>
+          <li>Google Chrome (all platforms except on iOS)</li>
+          <li>
+            Microsoft Edge (all platforms,
+            <a href="https://www.microsoftedgeinsider.com" target="_blank"
+              >dev and canary builds only</a
+            >)
+          </li>
+        </ul>
+      </div>
+
+      <div class="section-header">Why do some custom cards not work?</div>
+      <div class="card-content">
+        <p>
+          Home Assistant needs to be configured to allow Home Assistant Cast to
+          load custom cards. Starting with Home Assistant 0.97, this is done
+          automatically. If you are on an older version, or have manually
+          configured CORS for the HTTP integration, add the following to your
+          configuration.yaml file:
+        </p>
+        <pre>
+http:
+  cors_allowed_origins:
+    - https://cast.home-assistant.io</pre
+        >
+        <p>
+          Some custom cards rely on things that are only available in the normal
+          Home Assistant interface. This requires an update by the custom card
+          developer.
+        </p>
+        <p>
+          If you're a custom card developer: the most common mistake is that
+          LitElement is extracted from an element that is not available on the
+          page.
+        </p>
+      </div>
+    </hc-layout>
+
+    <script>
+      var _gaq = [["_setAccount", "UA-57927901-9"], ["_trackPageview"]];
+      (function(d, t) {
+        var g = d.createElement(t),
+          s = d.getElementsByTagName(t)[0];
+        g.src =
+          ("https:" == location.protocol ? "//ssl" : "//www") +
+          ".google-analytics.com/ga.js";
+        s.parentNode.insertBefore(g, s);
+      })(document, "script");
+    </script>
+  </body>
+</html>

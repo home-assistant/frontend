@@ -617,10 +617,21 @@
                     "common": {
                         "value": "Érték",
                         "instance": "Példány",
-                        "index": "Index"
+                        "index": "Index",
+                        "unknown": "Ismeretlen",
+                        "wakeup_interval": "Ébresztési időköz"
                     },
                     "values": {
                         "header": "Csomópont értékek"
+                    },
+                    "node_config": {
+                        "seconds": "másodperc",
+                        "set_wakeup": "Ébresztési időköz beállítása",
+                        "config_parameter": "Konfigurációs paraméter",
+                        "config_value": "Konfigurációs érték",
+                        "true": "Igaz",
+                        "false": "Hamis",
+                        "set_config_parameter": "Konfigurációs paraméter beállítása"
                     }
                 },
                 "users": {
@@ -743,6 +754,33 @@
                         "device_tracker_intro": "Válaszd ki azokat az eszközöket, amelyek ehhez a felhasználóhoz tartoznak.",
                         "device_tracker_picked": "Eszköz követése",
                         "device_tracker_pick": "Válassz egy követni kívánt eszközt"
+                    }
+                },
+                "server_control": {
+                    "caption": "Szerver vezérlés",
+                    "description": "A Home Assistant szerver újraindítása és leállítása",
+                    "section": {
+                        "validation": {
+                            "heading": "Konfiguráció érvényesítés",
+                            "introduction": "Érvényesítsd a konfigurációt, ha nemrégiben módosítottad azt, és meg szeretnél bizonyosodni róla, hogy minden érvényes",
+                            "check_config": "Konfiguráció ellenőrzése",
+                            "valid": "Érvényes konfiguráció!",
+                            "invalid": "Érvénytelen konfiguráció"
+                        },
+                        "reloading": {
+                            "heading": "Konfiguráció újratöltés",
+                            "introduction": "A Home Assistant bizonyos részei újraindítás nélkül újratölthetőek. Az újratöltés az aktuális konfiguráció helyére betölti az újat.",
+                            "core": "Mag újratöltése",
+                            "group": "Csoportok újratöltése",
+                            "automation": "Automatizálások újratöltése",
+                            "script": "Szkriptek újratöltése"
+                        },
+                        "server_management": {
+                            "heading": "Szerver menedzsment",
+                            "introduction": "Home Assistant szerver vezérlése... a Home Assistant-ból.",
+                            "restart": "Újraindítás",
+                            "stop": "Leállítás"
+                        }
                     }
                 }
             },

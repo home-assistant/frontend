@@ -23,6 +23,9 @@ export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
               entity: "switch.wemoporch",
             },
             "light.lifx5",
+            {
+              type: "custom:cast-demo-row",
+            },
           ],
         },
         {

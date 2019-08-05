@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Home Assistant Cast</title>
+    <link rel="manifest" href="/manifest.json" />
+    <link rel="icon" href="/images/ha-cast-icon.png" type="image/png" />
+    <%= renderTemplate('_style_base') %>
+    <style>
+      body {
+        background-color: #e5e5e5;
+      }
+    </style>
+    <meta property="fb:app_id" content="338291289691179">
+    <meta property="og:title" content="Home Assistant Cast">
+    <meta property="og:site_name" content="Home Assistant Cast">
+    <meta property="og:url" content="https://cast.home-assistant.io/">
+    <meta property="og:type" content="website">
+    <meta property="og:description" content="Show Home Assistant on your Chromecast or Google Assistant devices with a screen.">
+    <meta property="og:image" content="https://cast.home-assistant.io/images/google-nest-hub.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:site" content="@home_assistant">
+    <meta name="twitter:title" content="Home Assistant Cast">
+    <meta name="twitter:description" content="Show Home Assistant on your Chromecast or Google Assistant devices with a screen.">
+    <meta name="twitter:image" content="https://cast.home-assistant.io/images/google-nest-hub.png">
+  </head>
+  <body>
+    <%= renderTemplate('_js_base') %>
+
+    <hc-connect></hc-connect>
+
+    <script type="module" crossorigin="use-credentials">
+      import "<%= latestLauncherJS %>";
+    </script>
+
+    <script nomodule>
+      (function() {
+        // // Safari 10.1 supports type=module but ignores nomodule, so we add this check.
+        if (!isS101) {
+          _ls("/static/polyfills/custom-elements-es5-adapter.js");
+          _ls("<%= es5LauncherJS %>");
+        }
+      })();
+    </script>
+    <script>
+    var _gaq=[['_setAccount','UA-57927901-9'],['_trackPageview']];
+    (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];
+    g.src=('https:'==location.protocol?'//ssl':'//www')+'.google-analytics.com/ga.js';
+    s.parentNode.insertBefore(g,s)}(document,'script'));
+    </script>
+  </body>
+</html>
