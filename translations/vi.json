@@ -593,7 +593,9 @@
                     "caption": "Z-Wave",
                     "description": "Quản lý mạng Z-Wave",
                     "services": {
-                        "save_config": "Lưu cấu hình"
+                        "soft_reset": "Khởi động lại",
+                        "save_config": "Lưu cấu hình",
+                        "cancel_command": "Hủy lệnh"
                     },
                     "common": {
                         "value": "Giá trị",
@@ -707,6 +709,24 @@
                         "device_tracker_intro": "Chọn các thiết bị thuộc về người này.",
                         "device_tracker_picked": "Thiết bị theo dõi",
                         "device_tracker_pick": "Chọn thiết bị để theo dõi"
+                    }
+                },
+                "server_control": {
+                    "section": {
+                        "validation": {
+                            "heading": "Xác nhận cấu hình",
+                            "introduction": "Xác thực cấu hình của bạn nếu gần đây bạn đã thực hiện một số thay đổi đối với cấu hình của bạn và muốn đảm bảo rằng nó là hợp lệ",
+                            "check_config": "Kiểm tra cấu hình",
+                            "valid": "Cấu hình hợp lệ!",
+                            "invalid": "Cấu hình không hợp lệ"
+                        },
+                        "reloading": {
+                            "heading": "Nạp lại Cấu hình ",
+                            "introduction": "Một số phần của Home Assistant có thể tải lại mà không yêu cầu khởi động lại. Nhấn nút tải lại sẽ gỡ bỏ cấu hình hiện tại của nó và tải một cấu hình mới.",
+                            "core": "Tải lại lõi",
+                            "group": "Tải lại nhóm",
+                            "automation": "Tải lại Tự động hóa"
+                        }
                     }
                 }
             },

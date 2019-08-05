@@ -461,7 +461,16 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Z-Wave ağınızı yönetin"
+                    "description": "Z-Wave ağınızı yönetin",
+                    "node_config": {
+                        "seconds": "Saniye",
+                        "set_wakeup": "Uyandırma Aralığı Ayarla",
+                        "config_parameter": "Yapılandırma Parametresi",
+                        "config_value": "Yapılandırma Değeri",
+                        "true": "Doğru",
+                        "false": "Yanlış",
+                        "set_config_parameter": "Yapılandırma parametresini belirle"
+                    }
                 },
                 "users": {
                     "caption": "Kullanıcılar",
@@ -504,6 +513,13 @@
                 "zha": {
                     "caption": "ZHA",
                     "description": "Zigbee Ev Otomasyonu ağ yönetimi"
+                },
+                "server_control": {
+                    "section": {
+                        "server_management": {
+                            "restart": "Yeniden başlat"
+                        }
+                    }
                 }
             },
             "profile": {
