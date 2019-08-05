@@ -53,7 +53,7 @@ class HuiGenericEntityRow extends LitElement {
       ></state-badge>
       <div class="flex">
         <div class="info">
-          ${this.config.name || computeStateName(stateObj)}
+          ${this._computeName(stateObj)}
           <div class="secondary">
             ${!this.showSecondary
               ? html`
@@ -131,6 +131,10 @@ class HuiGenericEntityRow extends LitElement {
         margin-right: 8px;
       }
     `;
+  }
+
+  private _computeName(stateObj): string {
+    return !this.config ? "" : this.config.name || computeStateName(stateObj);
   }
 }
 customElements.define("hui-generic-entity-row", HuiGenericEntityRow);

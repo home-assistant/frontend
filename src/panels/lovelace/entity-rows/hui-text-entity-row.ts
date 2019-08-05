@@ -57,11 +57,7 @@ class HuiTextEntityRow extends LitElement implements EntityRow {
     return html`
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         <div>
-          ${computeStateDisplay(
-            this.hass!.localize,
-            stateObj,
-            this.hass.language
-          )}
+          ${this._computeState(stateObj)}
         </div>
       </hui-generic-entity-row>
     `;
@@ -73,6 +69,12 @@ class HuiTextEntityRow extends LitElement implements EntityRow {
         text-align: right;
       }
     `;
+  }
+
+  private _computeState(stateObj): string {
+    return !this.hass
+      ? ""
+      : computeStateDisplay(this.hass!.localize, stateObj, this.hass.language);
   }
 }
 

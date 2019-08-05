@@ -65,11 +65,7 @@ class HuiGroupEntityRow extends LitElement implements EntityRow {
             `
           : html`
               <div>
-                ${computeStateDisplay(
-                  this.hass!.localize,
-                  stateObj,
-                  this.hass.language
-                )}
+                ${this._computeState(stateObj)}
               </div>
             `}
       </hui-generic-entity-row>
@@ -80,6 +76,12 @@ class HuiGroupEntityRow extends LitElement implements EntityRow {
     return entityIds.some((entityId) =>
       DOMAINS_TOGGLE.has(entityId.split(".", 1)[0])
     );
+  }
+
+  private _computeState(stateObj): string {
+    return !this.hass
+      ? ""
+      : computeStateDisplay(this.hass!.localize, stateObj, this.hass.language);
   }
 }
 

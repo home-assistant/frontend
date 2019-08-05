@@ -64,15 +64,17 @@ class HuiToggleEntityRow extends LitElement implements EntityRow {
             `
           : html`
               <div>
-                ${computeStateDisplay(
-                  this.hass!.localize,
-                  stateObj,
-                  this.hass!.language
-                )}
+                ${this._computeState(stateObj)}
               </div>
             `}
       </hui-generic-entity-row>
     `;
+  }
+
+  private _computeState(stateObj): string {
+    return !this.hass
+      ? ""
+      : computeStateDisplay(this.hass!.localize, stateObj, this.hass.language);
   }
 }
 

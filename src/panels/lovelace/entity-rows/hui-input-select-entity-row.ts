@@ -66,7 +66,7 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
     return html`
       <state-badge .stateObj="${stateObj}"></state-badge>
       <ha-paper-dropdown-menu
-        .label=${this._config.name || computeStateName(stateObj)}
+        .label=${this._computeName(stateObj)}
         .value=${stateObj.state}
         @iron-select=${this._selectedChanged}
         @click=${stopPropagation}
@@ -131,6 +131,10 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
     forwardHaptic("light");
 
     setInputSelectOption(this.hass!, stateObj.entity_id, option);
+  }
+
+  private _computeName(stateObj): string {
+    return !this._config ? "" : this._config.name || computeStateName(stateObj);
   }
 }
 
