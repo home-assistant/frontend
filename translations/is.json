@@ -560,6 +560,9 @@
                         "soft_reset": "Mjúk endurstilling",
                         "save_config": "Vista stillingar",
                         "cancel_command": "Hætta við skipun"
+                    },
+                    "node_config": {
+                        "seconds": "sekúndur"
                     }
                 },
                 "users": {
@@ -680,6 +683,27 @@
                         "device_tracker_intro": "Veldu tæki sem tilheyrir þessari persónu.",
                         "device_tracker_picked": "Rekja tæki",
                         "device_tracker_pick": "Velja tæki til að rekja"
+                    }
+                },
+                "server_control": {
+                    "description": "Endurræsa og stöðva Home Assistant þjóni",
+                    "section": {
+                        "validation": {
+                            "heading": "Staðfesta stillingar",
+                            "check_config": "Athuga stillingar",
+                            "valid": "Stillingar í lagi!",
+                            "invalid": "Stillingar ógildar"
+                        },
+                        "reloading": {
+                            "heading": "Endurhleðsla stillinga",
+                            "core": "Endurhlaða kjarna",
+                            "group": "Endurhlaða hópa",
+                            "automation": "Endurhlaða sjálfvirkni"
+                        },
+                        "server_management": {
+                            "restart": "Endurræsa",
+                            "stop": "Stöðva"
+                        }
                     }
                 }
             },

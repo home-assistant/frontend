@@ -620,10 +620,22 @@
                     "common": {
                         "value": "Valor",
                         "instance": "Instància",
-                        "index": "Índex"
+                        "index": "Índex",
+                        "unknown": "desconegut",
+                        "wakeup_interval": "Interval en despertar"
                     },
                     "values": {
                         "header": "Valors dels node"
+                    },
+                    "node_config": {
+                        "header": "Opcions de configuració del node",
+                        "seconds": "segons",
+                        "set_wakeup": "Estableix l’interval en despertar",
+                        "config_parameter": "Paràmetre de configuració",
+                        "config_value": "Valor de configuració",
+                        "true": "Cert",
+                        "false": "Fals",
+                        "set_config_parameter": "Defineix el paràmetre de configuració"
                     }
                 },
                 "users": {

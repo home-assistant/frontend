@@ -620,10 +620,22 @@
                     "common": {
                         "value": "Verdi",
                         "instance": "Forekomst",
-                        "index": "Indeks"
+                        "index": "Indeks",
+                        "unknown": "ukjent",
+                        "wakeup_interval": "Våkningsintervall"
                     },
                     "values": {
                         "header": "Nodeverdier"
+                    },
+                    "node_config": {
+                        "header": "Alternativer for nodekonfigurasjon",
+                        "seconds": "sekunder",
+                        "set_wakeup": "Angi vekkeintervall",
+                        "config_parameter": "Konfigurasjon parameter",
+                        "config_value": "Konfigurasjon verdi",
+                        "true": "Ekte",
+                        "false": "Falsk",
+                        "set_config_parameter": "Angi konfigurasjons parameter"
                     }
                 },
                 "users": {

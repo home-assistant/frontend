@@ -320,7 +320,7 @@
                         "title": "Tapahtumat"
                     },
                     "templates": {
-                        "title": "Mallit"
+                        "title": "Malli"
                     },
                     "mqtt": {
                         "title": "MQTT"
@@ -346,10 +346,10 @@
                 "introduction": "Täällä voit säätää Home Assistanttia ja sen komponentteja. Huomioithan, ettei kaikkea voi vielä säätää käyttöliittymän kautta, mutta teemme jatkuvasti töitä sen mahdollistamiseksi.",
                 "core": {
                     "caption": "Yleinen",
-                    "description": "Tarkista asetustiedostosi ja hallitse palvelinta",
+                    "description": "Muuta Home Assistantin yleisiä asetuksiasi",
                     "section": {
                         "core": {
-                            "header": "Asetusten ja palvelimen hallinta",
+                            "header": "Yleiset asetukset",
                             "introduction": "Tiedämme, että asetusten muuttaminen saattaa olla työlästä. Täältä löydät työkaluja, jotka toivottavasti helpottavat elämääsi.",
                             "core_config": {
                                 "edit_requires_storage": "Editori on poistettu käytöstä, koska asetuksia on annettu configuration.yaml:ssa.",
