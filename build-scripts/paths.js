@@ -14,4 +14,10 @@ module.exports = {
   demo_static: path.resolve(__dirname, "../demo/dist/static"),
   demo_output: path.resolve(__dirname, "../demo/dist/frontend_latest"),
   demo_output_es5: path.resolve(__dirname, "../demo/dist/frontend_es5"),
+
+  cast_dir: path.resolve(__dirname, "../cast"),
+  cast_root: path.resolve(__dirname, "../cast/dist"),
+  cast_static: path.resolve(__dirname, "../cast/dist/static"),
+  cast_output: path.resolve(__dirname, "../cast/dist/frontend_latest"),
+  cast_output_es5: path.resolve(__dirname, "../cast/dist/frontend_es5"),
 };

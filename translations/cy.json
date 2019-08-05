@@ -687,6 +687,30 @@
                         "password": "Cyfrinair",
                         "create": "Creu"
                     }
+                },
+                "server_control": {
+                    "section": {
+                        "validation": {
+                            "introduction": "Dilyswch eich ffurfweddiad os gwnaethoch rai newidiadau ffurfweddu yn ddiweddar ac rydych eisiau gwneud yn siŵr fod o'n ddilys",
+                            "check_config": "Gwirio config",
+                            "valid": "Ffurfweddiad dilys!",
+                            "invalid": "Ffurfweddiad annilys"
+                        },
+                        "reloading": {
+                            "heading": "Ffurfweddiad yn ail-lwytho",
+                            "introduction": "Gall rhai rhannau o Home Assistant ail-lwytho heb orfod ailgychwyn. Bydd taro ail-lwytho yn dadlwytho eu cyfluniad cyfredol a llwytho'r un newydd.",
+                            "core": "Ail-lwytho craidd",
+                            "group": "Ail-lwytho grwpiau",
+                            "automation": "Ail-lwytho awtomeiddiadau",
+                            "script": "Ail-lwytho sgriptiau"
+                        },
+                        "server_management": {
+                            "heading": "Rheoli gweinydd",
+                            "introduction": "Rheoli eich gweinydd Home Assistant.. o Home Assistant.",
+                            "restart": "Ailgychwyn",
+                            "stop": "Stopio"
+                        }
+                    }
                 }
             },
             "lovelace": {
