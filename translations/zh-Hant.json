@@ -620,10 +620,22 @@
                     "common": {
                         "value": "數值",
                         "instance": "實例",
-                        "index": "指數"
+                        "index": "指數",
+                        "unknown": "未知",
+                        "wakeup_interval": "喚醒間隔"
                     },
                     "values": {
                         "header": "節點數值"
+                    },
+                    "node_config": {
+                        "header": "節點設定選項",
+                        "seconds": "秒",
+                        "set_wakeup": "設定喚醒間隔",
+                        "config_parameter": "設定參數",
+                        "config_value": "設定值",
+                        "true": "True",
+                        "false": "False",
+                        "set_config_parameter": "設定參數"
                     }
                 },
                 "users": {

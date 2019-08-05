@@ -608,6 +608,11 @@
                         "value": "Värde",
                         "instance": "Instans",
                         "index": "Index"
+                    },
+                    "node_config": {
+                        "seconds": "Sekunder",
+                        "true": "Sant",
+                        "false": "Falskt"
                     }
                 },
                 "users": {
@@ -730,6 +735,18 @@
                         "device_tracker_intro": "Välj de enheter som tillhör till den här personen.",
                         "device_tracker_picked": "Spåra enheten",
                         "device_tracker_pick": "Välj enhet att spåra"
+                    }
+                },
+                "server_control": {
+                    "section": {
+                        "reloading": {
+                            "introduction": "Vissa delar av Home Assistant kan laddas om utan att en omstart krävs. Att trycka på \"ladda om\" innebär att den nuvarande konfiguration inaktiveras och den nya laddas."
+                        },
+                        "server_management": {
+                            "introduction": "Kontrollera din Home Assistant-server ... från Home Assistant.",
+                            "restart": "Starta om",
+                            "stop": "Stoppa"
+                        }
                     }
                 }
             },

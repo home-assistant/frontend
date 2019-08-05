@@ -620,10 +620,22 @@
                     "common": {
                         "value": "Wartość",
                         "instance": "Instancja",
-                        "index": "Indeks"
+                        "index": "Indeks",
+                        "unknown": "nieznany",
+                        "wakeup_interval": "Interwał wybudzenia"
                     },
                     "values": {
                         "header": "Wartości węzła"
+                    },
+                    "node_config": {
+                        "header": "Opcje konfiguracji węzła",
+                        "seconds": "sekund",
+                        "set_wakeup": "Ustaw interwał wybudzenia",
+                        "config_parameter": "Parametr",
+                        "config_value": "Wartość",
+                        "true": "Prawda",
+                        "false": "Fałsz",
+                        "set_config_parameter": "Ustaw parametr"
                     }
                 },
                 "users": {
