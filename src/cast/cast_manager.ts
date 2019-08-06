@@ -122,10 +122,12 @@ export class CastManager {
     if (__DEV__) {
       console.log("Cast session state changed", ev.sessionState);
     }
-    if (ev.sessionState === "SESSION_RESUMED") {
-      this.sendMessage({ type: "get_status" });
-      this._attachMessageListener();
-    } else if (ev.sessionState === "SESSION_STARTED") {
+    // On Android, opening a new session always results in SESSION_RESUMED.
+    // So treat both as the same.
+    if (
+      ev.sessionState === "SESSION_STARTED" ||
+      ev.sessionState === "SESSION_RESUMED"
+    ) {
       if (this.auth) {
         castSendAuth(this, this.auth);
       } else {
