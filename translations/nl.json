@@ -620,10 +620,22 @@
                     "common": {
                         "value": "Waarde",
                         "instance": "Exemplaar",
-                        "index": "Index"
+                        "index": "Index",
+                        "unknown": "onbekend",
+                        "wakeup_interval": "Activerings interval"
                     },
                     "values": {
                         "header": "Knooppunt waarden"
+                    },
+                    "node_config": {
+                        "header": "Node Configuratie Opties",
+                        "seconds": "Seconden",
+                        "set_wakeup": "Wakeup-interval instellen",
+                        "config_parameter": "Configuratie Parameter",
+                        "config_value": "Configuratie Waarde",
+                        "true": "Waar",
+                        "false": "Niet waar",
+                        "set_config_parameter": "Stel de configuratieparameter in"
                     }
                 },
                 "users": {
