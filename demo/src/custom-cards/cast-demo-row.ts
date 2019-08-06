@@ -54,7 +54,12 @@ class CastDemoRow extends LitElement implements EntityRow {
         mgr.castContext.addEventListener(
           cast.framework.CastContextEventType.SESSION_STATE_CHANGED,
           (ev) => {
-            if (ev.sessionState === "SESSION_STARTED") {
+            // On Android, opening a new session always results in SESSION_RESUMED.
+            // So treat both as the same.
+            if (
+              ev.sessionState === "SESSION_STARTED" ||
+              ev.sessionState === "SESSION_RESUMED"
+            ) {
               castSendShowDemo(mgr);
             }
           }
