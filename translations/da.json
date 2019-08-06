@@ -620,10 +620,22 @@
                     "common": {
                         "value": "Værdi",
                         "instance": "Instans",
-                        "index": "Indeks"
+                        "index": "Indeks",
+                        "unknown": "ukendt",
+                        "wakeup_interval": "Vækningsinterval"
                     },
                     "values": {
                         "header": "Node værdier"
+                    },
+                    "node_config": {
+                        "header": "Indstillinger for node konfiguration",
+                        "seconds": "sekunder",
+                        "set_wakeup": "Indstil vækningsinterval",
+                        "config_parameter": "Konfigurationsparameter",
+                        "config_value": "Konfigurationsværdi",
+                        "true": "Sandt",
+                        "false": "Falsk",
+                        "set_config_parameter": "Indstil konfigurationsparameter"
                     }
                 },
                 "users": {
