@@ -48,7 +48,7 @@
     })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
 
     ga('create', 'UA-57927901-9', 'auto');
-    ga('send', 'pageview', '/');
+    ga('send', 'pageview', location.pathname.includes("auth_callback") === -1 ? location.pathname : "/");
     </script>
   </body>
 </html>
