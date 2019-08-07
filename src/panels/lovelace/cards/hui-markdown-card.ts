@@ -54,7 +54,6 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
             "no-header": !this._config.title,
           })}"
           .content="${this._config.content}"
-          allow-svg
         ></ha-markdown>
       </ha-card>
     `;
