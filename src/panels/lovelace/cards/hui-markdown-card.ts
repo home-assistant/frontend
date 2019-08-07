@@ -51,6 +51,9 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     this._cardSize = config._card_size;
 
     this._disconnect();
+    if (this._hass) {
+      this._connect();
+    }
   }
 
   public disconnectedCallback() {
@@ -83,11 +86,13 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     if (!this._unsubRenderTemplate && this._hass && this._config) {
       this._unsubRenderTemplate = await subscribeRenderTemplate(
         this._hass.connection,
-        this._config.content,
         (result) => {
           this._content = result;
         },
-        this._config.entity_id
+        {
+          template: this._config.content,
+          entity_ids: this._config.entity_id,
+        }
       );
     }
   }
