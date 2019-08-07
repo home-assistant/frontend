@@ -79,7 +79,7 @@ class StepFlowForm extends LitElement {
           : ""}
         ${description
           ? html`
-              <ha-markdown .content=${description} allow-svg></ha-markdown>
+              <ha-markdown .content=${description}></ha-markdown>
             `
           : ""}
         <ha-form
