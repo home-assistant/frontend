@@ -31,15 +31,15 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   @property() private _config?: MarkdownCardConfig;
   @property() private _content?: string = "";
-  @property() private _unsubRenderTemplate?: UnsubscribeFunc;
+  @property() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
   @property() private _cardSize?: number;
   @property() private _hass?: HomeAssistant;
 
   public getCardSize(): number {
-    return (
-      this._cardSize ||
-      this._config!.content.split("\n").length + (this._config!.title ? 1 : 0)
-    );
+    return this._cardSize !== undefined
+      ? this._cardSize
+      : this._config!.content.split("\n").length +
+          (this._config!.title ? 1 : 0);
   }
 
   public setConfig(config: MarkdownCardConfig): void {
@@ -84,7 +84,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   private async _connect() {
     if (!this._unsubRenderTemplate && this._hass && this._config) {
-      this._unsubRenderTemplate = await subscribeRenderTemplate(
+      this._unsubRenderTemplate = subscribeRenderTemplate(
         this._hass.connection,
         (result) => {
           this._content = result;
@@ -94,14 +94,23 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
           entity_ids: this._config.entity_id,
         }
       );
+      this._unsubRenderTemplate.catch(() => {
+        this._content = this._config!.content;
+      });
     }
   }
 
-  private _disconnect() {
+  private async _disconnect() {
     if (this._unsubRenderTemplate) {
-      this._unsubRenderTemplate();
+      this._unsubRenderTemplate
+        .then((unsub) => {
+          this._unsubRenderTemplate = undefined;
+          return unsub();
+        })
+        .catch(() => {
+          // If we get here, the connection was probably already closed. Ignore.
+        });
     }
-    this._unsubRenderTemplate = undefined;
   }
 
   static get styles(): CSSResult {
