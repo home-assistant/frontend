@@ -96,6 +96,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       );
       this._unsubRenderTemplate.catch(() => {
         this._content = this._config!.content;
+        this._unsubRenderTemplate = undefined;
       });
     }
   }
