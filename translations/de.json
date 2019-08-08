@@ -349,10 +349,10 @@
                 "introduction": "Hier ist es möglich, deine Komponenten und Home Assistant zu konfigurieren. Noch ist nicht alles über die GUI einstellbar, aber wir arbeiten daran.",
                 "core": {
                     "caption": "Allgemein",
-                    "description": "Überprüfe deine Konfigurationsdatei und steuere den Server",
+                    "description": "Bearbeite die allgemeine Konfiguration von Home Assistant",
                     "section": {
                         "core": {
-                            "header": "Einstellungen und Serversteuerung",
+                            "header": "Allgemeine Einstellungen",
                             "introduction": "Die Konfiguration zu ändern ist ein mühsamer Prozess. Das wissen wir. Dieser Bereich versucht dir das Leben etwas leichter zu gestalten.",
                             "core_config": {
                                 "edit_requires_storage": "Editor deaktiviert, da die Konfiguration in configuration.yaml gespeichert ist.",
