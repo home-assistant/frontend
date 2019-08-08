@@ -30,16 +30,23 @@ declare global {
     };
     "config-changed": {
       config: LovelaceCardConfig;
+      error?: string;
     };
   }
+}
+
+export interface UIConfigChangedEvent extends Event {
+  detail: {
+    config: LovelaceCardConfig;
+  };
 }
 
 @customElement("hui-card-editor")
 export class HuiCardEditor extends LitElement {
   @property() public hass?: HomeAssistant;
-  @property() public value?: LovelaceCardConfig;
 
   @property() private _yaml?: string;
+  @property() private _config?: LovelaceCardConfig;
   @property() private _configElement?: LovelaceCardEditor;
   @property() private _configElType?: string;
   @property() private _GUImode: boolean = true;
@@ -54,26 +61,31 @@ export class HuiCardEditor extends LitElement {
   }
   public set yaml(_yaml: string) {
     this._yaml = _yaml;
-    this._updateConfigElement();
-    // TODO: Defer this to next redraw? How?
-    setTimeout(() => {
-      if (this._yamlEditor) {
-        this._yamlEditor.codemirror.refresh();
-      }
-    }, 1);
-    fireEvent(this, "config-changed", { config: this.config! });
+    try {
+      this._config = yaml.safeLoad(this.yaml);
+      this._updateConfigElement();
+      setTimeout(() => {
+        if (this._yamlEditor) {
+          this._yamlEditor.codemirror.refresh();
+        }
+      }, 1);
+      this._error = undefined;
+    } catch (err) {
+      this._error = err.message;
+    }
+    fireEvent(this, "config-changed", {
+      config: this.value!,
+      error: this._error,
+    });
   }
 
-  public get config(): LovelaceCardConfig | undefined {
-    try {
-      return yaml.safeLoad(this.yaml);
-    } catch (err) {
-      this._error = err;
-      return { type: "error", error: err.message };
-    }
+  public get value(): LovelaceCardConfig | undefined {
+    return this._config;
   }
-  public set config(config: LovelaceCardConfig | undefined) {
-    this.yaml = yaml.safeDump(config);
+  public set value(config: LovelaceCardConfig | undefined) {
+    if (JSON.stringify(config) !== JSON.stringify(this._config || {})) {
+      this.yaml = yaml.safeDump(config);
+    }
   }
 
   public get hasError(): boolean {
@@ -141,10 +153,6 @@ export class HuiCardEditor extends LitElement {
     `;
   }
 
-  protected async firstUpdated() {
-    this.config = this.value;
-  }
-
   protected updated(changedProperties) {
     super.updated(changedProperties);
 
@@ -158,10 +166,10 @@ export class HuiCardEditor extends LitElement {
     }
   }
 
-  private _handleUIConfigChanged(ev) {
+  private _handleUIConfigChanged(ev: UIConfigChangedEvent) {
     ev.stopPropagation();
     const config = ev.detail.config;
-    this.config = config;
+    this.value = config;
   }
   private _handleYAMLChanged(ev) {
     ev.stopPropagation();
@@ -172,11 +180,11 @@ export class HuiCardEditor extends LitElement {
   }
 
   private async _updateConfigElement(): Promise<void> {
-    if (!this.config) {
+    if (!this.value) {
       return;
     }
 
-    const cardType = this.config.type;
+    const cardType = this.value.type;
     let configElement = this._configElement;
     try {
       this._error = undefined;
@@ -184,7 +192,7 @@ export class HuiCardEditor extends LitElement {
 
       if (this._configElType !== cardType) {
         // If the card type has changed, we need to load a new GUI editor
-        if (!this.config.type) {
+        if (!this.value.type) {
           throw new Error("No card type defined");
         }
 
@@ -211,7 +219,7 @@ export class HuiCardEditor extends LitElement {
 
       // Setup GUI editor and check that it can handle the current config
       try {
-        this._configElement!.setConfig(this.config);
+        this._configElement!.setConfig(this.value);
       } catch (err) {
         throw Error(`WARNING: ${err.message}`);
       }
@@ -219,7 +227,7 @@ export class HuiCardEditor extends LitElement {
       // Perform final setup
       this._configElement!.hass = this.hass;
       this._configElement!.addEventListener("config-changed", (ev) =>
-        this._handleUIConfigChanged(ev)
+        this._handleUIConfigChanged(ev as UIConfigChangedEvent)
       );
 
       return;

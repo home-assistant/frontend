@@ -42,6 +42,7 @@ export class HuiDialogEditCard extends LitElement {
   @property() private _cardConfig?: LovelaceCardConfig;
 
   @property() private _saving: boolean = false;
+  @property() private _error?: string;
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
@@ -83,10 +84,21 @@ export class HuiDialogEditCard extends LitElement {
                       @config-changed="${this._handleConfigChanged}"
                     ></hui-card-editor>
                   </div>
-                  <hui-card-preview
-                    .hass="${this.hass}"
-                    .config="${this._cardConfig}"
-                  ></hui-card-preview>
+                  <div class="element-preview">
+                    <hui-card-preview
+                      .hass="${this.hass}"
+                      .config="${this._cardConfig}"
+                      class=${this._error ? "blur" : ""}
+                    ></hui-card-preview>
+                    ${this._error
+                      ? html`
+                          <paper-spinner
+                            active
+                            alt="Can't update card"
+                          ></paper-spinner>
+                        `
+                      : ``}
+                  </div>
                 </div>
               `}
         </paper-dialog-scrollable>
@@ -186,9 +198,17 @@ export class HuiDialogEditCard extends LitElement {
         .element-editor {
           margin-bottom: 8px;
         }
-        .error {
-          color: #ef5350;
-          border-bottom: 1px solid #ef5350;
+        .blur {
+          filter: blur(2px) grayscale(100%);
+        }
+        .element-preview {
+          position: relative;
+        }
+        .element-preview paper-spinner {
+          top: 50%;
+          left: 50%;
+          position: absolute;
+          z-index: 10;
         }
         hui-card-preview {
           padding-top: 8px;
@@ -196,20 +216,19 @@ export class HuiDialogEditCard extends LitElement {
           display: block;
           width: 100%;
         }
-        .toggle-button {
-          margin-right: auto;
-        }
       `,
     ];
   }
 
   private _handleConfigChanged(ev) {
     this._cardConfig = ev.detail.config;
+    this._error = ev.detail.error;
   }
 
   private _close(): void {
     this._params = undefined;
     this._cardConfig = undefined;
+    this._error = undefined;
   }
 
   private get _canSave(): boolean {
