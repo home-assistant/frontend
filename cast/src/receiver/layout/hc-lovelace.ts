@@ -52,10 +52,11 @@ class HcLovelace extends LitElement {
 
   protected updated(changedProps) {
     super.updated(changedProps);
+
     if (changedProps.has("viewPath") || changedProps.has("lovelaceConfig")) {
       const index = this._viewIndex;
 
-      if (index) {
+      if (index !== undefined) {
         this.shadowRoot!.querySelector("hui-view")!.style.background =
           this.lovelaceConfig.views[index].background ||
           this.lovelaceConfig.background ||
