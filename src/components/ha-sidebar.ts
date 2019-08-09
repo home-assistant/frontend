@@ -102,6 +102,7 @@ class HaSidebar extends LitElement {
 
   @property({ type: Boolean }) public alwaysExpand = false;
   @property({ type: Boolean, reflect: true }) public expanded = false;
+  @property({ type: Boolean, reflect: true }) public rtl = false;
   @property() public _defaultPage?: string =
     localStorage.defaultPage || DEFAULT_PANEL;
   @property() private _externalConfig?: ExternalConfig;
@@ -139,6 +140,9 @@ class HaSidebar extends LitElement {
                   ? "hass:menu-open"
                   : "hass:menu"}
                 @click=${this._toggleSidebar}
+                class=${classMap({
+                  flipVertical: this.rtl,
+                })}
               ></paper-icon-button>
             `
           : ""}
@@ -472,6 +476,10 @@ class HaSidebar extends LitElement {
       :host([expanded]) .menu paper-icon-button {
         margin-right: 23px;
       }
+      :host([expanded][rtl]) .menu paper-icon-button {
+        margin-right: 0px;
+        margin-left: 23px;
+      }
 
       .title {
         display: none;
@@ -520,6 +528,10 @@ class HaSidebar extends LitElement {
       }
       :host([expanded]) paper-icon-item {
         width: 240px;
+      }
+      :host([rtl]) paper-icon-item {
+        padding-left: auto;
+        padding-right: 12px;
       }
 
       ha-icon[slot="item-icon"] {
@@ -588,8 +600,15 @@ class HaSidebar extends LitElement {
       .profile paper-icon-item {
         padding-left: 4px;
       }
+      :host([rtl]) .profile paper-icon-item {
+        padding-left: auto;
+        padding-right: 4px;
+      }
       .profile .item-text {
         margin-left: 8px;
+      }
+      :host([rtl]) .profile .item-text {
+        margin-right: 8px;
       }
 
       .notification-badge {
@@ -646,6 +665,11 @@ class HaSidebar extends LitElement {
         background-color: var(--sidebar-text-color);
         padding: 4px;
         font-weight: 500;
+      }
+
+      .flipVertical {
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
       }
     `;
   }
