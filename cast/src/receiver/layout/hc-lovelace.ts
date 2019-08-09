@@ -77,7 +77,6 @@ class HcLovelace extends LitElement {
   }
 
   static get styles(): CSSResult {
-    // We're applying a 10% transform so it all shows a little bigger.
     return css`
       :host {
         min-height: 100vh;
