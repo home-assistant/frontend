@@ -454,7 +454,10 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "మీ Z- వేవ్ నెట్వర్క్ని నిర్వహించండి"
+                    "description": "మీ Z- వేవ్ నెట్వర్క్ని నిర్వహించండి",
+                    "node_config": {
+                        "set_config_parameter": "కాన్ఫిగర్ పారామితిని సెట్ చేయండి"
+                    }
                 },
                 "users": {
                     "caption": "వినియోగదారులు",

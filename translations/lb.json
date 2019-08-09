@@ -620,10 +620,22 @@
                     "common": {
                         "value": "Wäert",
                         "instance": "Instanz",
-                        "index": "Index"
+                        "index": "Index",
+                        "unknown": "Onbekannt",
+                        "wakeup_interval": "Intervall fir z'erwächen"
                     },
                     "values": {
                         "header": "Wäerter vum Apparat"
+                    },
+                    "node_config": {
+                        "header": "Node Konfiguratioun Optiounen",
+                        "seconds": "Sekonnen",
+                        "set_wakeup": "Intervall fir z'erwächen définéieren",
+                        "config_parameter": "Konfiguratioun's Parameter",
+                        "config_value": "Konfiguratioun's Wäert",
+                        "true": "Richteg",
+                        "false": "Falsch",
+                        "set_config_parameter": "Konfiguratioun's Parameter setzen"
                     }
                 },
                 "users": {
@@ -746,6 +758,33 @@
                         "device_tracker_intro": "Wiel d'Apparater aus déi zu dëser Persoun gehéieren.",
                         "device_tracker_picked": "Aparat suivéieren",
                         "device_tracker_pick": "Wielt den Apparat aus fir ze suivéieren"
+                    }
+                },
+                "server_control": {
+                    "caption": "Kontroll vum Server",
+                    "description": "Start an Stop vum Home Assistant Server",
+                    "section": {
+                        "validation": {
+                            "heading": "Validatioun vun der Konfiguratioun",
+                            "introduction": "Validéiert är Konfiguratioun wann Dir viru kuerzem e puer Ännerungen an ärer Konfiguratioun gemaacht hutt a wëllt sécher sinn datt alles gëlteg ass",
+                            "check_config": "Konfiguratioun iwwerpréiwen",
+                            "valid": "Konfiguratioun gëlteg!",
+                            "invalid": "Konfiguratioun ongëlteg"
+                        },
+                        "reloading": {
+                            "heading": "Konfiguratioun gëtt frësch gelueden",
+                            "introduction": "E puer Deeler vum Home Assistant kënne frësch geluede ginn ouni datt een Neistart néideg ass. Klick op nei luede fir di aktuell Konfiguratioun z'entlueden an di nei Konfiguratioun ze lueden.",
+                            "core": "Kär néi lueden",
+                            "group": "Gruppe nei lueden",
+                            "automation": "Automatisme nei lueden",
+                            "script": "Skripte nei lueden"
+                        },
+                        "server_management": {
+                            "heading": "Serververwaltung",
+                            "introduction": "Kontrolléiert ären Home Assistant Server ... vun Home Assistant aus.",
+                            "restart": "Neistart",
+                            "stop": "Stop"
+                        }
                     }
                 }
             },

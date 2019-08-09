@@ -515,7 +515,10 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Upravljajte mrežom Z-Wave"
+                    "description": "Upravljajte mrežom Z-Wave",
+                    "node_config": {
+                        "set_config_parameter": "Postavite parametar Config"
+                    }
                 },
                 "users": {
                     "caption": "Korisnici",

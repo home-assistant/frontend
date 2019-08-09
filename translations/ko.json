@@ -621,7 +621,7 @@
                         "value": "값",
                         "instance": "인스턴스",
                         "index": "색인",
-                        "unknown": "알 수 없슴",
+                        "unknown": "알 수 없음",
                         "wakeup_interval": "절전 모드 해제 간격"
                     },
                     "values": {

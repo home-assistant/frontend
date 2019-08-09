@@ -562,7 +562,8 @@
                         "cancel_command": "Hætta við skipun"
                     },
                     "node_config": {
-                        "seconds": "sekúndur"
+                        "seconds": "sekúndur",
+                        "set_config_parameter": "Stilltu Config Parameter"
                     }
                 },
                 "users": {

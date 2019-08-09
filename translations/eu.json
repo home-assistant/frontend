@@ -299,7 +299,10 @@
                     "description": "Scriptak sortu eta editatu"
                 },
                 "zwave": {
-                    "caption": "Z-Wave"
+                    "caption": "Z-Wave",
+                    "node_config": {
+                        "set_config_parameter": "Ezarri konfigurazio-parametroa"
+                    }
                 },
                 "automation": {
                     "picker": {
