@@ -1,10 +1,10 @@
 // Nessages to be processed inside the Cast Receiver app
 
+import { Auth } from "home-assistant-js-websocket";
 import { CastManager } from "./cast_manager";
 
 import { BaseCastMessage } from "./types";
 import { CAST_DEV_HASS_URL, CAST_DEV } from "./const";
-import { Auth } from "home-assistant-js-websocket";
 
 export interface GetStatusMessage extends BaseCastMessage {
   type: "get_status";
@@ -19,7 +19,7 @@ export interface ConnectMessage extends BaseCastMessage {
 
 export interface ShowLovelaceViewMessage extends BaseCastMessage {
   type: "show_lovelace_view";
-  viewPath: string | null;
+  viewPath: string | number | null;
 }
 
 export interface ShowDemoMessage extends BaseCastMessage {
@@ -64,7 +64,6 @@ export const ensureConnectedCastSession = (cast: CastManager, auth: Auth) => {
       if (cast.castConnectedToOurHass) {
         unsub();
         resolve();
-        return;
       }
     });
 
