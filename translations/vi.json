@@ -277,7 +277,8 @@
         "default": {
             "unknown": "KB",
             "unavailable": "KKD",
-            "error": "Lỗi"
+            "error": "Lỗi",
+            "entity_not_found": "Không tìm thấy thực thể"
         },
         "alarm_control_panel": {
             "armed": "VT",
@@ -600,6 +601,13 @@
                     "common": {
                         "value": "Giá trị",
                         "index": "Mục lục"
+                    },
+                    "node_config": {
+                        "config_parameter": "Cấu hình tham số",
+                        "config_value": "Giá trị cấu hình",
+                        "true": "Đúng",
+                        "false": "Sai",
+                        "set_config_parameter": "Đặt tham số cấu hình"
                     }
                 },
                 "users": {
@@ -712,6 +720,8 @@
                     }
                 },
                 "server_control": {
+                    "caption": "Điều khiển máy chủ",
+                    "description": "Khởi động lại và dừng máy chủ Home Assistant",
                     "section": {
                         "validation": {
                             "heading": "Xác nhận cấu hình",
@@ -725,7 +735,14 @@
                             "introduction": "Một số phần của Home Assistant có thể tải lại mà không yêu cầu khởi động lại. Nhấn nút tải lại sẽ gỡ bỏ cấu hình hiện tại của nó và tải một cấu hình mới.",
                             "core": "Tải lại lõi",
                             "group": "Tải lại nhóm",
-                            "automation": "Tải lại Tự động hóa"
+                            "automation": "Tải lại Tự động hóa",
+                            "script": "Tải lại Kịch bản"
+                        },
+                        "server_management": {
+                            "heading": "Quản lý máy chủ",
+                            "introduction": "Kiểm soát máy chủ Home Assistant của bạn từ Home Assistant.",
+                            "restart": "Khởi động lại",
+                            "stop": "Dừng"
                         }
                     }
                 }
@@ -927,7 +944,9 @@
                     "intro": "Xin chào {name} , chào mừng bạn đến với Home Assistant. Bạn muốn đặt tên nhà của bạn thế nào?",
                     "intro_location": "Chúng tôi muốn biết nơi bạn sống. Thông tin này sẽ giúp hiển thị thông tin và thiết lập tự động dựa trên mặt trời. Dữ liệu này không bao giờ được chia sẻ bên ngoài mạng của bạn.",
                     "intro_location_detect": "Chúng tôi có thể giúp bạn điền thông tin này bằng cách yêu cầu một lần cho dịch vụ bên ngoài.",
-                    "location_name_default": "Nhà"
+                    "location_name_default": "Nhà",
+                    "button_detect": "Phát hiện",
+                    "finish": "Kế tiếp"
                 }
             },
             "lovelace": {
@@ -943,6 +962,7 @@
                         "go_to_integrations_page": "Chuyển đến trang tích hợp."
                     },
                     "picture-elements": {
+                        "hold": "Giữ:",
                         "tap": "Nhấn:",
                         "navigate_to": "Điều hướng đến {location}",
                         "toggle": "Chuyển đổi {name}",
@@ -1000,7 +1020,12 @@
                 "warning": {
                     "entity_not_found": "Thực thể không có sẵn: {entity}",
                     "entity_non_numeric": "Thực thể không phải là số: {entity}"
-                }
+                },
+                "changed_toast": {
+                    "message": "Cấu hình Lovelace đã được cập nhật, bạn có muốn làm mới không?",
+                    "refresh": "Làm tươi"
+                },
+                "reload_lovelace": "Tải lại Lovelace"
             },
             "page-demo": {
                 "cards": {
@@ -1016,6 +1041,9 @@
                             "kitchen": "Phòng bếp",
                             "patio": "Sân trong",
                             "hallway": "Hành lang"
+                        },
+                        "unit": {
+                            "minutes_abbr": "phút"
                         }
                     }
                 }
@@ -1126,7 +1154,8 @@
                 "fan_mode": "Chế độ quạt",
                 "swing_mode": "Chế độ swing",
                 "away_mode": "Chế độ đi vắng",
-                "aux_heat": "Nhiệt phụ trợ"
+                "aux_heat": "Nhiệt phụ trợ",
+                "preset_mode": "Đặt trước"
             },
             "lock": {
                 "code": "Mã",
@@ -1278,7 +1307,9 @@
                 "away": "Đi vắng",
                 "boost": "Tăng cường",
                 "comfort": "Thoải mái",
-                "home": "Ở nhà"
+                "home": "Ở nhà",
+                "sleep": "Ngủ",
+                "activity": "Hoạt động"
             },
             "hvac_action": {
                 "off": "Tắt",

@@ -583,7 +583,10 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Halda oma Z-Wave võrku"
+                    "description": "Halda oma Z-Wave võrku",
+                    "node_config": {
+                        "set_config_parameter": "Seadista parameeter Config"
+                    }
                 },
                 "users": {
                     "caption": "Kasutajad",
