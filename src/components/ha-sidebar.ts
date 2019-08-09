@@ -36,21 +36,21 @@ const SHOW_AFTER_SPACER = ["config", "developer-tools", "hassio"];
 
 const SUPPORT_SCROLL_IF_NEEDED = "scrollIntoViewIfNeeded" in document.body;
 
-const SORT_VALUE = {
+const SORT_VALUE_URL_PATHS = {
   map: 1,
   logbook: 2,
   history: 3,
   "developer-tools": 9,
   hassio: 10,
-  configuration: 11,
+  config: 11,
 };
 
 const panelSorter = (a, b) => {
-  const aBuiltIn = a.component_name in SORT_VALUE;
-  const bBuiltIn = b.component_name in SORT_VALUE;
+  const aBuiltIn = a.url_path in SORT_VALUE_URL_PATHS;
+  const bBuiltIn = b.url_path in SORT_VALUE_URL_PATHS;
 
   if (aBuiltIn && bBuiltIn) {
-    return SORT_VALUE[a.component_name] - SORT_VALUE[b.component_name];
+    return SORT_VALUE_URL_PATHS[a.url_path] - SORT_VALUE_URL_PATHS[b.url_path];
   }
   if (aBuiltIn) {
     return -1;
@@ -81,7 +81,7 @@ const computePanels = (hass: HomeAssistant): [PanelInfo[], PanelInfo[]] => {
     if (!panel.title) {
       return;
     }
-    (SHOW_AFTER_SPACER.includes(panel.component_name)
+    (SHOW_AFTER_SPACER.includes(panel.url_path)
       ? afterSpacer
       : beforeSpacer
     ).push(panel);
