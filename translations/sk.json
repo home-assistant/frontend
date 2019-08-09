@@ -588,7 +588,10 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Spravujte svoju Z-Wave sieť"
+                    "description": "Spravujte svoju Z-Wave sieť",
+                    "node_config": {
+                        "set_config_parameter": "Nastavte konfiguračný parameter"
+                    }
                 },
                 "users": {
                     "caption": "Používatelia",

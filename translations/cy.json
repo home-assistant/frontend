@@ -575,7 +575,10 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Rheoli eich rhwydwaith Z-Wave"
+                    "description": "Rheoli eich rhwydwaith Z-Wave",
+                    "node_config": {
+                        "set_config_parameter": "Gosod Paramedr Ffurfweddu"
+                    }
                 },
                 "cloud": {
                     "description_login": "Wedi mewngofnodi fel {email}",

@@ -624,6 +624,9 @@
                     },
                     "values": {
                         "header": "Valoare nod"
+                    },
+                    "node_config": {
+                        "set_config_parameter": "Setați parametrul de configurare"
                     }
                 },
                 "users": {

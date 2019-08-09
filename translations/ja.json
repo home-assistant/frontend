@@ -322,7 +322,10 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Z-waveネットワークを管理します"
+                    "description": "Z-waveネットワークを管理します",
+                    "node_config": {
+                        "set_config_parameter": "構成パラメーターの設定"
+                    }
                 },
                 "users": {
                     "caption": "ユーザー",
