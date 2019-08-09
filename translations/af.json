@@ -624,6 +624,9 @@
                     },
                     "values": {
                         "header": "Knooppuntwaardes"
+                    },
+                    "node_config": {
+                        "set_config_parameter": "Stel Config-parameter in"
                     }
                 },
                 "users": {

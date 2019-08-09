@@ -587,7 +587,10 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Administrer Z-Wave-nettverket ditt"
+                    "description": "Administrer Z-Wave-nettverket ditt",
+                    "node_config": {
+                        "set_config_parameter": "Angi konfigurasjonsparameter"
+                    }
                 },
                 "users": {
                     "caption": "Brukarar",

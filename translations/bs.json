@@ -273,7 +273,10 @@
             },
             "config": {
                 "zwave": {
-                    "caption": "Z-Wave"
+                    "caption": "Z-Wave",
+                    "node_config": {
+                        "set_config_parameter": "Podesite parametar Config"
+                    }
                 }
             }
         },
