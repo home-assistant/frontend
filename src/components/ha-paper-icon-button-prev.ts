@@ -11,7 +11,8 @@ const paperIconButtonClass = customElements.get(
 export class HaPaperIconButtonPrev extends paperIconButtonClass {
   public connectedCallback() {
     this.icon =
-      window.getComputedStyle(this).direction === "ltr"
+      (document.querySelector("home-assistant")! as HTMLElement).style
+        .direction === "ltr"
         ? "hass:chevron-left"
         : "hass:chevron-right";
 

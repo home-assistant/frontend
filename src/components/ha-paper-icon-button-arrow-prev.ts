@@ -13,7 +13,8 @@ export class HaPaperIconButtonArrowPrev extends paperIconButtonClass {
 
   public connectedCallback() {
     this.icon =
-      window.getComputedStyle(this).direction === "ltr"
+      (document.querySelector("home-assistant")! as HTMLElement).style
+        .direction === "ltr"
         ? this.hassio
           ? "hassio:arrow-left"
           : "hass:arrow-left"

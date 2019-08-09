@@ -6,7 +6,8 @@ import { HaIcon } from "./ha-icon";
 export class HaIconNext extends HaIcon {
   public connectedCallback() {
     this.icon =
-      window.getComputedStyle(this).direction === "ltr"
+      (document.querySelector("home-assistant")! as HTMLElement).style
+        .direction === "ltr"
         ? "hass:chevron-right"
         : "hass:chevron-left";
 
