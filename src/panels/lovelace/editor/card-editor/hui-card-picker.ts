@@ -12,6 +12,7 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { getCardElementTag } from "../../common/get-card-element-tag";
 import { CardPickTarget } from "../types";
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 const cards = [
   { name: "Alarm panel", type: "alarm-panel" },
@@ -60,6 +61,9 @@ export class HuiCardPicker extends LitElement {
           `;
         })}
       </div>
+      <div class="cards-container">
+        <mwc-button @click="${this._manualPicked}">MANUAL CARD</mwc-button>
+      </div>
     `;
   }
 
@@ -85,6 +89,12 @@ export class HuiCardPicker extends LitElement {
     ];
   }
 
+  private _manualPicked(): void {
+    fireEvent(this, "config-changed", {
+      config: { type: "" },
+    });
+  }
+
   private _cardPicked(ev: Event): void {
     const type = (ev.currentTarget! as CardPickTarget).type;
     const tag = getCardElementTag(type);
@@ -97,7 +107,7 @@ export class HuiCardPicker extends LitElement {
       config = { ...config, ...cardConfig };
     }
 
-    this.cardPicked!(config);
+    fireEvent(this, "config-changed", { config });
   }
 }
 
