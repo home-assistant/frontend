@@ -620,7 +620,8 @@
               "core": "Reload core",
               "group": "Reload groups",
               "automation": "Reload automations",
-              "script": "Reload scripts"
+              "script": "Reload scripts",
+              "scene": "Reload scenes"
             },
             "server_management": {
               "heading": "Server management",
