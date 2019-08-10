@@ -107,7 +107,9 @@ class HaSidebar extends LitElement {
     localStorage.defaultPage || DEFAULT_PANEL;
   @property() private _externalConfig?: ExternalConfig;
   @property() private _notifications?: PersistentNotification[];
-  @property({ type: Boolean, reflect: true }) private _rtl = false;
+  // property used only in css
+  // tslint:disable-next-line
+  @property({ type: Boolean, reflect: true }) private _rtl;
 
   private _mouseLeaveTimeout?: number;
   private _tooltipHideTimeout?: number;
