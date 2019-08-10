@@ -31,6 +31,7 @@ import computeDomain from "../common/entity/compute_domain";
 import { classMap } from "lit-html/directives/class-map";
 // tslint:disable-next-line: no-duplicate-imports
 import { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
+import { computeRTL } from "../common/util/compute_rtl";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools", "hassio"];
 
@@ -102,11 +103,11 @@ class HaSidebar extends LitElement {
 
   @property({ type: Boolean }) public alwaysExpand = false;
   @property({ type: Boolean, reflect: true }) public expanded = false;
-  @property({ type: Boolean, reflect: true }) public rtl = false;
   @property() public _defaultPage?: string =
     localStorage.defaultPage || DEFAULT_PANEL;
   @property() private _externalConfig?: ExternalConfig;
   @property() private _notifications?: PersistentNotification[];
+  @property({ type: Boolean, reflect: true }) private _rtl = false;
 
   private _mouseLeaveTimeout?: number;
   private _tooltipHideTimeout?: number;
@@ -130,6 +131,8 @@ class HaSidebar extends LitElement {
       }
     }
 
+    this._rtl = computeRTL(hass);
+
     return html`
       <div class="menu">
         ${!this.narrow
@@ -140,9 +143,6 @@ class HaSidebar extends LitElement {
                   ? "hass:menu-open"
                   : "hass:menu"}
                 @click=${this._toggleSidebar}
-                class=${classMap({
-                  flipVertical: this.rtl,
-                })}
               ></paper-icon-button>
             `
           : ""}
@@ -476,7 +476,7 @@ class HaSidebar extends LitElement {
       :host([expanded]) .menu paper-icon-button {
         margin-right: 23px;
       }
-      :host([expanded][rtl]) .menu paper-icon-button {
+      :host([expanded][_rtl]) .menu paper-icon-button {
         margin-right: 0px;
         margin-left: 23px;
       }
@@ -529,7 +529,7 @@ class HaSidebar extends LitElement {
       :host([expanded]) paper-icon-item {
         width: 240px;
       }
-      :host([rtl]) paper-icon-item {
+      :host([_rtl]) paper-icon-item {
         padding-left: auto;
         padding-right: 12px;
       }
@@ -600,14 +600,14 @@ class HaSidebar extends LitElement {
       .profile paper-icon-item {
         padding-left: 4px;
       }
-      :host([rtl]) .profile paper-icon-item {
+      :host([_rtl]) .profile paper-icon-item {
         padding-left: auto;
         padding-right: 4px;
       }
       .profile .item-text {
         margin-left: 8px;
       }
-      :host([rtl]) .profile .item-text {
+      :host([_rtl]) .profile .item-text {
         margin-right: 8px;
       }
 
@@ -667,7 +667,7 @@ class HaSidebar extends LitElement {
         font-weight: 500;
       }
 
-      .flipVertical {
+      :host([_rtl]) .menu paper-icon-button {
         -webkit-transform: scaleX(-1);
         transform: scaleX(-1);
       }

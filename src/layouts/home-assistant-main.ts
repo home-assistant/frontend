@@ -21,7 +21,6 @@ import { PolymerChangedEvent } from "../polymer-types";
 // tslint:disable-next-line: no-duplicate-imports
 import { AppDrawerLayoutElement } from "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
-import { computeRTL } from "../common/util/compute_rtl";
 
 const NON_SWIPABLE_PANELS = ["kiosk", "map"];
 
@@ -44,8 +43,6 @@ class HomeAssistantMain extends LitElement {
     if (!hass) {
       return;
     }
-
-    const isRTL = computeRTL(hass);
 
     const sidebarNarrow = this._sidebarNarrow;
 
@@ -77,7 +74,6 @@ class HomeAssistantMain extends LitElement {
             .narrow=${sidebarNarrow}
             .alwaysExpand=${sidebarNarrow ||
               this.hass.dockedSidebar === "docked"}
-            .rtl=${isRTL}
           ></ha-sidebar>
         </app-drawer>
 
