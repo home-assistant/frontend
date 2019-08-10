@@ -103,14 +103,17 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   private async _disconnect() {
     if (this._unsubRenderTemplate) {
-      this._unsubRenderTemplate
-        .then((unsub) => {
-          this._unsubRenderTemplate = undefined;
-          return unsub();
-        })
-        .catch(() => {
+      try {
+        const unsub = await this._unsubRenderTemplate;
+        this._unsubRenderTemplate = undefined;
+        await unsub();
+      } catch (e) {
+        if (e.code === "not_found") {
           // If we get here, the connection was probably already closed. Ignore.
-        });
+        } else {
+          throw e;
+        }
+      }
     }
   }
 
