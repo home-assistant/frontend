@@ -12,18 +12,18 @@ export class HaPaperIconButtonArrowPrev extends paperIconButtonClass {
   public hassio?: boolean;
 
   public connectedCallback() {
-    this.icon =
-      (document.querySelector("home-assistant")! as HTMLElement).style
-        .direction === "ltr"
-        ? this.hassio
-          ? "hassio:arrow-left"
-          : "hass:arrow-left"
-        : this.hassio
-        ? "hassio:arrow-right"
-        : "hass:arrow-right";
-
-    // calling super after setting icon to have it consistently show the icon (otherwise not always shown)
     super.connectedCallback();
+
+    setTimeout(() => {
+      this.icon =
+        window.getComputedStyle(this).direction === "ltr"
+          ? this.hassio
+            ? "hassio:arrow-left"
+            : "hass:arrow-left"
+          : this.hassio
+          ? "hassio:arrow-right"
+          : "hass:arrow-right";
+    }, 100);
   }
 }
 

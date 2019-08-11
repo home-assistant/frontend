@@ -5,14 +5,14 @@ import { HaIcon } from "./ha-icon";
 
 export class HaIconNext extends HaIcon {
   public connectedCallback() {
-    this.icon =
-      (document.querySelector("home-assistant")! as HTMLElement).style
-        .direction === "ltr"
-        ? "hass:chevron-right"
-        : "hass:chevron-left";
-
-    // calling super after setting icon to have it consistently show the icon (otherwise not always shown)
     super.connectedCallback();
+
+    setTimeout(() => {
+      this.icon =
+        window.getComputedStyle(this).direction === "ltr"
+          ? "hass:chevron-right"
+          : "hass:chevron-left";
+    }, 100);
   }
 }
 
