@@ -108,8 +108,8 @@ class HaSidebar extends LitElement {
   @property() private _externalConfig?: ExternalConfig;
   @property() private _notifications?: PersistentNotification[];
   // property used only in css
-  // tslint:disable-next-line
-  @property({ type: Boolean, reflect: true }) private _rtl;
+  // @ts-ignore
+  @property({ type: Boolean, reflect: true }) private _rtl = false;
 
   private _mouseLeaveTimeout?: number;
   private _tooltipHideTimeout?: number;
@@ -132,8 +132,6 @@ class HaSidebar extends LitElement {
         notificationCount++;
       }
     }
-
-    this._rtl = computeRTL(hass);
 
     return html`
       <div class="menu">
@@ -316,6 +314,8 @@ class HaSidebar extends LitElement {
         selectedEl.scrollIntoViewIfNeeded();
       }
     }
+
+    this._rtl = computeRTL(this.hass);
   }
 
   private get _tooltip() {
