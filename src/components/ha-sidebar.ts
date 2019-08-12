@@ -303,6 +303,9 @@ class HaSidebar extends LitElement {
     if (changedProps.has("alwaysExpand")) {
       this.expanded = this.alwaysExpand;
     }
+
+    this._rtl = computeRTL(this.hass);
+
     if (!SUPPORT_SCROLL_IF_NEEDED || !changedProps.has("hass")) {
       return;
     }
@@ -314,8 +317,6 @@ class HaSidebar extends LitElement {
         selectedEl.scrollIntoViewIfNeeded();
       }
     }
-
-    this._rtl = computeRTL(this.hass);
   }
 
   private get _tooltip() {
