@@ -622,7 +622,7 @@
                         "instance": "Instanz",
                         "index": "Index",
                         "unknown": "Unbekannt",
-                        "wakeup_interval": "Weckintervall einrichten"
+                        "wakeup_interval": "Aufwachintervall"
                     },
                     "values": {
                         "header": "Knotenwerte"
@@ -630,7 +630,7 @@
                     "node_config": {
                         "header": "Knotenkonfiguration",
                         "seconds": "Sekunden",
-                        "set_wakeup": "Weckintervall einrichten",
+                        "set_wakeup": "Aufwachintervall einrichten",
                         "config_parameter": "Konfigurationsparameter",
                         "config_value": "Konfigurationswert",
                         "true": "Richtig",
@@ -762,7 +762,7 @@
                 },
                 "server_control": {
                     "caption": "Serversteuerung",
-                    "description": "Neustarten und Stoppen des Home Assistant-Servers",
+                    "description": "Neustarten und Stoppen des Home Assistant Servers",
                     "section": {
                         "validation": {
                             "heading": "Konfiguration überprüfen",
@@ -1370,7 +1370,7 @@
                 "away": "Abwesend",
                 "boost": "Maximal",
                 "comfort": "Komfort",
-                "home": "Zuhause",
+                "home": "Zu Hause",
                 "sleep": "Schlafen",
                 "activity": "Aktivität"
             },
