@@ -12,6 +12,7 @@ export class HaPaperIconButtonArrowNext extends paperIconButtonClass {
   public connectedCallback() {
     super.connectedCallback();
 
+    // wait to check for direction since otherwise direction is wrong even though top level is RTL
     setTimeout(() => {
       this.icon =
         window.getComputedStyle(this).direction === "ltr"
