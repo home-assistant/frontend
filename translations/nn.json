@@ -587,7 +587,10 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Administrer Z-Wave-nettverket ditt"
+                    "description": "Administrer Z-Wave-nettverket ditt",
+                    "node_config": {
+                        "set_config_parameter": "Angi konfigurasjonsparameter"
+                    }
                 },
                 "users": {
                     "caption": "Brukarar",
@@ -974,8 +977,8 @@
                     "entity_non_numeric": "Oppføringa er ikkje numerisk: {entity}"
                 },
                 "changed_toast": {
-                    "message": "Lovelace konfigurasjonen blei oppdatert, ønskjer du å oppfriske?",
-                    "refresh": "Oppfrisk"
+                    "message": "Lovelace konfigurasjonen vart oppdatert. Ønsker du å friske opp?",
+                    "refresh": "Friske opp"
                 },
                 "reload_lovelace": "Omlast Lovelace"
             },

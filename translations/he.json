@@ -141,7 +141,8 @@
             "high_demand": "ביקוש גבוה",
             "heat_pump": "משאבת חום",
             "gas": "גז",
-            "manual": "מדריך ל"
+            "manual": "מדריך ל",
+            "heat_cool": "חימום\/קירור"
         },
         "configurator": {
             "configure": "הגדר",
@@ -323,6 +324,9 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "מידע"
                     }
                 }
             },
@@ -588,7 +592,51 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "נהל את רשת ה- Z-Wave שלך"
+                    "description": "נהל את רשת ה- Z-Wave שלך",
+                    "network_management": {
+                        "header": "ניהול רשת ה Z-Wave",
+                        "introduction": "הפעל פקודות המשפיעות על רשת ה-Z Wave. לא תקבל משוב אם רוב הפקודות הצליחו, אך באפשרותך לבדוק את יומן ה-OZW כדי לנסות לגלות."
+                    },
+                    "network_status": {
+                        "network_stopped": "רשת ה Z-Wave נעצרה",
+                        "network_starting": "מפעיל את רשת ה Z-Wave",
+                        "network_starting_note": "הדבר עשוי להימשך זמן מה בהתאם לגודל הרשת.",
+                        "network_started": "רשת ה Z-Wave הופעלה",
+                        "network_started_note_some_queried": "רכיבים דלוקים נבדקו. רכיבים כבויים יבדקו כאשר ידלקו.",
+                        "network_started_note_all_queried": "כל הרכיבים נבדקו"
+                    },
+                    "services": {
+                        "start_network": "הפעל רשת",
+                        "stop_network": "עצור רשת",
+                        "heal_network": "ריפוי רשת",
+                        "test_network": "בדיקת רשת",
+                        "soft_reset": "איפוס רך",
+                        "save_config": "שמור קונפיגורציה",
+                        "add_node_secure": "הוסף רכיב מאובטח",
+                        "add_node": "הוסף רכיב",
+                        "remove_node": "הסר רכיב",
+                        "cancel_command": "ביטול פקודה"
+                    },
+                    "common": {
+                        "value": "ערך תצורה",
+                        "instance": "פרמטר",
+                        "index": "אינדקס",
+                        "unknown": "לא ידוע",
+                        "wakeup_interval": "מרווח פעולה"
+                    },
+                    "values": {
+                        "header": "ערכים"
+                    },
+                    "node_config": {
+                        "header": "עריכת קונפיגורציה",
+                        "seconds": "שניות",
+                        "set_wakeup": "בחירת מרווח פעולה",
+                        "config_parameter": "פרמטר תצורה",
+                        "config_value": "ערך תצורה",
+                        "true": "True",
+                        "false": "False",
+                        "set_config_parameter": "הגדר פרמטר Config"
+                    }
                 },
                 "users": {
                     "caption": "משתמשים",
@@ -667,7 +715,7 @@
                 },
                 "area_registry": {
                     "caption": "מאגר האזורים",
-                    "description": "סקירה של כל האזורים בביתך.",
+                    "description": "סקירה של כל האזורים בביתך",
                     "picker": {
                         "header": "מאגר האזורים",
                         "introduction": "אזורים משמשים לארגון המיקום של ההתקנים. Home Assistant יעשה שימוש במידע זה בכדי לסייע לך בארגון הממשק, ההרשאות והאינטגרציות שלך עם מערכות אחרות.",
@@ -710,6 +758,33 @@
                         "device_tracker_intro": "בחר את המכשירים השייכים לאדם זה.",
                         "device_tracker_picked": "עקוב אחר מכשיר",
                         "device_tracker_pick": "בחר מכשיר למעקב"
+                    }
+                },
+                "server_control": {
+                    "caption": "בקרת שרת",
+                    "description": "שליטה על שרת ה Home Assistant",
+                    "section": {
+                        "validation": {
+                            "heading": "בדיקת הקונפיגורציה",
+                            "introduction": "אמת את הקונפיגורציה שלך אם ביצעת לאחרונה שינויים מסוימים וברצונך לוודא שהיא תקינה",
+                            "check_config": "בדיקת הקונפיגורציה",
+                            "valid": "קונפיגורציה תקינה!",
+                            "invalid": "קונפיגורציה לא תקנית"
+                        },
+                        "reloading": {
+                            "heading": "טען מחדש קונפיגורציה",
+                            "introduction": "חלקים מסוימים של Home Assistant יכולים להטען מחדש ללא צורך בהפעלה מחדש.\nטעינה מחדש תשנה את הקונפיגורציה הנוכחית ותטען קונפיגורציה חדשה.",
+                            "core": "טען מחדש את הליבה",
+                            "group": "טען מחדש קבוצות",
+                            "automation": "טען מחדש אוטומציות",
+                            "script": "טען מחדש סקריפטים"
+                        },
+                        "server_management": {
+                            "heading": "ניהול שרת",
+                            "introduction": "לשלוט על שרת הHome Assistant שלך... מHome Assistant.",
+                            "restart": "אתחול",
+                            "stop": "עצור"
+                        }
                     }
                 }
             },
@@ -781,6 +856,11 @@
                     "step_done": "הגדרה בוצעה עבור {step}",
                     "close": "סגור",
                     "submit": "שלח"
+                },
+                "logout": "התנתק",
+                "force_narrow": {
+                    "header": "הסתר תמיד את הסרגל הצדדי",
+                    "description": "פעולה זו תסתיר את הסרגל הצדדי כברירת מחדל, בדומה לחוויה בנייד."
                 }
             },
             "page-authorize": {
@@ -1137,7 +1217,8 @@
                 "fan_mode": "מצב מאורר",
                 "swing_mode": "מצב נדנוד",
                 "away_mode": "מצב מחוץ לבית",
-                "aux_heat": "מסייע חום"
+                "aux_heat": "מסייע חום",
+                "preset_mode": "מצב מוגדר"
             },
             "lock": {
                 "code": "קוד",
@@ -1282,6 +1363,24 @@
                 "off": "כבוי",
                 "on": "דולק",
                 "auto": "Auto"
+            },
+            "preset_mode": {
+                "none": "לא נבחר",
+                "eco": "חסכון",
+                "away": "לא בבית",
+                "boost": "מוגבר",
+                "comfort": "נוחות",
+                "home": "בבית",
+                "sleep": "שינה",
+                "activity": "פעילות"
+            },
+            "hvac_action": {
+                "off": "כבוי",
+                "heating": "חימום",
+                "cooling": "קירור",
+                "drying": "מייבש",
+                "idle": "כבוי",
+                "fan": "מאוורר"
             }
         }
     },

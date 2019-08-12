@@ -562,7 +562,10 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Kelola jaringan Z-Wave anda"
+                    "description": "Kelola jaringan Z-Wave anda",
+                    "node_config": {
+                        "set_config_parameter": "Setel Parameter Konfigurasi"
+                    }
                 },
                 "users": {
                     "caption": "Pengguna",

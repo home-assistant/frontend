@@ -588,7 +588,10 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Διαχειριστείτε το δίκτυο Z-Wave"
+                    "description": "Διαχειριστείτε το δίκτυο Z-Wave",
+                    "node_config": {
+                        "set_config_parameter": "Ορίστε την παράμετρο διαμόρφωσης"
+                    }
                 },
                 "users": {
                     "caption": "Χρήστες",

@@ -605,6 +605,9 @@
                     "common": {
                         "value": "值",
                         "instance": "实例"
+                    },
+                    "node_config": {
+                        "set_config_parameter": "设置配置参数"
                     }
                 },
                 "users": {

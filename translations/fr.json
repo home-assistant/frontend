@@ -160,7 +160,7 @@
             "not_home": "Absent"
         },
         "fan": {
-            "off": "Arrêt",
+            "off": "Éteint",
             "on": "Marche"
         },
         "group": {
@@ -179,7 +179,7 @@
             "problem": "Problème"
         },
         "input_boolean": {
-            "off": "Arrêt",
+            "off": "Arrêté",
             "on": "Marche"
         },
         "light": {
@@ -191,7 +191,7 @@
             "unlocked": "Déverrouillé"
         },
         "media_player": {
-            "off": "Arrêt",
+            "off": "Éteint",
             "on": "Marche",
             "playing": "Lecture en cours",
             "paused": "En pause",
@@ -594,13 +594,15 @@
                     "caption": "Z-Wave",
                     "description": "Gérez votre réseau Z-Wave",
                     "network_management": {
-                        "header": "Gestion de réseau Z-Wave"
+                        "header": "Gestion de réseau Z-Wave",
+                        "introduction": "Exécutez les commandes qui affectent le réseau Z-Wave. Vous ne saurez pas si la plupart des commandes ont réussi, mais vous pouvez consulter le journal OZW pour essayer de le savoir."
                     },
                     "network_status": {
                         "network_stopped": "Réseau Z-Wave arrêté",
                         "network_starting": "Démarrage du réseau Z-Wave...",
                         "network_starting_note": "Ceci peut prendre un certain temps en fonction du débit de votre réseau.",
                         "network_started": "Le réseau Z-Wave a été démarré",
+                        "network_started_note_some_queried": "Les nœuds éveillés ont été interrogés. Les nœuds en veille seront interrogés à leur réveil.",
                         "network_started_note_all_queried": "Tous les nœuds ont été interrogés."
                     },
                     "services": {
@@ -608,6 +610,7 @@
                         "stop_network": "Arrêter le réseau",
                         "heal_network": "Soigner le réseau",
                         "test_network": "Tester le réseau",
+                        "soft_reset": "Redémarrage",
                         "save_config": "Enregistrer la configuration",
                         "add_node_secure": "Ajouter un nœud sécurisé",
                         "add_node": "Ajouter un nœud",
@@ -617,10 +620,22 @@
                     "common": {
                         "value": "Valeur",
                         "instance": "Instance",
-                        "index": "Indice"
+                        "index": "Indice",
+                        "unknown": "Inconnu",
+                        "wakeup_interval": "Intervalle de réveil"
                     },
                     "values": {
                         "header": "Valeurs des nœuds"
+                    },
+                    "node_config": {
+                        "header": "Options de configuration du nœud",
+                        "seconds": "Secondes",
+                        "set_wakeup": "Définir l'intervalle de réveil",
+                        "config_parameter": "Paramètre de configuration",
+                        "config_value": "Valeur de configuration",
+                        "true": "Vrai",
+                        "false": "Faux",
+                        "set_config_parameter": "Définir le paramètre de configuration"
                     }
                 },
                 "users": {
@@ -746,15 +761,19 @@
                     }
                 },
                 "server_control": {
+                    "caption": "Contrôle du serveur",
+                    "description": "Redémarrez et arrêtez le serveur Home Assistant",
                     "section": {
                         "validation": {
                             "heading": "Validation de la configuration",
+                            "introduction": "Validez votre configuration si vous l'avez récemment modifiée et que vous voulez vous assurer que tout est valide",
                             "check_config": "Vérifiez la configuration",
                             "valid": "Configuration valide !",
                             "invalid": "Configuration invalide"
                         },
                         "reloading": {
                             "heading": "Rechargement de la configuration",
+                            "introduction": "Certaines parties de Home Assistant peuvent être rechargées sans nécessiter un redémarrage. Appuyer sur \"recharger\" déchargera leur configuration actuelle et chargera la nouvelle.",
                             "core": "Recharger le noyau",
                             "group": "Recharger les groupes",
                             "automation": "Recharger les automatisations",
@@ -762,6 +781,7 @@
                         },
                         "server_management": {
                             "heading": "Gestion du serveur",
+                            "introduction": "Contrôlez votre serveur Home Assistant ... depuis Home Assistant.",
                             "restart": "Redémarrer",
                             "stop": "Arrêter"
                         }
@@ -839,7 +859,8 @@
                 },
                 "logout": "Déconnexion",
                 "force_narrow": {
-                    "header": "Toujours cacher la barre latérale"
+                    "header": "Toujours cacher la barre latérale",
+                    "description": "Cela masquera la barre latérale par défaut, semblable à l'expérience mobile."
                 }
             },
             "page-authorize": {
@@ -1257,7 +1278,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Sauvegarder",
-                "name": "Surcharge du nom",
+                "name": "Outrepasser le nom",
                 "entity_id": "ID de l'entité"
             },
             "more_info_control": {

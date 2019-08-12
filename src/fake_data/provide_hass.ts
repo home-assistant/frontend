@@ -24,7 +24,10 @@ export interface MockHomeAssistant extends HomeAssistant {
   updateHass(obj: Partial<MockHomeAssistant>);
   updateStates(newStates: HassEntities);
   addEntities(entites: Entity | Entity[], replace?: boolean);
-  mockWS(type: string, callback: (msg: any) => any);
+  mockWS(
+    type: string,
+    callback: (msg: any, onChange?: (response: any) => void) => any
+  );
   mockAPI(path: string | RegExp, callback: MockRestCallback);
   mockEvent(event);
   mockTheme(theme: { [key: string]: string } | null);
@@ -108,10 +111,21 @@ export const provideHass = (
           console.error(`Unknown WS command: ${msg.type}`);
         }
       },
-      sendMessagePromise: (msg) => {
+      sendMessagePromise: async (msg) => {
         const callback = wsCommands[msg.type];
         return callback
           ? callback(msg)
+          : Promise.reject({
+              code: "command_not_mocked",
+              message: `WS Command ${
+                msg.type
+              } is not implemented in provide_hass.`,
+            });
+      },
+      subscribeMessage: async (onChange, msg) => {
+        const callback = wsCommands[msg.type];
+        return callback
+          ? callback(msg, onChange)
           : Promise.reject({
               code: "command_not_mocked",
               message: `WS Command ${
