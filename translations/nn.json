@@ -977,8 +977,8 @@
                     "entity_non_numeric": "Oppføringa er ikkje numerisk: {entity}"
                 },
                 "changed_toast": {
-                    "message": "Lovelace konfigurasjonen blei oppdatert, ønskjer du å oppfriske?",
-                    "refresh": "Oppfrisk"
+                    "message": "Lovelace konfigurasjonen vart oppdatert. Ønsker du å friske opp?",
+                    "refresh": "Friske opp"
                 },
                 "reload_lovelace": "Omlast Lovelace"
             },
