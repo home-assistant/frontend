@@ -5,13 +5,15 @@ import { HaIcon } from "./ha-icon";
 
 export class HaIconPrev extends HaIcon {
   public connectedCallback() {
-    this.icon =
-      window.getComputedStyle(this).direction === "ltr"
-        ? "hass:chevron-left"
-        : "hass:chevron-right";
-
-    // calling super after setting icon to have it consistently show the icon (otherwise not always shown)
     super.connectedCallback();
+
+    // wait to check for direction since otherwise direction is wrong even though top level is RTL
+    setTimeout(() => {
+      this.icon =
+        window.getComputedStyle(this).direction === "ltr"
+          ? "hass:chevron-left"
+          : "hass:chevron-right";
+    }, 100);
   }
 }
 

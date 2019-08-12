@@ -12,17 +12,19 @@ export class HaPaperIconButtonArrowPrev extends paperIconButtonClass {
   public hassio?: boolean;
 
   public connectedCallback() {
-    this.icon =
-      window.getComputedStyle(this).direction === "ltr"
-        ? this.hassio
-          ? "hassio:arrow-left"
-          : "hass:arrow-left"
-        : this.hassio
-        ? "hassio:arrow-right"
-        : "hass:arrow-right";
-
-    // calling super after setting icon to have it consistently show the icon (otherwise not always shown)
     super.connectedCallback();
+
+    // wait to check for direction since otherwise direction is wrong even though top level is RTL
+    setTimeout(() => {
+      this.icon =
+        window.getComputedStyle(this).direction === "ltr"
+          ? this.hassio
+            ? "hassio:arrow-left"
+            : "hass:arrow-left"
+          : this.hassio
+          ? "hassio:arrow-right"
+          : "hass:arrow-right";
+    }, 100);
   }
 }
 
