@@ -160,7 +160,7 @@
             "not_home": "Absent"
         },
         "fan": {
-            "off": "Arrêt",
+            "off": "Éteint",
             "on": "Marche"
         },
         "group": {
@@ -179,7 +179,7 @@
             "problem": "Problème"
         },
         "input_boolean": {
-            "off": "Arrêt",
+            "off": "Arrêté",
             "on": "Marche"
         },
         "light": {
@@ -191,7 +191,7 @@
             "unlocked": "Déverrouillé"
         },
         "media_player": {
-            "off": "Arrêt",
+            "off": "Éteint",
             "on": "Marche",
             "playing": "Lecture en cours",
             "paused": "En pause",
