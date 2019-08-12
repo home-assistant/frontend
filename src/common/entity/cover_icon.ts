@@ -11,16 +11,8 @@ export default function coverIcon(state: HassEntity): string {
       return open ? "hass:door-open" : "hass:door-closed";
     case "window":
       return open ? "hass:window-open" : "hass:window-closed";
-
     case "awning":
       return open ? "hass:umbrella-open" : "hass:umbrella-closed";
-
-    case "blind":
-    case "curtain":
-    case "shade":
-    case "shutter":
-      return "hass:blinds";
-
     default:
       return domainIcon("cover", state.state);
   }
