@@ -30,7 +30,7 @@ export interface CastConfig {
   type: "cast";
   icon: string;
   name: string;
-  view: string;
+  view: string | number;
   // Hide the row if either unsupported browser or no API available.
   hide_if_unavailable: boolean;
 }

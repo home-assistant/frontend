@@ -588,7 +588,10 @@
                 },
                 "zwave": {
                     "caption": "",
-                    "description": "Administrar su red Z-Wave"
+                    "description": "Administrar su red Z-Wave",
+                    "node_config": {
+                        "set_config_parameter": "Establecer parámetro de configuración"
+                    }
                 },
                 "users": {
                     "caption": "Usuarios",

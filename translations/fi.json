@@ -594,6 +594,9 @@
                         "test_network": "Testaa verkkoyhteys",
                         "save_config": "Tallenna asetukset",
                         "cancel_command": "Peruuta komento"
+                    },
+                    "node_config": {
+                        "set_config_parameter": "Aseta asetusparametri"
                     }
                 },
                 "users": {
@@ -1263,7 +1266,7 @@
         "notify": "Ilmoita",
         "plant": "Kasvi",
         "proximity": "Läheisyys",
-        "remote": "Etä",
+        "remote": "Kauko-ohjaus",
         "scene": "Skene",
         "script": "Skripti",
         "sensor": "Sensori",

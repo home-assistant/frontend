@@ -597,22 +597,41 @@
                         "network_stopped": "Z-Wave-nätverk stoppat",
                         "network_starting": "Startar Z-Wave-nätverk...",
                         "network_starting_note": "Detta kan ta ett tag beroende på storleken på ditt nätverk.",
-                        "network_started": "Z-Wave nätverk startat"
+                        "network_started": "Z-Wave nätverk startat",
+                        "network_started_note_some_queried": "Vakna noder har frågats. Vilande noder frågas när de vaknar.",
+                        "network_started_note_all_queried": "Alla noder har frågats."
                     },
                     "services": {
                         "start_network": "Starta Nätverket",
                         "stop_network": "Stoppa nätverket",
+                        "heal_network": "Reparera nätverk",
+                        "test_network": "Testa nätverk",
+                        "soft_reset": "Mjuk återställning",
+                        "save_config": "Spara konfiguration",
+                        "add_node_secure": "Lägg till nod med säkerhet",
+                        "add_node": "Lägg till nod",
+                        "remove_node": "Ta bort nod",
                         "cancel_command": "Avbryt kommandot"
                     },
                     "common": {
                         "value": "Värde",
                         "instance": "Instans",
-                        "index": "Index"
+                        "index": "Index",
+                        "unknown": "okänt",
+                        "wakeup_interval": "Uppvakningsintervall"
+                    },
+                    "values": {
+                        "header": "Nodvärden"
                     },
                     "node_config": {
+                        "header": "Alternativ för nodkonfiguration",
                         "seconds": "Sekunder",
+                        "set_wakeup": "Ställ in uppvakningsintervall",
+                        "config_parameter": "Konfigurera parameter",
+                        "config_value": "Konfigurera värde",
                         "true": "Sant",
-                        "false": "Falskt"
+                        "false": "Falskt",
+                        "set_config_parameter": "Ställ in konfigurations parameter"
                     }
                 },
                 "users": {
@@ -738,11 +757,26 @@
                     }
                 },
                 "server_control": {
+                    "caption": "Serverhantering",
+                    "description": "Starta om och stoppa Home Assistant-servern",
                     "section": {
+                        "validation": {
+                            "heading": "Validering av konfiguration",
+                            "introduction": "Kontrollera din konfiguration om du nyligen gjort ändringar och du vill säkerställa att den är giltig",
+                            "check_config": "Kontrollera konfigurationen",
+                            "valid": "Konfigurationen är giltig!",
+                            "invalid": "Konfigurationen är inte giltig"
+                        },
                         "reloading": {
-                            "introduction": "Vissa delar av Home Assistant kan laddas om utan att en omstart krävs. Att trycka på \"ladda om\" innebär att den nuvarande konfiguration inaktiveras och den nya laddas."
+                            "heading": "Konfigurationen laddas om",
+                            "introduction": "Vissa delar av Home Assistant kan laddas om utan att en omstart krävs. Att trycka på \"ladda om\" innebär att den nuvarande konfiguration inaktiveras och den nya laddas.",
+                            "core": "Ladda om kärnan",
+                            "group": "Ladda om grupper",
+                            "automation": "Ladda om automationer",
+                            "script": "Ladda om skript"
                         },
                         "server_management": {
+                            "heading": "Serverhantering",
                             "introduction": "Kontrollera din Home Assistant-server ... från Home Assistant.",
                             "restart": "Starta om",
                             "stop": "Stoppa"

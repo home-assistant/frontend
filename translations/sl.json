@@ -624,6 +624,9 @@
                     },
                     "values": {
                         "header": "Vrednosti vozlišča"
+                    },
+                    "node_config": {
+                        "set_config_parameter": "Nastavite Config Parameter"
                     }
                 },
                 "users": {

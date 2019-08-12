@@ -16,8 +16,10 @@ import "./hc-launch-screen";
 @customElement("hc-lovelace")
 class HcLovelace extends LitElement {
   @property() public hass!: HomeAssistant;
+
   @property() public lovelaceConfig!: LovelaceConfig;
-  @property() public viewPath?: string;
+
+  @property() public viewPath?: string | number;
 
   protected render(): TemplateResult | void {
     const index = this._viewIndex;
@@ -50,10 +52,11 @@ class HcLovelace extends LitElement {
 
   protected updated(changedProps) {
     super.updated(changedProps);
+
     if (changedProps.has("viewPath") || changedProps.has("lovelaceConfig")) {
       const index = this._viewIndex;
 
-      if (index) {
+      if (index !== undefined) {
         this.shadowRoot!.querySelector("hui-view")!.style.background =
           this.lovelaceConfig.views[index].background ||
           this.lovelaceConfig.background ||
@@ -64,7 +67,7 @@ class HcLovelace extends LitElement {
 
   private get _viewIndex() {
     const selectedView = this.viewPath;
-    const selectedViewInt = parseInt(selectedView!, 10);
+    const selectedViewInt = parseInt(selectedView as string, 10);
     for (let i = 0; i < this.lovelaceConfig.views.length; i++) {
       if (
         this.lovelaceConfig.views[i].path === selectedView ||
@@ -77,7 +80,6 @@ class HcLovelace extends LitElement {
   }
 
   static get styles(): CSSResult {
-    // We're applying a 10% transform so it all shows a little bigger.
     return css`
       :host {
         min-height: 100vh;

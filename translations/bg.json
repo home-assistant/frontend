@@ -624,6 +624,9 @@
                     },
                     "values": {
                         "header": "Стойности на устройсто"
+                    },
+                    "node_config": {
+                        "set_config_parameter": "Задайте параметър Config"
                     }
                 },
                 "users": {
