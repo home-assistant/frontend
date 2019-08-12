@@ -351,7 +351,7 @@
                             "header": "Konfigurace a správa serveru",
                             "introduction": "Moc dobře víme, že změna konfigurace může být velmi únavným procesem. Tato sekce se proto pokusí udělat váš život alespoň trochu jednodušší.",
                             "core_config": {
-                                "edit_requires_storage": "Editori pois käytöstä, koska asetukset on määritelty configuration.yaml:ssä",
+                                "edit_requires_storage": "Editor je zakázán, protože konfigurace je uložena v configuration.yaml.",
                                 "location_name": "Název instalace Home Assistant",
                                 "latitude": "Zeměpisná šířka",
                                 "longitude": "Zeměpisná délka",
@@ -588,7 +588,18 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Spravujte svou síť Z-Wave"
+                    "description": "Spravujte svou síť Z-Wave",
+                    "services": {
+                        "test_network": "Testovat síť",
+                        "save_config": "Uložit konfiguraci"
+                    },
+                    "common": {
+                        "unknown": "neznámý"
+                    },
+                    "node_config": {
+                        "seconds": "sekund",
+                        "set_config_parameter": "Nastavte konfigurační parametr"
+                    }
                 },
                 "users": {
                     "caption": "Uživatelé",
@@ -710,6 +721,25 @@
                         "device_tracker_intro": "Vyberte zařízení, která patří této osobě.",
                         "device_tracker_picked": "Sledovat zařízení",
                         "device_tracker_pick": "Vyberte zařízení, které chcete sledovat"
+                    }
+                },
+                "server_control": {
+                    "section": {
+                        "validation": {
+                            "check_config": "Zkontrolujte konfiguraci",
+                            "valid": "Konfigurace je v pořádku!",
+                            "invalid": "Konfigurace není v pořádku!"
+                        },
+                        "reloading": {
+                            "heading": "Konfigurace se načítá",
+                            "core": "Znovu načíst jádro",
+                            "group": "Znovu načíst skupiny",
+                            "automation": "Znovu načíst automatizace",
+                            "script": "Znovu načíst skripty"
+                        },
+                        "server_management": {
+                            "heading": "Správa serveru"
+                        }
                     }
                 }
             },

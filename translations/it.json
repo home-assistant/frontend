@@ -324,6 +324,9 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "Info"
                     }
                 }
             },
@@ -590,9 +593,49 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Gestisci la tua rete Z-Wave",
+                    "network_management": {
+                        "header": "Gestione della rete Z-Wave",
+                        "introduction": "Eseguire comandi che interessano la rete Z-Wave. Non otterrete un feedback sul successo della maggior parte dei comandi, ma potete controllare il Log OZW per cercare di scoprirlo."
+                    },
                     "network_status": {
+                        "network_stopped": "Rete Z-Wave arrestata",
                         "network_starting": "Inizializzazione della rete Z-Wave...",
-                        "network_started": "Rete Z-Wave inizializzata"
+                        "network_starting_note": "Questo potrebbe richiedere del tempo a seconda delle dimensioni della tua rete.",
+                        "network_started": "Rete Z-Wave inizializzata",
+                        "network_started_note_some_queried": "Sono stati interrogati i nodi attivi. I nodi dormienti verranno interrogati quando si attiveranno.",
+                        "network_started_note_all_queried": "Tutti i nodi sono stati interrogati."
+                    },
+                    "services": {
+                        "start_network": "Avvia la rete",
+                        "stop_network": "Ferma la rete",
+                        "heal_network": "Testa la rete",
+                        "test_network": "Testa la rete",
+                        "soft_reset": "Soft Reset",
+                        "save_config": "Salva configurazione",
+                        "add_node_secure": "Aggiungi nodo sicuro",
+                        "add_node": "Aggiungi Nodo",
+                        "remove_node": "Rimuovi nodo",
+                        "cancel_command": "Annulla Comando"
+                    },
+                    "common": {
+                        "value": "Valore",
+                        "instance": "Esempio",
+                        "index": "Indice",
+                        "unknown": "sconosciuto",
+                        "wakeup_interval": "Intervallo di sveglia"
+                    },
+                    "values": {
+                        "header": "Valori del nodo"
+                    },
+                    "node_config": {
+                        "header": "Opzioni di configurazione del nodo",
+                        "seconds": "secondi",
+                        "set_wakeup": "Imposta intervallo di riattivazione",
+                        "config_parameter": "Parametro di configurazione",
+                        "config_value": "Valore di configurazione",
+                        "true": "Vero",
+                        "false": "False",
+                        "set_config_parameter": "Imposta parametro di configurazione"
                     }
                 },
                 "users": {
@@ -715,6 +758,33 @@
                         "device_tracker_intro": "Seleziona i dispositivi che appartengono a questa persona.",
                         "device_tracker_picked": "Traccia dispositivo",
                         "device_tracker_pick": "Scegli il dispositivo da tracciare"
+                    }
+                },
+                "server_control": {
+                    "caption": "Gestione del server",
+                    "description": "Riavviare e arrestare il server Home Assistant",
+                    "section": {
+                        "validation": {
+                            "heading": "Convalida della configurazione",
+                            "introduction": "Convalidare la configurazione se di recente sono state apportate alcune modifiche alla configurazione e si desidera assicurarsi che sia tutto valido",
+                            "check_config": "Controlla la configurazione",
+                            "valid": "Configurazione valida!",
+                            "invalid": "Configurazione non valida"
+                        },
+                        "reloading": {
+                            "heading": "Ricaricamento della configurazione",
+                            "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere il riavvio. Cliccando su ricarica si rimuoverà la loro configurazione corrente e si caricherà quella nuova.",
+                            "core": "Ricarica core",
+                            "group": "Ricarica i gruppi",
+                            "automation": "Ricarica automazioni",
+                            "script": "Ricarica script"
+                        },
+                        "server_management": {
+                            "heading": "Gestione del server",
+                            "introduction": "Controllare il server Home Assistant... da Home Assistant.",
+                            "restart": "Riavviare",
+                            "stop": "Stop"
+                        }
                     }
                 }
             },
@@ -1147,7 +1217,8 @@
                 "fan_mode": "Ventilazione",
                 "swing_mode": "Modo oscillazione",
                 "away_mode": "Modalità Assente",
-                "aux_heat": "Riscaldamento ausiliario"
+                "aux_heat": "Riscaldamento ausiliario",
+                "preset_mode": "Preset"
             },
             "lock": {
                 "code": "Codice",
@@ -1296,6 +1367,8 @@
             "preset_mode": {
                 "none": "Nessuna",
                 "eco": "Eco",
+                "away": "Fuori Casa",
+                "boost": "Boost",
                 "comfort": "Comfort",
                 "home": "Casa",
                 "sleep": "Sleep",
@@ -1303,6 +1376,7 @@
             },
             "hvac_action": {
                 "off": "Spento",
+                "heating": "Riscaldamento",
                 "cooling": "Raffreddamento",
                 "drying": "Asciugatura",
                 "idle": "Inattivo",

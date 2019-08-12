@@ -588,7 +588,10 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "จัดการเครือข่าย Z-Wave"
+                    "description": "จัดการเครือข่าย Z-Wave",
+                    "node_config": {
+                        "set_config_parameter": "ตั้งค่าพารามิเตอร์การกำหนดค่า"
+                    }
                 },
                 "users": {
                     "caption": "ผู้ใช้",

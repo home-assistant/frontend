@@ -118,7 +118,42 @@
         </p>
       </div>
 
-      <div class="section-header">How does Home Assistant Cast work?</div>
+      <div class="section-header" id="https">
+        Why does Home Assistant Cast require me to authorize my Home Assistant
+        instance?
+      </div>
+      <div class="card-content">
+        <p>
+          You're currently looking at the Home Assistant Cast launcher
+          application. This is a standalone application to launch Home Assistant
+          Cast on your Chromecast. Because Chromecasts do not allow us to log in
+          to Home Assistant, we need to supply authentication to it from the
+          launcher. This authentication is obtained when you authorize your
+          instance. Your authentication credentials will remain in your browser
+          and on your Cast device.
+        </p>
+        <p>
+          Your authentication credentials or Home Assistant url are never sent
+          to the Cloud. You can validate this behavior in
+          <a
+            href="https://github.com/home-assistant/home-assistant-polymer/tree/dev/cast"
+            target="_blank"
+            >the source code</a
+          >.
+        </p>
+        <p>
+          The launcher application exists to make it possible to use Home
+          Assistant Cast with older versions of Home Assistant.
+        </p>
+        <p>
+          Starting with Home Assistant 0.97, Home Assistant Cast is also built
+          into the Lovelace UI as a special entities card row. Since the
+          Lovelace UI already has authentication, you will be able to start
+          casting right away.
+        </p>
+      </div>
+
+      <div class="section-header">Wat does Home Assistant Cast do?</div>
       <div class="card-content">
         <p>
           Home Assistant Cast is a receiver application for the Chromecast. When

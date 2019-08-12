@@ -158,16 +158,6 @@ class HcCast extends LitElement {
 
   protected updated(changedProps) {
     super.updated(changedProps);
-    if (this.castManager && this.castManager.status) {
-      const selectEl = this.shadowRoot!.querySelector("select");
-      if (selectEl) {
-        this.shadowRoot!.querySelector("select")!.value =
-          this.castManager.castConnectedToOurHass &&
-          !this.castManager.status.showDemo
-            ? this.castManager.status.lovelacePath || ""
-            : "";
-      }
-    }
     this.toggleAttribute(
       "hide-icons",
       this.lovelaceConfig

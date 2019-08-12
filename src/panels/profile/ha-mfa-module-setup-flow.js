@@ -91,7 +91,6 @@ class HaMfaModuleSetupFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
               >
                 <ha-markdown
                   content="[[_computeStepDescription(localize, _step)]]"
-                  allow-svg
                 ></ha-markdown>
               </template>
 
