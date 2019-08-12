@@ -303,10 +303,13 @@ class HaSidebar extends LitElement {
     if (changedProps.has("alwaysExpand")) {
       this.expanded = this.alwaysExpand;
     }
+    if (!changedProps.has("hass")) {
+      return;
+    }
 
     this._rtl = computeRTL(this.hass);
 
-    if (!SUPPORT_SCROLL_IF_NEEDED || !changedProps.has("hass")) {
+    if (!SUPPORT_SCROLL_IF_NEEDED) {
       return;
     }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
