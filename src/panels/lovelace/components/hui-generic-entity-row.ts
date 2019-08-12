@@ -17,6 +17,7 @@ import "../components/hui-warning";
 import { HomeAssistant } from "../../../types";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { EntitiesCardEntityConfig } from "../cards/types";
+import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 
 class HuiGenericEntityRow extends LitElement {
   @property() public hass?: HomeAssistant;
@@ -80,7 +81,7 @@ class HuiGenericEntityRow extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
     if (changedProps.has("hass")) {
-      this.toggleAttribute("rtl", computeRTL(this.hass!));
+      toggleAttribute(this, "rtl", computeRTL(this.hass!));
     }
   }
 
