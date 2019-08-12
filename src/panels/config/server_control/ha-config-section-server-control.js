@@ -128,6 +128,13 @@ class HaConfigSectionServerControl extends LocalizeMixin(PolymerElement) {
                 hidden$="[[!scriptLoaded(hass)]]"
                 >[[localize('ui.panel.config.server_control.section.reloading.script')]]
               </ha-call-service-button>
+              <ha-call-service-button
+                hass="[[hass]]"
+                domain="scene"
+                service="reload"
+                hidden$="[[!sceneLoaded(hass)]]"
+                >[[localize('ui.panel.config.server_control.section.reloading.scene')]]
+              </ha-call-service-button>
             </div>
           </ha-card>
         </template>
@@ -198,6 +205,10 @@ class HaConfigSectionServerControl extends LocalizeMixin(PolymerElement) {
 
   scriptLoaded(hass) {
     return isComponentLoaded(hass, "script");
+  }
+
+  sceneLoaded(hass) {
+    return isComponentLoaded(hass, "scene");
   }
 
   validateConfig() {
