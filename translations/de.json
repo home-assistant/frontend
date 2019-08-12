@@ -320,7 +320,7 @@
                         "title": "Ereignisse"
                     },
                     "templates": {
-                        "title": "Templates"
+                        "title": "Vorlage"
                     },
                     "mqtt": {
                         "title": "MQTT"
@@ -349,10 +349,10 @@
                 "introduction": "Hier ist es möglich, deine Komponenten und Home Assistant zu konfigurieren. Noch ist nicht alles über die GUI einstellbar, aber wir arbeiten daran.",
                 "core": {
                     "caption": "Allgemein",
-                    "description": "Überprüfe deine Konfigurationsdatei und steuere den Server",
+                    "description": "Bearbeite die allgemeine Konfiguration von Home Assistant",
                     "section": {
                         "core": {
-                            "header": "Einstellungen und Serversteuerung",
+                            "header": "Allgemeine Einstellungen",
                             "introduction": "Die Konfiguration zu ändern ist ein mühsamer Prozess. Das wissen wir. Dieser Bereich versucht dir das Leben etwas leichter zu gestalten.",
                             "core_config": {
                                 "edit_requires_storage": "Editor deaktiviert, da die Konfiguration in configuration.yaml gespeichert ist.",
@@ -602,7 +602,7 @@
                         "network_starting": "Z-Wave Netzwerk wird gestartet ...",
                         "network_starting_note": "Dies kann je nach Größe des Netzwerks eine Weile dauern.",
                         "network_started": "Z-Wave Netzwerk gestartet",
-                        "network_started_note_some_queried": "Wache Knoten wurden abgefragt. Schlafende knoten werden abgefragt wenn sie aufwachen.",
+                        "network_started_note_some_queried": "Aktive Knoten wurden abgefragt. Schlafende Knoten werden abgefragt, sobald sie aktiv werden.",
                         "network_started_note_all_queried": "Alle Knoten wurden abgefragt."
                     },
                     "services": {
@@ -620,10 +620,22 @@
                     "common": {
                         "value": "Wert",
                         "instance": "Instanz",
-                        "index": "Index"
+                        "index": "Index",
+                        "unknown": "Unbekannt",
+                        "wakeup_interval": "Aufwachintervall"
                     },
                     "values": {
                         "header": "Knotenwerte"
+                    },
+                    "node_config": {
+                        "header": "Knotenkonfiguration",
+                        "seconds": "Sekunden",
+                        "set_wakeup": "Aufwachintervall einrichten",
+                        "config_parameter": "Konfigurationsparameter",
+                        "config_value": "Konfigurationswert",
+                        "true": "Richtig",
+                        "false": "Falsch",
+                        "set_config_parameter": "Konfiguration speichern"
                     }
                 },
                 "users": {
@@ -750,18 +762,18 @@
                 },
                 "server_control": {
                     "caption": "Serversteuerung",
-                    "description": "Neustarten und Stoppen des Home Assistant-Servers",
+                    "description": "Neustarten und Stoppen des Home Assistant Servers",
                     "section": {
                         "validation": {
                             "heading": "Konfiguration überprüfen",
-                            "introduction": "Überprüfe deine Konfiguration wenn du kürzlich Änderungen vorgenommen hast und sicherstellen möchtest, dass alle Änderungen gültig sind",
+                            "introduction": "Überprüfe deine Konfiguration, wenn du kürzlich Änderungen vorgenommen hast und sicherstellen möchtest, dass alle Änderungen gültig sind",
                             "check_config": "Konfiguration prüfen",
                             "valid": "Konfiguration in Ordnung",
                             "invalid": "Konfiguration ungültig"
                         },
                         "reloading": {
                             "heading": "Konfiguration neu laden",
-                            "introduction": "Einige Komponenten von Home Assistant können ohne einen Neustart neu geladen werden. \"Neu laden\" entlädt dabei die aktuelle Konfiguration und lädt die Neue.",
+                            "introduction": "Einige Komponenten von Home Assistant können ohne einen Neustart neu geladen werden. \"Neu laden\" entlädt dabei die aktuelle Konfiguration und lädt die neue Konfiguration.",
                             "core": "Hauptsystem neu laden",
                             "group": "Gruppen neu laden",
                             "automation": "Automatisierungen neu laden",
@@ -1358,7 +1370,7 @@
                 "away": "Abwesend",
                 "boost": "Maximal",
                 "comfort": "Komfort",
-                "home": "Zuhause",
+                "home": "Zu Hause",
                 "sleep": "Schlafen",
                 "activity": "Aktivität"
             },

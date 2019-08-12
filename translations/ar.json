@@ -536,7 +536,10 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "إدارة شبكة Z-Wave"
+                    "description": "إدارة شبكة Z-Wave",
+                    "node_config": {
+                        "set_config_parameter": "تعيين معلمة التكوين"
+                    }
                 },
                 "users": {
                     "caption": "المستخدمين",

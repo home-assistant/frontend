@@ -602,7 +602,7 @@
                         "network_starting": "Z-Wave 네트워크 시작 중...",
                         "network_starting_note": "네트워크 규모에 따라 다소 시간이 걸릴 수 있습니다.",
                         "network_started": "Z-Wave 네트워크 시작됨",
-                        "network_started_note_some_queried": "절전 모드 해제 노드가 쿼리되었습니다. 절전 노드는 절전 모드 해제 시 쿼리됩니다.",
+                        "network_started_note_some_queried": "절전모드 해제 노드가 쿼리되었습니다. 절전모드 노드는 절전모드 해제 상태일 때 쿼리됩니다.",
                         "network_started_note_all_queried": "모든 노드가 쿼리되었습니다."
                     },
                     "services": {
@@ -621,8 +621,8 @@
                         "value": "값",
                         "instance": "인스턴스",
                         "index": "색인",
-                        "unknown": "알 수 없슴",
-                        "wakeup_interval": "절전 모드 해제 간격"
+                        "unknown": "알 수 없음",
+                        "wakeup_interval": "절전모드 해제 간격"
                     },
                     "values": {
                         "header": "노드 값"
@@ -630,7 +630,7 @@
                     "node_config": {
                         "header": "노드 구성 옵션",
                         "seconds": "초",
-                        "set_wakeup": "절전 모드 해제 간격 설정",
+                        "set_wakeup": "절전모드 해제 간격 설정",
                         "config_parameter": "구성 파라메터",
                         "config_value": "구성 값",
                         "true": "참",

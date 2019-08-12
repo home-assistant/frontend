@@ -56,7 +56,7 @@ class StepFlowCreateEntry extends LitElement {
       <div class="content">
         ${description
           ? html`
-              <ha-markdown .content=${description} allow-svg></ha-markdown>
+              <ha-markdown .content=${description}></ha-markdown>
             `
           : ""}
         <p>Created config for ${step.title}.</p>

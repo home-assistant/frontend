@@ -1,10 +1,10 @@
-import { HassElement } from "../../../../src/state/hass-element";
 import {
   getAuth,
   createConnection,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
 import { customElement, TemplateResult, html, property } from "lit-element";
+import { HassElement } from "../../../../src/state/hass-element";
 import {
   HassMessage,
   ConnectMessage,
@@ -26,9 +26,13 @@ import { isNavigationClick } from "../../../../src/common/dom/is-navigation-clic
 @customElement("hc-main")
 export class HcMain extends HassElement {
   @property() private _showDemo = false;
+
   @property() private _lovelaceConfig?: LovelaceConfig;
-  @property() private _lovelacePath: string | null = null;
+
+  @property() private _lovelacePath: string | number | null = null;
+
   @property() private _error?: string;
+
   private _unsubLovelace?: UnsubscribeFunc;
 
   public processIncomingMessage(msg: HassMessage) {
@@ -53,7 +57,7 @@ export class HcMain extends HassElement {
       `;
     }
 
-    if (!this._lovelaceConfig || !this._lovelacePath) {
+    if (!this._lovelaceConfig || this._lovelacePath === null) {
       return html`
         <hc-launch-screen
           .hass=${this.hass}

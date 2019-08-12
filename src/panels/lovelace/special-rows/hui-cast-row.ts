@@ -23,11 +23,13 @@ class HuiCastRow extends LitElement implements EntityRow {
   public hass!: HomeAssistant;
 
   @property() private _config?: CastConfig;
+
   @property() private _castManager?: CastManager | null;
+
   @property() private _noHTTPS = false;
 
   public setConfig(config: CastConfig): void {
-    if (!config || !config.view) {
+    if (!config || config.view === undefined || config.view === null) {
       throw new Error("Invalid Configuration: 'view' required");
     }
 
@@ -66,6 +68,8 @@ class HuiCastRow extends LitElement implements EntityRow {
                 <google-cast-launcher></google-cast-launcher>
                 <mwc-button
                   @click=${this._sendLovelace}
+                  .unelevated=${this._castManager.status &&
+                    this._config.view === this._castManager.status.lovelacePath}
                   .disabled=${!this._castManager.status}
                 >
                   SHOW
@@ -120,6 +124,7 @@ class HuiCastRow extends LitElement implements EntityRow {
       :host {
         display: flex;
         align-items: center;
+        overflow: visible;
       }
       ha-icon {
         padding: 8px;
@@ -127,7 +132,6 @@ class HuiCastRow extends LitElement implements EntityRow {
       }
       .flex {
         flex: 1;
-        overflow: hidden;
         margin-left: 16px;
         display: flex;
         justify-content: space-between;
@@ -144,6 +148,7 @@ class HuiCastRow extends LitElement implements EntityRow {
         align-items: center;
       }
       google-cast-launcher {
+        margin-right: 0.57em;
         cursor: pointer;
         display: inline-block;
         height: 24px;

@@ -7,31 +7,23 @@ trigger:
       - "*"
 pr: none
 variables:
-  - name: versionBuilder
-    value: "5.2"
-  - group: github
+  - name: versionWheels
+    value: '1.1-3.7-alpine3.10'
+  - name: versionNode
+    value: '12.1'
   - group: twine
+resources:
+  repositories:
+    - repository: azure
+      type: github
+      name: 'home-assistant/ci-azure'
+      endpoint: 'home-assistant'
+
 
 stages:
   - stage: "Validate"
     jobs:
-      - job: "VersionValidate"
-        pool:
-          vmImage: "ubuntu-latest"
-        steps:
-          - task: UsePythonVersion@0
-            displayName: "Use Python 3.7"
-            inputs:
-              versionSpec: "3.7"
-          - script: |
-              setup_version="$(python setup.py -V)"
-              branch_version="$(Build.SourceBranchName)"
-
-              if [ "${setup_version}" != "${branch_version}" ]; then
-                echo "Version of tag ${branch_version} don't match with ${setup_version}!"
-                exit 1
-              fi
-            displayName: "Check version of branch/tag"
+    - template: templates/azp-job-version.yaml@azure
 
   - stage: "Build"
     jobs:
@@ -44,9 +36,9 @@ stages:
             inputs:
               versionSpec: "3.7"
           - task: NodeTool@0
-            displayName: "Use Node 12.1"
+            displayName: "Use Node $(versionNode)"
             inputs:
-              versionSpec: "12.1"
+              versionSpec: "$(versionNode)"
           - script: pip install twine wheel
             displayName: "Install tools"
           - script: |
@@ -55,3 +47,18 @@ stages:
 
               script/release
             displayName: "Build and release package"
+      - template: templates/azp-job-wheels.yaml@azure
+        parameters:
+          builderVersion: '$(versionWheels)'
+          builderApk: 'build-base'
+          wheelsLocal: true
+          preBuild:
+          - task: NodeTool@0
+            displayName: "Use Node $(versionNode)"
+            inputs:
+              versionSpec: "$(versionNode)"
+          - script: |
+              set -e
+
+              yarn install
+              script/build_frontend

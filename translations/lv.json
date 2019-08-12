@@ -562,6 +562,9 @@
                     "description": "Pārvaldiet Z-Wave tīklu",
                     "services": {
                         "save_config": "Saglabāt konfigurāciju"
+                    },
+                    "node_config": {
+                        "set_config_parameter": "Iestatīt konfigurācijas parametru"
                     }
                 },
                 "users": {

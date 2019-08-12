@@ -349,7 +349,7 @@
                 "introduction": "Aquí puedes configurar tus componentes y Home Assistant. Aún no es posible configurar todo desde la interfaz de usuario, pero estamos trabajando en ello.",
                 "core": {
                     "caption": "Configuración general",
-                    "description": "Valida tu archivo de configuración y controla el servidor",
+                    "description": "Cambiar la configuración general de Home Assistant",
                     "section": {
                         "core": {
                             "header": "Configuración y control del servidor",
@@ -620,10 +620,22 @@
                     "common": {
                         "value": "Valor",
                         "instance": "Instancia",
-                        "index": "Índice"
+                        "index": "Índice",
+                        "unknown": "Desconocido",
+                        "wakeup_interval": "Intervalo de activación"
                     },
                     "values": {
                         "header": "Valores del nodo"
+                    },
+                    "node_config": {
+                        "header": "Opciones de configuración de nodo",
+                        "seconds": "segundos",
+                        "set_wakeup": "Configurar el intervalo de activación",
+                        "config_parameter": "Parámetro de configuración",
+                        "config_value": "Valor de configuración",
+                        "true": "Cierto",
+                        "false": "Falso",
+                        "set_config_parameter": "Establecer parámetro de configuración"
                     }
                 },
                 "users": {

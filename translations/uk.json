@@ -565,7 +565,10 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Керуйте мережею Z-Wave"
+                    "description": "Керуйте мережею Z-Wave",
+                    "node_config": {
+                        "set_config_parameter": "Встановити параметр налаштування"
+                    }
                 },
                 "users": {
                     "caption": "Користувачі",

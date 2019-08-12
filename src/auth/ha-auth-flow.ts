@@ -106,7 +106,6 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
             ? html`
                 <ha-markdown
                   .content=${this._computeStepDescription(step)}
-                  allow-svg
                 ></ha-markdown>
               `
             : html``}

@@ -8,12 +8,15 @@ import {
   CSSResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 
 import "../../../components/ha-card";
 import "../../../components/ha-markdown";
 
+import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { MarkdownCardConfig } from "./types";
+import { subscribeRenderTemplate } from "../../../data/ws-templates";
 
 @customElement("hui-markdown-card")
 export class HuiMarkdownCard extends LitElement implements LovelaceCard {
@@ -27,11 +30,16 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
   }
 
   @property() private _config?: MarkdownCardConfig;
+  @property() private _content?: string = "";
+  @property() private _unsubRenderTemplate?: Promise<UnsubscribeFunc>;
+  @property() private _hass?: HomeAssistant;
 
   public getCardSize(): number {
-    return (
-      this._config!.content.split("\n").length + (this._config!.title ? 1 : 0)
-    );
+    return this._config === undefined
+      ? 3
+      : this._config.card_size === undefined
+      ? this._config.content.split("\n").length + (this._config.title ? 1 : 0)
+      : this._config.card_size;
   }
 
   public setConfig(config: MarkdownCardConfig): void {
@@ -40,6 +48,20 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     }
 
     this._config = config;
+
+    this._disconnect();
+    if (this._hass) {
+      this._connect();
+    }
+  }
+
+  public disconnectedCallback() {
+    this._disconnect();
+  }
+
+  public set hass(hass) {
+    this._hass = hass;
+    this._connect();
   }
 
   protected render(): TemplateResult | void {
@@ -53,10 +75,45 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
           class="markdown ${classMap({
             "no-header": !this._config.title,
           })}"
-          .content="${this._config.content}"
+          .content="${this._content}"
         ></ha-markdown>
       </ha-card>
     `;
+  }
+
+  private async _connect() {
+    if (!this._unsubRenderTemplate && this._hass && this._config) {
+      this._unsubRenderTemplate = subscribeRenderTemplate(
+        this._hass.connection,
+        (result) => {
+          this._content = result;
+        },
+        {
+          template: this._config.content,
+          entity_ids: this._config.entity_id,
+        }
+      );
+      this._unsubRenderTemplate.catch(() => {
+        this._content = this._config!.content;
+        this._unsubRenderTemplate = undefined;
+      });
+    }
+  }
+
+  private async _disconnect() {
+    if (this._unsubRenderTemplate) {
+      try {
+        const unsub = await this._unsubRenderTemplate;
+        this._unsubRenderTemplate = undefined;
+        await unsub();
+      } catch (e) {
+        if (e.code === "not_found") {
+          // If we get here, the connection was probably already closed. Ignore.
+        } else {
+          throw e;
+        }
+      }
+    }
   }
 
   static get styles(): CSSResult {

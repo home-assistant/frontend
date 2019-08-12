@@ -624,6 +624,9 @@
                     },
                     "values": {
                         "header": "Valores de nó"
+                    },
+                    "node_config": {
+                        "set_config_parameter": "Definir o parâmetro de configuração"
                     }
                 },
                 "users": {
