@@ -20,6 +20,7 @@ hassAttributeUtil.DOMAIN_DEVICE_CLASS = {
     "power",
     "presence",
     "problem",
+    "question",
     "safety",
     "smoke",
     "sound",
