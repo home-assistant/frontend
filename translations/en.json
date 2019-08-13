@@ -115,6 +115,10 @@
             "lock": {
                 "off": "Locked",
                 "on": "Unlocked"
+            }.
+            "question": {
+                "off": "No",
+                "on": "Yes"
             }
         },
         "calendar": {
