@@ -69,11 +69,11 @@ export const showConfigFlowDialog = (
         : "";
     },
 
-    renderShowFormStepLabel(hass, step, error) {
+    renderShowFormStepFieldLabel(hass, step, error) {
       return hass.localize(`component.${step.handler}.config.error.${error}`);
     },
 
-    renderShowFormStepError(hass, step, field) {
+    renderShowFormStepFieldError(hass, step, field) {
       return hass.localize(
         `component.${step.handler}.config.step.${step.step_id}.data.${
           field.name
