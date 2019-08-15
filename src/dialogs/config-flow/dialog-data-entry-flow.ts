@@ -76,7 +76,7 @@ class DataEntryFlowDialog extends LitElement {
     this._instance = instance++;
 
     // Create a new config flow. Show picker
-    if (!params.continueFlowId) {
+    if (!params.continueFlowId && !params.startFlowHandler) {
       if (!params.flowConfig.getFlowHandlers) {
         throw new Error("No getFlowHandlers defined in flow config");
       }
@@ -99,10 +99,9 @@ class DataEntryFlowDialog extends LitElement {
 
     this._loading = true;
     const curInstance = this._instance;
-    const step = await params.flowConfig.fetchFlow(
-      this.hass,
-      params.continueFlowId
-    );
+    const step = await (params.continueFlowId
+      ? params.flowConfig.fetchFlow(this.hass, params.continueFlowId)
+      : params.flowConfig.createFlow(this.hass, params.startFlowHandler!));
 
     // Happens if second showDialog called
     if (curInstance !== this._instance) {
@@ -274,9 +273,11 @@ class DataEntryFlowDialog extends LitElement {
       this._params.flowConfig.deleteFlow(this.hass, this._step.flow_id);
     }
 
-    this._params.dialogClosedCallback({
-      flowFinished,
-    });
+    if (this._params.dialogClosedCallback) {
+      this._params.dialogClosedCallback({
+        flowFinished,
+      });
+    }
 
     this._step = undefined;
     this._params = undefined;
