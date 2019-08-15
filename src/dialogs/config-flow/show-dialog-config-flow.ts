@@ -5,13 +5,6 @@ import {
   deleteConfigFlow,
   createConfigFlow,
 } from "../../data/config_entries";
-import { HomeAssistant } from "../../types";
-import {
-  DataEntryFlowStepForm,
-  DataEntryFlowStepExternal,
-  DataEntryFlowStepCreateEntry,
-  DataEntryFlowStepAbort,
-} from "../../data/data_entry_flow";
 import { html } from "lit-element";
 import { localizeKey } from "../../common/translations/localize";
 import {
@@ -43,7 +36,7 @@ export const showConfigFlowDialog = (
     handleFlowStep: handleConfigFlowStep,
     deleteFlow: deleteConfigFlow,
 
-    renderAbortDescription(hass: HomeAssistant, step: DataEntryFlowStepAbort) {
+    renderAbortDescription(hass, step) {
       const description = localizeKey(
         hass.localize,
         `component.${step.handler}.config.abort.${step.reason}`,
@@ -57,16 +50,13 @@ export const showConfigFlowDialog = (
         : "";
     },
 
-    renderShowFormStepHeader(hass: HomeAssistant, step: DataEntryFlowStepForm) {
+    renderShowFormStepHeader(hass, step) {
       return hass.localize(
         `component.${step.handler}.config.step.${step.step_id}.title`
       );
     },
 
-    renderShowFormStepDescription(
-      hass: HomeAssistant,
-      step: DataEntryFlowStepForm
-    ) {
+    renderShowFormStepDescription(hass, step) {
       const description = localizeKey(
         hass.localize,
         `component.${step.handler}.config.step.${step.step_id}.description`,
@@ -79,19 +69,25 @@ export const showConfigFlowDialog = (
         : "";
     },
 
-    renderExternalStepHeader(
-      hass: HomeAssistant,
-      step: DataEntryFlowStepExternal
-    ) {
+    renderShowFormStepLabel(hass, step, error) {
+      return hass.localize(`component.${step.handler}.config.error.${error}`);
+    },
+
+    renderShowFormStepError(hass, step, field) {
+      return hass.localize(
+        `component.${step.handler}.config.step.${step.step_id}.data.${
+          field.name
+        }`
+      );
+    },
+
+    renderExternalStepHeader(hass, step) {
       return hass.localize(
         `component.${step.handler}.config.step.${step.step_id}.title`
       );
     },
 
-    renderExternalStepDescription(
-      hass: HomeAssistant,
-      step: DataEntryFlowStepExternal
-    ) {
+    renderExternalStepDescription(hass, step) {
       const description = localizeKey(
         hass.localize,
         `component.${step.handler}.config.${step.step_id}.description`,
@@ -112,10 +108,7 @@ export const showConfigFlowDialog = (
       `;
     },
 
-    renderCreateEntryDescription(
-      hass: HomeAssistant,
-      step: DataEntryFlowStepCreateEntry
-    ) {
+    renderCreateEntryDescription(hass, step) {
       const description = localizeKey(
         hass.localize,
         `component.${step.handler}.config.create_entry.${step.description ||

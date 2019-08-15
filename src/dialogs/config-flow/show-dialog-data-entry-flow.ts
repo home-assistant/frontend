@@ -7,6 +7,7 @@ import {
   DataEntryFlowStepForm,
   DataEntryFlowStep,
   DataEntryFlowStepAbort,
+  FieldSchema,
 } from "../../data/data_entry_flow";
 
 export interface FlowConfig {
@@ -40,6 +41,18 @@ export interface FlowConfig {
     hass: HomeAssistant,
     step: DataEntryFlowStepForm
   ): TemplateResult | "";
+
+  renderShowFormStepFieldLabel(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepForm,
+    error: string
+  ): string;
+
+  renderShowFormStepFieldError(
+    hass: HomeAssistant,
+    step: DataEntryFlowStepForm,
+    field: FieldSchema
+  ): string;
 
   renderExternalStepHeader(
     hass: HomeAssistant,
