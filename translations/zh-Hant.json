@@ -777,7 +777,8 @@
                             "core": "重新載入核心設定",
                             "group": "重新載入群組",
                             "automation": "重新載入自動化",
-                            "script": "重新載入腳本"
+                            "script": "重新載入腳本",
+                            "scene": "重新載入場景"
                         },
                         "server_management": {
                             "heading": "服務器管理",

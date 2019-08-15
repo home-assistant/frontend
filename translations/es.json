@@ -777,7 +777,8 @@
                             "core": "Recargar núcleo",
                             "group": "Recargar grupos",
                             "automation": "Recargar automatizaciones",
-                            "script": "Recargar los scripts"
+                            "script": "Recargar los scripts",
+                            "scene": "Recargar escenas"
                         },
                         "server_management": {
                             "heading": "Gestión del servidor",

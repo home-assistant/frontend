@@ -323,6 +323,9 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "Informace"
                     }
                 }
             },
@@ -591,9 +594,11 @@
                     "description": "Spravujte svou síť Z-Wave",
                     "services": {
                         "test_network": "Testovat síť",
-                        "save_config": "Uložit konfiguraci"
+                        "save_config": "Uložit konfiguraci",
+                        "cancel_command": "Zrušit příkaz"
                     },
                     "common": {
+                        "value": "Hodnota",
                         "unknown": "neznámý"
                     },
                     "node_config": {
@@ -724,21 +729,30 @@
                     }
                 },
                 "server_control": {
+                    "caption": "Ovládání serveru",
+                    "description": "Restart a zastavení serveru Home Asistent ",
                     "section": {
                         "validation": {
+                            "heading": "Ověření konfigurace",
+                            "introduction": "Pokud jste nedávno provedli změny konfigurace a chcete se ujistit, že je vše v pořádku, můžete ji zde ověřit",
                             "check_config": "Zkontrolujte konfiguraci",
                             "valid": "Konfigurace je v pořádku!",
                             "invalid": "Konfigurace není v pořádku!"
                         },
                         "reloading": {
                             "heading": "Konfigurace se načítá",
+                            "introduction": "Některé části Home Assistant lze načíst bez nutnosti restartování. Volba načtení zahodí jejich aktuální konfiguraci a načte novou.",
                             "core": "Znovu načíst jádro",
                             "group": "Znovu načíst skupiny",
                             "automation": "Znovu načíst automatizace",
-                            "script": "Znovu načíst skripty"
+                            "script": "Znovu načíst skripty",
+                            "scene": "Znovu načíst scény"
                         },
                         "server_management": {
-                            "heading": "Správa serveru"
+                            "heading": "Správa serveru",
+                            "introduction": "Ovládejte svůj Home Assistant server... z Home Assistant.",
+                            "restart": "Restartovat",
+                            "stop": "Zastavit"
                         }
                     }
                 }
@@ -811,6 +825,11 @@
                     "step_done": "Dokončen krok {step}",
                     "close": "Zavřít",
                     "submit": "Odeslat"
+                },
+                "logout": "Odhlásit",
+                "force_narrow": {
+                    "header": "Vždy skrýt postranní panel",
+                    "description": "Tato volba skryje postranním panelu jako výchozí nastavení, podobně jako na mobilním zažízení."
                 }
             },
             "page-authorize": {
@@ -1312,6 +1331,14 @@
                 "off": "Vypnuto",
                 "on": "Zapnuto",
                 "auto": "Automaticky"
+            },
+            "hvac_action": {
+                "off": "Vypnuto",
+                "heating": "Topení",
+                "cooling": "Chlazení",
+                "drying": "Sušení",
+                "idle": "Nečinný",
+                "fan": "Ventilátor"
             }
         }
     },
