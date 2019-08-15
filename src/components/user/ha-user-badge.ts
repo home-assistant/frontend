@@ -9,6 +9,7 @@ import {
 } from "lit-element";
 import { User } from "../../data/user";
 import { CurrentUser } from "../../types";
+import { toggleAttribute } from "../../common/dom/toggle_attribute";
 
 const computeInitials = (name: string) => {
   if (!name) {
@@ -40,7 +41,8 @@ class StateBadge extends LitElement {
 
   protected updated(changedProps) {
     super.updated(changedProps);
-    this.toggleAttribute(
+    toggleAttribute(
+      this,
       "long",
       (this.user ? computeInitials(this.user.name) : "?").length > 2
     );

@@ -777,7 +777,8 @@
                             "core": "Actualitza el nucli",
                             "group": "Actualitza grups",
                             "automation": "Actualitza automatismes",
-                            "script": "Actualitza programes"
+                            "script": "Actualitza programes",
+                            "scene": "Actualitza escenes"
                         },
                         "server_management": {
                             "heading": "Gestió del servidor",

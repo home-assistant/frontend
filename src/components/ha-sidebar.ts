@@ -31,6 +31,7 @@ import computeDomain from "../common/entity/compute_domain";
 import { classMap } from "lit-html/directives/class-map";
 // tslint:disable-next-line: no-duplicate-imports
 import { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
+import { computeRTL } from "../common/util/compute_rtl";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools", "hassio"];
 
@@ -106,6 +107,9 @@ class HaSidebar extends LitElement {
     localStorage.defaultPage || DEFAULT_PANEL;
   @property() private _externalConfig?: ExternalConfig;
   @property() private _notifications?: PersistentNotification[];
+  // property used only in css
+  // @ts-ignore
+  @property({ type: Boolean, reflect: true }) private _rtl = false;
 
   private _mouseLeaveTimeout?: number;
   private _tooltipHideTimeout?: number;
@@ -299,7 +303,13 @@ class HaSidebar extends LitElement {
     if (changedProps.has("alwaysExpand")) {
       this.expanded = this.alwaysExpand;
     }
-    if (!SUPPORT_SCROLL_IF_NEEDED || !changedProps.has("hass")) {
+    if (!changedProps.has("hass")) {
+      return;
+    }
+
+    this._rtl = computeRTL(this.hass);
+
+    if (!SUPPORT_SCROLL_IF_NEEDED) {
       return;
     }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
@@ -472,6 +482,10 @@ class HaSidebar extends LitElement {
       :host([expanded]) .menu paper-icon-button {
         margin-right: 23px;
       }
+      :host([expanded][_rtl]) .menu paper-icon-button {
+        margin-right: 0px;
+        margin-left: 23px;
+      }
 
       .title {
         display: none;
@@ -520,6 +534,10 @@ class HaSidebar extends LitElement {
       }
       :host([expanded]) paper-icon-item {
         width: 240px;
+      }
+      :host([_rtl]) paper-icon-item {
+        padding-left: auto;
+        padding-right: 12px;
       }
 
       ha-icon[slot="item-icon"] {
@@ -588,8 +606,15 @@ class HaSidebar extends LitElement {
       .profile paper-icon-item {
         padding-left: 4px;
       }
+      :host([_rtl]) .profile paper-icon-item {
+        padding-left: auto;
+        padding-right: 4px;
+      }
       .profile .item-text {
         margin-left: 8px;
+      }
+      :host([_rtl]) .profile .item-text {
+        margin-right: 8px;
       }
 
       .notification-badge {
@@ -646,6 +671,11 @@ class HaSidebar extends LitElement {
         background-color: var(--sidebar-text-color);
         padding: 4px;
         font-weight: 500;
+      }
+
+      :host([_rtl]) .menu paper-icon-button {
+        -webkit-transform: scaleX(-1);
+        transform: scaleX(-1);
       }
     `;
   }

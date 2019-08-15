@@ -593,6 +593,10 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Hantera ditt Z-Wave nätverk",
+                    "network_management": {
+                        "header": "Hantering av Z-Wave-nätverk",
+                        "introduction": "Kör kommandon som påverkar Z-Wave-nätverket. De flesta kommandon ger ingen bekräftelse om de lyckas men du kan kontrollera OZW-loggen för att försöka ta reda på det."
+                    },
                     "network_status": {
                         "network_stopped": "Z-Wave-nätverk stoppat",
                         "network_starting": "Startar Z-Wave-nätverk...",
@@ -625,13 +629,13 @@
                     },
                     "node_config": {
                         "header": "Alternativ för nodkonfiguration",
-                        "seconds": "Sekunder",
+                        "seconds": "sekunder",
                         "set_wakeup": "Ställ in uppvakningsintervall",
                         "config_parameter": "Konfigurera parameter",
                         "config_value": "Konfigurera värde",
                         "true": "Sant",
                         "false": "Falskt",
-                        "set_config_parameter": "Ställ in konfigurations parameter"
+                        "set_config_parameter": "Ställ in konfigurationsparametrar"
                     }
                 },
                 "users": {
@@ -735,7 +739,7 @@
                     "picker": {
                         "header": "Enhetsregister",
                         "unavailable": "(ej tillgänglig)",
-                        "introduction": "Home Assistant har ett enhetsregister som innehåller varje enhet som någonsin har setts vars identifieras kan vara unikt. Var och en av dessa enheter kommer att ha ett ID-nummer som är reserverat för bara den enheten.",
+                        "introduction": "Home Assistant har ett enhetsregister som innehåller samtliga identifierade enheter som någonsin har setts. Var och en av dessa enheter kommer att ha ett ID-nummer som är reserverat för bara den enheten.",
                         "introduction2": "Använd enhetsregistret för att skriva över namnet, ändra ID eller ta bort posten ifrån Home Assistant. Obs! Att ta bort posten ifrån entity registry (enhetsregister) kommer inte att ta bort enheten. För att göra det, följ länken nedan och ta bort det från integreringssidan.",
                         "integrations_page": "Integrationssida"
                     },
@@ -773,7 +777,8 @@
                             "core": "Ladda om kärnan",
                             "group": "Ladda om grupper",
                             "automation": "Ladda om automationer",
-                            "script": "Ladda om skript"
+                            "script": "Ladda om skript",
+                            "scene": "Ladda om scener"
                         },
                         "server_management": {
                             "heading": "Serverhantering",
@@ -1069,7 +1074,7 @@
                     "demo": {
                         "demo_by": "av {name}",
                         "next_demo": "Nästa demonstration",
-                        "introduction": "Välkommen hem! Du har nått Home Assistant demon, var vi visar upp de bästa användargränssnitt som skapats av vårt community.",
+                        "introduction": "Välkommen hem! Du har nått Home Assistant demon, där vi visar upp de bästa användargränssnitt som skapats av vårt community.",
                         "learn_more": "Lär dig mer om Home Assistant"
                     }
                 },
@@ -1213,7 +1218,8 @@
                 "fan_mode": "Fläktläge",
                 "swing_mode": "Svepläge",
                 "away_mode": "Bortaläge",
-                "aux_heat": "Underhållsvärme"
+                "aux_heat": "Underhållsvärme",
+                "preset_mode": "Förinställning"
             },
             "lock": {
                 "code": "Kod",
@@ -1360,7 +1366,11 @@
                 "auto": "Auto"
             },
             "preset_mode": {
+                "none": "Ingen",
+                "eco": "Eko",
                 "away": "Borta",
+                "boost": "Boost-läge",
+                "comfort": "Komfort",
                 "home": "Hemma",
                 "sleep": "Sover",
                 "activity": "Aktivitet"

@@ -349,7 +349,7 @@
                 "introduction": "Tutaj można skonfigurować komponenty i Home Assistant'a. Nie wszystko jest możliwe do skonfigurowania z interfejsu użytkownika, ale pracujemy nad tym.",
                 "core": {
                     "caption": "Ogólne",
-                    "description": "Sprawdź poprawność pliku konfiguracyjnego i kontroluj serwer",
+                    "description": "Zmień ogólną konfigurację Home Assistant",
                     "section": {
                         "core": {
                             "header": "Konfiguracja i kontrola serwera",
@@ -777,7 +777,8 @@
                             "core": "Przeładuj rdzeń",
                             "group": "Przeładuj grupy",
                             "automation": "Przeładuj automatyzacje",
-                            "script": "Przeładuj skrypty"
+                            "script": "Przeładuj skrypty",
+                            "scene": "Przeładuj sceny"
                         },
                         "server_management": {
                             "heading": "Zarządzanie serwerem",

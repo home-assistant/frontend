@@ -7,6 +7,10 @@ export default function coverIcon(state: HassEntity): string {
   switch (state.attributes.device_class) {
     case "garage":
       return open ? "hass:garage-open" : "hass:garage";
+    case "door":
+      return open ? "hass:door-open" : "hass:door-closed";
+    case "window":
+      return open ? "hass:window-open" : "hass:window-closed";
     default:
       return domainIcon("cover", state.state);
   }
