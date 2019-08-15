@@ -1,0 +1,83 @@
+import {
+  fetchOptionsFlow,
+  handleOptionsFlowStep,
+  deleteOptionsFlow,
+  createOptionsFlow,
+  ConfigEntry,
+} from "../../data/config_entries";
+import { html } from "lit-element";
+import { localizeKey } from "../../common/translations/localize";
+import {
+  showFlowDialog,
+  loadDataEntryFlowDialog,
+} from "./show-dialog-data-entry-flow";
+
+export const loadOptionsFlowDialog = loadDataEntryFlowDialog;
+
+export const showOptionsFlowDialog = (
+  element: HTMLElement,
+  configEntry: ConfigEntry
+): void =>
+  showFlowDialog(
+    element,
+    {
+      startFlowHandler: configEntry.entry_id,
+    },
+    {
+      loadDevicesAndAreas: false,
+      createFlow: createOptionsFlow,
+      fetchFlow: fetchOptionsFlow,
+      handleFlowStep: handleOptionsFlowStep,
+      deleteFlow: deleteOptionsFlow,
+
+      renderAbortDescription(hass, step) {
+        const description = localizeKey(
+          hass.localize,
+          `component.${configEntry.domain}.options.abort.${step.reason}`,
+          step.description_placeholders
+        );
+
+        return description
+          ? html`
+              <ha-markdown .content=${description}></ha-markdown>
+            `
+          : "";
+      },
+
+      renderShowFormStepHeader(hass, _step) {
+        return hass.localize(`ui.dialogs.options_flow.form.header`);
+      },
+
+      renderShowFormStepDescription(_hass, _step) {
+        return "";
+      },
+
+      renderShowFormStepFieldLabel(hass, step, field) {
+        return hass.localize(
+          `component.${configEntry.domain}.options.step.${step.step_id}.data.${
+            field.name
+          }`
+        );
+      },
+
+      renderShowFormStepFieldError(hass, _step, error) {
+        return hass.localize(
+          `component.${configEntry.domain}.options.error.${error}`
+        );
+      },
+
+      renderExternalStepHeader(_hass, _step) {
+        return "";
+      },
+
+      renderExternalStepDescription(_hass, _step) {
+        return "";
+      },
+
+      renderCreateEntryDescription(hass, _step) {
+        return html`
+          <p>${hass.localize(`ui.dialogs.options_flow.success.description`)}</p>
+        `;
+      },
+    }
+  );
