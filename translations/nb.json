@@ -777,7 +777,8 @@
                             "core": "Last inn kjernen på nytt",
                             "group": "Last inn grupper på nytt",
                             "automation": "Last inn automatiseringer på nytt",
-                            "script": "Last inn skript på nytt"
+                            "script": "Last inn skript på nytt",
+                            "scene": "Last inn scener på nytt"
                         },
                         "server_management": {
                             "heading": "Serveradministrasjon",
