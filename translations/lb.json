@@ -777,7 +777,8 @@
                             "core": "Kär néi lueden",
                             "group": "Gruppe nei lueden",
                             "automation": "Automatisme nei lueden",
-                            "script": "Skripte nei lueden"
+                            "script": "Skripte nei lueden",
+                            "scene": "Szeene néi lueden"
                         },
                         "server_management": {
                             "heading": "Serververwaltung",

@@ -777,7 +777,8 @@
                             "core": "코어 새로고침",
                             "group": "그룹 새로고침",
                             "automation": "자동화 새로고침",
-                            "script": "스크립트 새로 고침"
+                            "script": "스크립트 새로 고침",
+                            "scene": "씬 다시읽기"
                         },
                         "server_management": {
                             "heading": "서버 관리",
