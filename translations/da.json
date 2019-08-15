@@ -777,7 +777,8 @@
                             "core": "Genindlæs system",
                             "group": "Genindlæs grupper",
                             "automation": "Genindlæs automatiseringer",
-                            "script": "Genindlæs scripts"
+                            "script": "Genindlæs scripts",
+                            "scene": "Genindlæs scener"
                         },
                         "server_management": {
                             "heading": "Serveradministration",

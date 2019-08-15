@@ -563,6 +563,7 @@
                     },
                     "node_config": {
                         "seconds": "sekúndur",
+                        "config_value": "Stillingargildi",
                         "set_config_parameter": "Stilltu Config Parameter"
                     }
                 },
@@ -687,21 +688,28 @@
                     }
                 },
                 "server_control": {
+                    "caption": "Stjórnun þjóns",
                     "description": "Endurræsa og stöðva Home Assistant þjóni",
                     "section": {
                         "validation": {
                             "heading": "Staðfesta stillingar",
+                            "introduction": "Staðfestu stillingarnar þínar ef þú hefur gert breytingar á stillingum og vilt ganga úr skugga um að þær séu í lagi",
                             "check_config": "Athuga stillingar",
                             "valid": "Stillingar í lagi!",
                             "invalid": "Stillingar ógildar"
                         },
                         "reloading": {
                             "heading": "Endurhleðsla stillinga",
+                            "introduction": "Sumir hlutar af Home Assistant er hægt að hlaða inn að nýju án þess að það krefjist endurræsingar. Með því að velja að endurhlaða þá mun sú aðgerð hlaða inn nýjum stillingum.",
                             "core": "Endurhlaða kjarna",
                             "group": "Endurhlaða hópa",
-                            "automation": "Endurhlaða sjálfvirkni"
+                            "automation": "Endurhlaða sjálfvirkni",
+                            "script": "Endurhlaða skriftum",
+                            "scene": "Endurhlaða senum"
                         },
                         "server_management": {
+                            "heading": "Stjórnun miðlara",
+                            "introduction": "Stjórna Home Assistant miðlara... frá Home Assistant.",
                             "restart": "Endurræsa",
                             "stop": "Stöðva"
                         }
@@ -772,7 +780,11 @@
                     "close": "Loka",
                     "submit": "Senda"
                 },
-                "logout": "Skrá út"
+                "logout": "Skrá út",
+                "force_narrow": {
+                    "header": "Alltaf fela hliðarstikuna",
+                    "description": "Þetta mun fela hliðarstikuna með sambærilegum hætti og á snjalltækum."
+                }
             },
             "page-authorize": {
                 "initializing": "Frumstilli",

@@ -257,7 +257,7 @@
             "cleaning": "Pulendo",
             "docked": "In base",
             "error": "Errore",
-            "idle": "Sconosciuto",
+            "idle": "Inattivo",
             "off": "Spento",
             "on": "Acceso",
             "paused": "In pausa",
@@ -777,7 +777,8 @@
                             "core": "Ricarica core",
                             "group": "Ricarica i gruppi",
                             "automation": "Ricarica automazioni",
-                            "script": "Ricarica script"
+                            "script": "Ricarica script",
+                            "scene": "Ricarica le scene"
                         },
                         "server_management": {
                             "heading": "Gestione del server",
