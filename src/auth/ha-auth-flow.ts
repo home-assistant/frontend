@@ -11,7 +11,10 @@ import "../components/ha-form";
 import "../components/ha-markdown";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { AuthProvider } from "../data/auth";
-import { ConfigFlowStep, ConfigFlowStepForm } from "../data/config_entries";
+import {
+  DataEntryFlowStep,
+  DataEntryFlowStepForm,
+} from "../data/data_entry_flow";
 
 type State = "loading" | "error" | "step";
 
@@ -22,7 +25,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
   @property() public oauth2State?: string;
   @property() private _state: State = "loading";
   @property() private _stepData: any = {};
-  @property() private _step?: ConfigFlowStep;
+  @property() private _step?: DataEntryFlowStep;
   @property() private _errorMessage?: string;
 
   protected render() {
@@ -87,7 +90,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     }
   }
 
-  private _renderStep(step: ConfigFlowStep) {
+  private _renderStep(step: DataEntryFlowStep) {
     switch (step.type) {
       case "abort":
         return html`
@@ -192,7 +195,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     document.location.assign(url);
   }
 
-  private async _updateStep(step: ConfigFlowStep) {
+  private async _updateStep(step: DataEntryFlowStep) {
     let stepData: any = null;
     if (
       this._step &&
@@ -219,7 +222,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     }, 100);
   }
 
-  private _computeStepDescription(step: ConfigFlowStepForm) {
+  private _computeStepDescription(step: DataEntryFlowStepForm) {
     const resourceKey = `ui.panel.page-authorize.form.providers.${
       step.handler[0]
     }.step.${step.step_id}.description`;
@@ -232,7 +235,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     return this.localize(resourceKey, ...args);
   }
 
-  private _computeLabelCallback(step: ConfigFlowStepForm) {
+  private _computeLabelCallback(step: DataEntryFlowStepForm) {
     // Returns a callback for ha-form to calculate labels per schema object
     return (schema) =>
       this.localize(
@@ -242,7 +245,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
       );
   }
 
-  private _computeErrorCallback(step: ConfigFlowStepForm) {
+  private _computeErrorCallback(step: DataEntryFlowStepForm) {
     // Returns a callback for ha-form to calculate error messages
     return (error) =>
       this.localize(
