@@ -18,7 +18,6 @@ import {
   getConfigFlowsInProgress,
   getConfigEntries,
   ConfigEntry,
-  ConfigFlowProgress,
   localizeConfigFlowTitle,
 } from "../data/config_entries";
 import { compare } from "../common/string/compare";
@@ -28,13 +27,14 @@ import { debounce } from "../common/util/debounce";
 import { fireEvent } from "../common/dom/fire_event";
 import { onboardIntegrationStep } from "../data/onboarding";
 import { genClientId } from "home-assistant-js-websocket";
+import { DataEntryFlowProgress } from "../data/data_entry_flow";
 
 @customElement("onboarding-integrations")
 class OnboardingIntegrations extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public onboardingLocalize!: LocalizeFunc;
   @property() private _entries?: ConfigEntry[];
-  @property() private _discovered?: ConfigFlowProgress[];
+  @property() private _discovered?: DataEntryFlowProgress[];
   private _unsubEvents?: () => void;
 
   public connectedCallback() {
