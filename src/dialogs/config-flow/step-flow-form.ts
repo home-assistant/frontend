@@ -15,21 +15,19 @@ import "@polymer/paper-spinner/paper-spinner";
 import "../../components/ha-form";
 import "../../components/ha-markdown";
 import "../../resources/ha-style";
-import {
-  handleConfigFlowStep,
-  FieldSchema,
-  ConfigFlowStepForm,
-} from "../../data/config_entries";
 import { PolymerChangedEvent, applyPolymerEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
-import { localizeKey } from "../../common/translations/localize";
 import { configFlowContentStyles } from "./styles";
+import { DataEntryFlowStepForm, FieldSchema } from "../../data/data_entry_flow";
+import { FlowConfig } from "./show-dialog-data-entry-flow";
 
 @customElement("step-flow-form")
 class StepFlowForm extends LitElement {
+  public flowConfig!: FlowConfig;
+
   @property()
-  public step!: ConfigFlowStepForm;
+  public step!: DataEntryFlowStepForm;
 
   @property()
   public hass!: HomeAssistant;
@@ -44,7 +42,6 @@ class StepFlowForm extends LitElement {
   private _errorMsg?: string;
 
   protected render(): TemplateResult | void {
-    const localize = this.hass.localize;
     const step = this.step;
 
     const allRequiredInfoFilledIn =
@@ -59,17 +56,9 @@ class StepFlowForm extends LitElement {
               !["", undefined].includes(this._stepData![field.name])
           );
 
-    const description = localizeKey(
-      localize,
-      `component.${step.handler}.config.step.${step.step_id}.description`,
-      step.description_placeholders
-    );
-
     return html`
       <h2>
-        ${localize(
-          `component.${step.handler}.config.step.${step.step_id}.title`
-        )}
+        ${this.flowConfig.renderShowFormStepHeader(this.hass, this.step)}
       </h2>
       <div class="content">
         ${this._errorMsg
@@ -77,11 +66,7 @@ class StepFlowForm extends LitElement {
               <div class="error">${this._errorMsg}</div>
             `
           : ""}
-        ${description
-          ? html`
-              <ha-markdown .content=${description}></ha-markdown>
-            `
-          : ""}
+        ${this.flowConfig.renderShowFormStepDescription(this.hass, this.step)}
         <ha-form
           .data=${this._stepDataProcessed}
           @data-changed=${this._stepDataChanged}
@@ -161,7 +146,7 @@ class StepFlowForm extends LitElement {
     });
 
     try {
-      const step = await handleConfigFlowStep(
+      const step = await this.flowConfig.handleFlowStep(
         this.hass,
         this.step.flow_id,
         toSendData
@@ -188,18 +173,11 @@ class StepFlowForm extends LitElement {
     this._stepData = applyPolymerEvent(ev, this._stepData);
   }
 
-  private _labelCallback = (schema: FieldSchema): string => {
-    const step = this.step as ConfigFlowStepForm;
-
-    return this.hass.localize(
-      `component.${step.handler}.config.step.${step.step_id}.data.${
-        schema.name
-      }`
-    );
-  };
+  private _labelCallback = (field: FieldSchema): string =>
+    this.flowConfig.renderShowFormStepFieldLabel(this.hass, this.step, field);
 
   private _errorCallback = (error: string) =>
-    this.hass.localize(`component.${this.step.handler}.config.error.${error}`);
+    this.flowConfig.renderShowFormStepFieldError(this.hass, this.step, error);
 
   static get styles(): CSSResultArray {
     return [

@@ -15,7 +15,7 @@
             "off": "خاموش",
             "on": "روشن",
             "unknown": "نامشخص",
-            "unavailable": "غیر قابل دسترس"
+            "unavailable": "غیرقابل دسترس"
         },
         "alarm_control_panel": {
             "armed": "مصلح شده",
@@ -263,7 +263,7 @@
     "state_badge": {
         "default": {
             "unknown": "نامشخص",
-            "unavailable": "غیر قابل دسترس",
+            "unavailable": "غیرقابل دسترس",
             "error": "خطا",
             "entity_not_found": "نهاد یافت نشد"
         },
@@ -523,8 +523,19 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
+                    "common": {
+                        "unknown": "نامشخص",
+                        "wakeup_interval": "فاصله Wakeup"
+                    },
                     "node_config": {
-                        "set_config_parameter": "تنظیم پارامتر تنظیم کنید"
+                        "header": "گزینه‌های پیکربندی گره",
+                        "seconds": "ثانیه‌ها",
+                        "set_wakeup": "تنظیم فاصله Wakeup",
+                        "config_parameter": "پارامتر پیکربندی",
+                        "config_value": "مقدار پیکربندی",
+                        "true": "صحیح",
+                        "false": "نادرست",
+                        "set_config_parameter": "تنظیم پارامتر پیکربندی"
                     }
                 },
                 "users": {
@@ -651,6 +662,24 @@
                         "device_tracker_picked": "پیگیری دستگاه",
                         "device_tracker_pick": "دستگاه را برای پیگیری انتخاب کنید"
                     }
+                },
+                "server_control": {
+                    "section": {
+                        "reloading": {
+                            "introduction": "برخی از قسمت‌های Home Assistant بدون نیاز به راه‌اندازی مجدد می‌توانند بارگیری شوند.  با بارگیری مجدد، تنظیمات فعلی آنها حذف می‌شوند و نسخه جدید را بارگیری خواهد شد.",
+                            "core": "بارگذاری مجدد هسته",
+                            "group": "بارگیری مجدد گروه‌ها",
+                            "automation": "بارگیری مجدد اتوماسیون",
+                            "script": "بارگزاری مجدد اسکریپت",
+                            "scene": "بارگذاری سناریوها"
+                        },
+                        "server_management": {
+                            "heading": "مدیریت سرور",
+                            "introduction": "سرور Home Assistant خود را کنترل کنید ... از Home Assistant.",
+                            "restart": "راه‌اندازی مجدد",
+                            "stop": "بایست"
+                        }
+                    }
                 }
             },
             "profile": {
@@ -672,6 +701,7 @@
                     "learn_auth_requests": "با نحوه انجام درخواست های تأیید اعتبار آشنا شوید.",
                     "created_at": "ایجاد شده در {date}",
                     "confirm_delete": "آیا مطمئن هستید که میخواهید token زیر را برای {name} حذف کنید؟",
+                    "last_used": "آخرین مورد استفاده در {date} از {location}",
                     "not_used": "هرگز استفاده نشده است"
                 },
                 "current_user": "شما در حال حاضر به عنوان {fullName} وارد شده اید.",
