@@ -9,51 +9,34 @@ import {
 } from "lit-element";
 import "@material/mwc-button";
 
-import {
-  ConfigFlowStepExternal,
-  DataEntryFlowProgressedEvent,
-  fetchConfigFlow,
-} from "../../data/config_entries";
 import { HomeAssistant } from "../../types";
-import { localizeKey } from "../../common/translations/localize";
 import { fireEvent } from "../../common/dom/fire_event";
 import { configFlowContentStyles } from "./styles";
+import {
+  DataEntryFlowStepExternal,
+  DataEntryFlowProgressedEvent,
+} from "../../data/data_entry_flow";
+import { FlowConfig } from "./show-dialog-data-entry-flow";
 
 @customElement("step-flow-external")
 class StepFlowExternal extends LitElement {
+  public flowConfig!: FlowConfig;
+
   @property()
   public hass!: HomeAssistant;
 
   @property()
-  private step!: ConfigFlowStepExternal;
+  private step!: DataEntryFlowStepExternal;
 
   protected render(): TemplateResult | void {
     const localize = this.hass.localize;
-    const step = this.step;
-
-    const description = localizeKey(
-      localize,
-      `component.${step.handler}.config.${step.step_id}.description`,
-      step.description_placeholders
-    );
 
     return html`
       <h2>
-        ${localize(
-          `component.${step.handler}.config.step.${step.step_id}.title`
-        )}
+        ${this.flowConfig.renderExternalStepHeader(this.hass, this.step)}
       </h2>
       <div class="content">
-        <p>
-          ${localize(
-            "ui.panel.config.integrations.config_flow.external_step.description"
-          )}
-        </p>
-        ${description
-          ? html`
-              <ha-markdown .content=${description}></ha-markdown>
-            `
-          : ""}
+        ${this.flowConfig.renderExternalStepDescription(this.hass, this.step)}
         <div class="open-button">
           <a href=${this.step.url} target="_blank">
             <mwc-button raised>
@@ -76,7 +59,7 @@ class StepFlowExternal extends LitElement {
         }
 
         fireEvent(this, "flow-update", {
-          stepPromise: fetchConfigFlow(this.hass, this.step.flow_id),
+          stepPromise: this.flowConfig.fetchFlow(this.hass, this.step.flow_id),
         });
       },
       "data_entry_flow_progressed"
