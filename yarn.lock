@@ -847,10 +847,10 @@
   dependencies:
     "@material/feature-targeting" "^0.44.1"
 
-"@mdi/svg@3.9.97":
-  version "3.9.97"
-  resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-3.9.97.tgz#653fb2249e47c62bd89664ab1479eb5e16a3051c"
-  integrity sha512-ppU8jzKWZIau6DPWywZPtcDw1y5o+EopdtomfpYS96kLf1Lu7qEnIBeh+7QQUjhepKSexO/XW11/mMGecFkOdw==
+"@mdi/svg@4.0.96":
+  version "4.0.96"
+  resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-4.0.96.tgz#c534ca24d2d370b91ce90d036f6f04e122d4aa29"
+  integrity sha512-qL3ymeOLNWhxsDTvRtVMuAuEL/D8dH7tvdm+LeUloWdKGnI4wzhDX/3u3MMXWv7IIar56omxtLEGfqedjDHjGA==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"
@@ -8588,10 +8588,10 @@ lit-element@^2.0.1, lit-element@^2.2.0:
   dependencies:
     lit-html "^1.0.0"
 
-lit-html@^1.0.0, lit-html@^1.1.0:
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-1.1.0.tgz#6951fb717fb48fe34d915ae163448a04da321562"
-  integrity sha512-ZDJHpJi09yknMpjwPI8fuSl5sUG7+pF+eE5WciFtgyX7zebvgMDBgSLq4knXa7grxM00RkQ7PBd7UZQiruA78Q==
+lit-html@^1.0.0, lit-html@^1.1.0, lit-html@^1.1.2:
+  version "1.1.2"
+  resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-1.1.2.tgz#2e3560a7075210243649c888ad738eaf0daa8374"
+  integrity sha512-FFlUMKHKi+qG1x1iHNZ1hrtc/zHmfYTyrSvs3/wBTvaNtpZjOZGWzU7efGYVpgp6KvWeKF6ql9/KsCq6Z/mEDA==
 
 load-json-file@^1.0.0:
   version "1.1.0"

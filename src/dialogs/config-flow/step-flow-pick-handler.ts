@@ -11,7 +11,6 @@ import "@polymer/paper-spinner/paper-spinner-lite";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import { HomeAssistant } from "../../types";
-import { createConfigFlow } from "../../data/config_entries";
 import { fireEvent } from "../../common/dom/fire_event";
 import memoizeOne from "memoize-one";
 import * as Fuse from "fuse.js";
@@ -19,6 +18,7 @@ import * as Fuse from "fuse.js";
 import "../../components/ha-icon-next";
 import "../../common/search/search-input";
 import { styleMap } from "lit-html/directives/style-map";
+import { FlowConfig } from "./show-dialog-data-entry-flow";
 
 interface HandlerObj {
   name: string;
@@ -27,6 +27,8 @@ interface HandlerObj {
 
 @customElement("step-flow-pick-handler")
 class StepFlowPickHandler extends LitElement {
+  public flowConfig!: FlowConfig;
+
   @property() public hass!: HomeAssistant;
   @property() public handlers!: string[];
   @property() private filter?: string;
@@ -97,7 +99,10 @@ class StepFlowPickHandler extends LitElement {
 
   private async _handlerPicked(ev) {
     fireEvent(this, "flow-update", {
-      stepPromise: createConfigFlow(this.hass, ev.currentTarget.handler.slug),
+      stepPromise: this.flowConfig.createFlow(
+        this.hass,
+        ev.currentTarget.handler.slug
+      ),
     });
   }
 

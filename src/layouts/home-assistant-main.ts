@@ -21,6 +21,7 @@ import { PolymerChangedEvent } from "../polymer-types";
 // tslint:disable-next-line: no-duplicate-imports
 import { AppDrawerLayoutElement } from "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
+import { toggleAttribute } from "../common/dom/toggle_attribute";
 
 const NON_SWIPABLE_PANELS = ["kiosk", "map"];
 
@@ -114,7 +115,8 @@ class HomeAssistantMain extends LitElement {
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
 
-    this.toggleAttribute(
+    toggleAttribute(
+      this,
       "expanded",
       this.narrow || this.hass.dockedSidebar !== "auto"
     );
