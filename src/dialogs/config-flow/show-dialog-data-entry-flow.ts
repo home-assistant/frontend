@@ -71,8 +71,9 @@ export interface FlowConfig {
 }
 
 export interface DataEntryFlowDialogParams {
+  startFlowHandler?: string;
   continueFlowId?: string;
-  dialogClosedCallback: (params: { flowFinished: boolean }) => void;
+  dialogClosedCallback?: (params: { flowFinished: boolean }) => void;
   flowConfig: FlowConfig;
 }
 
