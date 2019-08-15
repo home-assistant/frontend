@@ -530,6 +530,14 @@
         "save": "Save",
         "name": "Name Override",
         "entity_id": "Entity ID"
+      },
+      "options_flow": {
+        "form": {
+          "header": "Options"
+        },
+        "success": {
+          "description": "Options successfully saved."
+        }
       }
     },
     "duration": {
