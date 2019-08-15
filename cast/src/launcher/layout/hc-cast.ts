@@ -29,6 +29,7 @@ import {
 } from "../../../../src/data/lovelace";
 import "./hc-layout";
 import { generateDefaultViewConfig } from "../../../../src/panels/lovelace/common/generate-lovelace-config";
+import { toggleAttribute } from "../../../../src/common/dom/toggle_attribute";
 
 @customElement("hc-cast")
 class HcCast extends LitElement {
@@ -158,7 +159,8 @@ class HcCast extends LitElement {
 
   protected updated(changedProps) {
     super.updated(changedProps);
-    this.toggleAttribute(
+    toggleAttribute(
+      this,
       "hide-icons",
       this.lovelaceConfig
         ? !this.lovelaceConfig.views.some((view) => view.icon)

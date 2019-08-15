@@ -11,6 +11,7 @@ import "./ha-ce-entities-card";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import NavigateMixin from "../../../mixins/navigate-mixin";
+import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
 
 class HaConfigEntryPage extends NavigateMixin(
   EventsMixin(LocalizeMixin(PolymerElement))
@@ -34,6 +35,13 @@ class HaConfigEntryPage extends NavigateMixin(
         }
       </style>
       <hass-subpage header="[[configEntry.title]]">
+        <template is="dom-if" if="[[configEntry.supports_options]]">
+          <paper-icon-button
+            slot="toolbar-icon"
+            icon="hass:settings"
+            on-click="_showSettings"
+          ></paper-icon-button>
+        </template>
         <paper-icon-button
           slot="toolbar-icon"
           icon="hass:delete"
@@ -139,6 +147,10 @@ class HaConfigEntryPage extends NavigateMixin(
 
   _computeIsEmpty(configEntryDevices, noDeviceEntities) {
     return configEntryDevices.length === 0 && noDeviceEntities.length === 0;
+  }
+
+  _showSettings() {
+    showOptionsFlowDialog(this, this.configEntry);
   }
 
   _removeEntry() {

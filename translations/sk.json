@@ -714,6 +714,33 @@
                         "device_tracker_picked": "Sledovať zariadenie",
                         "device_tracker_pick": "Vyberte zariadenie na sledovanie"
                     }
+                },
+                "server_control": {
+                    "caption": "Správa servera",
+                    "description": "Reštartujte a zastavte server Home Assistant",
+                    "section": {
+                        "validation": {
+                            "heading": "Kontrola konfigurácie",
+                            "introduction": "Overte svoju konfiguráciu, ak ste nedávno vykonali nejaké zmeny v konfigurácii a chcete sa uistiť, že je to všetko v poriadku",
+                            "check_config": "Skontrolujte konfiguráciu",
+                            "valid": "Konfigurácia je platná!",
+                            "invalid": "Konfigurácia je neplatná"
+                        },
+                        "reloading": {
+                            "heading": "Načítavanie novej konfigurácie",
+                            "introduction": "Niektoré časti aplikácie Home Assistant sa môžu načítať bez nutnosti reštartovania. Opätovným načítaním sa zahodí aktuálna konfigurácia a načíta sa nová.",
+                            "core": "Znovu načítať jadro",
+                            "group": "Znovu načítať skupiny",
+                            "automation": "Znovu načítať automatizácie",
+                            "script": "Znovu načítať skripty"
+                        },
+                        "server_management": {
+                            "heading": "Správa servera",
+                            "introduction": "Ovládajte Váš Home Assistant server... z aplikácie Home Assistant.",
+                            "restart": "Reštartovať",
+                            "stop": "Zastaviť"
+                        }
+                    }
                 }
             },
             "profile": {
@@ -785,7 +812,11 @@
                     "close": "Zavrieť",
                     "submit": "Odoslať"
                 },
-                "logout": "Logga ut"
+                "logout": "Logga ut",
+                "force_narrow": {
+                    "header": "Vždy skryť bočný panel",
+                    "description": "Predvolene sa skryje bočný panel, podobne ako v prípade mobilných zariadení."
+                }
             },
             "page-authorize": {
                 "initializing": "Inicializácia",
