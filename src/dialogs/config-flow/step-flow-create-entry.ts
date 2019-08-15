@@ -12,9 +12,7 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 
-import { ConfigFlowStepCreateEntry } from "../../data/config_entries";
 import { HomeAssistant } from "../../types";
-import { localizeKey } from "../../common/translations/localize";
 import { fireEvent } from "../../common/dom/fire_event";
 import { configFlowContentStyles } from "./styles";
 import {
@@ -25,14 +23,18 @@ import {
   AreaRegistryEntry,
   createAreaRegistryEntry,
 } from "../../data/area_registry";
+import { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
+import { FlowConfig } from "./show-dialog-data-entry-flow";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
+  public flowConfig!: FlowConfig;
+
   @property()
   public hass!: HomeAssistant;
 
   @property()
-  public step!: ConfigFlowStepCreateEntry;
+  public step!: DataEntryFlowStepCreateEntry;
 
   @property()
   public devices!: DeviceRegistryEntry[];
@@ -42,24 +44,11 @@ class StepFlowCreateEntry extends LitElement {
 
   protected render(): TemplateResult | void {
     const localize = this.hass.localize;
-    const step = this.step;
-
-    const description = localizeKey(
-      localize,
-      `component.${step.handler}.config.create_entry.${step.description ||
-        "default"}`,
-      step.description_placeholders
-    );
 
     return html`
       <h2>Success!</h2>
       <div class="content">
-        ${description
-          ? html`
-              <ha-markdown .content=${description}></ha-markdown>
-            `
-          : ""}
-        <p>Created config for ${step.title}.</p>
+        ${this.flowConfig.renderCreateEntryDescription(this.hass, this.step)}
         ${this.devices.length === 0
           ? ""
           : html`
