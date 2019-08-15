@@ -19,7 +19,7 @@ import { PolymerChangedEvent, applyPolymerEvent } from "../../polymer-types";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import { configFlowContentStyles } from "./styles";
-import { DataEntryFlowStepForm } from "../../data/data_entry_flow";
+import { DataEntryFlowStepForm, FieldSchema } from "../../data/data_entry_flow";
 import { FlowConfig } from "./show-dialog-data-entry-flow";
 
 @customElement("step-flow-form")
@@ -72,8 +72,8 @@ class StepFlowForm extends LitElement {
           @data-changed=${this._stepDataChanged}
           .schema=${step.data_schema}
           .error=${step.errors}
-          .computeLabel=${this.flowConfig.renderShowFormStepFieldLabel}
-          .computeError=${this.flowConfig.renderShowFormStepFieldError}
+          .computeLabel=${this._labelCallback}
+          .computeError=${this._errorCallback}
         ></ha-form>
       </div>
       <div class="buttons">
@@ -172,6 +172,12 @@ class StepFlowForm extends LitElement {
   private _stepDataChanged(ev: PolymerChangedEvent<any>): void {
     this._stepData = applyPolymerEvent(ev, this._stepData);
   }
+
+  private _labelCallback = (field: FieldSchema): string =>
+    this.flowConfig.renderShowFormStepFieldLabel(this.hass, this.step, field);
+
+  private _errorCallback = (error: string) =>
+    this.flowConfig.renderShowFormStepFieldError(this.hass, this.step, error);
 
   static get styles(): CSSResultArray {
     return [

@@ -45,13 +45,13 @@ export interface FlowConfig {
   renderShowFormStepFieldLabel(
     hass: HomeAssistant,
     step: DataEntryFlowStepForm,
-    error: string
+    field: FieldSchema
   ): string;
 
   renderShowFormStepFieldError(
     hass: HomeAssistant,
     step: DataEntryFlowStepForm,
-    field: FieldSchema
+    error: string
   ): string;
 
   renderExternalStepHeader(
