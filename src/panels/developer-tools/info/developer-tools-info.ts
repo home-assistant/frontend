@@ -117,9 +117,11 @@ class HaPanelDevInfo extends LitElement {
           </mwc-button>
         </p>
       </div>
-      <system-health-card .hass=${this.hass}></system-health-card>
-      <system-log-card .hass=${this.hass}></system-log-card>
-      <error-log-card .hass=${this.hass}></error-log-card>
+      <div class="content">
+        <system-health-card .hass=${this.hass}></system-health-card>
+        <system-log-card .hass=${this.hass}></system-log-card>
+        <error-log-card .hass=${this.hass}></error-log-card>
+      </div>
     `;
   }
 
@@ -155,7 +157,6 @@ class HaPanelDevInfo extends LitElement {
         }
 
         .content {
-          padding: 16px 0px 16px 0;
           direction: ltr;
         }
 
