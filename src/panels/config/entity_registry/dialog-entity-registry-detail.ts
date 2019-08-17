@@ -8,6 +8,7 @@ import {
 } from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
+import "@polymer/paper-toggle-button/paper-toggle-button";
 
 import "../../../components/dialog/ha-paper-dialog";
 
@@ -23,6 +24,7 @@ class DialogEntityRegistryDetail extends LitElement {
   public hass!: HomeAssistant;
   private _name!: string;
   private _entityId!: string;
+  private _disabledBy!: string | null;
   private _error?: string;
   private _params?: EntityRegistryDetailDialogParams;
   private _submitting?: boolean;
@@ -43,6 +45,7 @@ class DialogEntityRegistryDetail extends LitElement {
     this._error = undefined;
     this._name = this._params.entry.name || "";
     this._entityId = this._params.entry.entity_id;
+    this._disabledBy = this._params.entry.disabled_by;
     await this.updateComplete;
   }
 
@@ -96,6 +99,24 @@ class DialogEntityRegistryDetail extends LitElement {
               .invalid=${invalidDomainUpdate}
               .disabled=${this._submitting}
             ></paper-input>
+            <div class="row">
+              <paper-toggle-button
+                .checked=${this._disabledBy}
+                @checked-changed=${this._disabledByChanged}
+              >
+                <div>
+                  Disable
+                  entity${this._disabledBy && this._disabledBy !== "user"
+                    ? html`
+                        – Disabled by ${this._disabledBy}
+                      `
+                    : ""}
+                </div>
+                <div class="secondary">
+                  Disabled entities will not be added to Home Assistant.
+                </div>
+              </paper-toggle-button>
+            </div>
           </div>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
@@ -136,6 +157,7 @@ class DialogEntityRegistryDetail extends LitElement {
     try {
       await this._params!.updateEntry({
         name: this._name.trim() || null,
+        disabled_by: this._disabledBy,
         new_entity_id: this._entityId.trim(),
       });
       this._params = undefined;
@@ -162,6 +184,9 @@ class DialogEntityRegistryDetail extends LitElement {
       this._params = undefined;
     }
   }
+  private _disabledByChanged(ev: PolymerChangedEvent<boolean>): void {
+    this._disabledBy = ev.detail.value ? "user" : null;
+  }
 
   static get styles(): CSSResult[] {
     return [
@@ -178,6 +203,13 @@ class DialogEntityRegistryDetail extends LitElement {
         }
         .error {
           color: var(--google-red-500);
+        }
+        .row {
+          margin-top: 8px;
+          color: var(--primary-text-color);
+        }
+        .secondary {
+          color: var(--secondary-text-color);
         }
       `,
     ];
