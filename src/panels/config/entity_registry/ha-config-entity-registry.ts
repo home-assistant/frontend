@@ -97,9 +97,7 @@ class HaConfigEntityRegistry extends LitElement {
                   <paper-item-body two-line>
                     <div class="name">
                       ${computeEntityRegistryName(this.hass!, entry) ||
-                        this.hass!.localize(
-                          "ui.panel.config.entity_registry.picker.unavailable"
-                        )}
+                        `(${this.hass!.localize("state.default.unavailable")})`}
                     </div>
                     <div class="secondary entity-id">
                       ${entry.entity_id}

@@ -5,6 +5,7 @@ import {
   PropertyDeclarations,
   CSSResult,
   TemplateResult,
+  property,
 } from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
@@ -22,21 +23,12 @@ import computeStateName from "../../../common/entity/compute_state_name";
 
 class DialogEntityRegistryDetail extends LitElement {
   public hass!: HomeAssistant;
-  private _name!: string;
-  private _entityId!: string;
-  private _disabledBy!: string | null;
-  private _error?: string;
-  private _params?: EntityRegistryDetailDialogParams;
-  private _submitting?: boolean;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      _error: {},
-      _name: {},
-      _entityId: {},
-      _params: {},
-    };
-  }
+  @property() private _name!: string;
+  @property() private _entityId!: string;
+  @property() private _disabledBy!: string | null;
+  @property() private _error?: string;
+  @property() private _params?: EntityRegistryDetailDialogParams;
+  @property() private _submitting?: boolean;
 
   public async showDialog(
     params: EntityRegistryDetailDialogParams
@@ -105,15 +97,26 @@ class DialogEntityRegistryDetail extends LitElement {
                 @checked-changed=${this._disabledByChanged}
               >
                 <div>
-                  Disable
-                  entity${this._disabledBy && this._disabledBy !== "user"
+                  ${this.hass.localize(
+                    "ui.panel.config.entity_registry.editor.disabled_by_label"
+                  )}
+                  ${this._disabledBy && this._disabledBy !== "user"
                     ? html`
-                        – Disabled by ${this._disabledBy}
+                        –
+                        ${this.hass.localize(
+                          "ui.panel.config.entity_registry.editor.disabled_by_cause",
+                          "cause",
+                          this.hass.localize(
+                            `config_entry.disabled_by.${this._disabledBy}`
+                          )
+                        )}
                       `
                     : ""}
                 </div>
                 <div class="secondary">
-                  Disabled entities will not be added to Home Assistant.
+                  ${this.hass.localize(
+                    "ui.panel.config.entity_registry.editor.disabled_by_description"
+                  )}
                 </div>
               </paper-toggle-button>
             </div>
