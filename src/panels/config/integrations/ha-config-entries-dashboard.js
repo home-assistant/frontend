@@ -23,7 +23,7 @@ import {
   loadConfigFlowDialog,
   showConfigFlowDialog,
 } from "../../../dialogs/config-flow/show-dialog-config-flow";
-import { localizeConfigFlowTitle } from "../../../data/config_entries";
+import { localizeConfigFlowTitle } from "../../../data/config_flow";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -113,7 +113,7 @@ class HaConfigManagerDashboard extends LocalizeMixin(
               </div>
             </template>
             <template is="dom-repeat" items="[[entries]]">
-              <a href="/config/integrations/[[item.entry_id]]">
+              <a href="/config/integrations/config_entry/[[item.entry_id]]">
                 <paper-item>
                   <paper-item-body two-line>
                     <div>
@@ -175,8 +175,6 @@ class HaConfigManagerDashboard extends LocalizeMixin(
        * For example, can be discovered devices that require more config.
        */
       progress: Array,
-
-      handlers: Array,
 
       rtl: {
         type: Boolean,
