@@ -859,9 +859,9 @@
           "editor": {
             "unavailable": "This entity is not currently available.",
             "default_name": "New Area",
-            "disabled_by_label": "Disable entity",
-            "disabled_by_cause": "Disabled by {cause}",
-            "disabled_by_description": "Disabled entities will not be added to Home Assistant.",
+            "enabled_label": "Enable entity",
+            "enabled_cause": "Disabled by {cause}.",
+            "enabled_description": "Disabled entities will not be added to Home Assistant.",
             "delete": "DELETE",
             "update": "UPDATE"
           }

@@ -21,7 +21,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import computeStateName from "../../../common/entity/compute_state_name";
 
 class DialogEntityRegistryDetail extends LitElement {
-  public hass!: HomeAssistant;
+  @property() public hass!: HomeAssistant;
   @property() private _name!: string;
   @property() private _entityId!: string;
   @property() private _disabledBy!: string | null;
@@ -56,7 +56,11 @@ class DialogEntityRegistryDetail extends LitElement {
         opened
         @opened-changed="${this._openedChanged}"
       >
-        <h2>${entry.entity_id}</h2>
+        <h2>
+          ${stateObj
+            ? computeStateName(stateObj)
+            : entry.name || entry.entity_id}
+        </h2>
         <paper-dialog-scrollable>
           ${!stateObj
             ? html`
@@ -92,30 +96,30 @@ class DialogEntityRegistryDetail extends LitElement {
             ></paper-input>
             <div class="row">
               <paper-toggle-button
-                .checked=${this._disabledBy}
+                .checked=${!this._disabledBy}
                 @checked-changed=${this._disabledByChanged}
               >
                 <div>
-                  ${this.hass.localize(
-                    "ui.panel.config.entity_registry.editor.disabled_by_label"
-                  )}
-                  ${this._disabledBy && this._disabledBy !== "user"
-                    ? html`
-                        –
-                        ${this.hass.localize(
-                          "ui.panel.config.entity_registry.editor.disabled_by_cause",
+                  <div>
+                    ${this.hass.localize(
+                      "ui.panel.config.entity_registry.editor.enabled_label"
+                    )}
+                  </div>
+                  <div class="secondary">
+                    ${this._disabledBy && this._disabledBy !== "user"
+                      ? this.hass.localize(
+                          "ui.panel.config.entity_registry.editor.enabled_cause",
                           "cause",
                           this.hass.localize(
                             `config_entry.disabled_by.${this._disabledBy}`
                           )
-                        )}
-                      `
-                    : ""}
-                </div>
-                <div class="secondary">
-                  ${this.hass.localize(
-                    "ui.panel.config.entity_registry.editor.disabled_by_description"
-                  )}
+                        )
+                      : ""}
+                    ${this.hass.localize(
+                      "ui.panel.config.entity_registry.editor.enabled_description"
+                    )}
+                    <br />Note: this might not work yet with all integrations.
+                  </div>
                 </div>
               </paper-toggle-button>
             </div>
@@ -187,7 +191,7 @@ class DialogEntityRegistryDetail extends LitElement {
     }
   }
   private _disabledByChanged(ev: PolymerChangedEvent<boolean>): void {
-    this._disabledBy = ev.detail.value ? "user" : null;
+    this._disabledBy = ev.detail.value ? null : "user";
   }
 
   static get styles(): CSSResult[] {
@@ -196,6 +200,7 @@ class DialogEntityRegistryDetail extends LitElement {
       css`
         ha-paper-dialog {
           min-width: 400px;
+          max-width: 450px;
         }
         .form {
           padding-bottom: 24px;
