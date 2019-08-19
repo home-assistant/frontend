@@ -4,7 +4,7 @@ import {
   handleConfigFlowStep,
   deleteConfigFlow,
   createConfigFlow,
-} from "../../data/config_entries";
+} from "../../data/config_flow";
 import { html } from "lit-element";
 import { localizeKey } from "../../common/translations/localize";
 import {
