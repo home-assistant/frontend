@@ -68,6 +68,7 @@ export class HuiCardEditor extends LitElement {
         if (this._yamlEditor) {
           this._yamlEditor.codemirror.refresh();
         }
+        fireEvent(this as HTMLElement, "iron-resize");
       }, 1);
       this._error = undefined;
     } catch (err) {
