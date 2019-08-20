@@ -349,7 +349,7 @@
                 "introduction": "Hier kun je je componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
                 "core": {
                     "caption": "Algemeen",
-                    "description": "Wijzig je algemene Home Assistant configuratie",
+                    "description": "Wijzig je algemene Home Assistant-configuratie",
                     "section": {
                         "core": {
                             "header": "Algemene Configuratie",
@@ -408,7 +408,7 @@
                     "description": "Het maken en bewerken van automatiseringen",
                     "picker": {
                         "header": "Automatiseringsbewerker",
-                        "introduction": "Met de automatiseringsbewerker kun je automatiseringen maken en bewerken. Lees [de instructies](https:\/\/home-assistant.io\/docs\/automation\/editor\/) om er zeker van te zijn dat je Home Assistant juist hebt geconfigureerd.",
+                        "introduction": "Met de automatiseringsbewerker kun je automatiseringen maken en bewerken. Volg de link hieronder om er zeker van te zijn dat je Home Assistant juist hebt geconfigureerd.",
                         "pick_automation": "Kies te bewerken automatisering",
                         "no_automations": "We konden geen bewerkbare automatiseringen vinden",
                         "add_automation": "Automatisering toevoegen",
@@ -422,7 +422,7 @@
                         "alias": "Naam",
                         "triggers": {
                             "header": "",
-                            "introduction": "Triggers starten de verwerking van een automatiseringsregel. Het is mogelijk om meerdere triggers voor dezelfde regel op te geven. Zodra een trigger start, valideert Home Assistant de eventuele voorwaarden en roept hij de actie aan. \n\n [Meer informatie over triggers.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Triggers starten de verwerking van een automatiseringsregel. Het is mogelijk om meerdere triggers voor dezelfde regel op te geven. Zodra een trigger start, valideert Home Assistant de eventuele voorwaarden en roept hij de actie aan.",
                             "add": "Trigger toevoegen",
                             "duplicate": "Dupliceren",
                             "delete": "Verwijderen",
@@ -504,7 +504,7 @@
                         },
                         "conditions": {
                             "header": "Voorwaarden",
-                            "introduction": "Voorwaarden zijn een optioneel onderdeel van een automatiseringsregel en kunnen worden gebruikt om te voorkomen dat een actie plaatsvindt wanneer deze wordt geactiveerd. Voorwaarden lijken erg op triggers, maar zijn verschillend. Een trigger zal kijken naar gebeurtenissen die in het systeem plaatsvinden, terwijl een voorwaarde alleen kijkt naar hoe het systeem er op dit moment uitziet. Een trigger kan waarnemen dat een schakelaar wordt ingeschakeld. Een voorwaarde kan alleen zien of een schakelaar aan of uit staat. \n\n [Meer informatie over voorwaarden.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Voorwaarden zijn een optioneel onderdeel van een automatiseringsregel en kunnen worden gebruikt om te voorkomen dat een actie plaatsvindt wanneer deze wordt geactiveerd. Voorwaarden lijken erg op triggers, maar zijn verschillend. Een trigger zal kijken naar gebeurtenissen die in het systeem plaatsvinden, terwijl een voorwaarde alleen kijkt naar hoe het systeem er op dit moment uitziet. Een trigger kan waarnemen dat een schakelaar wordt ingeschakeld. Een voorwaarde kan alleen zien of een schakelaar aan of uit staat.",
                             "add": "Voorwaarde toevoegen",
                             "duplicate": "Dupliceren",
                             "delete": "Verwijderen",
@@ -550,7 +550,7 @@
                         },
                         "actions": {
                             "header": "Acties",
-                            "introduction": "De acties zijn wat Home Assistant zal doen wanneer de automatisering wordt geactiveerd. \n\n [Lees meer over acties.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "De acties zijn wat Home Assistant zal doen wanneer de automatisering wordt geactiveerd.",
                             "add": "Actie toevoegen",
                             "duplicate": "Dupliceer",
                             "delete": "Verwijderen",
@@ -602,7 +602,7 @@
                         "network_starting": "Z-Wave netwerk starten...",
                         "network_starting_note": "Dit kan een tijdje duren, afhankelijk van de grootte van uw netwerk.",
                         "network_started": "Z-Wave netwerk gestart",
-                        "network_started_note_some_queried": "Alle actieve nodes zijn opgevraagd. Inactieve nodes worden opgevraagd wanneer ze actiefworden.",
+                        "network_started_note_some_queried": "Alle actieve nodes zijn opgevraagd. Inactieve nodes worden opgevraagd wanneer ze actief worden.",
                         "network_started_note_all_queried": "Alle nodes zijn opgevraagd."
                     },
                     "services": {
@@ -622,7 +622,7 @@
                         "instance": "Exemplaar",
                         "index": "Index",
                         "unknown": "onbekend",
-                        "wakeup_interval": "Activerings interval"
+                        "wakeup_interval": "Activeringsinterval"
                     },
                     "values": {
                         "header": "Knooppunt waarden"
@@ -747,7 +747,10 @@
                         "unavailable": "Deze entiteit is momenteel niet beschikbaar.",
                         "default_name": "Nieuw Gebied",
                         "delete": "VERWIJDEREN",
-                        "update": "BIJWERKEN"
+                        "update": "BIJWERKEN",
+                        "enabled_label": "Schakel entiteit in",
+                        "enabled_cause": "Uitgeschakeld vanwege {cause}",
+                        "enabled_description": "Uitgeschakelde entiteiten zullen niet aan Home Assistant worden toegevoegd"
                     }
                 },
                 "person": {
@@ -951,7 +954,7 @@
                             },
                             "error": {
                                 "invalid_auth": "Ongeldige gebruikersnaam of wachtwoord",
-                                "invalid_code": "Onjuiste authenticatie code"
+                                "invalid_code": "Onjuiste authenticatiecode"
                             },
                             "abort": {
                                 "login_expired": "Sessie verlopen, meldt u opnieuw aan."
@@ -1302,6 +1305,11 @@
                 "success": {
                     "description": "Instellingen succesvol opgeslagen."
                 }
+            },
+            "config_entry_system_options": {
+                "title": "Systeemopties",
+                "enable_new_entities_label": "Voeg nieuwe entiteiten automatisch toe",
+                "enable_new_entities_description": "Indien uitgeschakeld, zullen entiteiten niet aan Home Assistant worden toegevoegd"
             }
         },
         "auth_store": {
@@ -1397,5 +1405,12 @@
         "system-admin": "Beheerders",
         "system-users": "Gebruikers",
         "system-read-only": "Alleen-lezen gebruikers"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Gebruiker",
+            "integration": "Integratie",
+            "config_entry": "Configuratie-item"
+        }
     }
 }

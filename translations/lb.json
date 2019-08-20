@@ -747,7 +747,10 @@
                         "unavailable": "Dës Entitéit ass net erreechbar fir de Moment.",
                         "default_name": "Neie Beräich",
                         "delete": "Läschen",
-                        "update": "Aktualiséieren"
+                        "update": "Aktualiséieren",
+                        "enabled_label": "Entitéit aktivéieren",
+                        "enabled_cause": "Desaktivéiert duerch {cause}.",
+                        "enabled_description": "Desaktivéiert Entitéiten ginn net am Home Assistant bäigesat."
                     }
                 },
                 "person": {
@@ -1302,6 +1305,9 @@
                 "success": {
                     "description": "Optiounen erfollegräich gespäichert."
                 }
+            },
+            "config_entry_system_options": {
+                "title": "System Optiounen"
             }
         },
         "auth_store": {
@@ -1397,5 +1403,11 @@
         "system-admin": "Administrateuren",
         "system-users": "Benotzer",
         "system-read-only": "Benotzer mat nëmmen Lies Rechter"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Benotzer",
+            "integration": "Integratioun"
+        }
     }
 }

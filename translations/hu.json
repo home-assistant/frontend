@@ -743,7 +743,10 @@
                         "unavailable": "Ez az entitás jelenleg nem elérhető.",
                         "default_name": "Új Terület",
                         "delete": "TÖRLÉS",
-                        "update": "FRISSÍTÉS"
+                        "update": "FRISSÍTÉS",
+                        "enabled_label": "Entitás engedélyezése",
+                        "enabled_cause": "Letiltva. ({cause})",
+                        "enabled_description": "A letiltott entitások nem lesznek hozzáadva a Home Assistant-hoz."
                     }
                 },
                 "person": {
@@ -773,7 +776,8 @@
                             "core": "Mag újratöltése",
                             "group": "Csoportok újratöltése",
                             "automation": "Automatizálások újratöltése",
-                            "script": "Szkriptek újratöltése"
+                            "script": "Szkriptek újratöltése",
+                            "scene": "Jelenetek újratöltése"
                         },
                         "server_management": {
                             "heading": "Szerver menedzsment",
@@ -1289,6 +1293,19 @@
                 "updater": {
                     "title": "Frissítési Instrukciók"
                 }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Opciók"
+                },
+                "success": {
+                    "description": "Beállítások sikeresen mentve."
+                }
+            },
+            "config_entry_system_options": {
+                "title": "Rendszerbeállítások",
+                "enable_new_entities_label": "Az újonnan hozzáadott entitások engedélyezése.",
+                "enable_new_entities_description": "Ha le van tiltva, akkor az újonnan felfedezett entitások nem lesznek automatikusan hozzáadva a Home Assistant-hoz."
             }
         },
         "auth_store": {
@@ -1384,5 +1401,12 @@
         "system-admin": "Adminisztrátorok",
         "system-users": "Felhasználók",
         "system-read-only": "Csak olvasható felhasználók"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Felhasználó",
+            "integration": "Integráció",
+            "config_entry": "Konfigurációs bejegyzés"
+        }
     }
 }
