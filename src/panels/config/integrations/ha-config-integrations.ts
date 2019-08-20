@@ -24,7 +24,10 @@ import {
 } from "../../../data/device_registry";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
-import { subscribeConfigFlowInProgress } from "../../../data/config_flow";
+import {
+  subscribeConfigFlowInProgress,
+  getConfigFlowInProgressCollection,
+} from "../../../data/config_flow";
 
 declare global {
   interface HASSDomEvents {
@@ -79,7 +82,10 @@ class HaConfigIntegrations extends HassRouterPage {
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
-    this.addEventListener("hass-reload-entries", () => this._loadData());
+    this.addEventListener("hass-reload-entries", () => {
+      this._loadData();
+      getConfigFlowInProgressCollection(this.hass.connection).refresh();
+    });
   }
 
   protected updated(changedProps: PropertyValues) {
