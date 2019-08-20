@@ -352,7 +352,7 @@
                     "description": "Wijzig je algemene Home Assistant configuratie",
                     "section": {
                         "core": {
-                            "header": "Configuratie en serverbeheer",
+                            "header": "Algemene Configuratie",
                             "introduction": "Het aanpassen van je configuratie kan een moeizaam proces zijn. Dat weten we. Dit onderdeel probeert je het leven iets makkelijker te maken.",
                             "core_config": {
                                 "edit_requires_storage": "Editor uitgeschakeld omdat de configuratie is opgeslagen in configuration.yaml",
@@ -777,7 +777,8 @@
                             "core": "Herlaad kern",
                             "group": "Herlaad groepen",
                             "automation": "Herlaad automatiseringen",
-                            "script": "Herlaad scripts"
+                            "script": "Herlaad scripts",
+                            "scene": "Herlaad scenes"
                         },
                         "server_management": {
                             "heading": "Serverbeheer",
@@ -1292,6 +1293,14 @@
                 },
                 "updater": {
                     "title": "Update-instructies"
+                }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Instellingen"
+                },
+                "success": {
+                    "description": "Instellingen succesvol opgeslagen."
                 }
             }
         },

@@ -1294,6 +1294,14 @@
                 "updater": {
                     "title": "Instruktioune fir d'Mise à jour"
                 }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Optiounen"
+                },
+                "success": {
+                    "description": "Optiounen erfollegräich gespäichert."
+                }
             }
         },
         "auth_store": {

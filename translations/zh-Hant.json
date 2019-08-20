@@ -1294,6 +1294,14 @@
                 "updater": {
                     "title": "更新說明"
                 }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "選項"
+                },
+                "success": {
+                    "description": "選項已儲存。"
+                }
             }
         },
         "auth_store": {
