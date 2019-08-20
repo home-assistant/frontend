@@ -37,7 +37,7 @@ export const getConfigFlowHandlers = (hass: HomeAssistant) =>
 
 const fetchConfigFlowInProgress = (conn) =>
   conn.sendMessagePromise({
-    type: "config/config_entries/flow",
+    type: "config_entries/flow/progress",
   });
 
 const subscribeConfigFlowInProgressUpdates = (conn, store) =>
