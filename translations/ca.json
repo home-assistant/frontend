@@ -320,7 +320,7 @@
                         "title": "Esdeveniments"
                     },
                     "templates": {
-                        "title": "Plantilles"
+                        "title": "Plantilla"
                     },
                     "mqtt": {
                         "title": "MQTT"
@@ -349,10 +349,10 @@
                 "introduction": "Aquí pots configurar Home Assistant i els seus components. Encara no és possible configurar-ho tot des de la interfície d'usuari, però hi estem treballant.",
                 "core": {
                     "caption": "General",
-                    "description": "Valida la configuració i controla el servidor",
+                    "description": "Canviar la configuració general de Home Assistant",
                     "section": {
                         "core": {
-                            "header": "Configuració i control del servidor",
+                            "header": "Configuració general",
                             "introduction": "Sabem que canviar la configuració pot ser un procés molest. Aquesta secció intenta facilitar-te una mica més la vida.",
                             "core_config": {
                                 "edit_requires_storage": "L'editor està desactivat ja que la configuració es troba a configuration.yaml.",
@@ -1293,6 +1293,14 @@
                 },
                 "updater": {
                     "title": "Instruccions d'actualització"
+                }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Opcions"
+                },
+                "success": {
+                    "description": "Opcions guardades amb èxit."
                 }
             }
         },

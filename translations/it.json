@@ -326,7 +326,7 @@
                         "title": "MQTT"
                     },
                     "info": {
-                        "title": "Info"
+                        "title": "Informazioni"
                     }
                 }
             },
@@ -622,7 +622,7 @@
                         "instance": "Esempio",
                         "index": "Indice",
                         "unknown": "sconosciuto",
-                        "wakeup_interval": "Intervallo di sveglia"
+                        "wakeup_interval": "Intervallo di riattivazione"
                     },
                     "values": {
                         "header": "Valori del nodo"
@@ -634,7 +634,7 @@
                         "config_parameter": "Parametro di configurazione",
                         "config_value": "Valore di configurazione",
                         "true": "Vero",
-                        "false": "False",
+                        "false": "Falso",
                         "set_config_parameter": "Imposta parametro di configurazione"
                     }
                 },
@@ -773,7 +773,7 @@
                         },
                         "reloading": {
                             "heading": "Ricaricamento della configurazione",
-                            "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere il riavvio. Cliccando su ricarica si rimuoverà la loro configurazione corrente e si caricherà quella nuova.",
+                            "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere il riavvio. Cliccando su ricarica si rimuoverà la loro configurazione attuale e si caricherà la versione aggiornata.",
                             "core": "Ricarica core",
                             "group": "Ricarica i gruppi",
                             "automation": "Ricarica automazioni",
@@ -1075,7 +1075,7 @@
                         "demo_by": "di {name}",
                         "next_demo": "Prossima demo",
                         "introduction": "Benvenuto a casa! Questa è la demo di Home Assistant, qui pubblichiamo le migliori interfacce utente create dalla nostra community.",
-                        "learn_more": "Ulteriori informazioni su Home Assistant"
+                        "learn_more": "Scopri di più su Home Assistant"
                     }
                 },
                 "config": {
@@ -1293,6 +1293,14 @@
                 },
                 "updater": {
                     "title": "Istruzioni per l'aggiornamento"
+                }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Opzioni"
+                },
+                "success": {
+                    "description": "Opzioni salvate correttamente."
                 }
             }
         },

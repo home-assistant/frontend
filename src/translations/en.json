@@ -367,6 +367,13 @@
     "system-users": "Users",
     "system-read-only": "Read-Only Users"
   },
+  "config_entry": {
+    "disabled_by": {
+      "user": "User",
+      "integration": "Integration",
+      "config_entry": "Config Entry"
+    }
+  },
   "ui": {
     "auth_store": {
       "ask": "Do you want to save this login?",
@@ -538,6 +545,11 @@
         "success": {
           "description": "Options successfully saved."
         }
+      },
+      "config_entry_system_options": {
+        "title": "System Options",
+        "enable_new_entities_label": "Enable newly added entities.",
+        "enable_new_entities_description": "If disabled, newly discovered entities will not be automatically added to Home Assistant."
       }
     },
     "duration": {
@@ -847,12 +859,14 @@
             "header": "Entity Registry",
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant. Note, removing the entity registry entry won't remove the entity. To do that, follow the link below and remove it from the integrations page.",
-            "integrations_page": "Integrations page",
-            "unavailable": "(unavailable)"
+            "integrations_page": "Integrations page"
           },
           "editor": {
             "unavailable": "This entity is not currently available.",
             "default_name": "New Area",
+            "enabled_label": "Enable entity",
+            "enabled_cause": "Disabled by {cause}.",
+            "enabled_description": "Disabled entities will not be added to Home Assistant.",
             "delete": "DELETE",
             "update": "UPDATE"
           }

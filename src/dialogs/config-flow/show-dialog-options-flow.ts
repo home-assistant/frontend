@@ -3,14 +3,14 @@ import {
   handleOptionsFlowStep,
   deleteOptionsFlow,
   createOptionsFlow,
-  ConfigEntry,
-} from "../../data/config_entries";
+} from "../../data/options_flow";
 import { html } from "lit-element";
 import { localizeKey } from "../../common/translations/localize";
 import {
   showFlowDialog,
   loadDataEntryFlowDialog,
 } from "./show-dialog-data-entry-flow";
+import { ConfigEntry } from "../../data/config_entries";
 
 export const loadOptionsFlowDialog = loadDataEntryFlowDialog;
 

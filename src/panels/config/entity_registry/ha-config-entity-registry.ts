@@ -31,6 +31,7 @@ import {
 } from "./show-dialog-entity-registry-detail";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { compare } from "../../../common/string/compare";
+import { classMap } from "lit-html/directives/class-map";
 
 class HaConfigEntityRegistry extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -82,7 +83,11 @@ class HaConfigEntityRegistry extends LitElement {
             ${this._entities.map((entry) => {
               const state = this.hass!.states[entry.entity_id];
               return html`
-                <paper-icon-item @click=${this._openEditEntry} .entry=${entry}>
+                <paper-icon-item
+                  @click=${this._openEditEntry}
+                  .entry=${entry}
+                  class=${classMap({ "disabled-entry": !!entry.disabled_by })}
+                >
                   <ha-icon
                     slot="item-icon"
                     .icon=${state
@@ -92,15 +97,20 @@ class HaConfigEntityRegistry extends LitElement {
                   <paper-item-body two-line>
                     <div class="name">
                       ${computeEntityRegistryName(this.hass!, entry) ||
-                        this.hass!.localize(
-                          "ui.panel.config.entity_registry.picker.unavailable"
-                        )}
+                        `(${this.hass!.localize("state.default.unavailable")})`}
                     </div>
                     <div class="secondary entity-id">
                       ${entry.entity_id}
                     </div>
                   </paper-item-body>
-                  <div class="platform">${entry.platform}</div>
+                  <div class="platform">
+                    ${entry.platform}
+                    ${entry.disabled_by
+                      ? html`
+                          <br />(disabled)
+                        `
+                      : ""}
+                  </div>
                 </paper-icon-item>
               `;
             })}
@@ -171,14 +181,22 @@ Deleting an entry will not remove the entity from Home Assistant. To do this, yo
         color: var(--primary-color);
       }
       ha-card {
+        margin-bottom: 24px;
         direction: ltr;
-        overflow: hidden;
       }
       paper-icon-item {
         cursor: pointer;
+        color: var(--primary-text-color);
       }
       ha-icon {
         margin-left: 8px;
+      }
+      .platform {
+        text-align: right;
+        margin: 0 0 0 8px;
+      }
+      .disabled-entry {
+        color: var(--secondary-text-color);
       }
     `;
   }

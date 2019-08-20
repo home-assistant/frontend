@@ -620,12 +620,21 @@
                     "common": {
                         "value": "Vrednost",
                         "instance": "Instanca",
-                        "index": "Indeks"
+                        "index": "Indeks",
+                        "unknown": "Neznano",
+                        "wakeup_interval": "Interval bujenja"
                     },
                     "values": {
                         "header": "Vrednosti vozlišča"
                     },
                     "node_config": {
+                        "header": "Možnosti konfiguracije vozlišča",
+                        "seconds": "Sekund",
+                        "set_wakeup": "Nastavite Interval bujenja",
+                        "config_parameter": "Vrednostni parameter",
+                        "config_value": "vrednost nastavite",
+                        "true": "Prav",
+                        "false": "Lažno",
                         "set_config_parameter": "Nastavite Config Parameter"
                     }
                 },
@@ -768,7 +777,8 @@
                             "core": "Ponovno naloži jedro",
                             "group": "Ponovno naloži skupine",
                             "automation": "Ponovno naloži avtomatizacije",
-                            "script": "Ponovno naloži skripte"
+                            "script": "Ponovno naloži skripte",
+                            "scene": "Ponovno naloži scene"
                         },
                         "server_management": {
                             "heading": "Upravljanje strežnika",
@@ -1283,6 +1293,14 @@
                 },
                 "updater": {
                     "title": "Navodila za posodabitev"
+                }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Možnosti"
+                },
+                "success": {
+                    "description": "Možnosti so uspešno shranjene."
                 }
             }
         },

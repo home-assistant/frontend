@@ -1294,6 +1294,14 @@
                 "updater": {
                     "title": "업데이트 방법"
                 }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "옵션"
+                },
+                "success": {
+                    "description": "옵션이 성공적으로 저장되었습니다."
+                }
             }
         },
         "auth_store": {

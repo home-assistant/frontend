@@ -777,7 +777,8 @@
                             "core": "Hauptsystem neu laden",
                             "group": "Gruppen neu laden",
                             "automation": "Automatisierungen neu laden",
-                            "script": "Skripte neu laden"
+                            "script": "Skripte neu laden",
+                            "scene": "Szenen neu laden"
                         },
                         "server_management": {
                             "heading": "Serververwaltung",
@@ -1292,6 +1293,14 @@
                 },
                 "updater": {
                     "title": "Update-Anweisungen"
+                }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Optionen"
+                },
+                "success": {
+                    "description": "Optionen wurden erfolgreich gespeichert."
                 }
             }
         },
