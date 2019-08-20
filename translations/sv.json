@@ -129,11 +129,11 @@
         "climate": {
             "off": "Av",
             "on": "På",
-            "heat": "Värmer",
-            "cool": "Kyler",
+            "heat": "Värme",
+            "cool": "Kyla",
             "idle": "Inaktiv",
             "auto": "Automatisk",
-            "dry": "Avfuktar",
+            "dry": "Avfuktning",
             "fan_only": "Endast fläkt",
             "eco": "Eco",
             "electric": "Elektrisk",
@@ -1294,6 +1294,14 @@
                 "updater": {
                     "title": "Uppdateringsanvisningar"
                 }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Inställningar"
+                },
+                "success": {
+                    "description": "Inställningar sparade"
+                }
             }
         },
         "auth_store": {
@@ -1377,9 +1385,9 @@
             },
             "hvac_action": {
                 "off": "Av",
-                "heating": "Uppvärmning",
-                "cooling": "Kyla",
-                "drying": "Avfuktning",
+                "heating": "Värmer",
+                "cooling": "Kyler",
+                "drying": "Avfuktar",
                 "idle": "Inaktiv",
                 "fan": "Fläkt"
             }

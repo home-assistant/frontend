@@ -596,7 +596,20 @@
                     "network_management": {
                         "header": "Z-Wave网络管理"
                     },
+                    "network_status": {
+                        "network_stopped": "Z-Wave网络已停止",
+                        "network_starting": "启动Z-Wave网络......",
+                        "network_starting_note": "这可能需要一段时间，具体取决于您的网络规模。",
+                        "network_started": "Z-Wave网络开始",
+                        "network_started_note_some_queried": "已查询唤醒节点。睡眠节点将在唤醒时被查询。",
+                        "network_started_note_all_queried": "已查询所有节点。"
+                    },
                     "services": {
+                        "start_network": "启动网络",
+                        "stop_network": "停止网络",
+                        "heal_network": "修复网络",
+                        "test_network": "测试网络",
+                        "soft_reset": "软复位",
                         "save_config": "保存配置",
                         "add_node": "添加节点",
                         "remove_node": "删除节点",
@@ -604,9 +617,15 @@
                     },
                     "common": {
                         "value": "值",
-                        "instance": "实例"
+                        "instance": "实例",
+                        "unknown": "未知",
+                        "wakeup_interval": "唤醒时间间隔"
                     },
                     "node_config": {
+                        "header": "节点配置选项",
+                        "seconds": "秒",
+                        "set_wakeup": "设置唤醒间隔",
+                        "config_parameter": "配置参数",
                         "set_config_parameter": "设置配置参数"
                     }
                 },
@@ -730,6 +749,29 @@
                         "device_tracker_intro": "选择属于此人的设备。",
                         "device_tracker_picked": "跟踪设备",
                         "device_tracker_pick": "选择要跟踪的设备"
+                    }
+                },
+                "server_control": {
+                    "section": {
+                        "validation": {
+                            "heading": "配置有效性",
+                            "check_config": "配置检查",
+                            "valid": "配置有效！",
+                            "invalid": "配置无效"
+                        },
+                        "reloading": {
+                            "heading": "配置重载中",
+                            "core": "重载核心模块",
+                            "group": "重载分组",
+                            "automation": "重载自动化",
+                            "script": "重载脚本",
+                            "scene": "重载场景"
+                        },
+                        "server_management": {
+                            "heading": "服务器管理",
+                            "restart": "重新启动",
+                            "stop": "停止服务"
+                        }
                     }
                 }
             },
@@ -1237,6 +1279,14 @@
                 },
                 "updater": {
                     "title": "更新说明"
+                }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "选项"
+                },
+                "success": {
+                    "description": "选项已成功保存。"
                 }
             }
         },
