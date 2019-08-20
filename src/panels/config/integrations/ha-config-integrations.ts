@@ -1,7 +1,7 @@
 import "@polymer/app-route/app-route";
 
 import "./ha-config-entries-dashboard";
-import "./ha-config-entry-page";
+import "./config-entry/ha-config-entry-page";
 import { compare } from "../../../common/string/compare";
 import {
   subscribeAreaRegistry,
