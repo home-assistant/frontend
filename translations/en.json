@@ -1294,6 +1294,14 @@
                 "updater": {
                     "title": "Update Instructions"
                 }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Options"
+                },
+                "success": {
+                    "description": "Options successfully saved."
+                }
             }
         },
         "auth_store": {
