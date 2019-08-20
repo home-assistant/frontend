@@ -1294,6 +1294,14 @@
                 "updater": {
                     "title": "Instrukcje aktualizacji"
                 }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Opcje"
+                },
+                "success": {
+                    "description": "Opcje zapisane pomyślnie."
+                }
             }
         },
         "auth_store": {

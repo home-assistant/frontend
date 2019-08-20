@@ -608,8 +608,8 @@
                     "services": {
                         "start_network": "Включить",
                         "stop_network": "Отключить",
-                        "heal_network": "Исправить",
-                        "test_network": "Тестировать",
+                        "heal_network": "Исправить сеть",
+                        "test_network": "Тестировать ",
                         "soft_reset": "Сброс",
                         "save_config": "Сохранить конфигурацию",
                         "add_node_secure": "Добавить защищенный узел",
@@ -1293,6 +1293,14 @@
                 },
                 "updater": {
                     "title": "Инструкция по обновлению"
+                }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Параметры"
+                },
+                "success": {
+                    "description": "Параметры успешно сохранены."
                 }
             }
         },
