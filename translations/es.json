@@ -352,7 +352,7 @@
                     "description": "Cambiar la configuración general de Home Assistant",
                     "section": {
                         "core": {
-                            "header": "Configuración y control del servidor",
+                            "header": "Configuración general",
                             "introduction": "Cambiar tu configuración puede ser un proceso tedioso. Lo sabemos. Esta sección tratará de hacer tu vida un poco más fácil.",
                             "core_config": {
                                 "edit_requires_storage": "Editor deshabilitado debido a la configuración almacenada en configuration.yaml.",
@@ -1294,6 +1294,14 @@
                 "updater": {
                     "title": "Instrucciones de actualización"
                 }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Opciones"
+                },
+                "success": {
+                    "description": "Las opciones se guardaron correctamente."
+                }
             }
         },
         "auth_store": {
@@ -1316,7 +1324,7 @@
         "climate": "Climatización",
         "configurator": "Configurador",
         "conversation": "Conversación",
-        "cover": "Cubierta",
+        "cover": "Persiana",
         "device_tracker": "Rastreador de dispositivo",
         "fan": "Ventilador",
         "history_graph": "Historial gráfico",
