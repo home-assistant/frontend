@@ -14,16 +14,16 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@material/mwc-button/mwc-button";
 
-import "../../../components/dialog/ha-paper-dialog";
+import "../../components/dialog/ha-paper-dialog";
 
 import { DeviceRegistryDetailDialogParams } from "./show-dialog-device-registry-detail";
-import { PolymerChangedEvent } from "../../../polymer-types";
-import { haStyleDialog } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import { PolymerChangedEvent } from "../../polymer-types";
+import { haStyleDialog } from "../../resources/styles";
+import { HomeAssistant } from "../../types";
 import {
   subscribeAreaRegistry,
   AreaRegistryEntry,
-} from "../../../data/area_registry";
+} from "../../data/area_registry";
 
 @customElement("dialog-device-registry-detail")
 class DialogDeviceRegistryDetail extends LitElement {
@@ -74,7 +74,7 @@ class DialogDeviceRegistryDetail extends LitElement {
         opened
         @opened-changed="${this._openedChanged}"
       >
-        <h2>${device.name}</h2>
+        <h2>${device.name || "Unnamed device"}</h2>
         <paper-dialog-scrollable>
           ${this._error
             ? html`
