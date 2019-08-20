@@ -9,12 +9,13 @@ export interface EntityRegistryEntry {
   platform: string;
   config_entry_id?: string;
   device_id?: string;
-  disabled_by?: string;
+  disabled_by: string | null;
 }
 
 export interface EntityRegistryEntryUpdateParams {
-  name: string | null;
-  new_entity_id: string;
+  name?: string | null;
+  disabled_by?: string | null;
+  new_entity_id?: string;
 }
 
 export const computeEntityRegistryName = (
