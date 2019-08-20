@@ -1,7 +1,7 @@
 import { HomeAssistant } from "../types";
 import { DataEntryFlowStep, DataEntryFlowProgress } from "./data_entry_flow";
 import { debounce } from "../common/util/debounce";
-import { createCollection } from "home-assistant-js-websocket";
+import { getCollection, Connection } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "../common/translations/localize";
 
 export const createConfigFlow = (hass: HomeAssistant, handler: string) =>
@@ -29,9 +29,6 @@ export const handleConfigFlowStep = (
 export const deleteConfigFlow = (hass: HomeAssistant, flowId: string) =>
   hass.callApi("DELETE", `config/config_entries/flow/${flowId}`);
 
-export const getConfigFlowsInProgress = (hass: HomeAssistant) =>
-  hass.callApi<DataEntryFlowProgress[]>("GET", "config/config_entries/flow");
-
 export const getConfigFlowHandlers = (hass: HomeAssistant) =>
   hass.callApi<string[]>("GET", "config/config_entries/flow_handlers");
 
@@ -53,17 +50,18 @@ const subscribeConfigFlowInProgressUpdates = (conn, store) =>
     "config_entry_discovered"
   );
 
+export const getConfigFlowInProgressCollection = (conn: Connection) =>
+  getCollection<DataEntryFlowProgress[]>(
+    conn,
+    "_configFlowProgress",
+    fetchConfigFlowInProgress,
+    subscribeConfigFlowInProgressUpdates
+  );
+
 export const subscribeConfigFlowInProgress = (
   hass: HomeAssistant,
   onChange: (flows: DataEntryFlowProgress[]) => void
-) =>
-  createCollection<DataEntryFlowProgress[]>(
-    "_configFlowProgress",
-    fetchConfigFlowInProgress,
-    subscribeConfigFlowInProgressUpdates,
-    hass.connection,
-    onChange
-  );
+) => getConfigFlowInProgressCollection(hass.connection).subscribe(onChange);
 
 export const localizeConfigFlowTitle = (
   localize: LocalizeFunc,

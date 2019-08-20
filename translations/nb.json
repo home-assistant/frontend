@@ -747,7 +747,10 @@
                         "unavailable": "Denne enheten er ikke tilgjengelig for øyeblikket.",
                         "default_name": "Nytt område",
                         "delete": "SLETT",
-                        "update": "OPPDATER"
+                        "update": "OPPDATER",
+                        "enabled_label": "Aktiver enhet",
+                        "enabled_cause": "Deaktivert av {Cause}.",
+                        "enabled_description": "Deaktiverte enheter vil ikke bli lagt til i Home Assistant."
                     }
                 },
                 "person": {
@@ -1294,6 +1297,19 @@
                 "updater": {
                     "title": "Oppdateringsanvisning"
                 }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Alternativer"
+                },
+                "success": {
+                    "description": "Alternativene er lagret."
+                }
+            },
+            "config_entry_system_options": {
+                "title": "Systemalternativer",
+                "enable_new_entities_label": "Aktiver enheter som nylig er lagt til.",
+                "enable_new_entities_description": "Hvis den er deaktivert, vil ikke nyoppdagede enheter automatisk bli lagt til i Home Assistant."
             }
         },
         "auth_store": {
@@ -1389,5 +1405,12 @@
         "system-admin": "Administratorer",
         "system-users": "Brukere",
         "system-read-only": "Brukere med lesetilgang"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Bruker",
+            "integration": "Integrering",
+            "config_entry": "Konfigurer oppføring"
+        }
     }
 }
