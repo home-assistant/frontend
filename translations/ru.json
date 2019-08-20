@@ -1302,6 +1302,9 @@
                 "success": {
                     "description": "Параметры успешно сохранены."
                 }
+            },
+            "config_entry_system_options": {
+                "title": "Системные настройки"
             }
         },
         "auth_store": {
@@ -1397,5 +1400,11 @@
         "system-admin": "Администраторы",
         "system-users": "Пользователи",
         "system-read-only": "Системные пользователи"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Пользователь",
+            "integration": "Интеграция"
+        }
     }
 }
