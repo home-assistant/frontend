@@ -747,7 +747,10 @@
                         "unavailable": "This entity is not currently available.",
                         "default_name": "New Area",
                         "delete": "DELETE",
-                        "update": "UPDATE"
+                        "update": "UPDATE",
+                        "enabled_label": "Enable entity",
+                        "enabled_cause": "Disabled by {cause}.",
+                        "enabled_description": "Disabled entities will not be added to Home Assistant."
                     }
                 },
                 "person": {
@@ -1302,6 +1305,11 @@
                 "success": {
                     "description": "Options successfully saved."
                 }
+            },
+            "config_entry_system_options": {
+                "title": "System Options",
+                "enable_new_entities_label": "Enable newly added entities.",
+                "enable_new_entities_description": "If disabled, newly discovered entities will not be automatically added to Home Assistant."
             }
         },
         "auth_store": {
@@ -1397,5 +1405,12 @@
         "system-admin": "Administrators",
         "system-users": "Users",
         "system-read-only": "Read-Only Users"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "User",
+            "integration": "Integration",
+            "config_entry": "Config Entry"
+        }
     }
 }
