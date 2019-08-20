@@ -1,21 +1,25 @@
 import memoizeOne from "memoize-one";
-import "../../../layouts/hass-subpage";
-import "../../../layouts/hass-error-screen";
+import "../../../../layouts/hass-subpage";
+import "../../../../layouts/hass-error-screen";
 
-import "../../../components/entity/state-badge";
-import { compare } from "../../../common/string/compare";
+import "../../../../components/entity/state-badge";
+import { compare } from "../../../../common/string/compare";
 
 import "./ha-device-card";
 import "./ha-ce-entities-card";
-import { showOptionsFlowDialog } from "../../../dialogs/config-flow/show-dialog-options-flow";
+import { showOptionsFlowDialog } from "../../../../dialogs/config-flow/show-dialog-options-flow";
 import { property, LitElement, CSSResult, css, html } from "lit-element";
-import { navigate } from "../../../common/navigate";
-import { HomeAssistant } from "../../../types";
-import { ConfigEntry, deleteConfigEntry } from "../../../data/config_entries";
-import { EntityRegistryEntry } from "../../../data/entity_registry";
-import { DeviceRegistryEntry } from "../../../data/device_registry";
-import { AreaRegistryEntry } from "../../../data/area_registry";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { navigate } from "../../../../common/navigate";
+import { HomeAssistant } from "../../../../types";
+import {
+  ConfigEntry,
+  deleteConfigEntry,
+} from "../../../../data/config_entries";
+import { EntityRegistryEntry } from "../../../../data/entity_registry";
+import { DeviceRegistryEntry } from "../../../../data/device_registry";
+import { AreaRegistryEntry } from "../../../../data/area_registry";
+import { fireEvent } from "../../../../common/dom/fire_event";
+import { showConfigEntrySystemOptionsDialog } from "../../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
 
 class HaConfigEntryPage extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -94,6 +98,11 @@ class HaConfigEntryPage extends LitElement {
           : ""}
         <paper-icon-button
           slot="toolbar-icon"
+          icon="hass:message-settings-variant"
+          @click=${this._showSystemOptions}
+        ></paper-icon-button>
+        <paper-icon-button
+          slot="toolbar-icon"
           icon="hass:delete"
           @click=${this._removeEntry}
         ></paper-icon-button>
@@ -140,6 +149,12 @@ class HaConfigEntryPage extends LitElement {
 
   private _showSettings() {
     showOptionsFlowDialog(this, this._configEntry!);
+  }
+
+  private _showSystemOptions() {
+    showConfigEntrySystemOptionsDialog(this, {
+      entry: this._configEntry!,
+    });
   }
 
   private _removeEntry() {
