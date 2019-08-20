@@ -2,12 +2,13 @@ import {
   LitElement,
   html,
   css,
-  PropertyDeclarations,
   CSSResult,
   TemplateResult,
+  property,
 } from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
+import "@polymer/paper-toggle-button/paper-toggle-button";
 
 import "../../../components/dialog/ha-paper-dialog";
 
@@ -20,21 +21,13 @@ import { HassEntity } from "home-assistant-js-websocket";
 import computeStateName from "../../../common/entity/compute_state_name";
 
 class DialogEntityRegistryDetail extends LitElement {
-  public hass!: HomeAssistant;
-  private _name!: string;
-  private _entityId!: string;
-  private _error?: string;
-  private _params?: EntityRegistryDetailDialogParams;
-  private _submitting?: boolean;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      _error: {},
-      _name: {},
-      _entityId: {},
-      _params: {},
-    };
-  }
+  @property() public hass!: HomeAssistant;
+  @property() private _name!: string;
+  @property() private _entityId!: string;
+  @property() private _disabledBy!: string | null;
+  @property() private _error?: string;
+  @property() private _params?: EntityRegistryDetailDialogParams;
+  @property() private _submitting?: boolean;
 
   public async showDialog(
     params: EntityRegistryDetailDialogParams
@@ -43,6 +36,7 @@ class DialogEntityRegistryDetail extends LitElement {
     this._error = undefined;
     this._name = this._params.entry.name || "";
     this._entityId = this._params.entry.entity_id;
+    this._disabledBy = this._params.entry.disabled_by;
     await this.updateComplete;
   }
 
@@ -62,7 +56,11 @@ class DialogEntityRegistryDetail extends LitElement {
         opened
         @opened-changed="${this._openedChanged}"
       >
-        <h2>${entry.entity_id}</h2>
+        <h2>
+          ${stateObj
+            ? computeStateName(stateObj)
+            : entry.name || entry.entity_id}
+        </h2>
         <paper-dialog-scrollable>
           ${!stateObj
             ? html`
@@ -96,6 +94,35 @@ class DialogEntityRegistryDetail extends LitElement {
               .invalid=${invalidDomainUpdate}
               .disabled=${this._submitting}
             ></paper-input>
+            <div class="row">
+              <paper-toggle-button
+                .checked=${!this._disabledBy}
+                @checked-changed=${this._disabledByChanged}
+              >
+                <div>
+                  <div>
+                    ${this.hass.localize(
+                      "ui.panel.config.entity_registry.editor.enabled_label"
+                    )}
+                  </div>
+                  <div class="secondary">
+                    ${this._disabledBy && this._disabledBy !== "user"
+                      ? this.hass.localize(
+                          "ui.panel.config.entity_registry.editor.enabled_cause",
+                          "cause",
+                          this.hass.localize(
+                            `config_entry.disabled_by.${this._disabledBy}`
+                          )
+                        )
+                      : ""}
+                    ${this.hass.localize(
+                      "ui.panel.config.entity_registry.editor.enabled_description"
+                    )}
+                    <br />Note: this might not work yet with all integrations.
+                  </div>
+                </div>
+              </paper-toggle-button>
+            </div>
           </div>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
@@ -136,6 +163,7 @@ class DialogEntityRegistryDetail extends LitElement {
     try {
       await this._params!.updateEntry({
         name: this._name.trim() || null,
+        disabled_by: this._disabledBy,
         new_entity_id: this._entityId.trim(),
       });
       this._params = undefined;
@@ -162,6 +190,9 @@ class DialogEntityRegistryDetail extends LitElement {
       this._params = undefined;
     }
   }
+  private _disabledByChanged(ev: PolymerChangedEvent<boolean>): void {
+    this._disabledBy = ev.detail.value ? null : "user";
+  }
 
   static get styles(): CSSResult[] {
     return [
@@ -169,6 +200,7 @@ class DialogEntityRegistryDetail extends LitElement {
       css`
         ha-paper-dialog {
           min-width: 400px;
+          max-width: 450px;
         }
         .form {
           padding-bottom: 24px;
@@ -178,6 +210,13 @@ class DialogEntityRegistryDetail extends LitElement {
         }
         .error {
           color: var(--google-red-500);
+        }
+        .row {
+          margin-top: 8px;
+          color: var(--primary-text-color);
+        }
+        .secondary {
+          color: var(--secondary-text-color);
         }
       `,
     ];

@@ -3,13 +3,13 @@ import "@polymer/paper-item/paper-item-body";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-card";
-import "../../../layouts/hass-subpage";
+import "../../../../components/ha-card";
+import "../../../../layouts/hass-subpage";
 
-import { EventsMixin } from "../../../mixins/events-mixin";
-import LocalizeMixIn from "../../../mixins/localize-mixin";
-import "../../../components/entity/state-badge";
-import { computeEntityRegistryName } from "../../../data/entity_registry";
+import { EventsMixin } from "../../../../mixins/events-mixin";
+import LocalizeMixIn from "../../../../mixins/localize-mixin";
+import "../../../../components/entity/state-badge";
+import { computeEntityRegistryName } from "../../../../data/entity_registry";
 
 /*
  * @appliesMixin LocalizeMixIn

@@ -14,12 +14,7 @@ import {
   showConfigFlowDialog,
 } from "../dialogs/config-flow/show-dialog-config-flow";
 import { HomeAssistant } from "../types";
-import {
-  getConfigFlowsInProgress,
-  getConfigEntries,
-  ConfigEntry,
-  localizeConfigFlowTitle,
-} from "../data/config_entries";
+import { getConfigEntries, ConfigEntry } from "../data/config_entries";
 import { compare } from "../common/string/compare";
 import "./integration-badge";
 import { LocalizeFunc } from "../common/translations/localize";
@@ -28,6 +23,10 @@ import { fireEvent } from "../common/dom/fire_event";
 import { onboardIntegrationStep } from "../data/onboarding";
 import { genClientId } from "home-assistant-js-websocket";
 import { DataEntryFlowProgress } from "../data/data_entry_flow";
+import {
+  localizeConfigFlowTitle,
+  getConfigFlowsInProgress,
+} from "../data/config_flow";
 
 @customElement("onboarding-integrations")
 class OnboardingIntegrations extends LitElement {

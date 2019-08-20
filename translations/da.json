@@ -1294,6 +1294,14 @@
                 "updater": {
                     "title": "Opdateringsvejledning"
                 }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Indstillinger"
+                },
+                "success": {
+                    "description": "Indstillingerne blev gemt."
+                }
             }
         },
         "auth_store": {
