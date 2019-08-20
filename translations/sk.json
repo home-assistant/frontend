@@ -732,7 +732,8 @@
                             "core": "Znovu načítať jadro",
                             "group": "Znovu načítať skupiny",
                             "automation": "Znovu načítať automatizácie",
-                            "script": "Znovu načítať skripty"
+                            "script": "Znovu načítať skripty",
+                            "scene": "Znovu načítať scény"
                         },
                         "server_management": {
                             "heading": "Správa servera",
