@@ -542,7 +542,7 @@
       "config_entry_system_options": {
         "title": "System Options",
         "enable_new_entities_label": "Enable newly added entities.",
-        "enable_new_entities_description": "If disabled, newly discovered entities will not be automatically shown in Home Assistant."
+        "enable_new_entities_description": "If disabled, newly discovered entities will not be automatically added to Home Assistant."
       }
     },
     "duration": {
