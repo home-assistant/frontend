@@ -91,7 +91,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         {
           template: this._config.content,
           entity_ids: this._config.entity_id,
-          variables: this._config,
+          variables: {config: this._config},
         }
       );
       this._unsubRenderTemplate.catch(() => {
