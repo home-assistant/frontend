@@ -747,7 +747,10 @@
                         "unavailable": "Ovaj entitet trenutno nije dostupan.",
                         "default_name": "Novo područje",
                         "delete": "IZBRISATI",
-                        "update": "AŽURIRANJE"
+                        "update": "AŽURIRANJE",
+                        "enabled_label": "Aktiviraj entitet",
+                        "enabled_cause": "Deaktivirano zbog {uzrok}.",
+                        "enabled_description": "Onemogućeni entiteti neće biti dodani u Home Assistant."
                     }
                 },
                 "person": {
@@ -1294,6 +1297,19 @@
                 "updater": {
                     "title": "Upute za ažuriranje"
                 }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Opcije"
+                },
+                "success": {
+                    "description": "Opcije su uspješno spremljene."
+                }
+            },
+            "config_entry_system_options": {
+                "title": "Mogućnosti sustava",
+                "enable_new_entities_label": "Aktiviraj novododane entitete.",
+                "enable_new_entities_description": "Ako nije aktivno, novootkriveni entiteti neće biti automatski dodani u Home Assistant."
             }
         },
         "auth_store": {
@@ -1389,5 +1405,12 @@
         "system-admin": "Administratori",
         "system-users": "Korisnici",
         "system-read-only": "Korisnici sa pravima samo za čitanje"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Korisnik",
+            "integration": "Integracija",
+            "config_entry": "Stavka konfiguracije"
+        }
     }
 }
