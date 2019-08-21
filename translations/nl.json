@@ -426,7 +426,7 @@
                             "add": "Trigger toevoegen",
                             "duplicate": "Dupliceren",
                             "delete": "Verwijderen",
-                            "delete_confirm": "Zeker dat u wilt verwijderen?",
+                            "delete_confirm": "Zeker dat je wil verwijderen?",
                             "unsupported_platform": "Niet ondersteund platform: {platform}",
                             "type_select": "Trigger-type",
                             "type": {
@@ -677,7 +677,7 @@
                     "config_entry": {
                         "no_devices": "Deze integratie heeft geen apparaten.",
                         "no_device": "Entiteiten zonder apparaten",
-                        "delete_confirm": "Weet u zeker dat u deze integratie wilt verwijderen?",
+                        "delete_confirm": "Weet je zeker dat je deze integratie wilt verwijderen?",
                         "restart_confirm": "Herstart Home Assistant om het verwijderen van deze integratie te voltooien",
                         "manuf": "door {manufacturer}",
                         "via": "Verbonden via",
@@ -689,7 +689,7 @@
                     },
                     "config_flow": {
                         "external_step": {
-                            "description": "Deze stap vereist dat u een externe website bezoekt om dit te voltooien.",
+                            "description": "Deze stap vereist dat je een externe website bezoekt om dit te voltooien.",
                             "open_site": "Open website"
                         }
                     }
@@ -817,7 +817,7 @@
                     "description": "Elk toegangstoken vertegenwoordigt een inlogsessie. Toegangstokens worden automatisch verwijderd wanneer u op Uitloggen klikt. De volgende toegangstokens zijn momenteel actief voor uw account.",
                     "token_title": "Token voor {clientId}",
                     "created_at": "Gemaakt op {date}",
-                    "confirm_delete": "Weet u zeker dat u de toegangstoken voor {name} wilt verwijderen?",
+                    "confirm_delete": "Weet je zeker dat je de verversingstoken voor {name} wilt verwijderen?",
                     "delete_failed": "Verwijderen van de toegangstoken is mislukt.",
                     "last_used": "Laatst gebruikt op {date} vanaf {location}",
                     "not_used": "Is nog nooit gebruikt",
@@ -838,8 +838,8 @@
                     "last_used": "Laatst gebruikt op {date} vanaf {location}",
                     "not_used": "Is nog nooit gebruikt"
                 },
-                "current_user": "U bent momenteel ingelogd als {fullName}.",
-                "is_owner": "U bent eigenaar.",
+                "current_user": "Je bent momenteel ingelogd als {fullName}.",
+                "is_owner": "Je bent eigenaar.",
                 "change_password": {
                     "header": "Wachtwoord wijzigen",
                     "current_password": "Huidige wachtwoord",
@@ -852,7 +852,7 @@
                     "header": "Twee-factor-authenticatie modules",
                     "disable": "Uitschakelen",
                     "enable": "Inschakelen",
-                    "confirm_disable": "Weet u zeker dat u {naam} wilt uitschakelen?"
+                    "confirm_disable": "Weet je zeker dat je {naam} wilt uitschakelen?"
                 },
                 "mfa_setup": {
                     "title_aborted": "Afgebroken",
@@ -869,7 +869,7 @@
             },
             "page-authorize": {
                 "initializing": "Initialiseren",
-                "authorizing_client": "U staat op het punt {clientId} toegang te geven tot uw Home Assistant-instantie.",
+                "authorizing_client": "Je staat op het punt {clientId} toegang te geven tot je Home Assistant-instantie.",
                 "logging_in_with": "Aan het inloggen met **{authProviderName}**.",
                 "pick_auth_provider": "Of log in met",
                 "abort_intro": "Inloggen afgebroken",
@@ -930,7 +930,7 @@
                                     "data": {
                                         "user": "Gebruiker"
                                     },
-                                    "description": "Selecteer een gebruiker waarmee u wilt aanmelden:"
+                                    "description": "Selecteer een gebruiker waarmee je je wilt aanmelden:"
                                 }
                             },
                             "abort": {
@@ -964,7 +964,7 @@
                 }
             },
             "page-onboarding": {
-                "intro": "Bent u klaar om uw huis wakker te maken, uw privacy terug te winnen en deel te nemen aan een wereldwijde gemeenschap van knutselaars?",
+                "intro": "Ben je klaar om uw huis wakker te maken, uw privacy terug te winnen en deel te nemen aan een wereldwijde gemeenschap van knutselaars?",
                 "user": {
                     "intro": "Laten we beginnen door een gebruikersaccount aan te maken.",
                     "required_field": "Verplicht",
@@ -1313,7 +1313,7 @@
             }
         },
         "auth_store": {
-            "ask": "Wilt u de inloggegevens opslaan?",
+            "ask": "Wil je de inloggegevens opslaan?",
             "decline": "Nee, bedankt",
             "confirm": "Login opslaan"
         },

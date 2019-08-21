@@ -20,7 +20,7 @@
     "@material/mwc-base": "^0.6.0",
     "@material/mwc-button": "^0.6.0",
     "@material/mwc-ripple": "^0.6.0",
-    "@mdi/svg": "4.0.96",
+    "@mdi/svg": "4.1.95",
     "@polymer/app-layout": "^3.0.2",
     "@polymer/app-localize-behavior": "^3.0.1",
     "@polymer/app-route": "^3.0.2",
