@@ -748,7 +748,8 @@
                         "default_name": "Nyt område",
                         "delete": "SLET",
                         "update": "OPDATER",
-                        "enabled_label": "Aktivér enhed"
+                        "enabled_label": "Aktivér enhed",
+                        "enabled_cause": "Deaktiveret af {cause}."
                     }
                 },
                 "person": {
