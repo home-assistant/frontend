@@ -27,6 +27,7 @@ class HaTextarea extends PolymerElement {
 
   static get properties() {
     return {
+      name: String,
       label: String,
       value: {
         type: String,
