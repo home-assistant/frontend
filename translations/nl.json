@@ -600,7 +600,7 @@
                     "network_status": {
                         "network_stopped": "Z-Wave netwerk gestopt",
                         "network_starting": "Z-Wave netwerk starten...",
-                        "network_starting_note": "Dit kan een tijdje duren, afhankelijk van de grootte van uw netwerk.",
+                        "network_starting_note": "Dit kan een tijdje duren, afhankelijk van de grootte van je netwerk.",
                         "network_started": "Z-Wave netwerk gestart",
                         "network_started_note_some_queried": "Alle actieve nodes zijn opgevraagd. Inactieve nodes worden opgevraagd wanneer ze actief worden.",
                         "network_started_note_all_queried": "Alle nodes zijn opgevraagd."
@@ -710,7 +710,7 @@
                     "add_device_page": {
                         "header": "ZigBee Home Automation - Apparaten toevoegen",
                         "spinner": "Zoeken naar ZHA Zigbee-apparaten ...",
-                        "discovery_text": "Gevonden apparaten worden hier weergegeven. Volg de instructies voor uw apparaat of apparaten en plaats het apparaat of de apparaten in de koppelingsmodus."
+                        "discovery_text": "Gevonden apparaten worden hier weergegeven. Volg de instructies voor je apparaat of apparaten en plaats het apparaat of de apparaten in de koppelingsmodus."
                     }
                 },
                 "area_registry": {
@@ -718,7 +718,7 @@
                     "description": "Overzicht van alle gebieden in je huis.",
                     "picker": {
                         "header": "Gebiedenregister",
-                        "introduction": "Gebieden worden gebruikt om te bepalen waar apparaten zijn. Deze informatie wordt overal in de Home Assistant gebruikt om u te helpen bij het organiseren van uw interface, machtigingen en integraties met andere systemen.",
+                        "introduction": "Gebieden worden gebruikt om te bepalen waar apparaten zijn. Deze informatie wordt overal in de Home Assistant gebruikt om je te helpen bij het organiseren van je interface, machtigingen en integraties met andere systemen.",
                         "introduction2": "Als u apparaten in een gebied wilt plaatsen, gebruikt u de onderstaande koppeling om naar de integratiespagina te gaan en vervolgens op een geconfigureerde integratie te klikken om naar de apparaatkaarten te gaan.",
                         "integrations_page": "Integratiespagina",
                         "no_areas": "Het lijkt erop dat je nog geen ruimtes hebt!",
@@ -825,10 +825,10 @@
                 },
                 "long_lived_access_tokens": {
                     "header": "Toegangtokens met lange levensduur",
-                    "description": "Maak toegangstokens met een lange levensduur zodat uw scripts kunnen communiceren met uw Home Assistant instantie. Elk token is tien jaar geldig vanaf geldig vanaf de aanmaakdatum. De volgende langlevende toegangstokens zijn momenteel actief.",
-                    "learn_auth_requests": "Kom te weten hoe u geverifieerde verzoeken kunt maken",
+                    "description": "Maak toegangstokens met een lange levensduur zodat je scripts kunnen communiceren met je Home Assistant-instantie. Elk token is tien jaar geldig vanaf geldig vanaf de aanmaakdatum. De volgende langlevende toegangstokens zijn momenteel actief.",
+                    "learn_auth_requests": "Kom te weten hoe je geverifieerde verzoeken kunt maken",
                     "created_at": "Gemaakt op {date}",
-                    "confirm_delete": "Weet u zeker dat u de toegangstoken voor {name} wilt verwijderen?",
+                    "confirm_delete": "Weet je zeker dat je de toegangstoken voor {name} wilt verwijderen?",
                     "delete_failed": "Verwijderen van de toegangstoken is mislukt.",
                     "create": "Token aanmaken",
                     "create_failed": "De toegangstoken kon niet worden aangemaakt.",
@@ -889,7 +889,7 @@
                                     "data": {
                                         "code": "Twee-factor-authenticatiecode"
                                     },
-                                    "description": "Open de **{mfa_module_name}** op uw apparaat om uw twee-factor-authenticatiecode te bekijken en verifieer uw identiteit:"
+                                    "description": "Open de **{mfa_module_name}** op je apparaat om je twee-factor-authenticatiecode te bekijken en verifieer je identiteit:"
                                 }
                             },
                             "error": {
@@ -897,7 +897,7 @@
                                 "invalid_code": "Ongeldige authenticatiecode"
                             },
                             "abort": {
-                                "login_expired": "Sessie verlopen, meldt u opnieuw aan."
+                                "login_expired": "Sessie verlopen, meld je opnieuw aan."
                             }
                         },
                         "legacy_api_password": {
@@ -906,13 +906,13 @@
                                     "data": {
                                         "password": "API-wachtwoord"
                                     },
-                                    "description": "Voer het API-wachtwoord in van uw http configuratie:"
+                                    "description": "Voer het API-wachtwoord in van je http-configuratie:"
                                 },
                                 "mfa": {
                                     "data": {
                                         "code": "Twee-factor-authenticatiecode"
                                     },
-                                    "description": "Open de **{mfa_module_name}** op uw apparaat om uw twee-factor-authenticatiecode te bekijken en verifieer uw identiteit:"
+                                    "description": "Open de **{mfa_module_name}** op je apparaat om je twee-factor-authenticatiecode te bekijken en verifieer je identiteit:"
                                 }
                             },
                             "error": {
@@ -921,7 +921,7 @@
                             },
                             "abort": {
                                 "no_api_password_set": "Er is geen API-wachtwoord ingesteld.",
-                                "login_expired": "Sessie verlopen, meldt u opnieuw aan."
+                                "login_expired": "Sessie verlopen, meld je opnieuw aan."
                             }
                         },
                         "trusted_networks": {
@@ -934,7 +934,7 @@
                                 }
                             },
                             "abort": {
-                                "not_whitelisted": "Uw computer staat niet op de whitelist."
+                                "not_whitelisted": "Je computer staat niet op de whitelist."
                             }
                         },
                         "command_line": {
@@ -957,14 +957,14 @@
                                 "invalid_code": "Onjuiste authenticatiecode"
                             },
                             "abort": {
-                                "login_expired": "Sessie verlopen, meldt u opnieuw aan."
+                                "login_expired": "Sessie verlopen, meld je opnieuw aan."
                             }
                         }
                     }
                 }
             },
             "page-onboarding": {
-                "intro": "Ben je klaar om uw huis wakker te maken, uw privacy terug te winnen en deel te nemen aan een wereldwijde gemeenschap van knutselaars?",
+                "intro": "Ben je klaar om je huis wakker te maken, je privacy terug te winnen en deel te nemen aan een wereldwijde gemeenschap van knutselaars?",
                 "user": {
                     "intro": "Laten we beginnen door een gebruikersaccount aan te maken.",
                     "required_field": "Verplicht",
@@ -987,7 +987,7 @@
                 },
                 "core-config": {
                     "intro": "Hallo {name}, welkom bij Home Assistant. Welke naam wil je je huis geven?",
-                    "intro_location": "We willen graag weten waar je woont. Deze informatie zal helpen bij het weergeven van informatie en het instellen van op de zon gebaseerde automatiseringen. Deze gegevens worden nooit gedeeld buiten uw netwerk.",
+                    "intro_location": "We willen graag weten waar je woont. Deze informatie zal helpen bij het weergeven van informatie en het instellen van op de zon gebaseerde automatiseringen. Deze gegevens worden nooit gedeeld buiten je netwerk.",
                     "intro_location_detect": "Wij kunnen u helpen deze informatie in te vullen door eenmalig een verbinding te maken met een externe service.",
                     "location_name_default": "Huis",
                     "button_detect": "Detecteren",
@@ -1040,7 +1040,7 @@
                         "delete": "Weergave verwijderen"
                     },
                     "save_config": {
-                        "header": "Neem de controle over uw Lovelace UI",
+                        "header": "Neem de controle over je Lovelace UI",
                         "para": "Normaal gesproken onderhoudt Home Assistant je gebruikersinterface en update die met nieuwe entiteiten of Lovelace-onderdelen wanneer deze beschikbaar zijn. Als je het beheer overneemt, zullen we niet langer automatisch wijzigingen aanbrengen.",
                         "para_sure": "Weet je zeker dat je de controle wilt over je gebruikersinterface?",
                         "cancel": "Laat maar",

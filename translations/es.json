@@ -1302,6 +1302,10 @@
                 "success": {
                     "description": "Las opciones se guardaron correctamente."
                 }
+            },
+            "config_entry_system_options": {
+                "title": "Opciones del sistema",
+                "enable_new_entities_label": "Habilitar entidades recién agregadas."
             }
         },
         "auth_store": {
@@ -1397,5 +1401,11 @@
         "system-admin": "Administradores",
         "system-users": "Usuarios",
         "system-read-only": "Usuarios de solo lectura"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Usuario",
+            "integration": "Integración"
+        }
     }
 }
