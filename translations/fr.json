@@ -747,7 +747,10 @@
                         "unavailable": "Cette entité n'est pas disponible actuellement.",
                         "default_name": "Nouvelle pièce",
                         "delete": "SUPPRIMER",
-                        "update": "METTRE À JOUR"
+                        "update": "METTRE À JOUR",
+                        "enabled_label": "Activer l'entité",
+                        "enabled_cause": "Désactivé par {cause}.",
+                        "enabled_description": "Les entités désactivées ne seront pas ajoutées à Home Assistant."
                     }
                 },
                 "person": {
@@ -777,7 +780,8 @@
                             "core": "Recharger le noyau",
                             "group": "Recharger les groupes",
                             "automation": "Recharger les automatisations",
-                            "script": "Recharger les scripts"
+                            "script": "Recharger les scripts",
+                            "scene": "Recharger les scènes"
                         },
                         "server_management": {
                             "heading": "Gestion du serveur",
@@ -1293,6 +1297,19 @@
                 "updater": {
                     "title": "Instructions de mise à jour"
                 }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Options"
+                },
+                "success": {
+                    "description": "Option enregistrées avec succès."
+                }
+            },
+            "config_entry_system_options": {
+                "title": "Options du système",
+                "enable_new_entities_label": "Activer les entités nouvellement ajoutées.",
+                "enable_new_entities_description": "Si désactivé, les entités nouvellement découvertes ne seront pas ajoutées automatiquement à Home Assistant."
             }
         },
         "auth_store": {
@@ -1388,5 +1405,11 @@
         "system-admin": "Administrateurs",
         "system-users": "Utilisateurs",
         "system-read-only": "Utilisateurs en lecture seule"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Utilisateur",
+            "integration": "Intégration"
+        }
     }
 }
