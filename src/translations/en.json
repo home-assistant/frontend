@@ -230,7 +230,9 @@
       "playing": "Playing",
       "paused": "Paused",
       "idle": "Idle",
-      "standby": "Standby"
+      "standby": "Standby",
+      "cooling_down": "Cooling Down",
+      "warming_up": "Warming Up"
     },
     "person": {
       "home": "Home",

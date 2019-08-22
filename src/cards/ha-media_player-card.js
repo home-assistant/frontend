@@ -321,7 +321,7 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       return cls;
     }
 
-    if (playerObj.isOff || playerObj.isIdle) {
+    if (playerObj.isOff || playerObj.isIdle || playerObj.isCoolingWarming) {
       cls += " is-off no-cover";
     } else if (
       !playerObj.stateObj.attributes.entity_picture ||
