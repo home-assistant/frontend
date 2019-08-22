@@ -43,17 +43,17 @@ class StepFlowForm extends LitElement {
 
   protected render(): TemplateResult | void {
     const step = this.step;
+    const stepData = this._stepDataProcessed;
 
     const allRequiredInfoFilledIn =
-      this._stepData === undefined
+      stepData === undefined
         ? // If no data filled in, just check that any field is required
           step.data_schema.find((field) => !field.optional) === undefined
         : // If data is filled in, make sure all required fields are
-          this._stepData &&
+          stepData &&
           step.data_schema.every(
             (field) =>
-              field.optional ||
-              !["", undefined].includes(this._stepData![field.name])
+              field.optional || !["", undefined].includes(stepData![field.name])
           );
 
     return html`
@@ -68,7 +68,7 @@ class StepFlowForm extends LitElement {
           : ""}
         ${this.flowConfig.renderShowFormStepDescription(this.hass, this.step)}
         <ha-form
-          .data=${this._stepDataProcessed}
+          .data=${stepData}
           @data-changed=${this._stepDataChanged}
           .schema=${step.data_schema}
           .error=${step.errors}
