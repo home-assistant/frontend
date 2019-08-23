@@ -17,7 +17,10 @@ export default class MediaPlayerEntity {
   }
 
   get isCoolingWarming() {
-    return this.stateObj.state === "warming_up" || this.stateObj.state === "cooling_down"
+    return (
+      this.stateObj.state === "warming_up" ||
+      this.stateObj.state === "cooling_down"
+    );
   }
 
   get isMuted() {
