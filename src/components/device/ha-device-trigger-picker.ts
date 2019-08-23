@@ -1,6 +1,5 @@
-import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-listbox/paper-listbox";
@@ -16,76 +15,48 @@ import {
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import { compare } from "../../common/string/compare";
-import { LocalizeFunc } from "../../common/translations/localize";
 import computeStateName from "../../common/entity/compute_state_name";
+import {
+  DeviceTrigger,
+  fetchDeviceTriggers,
+  triggersEqual,
+} from "../../data/device_automation";
 
-export interface DeviceTrigger {
-  platform: string;
-  domain: string;
-  device_id: string;
-  entity_id?: string;
-  type: string;
-}
-
-const fetchDeviceTriggers = (hass, deviceId) =>
-  hass.callWS<DeviceTrigger[]>({
-    type: "device_automation/list_triggers",
-    device_id: deviceId,
-  });
-
-function isObject(v) {
-  return "[object Object]" === Object.prototype.toString.call(v);
-}
-
-JSON.sort = function(o) {
-  if (Array.isArray(o)) {
-    return o.sort().map(JSON.sort);
-  } else if (isObject(o)) {
-    return Object.keys(o)
-      .sort()
-      .reduce(function(a, k) {
-        a[k] = JSON.sort(o[k]);
-
-        return a;
-      }, {});
-  }
-
-  return o;
-};
-
-class HaEntityPicker extends LitElement {
+class HaDeviceTriggerPicker extends LitElement {
   public hass?: HomeAssistant;
-  public localize?: LocalizeFunc;
   @property() public label?: string;
-  @property() public value?: string;
   @property() public deviceId?: string;
-  @property() public triggers?: DeviceTrigger[];
+  @property() public triggers?: DeviceTrigger[] = [];
+  @property() public trigger?: DeviceTrigger;
+  @property() public presetTrigger?: DeviceTrigger;
+  private noTrigger = { device_id: this.deviceId, platform: "device" };
 
   private _sortedTriggers = memoizeOne((triggers?: DeviceTrigger[]) => {
     return triggers || [];
   });
 
   protected render(): TemplateResult | void {
+    const noTriggers = this._sortedTriggers(this.triggers).length == 0;
     return html`
-      <paper-dropdown-menu-light .label=${this.label}>
+      <paper-dropdown-menu-light .label=${this.label} ?disabled=${noTriggers}>
         <paper-listbox
           slot="dropdown-content"
-          .selected=${this._value}
-          attr-for-selected="data-trigger"
+          .selected=${this._trigger}
+          attr-for-selected="trigger"
           @iron-select=${this._triggerChanged}
+          id="listbox"
         >
-          <paper-item
-            data-trigger=${JSON.stringify({
-              device_id: this.deviceId,
-              platform: "device",
-            })}
-          >
-            No trigger
-          </paper-item>
+          ${noTriggers
+            ? html`
+                <paper-item .trigger=${this.noTrigger}>
+                  No triggers
+                </paper-item>
+              `
+            : ""}
           ${this._sortedTriggers(this.triggers).map(
             (trigger) => html`
-              <paper-item data-trigger=${JSON.stringify(JSON.sort(trigger))}>
-                ${this.localize(
+              <paper-item .trigger=${trigger}>
+                ${this.hass.localize(
                   `ui.panel.config.automation.editor.triggers.type.device.trigger_type.${
                     trigger.type
                   }`,
@@ -104,31 +75,49 @@ class HaEntityPicker extends LitElement {
     `;
   }
 
-  private get _value() {
-    return this.value || "";
+  private get _trigger() {
+    return this.trigger;
   }
 
-  protected updated(oldProps) {
-    console.log("_triggerChanged");
-    if (oldProps.has("deviceId") && oldProps.get("deviceId") != this.deviceId) {
+  protected updated(changedProps) {
+    super.updated(changedProps);
+
+    // Reset trigger if device-id has changed
+    if (changedProps.has("deviceId")) {
+      this.noTrigger = { device_id: this.deviceId, platform: "device" };
       if (this.deviceId) {
         fetchDeviceTriggers(this.hass!, this.deviceId).then((trigger) => {
           this.triggers = trigger.triggers;
+          if (this.triggers.length > 0) {
+            // Set first trigger as default
+            this.trigger = this.triggers[0];
+          } else if (triggersEqual(this.noTrigger, this.presetTrigger)) {
+            this.trigger = this.noTrigger;
+          }
+          for (var trigger of this.triggers) {
+            // Try to find a trigger matching existing trigger loaded from stored automation
+            if (triggersEqual(trigger, this.presetTrigger))
+              this.trigger = trigger;
+          }
         });
       } else {
+        // No device, clear the list of triggers
         this.triggers = [];
+        this.trigger = this.noTrigger;
       }
+    }
+
+    // The triggers property has changed, force the listbox to update
+    if (changedProps.has("triggers")) {
+      this.shadowRoot.getElementById("listbox")._selectSelected();
     }
   }
 
   private _triggerChanged(ev) {
-    console.log("_triggerChanged");
-    const tmp = JSON.parse(ev.detail.item.dataset.trigger);
-    const newValue = ev.detail.item.dataset.trigger;
-    if (newValue !== this._value) {
-      this.value = newValue;
+    const newValue = ev.detail.item.trigger;
+    if (newValue !== this._trigger) {
+      this.trigger = newValue;
       setTimeout(() => {
-        fireEvent(this, "value-changed", { value: newValue });
         fireEvent(this, "change");
       }, 0);
     }
@@ -145,11 +134,11 @@ class HaEntityPicker extends LitElement {
       paper-listbox {
         min-width: 200px;
       }
-      paper-icon-item {
+      paper-item {
         cursor: pointer;
       }
     `;
   }
 }
 
-customElements.define("ha-device-trigger-picker", HaEntityPicker);
+customElements.define("ha-device-trigger-picker", HaDeviceTriggerPicker);

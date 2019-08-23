@@ -1,6 +1,5 @@
-import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-listbox/paper-listbox";
@@ -17,18 +16,18 @@ import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import {
   DeviceRegistryEntry,
-  fetchDeviceRegistry,
+  subscribeDeviceRegistry,
 } from "../../data/device_registry";
 import { compare } from "../../common/string/compare";
 
-class HaEntityPicker extends LitElement {
+class HaDevicePicker extends LitElement {
   public hass?: HomeAssistant;
   @property() public label?: string;
   @property() public value?: string;
   @property() public devices?: DeviceRegistryEntry[];
+  private _unsubDevices?: UnsubscribeFunc;
 
   private _sortedDevices = memoizeOne((devices?: DeviceRegistryEntry[]) => {
-    console.log(devices);
     if (!devices || devices.length === 1) {
       return devices || [];
     }
@@ -46,14 +45,14 @@ class HaEntityPicker extends LitElement {
           attr-for-selected="data-device-id"
           @iron-select=${this._deviceChanged}
         >
-          <paper-icon-item data-device-id="">
+          <paper-item data-device-id="">
             No device
-          </paper-icon-item>
+          </paper-item>
           ${this._sortedDevices(this.devices).map(
             (device) => html`
-              <paper-icon-item data-device-id=${device.id}>
+              <paper-item data-device-id=${device.id}>
                 ${device.name_by_user || device.name}
-              </paper-icon-item>
+              </paper-item>
             `
           )}
         </paper-listbox>
@@ -65,13 +64,23 @@ class HaEntityPicker extends LitElement {
     return this.value || "";
   }
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._unsubDevices) {
+      this._unsubDevices();
+      this._unsubDevices = undefined;
+    }
+  }
+
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     if (this.devices === undefined) {
-      // TODO: Subscribe to device registry updates?
-      fetchDeviceRegistry(this.hass.connection!).then((devices) => {
-        this.devices = devices;
-      });
+      this._unsubDevices = subscribeDeviceRegistry(
+        this.hass.connection!,
+        (devices) => {
+          this.devices = devices;
+        }
+      );
     }
   }
 
@@ -98,11 +107,11 @@ class HaEntityPicker extends LitElement {
       paper-listbox {
         min-width: 200px;
       }
-      paper-icon-item {
+      paper-item {
         cursor: pointer;
       }
     `;
   }
 }
 
-customElements.define("ha-device-picker", HaEntityPicker);
+customElements.define("ha-device-picker", HaDevicePicker);
