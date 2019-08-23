@@ -5,8 +5,6 @@ import "../../../../components/device/ha-device-trigger-picker";
 
 import { onChangeEvent } from "../../../../common/preact/event";
 
-import { triggersEqual } from "../../../../data/device_automation";
-
 export default class DeviceTrigger extends Component {
   constructor() {
     super();
@@ -17,21 +15,19 @@ export default class DeviceTrigger extends Component {
 
   devicePicked(ev) {
     this.deviceId = ev.target.value;
-    let deviceTrigger = {};
-
     // Reset the trigger if device is changed
-    deviceTrigger.platform = "device";
-    deviceTrigger.device_id = this.deviceId;
+    const deviceTrigger = { platform: "device", device_id: this.deviceId };
+
     this.props.onChange(this.props.index, (this.props.trigger = deviceTrigger));
   }
 
   deviceTriggerPicked(ev) {
-    let deviceTrigger = ev.target.trigger;
+    const deviceTrigger = ev.target.trigger;
     this.props.onChange(this.props.index, (this.props.trigger = deviceTrigger));
   }
 
   /* eslint-disable camelcase */
-  render({ trigger, hass, localize }) {
+  render({ trigger, hass }) {
     const { device_id } = trigger;
     const jsontrigger = trigger;
 
