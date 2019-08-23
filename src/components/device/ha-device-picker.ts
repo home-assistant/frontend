@@ -12,6 +12,7 @@ import {
   CSSResult,
   property,
 } from "lit-element";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import {
@@ -32,9 +33,17 @@ class HaDevicePicker extends LitElement {
       return devices || [];
     }
     const sorted = [...devices];
-    sorted.sort((a, b) => compare(a.name, b.name));
+    sorted.sort((a, b) => compare(a.name || "", b.name || ""));
     return sorted;
   });
+
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+    if (this._unsubDevices) {
+      this._unsubDevices();
+      this._unsubDevices = undefined;
+    }
+  }
 
   protected render(): TemplateResult | void {
     return html`
@@ -64,19 +73,11 @@ class HaDevicePicker extends LitElement {
     return this.value || "";
   }
 
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._unsubDevices) {
-      this._unsubDevices();
-      this._unsubDevices = undefined;
-    }
-  }
-
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     if (this.devices === undefined) {
       this._unsubDevices = subscribeDeviceRegistry(
-        this.hass.connection!,
+        this.hass!.connection!,
         (devices) => {
           this.devices = devices;
         }

@@ -14,7 +14,6 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
-import { compare } from "../../common/string/compare";
 import computeStateName from "../../common/entity/compute_state_name";
 import {
   DeviceTrigger,
@@ -26,17 +25,20 @@ class HaDeviceTriggerPicker extends LitElement {
   public hass?: HomeAssistant;
   @property() public label?: string;
   @property() public deviceId?: string;
-  @property() public triggers?: DeviceTrigger[] = [];
+  @property() public triggers: DeviceTrigger[] = [];
   @property() public trigger?: DeviceTrigger;
   @property() public presetTrigger?: DeviceTrigger;
-  private noTrigger = { device_id: this.deviceId, platform: "device" };
+  private noTrigger: DeviceTrigger = {
+    device_id: this.deviceId || "",
+    platform: "device",
+  };
 
   private _sortedTriggers = memoizeOne((triggers?: DeviceTrigger[]) => {
     return triggers || [];
   });
 
   protected render(): TemplateResult | void {
-    const noTriggers = this._sortedTriggers(this.triggers).length == 0;
+    const noTriggers = this._sortedTriggers(this.triggers).length === 0;
     return html`
       <paper-dropdown-menu-light .label=${this.label} ?disabled=${noTriggers}>
         <paper-listbox
@@ -56,13 +58,13 @@ class HaDeviceTriggerPicker extends LitElement {
           ${this._sortedTriggers(this.triggers).map(
             (trigger) => html`
               <paper-item .trigger=${trigger}>
-                ${this.hass.localize(
+                ${this.hass!.localize(
                   `ui.panel.config.automation.editor.triggers.type.device.trigger_type.${
                     trigger.type
                   }`,
                   "entity_id",
                   trigger.entity_id
-                    ? computeStateName(this.hass.states[trigger.entity_id])
+                    ? computeStateName(this.hass!.states[trigger.entity_id])
                     : "",
                   "event",
                   trigger.event
@@ -84,7 +86,7 @@ class HaDeviceTriggerPicker extends LitElement {
 
     // Reset trigger if device-id has changed
     if (changedProps.has("deviceId")) {
-      this.noTrigger = { device_id: this.deviceId, platform: "device" };
+      this.noTrigger = { device_id: this.deviceId || "", platform: "device" };
       if (this.deviceId) {
         fetchDeviceTriggers(this.hass!, this.deviceId).then((trigger) => {
           this.triggers = trigger.triggers;
@@ -94,10 +96,11 @@ class HaDeviceTriggerPicker extends LitElement {
           } else if (triggersEqual(this.noTrigger, this.presetTrigger)) {
             this.trigger = this.noTrigger;
           }
-          for (var trigger of this.triggers) {
+          for (const trig of this.triggers) {
             // Try to find a trigger matching existing trigger loaded from stored automation
-            if (triggersEqual(trigger, this.presetTrigger))
-              this.trigger = trigger;
+            if (triggersEqual(trig, this.presetTrigger)) {
+              this.trigger = trig;
+            }
           }
         });
       } else {
@@ -109,7 +112,8 @@ class HaDeviceTriggerPicker extends LitElement {
 
     // The triggers property has changed, force the listbox to update
     if (changedProps.has("triggers")) {
-      this.shadowRoot.getElementById("listbox")._selectSelected();
+      const listbox = this.shadowRoot!.getElementById("listbox") as any;
+      listbox._selectSelected();
     }
   }
 
