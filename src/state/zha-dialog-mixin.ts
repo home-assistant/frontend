@@ -1,7 +1,5 @@
 import { Constructor, LitElement } from "lit-element";
-
 import { HassBaseEl } from "./hass-base-mixin";
-
 import { showZHADeviceInfoDialog } from "../dialogs/zha-device-info-dialog/show-dialog-zha-device-info";
 
 declare global {
