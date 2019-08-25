@@ -24,16 +24,16 @@ import {
 
 @customElement("ha-device-trigger-picker")
 class HaDeviceTriggerPicker extends LitElement {
-  private noTrigger: DeviceTrigger = {};
-  private unknownTrigger: DeviceTrigger = {};
-  private trigger?: DeviceTrigger;
-  private setTrigger?: DeviceTrigger;
-
   public hass?: HomeAssistant;
   @property() public label?: string;
   @property() public deviceId?: string;
   @property() public triggers: DeviceTrigger[] = [];
   public presetTrigger?: DeviceTrigger;
+
+  private noTrigger: DeviceTrigger = {};
+  private unknownTrigger: DeviceTrigger = {};
+  private trigger?: DeviceTrigger;
+  private setTrigger?: DeviceTrigger;
 
   private _sortedTriggers = memoizeOne((triggers?: DeviceTrigger[]) => {
     return triggers || [];
