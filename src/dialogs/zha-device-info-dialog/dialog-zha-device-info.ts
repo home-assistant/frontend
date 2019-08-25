@@ -8,12 +8,6 @@ import {
   property,
 } from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-item/paper-item";
-import "@material/mwc-button/mwc-button";
-
 import "../../components/dialog/ha-paper-dialog";
 import "../../panels/config/zha/zha-device-card";
 

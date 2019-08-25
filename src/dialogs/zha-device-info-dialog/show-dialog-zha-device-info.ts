@@ -7,7 +7,7 @@ export interface ZHADeviceInfoDialogParams {
 export const loadZHADeviceInfoDialog = () =>
   import(/* webpackChunkName: "device-zha-device-info" */ "./dialog-zha-device-info");
 
-export const showDeviceRegistryDetailDialog = (
+export const showZHADeviceInfoDialog = (
   element: HTMLElement,
   zhaDeviceInfoParams: ZHADeviceInfoDialogParams
 ): void => {
