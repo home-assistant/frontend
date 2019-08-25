@@ -11,14 +11,11 @@ export default class DeviceTrigger extends Component {
     this.onChange = onChangeEvent.bind(this, "trigger");
     this.devicePicked = this.devicePicked.bind(this);
     this.deviceTriggerPicked = this.deviceTriggerPicked.bind(this);
+    this.state.device_id = undefined;
   }
 
   devicePicked(ev) {
-    this.deviceId = ev.target.value;
-    // Reset the trigger if device is changed
-    const deviceTrigger = { platform: "device", device_id: this.deviceId };
-
-    this.props.onChange(this.props.index, (this.props.trigger = deviceTrigger));
+    this.setState({ device_id: ev.target.value });
   }
 
   deviceTriggerPicked(ev) {
@@ -27,8 +24,8 @@ export default class DeviceTrigger extends Component {
   }
 
   /* eslint-disable camelcase */
-  render({ trigger, hass }) {
-    const { device_id } = trigger;
+  render({ trigger, hass }, { device_id }) {
+    if (device_id === undefined) device_id = trigger.device_id;
 
     return (
       <div>
