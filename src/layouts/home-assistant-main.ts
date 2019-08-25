@@ -22,7 +22,6 @@ import { PolymerChangedEvent } from "../polymer-types";
 import { AppDrawerLayoutElement } from "@polymer/app-layout/app-drawer-layout/app-drawer-layout";
 import { showNotificationDrawer } from "../dialogs/notifications/show-notification-drawer";
 import { toggleAttribute } from "../common/dom/toggle_attribute";
-import { showZHADeviceInfoDialog } from "../dialogs/zha-device-info-dialog/show-dialog-zha-device-info";
 
 const NON_SWIPABLE_PANELS = ["kiosk", "map"];
 
@@ -110,10 +109,6 @@ class HomeAssistantMain extends LitElement {
       showNotificationDrawer(this, {
         narrow: this.narrow!,
       });
-    });
-
-    this.addEventListener("show-zha-device-dialog", (ev: Event) => {
-      showZHADeviceInfoDialog(ev.target, ev.detail);
     });
   }
 
