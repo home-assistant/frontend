@@ -32,7 +32,7 @@ class DialogZHADeviceInfo extends LitElement {
   }
 
   protected render(): TemplateResult | void {
-    if (!this._params) {
+    if (!this._params || !this._device) {
       return html``;
     }
 
