@@ -29,7 +29,6 @@ export default class DeviceTrigger extends Component {
   /* eslint-disable camelcase */
   render({ trigger, hass }) {
     const { device_id } = trigger;
-    const jsontrigger = trigger;
 
     return (
       <div>
@@ -40,7 +39,7 @@ export default class DeviceTrigger extends Component {
           label="Device"
         />
         <ha-device-trigger-picker
-          presetTrigger={jsontrigger}
+          presetTrigger={trigger}
           deviceId={device_id}
           onChange={this.deviceTriggerPicked}
           hass={hass}

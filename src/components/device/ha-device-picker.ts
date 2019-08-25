@@ -10,6 +10,7 @@ import {
   html,
   css,
   CSSResult,
+  customElement,
   property,
 } from "lit-element";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -21,6 +22,7 @@ import {
 } from "../../data/device_registry";
 import { compare } from "../../common/string/compare";
 
+@customElement("ha-device-picker")
 class HaDevicePicker extends LitElement {
   public hass?: HomeAssistant;
   @property() public label?: string;
@@ -36,6 +38,16 @@ class HaDevicePicker extends LitElement {
     sorted.sort((a, b) => compare(a.name || "", b.name || ""));
     return sorted;
   });
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._unsubDevices = subscribeDeviceRegistry(
+      this.hass!.connection!,
+      (devices) => {
+        this.devices = devices;
+      }
+    );
+  }
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -73,18 +85,6 @@ class HaDevicePicker extends LitElement {
     return this.value || "";
   }
 
-  protected firstUpdated(changedProps) {
-    super.firstUpdated(changedProps);
-    if (this.devices === undefined) {
-      this._unsubDevices = subscribeDeviceRegistry(
-        this.hass!.connection!,
-        (devices) => {
-          this.devices = devices;
-        }
-      );
-    }
-  }
-
   private _deviceChanged(ev) {
     const newValue = ev.detail.item.dataset.deviceId;
 
@@ -99,11 +99,8 @@ class HaDevicePicker extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      :host {
-        display: inline-block;
-      }
       paper-dropdown-menu-light {
-        display: block;
+        width: 100%;
       }
       paper-listbox {
         min-width: 200px;
@@ -115,4 +112,8 @@ class HaDevicePicker extends LitElement {
   }
 }
 
-customElements.define("ha-device-picker", HaDevicePicker);
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-device-picker": HaDevicePicker;
+  }
+}

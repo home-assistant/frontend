@@ -10,6 +10,7 @@ import {
   html,
   css,
   CSSResult,
+  customElement,
   property,
 } from "lit-element";
 import { HomeAssistant } from "../../types";
@@ -21,6 +22,7 @@ import {
   triggersEqual,
 } from "../../data/device_automation";
 
+@customElement("ha-device-trigger-picker")
 class HaDeviceTriggerPicker extends LitElement {
   public hass?: HomeAssistant;
   @property() public label?: string;
@@ -81,28 +83,27 @@ class HaDeviceTriggerPicker extends LitElement {
     return this.trigger;
   }
 
-  protected updated(changedProps) {
+  protected async updated(changedProps) {
     super.updated(changedProps);
 
     // Reset trigger if device-id has changed
     if (changedProps.has("deviceId")) {
       this.noTrigger = { device_id: this.deviceId || "", platform: "device" };
       if (this.deviceId) {
-        fetchDeviceTriggers(this.hass!, this.deviceId).then((trigger) => {
-          this.triggers = trigger.triggers;
-          if (this.triggers.length > 0) {
-            // Set first trigger as default
-            this.trigger = this.triggers[0];
-          } else if (triggersEqual(this.noTrigger, this.presetTrigger)) {
-            this.trigger = this.noTrigger;
+        const trigger = await this._loadDeviceTriggers();
+        this.triggers = trigger.triggers;
+        if (this.triggers.length > 0) {
+          // Set first trigger as default
+          this.trigger = this.triggers[0];
+        } else if (triggersEqual(this.noTrigger, this.presetTrigger)) {
+          this.trigger = this.noTrigger;
+        }
+        for (const trig of this.triggers) {
+          // Try to find a trigger matching existing trigger loaded from stored automation
+          if (triggersEqual(trig, this.presetTrigger)) {
+            this.trigger = trig;
           }
-          for (const trig of this.triggers) {
-            // Try to find a trigger matching existing trigger loaded from stored automation
-            if (triggersEqual(trig, this.presetTrigger)) {
-              this.trigger = trig;
-            }
-          }
-        });
+        }
       } else {
         // No device, clear the list of triggers
         this.triggers = [];
@@ -117,6 +118,10 @@ class HaDeviceTriggerPicker extends LitElement {
     }
   }
 
+  private async _loadDeviceTriggers() {
+    return fetchDeviceTriggers(this.hass!, this.deviceId || "");
+  }
+
   private _triggerChanged(ev) {
     const newValue = ev.detail.item.trigger;
     if (newValue !== this._trigger) {
@@ -129,11 +134,8 @@ class HaDeviceTriggerPicker extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      :host {
-        display: inline-block;
-      }
       paper-dropdown-menu-light {
-        display: block;
+        width: 100%;
       }
       paper-listbox {
         min-width: 200px;
@@ -145,4 +147,8 @@ class HaDeviceTriggerPicker extends LitElement {
   }
 }
 
-customElements.define("ha-device-trigger-picker", HaDeviceTriggerPicker);
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-device-trigger-picker": HaDeviceTriggerPicker;
+  }
+}
