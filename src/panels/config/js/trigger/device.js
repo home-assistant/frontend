@@ -19,7 +19,7 @@ export default class DeviceTrigger extends Component {
   }
 
   deviceTriggerPicked(ev) {
-    const deviceTrigger = ev.target.trigger;
+    const deviceTrigger = ev.target.setTrigger;
     this.props.onChange(this.props.index, (this.props.trigger = deviceTrigger));
   }
 
