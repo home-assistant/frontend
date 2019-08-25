@@ -30,8 +30,8 @@ class HaDeviceTriggerPicker extends LitElement {
   @property() public triggers: DeviceTrigger[] = [];
   public presetTrigger?: DeviceTrigger;
 
-  private noTrigger: DeviceTrigger = {};
-  private unknownTrigger: DeviceTrigger = {};
+  private noTrigger: DeviceTrigger = { device_id: "", platform: "" };
+  private unknownTrigger?: DeviceTrigger = { device_id: "", platform: "" };
   private trigger?: DeviceTrigger;
   private setTrigger?: DeviceTrigger;
 
@@ -82,7 +82,7 @@ class HaDeviceTriggerPicker extends LitElement {
     return this.trigger;
   }
 
-  protected async firstUpdated(changedProps) {
+  protected async firstUpdated() {
     this.setTrigger = this.presetTrigger;
   }
 
@@ -96,13 +96,12 @@ class HaDeviceTriggerPicker extends LitElement {
       if (this.deviceId) {
         const response = await this._loadDeviceTriggers();
         this.triggers = response.triggers;
-        if (this.triggers.length > 0) {
-          // Set first trigger as default
-          this.trigger = this.triggers[0];
-        } else {
-          this.trigger = this.noTrigger;
-        }
-        if (this.setTrigger.device_id === this.deviceId) {
+        // Set first trigger as default, or no trigger if the device has none
+        this.trigger =
+          this.triggers.length > 0
+            ? (this.trigger = this.triggers[0])
+            : (this.trigger = this.noTrigger);
+        if (this.setTrigger && this.setTrigger.device_id === this.deviceId) {
           // Handles the case when the stored automation does not match any trigger reported by the device
           this.trigger = this.unknownTrigger = this.setTrigger;
         }
