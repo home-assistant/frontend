@@ -16,7 +16,6 @@ import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { ZHADeviceInfoDialogParams } from "./show-dialog-zha-device-info";
 import { ZHADevice, fetchZHADevice } from "../../data/zha";
-import { ZHADeviceRemovedEvent } from "../../panels/config/zha/types";
 
 @customElement("dialog-zha-device-info")
 class DialogZHADeviceInfo extends LitElement {
