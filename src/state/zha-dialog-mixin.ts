@@ -1,6 +1,10 @@
 import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
-import { showZHADeviceInfoDialog } from "../dialogs/zha-device-info-dialog/show-dialog-zha-device-info";
+import {
+  showZHADeviceInfoDialog,
+  ZHADeviceInfoDialogParams,
+} from "../dialogs/zha-device-info-dialog/show-dialog-zha-device-info";
+import { HASSDomEvent } from "../common/dom/fire_event";
 
 declare global {
   // for fire event
@@ -16,7 +20,10 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("zha-show-device-dialog", (e) =>
-        showZHADeviceInfoDialog(e.target, e.detail)
+        showZHADeviceInfoDialog(
+          e.target as HTMLElement,
+          (e as HASSDomEvent<ZHADeviceInfoDialogParams>).detail
+        )
       );
     }
   };
