@@ -621,7 +621,7 @@
                         "value": "Valeur",
                         "instance": "Instance",
                         "index": "Indice",
-                        "unknown": "Inconnu",
+                        "unknown": "inconnu",
                         "wakeup_interval": "Intervalle de réveil"
                     },
                     "values": {
@@ -629,7 +629,7 @@
                     },
                     "node_config": {
                         "header": "Options de configuration du nœud",
-                        "seconds": "Secondes",
+                        "seconds": "secondes",
                         "set_wakeup": "Définir l'intervalle de réveil",
                         "config_parameter": "Paramètre de configuration",
                         "config_value": "Valeur de configuration",
@@ -1409,7 +1409,8 @@
     "config_entry": {
         "disabled_by": {
             "user": "Utilisateur",
-            "integration": "Intégration"
+            "integration": "Intégration",
+            "config_entry": "Paramètre de configuration"
         }
     }
 }

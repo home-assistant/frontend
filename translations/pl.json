@@ -278,7 +278,7 @@
             "unknown": "niezn",
             "unavailable": "niedos",
             "error": "błąd",
-            "entity_not_found": "brak"
+            "entity_not_found": "Nie znaleziono jednostki"
         },
         "alarm_control_panel": {
             "armed": "uzbr",
@@ -397,10 +397,10 @@
                 },
                 "customize": {
                     "caption": "Dostosowywanie",
-                    "description": "Dostosuj swoje encje",
+                    "description": "Dostosuj swoje jednostki",
                     "picker": {
                         "header": "Dostosowywanie",
-                        "introduction": "Dostosuj atrybuty encji. Dodawane\/edytowane dostosowywania zostaną wprowadzone natychmiast. Usunięte dostosowania zostaną uwzględnione, gdy encja zostanie zaktualizowana."
+                        "introduction": "Ulepsz atrybuty poszczególnych jednostek. Dodane\/edytowane dostosowania zaczną obowiązywać natychmiast. Usunięte dostosowania zostaną zastosowane po zaktualizowaniu encji."
                     }
                 },
                 "automation": {
@@ -475,7 +475,7 @@
                                 },
                                 "zone": {
                                     "label": "Strefa",
-                                    "entity": "Encja z lokalizacją",
+                                    "entity": "jednostka z lokalizacją",
                                     "zone": "Strefa",
                                     "event": "Zdarzenie:",
                                     "enter": "Wprowadź",
@@ -508,7 +508,7 @@
                             "add": "Dodaj warunek",
                             "duplicate": "Duplikuj",
                             "delete": "Usuń",
-                            "delete_confirm": "Jesteś pewien, że chcesz usunąć?",
+                            "delete_confirm": "Czy chcesz usunąć?",
                             "unsupported_condition": "Stan nieobsługiwany: {condition}",
                             "type_select": "Typ warunku",
                             "type": {
@@ -542,7 +542,7 @@
                                 },
                                 "zone": {
                                     "label": "Strefa",
-                                    "entity": "Encja z lokalizacją",
+                                    "entity": "Jednostka z lokalizacją",
                                     "zone": "Strefa"
                                 }
                             },
@@ -629,13 +629,13 @@
                     },
                     "node_config": {
                         "header": "Opcje konfiguracji węzła",
-                        "seconds": "sekund",
+                        "seconds": "sekundy",
                         "set_wakeup": "Ustaw interwał wybudzenia",
                         "config_parameter": "Parametr",
                         "config_value": "Wartość",
                         "true": "Prawda",
                         "false": "Fałsz",
-                        "set_config_parameter": "Ustaw parametr"
+                        "set_config_parameter": "Ustaw parametr konfiguracji"
                     }
                 },
                 "users": {
@@ -676,14 +676,14 @@
                     "none": "Nic jeszcze nie zostało skonfigurowane",
                     "config_entry": {
                         "no_devices": "Ta integracja nie ma żadnych urządzeń.",
-                        "no_device": "Encje bez urządzeń",
+                        "no_device": "Jednostki bez urządzeń",
                         "delete_confirm": "Czy na pewno chcesz usunąć tę integrację?",
                         "restart_confirm": "Zrestartuj Home Assistant'a, aby zakończyć usuwanie tej integracji",
                         "manuf": "przez: {manufacturer}",
                         "via": "Połączony przez",
                         "firmware": "Oprogramowanie: {version}",
                         "device_unavailable": "urządzenie niedostępne",
-                        "entity_unavailable": "encja niedostępna",
+                        "entity_unavailable": "jednostka niedostępna",
                         "no_area": "brak",
                         "hub": "Połączony przez"
                     },
@@ -734,20 +734,23 @@
                     }
                 },
                 "entity_registry": {
-                    "caption": "Rejestr encji",
-                    "description": "Przegląd wszystkich znanych encji",
+                    "caption": "Rejestr jednostek",
+                    "description": "Przegląd wszystkich znanych jednostek.",
                     "picker": {
-                        "header": "Rejestr encji",
-                        "unavailable": "(niedostępna)",
-                        "introduction": "Home Assistant prowadzi rejestr każdego podmiotu, jaki kiedykolwiek widział, i który można jednoznacznie zidentyfikować. Każda z tych jednostek będzie miała przypisany identyfikator podmiotu, który będzie zarezerwowany tylko dla tego podmiotu.",
-                        "introduction2": "Użyj rejestru jednostek, aby nadpisać nazwę, zmienić identyfikator jednostki lub usunąć wpis z Home Assistant. Uwaga: usunięcie wpisu rejestru jednostki nie spowoduje usunięcia encji. Aby to zrobić, kliknij poniższy link i usuń go ze strony integracji.",
+                        "header": "Rejestr jednostek",
+                        "unavailable": "(niedostępne)",
+                        "introduction": "Home Assistant prowadzi rejestr wszystkich jednostek, które kiedykolwiek widział, które można jednoznacznie zidentyfikować. Każda z tych jednostek będzie miała przypisany ID jednostki, który będzie zarezerwowany tylko dla tej jednostki.",
+                        "introduction2": "Użyj rejestru jednostek, aby zastąpić nazwę, zmienić ID jednostki lub usunąć wpis z Home Assistant. Uwaga usunięcie wpisu z rejestru jednostek nie spowoduje usunięcia jednostki. Aby to zrobić, kliknij poniższy link i usuń go ze strony integracji.",
                         "integrations_page": "Strona integracji"
                     },
                     "editor": {
-                        "unavailable": "Ta encja nie jest obecnie dostępna.",
+                        "unavailable": "Ten jednostka nie jest obecnie dostępna.",
                         "default_name": "Nowy obszar",
                         "delete": "USUŃ",
-                        "update": "UAKTUALNIJ"
+                        "update": "UAKTUALNIJ",
+                        "enabled_label": "Włącz jednostkę",
+                        "enabled_cause": "Wyłączone przez {cause}.",
+                        "enabled_description": "Wyłączone jednostki nie zostaną dodane do Home Assistant."
                     }
                 },
                 "person": {
@@ -772,13 +775,13 @@
                             "invalid": "Konfiguracja nieprawidłowa"
                         },
                         "reloading": {
-                            "heading": "Przeładowanie konfiguracji",
-                            "introduction": "Niektóre części Home Assistant'a można przeładować bez konieczności ponownego uruchomienia. Kliknięcie przeładuj spowoduje ponowne wczytanie konfiguracji.",
-                            "core": "Przeładuj rdzeń",
-                            "group": "Przeładuj grupy",
-                            "automation": "Przeładuj automatyzacje",
-                            "script": "Przeładuj skrypty",
-                            "scene": "Przeładuj sceny"
+                            "heading": "Ponowne załadowanie konfiguracji",
+                            "introduction": "Niektóre części Home Assistant można przeładować bez konieczności ponownego uruchamiania. Naciśnięcie przycisku przeładowania spowoduje zwolnienie bieżącej konfiguracji i załadowanie nowej.",
+                            "core": "Załaduj ponownie rdzeń",
+                            "group": "Załaduj ponownie grupy",
+                            "automation": "Załaduj ponownie automatyzacje",
+                            "script": "Załaduj ponownie skrypty",
+                            "scene": "Załaduj ponownie sceny"
                         },
                         "server_management": {
                             "heading": "Zarządzanie serwerem",
@@ -1038,7 +1041,7 @@
                     },
                     "save_config": {
                         "header": "Przejmij kontrolę nad interfejsem użytkownika Lovelace",
-                        "para": "Domyślnie Home Assistant będzie zarządzać interfejsem użytkownika, aktualizując go, gdy pojawią się nowe encje lub komponenty Lovelace. Jeśli przejmiesz kontrolę, Home Assistant nie będzie już automatycznie wprowadzać dla ciebie zmian.",
+                        "para": "Domyślnie asystent domowy będzie utrzymywał interfejs użytkownika, aktualizując go, gdy pojawią się nowe elementy lub komponenty Lovelace. Jeśli przejmiesz kontrolę, nie będziemy już dokonywać zmian automatycznie.",
                         "para_sure": "Czy na pewno chcesz przejąć kontrolę nad interfejsem użytkownika?",
                         "cancel": "Nieważne",
                         "save": "Przejmuję kontrolę"
@@ -1055,13 +1058,13 @@
                 },
                 "menu": {
                     "configure_ui": "Konfiguracja interfejsu użytkownika",
-                    "unused_entities": "Nieużywane encje",
+                    "unused_entities": "Nieużywane jednostki",
                     "help": "Pomoc",
                     "refresh": "Odśwież"
                 },
                 "warning": {
-                    "entity_not_found": "Ta encja nie jest dostępna: {entity}",
-                    "entity_non_numeric": "Ta encja nie jest numeryczna: {entity}"
+                    "entity_not_found": "Ta jednostka jest niedostępna: {entity}",
+                    "entity_non_numeric": "Ta jednostka nie jest numeryczna: {entity}"
                 },
                 "changed_toast": {
                     "message": "Zaktualizowano konfigurację Lovelace, czy chcesz odświeżyć?",
@@ -1246,7 +1249,7 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Encja"
+                    "entity": "Jednostka"
                 }
             },
             "service-picker": {
@@ -1280,7 +1283,7 @@
             "more_info_settings": {
                 "save": "Zapisz",
                 "name": "Nadpisanie nazwy",
-                "entity_id": "Identyfikator encji"
+                "entity_id": "ID jednostki"
             },
             "more_info_control": {
                 "script": {
@@ -1300,8 +1303,13 @@
                     "header": "Opcje"
                 },
                 "success": {
-                    "description": "Opcje zapisane pomyślnie."
+                    "description": "Opcje pomyślnie zapisane."
                 }
+            },
+            "config_entry_system_options": {
+                "title": "Opcje systemu",
+                "enable_new_entities_label": "Włącz nowo dodane jednostki.",
+                "enable_new_entities_description": "Jeśli wyłączone, nowo odkryte jednostki nie będą automatycznie dodawane do Home Assistant."
             }
         },
         "auth_store": {
@@ -1397,5 +1405,12 @@
         "system-admin": "Administratorzy",
         "system-users": "Użytkownicy",
         "system-read-only": "Użytkownicy (tylko odczyt)"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Użytkownik",
+            "integration": "Integracja",
+            "config_entry": "Wpis konfiguracji"
+        }
     }
 }

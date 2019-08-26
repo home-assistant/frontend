@@ -698,7 +698,10 @@
                         "unavailable": "Denne eininga er for augeblinken ikkje tilgjengeleg.",
                         "default_name": "Nytt område",
                         "delete": "SLETT",
-                        "update": "OPPDATER"
+                        "update": "OPPDATER",
+                        "enabled_label": "Aktiver oppføringa",
+                        "enabled_cause": "Deaktivert av {cause} .",
+                        "enabled_description": "Deaktiverte eininga kjem ikkje til å verta lagt til i Home Assistant"
                     }
                 },
                 "person": {
