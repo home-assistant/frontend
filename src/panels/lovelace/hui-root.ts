@@ -116,11 +116,11 @@ class HUIRoot extends LitElement {
                       @iron-select="${this._deselect}"
                       slot="dropdown-content"
                     >
-                      <paper-item @click="${this.lovelace!.enableFullEditMode}"
-                        >${this.hass!.localize(
+                      <paper-item @tap="${this.lovelace!.enableFullEditMode}">
+                        ${this.hass!.localize(
                           "ui.panel.lovelace.editor.menu.raw_editor"
-                        )}</paper-item
-                      >
+                        )}
+                      </paper-item>
                     </paper-listbox>
                   </paper-menu-button>
                 </app-toolbar>
@@ -154,7 +154,7 @@ class HUIRoot extends LitElement {
                               aria-label=${this.hass!.localize(
                                 "ui.panel.lovelace.menu.refresh"
                               )}
-                              @click="${this._handleRefresh}"
+                              @tap="${this._handleRefresh}"
                             >
                               ${this.hass!.localize(
                                 "ui.panel.lovelace.menu.refresh"
@@ -169,7 +169,7 @@ class HUIRoot extends LitElement {
                               aria-label=${this.hass!.localize(
                                 "ui.panel.lovelace.menu.unused_entities"
                               )}
-                              @click="${this._handleUnusedEntities}"
+                              @tap="${this._handleUnusedEntities}"
                             >
                               ${this.hass!.localize(
                                 "ui.panel.lovelace.menu.unused_entities"
@@ -180,20 +180,20 @@ class HUIRoot extends LitElement {
                         aria-label=${this.hass!.localize(
                           "ui.panel.lovelace.menu.configure_ui"
                         )}
-                        @click="${this._editModeEnable}"
-                        >${this.hass!.localize(
-                          "ui.panel.lovelace.menu.configure_ui"
-                        )}</paper-item
+                        @tap="${this._editModeEnable}"
                       >
+                        ${this.hass!.localize(
+                          "ui.panel.lovelace.menu.configure_ui"
+                        )}
+                      </paper-item>
                       <paper-item
                         aria-label=${this.hass!.localize(
                           "ui.panel.lovelace.menu.help"
                         )}
-                        @click="${this._handleHelp}"
-                        >${this.hass!.localize(
-                          "ui.panel.lovelace.menu.help"
-                        )}</paper-item
+                        @tap="${this._handleHelp}"
                       >
+                        ${this.hass!.localize("ui.panel.lovelace.menu.help")}
+                      </paper-item>
                     </paper-listbox>
                   </paper-menu-button>
                 </app-toolbar>
