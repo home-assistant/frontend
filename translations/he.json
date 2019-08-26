@@ -762,7 +762,7 @@
                 },
                 "server_control": {
                     "caption": "בקרת שרת",
-                    "description": "שליטה על שרת ה Home Assistant",
+                    "description": "אתחל וכבה את שרת ה Home Assistant",
                     "section": {
                         "validation": {
                             "heading": "בדיקת הקונפיגורציה",
@@ -859,7 +859,7 @@
                 },
                 "logout": "התנתק",
                 "force_narrow": {
-                    "header": "הסתר תמיד את הסרגל הצדדי",
+                    "header": "הסתר תמיד את הסרגל הצידי",
                     "description": "פעולה זו תסתיר את הסרגל הצדדי כברירת מחדל, בדומה לחוויה בנייד."
                 }
             },
@@ -1293,6 +1293,14 @@
                 "updater": {
                     "title": "הוראות עדכון"
                 }
+            },
+            "options_flow": {
+                "success": {
+                    "description": "האפשרויות נשמרו בהצלחה."
+                }
+            },
+            "config_entry_system_options": {
+                "title": "אפשרויות מערכת"
             }
         },
         "auth_store": {
@@ -1388,5 +1396,11 @@
         "system-admin": "מנהלים",
         "system-users": "משתמשים",
         "system-read-only": "משתמשים לקריאה בלבד"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "משתמש",
+            "integration": "אינטגרציה"
+        }
     }
 }
