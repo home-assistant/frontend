@@ -749,7 +749,7 @@
                         "delete": "УДАЛИТЬ",
                         "update": "ОБНОВИТЬ",
                         "enabled_label": "Включить объект",
-                        "enabled_cause": "Отключен {cause} .",
+                        "enabled_cause": "Отключен {cause}.",
                         "enabled_description": "Отключенные объекты не будут добавлены в Home Assistant."
                     }
                 },
@@ -1063,7 +1063,7 @@
                     "refresh": "Обновить"
                 },
                 "warning": {
-                    "entity_not_found": "Объект недоступен: {entity}",
+                    "entity_not_found": "Объект {entity} недоступен.",
                     "entity_non_numeric": "Объект не является числом: {entity}"
                 },
                 "changed_toast": {

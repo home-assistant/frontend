@@ -747,7 +747,10 @@
                         "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
                         "default_name": "새로운 영역",
                         "delete": "삭제",
-                        "update": "업데이트"
+                        "update": "업데이트",
+                        "enabled_label": "구성요소 활성화",
+                        "enabled_cause": "{cause} 에 의해 비활성화 되었습니다.",
+                        "enabled_description": "비활성화 된 구성요소는 Home Assistant 에 추가되지 않습니다."
                     }
                 },
                 "person": {
@@ -1302,6 +1305,11 @@
                 "success": {
                     "description": "옵션이 성공적으로 저장되었습니다."
                 }
+            },
+            "config_entry_system_options": {
+                "title": "시스템 옵션",
+                "enable_new_entities_label": "새로 추가된 구성요소를 활성화합니다.",
+                "enable_new_entities_description": "비활성화한 경우 새로 검색된 구성요소는 Home Assistant 에 자동으로 추가되지 않습니다."
             }
         },
         "auth_store": {
@@ -1397,5 +1405,12 @@
         "system-admin": "관리자",
         "system-users": "사용자",
         "system-read-only": "읽기 전용 사용자"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "사용자",
+            "integration": "통합 구성요소",
+            "config_entry": "구성 항목"
+        }
     }
 }

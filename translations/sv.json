@@ -747,7 +747,10 @@
                         "unavailable": "Denna enhet är inte tillgänglig för tillfället.",
                         "default_name": "Nytt område",
                         "delete": "RADERA",
-                        "update": "UPPDATERA"
+                        "update": "UPPDATERA",
+                        "enabled_label": "Aktivera enhet",
+                        "enabled_cause": "Inaktiverad på grund av {cause}.",
+                        "enabled_description": "Inaktiverade enheter kommer ej läggas till i Home Assistant."
                     }
                 },
                 "person": {
@@ -1302,6 +1305,11 @@
                 "success": {
                     "description": "Inställningar sparade"
                 }
+            },
+            "config_entry_system_options": {
+                "title": "Inställningar",
+                "enable_new_entities_label": "Aktivera nyligen tillagda enheter.",
+                "enable_new_entities_description": "Nyupptäckta enheter kommer ej läggas till automatiskt i Home Assistant om de är inaktiverade."
             }
         },
         "auth_store": {
@@ -1397,5 +1405,11 @@
         "system-admin": "Administratörer",
         "system-users": "Användare",
         "system-read-only": "Användare med läsbehörighet"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Användare",
+            "integration": "Integration"
+        }
     }
 }
