@@ -16,11 +16,7 @@ export default (superClass: Constructor<LitElement & HassBaseEl>) =>
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       this.addEventListener("zha-show-device-dialog", (e) =>
-        this._handleShowZHADeviceInfoDialog(e)
+        showZHADeviceInfoDialog(e.target, e.detail)
       );
-    }
-
-    private async _handleShowZHADeviceInfoDialog(ev) {
-      showZHADeviceInfoDialog(ev.target, ev.detail);
     }
   };

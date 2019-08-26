@@ -80,7 +80,7 @@ export const fetchDevices = (hass: HomeAssistant): Promise<ZHADevice[]> =>
     type: "zha/devices",
   });
 
-export const fetchDevice = (
+export const fetchZHADevice = (
   hass: HomeAssistant,
   ieeeAddress: string
 ): Promise<ZHADevice> =>

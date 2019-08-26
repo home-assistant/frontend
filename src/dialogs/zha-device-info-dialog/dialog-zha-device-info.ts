@@ -15,7 +15,7 @@ import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { ZHADeviceInfoDialogParams } from "./show-dialog-zha-device-info";
-import { ZHADevice, fetchDevice } from "../../data/zha";
+import { ZHADevice, fetchZHADevice } from "../../data/zha";
 import { ZHADeviceRemovedEvent } from "../../panels/config/zha/types";
 
 @customElement("dialog-zha-device-info")
@@ -27,7 +27,7 @@ class DialogZHADeviceInfo extends LitElement {
 
   public async showDialog(params: ZHADeviceInfoDialogParams): Promise<void> {
     this._params = params;
-    this._device = await fetchDevice(this.hass, params.ieee);
+    this._device = await fetchZHADevice(this.hass, params.ieee);
     await this.updateComplete;
   }
 
@@ -71,6 +71,7 @@ class DialogZHADeviceInfo extends LitElement {
   private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
     if (!(ev.detail as any).value) {
       this._params = undefined;
+      this._error = undefined;
     }
   }
 
