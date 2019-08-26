@@ -747,7 +747,10 @@
                         "unavailable": "Ta entiteta trenutno ni na voljo.",
                         "default_name": "Novo območje",
                         "delete": "BRISANJE",
-                        "update": "POSODOBITEV"
+                        "update": "POSODOBITEV",
+                        "enabled_label": "Omogoči entiteto",
+                        "enabled_cause": "Onemogočeno zaradi {cause}.",
+                        "enabled_description": "Onemogočeni subjekti ne bodo dodani v Home Assistant-a."
                     }
                 },
                 "person": {
@@ -1302,6 +1305,11 @@
                 "success": {
                     "description": "Možnosti so uspešno shranjene."
                 }
+            },
+            "config_entry_system_options": {
+                "title": "Sistemske možnosti",
+                "enable_new_entities_label": "Omogočite novo dodane subjekte.",
+                "enable_new_entities_description": "Če je onemogočeno, novo odkrite entitete ne bodo samodejno dodane v Home Assistant."
             }
         },
         "auth_store": {
@@ -1397,5 +1405,12 @@
         "system-admin": "Skrbniki",
         "system-users": "Uporabniki",
         "system-read-only": "Uporabniki \"samo za branje\""
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Uporabnik",
+            "integration": "Integracija",
+            "config_entry": "Vnos konfiguracije"
+        }
     }
 }

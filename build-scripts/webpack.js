@@ -170,6 +170,8 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
       chunkFilename: genChunkFilename(isProdBuild, isStatsBuild),
       path: latestBuild ? paths.output : paths.output_es5,
       publicPath: latestBuild ? "/frontend_latest/" : "/frontend_es5/",
+      // For workerize loader
+      globalObject: "self",
     },
     resolve,
   };
@@ -210,6 +212,8 @@ const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
         latestBuild ? "frontend_latest" : "frontend_es5"
       ),
       publicPath: latestBuild ? "/frontend_latest/" : "/frontend_es5/",
+      // For workerize loader
+      globalObject: "self",
     },
   };
 };
@@ -255,6 +259,8 @@ const createCastConfig = ({ isProdBuild, latestBuild }) => {
         latestBuild ? "frontend_latest" : "frontend_es5"
       ),
       publicPath: latestBuild ? "/frontend_latest/" : "/frontend_es5/",
+      // For workerize loader
+      globalObject: "self",
     },
   };
 };

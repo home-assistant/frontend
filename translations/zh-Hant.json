@@ -747,7 +747,10 @@
                         "unavailable": "該物件目前不可用。",
                         "default_name": "新分區",
                         "delete": "刪除",
-                        "update": "更新"
+                        "update": "更新",
+                        "enabled_label": "啟用物件",
+                        "enabled_cause": "由 {cause} 關閉。",
+                        "enabled_description": "關閉的物件將不會新增至 Home Assistant。"
                     }
                 },
                 "person": {
@@ -1302,6 +1305,11 @@
                 "success": {
                     "description": "選項已儲存。"
                 }
+            },
+            "config_entry_system_options": {
+                "title": "系統選項",
+                "enable_new_entities_label": "啟用新增之物件。",
+                "enable_new_entities_description": "關閉後，新發現的物件將不會自動新增至 Home Assistant。"
             }
         },
         "auth_store": {
@@ -1397,5 +1405,12 @@
         "system-admin": "管理員",
         "system-users": "用戶",
         "system-read-only": "唯讀用戶"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "使用者",
+            "integration": "整合",
+            "config_entry": "設定物件"
+        }
     }
 }
