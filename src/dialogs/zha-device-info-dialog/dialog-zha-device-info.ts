@@ -75,7 +75,9 @@ class DialogZHADeviceInfo extends LitElement {
     }
   }
 
-  private _onDeviceRemoved(event: ZHADeviceRemovedEvent): void {}
+  private _onDeviceRemoved(): void {
+    // do nothing intentionally
+  }
 
   static get styles(): CSSResult[] {
     return [
