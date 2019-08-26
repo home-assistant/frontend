@@ -141,7 +141,8 @@
             "high_demand": "Alta Demanda",
             "heat_pump": "Bomba de Calor",
             "gas": "Gas",
-            "manual": "Manual"
+            "manual": "Manual",
+            "heat_cool": "Calentar\/Enfriar"
         },
         "configurator": {
             "configure": "Configurar",
@@ -323,6 +324,9 @@
                     },
                     "mqtt": {
                         "title": ""
+                    },
+                    "info": {
+                        "title": "Información"
                     }
                 }
             },
@@ -589,7 +593,46 @@
                 "zwave": {
                     "caption": "",
                     "description": "Administrar su red Z-Wave",
+                    "network_management": {
+                        "header": "Gestión de la red Z-Wave",
+                        "introduction": "Ejecute comandos que afectan a la red Z-Wave. No recibirá comentarios sobre si la mayoría de los comandos tuvieron éxito, pero puede consultar el registro OZW para intentar averiguarlo."
+                    },
+                    "network_status": {
+                        "network_stopped": "Red Z-Wave detenida",
+                        "network_starting": "Iniciando la Red Z-Wave...",
+                        "network_starting_note": "Esto puede llevar un tiempo dependiendo del tamaño de su red.",
+                        "network_started": "Red Z-Wave iniciada",
+                        "network_started_note_some_queried": "Los nodos despiertos han sido consultados. Los nodos dormidos serán consultados cuando se despierten.",
+                        "network_started_note_all_queried": "Todos los nodos han sido consultados."
+                    },
+                    "services": {
+                        "start_network": "Iniciar red",
+                        "stop_network": "Detener red",
+                        "test_network": "Red de prueba",
+                        "save_config": "Guardar configuración",
+                        "add_node_secure": "Agregar nodo seguro",
+                        "add_node": "Agregar nodo",
+                        "remove_node": "Eliminar nodo",
+                        "cancel_command": "Cancelar comando"
+                    },
+                    "common": {
+                        "value": "Valor",
+                        "instance": "Instancia",
+                        "index": "Índice",
+                        "unknown": "desconocido",
+                        "wakeup_interval": "Intervalo de activación"
+                    },
+                    "values": {
+                        "header": "Valores del nodo"
+                    },
                     "node_config": {
+                        "header": "Opciones de configuración del nodo",
+                        "seconds": "segundos",
+                        "set_wakeup": "Establecer intervalo de activación",
+                        "config_parameter": "Parámetro de configuración",
+                        "config_value": "Valor de configuración",
+                        "true": "Verdadero",
+                        "false": "Falso",
                         "set_config_parameter": "Establecer parámetro de configuración"
                     }
                 },
@@ -702,7 +745,10 @@
                         "unavailable": "Esta entidad no está disponible actualmente.",
                         "default_name": "Nueva Área",
                         "delete": "ELIMINAR",
-                        "update": "ACTUALIZAR"
+                        "update": "ACTUALIZAR",
+                        "enabled_label": "Habilitar entidad",
+                        "enabled_cause": "Deshabilitado por {cause}.",
+                        "enabled_description": "Las entidades deshabilitadas no serán agregadas a Home Assistant."
                     }
                 },
                 "person": {
@@ -713,6 +759,34 @@
                         "device_tracker_intro": "Selecciona los dispositivos que pertenecen a esta persona.",
                         "device_tracker_picked": "Dispositivo de seguimiento",
                         "device_tracker_pick": "Elegir dispositivo para rastrear"
+                    }
+                },
+                "server_control": {
+                    "caption": "Control del servidor",
+                    "description": "Reinicie y detenga el servidor de Home Assistant",
+                    "section": {
+                        "validation": {
+                            "heading": "Validación de la configuración",
+                            "introduction": "Valide su configuración si recientemente realizó algunos cambios en su configuración y quiere asegurarse de que sea válida",
+                            "check_config": "Verificar configuración",
+                            "valid": "¡Configuración valida!",
+                            "invalid": "Configuración inválida"
+                        },
+                        "reloading": {
+                            "heading": "Recarga de configuración",
+                            "introduction": "Algunas partes de Home Assistant pueden volver a cargarse sin necesidad de reiniciar. Al pulsar recargar descargará su configuración actual y cargará la nueva.",
+                            "core": "Recargar núcleo",
+                            "group": "Recargar grupos",
+                            "automation": "Recargar automatizaciones",
+                            "script": "Recargar scripts",
+                            "scene": "Recargar escenas"
+                        },
+                        "server_management": {
+                            "heading": "Administración del servidor",
+                            "introduction": "Controle su servidor Home Assistant ... desde Home Assistant.",
+                            "restart": "Reiniciar",
+                            "stop": "Detener"
+                        }
                     }
                 }
             },
@@ -784,6 +858,11 @@
                     "step_done": "Configuración realizada para {step}",
                     "close": "Cerrar",
                     "submit": "Enviar"
+                },
+                "logout": "Cerrar sesión",
+                "force_narrow": {
+                    "header": "Ocultar siempre la barra lateral",
+                    "description": "Esto ocultará la barra lateral de forma predeterminada, similar a la experiencia móvil."
                 }
             },
             "page-authorize": {
@@ -1216,6 +1295,19 @@
                 "updater": {
                     "title": "Instrucciones de actualización"
                 }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Opciones"
+                },
+                "success": {
+                    "description": "Opciones guardadas con éxito."
+                }
+            },
+            "config_entry_system_options": {
+                "title": "Opciones del sistema",
+                "enable_new_entities_label": "Habilitar entidades recién agregadas.",
+                "enable_new_entities_description": "Si está deshabilitado, las entidades recién descubiertas no se agregarán automáticamente a Home Assistant."
             }
         },
         "auth_store": {
@@ -1296,6 +1388,14 @@
                 "home": "En Casa",
                 "sleep": "Dormir",
                 "activity": "Actividad"
+            },
+            "hvac_action": {
+                "off": "Desactivado",
+                "heating": "Calentando",
+                "cooling": "Enfriando",
+                "drying": "Secando",
+                "idle": "Inactivo",
+                "fan": "Ventilador"
             }
         }
     },
@@ -1303,5 +1403,12 @@
         "system-admin": "Administradores",
         "system-users": "Usuarios",
         "system-read-only": "Usuarios de solo lectura"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Usuario",
+            "integration": "Integración",
+            "config_entry": "Entrada de configuración"
+        }
     }
 }

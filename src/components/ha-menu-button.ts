@@ -127,6 +127,7 @@ class HaMenuButton extends LitElement {
         position: relative;
       }
       .dot {
+        pointer-events: none;
         position: absolute;
         background-color: var(--accent-color);
         width: 12px;
