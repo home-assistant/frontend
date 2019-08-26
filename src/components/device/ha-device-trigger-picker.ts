@@ -3,7 +3,6 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-listbox/paper-listbox";
-import memoizeOne from "memoize-one";
 import {
   LitElement,
   TemplateResult,
@@ -27,48 +26,53 @@ class HaDeviceTriggerPicker extends LitElement {
   public hass?: HomeAssistant;
   @property() public label?: string;
   @property() public deviceId?: string;
-  @property() public triggers: DeviceTrigger[] = [];
+  @property() public triggers: any = {};
   public presetTrigger?: DeviceTrigger;
 
   private noTrigger: DeviceTrigger = { device_id: "", platform: "" };
   private unknownTrigger?: DeviceTrigger = { device_id: "", platform: "" };
-  private trigger?: DeviceTrigger;
+  private key?: string;
   private setTrigger?: DeviceTrigger;
 
-  private _sortedTriggers = memoizeOne((triggers?: DeviceTrigger[]) => {
-    return triggers || [];
-  });
+  private readonly NO_TRIGGER = "NO_TRIGGER";
+  private readonly UNKNOWN_TRIGGER = "UNKNOWN_TRIGGER";
 
   protected render(): TemplateResult | void {
-    const noTriggers = this._sortedTriggers(this.triggers).length === 0;
+    const noTriggers = Object.keys(this.triggers).length === 0;
     return html`
       <paper-dropdown-menu-light .label=${this.label} ?disabled=${noTriggers}>
         <paper-listbox
           slot="dropdown-content"
-          .selected=${this._trigger}
-          attr-for-selected="trigger"
+          .selected=${this._key}
+          attr-for-selected="key"
           @iron-select=${this._triggerChanged}
           id="listbox"
         >
-          <paper-item .trigger=${this.noTrigger} hidden>
+          <paper-item .key=${this.NO_TRIGGER} .trigger=${this.noTrigger} hidden>
             No triggers
           </paper-item>
-          <paper-item .trigger=${this.unknownTrigger} hidden>
+          <paper-item
+            .key=${this.UNKNOWN_TRIGGER}
+            .trigger=${this.unknownTrigger}
+            hidden
+          >
             Unknown trigger
           </paper-item>
-          ${this._sortedTriggers(this.triggers).map(
-            (trigger) => html`
-              <paper-item .trigger=${trigger}>
+          ${Object.keys(this.triggers).map(
+            (key) => html`
+              <paper-item .key=${key} .trigger=${this.triggers[key]}>
                 ${this.hass!.localize(
                   `ui.panel.config.automation.editor.triggers.type.device.trigger_type.${
-                    trigger.type
+                    this.triggers[key].type
                   }`,
                   "entity_id",
-                  trigger.entity_id
-                    ? computeStateName(this.hass!.states[trigger.entity_id])
+                  this.triggers[key].entity_id
+                    ? computeStateName(
+                        this.hass!.states[this.triggers[key].entity_id]
+                      )
                     : "",
                   "event",
-                  trigger.event
+                  this.triggers[key].event
                 )}
               </paper-item>
             `
@@ -78,8 +82,8 @@ class HaDeviceTriggerPicker extends LitElement {
     `;
   }
 
-  private get _trigger() {
-    return this.trigger;
+  private get _key() {
+    return this.key;
   }
 
   protected async firstUpdated() {
@@ -95,26 +99,33 @@ class HaDeviceTriggerPicker extends LitElement {
 
       if (this.deviceId) {
         const response = await this._loadDeviceTriggers();
-        this.triggers = response.triggers;
-        // Set first trigger as default, or no trigger if the device has none
-        this.trigger =
-          this.triggers.length > 0
-            ? (this.trigger = this.triggers[0])
-            : (this.trigger = this.noTrigger);
+        this.triggers = {};
+        for (let i = 0; i < response.triggers.length; i++) {
+          const key = `${this.deviceId}_${i}`;
+          this.triggers[key] = response.triggers[i];
+        }
+        // Set to first trigger by default
+        this.key =
+          Object.keys(this.triggers).length > 0
+            ? (this.key = `${this.deviceId}_0`)
+            : (this.key = this.NO_TRIGGER);
+
         if (this.setTrigger && this.setTrigger.device_id === this.deviceId) {
           // Handles the case when the stored automation does not match any trigger reported by the device
-          this.trigger = this.unknownTrigger = this.setTrigger;
+          this.unknownTrigger = this.setTrigger;
+          this.key = this.UNKNOWN_TRIGGER;
         }
-        for (const trig of this.triggers) {
+        for (const key of Object.keys(this.triggers)) {
           // Match triggers reported by the device with trigger loaded from stored automation
-          if (triggersEqual(trig, this.setTrigger)) {
-            this.trigger = trig;
+          if (triggersEqual(this.triggers[key], this.setTrigger)) {
+            this.key = key;
+            break;
           }
         }
       } else {
         // No device, clear the list of triggers
-        this.triggers = [];
-        this.trigger = this.noTrigger;
+        this.triggers = {};
+        this.key = this.NO_TRIGGER;
       }
     }
 
@@ -130,8 +141,7 @@ class HaDeviceTriggerPicker extends LitElement {
   }
 
   private _triggerChanged(ev) {
-    const newValue = ev.detail.item.trigger;
-    this.setTrigger = newValue;
+    this.setTrigger = ev.detail.item.trigger;
     setTimeout(() => {
       fireEvent(this, "change");
     }, 0);
