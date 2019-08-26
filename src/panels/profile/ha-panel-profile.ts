@@ -136,7 +136,7 @@ class HaPanelProfile extends LitElement {
             ? html`
                 <ha-advanced-mode-card
                   .hass=${this.hass}
-                  coreUserData=${this._coreUserData}
+                  .coreUserData=${this._coreUserData}
                 ></ha-advanced-mode-card>
               `
             : ""}
