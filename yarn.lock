@@ -847,10 +847,10 @@
   dependencies:
     "@material/feature-targeting" "^0.44.1"
 
-"@mdi/svg@4.1.95":
-  version "4.1.95"
-  resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-4.1.95.tgz#6ffb3d77463b04bf2adfbf47b805edaac02d1d69"
-  integrity sha512-lgt5hW2f6m1xMdymbctBsVt7BI97O5OTKoLC6i4UOdHEQeTQq1E1CMgsUYSGhuENjoas0bi0ISqNBMddIpF/Ig==
+"@mdi/svg@4.2.95":
+  version "4.2.95"
+  resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-4.2.95.tgz#05d45a4391da211da3de2e0e25acad8272c23d67"
+  integrity sha512-99vNFQO8g8YakSBNa4pNx0CxmgOOvvme8fHZCPOZsgVTaW8sJepS3zugUb/csU+tDTnlRztDoPAtzcXvn2WzwA==
 
 "@mrmlnc/readdir-enhanced@^2.2.1":
   version "2.2.1"

@@ -1307,7 +1307,9 @@
                 }
             },
             "config_entry_system_options": {
-                "title": "System Optiounen"
+                "title": "System Optiounen",
+                "enable_new_entities_label": "Aktivéiert nei dobäigesate Entitéiten.",
+                "enable_new_entities_description": "Falls desaktivéiert, ginn nei entdeckten Entitéiten net automatesch zu Home Assistant dobäigesat."
             }
         },
         "auth_store": {
@@ -1407,7 +1409,8 @@
     "config_entry": {
         "disabled_by": {
             "user": "Benotzer",
-            "integration": "Integratioun"
+            "integration": "Integratioun",
+            "config_entry": "Konfiguratioun's Entrée"
         }
     }
 }
