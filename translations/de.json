@@ -747,7 +747,10 @@
                         "unavailable": "Diese Entität ist derzeit nicht verfügbar.",
                         "default_name": "Neuer Bereich",
                         "delete": "LÖSCHEN",
-                        "update": "UPDATE"
+                        "update": "UPDATE",
+                        "enabled_label": "Entität aktivieren",
+                        "enabled_cause": "Deaktiviert durch {cause} .",
+                        "enabled_description": "Deaktivierte Entitäten werden in Home Assistant nicht hinzugefügt."
                     }
                 },
                 "person": {
@@ -1302,6 +1305,11 @@
                 "success": {
                     "description": "Optionen wurden erfolgreich gespeichert."
                 }
+            },
+            "config_entry_system_options": {
+                "title": "Systemoptionen",
+                "enable_new_entities_label": "Neu hinzugefügte Entitäten aktivieren.",
+                "enable_new_entities_description": "Neu erkannte Entitäten werden nicht automatisch in Home Assistant hinzugefügt wenn sie deaktiviert sind."
             }
         },
         "auth_store": {
@@ -1397,5 +1405,12 @@
         "system-admin": "Administratoren",
         "system-users": "Benutzer",
         "system-read-only": "Nur-Lesen Benutzer"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Benutzer",
+            "integration": "Integration",
+            "config_entry": "Konfigurationseintrag"
+        }
     }
 }

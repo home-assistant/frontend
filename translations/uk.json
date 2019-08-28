@@ -325,7 +325,7 @@
                         "title": "MQTT"
                     },
                     "info": {
-                        "title": "Інфо"
+                        "title": "Інформація"
                     }
                 }
             },
@@ -360,6 +360,7 @@
                                 "elevation_meters": "метрів",
                                 "time_zone": "Часовий пояс",
                                 "unit_system": "Система одиниць",
+                                "unit_system_imperial": "Імперська",
                                 "unit_system_metric": "Метрична",
                                 "imperial_example": "Фаренгейти, фунти",
                                 "metric_example": "Цельсії, кілограми",
@@ -579,7 +580,14 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Керуйте мережею Z-Wave",
+                    "services": {
+                        "save_config": "Зберегти конфігурацію",
+                        "add_node": "Додати вузол",
+                        "remove_node": "Видалити вузол",
+                        "cancel_command": "Скасувати команду"
+                    },
                     "node_config": {
+                        "config_parameter": "Параметр конфігурації",
                         "set_config_parameter": "Встановити параметр налаштування"
                     }
                 },
@@ -635,7 +643,11 @@
                     "caption": "ZHA",
                     "description": "Управління мережею домашньої автоматизації Zigbee",
                     "services": {
-                        "reconfigure": "Переконфігуруйте пристрій ZHA (пристрій загоєння). Використовуйте це, якщо у вас виникли проблеми з пристроєм. Якщо пристрій, про який йде мова, живиться від батареї, будь ласка, переконайтеся, що він є активним і приймає команди під час використання цієї команди."
+                        "reconfigure": "Переконфігуруйте пристрій ZHA (пристрій загоєння). Використовуйте це, якщо у вас виникли проблеми з пристроєм. Якщо пристрій, про який йде мова, живиться від батареї, будь ласка, переконайтеся, що він є активним і приймає команди під час використання цієї команди.",
+                        "remove": "Видалити пристрій із мережі ZigBee."
+                    },
+                    "device_card": {
+                        "area_picker_label": "Площа"
                     }
                 },
                 "area_registry": {
@@ -672,7 +684,9 @@
                         "unavailable": "Цей об'єкт наразі недоступний.",
                         "default_name": "Нова область",
                         "delete": "ВИДАЛИТИ",
-                        "update": "ОНОВИТИ"
+                        "update": "ОНОВИТИ",
+                        "enabled_label": "Увімкнути об'єкт",
+                        "enabled_description": "Відключені об'єкти не будуть додані в Home Assistant."
                     }
                 },
                 "person": {
@@ -884,9 +898,11 @@
                     }
                 },
                 "integration": {
-                    "more_integrations": "Більше"
+                    "more_integrations": "Більше",
+                    "finish": "Завершити"
                 },
                 "core-config": {
+                    "intro": "Привіт {name}, Ласкаво просимо до домашнього помічника. Як би ви хотіли назвати свій будинок?",
                     "location_name_default": "Головна",
                     "button_detect": "Виявити",
                     "finish": "Далі"
@@ -973,6 +989,15 @@
                 },
                 "config": {
                     "arsaboo": {
+                        "names": {
+                            "family_room": "Вітальня",
+                            "kitchen": "Кухня",
+                            "left": "Зліва",
+                            "right": "Право"
+                        },
+                        "labels": {
+                            "volume": "Гучність"
+                        },
                         "unit": {
                             "minutes_abbr": "хв"
                         }
@@ -1159,6 +1184,19 @@
                 "updater": {
                     "title": "Інструкції по оновленню"
                 }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Параметри"
+                },
+                "success": {
+                    "description": "Параметри успішно збережені."
+                }
+            },
+            "config_entry_system_options": {
+                "title": "Системні налаштування",
+                "enable_new_entities_label": "Додавати нові об'єкти.",
+                "enable_new_entities_description": "Автоматично додавати в Home Assistant знову виявлені об'єкти."
             }
         },
         "auth_store": {
@@ -1254,5 +1292,12 @@
         "system-admin": "Адміністратори",
         "system-users": "Користувачі",
         "system-read-only": "Користувачі лише для читання"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Користувач",
+            "integration": "Інтеграція",
+            "config_entry": "Запис"
+        }
     }
 }
