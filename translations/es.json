@@ -747,7 +747,10 @@
                         "unavailable": "Esta entidad no está disponible actualmente.",
                         "default_name": "Área Nueva",
                         "delete": "BORRAR",
-                        "update": "ACTUALIZAR"
+                        "update": "ACTUALIZAR",
+                        "enabled_label": "Habilitar entidad",
+                        "enabled_cause": "Desactivado por {cause}.",
+                        "enabled_description": "Las entidades deshabilitadas no se agregarán a Home Assistant."
                     }
                 },
                 "person": {
@@ -1305,7 +1308,8 @@
             },
             "config_entry_system_options": {
                 "title": "Opciones del sistema",
-                "enable_new_entities_label": "Habilitar entidades recién agregadas."
+                "enable_new_entities_label": "Habilitar entidades recién agregadas.",
+                "enable_new_entities_description": "Si está deshabilitada, las nuevas entidades que se descubran no se agregarán automáticamente a Home Assistant."
             }
         },
         "auth_store": {
@@ -1405,7 +1409,8 @@
     "config_entry": {
         "disabled_by": {
             "user": "Usuario",
-            "integration": "Integración"
+            "integration": "Integración",
+            "config_entry": "Entrada de configuración"
         }
     }
 }

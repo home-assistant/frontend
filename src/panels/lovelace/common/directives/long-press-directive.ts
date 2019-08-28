@@ -136,8 +136,16 @@ class LongPress extends HTMLElement implements LongPress {
     element.addEventListener("touchstart", clickStart, { passive: true });
     element.addEventListener("touchend", clickEnd);
     element.addEventListener("touchcancel", clickEnd);
-    element.addEventListener("mousedown", clickStart, { passive: true });
-    element.addEventListener("click", clickEnd);
+
+    // iOS 13 sends a complete normal touchstart-touchend series of events followed by a mousedown-click series.
+    // That might be a bug, but until it's fixed, this should make long-press work.
+    // If it's not a bug that is fixed, this might need updating with the next iOS version.
+    // Note that all events (both touch and mouse) must be listened for in order to work on computers with both mouse and touchscreen.
+    const isIOS13 = window.navigator.userAgent.match(/iPhone OS 13_/);
+    if (!isIOS13) {
+      element.addEventListener("mousedown", clickStart, { passive: true });
+      element.addEventListener("click", clickEnd);
+    }
   }
 
   private startAnimation(x: number, y: number) {
