@@ -1304,7 +1304,7 @@
             },
             "config_entry_system_options": {
                 "title": "Rendszerbeállítások",
-                "enable_new_entities_label": "Az újonnan hozzáadott entitások engedélyezése.",
+                "enable_new_entities_label": "Újonnan hozzáadott entitások engedélyezése.",
                 "enable_new_entities_description": "Ha le van tiltva, akkor az újonnan felfedezett entitások nem lesznek automatikusan hozzáadva a Home Assistant-hoz."
             }
         },

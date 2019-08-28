@@ -278,7 +278,7 @@
             "unknown": "niezn",
             "unavailable": "niedos",
             "error": "błąd",
-            "entity_not_found": "Nie znaleziono jednostki"
+            "entity_not_found": "Nie znaleziono encji"
         },
         "alarm_control_panel": {
             "armed": "uzbr",
@@ -320,7 +320,7 @@
                         "title": "Zdarzenia"
                     },
                     "templates": {
-                        "title": "Szablony"
+                        "title": "Szablon"
                     },
                     "mqtt": {
                         "title": "MQTT"
@@ -352,7 +352,7 @@
                     "description": "Zmień ogólną konfigurację Home Assistant",
                     "section": {
                         "core": {
-                            "header": "Konfiguracja i kontrola serwera",
+                            "header": "Konfiguracja ogólna",
                             "introduction": "Zmiana konfiguracji może być męczącym procesem. Wiemy. Ta sekcja postara się ułatwić Ci życie.",
                             "core_config": {
                                 "edit_requires_storage": "Edytor wyłączony, ponieważ konfiguracja jest przechowywana w pliku configuration.yaml.",
@@ -397,10 +397,10 @@
                 },
                 "customize": {
                     "caption": "Dostosowywanie",
-                    "description": "Dostosuj swoje jednostki",
+                    "description": "Dostosuj swoje encje",
                     "picker": {
                         "header": "Dostosowywanie",
-                        "introduction": "Ulepsz atrybuty poszczególnych jednostek. Dodane\/edytowane dostosowania zaczną obowiązywać natychmiast. Usunięte dostosowania zostaną zastosowane po zaktualizowaniu encji."
+                        "introduction": "Dostosuj atrybuty encji. Dodawane\/edytowane dostosowywania zostaną wprowadzone natychmiast. Usunięte dostosowania zostaną uwzględnione, gdy encja zostanie zaktualizowana."
                     }
                 },
                 "automation": {
@@ -475,7 +475,7 @@
                                 },
                                 "zone": {
                                     "label": "Strefa",
-                                    "entity": "jednostka z lokalizacją",
+                                    "entity": "Encja z lokalizacją",
                                     "zone": "Strefa",
                                     "event": "Zdarzenie:",
                                     "enter": "Wprowadź",
@@ -542,7 +542,7 @@
                                 },
                                 "zone": {
                                     "label": "Strefa",
-                                    "entity": "Jednostka z lokalizacją",
+                                    "entity": "Encja z lokalizacją",
                                     "zone": "Strefa"
                                 }
                             },
@@ -676,14 +676,14 @@
                     "none": "Nic jeszcze nie zostało skonfigurowane",
                     "config_entry": {
                         "no_devices": "Ta integracja nie ma żadnych urządzeń.",
-                        "no_device": "Jednostki bez urządzeń",
+                        "no_device": "Encje bez urządzeń",
                         "delete_confirm": "Czy na pewno chcesz usunąć tę integrację?",
                         "restart_confirm": "Zrestartuj Home Assistant'a, aby zakończyć usuwanie tej integracji",
                         "manuf": "przez: {manufacturer}",
                         "via": "Połączony przez",
                         "firmware": "Oprogramowanie: {version}",
                         "device_unavailable": "urządzenie niedostępne",
-                        "entity_unavailable": "jednostka niedostępna",
+                        "entity_unavailable": "encja niedostępna",
                         "no_area": "brak",
                         "hub": "Połączony przez"
                     },
@@ -734,23 +734,23 @@
                     }
                 },
                 "entity_registry": {
-                    "caption": "Rejestr jednostek",
-                    "description": "Przegląd wszystkich znanych jednostek.",
+                    "caption": "Rejestr encji",
+                    "description": "Przegląd wszystkich znanych encji",
                     "picker": {
-                        "header": "Rejestr jednostek",
+                        "header": "Rejestr encji",
                         "unavailable": "(niedostępne)",
-                        "introduction": "Home Assistant prowadzi rejestr wszystkich jednostek, które kiedykolwiek widział, które można jednoznacznie zidentyfikować. Każda z tych jednostek będzie miała przypisany ID jednostki, który będzie zarezerwowany tylko dla tej jednostki.",
-                        "introduction2": "Użyj rejestru jednostek, aby zastąpić nazwę, zmienić ID jednostki lub usunąć wpis z Home Assistant. Uwaga usunięcie wpisu z rejestru jednostek nie spowoduje usunięcia jednostki. Aby to zrobić, kliknij poniższy link i usuń go ze strony integracji.",
+                        "introduction": "Home Assistant prowadzi rejestr każdej encji, jaką kiedykolwiek widział i którą można jednoznacznie zidentyfikować. Każda z tych encji będzie miała przypisany unikalny identyfikator, który będzie zarezerwowany tylko dla niej.",
+                        "introduction2": "Użyj rejestru encji, aby nadpisać jej nazwę, zmienić jej identyfikator lub usunąć ją z Home Assistant'a. Uwaga: usunięcie wpisu rejestru encji nie spowoduje usunięcia encji. Aby to zrobić, kliknij poniższy link i usuń integracje encji.",
                         "integrations_page": "Strona integracji"
                     },
                     "editor": {
-                        "unavailable": "Ten jednostka nie jest obecnie dostępna.",
+                        "unavailable": "Ta encja nie jest obecnie dostępna.",
                         "default_name": "Nowy obszar",
                         "delete": "USUŃ",
                         "update": "UAKTUALNIJ",
-                        "enabled_label": "Włącz jednostkę",
+                        "enabled_label": "Włącz encję",
                         "enabled_cause": "Wyłączone przez {cause}.",
-                        "enabled_description": "Wyłączone jednostki nie zostaną dodane do Home Assistant."
+                        "enabled_description": "Wyłączone encje nie będą dodawane do Home Assistant'a."
                     }
                 },
                 "person": {
@@ -1058,13 +1058,13 @@
                 },
                 "menu": {
                     "configure_ui": "Konfiguracja interfejsu użytkownika",
-                    "unused_entities": "Nieużywane jednostki",
+                    "unused_entities": "Nieużywane encje",
                     "help": "Pomoc",
                     "refresh": "Odśwież"
                 },
                 "warning": {
-                    "entity_not_found": "Ta jednostka jest niedostępna: {entity}",
-                    "entity_non_numeric": "Ta jednostka nie jest numeryczna: {entity}"
+                    "entity_not_found": "Encja niedostępna: {entity}",
+                    "entity_non_numeric": "Encja nie jest numeryczna: {entity}"
                 },
                 "changed_toast": {
                     "message": "Zaktualizowano konfigurację Lovelace, czy chcesz odświeżyć?",
@@ -1249,7 +1249,7 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Jednostka"
+                    "entity": "Encja"
                 }
             },
             "service-picker": {
@@ -1283,7 +1283,7 @@
             "more_info_settings": {
                 "save": "Zapisz",
                 "name": "Nadpisanie nazwy",
-                "entity_id": "ID jednostki"
+                "entity_id": "Identyfikator encji"
             },
             "more_info_control": {
                 "script": {
@@ -1308,8 +1308,8 @@
             },
             "config_entry_system_options": {
                 "title": "Opcje systemu",
-                "enable_new_entities_label": "Włącz nowo dodane jednostki.",
-                "enable_new_entities_description": "Jeśli wyłączone, nowo odkryte jednostki nie będą automatycznie dodawane do Home Assistant."
+                "enable_new_entities_label": "Włącz dodawanie nowych encji.",
+                "enable_new_entities_description": "Jeśli wyłączone, nowo wykryte encje nie będą automatycznie dodawane do Home Assistant'a."
             }
         },
         "auth_store": {
