@@ -747,7 +747,10 @@
                         "unavailable": "Aquesta entitat no està disponible actualment.",
                         "default_name": "Àrea nova",
                         "delete": "ELIMINA",
-                        "update": "ACTUALITZAR"
+                        "update": "ACTUALITZAR",
+                        "enabled_label": "Activa l’entitat",
+                        "enabled_cause": "Desactivat per {cause}.",
+                        "enabled_description": "Les entitats desactivades no s’afegiran a Home Assistant."
                     }
                 },
                 "person": {
@@ -1302,6 +1305,11 @@
                 "success": {
                     "description": "Opcions guardades amb èxit."
                 }
+            },
+            "config_entry_system_options": {
+                "title": "Opcions de sistema",
+                "enable_new_entities_label": "Activa entitats afegides recentment.",
+                "enable_new_entities_description": "Si està desactivat, les entitats descobertes recentment no s’afegiran automàticament a Home Assistant."
             }
         },
         "auth_store": {
@@ -1397,5 +1405,12 @@
         "system-admin": "Administradors",
         "system-users": "Usuaris",
         "system-read-only": "Usuaris de només lectura"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Usuari",
+            "integration": "Integració",
+            "config_entry": "Entrada de configuració"
+        }
     }
 }
