@@ -123,7 +123,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
 
       this._steps = steps;
     } catch (err) {
-      alert("Something went wrong loading loading onboarding, try refreshing");
+      alert("Something went wrong loading onboarding, try refreshing");
     }
   }
 
