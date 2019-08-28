@@ -749,7 +749,8 @@
                         "delete": "SLET",
                         "update": "OPDATER",
                         "enabled_label": "Aktivér enhed",
-                        "enabled_cause": "Deaktiveret af {cause}."
+                        "enabled_cause": "Deaktiveret af {cause}.",
+                        "enabled_description": "Deaktiverede enheder tilføjes ikke til Home Assistant."
                     }
                 },
                 "person": {
@@ -1306,7 +1307,9 @@
                 }
             },
             "config_entry_system_options": {
-                "title": "Systemindstillinger"
+                "title": "Systemindstillinger",
+                "enable_new_entities_label": "Aktivér nyligt tilføjede enheder.",
+                "enable_new_entities_description": "Hvis deaktiveret, tilføjes nyligt opdagede enheder ikke automatisk til Home Assistant."
             }
         },
         "auth_store": {
