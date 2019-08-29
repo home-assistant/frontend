@@ -29,8 +29,11 @@ class HaDeviceTriggerPicker extends LitElement {
   @property() public triggers: any = {};
   public presetTrigger?: DeviceTrigger;
 
-  private noTrigger: DeviceTrigger = { device_id: "", platform: "" };
-  private unknownTrigger?: DeviceTrigger = { device_id: "", platform: "" };
+  private noTrigger: DeviceTrigger = { device_id: "", platform: "device" };
+  private unknownTrigger?: DeviceTrigger = {
+    device_id: "",
+    platform: "device",
+  };
   private key?: string;
   private setTrigger?: DeviceTrigger;
 
