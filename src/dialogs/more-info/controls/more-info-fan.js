@@ -29,7 +29,6 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
         .has-speed_list .container-speed_list,
         .has-direction .container-direction,
-        .has-current_direction .container-direction,
         .has-oscillating .container-oscillating {
           display: block;
         }
@@ -98,7 +97,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
       <ha-attributes
         state-obj="[[stateObj]]"
-        extra-filters="speed,speed_list,oscillating,direction,current_direction"
+        extra-filters="speed,speed_list,oscillating,direction"
       ></ha-attributes>
     `;
   }
@@ -137,12 +136,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
   computeClassNames(stateObj) {
     return (
       "more-info-fan " +
-      attributeClassNames(stateObj, [
-        "oscillating",
-        "speed_list",
-        "direction",
-        "current_direction",
-      ])
+      attributeClassNames(stateObj, ["oscillating", "speed_list", "direction"])
     );
   }
 
