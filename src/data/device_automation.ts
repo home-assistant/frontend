@@ -19,7 +19,7 @@ export const fetchDeviceTriggers = (hass: HomeAssistant, deviceId: string) =>
     device_id: deviceId,
   });
 
-export const triggersEqual = (a: any, b: any) => {
+export const triggersEqual = (a: DeviceTrigger, b: DeviceTrigger) => {
   if (typeof a !== typeof b) {
     return false;
   }
