@@ -15,7 +15,7 @@ export interface DeviceTriggerList {
 
 export const fetchDeviceTriggers = (hass: HomeAssistant, deviceId: string) =>
   hass.callWS<DeviceTriggerList>({
-    type: "device_automation/list_triggers",
+    type: "device_automation/trigger/list",
     device_id: deviceId,
   });
 
