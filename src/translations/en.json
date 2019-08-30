@@ -678,12 +678,7 @@
               "type_select": "Trigger type",
               "type": {
                 "device": {
-                  "label": "Device",
-                  "trigger_type": {
-                    "turn_on": "{entity_id} turned on",
-                    "turn_off": "{entity_id} turned off",
-                    "pressed": "{event} pressed"
-                  }
+                  "label": "Device"
                 },
                 "event": {
                   "label": "Event",

@@ -72,9 +72,9 @@ class HaDeviceTriggerPicker extends LitElement {
             (key) => html`
               <paper-item .key=${key} .trigger=${this.triggers[key]}>
                 ${this.hass!.localize(
-                  `ui.panel.config.automation.editor.triggers.type.device.trigger_type.${
-                    this.triggers[key].type
-                  }`,
+                  `component.${
+                    this.triggers[key].domain
+                  }.device_automation.trigger_type.${this.triggers[key].type}`,
                   "entity_id",
                   this.triggers[key].entity_id
                     ? computeStateName(
