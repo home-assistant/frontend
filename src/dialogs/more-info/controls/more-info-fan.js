@@ -29,6 +29,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
         .has-speed_list .container-speed_list,
         .has-direction .container-direction,
+        .has-current_direction .container-direction,
         .has-oscillating .container-oscillating {
           display: block;
         }
@@ -81,15 +82,15 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
             <div>[[localize('ui.card.fan.direction')]]</div>
             <paper-icon-button
               icon="hass:rotate-left"
-              on-click="onDirectionLeft"
-              title="Left"
-              disabled="[[computeIsRotatingLeft(stateObj)]]"
+              on-click="onDirectionReverse"
+              title="Reverse"
+              disabled="[[computeIsRotatingReverse(stateObj)]]"
             ></paper-icon-button>
             <paper-icon-button
               icon="hass:rotate-right"
-              on-click="onDirectionRight"
-              title="Right"
-              disabled="[[computeIsRotatingRight(stateObj)]]"
+              on-click="onDirectionForward"
+              title="Forward"
+              disabled="[[computeIsRotatingForward(stateObj)]]"
             ></paper-icon-button>
           </div>
         </div>
@@ -97,7 +98,7 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
       <ha-attributes
         state-obj="[[stateObj]]"
-        extra-filters="speed,speed_list,oscillating,direction"
+        extra-filters="speed,speed_list,oscillating,direction,current_direction"
       ></ha-attributes>
     `;
   }
@@ -136,7 +137,12 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
   computeClassNames(stateObj) {
     return (
       "more-info-fan " +
-      attributeClassNames(stateObj, ["oscillating", "speed_list", "direction"])
+      attributeClassNames(stateObj, [
+        "oscillating",
+        "speed_list",
+        "direction",
+        "current_direction",
+      ])
     );
   }
 
@@ -164,26 +170,32 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
     });
   }
 
-  onDirectionLeft() {
+  onDirectionReverse() {
     this.hass.callService("fan", "set_direction", {
       entity_id: this.stateObj.entity_id,
       direction: "reverse",
     });
   }
 
-  onDirectionRight() {
+  onDirectionForward() {
     this.hass.callService("fan", "set_direction", {
       entity_id: this.stateObj.entity_id,
       direction: "forward",
     });
   }
 
-  computeIsRotatingLeft(stateObj) {
-    return stateObj.attributes.direction === "reverse";
+  computeIsRotatingReverse(stateObj) {
+    return (
+      stateObj.attributes.direction === "reverse" ||
+      stateObj.attributes.current_direction === "reverse"
+    );
   }
 
-  computeIsRotatingRight(stateObj) {
-    return stateObj.attributes.direction === "forward";
+  computeIsRotatingForward(stateObj) {
+    return (
+      stateObj.attributes.direction === "forward" ||
+      stateObj.attributes.current_direction === "forward"
+    );
   }
 }
 
