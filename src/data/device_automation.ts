@@ -14,10 +14,12 @@ export interface DeviceTriggerList {
 }
 
 export const fetchDeviceTriggers = (hass: HomeAssistant, deviceId: string) =>
-  hass.callWS<DeviceTriggerList>({
-    type: "device_automation/trigger/list",
-    device_id: deviceId,
-  });
+  hass
+    .callWS<DeviceTriggerList>({
+      type: "device_automation/trigger/list",
+      device_id: deviceId,
+    })
+    .then((response) => response.triggers);
 
 export const triggersEqual = (a: DeviceTrigger, b: DeviceTrigger) => {
   if (typeof a !== typeof b) {

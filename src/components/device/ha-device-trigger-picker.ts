@@ -53,7 +53,7 @@ class HaDeviceTriggerPicker extends LitElement {
       <paper-dropdown-menu-light .label=${this.label} ?disabled=${noTriggers}>
         <paper-listbox
           slot="dropdown-content"
-          .selected=${this._key}
+          .selected=${this.key}
           attr-for-selected="key"
           @iron-select=${this._triggerChanged}
           id="listbox"
@@ -90,15 +90,11 @@ class HaDeviceTriggerPicker extends LitElement {
     `;
   }
 
-  private get _key() {
-    return this.key;
-  }
-
   protected async firstUpdated() {
     this.setTrigger = this.presetTrigger;
   }
 
-  protected async updated(changedProps) {
+  protected updated(changedProps) {
     super.updated(changedProps);
 
     if (changedProps.has("deviceId")) {
@@ -111,30 +107,7 @@ class HaDeviceTriggerPicker extends LitElement {
       };
 
       if (this.deviceId) {
-        const response = await this._loadDeviceTriggers();
-        this.triggers = {};
-        for (let i = 0; i < response.triggers.length; i++) {
-          const key = `${this.deviceId}_${i}`;
-          this.triggers[key] = response.triggers[i];
-        }
-        // Set to first trigger by default
-        this.key =
-          Object.keys(this.triggers).length > 0
-            ? (this.key = `${this.deviceId}_0`)
-            : (this.key = this.NO_TRIGGER);
-
-        if (this.setTrigger && this.setTrigger.device_id === this.deviceId) {
-          // Handles the case when the stored automation does not match any trigger reported by the device
-          this.unknownTrigger = this.setTrigger;
-          this.key = this.UNKNOWN_TRIGGER;
-        }
-        for (const key of Object.keys(this.triggers)) {
-          // Match triggers reported by the device with trigger loaded from stored automation
-          if (triggersEqual(this.triggers[key], this.setTrigger)) {
-            this.key = key;
-            break;
-          }
-        }
+        this._updateDeviceInfo();
       } else {
         // No device, clear the list of triggers
         this.triggers = {};
@@ -143,9 +116,39 @@ class HaDeviceTriggerPicker extends LitElement {
     }
 
     // The triggers property has changed, force the listbox to update
-    if (changedProps.has("triggers")) {
-      const listbox = this.shadowRoot!.getElementById("listbox") as any;
+    if (changedProps.has("triggers" && this.shadowRoot)) {
+      const listbox = this.shadowRoot!.querySelector("paper-listbox") as any;
       listbox._selectSelected();
+    }
+  }
+
+  private async _updateDeviceInfo() {
+    const triggers = await this._loadDeviceTriggers();
+    this.triggers = {};
+    for (let i = 0; i < triggers.length; i++) {
+      const key = `${this.deviceId}_${i}`;
+      this.triggers[key] = triggers[i];
+    }
+    // Set to first trigger by default
+    this.key =
+      Object.keys(this.triggers).length > 0
+        ? (this.key = `${this.deviceId}_0`)
+        : (this.key = this.NO_TRIGGER);
+
+    if (this.setTrigger && this.setTrigger.device_id === this.deviceId) {
+      // Handles the case when the stored automation does not match any trigger reported by the device
+      this.unknownTrigger = this.setTrigger;
+      this.key = this.UNKNOWN_TRIGGER;
+    }
+    for (const key of Object.keys(this.triggers)) {
+      // Match triggers reported by the device with trigger loaded from stored automation
+      if (
+        this.setTrigger &&
+        triggersEqual(this.triggers[key], this.setTrigger)
+      ) {
+        this.key = key;
+        break;
+      }
     }
   }
 
