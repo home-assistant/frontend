@@ -26,13 +26,20 @@ class HaDeviceTriggerPicker extends LitElement {
   public hass?: HomeAssistant;
   @property() public label?: string;
   @property() public deviceId?: string;
-  @property() public triggers: any = {};
+  @property() public triggers: { [key: string]: DeviceTrigger } = {};
   public presetTrigger?: DeviceTrigger;
 
-  private noTrigger: DeviceTrigger = { device_id: "", platform: "device" };
+  private noTrigger: DeviceTrigger = {
+    device_id: "",
+    platform: "device",
+    domain: "",
+    entity_id: "",
+  };
   private unknownTrigger?: DeviceTrigger = {
     device_id: "",
     platform: "device",
+    domain: "",
+    entity_id: "",
   };
   private key?: string;
   private setTrigger?: DeviceTrigger;
@@ -98,7 +105,12 @@ class HaDeviceTriggerPicker extends LitElement {
 
     if (changedProps.has("deviceId")) {
       // Reset trigger if device-id has changed
-      this.noTrigger = { device_id: this.deviceId || "", platform: "device" };
+      this.noTrigger = {
+        device_id: this.deviceId || "",
+        platform: "device",
+        domain: "",
+        entity_id: "",
+      };
 
       if (this.deviceId) {
         const response = await this._loadDeviceTriggers();

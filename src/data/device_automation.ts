@@ -3,8 +3,8 @@ import { HomeAssistant } from "../types";
 export interface DeviceTrigger {
   platform: string;
   device_id: string;
-  domain?: string;
-  entity_id?: string;
+  domain: string;
+  entity_id: string;
   type?: string;
   event?: string;
 }
