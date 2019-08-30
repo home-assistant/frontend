@@ -24,6 +24,8 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
 import { toggleEntity } from "../common/entity/toggle-entity";
 import { LightCardConfig } from "./types";
+import { SUPPORT_BRIGHTNESS } from "../../../data/light";
+import { supportsFeature } from "../../../common/entity/supports-feature";
 
 const lightConfig = {
   radius: 80,
@@ -127,12 +129,13 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   }
 
   protected async firstUpdated(): Promise<void> {
-    const loaded = await loadRoundslider();
-
-    this._roundSliderStyle = loaded.roundSliderStyle;
-    this._jQuery = loaded.jQuery;
-
     const stateObj = this.hass!.states[this._config!.entity] as LightEntity;
+
+    if (supportsFeature(stateObj, SUPPORT_BRIGHTNESS)) {
+      const loaded = await loadRoundslider();
+      this._roundSliderStyle = loaded.roundSliderStyle;
+      this._jQuery = loaded.jQuery;
+    }
 
     if (!stateObj) {
       // Card will require refresh to work again
@@ -141,13 +144,16 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
     const brightness = stateObj.attributes.brightness || 0;
 
-    this._jQuery("#light", this.shadowRoot).roundSlider({
-      ...lightConfig,
-      change: (value) => this._setBrightness(value),
-      drag: (value) => this._dragEvent(value),
-      start: () => this._showBrightness(),
-      stop: () => this._hideBrightness(),
-    });
+    if (supportsFeature(stateObj, SUPPORT_BRIGHTNESS)) {
+      this._jQuery("#light", this.shadowRoot).roundSlider({
+        ...lightConfig,
+        change: (value) => this._setBrightness(value),
+        drag: (value) => this._dragEvent(value),
+        start: () => this._showBrightness(),
+        stop: () => this._hideBrightness(),
+      });
+    }
+
     this.shadowRoot!.querySelector(".brightness")!.innerHTML =
       (Math.round((brightness / 254) * 100) || 0) + "%";
   }
@@ -166,9 +172,11 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
     const attrs = stateObj.attributes;
 
-    this._jQuery("#light", this.shadowRoot).roundSlider({
-      value: Math.round((attrs.brightness / 254) * 100) || 0,
-    });
+    if (supportsFeature(stateObj, SUPPORT_BRIGHTNESS)) {
+      this._jQuery("#light", this.shadowRoot).roundSlider({
+        value: Math.round((attrs.brightness / 254) * 100) || 0,
+      });
+    }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (!oldHass || oldHass.themes !== this.hass.themes) {
