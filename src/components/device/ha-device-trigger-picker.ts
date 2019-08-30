@@ -116,8 +116,8 @@ class HaDeviceTriggerPicker extends LitElement {
     }
 
     // The triggers property has changed, force the listbox to update
-    if (changedProps.has("triggers" && this.shadowRoot)) {
-      const listbox = this.shadowRoot!.querySelector("paper-listbox") as any;
+    if (changedProps.has("triggers") && this.shadowRoot) {
+      const listbox = this.shadowRoot.querySelector("paper-listbox") as any;
       listbox._selectSelected();
     }
   }
