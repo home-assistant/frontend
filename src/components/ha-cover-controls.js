@@ -12,7 +12,7 @@ class HaCoverControls extends PolymerElement {
           white-space: nowrap;
         }
         [invisible] {
-          visibility: hidden !important;
+          display: none;
         }
       </style>
 
