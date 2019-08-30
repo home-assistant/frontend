@@ -82,13 +82,13 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
             <paper-icon-button
               icon="hass:rotate-left"
               on-click="onDirectionReverse"
-              title="Reverse"
+              title="[[localize('ui.card.fan.reverse')]]"
               disabled="[[computeIsRotatingReverse(stateObj)]]"
             ></paper-icon-button>
             <paper-icon-button
               icon="hass:rotate-right"
               on-click="onDirectionForward"
-              title="Forward"
+              title="[[localize('ui.card.fan.forward')]]"
               disabled="[[computeIsRotatingForward(stateObj)]]"
             ></paper-icon-button>
           </div>
@@ -179,17 +179,11 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   computeIsRotatingReverse(stateObj) {
-    return (
-      stateObj.attributes.direction === "reverse" ||
-      stateObj.attributes.current_direction === "reverse"
-    );
+    return stateObj.attributes.direction === "reverse";
   }
 
   computeIsRotatingForward(stateObj) {
-    return (
-      stateObj.attributes.direction === "forward" ||
-      stateObj.attributes.current_direction === "forward"
-    );
+    return stateObj.attributes.direction === "forward";
   }
 }
 

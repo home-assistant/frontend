@@ -416,7 +416,9 @@
       "fan": {
         "speed": "Speed",
         "oscillate": "Oscillate",
-        "direction": "Direction"
+        "direction": "Direction",
+        "forward": "Forward",
+        "reverse": "Reverse"
       },
       "light": {
         "brightness": "Brightness",
