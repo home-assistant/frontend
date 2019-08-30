@@ -75,14 +75,12 @@ class HaDeviceTriggerPicker extends LitElement {
                   `component.${
                     this.triggers[key].domain
                   }.device_automation.trigger_type.${this.triggers[key].type}`,
-                  "entity_id",
+                  "name",
                   this.triggers[key].entity_id
                     ? computeStateName(
                         this.hass!.states[this.triggers[key].entity_id]
                       )
-                    : "",
-                  "event",
-                  this.triggers[key].event
+                    : ""
                 )}
               </paper-item>
             `
