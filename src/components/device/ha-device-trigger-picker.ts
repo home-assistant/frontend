@@ -21,65 +21,62 @@ import {
   triggersEqual,
 } from "../../data/device_automation";
 
+const NO_TRIGGER_KEY = "NO_TRIGGER";
+const UNKNOWN_TRIGGER_KEY = "UNKNOWN_TRIGGER";
+
 @customElement("ha-device-trigger-picker")
 class HaDeviceTriggerPicker extends LitElement {
   public hass?: HomeAssistant;
   @property() public label?: string;
   @property() public deviceId?: string;
-  @property() public triggers: { [key: string]: DeviceTrigger } = {};
-  public presetTrigger?: DeviceTrigger;
+  @property() public value?: DeviceTrigger;
+  @property() private _triggers: DeviceTrigger[] = [];
 
-  private noTrigger: DeviceTrigger = {
-    device_id: "",
-    platform: "device",
-    domain: "",
-    entity_id: "",
-  };
-  private unknownTrigger?: DeviceTrigger = {
-    device_id: "",
-    platform: "device",
-    domain: "",
-    entity_id: "",
-  };
-  private key?: string;
-  private setTrigger?: DeviceTrigger;
+  private get _key() {
+    if (!this.value) {
+      return NO_TRIGGER_KEY;
+    }
 
-  private readonly NO_TRIGGER = "NO_TRIGGER";
-  private readonly UNKNOWN_TRIGGER = "UNKNOWN_TRIGGER";
+    const idx = this._triggers.findIndex((trigger) =>
+      triggersEqual(trigger, this.value!)
+    );
+
+    if (idx === -1) {
+      return UNKNOWN_TRIGGER_KEY;
+    }
+
+    return `${this._triggers[idx].device_id}_${idx}`;
+  }
 
   protected render(): TemplateResult | void {
-    const noTriggers = Object.keys(this.triggers).length === 0;
     return html`
-      <paper-dropdown-menu-light .label=${this.label} ?disabled=${noTriggers}>
+      <paper-dropdown-menu-light
+        .label=${this.label}
+        ?disabled=${this._triggers.length === 0}
+      >
         <paper-listbox
           slot="dropdown-content"
-          .selected=${this.key}
+          .selected=${this._key}
           attr-for-selected="key"
           @iron-select=${this._triggerChanged}
           id="listbox"
         >
-          <paper-item .key=${this.NO_TRIGGER} .trigger=${this.noTrigger} hidden>
+          <paper-item .key=${NO_TRIGGER_KEY} .trigger=${this._noTrigger} hidden>
             No triggers
           </paper-item>
-          <paper-item
-            .key=${this.UNKNOWN_TRIGGER}
-            .trigger=${this.unknownTrigger}
-            hidden
-          >
+          <paper-item .key=${UNKNOWN_TRIGGER_KEY} .trigger=${this.value} hidden>
             Unknown trigger
           </paper-item>
-          ${Object.keys(this.triggers).map(
-            (key) => html`
-              <paper-item .key=${key} .trigger=${this.triggers[key]}>
+          ${this._triggers.map(
+            (trigger, idx) => html`
+              <paper-item .key=${`${this.deviceId}_${idx}`} .trigger=${trigger}>
                 ${this.hass!.localize(
-                  `component.${
-                    this.triggers[key].domain
-                  }.device_automation.trigger_type.${this.triggers[key].type}`,
+                  `component.${trigger.domain}.device_automation.trigger_type.${
+                    trigger.type
+                  }`,
                   "name",
-                  this.triggers[key].entity_id
-                    ? computeStateName(
-                        this.hass!.states[this.triggers[key].entity_id]
-                      )
+                  trigger.entity_id
+                    ? computeStateName(this.hass!.states[trigger.entity_id])
                     : ""
                 )}
               </paper-item>
@@ -90,74 +87,49 @@ class HaDeviceTriggerPicker extends LitElement {
     `;
   }
 
-  protected async firstUpdated() {
-    this.setTrigger = this.presetTrigger;
-  }
-
   protected updated(changedProps) {
     super.updated(changedProps);
 
     if (changedProps.has("deviceId")) {
-      // Reset trigger if device-id has changed
-      this.noTrigger = {
-        device_id: this.deviceId || "",
-        platform: "device",
-        domain: "",
-        entity_id: "",
-      };
-
-      if (this.deviceId) {
-        this._updateDeviceInfo();
-      } else {
-        // No device, clear the list of triggers
-        this.triggers = {};
-        this.key = this.NO_TRIGGER;
-      }
+      this._updateDeviceInfo();
     }
 
-    // The triggers property has changed, force the listbox to update
-    if (changedProps.has("triggers") && this.shadowRoot) {
-      const listbox = this.shadowRoot.querySelector("paper-listbox") as any;
-      listbox._selectSelected();
+    // The value has changed, force the listbox to update
+    if (changedProps.has("value")) {
+      const listbox = this.shadowRoot!.querySelector("paper-listbox")!;
+      listbox._selectSelected(this._key);
     }
   }
 
   private async _updateDeviceInfo() {
-    const triggers = await this._loadDeviceTriggers();
-    this.triggers = {};
-    for (let i = 0; i < triggers.length; i++) {
-      const key = `${this.deviceId}_${i}`;
-      this.triggers[key] = triggers[i];
-    }
-    // Set to first trigger by default
-    this.key =
-      Object.keys(this.triggers).length > 0
-        ? (this.key = `${this.deviceId}_0`)
-        : (this.key = this.NO_TRIGGER);
+    this._triggers = this.deviceId
+      ? await fetchDeviceTriggers(this.hass!, this.deviceId!)
+      : // No device, clear the list of triggers
+        [];
 
-    if (this.setTrigger && this.setTrigger.device_id === this.deviceId) {
-      // Handles the case when the stored automation does not match any trigger reported by the device
-      this.unknownTrigger = this.setTrigger;
-      this.key = this.UNKNOWN_TRIGGER;
-    }
-    for (const key of Object.keys(this.triggers)) {
-      // Match triggers reported by the device with trigger loaded from stored automation
-      if (
-        this.setTrigger &&
-        triggersEqual(this.triggers[key], this.setTrigger)
-      ) {
-        this.key = key;
-        break;
-      }
+    // If there is no value, or if we have changed the device ID, reset the value.
+    if (!this.value || this.value.device_id !== this.deviceId) {
+      this._setValue(
+        this._triggers.length ? this._triggers[0] : this._noTrigger
+      );
     }
   }
 
-  private async _loadDeviceTriggers() {
-    return fetchDeviceTriggers(this.hass!, this.deviceId || "");
+  private get _noTrigger() {
+    return {
+      device_id: this.deviceId || "",
+      platform: "device",
+      domain: "",
+      entity_id: "",
+    };
   }
 
   private _triggerChanged(ev) {
-    this.setTrigger = ev.detail.item.trigger;
+    this._setValue(ev.detail.item.trigger);
+  }
+
+  private _setValue(trigger: DeviceTrigger) {
+    this.value = trigger;
     setTimeout(() => {
       fireEvent(this, "change");
     }, 0);

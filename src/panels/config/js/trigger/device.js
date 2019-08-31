@@ -19,7 +19,7 @@ export default class DeviceTrigger extends Component {
   }
 
   deviceTriggerPicked(ev) {
-    const deviceTrigger = ev.target.setTrigger;
+    const deviceTrigger = ev.target.value;
     this.props.onChange(this.props.index, (this.props.trigger = deviceTrigger));
   }
 
@@ -36,7 +36,7 @@ export default class DeviceTrigger extends Component {
           label="Device"
         />
         <ha-device-trigger-picker
-          presetTrigger={trigger}
+          value={trigger}
           deviceId={device_id}
           onChange={this.deviceTriggerPicked}
           hass={hass}
