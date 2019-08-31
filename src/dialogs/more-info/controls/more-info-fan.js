@@ -81,15 +81,15 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
             <div>[[localize('ui.card.fan.direction')]]</div>
             <paper-icon-button
               icon="hass:rotate-left"
-              on-click="onDirectionLeft"
-              title="Left"
-              disabled="[[computeIsRotatingLeft(stateObj)]]"
+              on-click="onDirectionReverse"
+              title="[[localize('ui.card.fan.reverse')]]"
+              disabled="[[computeIsRotatingReverse(stateObj)]]"
             ></paper-icon-button>
             <paper-icon-button
               icon="hass:rotate-right"
-              on-click="onDirectionRight"
-              title="Right"
-              disabled="[[computeIsRotatingRight(stateObj)]]"
+              on-click="onDirectionForward"
+              title="[[localize('ui.card.fan.forward')]]"
+              disabled="[[computeIsRotatingForward(stateObj)]]"
             ></paper-icon-button>
           </div>
         </div>
@@ -164,25 +164,25 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
     });
   }
 
-  onDirectionLeft() {
+  onDirectionReverse() {
     this.hass.callService("fan", "set_direction", {
       entity_id: this.stateObj.entity_id,
       direction: "reverse",
     });
   }
 
-  onDirectionRight() {
+  onDirectionForward() {
     this.hass.callService("fan", "set_direction", {
       entity_id: this.stateObj.entity_id,
       direction: "forward",
     });
   }
 
-  computeIsRotatingLeft(stateObj) {
+  computeIsRotatingReverse(stateObj) {
     return stateObj.attributes.direction === "reverse";
   }
 
-  computeIsRotatingRight(stateObj) {
+  computeIsRotatingForward(stateObj) {
     return stateObj.attributes.direction === "forward";
   }
 }
