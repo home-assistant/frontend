@@ -5,6 +5,7 @@ export interface EntityConfig {
   type?: string;
   name?: string;
   icon?: string;
+  entity_picture?: string;
 }
 export interface DividerConfig {
   type: "divider";
