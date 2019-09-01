@@ -1315,6 +1315,9 @@
           "info": {
             "title": "Info"
           },
+          "logs": {
+            "title": "Logs"
+          },
           "events": {
             "title": "Events"
           },

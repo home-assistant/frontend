@@ -17,8 +17,6 @@ class HaPanelDevLogs extends LitElement {
   @property() public hass!: HomeAssistant;
 
   protected render(): TemplateResult | void {
-    const hass = this.hass;
-
     return html`
       <div class="content">
         <system-log-card .hass=${this.hass}></system-log-card>
