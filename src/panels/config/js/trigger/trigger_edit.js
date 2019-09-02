@@ -4,6 +4,7 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 
+import DeviceTrigger from "./device";
 import EventTrigger from "./event";
 import GeolocationTrigger from "./geo_location";
 import HassTrigger from "./homeassistant";
@@ -18,6 +19,7 @@ import WebhookTrigger from "./webhook";
 import ZoneTrigger from "./zone";
 
 const TYPES = {
+  device: DeviceTrigger,
   event: EventTrigger,
   state: StateTrigger,
   geo_location: GeolocationTrigger,
