@@ -21,6 +21,7 @@ import {
   FORMAT_NUMBER,
 } from "../../../data/alarm_control_panel";
 import { AlarmPanelCardConfig } from "./types";
+import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
 const ICONS = {
   armed_away: "hass:shield-lock",
@@ -114,7 +115,11 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <ha-card .header="${this._config.name || this._label(stateObj.state)}">
+      <ha-card
+        .header="${this._config.name ||
+          stateObj.attributes.friendly_name ||
+          this._label(stateObj.state)}"
+      >
         <ha-label-badge
           class="${classMap({ [stateObj.state]: true })}"
           .icon="${ICONS[stateObj.state] || "hass:shield-outline"}"
@@ -140,6 +145,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
           ? html``
           : html`
               <paper-input
+                id="alarmCode"
                 label="Alarm Code"
                 type="password"
                 .value="${this._code}"
@@ -194,11 +200,17 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
   }
 
   private _handleActionClick(e: MouseEvent): void {
+    const input = this.shadowRoot!.querySelector(
+      "#alarmCode"
+    ) as PaperInputElement;
+    const code =
+      this._code ||
+      (input && input.value && input.value.length > 0 ? input.value : "");
     callAlarmAction(
       this.hass!,
       this._config!.entity,
       (e.currentTarget! as any).action,
-      this._code!
+      code!
     );
     this._code = "";
   }
