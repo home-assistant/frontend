@@ -691,6 +691,9 @@
               "unsupported_platform": "Unsupported platform: {platform}",
               "type_select": "Trigger type",
               "type": {
+                "device": {
+                  "label": "Device"
+                },
                 "event": {
                   "label": "Event",
                   "event_type": "Event type",
