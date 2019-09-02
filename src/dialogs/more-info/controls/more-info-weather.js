@@ -158,6 +158,7 @@ class MoreInfoWeather extends LocalizeMixin(PolymerElement) {
     this.weatherIcons = {
       "clear-night": "hass:weather-night",
       cloudy: "hass:weather-cloudy",
+      exceptional: "hass:alert-circle-outline",
       fog: "hass:weather-fog",
       hail: "hass:weather-hail",
       lightning: "hass:weather-lightning",
