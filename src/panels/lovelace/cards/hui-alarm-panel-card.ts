@@ -206,7 +206,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       this.hass!,
       this._config!.entity,
       (e.currentTarget! as any).action,
-      code!
+      code
     );
     this._code = "";
   }
