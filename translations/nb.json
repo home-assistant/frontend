@@ -633,8 +633,8 @@
                         "set_wakeup": "Angi vekkeintervall",
                         "config_parameter": "Konfigurasjon parameter",
                         "config_value": "Konfigurasjon verdi",
-                        "true": "Ekte",
-                        "false": "Falsk",
+                        "true": "Sant",
+                        "false": "Usant",
                         "set_config_parameter": "Angi konfigurasjons parameter"
                     }
                 },
@@ -749,7 +749,7 @@
                         "delete": "SLETT",
                         "update": "OPPDATER",
                         "enabled_label": "Aktiver enhet",
-                        "enabled_cause": "Deaktivert av {Cause}.",
+                        "enabled_cause": "Deaktivert av {cause}.",
                         "enabled_description": "Deaktiverte enheter vil ikke bli lagt til i Home Assistant."
                     }
                 },
@@ -1309,7 +1309,7 @@
             "config_entry_system_options": {
                 "title": "Systemalternativer",
                 "enable_new_entities_label": "Aktiver enheter som nylig er lagt til.",
-                "enable_new_entities_description": "Hvis den er deaktivert, vil ikke nyoppdagede enheter automatisk bli lagt til i Home Assistant."
+                "enable_new_entities_description": "Hvis deaktivert, vil ikke nyoppdagede enheter automatisk bli lagt til i Home Assistant."
             }
         },
         "auth_store": {
