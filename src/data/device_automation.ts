@@ -1,4 +1,5 @@
 import { HomeAssistant } from "../types";
+import compute_state_name from "../common/entity/compute_state_name";
 
 export interface DeviceTrigger {
   platform: string;
@@ -21,7 +22,10 @@ export const fetchDeviceTriggers = (hass: HomeAssistant, deviceId: string) =>
     })
     .then((response) => response.triggers);
 
-export const triggersEqual = (a: DeviceTrigger, b: DeviceTrigger) => {
+export const deviceAutomationTriggersEqual = (
+  a: DeviceTrigger,
+  b: DeviceTrigger
+) => {
   if (typeof a !== typeof b) {
     return false;
   }
@@ -39,3 +43,15 @@ export const triggersEqual = (a: DeviceTrigger, b: DeviceTrigger) => {
 
   return true;
 };
+
+export const localizeDeviceAutomationTrigger = (
+  hass: HomeAssistant,
+  trigger: DeviceTrigger
+) =>
+  hass.localize(
+    `component.${trigger.domain}.device_automation.trigger_type.${
+      trigger.type
+    }`,
+    "name",
+    trigger.entity_id ? compute_state_name(hass!.states[trigger.entity_id]) : ""
+  );

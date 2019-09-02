@@ -1,7 +1,6 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-listbox/paper-listbox";
 import {
   LitElement,
@@ -14,23 +13,28 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
-import computeStateName from "../../common/entity/compute_state_name";
 import {
   DeviceTrigger,
   fetchDeviceTriggers,
-  triggersEqual,
+  deviceAutomationTriggersEqual,
+  localizeDeviceAutomationTrigger,
 } from "../../data/device_automation";
+import "../../components/ha-paper-dropdown-menu";
 
 const NO_TRIGGER_KEY = "NO_TRIGGER";
 const UNKNOWN_TRIGGER_KEY = "UNKNOWN_TRIGGER";
 
 @customElement("ha-device-trigger-picker")
 class HaDeviceTriggerPicker extends LitElement {
-  public hass?: HomeAssistant;
+  public hass!: HomeAssistant;
   @property() public label?: string;
   @property() public deviceId?: string;
   @property() public value?: DeviceTrigger;
   @property() private _triggers: DeviceTrigger[] = [];
+
+  // Trigger an empty render so we start with a clean DOM.
+  // paper-listbox does not like changing things around.
+  @property() private _renderEmpty = false;
 
   private get _key() {
     if (!this.value) {
@@ -38,7 +42,7 @@ class HaDeviceTriggerPicker extends LitElement {
     }
 
     const idx = this._triggers.findIndex((trigger) =>
-      triggersEqual(trigger, this.value!)
+      deviceAutomationTriggersEqual(trigger, this.value!)
     );
 
     if (idx === -1) {
@@ -49,9 +53,15 @@ class HaDeviceTriggerPicker extends LitElement {
   }
 
   protected render(): TemplateResult | void {
+    if (this._renderEmpty) {
+      return html``;
+    }
     return html`
-      <paper-dropdown-menu-light
+      <ha-paper-dropdown-menu
         .label=${this.label}
+        .value=${this.value
+          ? localizeDeviceAutomationTrigger(this.hass, this.value)
+          : ""}
         ?disabled=${this._triggers.length === 0}
       >
         <paper-listbox
@@ -59,31 +69,22 @@ class HaDeviceTriggerPicker extends LitElement {
           .selected=${this._key}
           attr-for-selected="key"
           @iron-select=${this._triggerChanged}
-          id="listbox"
         >
-          <paper-item .key=${NO_TRIGGER_KEY} .trigger=${this._noTrigger} hidden>
+          <paper-item key=${NO_TRIGGER_KEY} .trigger=${this._noTrigger} hidden>
             No triggers
           </paper-item>
-          <paper-item .key=${UNKNOWN_TRIGGER_KEY} .trigger=${this.value} hidden>
+          <paper-item key=${UNKNOWN_TRIGGER_KEY} .trigger=${this.value} hidden>
             Unknown trigger
           </paper-item>
           ${this._triggers.map(
             (trigger, idx) => html`
-              <paper-item .key=${`${this.deviceId}_${idx}`} .trigger=${trigger}>
-                ${this.hass!.localize(
-                  `component.${trigger.domain}.device_automation.trigger_type.${
-                    trigger.type
-                  }`,
-                  "name",
-                  trigger.entity_id
-                    ? computeStateName(this.hass!.states[trigger.entity_id])
-                    : ""
-                )}
+              <paper-item key=${`${this.deviceId}_${idx}`} .trigger=${trigger}>
+                ${localizeDeviceAutomationTrigger(this.hass, trigger)}
               </paper-item>
             `
           )}
         </paper-listbox>
-      </paper-dropdown-menu-light>
+      </ha-paper-dropdown-menu>
     `;
   }
 
@@ -95,9 +96,11 @@ class HaDeviceTriggerPicker extends LitElement {
     }
 
     // The value has changed, force the listbox to update
-    if (changedProps.has("value")) {
+    if (changedProps.has("value") || changedProps.has("_renderEmpty")) {
       const listbox = this.shadowRoot!.querySelector("paper-listbox")!;
-      listbox._selectSelected(this._key);
+      if (listbox) {
+        listbox._selectSelected(this._key);
+      }
     }
   }
 
@@ -113,6 +116,9 @@ class HaDeviceTriggerPicker extends LitElement {
         this._triggers.length ? this._triggers[0] : this._noTrigger
       );
     }
+    this._renderEmpty = true;
+    await this.updateComplete;
+    this._renderEmpty = false;
   }
 
   private get _noTrigger() {
@@ -129,6 +135,9 @@ class HaDeviceTriggerPicker extends LitElement {
   }
 
   private _setValue(trigger: DeviceTrigger) {
+    if (this.value && deviceAutomationTriggersEqual(trigger, this.value)) {
+      return;
+    }
     this.value = trigger;
     setTimeout(() => {
       fireEvent(this, "change");
@@ -137,7 +146,7 @@ class HaDeviceTriggerPicker extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      paper-dropdown-menu-light {
+      ha-paper-dropdown-menu {
         width: 100%;
       }
       paper-listbox {
