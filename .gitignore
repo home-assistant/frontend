@@ -25,6 +25,9 @@ dist
 .vscode/*
 !.vscode/extensions.json
 
+# Cast settings 
+src/cast/const.ts
+
 # Secrets
 .lokalise_token
 yarn-error.log
