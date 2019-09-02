@@ -28,6 +28,10 @@ class DeveloperToolsRouter extends HassRouterPage {
         tag: "developer-tools-info",
         load: () => import("./info/developer-tools-info"),
       },
+      logs: {
+        tag: "developer-tools-logs",
+        load: () => import("./logs/developer-tools-logs"),
+      },
       mqtt: {
         tag: "developer-tools-mqtt",
         load: () => import("./mqtt/developer-tools-mqtt"),
