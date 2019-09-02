@@ -73,6 +73,9 @@ export class HuiPersistentNotificationItem extends LitElement {
       a {
         color: var(--primary-color);
       }
+      ha-markdown {
+        overflow-wrap: break-word;
+      }
     `;
   }
 

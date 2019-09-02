@@ -150,6 +150,7 @@ class HaConfigSectionServerControl extends LocalizeMixin(PolymerElement) {
               hass="[[hass]]"
               domain="homeassistant"
               service="restart"
+              confirmation="[[localize('ui.panel.config.server_control.section.server_management.confirm_restart')]]"
               >[[localize('ui.panel.config.server_control.section.server_management.restart')]]
             </ha-call-service-button>
             <ha-call-service-button
@@ -157,6 +158,7 @@ class HaConfigSectionServerControl extends LocalizeMixin(PolymerElement) {
               hass="[[hass]]"
               domain="homeassistant"
               service="stop"
+              confirmation="[[localize('ui.panel.config.server_control.section.server_management.confirm_stop')]]"
               >[[localize('ui.panel.config.server_control.section.server_management.stop')]]
             </ha-call-service-button>
           </div>
