@@ -649,7 +649,9 @@
               "heading": "Server management",
               "introduction": "Control your Home Assistant server… from Home Assistant.",
               "restart": "Restart",
-              "stop": "Stop"
+              "confirm_restart": "Are you sure you want to restart Home Assistant?",
+              "stop": "Stop",
+              "confirm_stop": "Are you sure you want to stop Home Assistant?"
             }
           }
         },
