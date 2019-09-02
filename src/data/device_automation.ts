@@ -1,8 +1,7 @@
 import { HomeAssistant } from "../types";
 import compute_state_name from "../common/entity/compute_state_name";
 
-export interface DeviceTrigger {
-  platform: string;
+export interface DeviceAutomation {
   device_id: string;
   domain: string;
   entity_id: string;
@@ -10,9 +9,29 @@ export interface DeviceTrigger {
   event?: string;
 }
 
+export interface DeviceCondition extends DeviceAutomation {
+  condition: string;
+}
+
+export interface DeviceTrigger extends DeviceAutomation {
+  platform: string;
+}
+
+export interface DeviceConditionList {
+  conditions: DeviceCondition[];
+}
+
 export interface DeviceTriggerList {
   triggers: DeviceTrigger[];
 }
+
+export const fetchDeviceConditions = (hass: HomeAssistant, deviceId: string) =>
+  hass
+    .callWS<DeviceConditionList>({
+      type: "device_automation/condition/list",
+      device_id: deviceId,
+    })
+    .then((response) => response.conditions);
 
 export const fetchDeviceTriggers = (hass: HomeAssistant, deviceId: string) =>
   hass
@@ -22,9 +41,9 @@ export const fetchDeviceTriggers = (hass: HomeAssistant, deviceId: string) =>
     })
     .then((response) => response.triggers);
 
-export const deviceAutomationTriggersEqual = (
-  a: DeviceTrigger,
-  b: DeviceTrigger
+export const deviceAutomationsEqual = (
+  a: DeviceCondition,
+  b: DeviceCondition
 ) => {
   if (typeof a !== typeof b) {
     return false;
@@ -43,6 +62,20 @@ export const deviceAutomationTriggersEqual = (
 
   return true;
 };
+
+export const localizeDeviceAutomationCondition = (
+  hass: HomeAssistant,
+  condition: DeviceCondition
+) =>
+  hass.localize(
+    `component.${condition.domain}.device_automation.condition_type.${
+      condition.type
+    }`,
+    "name",
+    condition.entity_id
+      ? compute_state_name(hass!.states[condition.entity_id])
+      : ""
+  );
 
 export const localizeDeviceAutomationTrigger = (
   hass: HomeAssistant,
