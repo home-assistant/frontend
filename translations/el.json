@@ -293,7 +293,7 @@
             "armed_custom_bypass": "Οπλισμένο"
         },
         "device_tracker": {
-            "home": "Σπίτι",
+            "home": "Εντός σπιτιού",
             "not_home": "Εκτός"
         },
         "person": {
