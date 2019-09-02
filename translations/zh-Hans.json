@@ -618,14 +618,19 @@
                     "common": {
                         "value": "值",
                         "instance": "实例",
+                        "index": "指数",
                         "unknown": "未知",
                         "wakeup_interval": "唤醒时间间隔"
+                    },
+                    "values": {
+                        "header": "节点值"
                     },
                     "node_config": {
                         "header": "节点配置选项",
                         "seconds": "秒",
                         "set_wakeup": "设置唤醒间隔",
                         "config_parameter": "配置参数",
+                        "config_value": "配置值",
                         "set_config_parameter": "设置配置参数"
                     }
                 },
@@ -738,7 +743,10 @@
                         "unavailable": "该实体暂不可用。",
                         "default_name": "新建区域",
                         "delete": "删除",
-                        "update": "更新"
+                        "update": "更新",
+                        "enabled_label": "启用实体",
+                        "enabled_cause": "被{cause}禁用。",
+                        "enabled_description": "已禁用的实体不再添加到Home Assistant。"
                     }
                 },
                 "person": {
@@ -752,15 +760,19 @@
                     }
                 },
                 "server_control": {
+                    "caption": "服务器控制",
+                    "description": "重新启动或停止Home Assistant服务器",
                     "section": {
                         "validation": {
                             "heading": "配置有效性",
+                            "introduction": "此处可以帮助你检验最新修改的配置文件有效性",
                             "check_config": "配置检查",
                             "valid": "配置有效！",
                             "invalid": "配置无效"
                         },
                         "reloading": {
                             "heading": "配置重载中",
+                            "introduction": "Home Assistant 中的部分设定可以直接重载，无需重启服务器。点击重载按钮将重新载入新的设定。",
                             "core": "重载核心模块",
                             "group": "重载分组",
                             "automation": "重载自动化",
@@ -769,6 +781,7 @@
                         },
                         "server_management": {
                             "heading": "服务器管理",
+                            "introduction": "在这里即可控制 Home Assistant 服务。",
                             "restart": "重新启动",
                             "stop": "停止服务"
                         }
@@ -1288,6 +1301,11 @@
                 "success": {
                     "description": "选项已成功保存。"
                 }
+            },
+            "config_entry_system_options": {
+                "title": "系统选项",
+                "enable_new_entities_label": "启用新添加的实体。",
+                "enable_new_entities_description": "如果禁用，新发现的实体将不会自动添加到Home Assistant。"
             }
         },
         "auth_store": {
@@ -1383,5 +1401,12 @@
         "system-admin": "管理员",
         "system-users": "用户",
         "system-read-only": "只读用户"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "用户",
+            "integration": "集成",
+            "config_entry": "配置条目"
+        }
     }
 }

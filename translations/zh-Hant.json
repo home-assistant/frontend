@@ -218,7 +218,7 @@
             "on": "開啓"
         },
         "sun": {
-            "above_horizon": "白天",
+            "above_horizon": "日出東海",
             "below_horizon": "日落西山"
         },
         "switch": {
@@ -986,7 +986,7 @@
                     "finish": "完成"
                 },
                 "core-config": {
-                    "intro": "{name}、你好，歡迎使用 Home Assistant。為您的家庭取個名字吧？",
+                    "intro": "{name}你好，歡迎使用 Home Assistant。為您的家庭取個名字吧？",
                     "intro_location": "希望能夠提供您所居住的區域，資料將協助所顯示的資訊內容、設定以日出日落為基礎的自動化。此資料將絕不會與外部網路進行分享。",
                     "intro_location_detect": "設定可以藉由一次性請求外部服務、以協助您填寫此項資料。",
                     "location_name_default": "首頁",
