@@ -126,10 +126,7 @@ class HaConfigManagerDashboard extends LocalizeMixin(
                         items="[[_computeConfigEntryEntities(hass, item, entities)]]"
                       >
                         <span>
-                          <ha-state-icon
-                            state-obj="[[item]]"
-                            on-click="_handleMoreInfo"
-                          ></ha-state-icon>
+                          <ha-state-icon state-obj="[[item]]"></ha-state-icon>
                           <paper-tooltip position="bottom"
                             >[[_computeStateName(item)]]</paper-tooltip
                           >
@@ -228,10 +225,6 @@ class HaConfigManagerDashboard extends LocalizeMixin(
 
   _computeStateName(stateObj) {
     return computeStateName(stateObj);
-  }
-
-  _handleMoreInfo(ev) {
-    this.fire("hass-more-info", { entityId: ev.model.item.entity_id });
   }
 
   _computeRTL(hass) {
