@@ -114,7 +114,11 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <ha-card .header="${this._config.name || this._label(stateObj.state)}">
+      <ha-card
+        .header="${this._config.name ||
+          stateObj.attributes.friendly_name ||
+          this._label(stateObj.state)}"
+      >
         <ha-label-badge
           class="${classMap({ [stateObj.state]: true })}"
           .icon="${ICONS[stateObj.state] || "hass:shield-outline"}"
