@@ -346,10 +346,10 @@
             },
             "config": {
                 "header": "Konfiguruj Home Assistant'a",
-                "introduction": "Tutaj można skonfigurować komponenty i Home Assistant'a. Nie wszystko jest możliwe do skonfigurowania z interfejsu użytkownika, ale pracujemy nad tym.",
+                "introduction": "Tutaj możesz skonfigurować Home Assistant'a i jego komponenty. Nie wszystkie opcje można konfigurować z interfejsu użytkownika, ale pracujemy nad tym.",
                 "core": {
                     "caption": "Ogólne",
-                    "description": "Zmień ogólną konfigurację Home Assistant",
+                    "description": "Zmień podstawowe opcje Home Assistant'a",
                     "section": {
                         "core": {
                             "header": "Konfiguracja ogólna",
@@ -373,18 +373,18 @@
                         "server_control": {
                             "validation": {
                                 "heading": "Sprawdzanie konfiguracji",
-                                "introduction": "Jeśli ostatnio wprowadzono zmiany w konfiguracji i chcesz się upewnić, że jest ona poprawna, kliknij Sprawdź konfigurację",
+                                "introduction": "Kliknij Sprawdź konfigurację, by upewnić się, że jest ona prawidłowa.",
                                 "check_config": "Sprawdź konfigurację",
                                 "valid": "Konfiguracja prawidłowa!",
                                 "invalid": "Konfiguracja nieprawidłowa"
                             },
                             "reloading": {
-                                "heading": "Przeładowanie konfiguracji",
-                                "introduction": "Niektóre części Home Assistant'a można przeładować bez konieczności ponownego uruchomienia. Kliknięcie przeładuj spowoduje ponowne wczytanie konfiguracji.",
-                                "core": "Przeładuj rdzeń",
-                                "group": "Przeładuj grupy",
-                                "automation": "Przeładuj automatyzacje",
-                                "script": "Przeładuj skrypty"
+                                "heading": "Ponowne wczytanie konfiguracji",
+                                "introduction": "Niektóre części konfiguracji można wczytać od nowa bez konieczności ponownego uruchamiania Home Assistant'a. Naciśnięcie poniższych przycisków wczyta ponownie daną część konfiguracji.",
+                                "core": "Rdzeń",
+                                "group": "Grupy",
+                                "automation": "Automatyzacje",
+                                "script": "Skrypty"
                             },
                             "server_management": {
                                 "heading": "Zarządzanie serwerem",
@@ -592,7 +592,7 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
-                    "description": "Zarządzaj swoją siecią Z-Wave",
+                    "description": "Zarządzaj siecią Z-Wave",
                     "network_management": {
                         "header": "Zarządzanie siecią Z-Wave",
                         "introduction": "Uruchom polecenia sterujące siecią Z-Wave. Nie otrzymasz informacji o tym, czy wykonanie poleceń się powiodło, ale możesz szukać informacji na ten temat w logu OZW."
@@ -715,7 +715,7 @@
                 },
                 "area_registry": {
                     "caption": "Rejestr obszarów",
-                    "description": "Przegląd wszystkich obszarów w twoim domu.",
+                    "description": "Przegląd wszystkich obszarów w twoim domu",
                     "picker": {
                         "header": "Rejestr obszarów",
                         "introduction": "Obszary służą do organizacji urządzeń. Informacje te będą używane w Home Assistant, aby pomóc w organizacji interfejsu, uprawnień i integracji z innymi systemami.",
@@ -755,7 +755,7 @@
                 },
                 "person": {
                     "caption": "Osoby",
-                    "description": "Zarządzaj osobami, które śledzi Home Assistant.",
+                    "description": "Zarządzaj osobami, które śledzi Home Assistant",
                     "detail": {
                         "name": "Imię",
                         "device_tracker_intro": "Wybierz urządzenia należące do tej osoby.",
@@ -765,27 +765,27 @@
                 },
                 "server_control": {
                     "caption": "Kontrola serwera",
-                    "description": "Uruchom ponownie i zatrzymaj serwer Home Assistant",
+                    "description": "Uruchom ponownie i zatrzymaj serwer Home Assistant'a",
                     "section": {
                         "validation": {
                             "heading": "Sprawdzanie konfiguracji",
-                            "introduction": "Jeśli ostatnio wprowadzano zmiany w konfiguracji sprawdź jej poprawność",
+                            "introduction": "Kliknij Sprawdź konfigurację, by upewnić się, że jest ona prawidłowa.",
                             "check_config": "Sprawdź konfigurację",
                             "valid": "Konfiguracja prawidłowa!",
                             "invalid": "Konfiguracja nieprawidłowa"
                         },
                         "reloading": {
-                            "heading": "Ponowne załadowanie konfiguracji",
-                            "introduction": "Niektóre części Home Assistant można przeładować bez konieczności ponownego uruchamiania. Naciśnięcie przycisku przeładowania spowoduje zwolnienie bieżącej konfiguracji i załadowanie nowej.",
-                            "core": "Załaduj ponownie rdzeń",
-                            "group": "Załaduj ponownie grupy",
-                            "automation": "Załaduj ponownie automatyzacje",
-                            "script": "Załaduj ponownie skrypty",
-                            "scene": "Załaduj ponownie sceny"
+                            "heading": "Ponowne wczytanie konfiguracji",
+                            "introduction": "Niektóre części konfiguracji można wczytać od nowa bez konieczności ponownego uruchamiania Home Assistant'a. Naciśnięcie poniższych przycisków wczyta ponownie daną część konfiguracji.",
+                            "core": "Rdzeń",
+                            "group": "Grupy",
+                            "automation": "Automatyzacje",
+                            "script": "Skrypty",
+                            "scene": "Sceny"
                         },
                         "server_management": {
                             "heading": "Zarządzanie serwerem",
-                            "introduction": "Kontroluj swój serwer Home Assistant… z Home Assistant.",
+                            "introduction": "Kontroluj serwer Home Assistant'a.",
                             "restart": "Uruchom ponownie",
                             "stop": "Zatrzymaj"
                         }
@@ -987,7 +987,7 @@
                 },
                 "core-config": {
                     "intro": "{name}, witamy w Home Assistant. Jak chcesz nazwać swój dom?",
-                    "intro_location": "Chcielibyśmy wiedzieć gdzie mieszkasz. Te dane pomogą w wyświetlaniu informacji i konfigurowaniu automatyki opartej na położeniu słońca. Te dane nigdy nie będą udostępniane poza Twoją sieć lokalną.",
+                    "intro_location": "Chcielibyśmy wiedzieć, gdzie mieszkasz. Te dane pomogą w wyświetlaniu informacji i konfigurowaniu automatyki opartej na położeniu słońca. Te dane nigdy nie będą udostępniane poza Twoją sieć lokalną.",
                     "intro_location_detect": "Możemy pomóc Ci wprowadzić te informacje, wysyłając jednorazowe zapytanie do usługi zewnętrznej.",
                     "location_name_default": "Dom",
                     "button_detect": "Wykryj",
@@ -1070,7 +1070,7 @@
                     "message": "Zaktualizowano konfigurację Lovelace, czy chcesz odświeżyć?",
                     "refresh": "Odśwież"
                 },
-                "reload_lovelace": "Przeładuj Lovelace"
+                "reload_lovelace": "Wczytaj ponownie Lovelace"
             },
             "page-demo": {
                 "cards": {

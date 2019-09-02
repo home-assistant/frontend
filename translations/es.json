@@ -633,7 +633,7 @@
                         "set_wakeup": "Configurar el intervalo de activación",
                         "config_parameter": "Parámetro de configuración",
                         "config_value": "Valor de configuración",
-                        "true": "Cierto",
+                        "true": "Verdadero",
                         "false": "Falso",
                         "set_config_parameter": "Establecer parámetro de configuración"
                     }
@@ -748,9 +748,9 @@
                         "default_name": "Área Nueva",
                         "delete": "BORRAR",
                         "update": "ACTUALIZAR",
-                        "enabled_label": "Habilitar entidad",
+                        "enabled_label": "Activar entidad",
                         "enabled_cause": "Desactivado por {cause}.",
-                        "enabled_description": "Las entidades deshabilitadas no se agregarán a Home Assistant."
+                        "enabled_description": "Las entidades desactivadas no se añadirán a Home Assistant."
                     }
                 },
                 "person": {
@@ -780,12 +780,12 @@
                             "core": "Recargar núcleo",
                             "group": "Recargar grupos",
                             "automation": "Recargar automatizaciones",
-                            "script": "Recargar los scripts",
+                            "script": "Recargar scripts",
                             "scene": "Recargar escenas"
                         },
                         "server_management": {
                             "heading": "Gestión del servidor",
-                            "introduction": "Controla tu servidor de Home Assistant ... desde Home Assistant.",
+                            "introduction": "Controla tu servidor de Home Assistant... desde Home Assistant.",
                             "restart": "Reiniciar",
                             "stop": "Detener"
                         }
@@ -1308,8 +1308,8 @@
             },
             "config_entry_system_options": {
                 "title": "Opciones del sistema",
-                "enable_new_entities_label": "Habilitar entidades recién agregadas.",
-                "enable_new_entities_description": "Si está deshabilitada, las nuevas entidades que se descubran no se agregarán automáticamente a Home Assistant."
+                "enable_new_entities_label": "Activar entidades recién añadidas.",
+                "enable_new_entities_description": "Si está desactivado, las entidades recién descubiertas no se añadirán automáticamente a Home Assistant."
             }
         },
         "auth_store": {
