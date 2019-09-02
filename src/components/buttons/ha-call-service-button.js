@@ -42,10 +42,17 @@ class HaCallServiceButton extends EventsMixin(PolymerElement) {
         type: Object,
         value: {},
       },
+
+      confirmation: {
+        type: String,
+      },
     };
   }
 
   buttonTapped() {
+    if (this.confirmation && !window.confirm(this.confirmation)) {
+      return;
+    }
     this.progress = true;
     var el = this;
     var eventData = {
