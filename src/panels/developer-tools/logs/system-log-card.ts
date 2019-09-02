@@ -141,8 +141,6 @@ class SystemLogCard extends LitElement {
 
       .system-log-intro {
         margin: 16px;
-        border-top: 1px solid var(--light-primary-color);
-        padding-top: 16px;
       }
 
       .loading-container {
