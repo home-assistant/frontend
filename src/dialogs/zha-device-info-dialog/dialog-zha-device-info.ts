@@ -9,6 +9,9 @@ import {
 } from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "../../components/dialog/ha-paper-dialog";
+// Not duplicate, is for typing
+// tslint:disable-next-line
+import { HaPaperDialog } from "../../components/dialog/ha-paper-dialog";
 import "../../panels/config/zha/zha-device-card";
 
 import { PolymerChangedEvent } from "../../polymer-types";
@@ -22,12 +25,13 @@ class DialogZHADeviceInfo extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() private _params?: ZHADeviceInfoDialogParams;
   @property() private _error?: string;
-  @property() private _device!: ZHADevice;
+  @property() private _device?: ZHADevice;
 
   public async showDialog(params: ZHADeviceInfoDialogParams): Promise<void> {
     this._params = params;
     this._device = await fetchZHADevice(this.hass, params.ieee);
     await this.updateComplete;
+    this._dialog.open();
   }
 
   protected render(): TemplateResult | void {
@@ -41,49 +45,53 @@ class DialogZHADeviceInfo extends LitElement {
         opened
         @opened-changed="${this._openedChanged}"
       >
-        <h2>
-          ${this._device.user_given_name
-            ? this._device.user_given_name
-            : this._device.name}
-        </h2>
-        <paper-dialog-scrollable>
-          <zha-device-card
-            class="card"
-            .hass="${this.hass}"
-            .device="${this._device}"
-            .narrow="${false}"
-            .showHelp="${false}"
-            .showActions="${true}"
-            @zha-device-removed="${this._onDeviceRemoved}"
-            .isJoinPage="${false}"
-          ></zha-device-card>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
-        </paper-dialog-scrollable>
+        <zha-device-card
+          class="card"
+          .hass="${this.hass}"
+          .device="${this._device}"
+          .narrow="${false}"
+          .showHelp="${false}"
+          .showActions="${true}"
+          @zha-device-removed="${this._onDeviceRemoved}"
+          .isJoinPage="${true}"
+        ></zha-device-card>
+        ${this._error
+          ? html`
+              <div class="error">${this._error}</div>
+            `
+          : ""}
       </ha-paper-dialog>
     `;
   }
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
-    if (!(ev.detail as any).value) {
+    if (!ev.detail.value) {
       this._params = undefined;
       this._error = undefined;
+      this._device = undefined;
     }
   }
 
   private _onDeviceRemoved(): void {
-    // do nothing intentionally
+    this._closeDialog();
+  }
+
+  private get _dialog(): HaPaperDialog {
+    return this.shadowRoot!.querySelector("ha-paper-dialog")!;
+  }
+
+  private _closeDialog() {
+    this._dialog.close();
   }
 
   static get styles(): CSSResult[] {
     return [
       haStyleDialog,
       css`
-        ha-paper-dialog {
-          min-width: 400px;
+        ha-paper-dialog > * {
+          margin: 0;
+          display: block;
+          padding: 0;
         }
         .card {
           box-sizing: border-box;
@@ -91,9 +99,6 @@ class DialogZHADeviceInfo extends LitElement {
           flex: 1 0 300px;
           min-width: 0;
           max-width: 600px;
-          padding-left: 28px;
-          padding-right: 28px;
-          padding-bottom: 10px;
           word-wrap: break-word;
         }
         .error {
