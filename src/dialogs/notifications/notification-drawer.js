@@ -49,7 +49,7 @@ export class HuiNotificationDrawer extends EventsMixin(
         text-align: center;
       }
     </style>
-    <app-drawer id='drawer' opened="{{open}}" disable-swipe>
+    <app-drawer id='drawer' opened="{{open}}" disable-swipe align="start">
       <app-toolbar>
         <div main-title>[[localize('ui.notification_drawer.title')]]</div>
         <ha-paper-icon-button-prev on-click="_closeDrawer"></paper-icon-button>
