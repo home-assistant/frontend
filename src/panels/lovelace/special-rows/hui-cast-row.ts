@@ -7,6 +7,7 @@ import {
   css,
   CSSResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 
 import { EntityRow, CastConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
@@ -45,6 +46,11 @@ class HuiCastRow extends LitElement implements EntityRow {
       return html``;
     }
 
+    const active =
+      this._castManager &&
+      this._castManager.status &&
+      this._config.view === this._castManager.status.lovelacePath;
+
     return html`
       <ha-icon .icon="${this._config.icon}"></ha-icon>
       <div class="flex">
@@ -68,8 +74,8 @@ class HuiCastRow extends LitElement implements EntityRow {
                 <google-cast-launcher></google-cast-launcher>
                 <mwc-button
                   @click=${this._sendLovelace}
-                  .unelevated=${this._castManager.status &&
-                    this._config.view === this._castManager.status.lovelacePath}
+                  class=${classMap({ inactive: !Boolean(active) })}
+                  .unelevated=${active}
                   .disabled=${!this._castManager.status}
                 >
                   SHOW
@@ -124,7 +130,6 @@ class HuiCastRow extends LitElement implements EntityRow {
       :host {
         display: flex;
         align-items: center;
-        overflow: visible;
       }
       ha-icon {
         padding: 8px;
@@ -143,7 +148,6 @@ class HuiCastRow extends LitElement implements EntityRow {
         text-overflow: ellipsis;
       }
       .controls {
-        margin-right: -0.57em;
         display: flex;
         align-items: center;
       }
@@ -153,6 +157,9 @@ class HuiCastRow extends LitElement implements EntityRow {
         display: inline-block;
         height: 24px;
         width: 24px;
+      }
+      .inactive {
+        padding: 0 4px;
       }
     `;
   }
