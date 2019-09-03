@@ -12,6 +12,7 @@ export interface LovelaceViewConfig {
   index?: number;
   title?: string;
   badges?: string[];
+  badges_state_filter?: string[];
   cards?: LovelaceCardConfig[];
   path?: string;
   icon?: string;
