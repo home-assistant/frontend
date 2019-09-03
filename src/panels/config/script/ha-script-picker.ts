@@ -11,6 +11,7 @@ import { ifDefined } from "lit-html/directives/if-defined";
 import "@polymer/paper-fab/paper-fab";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-tooltip/paper-tooltip";
 import { HassEntity } from "home-assistant-js-websocket";
 
 import "../../../layouts/hass-subpage";
