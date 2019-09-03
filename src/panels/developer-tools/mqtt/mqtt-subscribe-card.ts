@@ -11,13 +11,9 @@ import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
 import { HomeAssistant } from "../../../types";
 import "../../../components/ha-card";
+import format_time from "../../../common/datetime/format_time";
 
-interface MqttMessage {
-  topic: string;
-  payload: string;
-  qos: number;
-  retain: number;
-}
+import { subscribeMQTTTopic, MQTTMessage } from "../../../data/mqtt";
 
 @customElement("mqtt-subscribe-card")
 class MqttSubscribeCard extends LitElement {
@@ -29,7 +25,9 @@ class MqttSubscribeCard extends LitElement {
 
   @property() private _messages: Array<{
     id: number;
-    message: MqttMessage;
+    message: MQTTMessage;
+    payload: string;
+    time: Date;
   }> = [];
 
   private _messageCount = 0;
@@ -66,8 +64,13 @@ class MqttSubscribeCard extends LitElement {
           ${this._messages.map(
             (msg) => html`
               <div class="event">
-                Message ${msg.id} received:
-                <pre>${JSON.stringify(msg.message, null, 4)}</pre>
+                Message ${msg.id} received on <b>${msg.message.topic}</b> at
+                ${format_time(msg.time, this.hass!.language)}:
+                <pre>${msg.payload}</pre>
+                <div class="bottom">
+                  QoS: ${msg.message.qos} - Retain:
+                  ${Boolean(msg.message.retain)}
+                </div>
               </div>
             `
           )}
@@ -85,21 +88,28 @@ class MqttSubscribeCard extends LitElement {
       this._subscribed();
       this._subscribed = undefined;
     } else {
-      this._subscribed = await this.hass!.connection.subscribeMessage<
-        MqttMessage
-      >((message) => this._handleMessage(message), {
-        type: "mqtt/subscribe",
-        topic: this._topic,
-      });
+      this._subscribed = await subscribeMQTTTopic(
+        this.hass!,
+        this._topic,
+        (message) => this._handleMessage(message)
+      );
     }
   }
 
-  private _handleMessage(message: MqttMessage) {
+  private _handleMessage(message: MQTTMessage) {
     const tail =
       this._messages.length > 30 ? this._messages.slice(0, 29) : this._messages;
+    let payload;
+    try {
+      payload = JSON.stringify(JSON.parse(message.payload), null, 4);
+    } catch (e) {
+      payload = message.payload;
+    }
     this._messages = [
       {
+        payload,
         message,
+        time: new Date(),
         id: this._messageCount++,
       },
       ...tail,
@@ -127,6 +137,10 @@ class MqttSubscribeCard extends LitElement {
       }
       .event:last-child {
         border-bottom: 0;
+      }
+      .bottom {
+        font-size: 80%;
+        color: var(--secondary-text-color);
       }
     `;
   }
