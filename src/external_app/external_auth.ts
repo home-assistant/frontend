@@ -70,6 +70,8 @@ class ExternalAuth extends Auth {
       }
     );
 
+    await 0;
+
     if (window.externalApp) {
       window.externalApp.getExternalAuth(JSON.stringify(callbackPayload));
     } else {
@@ -91,6 +93,8 @@ class ExternalAuth extends Auth {
       window[CALLBACK_REVOKE_TOKEN] = (success, data) =>
         success ? resolve(data) : reject(data);
     });
+
+    await 0;
 
     if (window.externalApp) {
       window.externalApp.revokeExternalAuth(JSON.stringify(callbackPayload));
