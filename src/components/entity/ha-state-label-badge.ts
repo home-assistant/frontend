@@ -29,6 +29,12 @@ export class HaStateLabelBadge extends LitElement {
 
   @property() public state?: HassEntity;
 
+  @property() public name?: string;
+
+  @property() public icon?: string;
+
+  @property() public image?: string;
+
   @property() private _timerTimeRemaining?: number;
 
   private _connected?: boolean;
@@ -72,10 +78,14 @@ export class HaStateLabelBadge extends LitElement {
           "has-unit_of_measurement": "unit_of_measurement" in state.attributes,
         })}"
         .value="${this._computeValue(domain, state)}"
-        .icon="${this._computeIcon(domain, state)}"
-        .image="${state.attributes.entity_picture}"
+        .icon="${this.icon ? this.icon : this._computeIcon(domain, state)}"
+        .image="${this.icon
+          ? ""
+          : this.image
+          ? this.image
+          : state.attributes.entity_picture}"
         .label="${this._computeLabel(domain, state, this._timerTimeRemaining)}"
-        .description="${computeStateName(state)}"
+        .description="${this.name ? this.name : computeStateName(state)}"
       ></ha-label-badge>
     `;
   }
