@@ -15,7 +15,7 @@ import { getLocalLanguage } from "../util/hass-translation";
 import { fetchWithAuth } from "../util/fetch-with-auth";
 import hassCallApi from "../util/hass-call-api";
 import { subscribePanels } from "../data/ws-panels";
-import { forwardHaptic } from "../data/haptics";
+import { haptic } from "../util/haptics";
 import { fireEvent } from "../common/dom/fire_event";
 import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
@@ -65,7 +65,7 @@ export const connectionMixin = (
                 err
               );
             }
-            forwardHaptic("failure");
+            haptic("failure");
             const message =
               (this as any).hass.localize(
                 "ui.notification_toast.service_call_failed",
