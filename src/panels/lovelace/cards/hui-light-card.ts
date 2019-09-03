@@ -24,6 +24,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { loadRoundslider } from "../../../resources/jquery.roundslider.ondemand";
 import { toggleEntity } from "../common/entity/toggle-entity";
 import { LightCardConfig } from "./types";
+import { stopPropagation } from "../../../common/dom/stop_propagation";
 
 const lightConfig = {
   radius: 80,
@@ -79,7 +80,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
     const stateObj = this.hass.states[this._config!.entity] as LightEntity;
 
-    if (!stateObj || stateObj.state === "unavailable") {
+    if (!stateObj) {
       return html`
         <hui-warning
           >${this.hass.localize(
@@ -94,6 +95,13 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     return html`
       ${this.renderStyle()}
       <ha-card>
+        ${stateObj.state === "unavailable"
+          ? html`
+              <div id="overlay" @click="${this._stopPropagation}">
+                <div id="text">Unavailable</div>
+              </div>
+            `
+          : ""}
         <paper-icon-button
           icon="hass:dots-vertical"
           class="more-info"
@@ -306,6 +314,29 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           z-index: 25;
           color: var(--secondary-text-color);
         }
+
+        #overlay {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          background-color: var(--state-icon-unavailable-color);
+          opacity: 0.5;
+          z-index: 20;
+        }
+
+        #text {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          font-size: 50px;
+          color: var(--primary-text-color);
+          transform: translate(-50%, -50%);
+          -ms-transform: translate(-50%, -50%);
+        }
       </style>
     `;
   }
@@ -363,6 +394,10 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     fireEvent(this, "hass-more-info", {
       entityId: this._config!.entity,
     });
+  }
+
+  private _stopPropagation(ev: Event) {
+    stopPropagation(ev);
   }
 }
 
