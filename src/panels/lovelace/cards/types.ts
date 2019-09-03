@@ -82,6 +82,10 @@ export interface ConfigEntity extends EntityConfig {
   hold_action?: ActionConfig;
 }
 
+export interface GlanceConfigEntity extends ConfigEntity {
+  show_last_changed?: boolean;
+}
+
 export interface GlanceCardConfig extends LovelaceCardConfig {
   show_name?: boolean;
   show_state?: boolean;
