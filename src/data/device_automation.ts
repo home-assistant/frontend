@@ -42,8 +42,8 @@ export const fetchDeviceTriggers = (hass: HomeAssistant, deviceId: string) =>
     .then((response) => response.triggers);
 
 export const deviceAutomationsEqual = (
-  a: DeviceCondition,
-  b: DeviceCondition
+  a: DeviceAutomation,
+  b: DeviceAutomation
 ) => {
   if (typeof a !== typeof b) {
     return false;
@@ -66,25 +66,29 @@ export const deviceAutomationsEqual = (
 export const localizeDeviceAutomationCondition = (
   hass: HomeAssistant,
   condition: DeviceCondition
-) =>
-  hass.localize(
+) => {
+  const state = condition.entity_id
+    ? hass.states[condition.entity_id]
+    : undefined;
+  return hass.localize(
     `component.${condition.domain}.device_automation.condition_type.${
       condition.type
     }`,
     "name",
-    condition.entity_id
-      ? compute_state_name(hass!.states[condition.entity_id])
-      : ""
+    state ? compute_state_name(state) : "<unknown>"
   );
+};
 
 export const localizeDeviceAutomationTrigger = (
   hass: HomeAssistant,
   trigger: DeviceTrigger
-) =>
-  hass.localize(
+) => {
+  const state = trigger.entity_id ? hass.states[trigger.entity_id] : undefined;
+  return hass.localize(
     `component.${trigger.domain}.device_automation.trigger_type.${
       trigger.type
     }`,
     "name",
-    trigger.entity_id ? compute_state_name(hass!.states[trigger.entity_id]) : ""
+    state ? compute_state_name(state) : "<unknown>"
   );
+};

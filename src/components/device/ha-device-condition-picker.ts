@@ -14,22 +14,17 @@ class HaDeviceConditionPicker extends HaDeviceAutomationPicker<
   protected NO_AUTOMATION_TEXT = "No conditions";
   protected UNKNOWN_AUTOMATION_TEXT = "Unknown condition";
 
-  protected localizeDeviceAutomation(value) {
-    return localizeDeviceAutomationCondition(this.hass, value);
-  }
-
-  protected async _fetchDeviceAutomations() {
-    const triggers = await fetchDeviceConditions(this.hass!, this.deviceId!);
-    return triggers;
-  }
-
-  protected get _noAutomation(): DeviceCondition {
-    return {
-      device_id: this.deviceId || "",
-      condition: "device",
-      domain: "",
-      entity_id: "",
-    };
+  constructor() {
+    super(
+      localizeDeviceAutomationCondition,
+      fetchDeviceConditions,
+      (deviceId: string) => ({
+        device_id: deviceId || "",
+        condition: "device",
+        domain: "",
+        entity_id: "",
+      })
+    );
   }
 }
 

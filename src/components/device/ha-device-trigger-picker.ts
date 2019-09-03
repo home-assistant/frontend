@@ -12,22 +12,17 @@ class HaDeviceTriggerPicker extends HaDeviceAutomationPicker<DeviceTrigger> {
   protected NO_AUTOMATION_TEXT = "No triggers";
   protected UNKNOWN_AUTOMATION_TEXT = "Unknown trigger";
 
-  protected localizeDeviceAutomation(value) {
-    return localizeDeviceAutomationTrigger(this.hass, value);
-  }
-
-  protected async _fetchDeviceAutomations() {
-    const triggers = await fetchDeviceTriggers(this.hass!, this.deviceId!);
-    return triggers;
-  }
-
-  protected get _noAutomation(): DeviceTrigger {
-    return {
-      device_id: this.deviceId || "",
-      platform: "device",
-      domain: "",
-      entity_id: "",
-    };
+  constructor() {
+    super(
+      localizeDeviceAutomationTrigger,
+      fetchDeviceTriggers,
+      (deviceId: string) => ({
+        device_id: deviceId || "",
+        platform: "device",
+        domain: "",
+        entity_id: "",
+      })
+    );
   }
 }
 

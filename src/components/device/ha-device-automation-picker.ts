@@ -36,8 +36,35 @@ export abstract class HaDeviceAutomationPicker<
   // paper-listbox does not like changing things around.
   @property() private _renderEmpty = false;
 
+  private _localizeDeviceAutomation: (
+    hass: HomeAssistant,
+    automation: T
+  ) => string;
+  private _fetchDeviceAutomations: (
+    hass: HomeAssistant,
+    deviceId: string
+  ) => Promise<T[]>;
+  private _createNoAutomation: (deviceId?: string) => T;
+
+  constructor(
+    localizeDeviceAutomation,
+    fetchDeviceAutomations,
+    createNoAutomation
+  ) {
+    super();
+    this._localizeDeviceAutomation = localizeDeviceAutomation;
+    this._fetchDeviceAutomations = fetchDeviceAutomations;
+    this._createNoAutomation = createNoAutomation;
+  }
+
   private get _key() {
-    if (!this.value || deviceAutomationsEqual(this._noAutomation, this.value)) {
+    if (
+      !this.value ||
+      deviceAutomationsEqual(
+        this._createNoAutomation(this.deviceId),
+        this.value
+      )
+    ) {
       return NO_AUTOMATION_KEY;
     }
 
@@ -53,10 +80,6 @@ export abstract class HaDeviceAutomationPicker<
     return `${this._automations[idx].device_id}_${idx}`;
   }
 
-  protected localizeDeviceAutomation(value) {
-    /**/
-  }
-
   protected render(): TemplateResult | void {
     if (this._renderEmpty) {
       return html``;
@@ -64,7 +87,9 @@ export abstract class HaDeviceAutomationPicker<
     return html`
       <ha-paper-dropdown-menu
         .label=${this.label}
-        .value=${this.value ? this.localizeDeviceAutomation(this.value) : ""}
+        .value=${this.value
+          ? this._localizeDeviceAutomation(this.hass, this.value)
+          : ""}
         ?disabled=${this._automations.length === 0}
       >
         <paper-listbox
@@ -75,7 +100,7 @@ export abstract class HaDeviceAutomationPicker<
         >
           <paper-item
             key=${NO_AUTOMATION_KEY}
-            .automation=${this._noAutomation}
+            .automation=${this._createNoAutomation(this.deviceId)}
             hidden
           >
             ${this.NO_AUTOMATION_TEXT}
@@ -93,7 +118,7 @@ export abstract class HaDeviceAutomationPicker<
                 key=${`${this.deviceId}_${idx}`}
                 .automation=${automation}
               >
-                ${this.localizeDeviceAutomation(automation)}
+                ${this._localizeDeviceAutomation(this.hass, automation)}
               </paper-item>
             `
           )}
@@ -118,29 +143,23 @@ export abstract class HaDeviceAutomationPicker<
     }
   }
 
-  protected async _fetchDeviceAutomations() {
-    /**/
-  }
-
   private async _updateDeviceInfo() {
     this._automations = this.deviceId
-      ? await this._fetchDeviceAutomations()
+      ? await this._fetchDeviceAutomations(this.hass, this.deviceId)
       : // No device, clear the list of automations
         [];
 
     // If there is no value, or if we have changed the device ID, reset the value.
     if (!this.value || this.value.device_id !== this.deviceId) {
       this._setValue(
-        this._automations.length ? this._automations[0] : this._noAutomation
+        this._automations.length
+          ? this._automations[0]
+          : this._createNoAutomation(this.deviceId)
       );
     }
     this._renderEmpty = true;
     await this.updateComplete;
     this._renderEmpty = false;
-  }
-
-  protected get _noAutomation(): T {
-    /**/
   }
 
   private _automationChanged(ev) {
