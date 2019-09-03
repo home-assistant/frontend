@@ -99,7 +99,7 @@ class MqttSubscribeCard extends LitElement {
   private _handleMessage(message: MQTTMessage) {
     const tail =
       this._messages.length > 30 ? this._messages.slice(0, 29) : this._messages;
-    let payload;
+    let payload: string;
     try {
       payload = JSON.stringify(JSON.parse(message.payload), null, 4);
     } catch (e) {
