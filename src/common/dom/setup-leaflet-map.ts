@@ -20,10 +20,19 @@ export const setupLeafletMap = async (
   style.setAttribute("rel", "stylesheet");
   mapElement.parentNode.appendChild(style);
   map.setView([52.3731339, 4.8903147], 13);
-  Leaflet.tileLayer(
+  createTileLayer(Leaflet, darkMode).addTo(map);
+
+  return [map, Leaflet];
+};
+
+export const createTileLayer = (
+  leaflet: LeafletModuleType,
+  darkMode: boolean
+) => {
+  return leaflet.tileLayer(
     `https://{s}.basemaps.cartocdn.com/${
       darkMode ? "dark_all" : "light_all"
-    }/{z}/{x}/{y}${Leaflet.Browser.retina ? "@2x.png" : ".png"}`,
+    }/{z}/{x}/{y}${leaflet.Browser.retina ? "@2x.png" : ".png"}`,
     {
       attribution:
         '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>',
@@ -31,7 +40,5 @@ export const setupLeafletMap = async (
       minZoom: 0,
       maxZoom: 20,
     }
-  ).addTo(map);
-
-  return [map, Leaflet];
+  );
 };
