@@ -86,6 +86,7 @@ export interface GlanceCardConfig extends LovelaceCardConfig {
   show_name?: boolean;
   show_state?: boolean;
   show_icon?: boolean;
+  show_last_changed?: boolean;
   title?: string;
   theme?: string;
   entities: ConfigEntity[];
