@@ -6,6 +6,7 @@ export const ENTITY_COMPONENT_DOMAINS = [
   "automation",
   "binary_sensor",
   "calendar",
+  "camera",
   "counter",
   "cover",
   "dominos",
