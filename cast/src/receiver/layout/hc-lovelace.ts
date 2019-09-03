@@ -57,10 +57,16 @@ class HcLovelace extends LitElement {
       const index = this._viewIndex;
 
       if (index !== undefined) {
-        this.shadowRoot!.querySelector("hui-view")!.style.background =
+        const configBackground =
           this.lovelaceConfig.views[index].background ||
-          this.lovelaceConfig.background ||
-          "";
+          this.lovelaceConfig.background;
+
+        if (configBackground) {
+          this.shadowRoot!.querySelector("hui-view")!.style.setProperty(
+            "--lovelace-background",
+            configBackground
+          );
+        }
       }
     }
   }
