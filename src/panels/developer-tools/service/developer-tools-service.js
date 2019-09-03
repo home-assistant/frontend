@@ -118,6 +118,11 @@ class HaPanelDevService extends PolymerElement {
           <mwc-button on-click="_callService" raised disabled="[[!validJSON]]"
             >Call Service</mwc-button
           >
+          <template is="dom-if" if="[[_attributes.length]]">
+            <mwc-button on-click="_fillExampleData" raised
+              >Fill Example Data</mwc-button
+            >
+          </template>
           <template is="dom-if" if="[[!validJSON]]">
             <span class="error">Invalid JSON</span>
           </template>
@@ -272,6 +277,14 @@ class HaPanelDevService extends PolymerElement {
     }
 
     this.hass.callService(this._domain, this._service, this.parsedJSON);
+  }
+
+  _fillExampleData() {
+    const example = this._attributes.reduce(
+      (acc, cur) => ({ ...acc, [cur.key]: cur.example }),
+      {}
+    );
+    this.serviceData = JSON.stringify(example, null, 4);
   }
 
   _entityPicked(ev) {
