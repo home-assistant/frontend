@@ -1,5 +1,6 @@
 import { castApiAvailable } from "./cast_framework";
-import { CAST_APP_ID, CAST_NS, CAST_DEV_HASS_URL, CAST_DEV } from "./const";
+import { CAST_APP_ID, CAST_NS, CAST_DEV } from "./const";
+import { CAST_DEV_HASS_URL } from "./dev_const";
 import {
   castSendAuth,
   HassMessage as ReceiverMessage,

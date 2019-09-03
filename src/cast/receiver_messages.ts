@@ -4,7 +4,8 @@ import { Auth } from "home-assistant-js-websocket";
 import { CastManager } from "./cast_manager";
 
 import { BaseCastMessage } from "./types";
-import { CAST_DEV_HASS_URL, CAST_DEV } from "./const";
+import { CAST_DEV } from "./const";
+import { CAST_DEV_HASS_URL } from "./dev_const";
 
 export interface GetStatusMessage extends BaseCastMessage {
   type: "get_status";
