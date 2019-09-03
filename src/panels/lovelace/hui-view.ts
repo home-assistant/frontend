@@ -271,7 +271,7 @@ export class HUIView extends LitElement {
       element.state = this.hass!.states[entityId];
       element.name = badge.name;
       element.icon = badge.icon;
-      element.entityPicture = badge.entity_picture;
+      element.image = badge.image;
       elements.push({ element, entityId });
       root.appendChild(element);
     }

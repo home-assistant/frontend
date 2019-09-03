@@ -33,7 +33,7 @@ export class HaStateLabelBadge extends LitElement {
 
   @property() public icon?: string;
 
-  @property() public entityPicture?: string;
+  @property() public image?: string;
 
   @property() private _timerTimeRemaining?: number;
 
@@ -81,8 +81,8 @@ export class HaStateLabelBadge extends LitElement {
         .icon="${this.icon ? this.icon : this._computeIcon(domain, state)}"
         .image="${this.icon
           ? ""
-          : this.entityPicture
-          ? this.entityPicture
+          : this.image
+          ? this.image
           : state.attributes.entity_picture}"
         .label="${this._computeLabel(domain, state, this._timerTimeRemaining)}"
         .description="${this.name ? this.name : computeStateName(state)}"
