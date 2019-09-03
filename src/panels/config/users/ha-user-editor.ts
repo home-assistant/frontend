@@ -23,7 +23,7 @@ import {
   SYSTEM_GROUP_ID_USER,
   SYSTEM_GROUP_ID_ADMIN,
 } from "../../../data/user";
-import { showToast } from "../../../util/toast";
+import { showSuccesToast } from "../../../util/toast-saved-success";
 
 declare global {
   interface HASSDomEvents {
@@ -151,9 +151,7 @@ class HaUserEditor extends LitElement {
       await updateUser(this.hass!, this.user!.id, {
         group_ids: [newGroup],
       });
-      showToast(this, {
-        message: this.hass!.localize("ui.common.successfully_saved"),
-      });
+      showSuccesToast(this, this.hass!);
       fireEvent(this, "reload-users");
     } catch (err) {
       alert(`Group update failed: ${err.message}`);
