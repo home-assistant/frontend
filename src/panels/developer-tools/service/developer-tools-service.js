@@ -284,14 +284,12 @@ class HaPanelDevService extends PolymerElement {
       (acc, cur) => ({ ...acc, [cur.key]: cur.example }),
       {}
     );
-    this.serviceData = JSON.stringify(example, null, 4);
+    this.serviceData = JSON.stringify(example, null, 2);
   }
 
   _entityPicked(ev) {
     this.serviceData = JSON.stringify(
-      Object.assign({}, this.parsedJSON, {
-        entity_id: ev.target.value,
-      }),
+      { ...this.parsedJSON, entity_id: ev.target.value },
       null,
       2
     );
