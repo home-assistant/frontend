@@ -56,6 +56,9 @@ export class HuiUnusedEntities extends LitElement {
   private renderStyle(): TemplateResult {
     return html`
       <style>
+        :host {
+          background: var(--lovelace-background);
+        }
         #root {
           padding: 4px;
           display: flex;
