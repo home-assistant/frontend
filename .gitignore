@@ -26,7 +26,7 @@ dist
 !.vscode/extensions.json
 
 # Cast dev settings 
-# src/cast/dev_const.ts
+src/cast/dev_const.ts
 
 # Secrets
 .lokalise_token
