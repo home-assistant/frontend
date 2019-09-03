@@ -23,6 +23,7 @@ import "../../../components/ha-card";
 import "../ha-config-section";
 
 import computeStateName from "../../../common/entity/compute_state_name";
+import computeObjectId from "../../../common/entity/compute_object_id";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { triggerScript } from "../../../data/script";
@@ -35,6 +36,22 @@ class HaScriptPicker extends LitElement {
   @property() public isWide!: boolean;
 
   protected render(): TemplateResult | void {
+    for (const script of this.scripts) {
+      this.hass
+        .callApi(
+          "GET",
+          "config/script/config/" + computeObjectId(script.entity_id)
+        )
+        .then(
+          () => {
+            script.attributes.editable = true;
+          },
+          () => {
+            script.attributes.editable = false;
+          }
+        );
+    }
+
     return html`
       <hass-subpage
         .header=${this.hass.localize("ui.panel.config.script.caption")}
@@ -72,16 +89,16 @@ class HaScriptPicker extends LitElement {
                       <div class="actions">
                         <a
                           href=${ifDefined(
-                            script.attributes.id
-                              ? `/config/script/edit/${script.attributes.id}`
+                            script.attributes.editable
+                              ? `/config/script/edit/${script.entity_id}`
                               : undefined
                           )}
                         >
                           <paper-icon-button
                             icon="hass:pencil"
-                            .disabled=${!script.attributes.id}
+                            .disabled=${!script.attributes.editable}
                           ></paper-icon-button>
-                          ${!script.attributes.id
+                          ${!script.attributes.editable
                             ? html`
                                 <paper-tooltip position="left">
                                   Only scripts defined in scripts.yaml are
