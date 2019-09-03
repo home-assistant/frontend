@@ -80,6 +80,9 @@ export interface GaugeCardConfig extends LovelaceCardConfig {
 export interface ConfigEntity extends EntityConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
+}
+
+export interface GlanceConfigEntity extends ConfigEntity {
   show_last_changed?: boolean;
 }
 
