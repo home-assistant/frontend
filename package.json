@@ -178,7 +178,6 @@
   "_comment_2": "Fix in https://github.com/Polymer/polymer/pull/5569",
   "resolutions": {
     "@webcomponents/webcomponentsjs": "^2.2.10",
-    "@vaadin/vaadin-lumo-styles": "^1.4.2",
     "@polymer/polymer": "3.1.0",
     "lit-html": "^1.1.2"
   },
