@@ -15,7 +15,6 @@ import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 
 import "../../components/ha-menu-button";
-import "../../resources/ha-style";
 import "./developer-tools-router";
 
 import scrollToTarget from "../../common/dom/scroll-to-target";
