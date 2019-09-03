@@ -11,6 +11,7 @@ class EntityFilterCard extends HTMLElement implements LovelaceCard {
   private _element?: LovelaceCard;
   private _config?: EntityFilterCardConfig;
   private _configEntities?: EntityConfig[];
+  private _oldConfigEntities?: EntityConfig[];
   private _baseCardConfig?: LovelaceCardConfig;
   private _hass?: HomeAssistant;
 
@@ -24,6 +25,10 @@ class EntityFilterCard extends HTMLElement implements LovelaceCard {
     }
 
     this._config = config;
+    this._oldConfigEntities =
+      this._configEntities !== undefined
+        ? this._configEntities
+        : this._oldConfigEntities;
     this._configEntities = undefined;
     this._baseCardConfig = {
       type: "entities",
@@ -49,6 +54,15 @@ class EntityFilterCard extends HTMLElement implements LovelaceCard {
 
     this._hass = hass;
 
+    const oldEntitiesList = this._oldConfigEntities
+      ? this._oldConfigEntities.filter((entityConf) => {
+          const stateObj = hass.states[entityConf.entity];
+          return (
+            stateObj && this._config!.state_filter.includes(stateObj.state)
+          );
+        })
+      : [];
+
     if (!this._configEntities) {
       this._configEntities = processConfigEntities(this._config.entities);
     }
@@ -70,7 +84,14 @@ class EntityFilterCard extends HTMLElement implements LovelaceCard {
     }
 
     if (element.tagName !== "HUI-ERROR-CARD") {
-      element.setConfig({ ...this._baseCardConfig!, entities: entitiesList });
+      const isSame =
+        entitiesList.length === oldEntitiesList.length &&
+        entitiesList.every((entity, idx) => entity === oldEntitiesList[idx]);
+
+      if (!isSame) {
+        element.setConfig({ ...this._baseCardConfig!, entities: entitiesList });
+      }
+
       element.isPanel = this.isPanel;
       element.hass = hass;
     }
