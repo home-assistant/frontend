@@ -9,10 +9,15 @@ import {
 } from "lit-element";
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
-import { MessageBase } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../../../types";
-import { PolymerChangedEvent } from "../../../polymer-types";
 import "../../../components/ha-card";
+
+interface MqttMessage {
+  topic: string;
+  payload: string;
+  qos: number;
+  retain: number;
+}
 
 @customElement("mqtt-subscribe-card")
 class MqttSubscribeCard extends LitElement {
@@ -24,7 +29,7 @@ class MqttSubscribeCard extends LitElement {
 
   @property() private _messages: Array<{
     id: number;
-    message: MessageBase;
+    message: MqttMessage;
   }> = [];
 
   private _messageCount = 0;
@@ -71,7 +76,7 @@ class MqttSubscribeCard extends LitElement {
     `;
   }
 
-  private _valueChanged(ev: PolymerChangedEvent<string>): void {
+  private _valueChanged(ev: CustomEvent): void {
     this._topic = ev.detail.value;
   }
 
@@ -81,7 +86,7 @@ class MqttSubscribeCard extends LitElement {
       this._subscribed = undefined;
     } else {
       this._subscribed = await this.hass!.connection.subscribeMessage<
-        MessageBase
+        MqttMessage
       >((message) => this._handleMessage(message), {
         type: "mqtt/subscribe",
         topic: this._topic,
@@ -89,8 +94,7 @@ class MqttSubscribeCard extends LitElement {
     }
   }
 
-  private _handleMessage(message: MessageBase) {
-    console.log(message);
+  private _handleMessage(message: MqttMessage) {
     const tail =
       this._messages.length > 30 ? this._messages.slice(0, 29) : this._messages;
     this._messages = [
