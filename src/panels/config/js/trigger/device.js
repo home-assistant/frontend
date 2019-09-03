@@ -49,4 +49,6 @@ export default class DeviceTrigger extends Component {
 
 DeviceTrigger.defaultConfig = {
   device_id: "",
+  domain: "",
+  entity_id: "",
 };
