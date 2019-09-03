@@ -493,7 +493,8 @@
     "common": {
       "loading": "Loading",
       "cancel": "Cancel",
-      "save": "Save"
+      "save": "Save",
+      "successfully_saved": "Successfully saved"
     },
     "components": {
       "entity": {
