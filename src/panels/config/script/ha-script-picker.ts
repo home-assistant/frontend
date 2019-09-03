@@ -7,6 +7,7 @@ import {
   property,
   customElement,
 } from "lit-element";
+import { ifDefined } from "lit-html/directives/if-defined";
 import "@polymer/paper-fab/paper-fab";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item-body";
@@ -68,10 +69,25 @@ class HaScriptPicker extends LitElement {
                         <div>${computeStateName(script)}</div>
                       </paper-item-body>
                       <div class="actions">
-                        <a href=${`/config/script/edit/${script.entity_id}`}>
+                        <a
+                          href=${ifDefined(
+                            script.attributes.id
+                              ? `/config/script/edit/${script.attributes.id}`
+                              : undefined
+                          )}
+                        >
                           <paper-icon-button
                             icon="hass:pencil"
+                            .disabled=${!script.attributes.id}
                           ></paper-icon-button>
+                          ${!script.attributes.id
+                            ? html`
+                                <paper-tooltip position="left">
+                                  Only scripts defined in scripts.yaml are
+                                  editable.
+                                </paper-tooltip>
+                              `
+                            : ""}
                         </a>
                       </div>
                     </div>
