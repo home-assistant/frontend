@@ -74,6 +74,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
           autofocus
           hass="[[hass]]"
           value="{{_entityId}}"
+          on-change="entityIdChanged"
           allow-custom-entity
         ></ha-entity-picker>
         <paper-input
@@ -212,6 +213,12 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
     this._state = state.state;
     this._stateAttributes = JSON.stringify(state.attributes, null, "  ");
     ev.preventDefault();
+  }
+
+  entityIdChanged() {
+    var state = this.hass.states[this._entityId];
+    this._state = state.state;
+    this._stateAttributes = JSON.stringify(state.attributes, null, "  ");
   }
 
   entityMoreInfo(ev) {
