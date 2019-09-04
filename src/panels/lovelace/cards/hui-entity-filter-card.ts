@@ -13,7 +13,7 @@ class EntityFilterCard extends HTMLElement implements LovelaceCard {
   private _configEntities?: EntityConfig[];
   private _baseCardConfig?: LovelaceCardConfig;
   private _hass?: HomeAssistant;
-  private _oldEntities: EntityConfig[] = [];
+  private _oldEntities?: EntityConfig[];
 
   public getCardSize(): number {
     return this._element ? this._element.getCardSize() : 1;
@@ -72,8 +72,9 @@ class EntityFilterCard extends HTMLElement implements LovelaceCard {
 
     if (element.tagName !== "HUI-ERROR-CARD") {
       const isSame =
+        this._oldEntities &&
         entitiesList.length === this._oldEntities.length &&
-        entitiesList.every((entity, idx) => entity === this._oldEntities[idx]);
+        entitiesList.every((entity, idx) => entity === this._oldEntities![idx]);
 
       if (!isSame) {
         this._oldEntities = entitiesList;
