@@ -24,13 +24,15 @@ class MoreInfoTimer extends LitElement {
 
     return html`
       <ha-attributes .stateObj="${this.stateObj}"></ha-attributes>
-      ${actions.map((state) => {
-        return html`
-          <mwc-button .action="${state}" @click="${this._handleActionClick}">
-            ${state}
-          </mwc-button>
-        `;
-      })}
+      <div class="actions">
+        ${actions.map((state) => {
+          return html`
+            <mwc-button .action="${state}" @click="${this._handleActionClick}">
+              ${state}
+            </mwc-button>
+          `;
+        })}
+      </div>
     `;
   }
 
@@ -47,7 +49,15 @@ class MoreInfoTimer extends LitElement {
   }
 
   static get styles(): CSSResult {
-    return css``;
+    return css`
+      .actions {
+        margin: 0 8px;
+        padding-top: 20px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+    `;
   }
 }
 
