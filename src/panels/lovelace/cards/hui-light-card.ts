@@ -290,7 +290,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           position: absolute;
           margin: 0 auto;
           left: 50%;
-          top: 10%;
+          top: 50%;
           transform: translate(-50%);
           opacity: 0;
           transition: opacity 0.5s ease-in-out;
