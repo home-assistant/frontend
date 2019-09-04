@@ -113,12 +113,12 @@ class ZHAAddDevicesPage extends LitElement {
                   (device) => html`
                     <zha-device-card
                       class="card"
-                      .hass="${this.hass}"
-                      .device="${device}"
-                      .narrow="${!this.isWide}"
-                      .showHelp="${this._showHelp}"
-                      .showActions="${!this._active}"
-                      .isJoinPage="${true}"
+                      .hass=${this.hass}
+                      .device=${device}
+                      .narrow=${!this.isWide}
+                      .showHelp=${this._showHelp}
+                      .showActions=${!this._active}
+                      isJoinPage
                     ></zha-device-card>
                   `
                 )}
