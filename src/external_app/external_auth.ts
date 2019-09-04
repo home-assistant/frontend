@@ -63,6 +63,15 @@ class ExternalAuth extends Auth {
   public async refreshAccessToken() {
     const callbackPayload = { callback: CALLBACK_SET_TOKEN };
 
+    const callbackPromise = new Promise<RefreshTokenResponse>(
+      (resolve, reject) => {
+        window[CALLBACK_SET_TOKEN] = (success, data) =>
+          success ? resolve(data) : reject(data);
+      }
+    );
+
+    await 0;
+
     if (window.externalApp) {
       window.externalApp.getExternalAuth(JSON.stringify(callbackPayload));
     } else {
@@ -71,12 +80,7 @@ class ExternalAuth extends Auth {
       );
     }
 
-    const tokens = await new Promise<RefreshTokenResponse>(
-      (resolve, reject) => {
-        window[CALLBACK_SET_TOKEN] = (success, data) =>
-          success ? resolve(data) : reject(data);
-      }
-    );
+    const tokens = await callbackPromise;
 
     this.data.access_token = tokens.access_token;
     this.data.expires = tokens.expires_in * 1000 + Date.now();
@@ -84,6 +88,13 @@ class ExternalAuth extends Auth {
 
   public async revoke() {
     const callbackPayload = { callback: CALLBACK_REVOKE_TOKEN };
+
+    const callbackPromise = new Promise((resolve, reject) => {
+      window[CALLBACK_REVOKE_TOKEN] = (success, data) =>
+        success ? resolve(data) : reject(data);
+    });
+
+    await 0;
 
     if (window.externalApp) {
       window.externalApp.revokeExternalAuth(JSON.stringify(callbackPayload));
@@ -93,10 +104,7 @@ class ExternalAuth extends Auth {
       );
     }
 
-    await new Promise((resolve, reject) => {
-      window[CALLBACK_REVOKE_TOKEN] = (success, data) =>
-        success ? resolve(data) : reject(data);
-    });
+    await callbackPromise;
   }
 }
 
