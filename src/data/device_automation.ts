@@ -26,20 +26,16 @@ export interface DeviceTriggerList {
 }
 
 export const fetchDeviceConditions = (hass: HomeAssistant, deviceId: string) =>
-  hass
-    .callWS<DeviceConditionList>({
-      type: "device_automation/condition/list",
-      device_id: deviceId,
-    })
-    .then((response) => response.conditions);
+  hass.callWS<DeviceConditionList>({
+    type: "device_automation/condition/list",
+    device_id: deviceId,
+  });
 
 export const fetchDeviceTriggers = (hass: HomeAssistant, deviceId: string) =>
-  hass
-    .callWS<DeviceTriggerList>({
-      type: "device_automation/trigger/list",
-      device_id: deviceId,
-    })
-    .then((response) => response.triggers);
+  hass.callWS<DeviceTriggerList>({
+    type: "device_automation/trigger/list",
+    device_id: deviceId,
+  });
 
 export const deviceAutomationsEqual = (
   a: DeviceAutomation,
