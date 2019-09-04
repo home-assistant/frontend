@@ -3,9 +3,11 @@ export const UNAVAILABLE = "unavailable";
 export const ENTITY_COMPONENT_DOMAINS = [
   "air_quality",
   "alarm_control_panel",
+  "alert",
   "automation",
   "binary_sensor",
   "calendar",
+  "camera",
   "counter",
   "cover",
   "dominos",
