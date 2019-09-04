@@ -15,6 +15,7 @@ const dialogTag = "hui-dialog-edit-card";
 export interface EditCardDialogParams {
   lovelace: Lovelace;
   path: [number] | [number, number];
+  entities?: string[];
 }
 
 const registerEditCardDialog = (element: HTMLElement): Event =>

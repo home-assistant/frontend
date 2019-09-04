@@ -121,6 +121,20 @@ class HUIRoot extends LitElement {
                           "ui.panel.lovelace.editor.menu.raw_editor"
                         )}
                       </paper-item>
+                      ${__DEMO__ /* No unused entities available in the demo */
+                        ? ""
+                        : html`
+                            <paper-item
+                              aria-label=${this.hass!.localize(
+                                "ui.panel.lovelace.menu.unused_entities"
+                              )}
+                              @tap="${this._handleUnusedEntities}"
+                            >
+                              ${this.hass!.localize(
+                                "ui.panel.lovelace.menu.unused_entities"
+                              )}
+                            </paper-item>
+                          `}
                     </paper-listbox>
                   </paper-menu-button>
                 </app-toolbar>
@@ -565,6 +579,7 @@ class HUIRoot extends LitElement {
       import(/* webpackChunkName: "hui-unused-entities" */ "./hui-unused-entities").then(
         () => {
           unusedEntities.setConfig(this.config);
+          unusedEntities.lovelace = this.lovelace!;
           unusedEntities.hass = this.hass!;
         }
       );

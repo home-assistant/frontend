@@ -72,7 +72,7 @@ export class HuiDialogEditCard extends LitElement {
             ? html`
                 <hui-card-picker
                   .hass="${this.hass}"
-                  @config-changed="${this._handleConfigChanged}"
+                  @config-changed="${this._handleCardPicked}"
                 ></hui-card-picker>
               `
             : html`
@@ -218,6 +218,19 @@ export class HuiDialogEditCard extends LitElement {
         }
       `,
     ];
+  }
+
+  private _handleCardPicked(ev) {
+    this._cardConfig = ev.detail.config;
+    if (this._params!.entities) {
+      if (Object.keys(this._cardConfig!).includes("entities")) {
+        this._cardConfig!.entities = this._params!.entities;
+      }
+      if (Object.keys(this._cardConfig!).includes("entity")) {
+        this._cardConfig!.entity = this._params!.entities[0];
+      }
+    }
+    this._error = ev.detail.error;
   }
 
   private _handleConfigChanged(ev) {
