@@ -43,23 +43,22 @@ class DialogZHADeviceInfo extends LitElement {
       <ha-paper-dialog
         with-backdrop
         opened
-        @opened-changed="${this._openedChanged}"
+        @opened-changed=${this._openedChanged}
       >
-        <zha-device-card
-          class="card"
-          .hass="${this.hass}"
-          .device="${this._device}"
-          .narrow="${false}"
-          .showHelp="${false}"
-          .showActions="${true}"
-          @zha-device-removed="${this._onDeviceRemoved}"
-          .isJoinPage="${true}"
-        ></zha-device-card>
         ${this._error
           ? html`
               <div class="error">${this._error}</div>
             `
-          : ""}
+          : html`
+              <zha-device-card
+                class="card"
+                .hass=${this.hass}
+                .device=${this._device}
+                showActions
+                isJoinPage
+                @zha-device-removed=${this._onDeviceRemoved}
+              ></zha-device-card>
+            `}
       </ha-paper-dialog>
     `;
   }

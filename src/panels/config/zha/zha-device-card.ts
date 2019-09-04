@@ -55,11 +55,11 @@ declare global {
 @customElement("zha-device-card")
 class ZHADeviceCard extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public narrow?: boolean;
   @property() public device?: ZHADevice;
-  @property() public showHelp: boolean = false;
-  @property() public showActions?: boolean;
-  @property() public isJoinPage?: boolean;
+  @property({ type: Boolean }) public narrow?: boolean;
+  @property({ type: Boolean }) public showHelp?: boolean = false;
+  @property({ type: Boolean }) public showActions?: boolean;
+  @property({ type: Boolean }) public isJoinPage?: boolean;
   @property() private _serviceData?: NodeServiceData;
   @property() private _areas: AreaRegistryEntry[] = [];
   @property() private _selectedAreaIndex: number = -1;
