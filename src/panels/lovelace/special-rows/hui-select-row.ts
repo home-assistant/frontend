@@ -19,6 +19,18 @@ import { HomeAssistant } from "../../../types";
 import "../../../components/ha-icon";
 import { fireEvent } from "../../../common/dom/fire_event";
 
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "entity-selection-changed": EntitySelectionChangedEvent;
+  }
+}
+
+export interface EntitySelectionChangedEvent {
+  entity: string;
+  selected: boolean;
+}
+
 @customElement("hui-select-row")
 class HuiSelectRow extends LitElement implements EntityRow {
   public hass?: HomeAssistant;
@@ -52,7 +64,7 @@ class HuiSelectRow extends LitElement implements EntityRow {
     const checkbox = ev.currentTarget as PaperCheckboxElement;
     fireEvent(this, "entity-selection-changed", {
       entity: this._config!.entity,
-      selected: checkbox.checked,
+      selected: checkbox.checked as boolean,
     });
   }
 
