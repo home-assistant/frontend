@@ -568,7 +568,12 @@ class HUIRoot extends LitElement {
           unusedEntities.hass = this.hass!;
         }
       );
-      root.style.background = this.config.background || "";
+      if (this.config.background) {
+        unusedEntities.style.setProperty(
+          "--lovelace-background",
+          this.config.background
+        );
+      }
       root.append(unusedEntities);
       return;
     }
@@ -597,8 +602,13 @@ class HUIRoot extends LitElement {
     }
 
     view.hass = this.hass;
-    root.style.background =
-      viewConfig.background || this.config.background || "";
+
+    const configBackground = viewConfig.background || this.config.background;
+
+    if (configBackground) {
+      view.style.setProperty("--lovelace-background", configBackground);
+    }
+
     root.append(view);
   }
 }

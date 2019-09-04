@@ -37,7 +37,10 @@ class HaDeviceTriggerPicker extends LitElement {
   @property() private _renderEmpty = false;
 
   private get _key() {
-    if (!this.value) {
+    if (
+      !this.value ||
+      deviceAutomationTriggersEqual(this._noTrigger, this.value)
+    ) {
       return NO_TRIGGER_KEY;
     }
 

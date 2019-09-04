@@ -15,6 +15,7 @@ import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../components/hui-warning";
+import "../components/hui-unavailable";
 
 import { fireEvent } from "../../../common/dom/fire_event";
 import { styleMap } from "lit-html/directives/style-map";
@@ -94,6 +95,13 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     return html`
       ${this.renderStyle()}
       <ha-card>
+        ${stateObj.state === "unavailable"
+          ? html`
+              <hui-unavailable
+                .text="${this.hass.localize("state.default.unavailable")}"
+              ></hui-unavailable>
+            `
+          : ""}
         <paper-icon-button
           icon="hass:dots-vertical"
           class="more-info"

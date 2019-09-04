@@ -281,6 +281,7 @@
     "weather": {
       "clear-night": "Clear, night",
       "cloudy": "Cloudy",
+      "exceptional": "Exceptional",
       "fog": "Fog",
       "hail": "Hail",
       "lightning": "Lightning",
@@ -493,7 +494,8 @@
     "common": {
       "loading": "Loading",
       "cancel": "Cancel",
-      "save": "Save"
+      "save": "Save",
+      "successfully_saved": "Successfully saved"
     },
     "components": {
       "entity": {

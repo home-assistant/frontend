@@ -9,23 +9,28 @@ import {
 } from "lit-element";
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
-import { HassEvent } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../../../types";
-import { PolymerChangedEvent } from "../../../polymer-types";
 import "../../../components/ha-card";
 import format_time from "../../../common/datetime/format_time";
 
-@customElement("event-subscribe-card")
-class EventSubscribeCard extends LitElement {
+import { subscribeMQTTTopic, MQTTMessage } from "../../../data/mqtt";
+
+@customElement("mqtt-subscribe-card")
+class MqttSubscribeCard extends LitElement {
   @property() public hass?: HomeAssistant;
 
-  @property() private _eventType = "";
+  @property() private _topic = "";
 
   @property() private _subscribed?: () => void;
 
-  @property() private _events: Array<{ id: number; event: HassEvent }> = [];
+  @property() private _messages: Array<{
+    id: number;
+    message: MQTTMessage;
+    payload: string;
+    time: Date;
+  }> = [];
 
-  private _eventCount = 0;
+  private _messageCount = 0;
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -37,18 +42,18 @@ class EventSubscribeCard extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-card header="Listen to events">
+      <ha-card header="Listen to a topic">
         <form>
           <paper-input
             .label=${this._subscribed
               ? "Listening to"
-              : "Event to subscribe to"}
+              : "Topic to subscribe to"}
             .disabled=${this._subscribed !== undefined}
-            .value=${this._eventType}
+            .value=${this._topic}
             @value-changed=${this._valueChanged}
           ></paper-input>
           <mwc-button
-            .disabled=${this._eventType === ""}
+            .disabled=${this._topic === ""}
             @click=${this._handleSubmit}
             type="submit"
           >
@@ -56,15 +61,16 @@ class EventSubscribeCard extends LitElement {
           </mwc-button>
         </form>
         <div class="events">
-          ${this._events.map(
-            (ev) => html`
+          ${this._messages.map(
+            (msg) => html`
               <div class="event">
-                Event ${ev.id} fired
-                ${format_time(
-                  new Date(ev.event.time_fired),
-                  this.hass!.language
-                )}:
-                <pre>${JSON.stringify(ev.event, null, 4)}</pre>
+                Message ${msg.id} received on <b>${msg.message.topic}</b> at
+                ${format_time(msg.time, this.hass!.language)}:
+                <pre>${msg.payload}</pre>
+                <div class="bottom">
+                  QoS: ${msg.message.qos} - Retain:
+                  ${Boolean(msg.message.retain)}
+                </div>
               </div>
             `
           )}
@@ -73,8 +79,8 @@ class EventSubscribeCard extends LitElement {
     `;
   }
 
-  private _valueChanged(ev: PolymerChangedEvent<string>): void {
-    this._eventType = ev.detail.value;
+  private _valueChanged(ev: CustomEvent): void {
+    this._topic = ev.detail.value;
   }
 
   private async _handleSubmit(): Promise<void> {
@@ -82,21 +88,32 @@ class EventSubscribeCard extends LitElement {
       this._subscribed();
       this._subscribed = undefined;
     } else {
-      this._subscribed = await this.hass!.connection.subscribeEvents<HassEvent>(
-        (event) => {
-          const tail =
-            this._events.length > 30 ? this._events.slice(0, 29) : this._events;
-          this._events = [
-            {
-              event,
-              id: this._eventCount++,
-            },
-            ...tail,
-          ];
-        },
-        this._eventType
+      this._subscribed = await subscribeMQTTTopic(
+        this.hass!,
+        this._topic,
+        (message) => this._handleMessage(message)
       );
     }
+  }
+
+  private _handleMessage(message: MQTTMessage) {
+    const tail =
+      this._messages.length > 30 ? this._messages.slice(0, 29) : this._messages;
+    let payload: string;
+    try {
+      payload = JSON.stringify(JSON.parse(message.payload), null, 4);
+    } catch (e) {
+      payload = message.payload;
+    }
+    this._messages = [
+      {
+        payload,
+        message,
+        time: new Date(),
+        id: this._messageCount++,
+      },
+      ...tail,
+    ];
   }
 
   static get styles(): CSSResult {
@@ -121,12 +138,16 @@ class EventSubscribeCard extends LitElement {
       .event:last-child {
         border-bottom: 0;
       }
+      .bottom {
+        font-size: 80%;
+        color: var(--secondary-text-color);
+      }
     `;
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "event-subscribe-card": EventSubscribeCard;
+    "mqtt-subscribe-card": MqttSubscribeCard;
   }
 }
