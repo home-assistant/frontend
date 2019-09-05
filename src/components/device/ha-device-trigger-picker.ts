@@ -16,7 +16,7 @@ class HaDeviceTriggerPicker extends HaDeviceAutomationPicker<DeviceTrigger> {
     super(
       localizeDeviceAutomationTrigger,
       fetchDeviceTriggers,
-      (deviceId: string) => ({
+      (deviceId?: string) => ({
         device_id: deviceId || "",
         platform: "device",
         domain: "",

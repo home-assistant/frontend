@@ -18,7 +18,7 @@ class HaDeviceConditionPicker extends HaDeviceAutomationPicker<
     super(
       localizeDeviceAutomationCondition,
       fetchDeviceConditions,
-      (deviceId: string) => ({
+      (deviceId?: string) => ({
         device_id: deviceId || "",
         condition: "device",
         domain: "",
