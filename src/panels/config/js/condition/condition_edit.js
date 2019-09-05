@@ -3,6 +3,7 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
 
+import DeviceCondition from "./device";
 import NumericStateCondition from "./numeric_state";
 import StateCondition from "./state";
 import SunCondition from "./sun";
@@ -11,6 +12,7 @@ import TimeCondition from "./time";
 import ZoneCondition from "./zone";
 
 const TYPES = {
+  device: DeviceCondition,
   state: StateCondition,
   numeric_state: NumericStateCondition,
   sun: SunCondition,
