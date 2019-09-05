@@ -794,6 +794,9 @@
               "unsupported_condition": "Unsupported condition: {condition}",
               "type_select": "Condition type",
               "type": {
+                "device": {
+                  "label": "Device"
+                },
                 "state": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
                   "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]"
