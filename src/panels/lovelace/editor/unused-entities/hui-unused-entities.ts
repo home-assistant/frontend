@@ -1,9 +1,9 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
   PropertyValues,
+  property,
 } from "lit-element";
 
 import { classMap } from "lit-html/directives/class-map";
@@ -23,25 +23,16 @@ import { LovelaceCard, Lovelace } from "../../types";
 import { LovelaceConfig } from "../../../../data/lovelace";
 
 export class HuiUnusedEntities extends LitElement {
-  public lovelace?: Lovelace;
+  @property() public lovelace?: Lovelace;
 
-  private _hass?: HomeAssistant;
+  @property() private _hass?: HomeAssistant;
 
-  private _config?: LovelaceConfig;
+  @property() private _config?: LovelaceConfig;
 
-  private _elements?: LovelaceCard[];
+  @property() private _elements?: LovelaceCard[];
 
   private _selectedEntities: string[] = [];
   private _unusedEntities: string[] = [];
-
-  static get properties(): PropertyDeclarations {
-    return {
-      _hass: {},
-      _config: {},
-      lovelace: {},
-      _elements: {},
-    };
-  }
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
