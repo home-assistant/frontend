@@ -21,6 +21,8 @@ import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { WeatherForecastCardConfig } from "./types";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { toggleAttribute } from "../../../common/dom/toggle_attribute";
+import { HassEntity } from "home-assistant-js-websocket";
 
 const cardinalDirections = [
   "N",
@@ -67,7 +69,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-weather-forecast-card-editor");
   }
   public static getStubConfig(): object {
-    return {};
+    return { entity: "" };
   }
 
   @property() public hass?: HomeAssistant;
@@ -89,13 +91,19 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     this._config = config;
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (changedProps.has("hass")) {
+      toggleAttribute(this, "rtl", computeRTL(this.hass!));
+    }
+  }
+
   protected render(): TemplateResult | void {
     if (!this._config || !this.hass) {
       return html``;
     }
 
     const stateObj = this.hass.states[this._config.entity];
-    const forecast = this.computeForecast(stateObj.attributes.forecast);
 
     if (!stateObj) {
       return html`
@@ -109,10 +117,12 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const forecast = this.computeForecast(stateObj.attributes.forecast);
+
     return html`
       <ha-card @click="${this.handleClick}">
         <div class="header">
-          ${this.computeState(stateObj.state, this.hass.localize)}
+          ${this.computeState(stateObj.state)}
           <div class="name">${this.computeName(stateObj)}</div>
         </div>
         <div class="content">
@@ -166,10 +176,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                       <span class="measurand">
                         ${this.getWindSpeed(stateObj.attributes.wind_speed)}
                       </span>
-                      ${this.getWindBearing(
-                        stateObj.attributes.wind_bearing,
-                        this.hass.localize
-                      )}
+                      ${this.getWindBearing(stateObj.attributes.wind_bearing)}
                     </div>
                   `
                 : ""}
@@ -236,15 +243,15 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  private handleClick() {
+  private handleClick(): void {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
 
-  private computeForecast(forecast) {
+  private computeForecast(forecast: any[]): any[] {
     return forecast && forecast.slice(0, 5);
   }
 
-  private getUnit(measure) {
+  private getUnit(measure: string): string {
     const lengthUnit = this.hass!.config.unit_system.length || "";
     switch (measure) {
       case "air_pressure":
@@ -258,23 +265,23 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private computeState(state, localize) {
-    return localize(`state.weather.${state}`) || state;
+  private computeState(state: string): string {
+    return this.hass!.localize(`state.weather.${state}`) || state;
   }
 
-  private computeName(stateObj) {
+  private computeName(stateObj: HassEntity): string {
     return (this._config && this._config.name) || computeStateName(stateObj);
   }
 
-  private showWeatherIcon(condition) {
+  private showWeatherIcon(condition: string): boolean {
     return condition in weatherIcons;
   }
 
-  private getWeatherIcon(condition) {
+  private getWeatherIcon(condition: string): string {
     return weatherIcons[condition];
   }
 
-  private windBearingToText(degree) {
+  private windBearingToText(degree: string): string {
     const degreenum = parseInt(degree, 10);
     if (isFinite(degreenum)) {
       // tslint:disable-next-line: no-bitwise
@@ -283,36 +290,32 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     return degree;
   }
 
-  private getWindSpeed(speed) {
+  private getWindSpeed(speed: number): string {
     return `${speed} ${this.getUnit("length")}/h`;
   }
 
-  private getWindBearing(bearing, localize) {
+  private getWindBearing(bearing: string): string {
     if (bearing != null) {
       const cardinalDirection = this.windBearingToText(bearing);
-      return `(${localize(
+      return `(${this.hass!.localize(
         `ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`
       ) || cardinalDirection})`;
     }
     return ``;
   }
 
-  private _showValue(item) {
+  private _showValue(item: string): boolean {
     return typeof item !== "undefined" && item !== null;
   }
 
-  private computeDate(data) {
+  private computeDate(data: string): string {
     const date = new Date(data);
     return date.toLocaleDateString(this.hass!.language, { weekday: "short" });
   }
 
-  private computeTime(data) {
+  private computeTime(data: string): string {
     const date = new Date(data);
     return date.toLocaleTimeString(this.hass!.language, { hour: "numeric" });
-  }
-
-  private _computeRTL(hass) {
-    return computeRTL(hass);
   }
 
   static get styles(): CSSResult {
