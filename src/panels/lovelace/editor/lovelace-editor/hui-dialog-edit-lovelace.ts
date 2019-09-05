@@ -55,8 +55,9 @@ export class HuiDialogEditLovelace extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <ha-paper-dialog with-backdrop>
-        <h2>Edit Lovelace</h2>
+        <h2>Title of your Lovelace UI</h2>
         <paper-dialog-scrollable>
+          This title is shown above all your views in Lovelace.
           <hui-lovelace-editor
             .hass="${this.hass}"
             .config="${this._config}"
