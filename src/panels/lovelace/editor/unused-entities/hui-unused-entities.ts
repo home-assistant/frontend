@@ -64,7 +64,11 @@ export class HuiUnusedEntities extends LitElement {
 
   protected render(): TemplateResult | void {
     if (!this._config || !this._hass || !this.lovelace) {
-      return html``;
+      return;
+    }
+
+    if (this.lovelace.editMode === false) {
+      return;
     }
 
     return html`
@@ -149,7 +153,7 @@ export class HuiUnusedEntities extends LitElement {
         }
 
         .entities tbody hui-select-row:hover {
-          background-color: #eee;
+          background-color: var(--table-row-alternative-background-color, #eee);
         }
 
         .entities td {

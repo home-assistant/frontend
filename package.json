@@ -19,6 +19,7 @@
   "dependencies": {
     "@material/mwc-base": "^0.6.0",
     "@material/mwc-button": "^0.6.0",
+    "@material/mwc-checkbox": "^0.8.0",
     "@material/mwc-ripple": "^0.6.0",
     "@mdi/svg": "4.2.95",
     "@polymer/app-layout": "^3.0.2",

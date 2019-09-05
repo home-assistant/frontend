@@ -8,10 +8,10 @@ import {
   CSSResult,
 } from "lit-element";
 
-import "@polymer/paper-checkbox/paper-checkbox";
+import "@material/mwc-checkbox";
 // Not duplicate import, it's for typing
 // tslint:disable-next-line
-import { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
+import { Checkbox } from "@material/mwc-checkbox";
 import { HomeAssistant } from "../../../../types";
 import computeStateName from "../../../../common/entity/compute_state_name";
 import computeDomain from "../../../../common/entity/compute_domain";
@@ -52,7 +52,7 @@ class HuiSelectRow extends LitElement {
 
     return html`
       <td>
-        <paper-checkbox @change=${this._handleSelect}></paper-checkbox>
+        <mwc-checkbox @change=${this._handleSelect}></mwc-checkbox>
         <state-badge .hass=${this.hass} .stateObj=${stateObj}></state-badge>
         ${computeStateName(stateObj)}
       </td>
@@ -68,7 +68,7 @@ class HuiSelectRow extends LitElement {
   }
 
   private _handleSelect(ev): void {
-    const checkbox = ev.currentTarget as PaperCheckboxElement;
+    const checkbox = ev.currentTarget as Checkbox;
     fireEvent(this, "entity-selection-changed", {
       entity: this.entity!,
       selected: checkbox.checked as boolean,
