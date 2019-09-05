@@ -40,8 +40,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
   @property() private _config?: LightCardConfig;
 
-  @property() private _roundSliderStyle?: TemplateResult;
-
   private _brightnessTimout?: number;
 
   public getCardSize(): number {
@@ -147,7 +145,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
   private renderStyle(): TemplateResult {
     return html`
-      ${this._roundSliderStyle}
       <style>
         :host {
           display: block;
