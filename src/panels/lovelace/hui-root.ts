@@ -116,11 +116,6 @@ class HUIRoot extends LitElement {
                       @iron-select="${this._deselect}"
                       slot="dropdown-content"
                     >
-                      <paper-item @tap="${this.lovelace!.enableFullEditMode}">
-                        ${this.hass!.localize(
-                          "ui.panel.lovelace.editor.menu.raw_editor"
-                        )}
-                      </paper-item>
                       ${__DEMO__ /* No unused entities available in the demo */
                         ? ""
                         : html`
@@ -135,6 +130,11 @@ class HUIRoot extends LitElement {
                               )}
                             </paper-item>
                           `}
+                      <paper-item @tap="${this.lovelace!.enableFullEditMode}">
+                        ${this.hass!.localize(
+                          "ui.panel.lovelace.editor.menu.raw_editor"
+                        )}
+                      </paper-item>
                     </paper-listbox>
                   </paper-menu-button>
                 </app-toolbar>
@@ -176,20 +176,6 @@ class HUIRoot extends LitElement {
                             </paper-item>
                           `
                         : ""}
-                      ${__DEMO__ /* No unused entities available in the demo */
-                        ? ""
-                        : html`
-                            <paper-item
-                              aria-label=${this.hass!.localize(
-                                "ui.panel.lovelace.menu.unused_entities"
-                              )}
-                              @tap="${this._handleUnusedEntities}"
-                            >
-                              ${this.hass!.localize(
-                                "ui.panel.lovelace.menu.unused_entities"
-                              )}
-                            </paper-item>
-                          `}
                       <paper-item
                         aria-label=${this.hass!.localize(
                           "ui.panel.lovelace.menu.configure_ui"
@@ -576,7 +562,7 @@ class HUIRoot extends LitElement {
     if (viewIndex === "hass-unused-entities") {
       const unusedEntities = document.createElement("hui-unused-entities");
       // Wait for promise to resolve so that the element has been upgraded.
-      import(/* webpackChunkName: "hui-unused-entities" */ "./hui-unused-entities").then(
+      import(/* webpackChunkName: "hui-unused-entities" */ "./editor/unused-entities/hui-unused-entities").then(
         () => {
           unusedEntities.setConfig(this.config);
           unusedEntities.lovelace = this.lovelace!;

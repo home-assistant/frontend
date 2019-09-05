@@ -16,17 +16,6 @@ import { SelectViewDialogParams } from "./show-select-view-dialog";
 import { PolymerChangedEvent } from "../../../../polymer-types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "view-selected": ViewSelectedEvent;
-  }
-}
-
-export interface ViewSelectedEvent {
-  view: number;
-}
-
 @customElement("hui-dialog-select-view")
 export class HuiDialogSelectView extends LitElement {
   @property() private _params?: SelectViewDialogParams;
@@ -73,7 +62,7 @@ export class HuiDialogSelectView extends LitElement {
 
   private _selectView(e: Event): void {
     const view = (e.currentTarget! as any).index;
-    fireEvent(this, "view-selected", { view });
+    this._params!.viewSelectedCallback(view);
     this._dialog.close();
   }
 
