@@ -47,9 +47,13 @@ export abstract class HaDeviceAutomationPicker<
   private _createNoAutomation: (deviceId?: string) => T;
 
   constructor(
-    localizeDeviceAutomation,
-    fetchDeviceAutomations,
-    createNoAutomation
+    localizeDeviceAutomation: HaDeviceAutomationPicker<
+      T
+    >["_localizeDeviceAutomation"],
+    fetchDeviceAutomations: HaDeviceAutomationPicker<
+      T
+    >["_fetchDeviceAutomations"],
+    createNoAutomation: HaDeviceAutomationPicker<T>["_createNoAutomation"]
   ) {
     super();
     this._localizeDeviceAutomation = localizeDeviceAutomation;
@@ -69,7 +73,6 @@ export abstract class HaDeviceAutomationPicker<
     }
 
     const idx = this._automations.findIndex((automation) =>
-      // deviceAutomationsEqual/*<T>*/(automation, this.value!)
       deviceAutomationsEqual(automation, this.value!)
     );
 
