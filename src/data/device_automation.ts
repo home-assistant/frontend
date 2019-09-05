@@ -17,22 +17,14 @@ export interface DeviceTrigger extends DeviceAutomation {
   platform: string;
 }
 
-export interface DeviceConditionList {
-  conditions: DeviceCondition[];
-}
-
-export interface DeviceTriggerList {
-  triggers: DeviceTrigger[];
-}
-
 export const fetchDeviceConditions = (hass: HomeAssistant, deviceId: string) =>
-  hass.callWS<DeviceConditionList>({
+  hass.callWS<DeviceCondition[]>({
     type: "device_automation/condition/list",
     device_id: deviceId,
   });
 
 export const fetchDeviceTriggers = (hass: HomeAssistant, deviceId: string) =>
-  hass.callWS<DeviceTriggerList>({
+  hass.callWS<DeviceTrigger[]>({
     type: "device_automation/trigger/list",
     device_id: deviceId,
   });
