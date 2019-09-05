@@ -14,7 +14,6 @@ import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 
 import { SelectViewDialogParams } from "./show-select-view-dialog";
 import { PolymerChangedEvent } from "../../../../polymer-types";
-import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("hui-dialog-select-view")
 export class HuiDialogSelectView extends LitElement {
