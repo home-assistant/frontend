@@ -115,14 +115,9 @@ class HaPanelDevService extends PolymerElement {
             autocomplete="off"
             spellcheck="false"
           ></paper-textarea>
-          <mwc-button on-click="_callService" raised disabled="[[!validJSON]]"
-            >Call Service</mwc-button
-          >
-          <template is="dom-if" if="[[_attributes.length]]">
-            <mwc-button on-click="_fillExampleData" raised
-              >Fill Example Data</mwc-button
-            >
-          </template>
+          <mwc-button on-click="_callService" raised disabled="[[!validJSON]]">
+            Call Service
+          </mwc-button>
           <template is="dom-if" if="[[!validJSON]]">
             <span class="error">Invalid JSON</span>
           </template>
@@ -158,6 +153,12 @@ class HaPanelDevService extends PolymerElement {
                 </tr>
               </template>
             </table>
+
+            <template is="dom-if" if="[[_attributes.length]]">
+              <mwc-button on-click="_fillExampleData">
+                Fill Example Data
+              </mwc-button>
+            </template>
           </template>
         </template>
       </div>
@@ -280,10 +281,10 @@ class HaPanelDevService extends PolymerElement {
   }
 
   _fillExampleData() {
-    const example = this._attributes.reduce(
-      (acc, cur) => ({ ...acc, [cur.key]: cur.example }),
-      {}
-    );
+    const example = {};
+    for (const attribute of this._attributes) {
+      example[attribute.key] = attribute.example;
+    }
     this.serviceData = JSON.stringify(example, null, 2);
   }
 
