@@ -1,13 +1,6 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { Lovelace } from "../../types";
 
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "show-select-view": SelectViewDialogParams;
-  }
-}
-
 export interface SelectViewDialogParams {
   lovelace: Lovelace;
   viewSelectedCallback: (view: number) => void;

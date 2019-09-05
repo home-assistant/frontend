@@ -7,8 +7,11 @@ import {
   css,
   CSSResult,
 } from "lit-element";
-import "@polymer/paper-item/paper-item";
+import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-item/paper-icon-item";
 import "../../../../components/dialog/ha-paper-dialog";
+import { toggleAttribute } from "../../../../common/dom/toggle_attribute";
+
 // tslint:disable-next-line:no-duplicate-imports
 import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 
@@ -24,6 +27,17 @@ export class HuiDialogSelectView extends LitElement {
     await this.updateComplete;
   }
 
+  protected updated(changedProps) {
+    super.updated(changedProps);
+    toggleAttribute(
+      this,
+      "hide-icons",
+      this._params!.lovelace!.config
+        ? !this._params!.lovelace!.config.views.some((view) => view.icon)
+        : true
+    );
+  }
+
   protected render(): TemplateResult | void {
     if (!this._params) {
       return html``;
@@ -35,22 +49,41 @@ export class HuiDialogSelectView extends LitElement {
         @opened-changed="${this._openedChanged}"
       >
         <h2>Choose a view</h2>
-        ${this._params!.lovelace!.config.views.map((view, index) => {
-          return html`
-            <paper-item @click="${this._selectView}" .index="${index}"
-              >${view.title}</paper-item
-            >
-          `;
-        })}
+        <paper-listbox>
+          ${this._params!.lovelace!.config.views.map(
+            (view, index) => html`
+              <paper-icon-item @click=${this._selectView} .index="${index}">
+                ${view.icon
+                  ? html`
+                      <ha-icon .icon=${view.icon} slot="item-icon"></ha-icon>
+                    `
+                  : ""}
+                ${view.title || view.path}
+              </paper-icon-item>
+            `
+          )}
+        </paper-listbox>
       </ha-paper-dialog>
     `;
   }
 
   static get styles(): CSSResult {
     return css`
-      paper-item {
-        margin: 8px;
+      paper-listbox {
+        padding-top: 0;
+      }
+
+      paper-listbox ha-icon {
+        padding: 12px;
+        color: var(--secondary-text-color);
+      }
+
+      paper-icon-item {
         cursor: pointer;
+      }
+
+      :host([hide-icons]) paper-icon-item {
+        --paper-item-icon-width: 0px;
       }
     `;
   }
