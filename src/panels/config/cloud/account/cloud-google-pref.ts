@@ -18,6 +18,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 import { CloudStatusLoggedIn, updateCloudPref } from "../../../../data/cloud";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 
 export class CloudGooglePref extends LitElement {
   public hass?: HomeAssistant;
@@ -83,7 +84,7 @@ export class CloudGooglePref extends LitElement {
                   <paper-input
                     label="Secure Devices Pin"
                     id="google_secure_devices_pin"
-                    placeholder="Secure devices disabled"
+                    placeholder="Enter a PIN to use secure devices"
                     .value=${google_secure_devices_pin || ""}
                     @change="${this._pinChanged}"
                   ></paper-input>
@@ -124,6 +125,7 @@ export class CloudGooglePref extends LitElement {
       await updateCloudPref(this.hass!, {
         [input.id]: input.value || null,
       });
+      showSaveSuccessToast(this, this.hass!);
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err) {
       alert(`Unable to store pin: ${err.message}`);
@@ -150,7 +152,7 @@ export class CloudGooglePref extends LitElement {
         padding-top: 16px;
       }
       paper-input {
-        width: 200px;
+        width: 250px;
       }
       .card-actions {
         display: flex;
