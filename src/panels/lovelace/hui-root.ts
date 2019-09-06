@@ -564,7 +564,6 @@ class HUIRoot extends LitElement {
       // Wait for promise to resolve so that the element has been upgraded.
       import(/* webpackChunkName: "hui-unused-entities" */ "./editor/unused-entities/hui-unused-entities").then(
         () => {
-          unusedEntities.setConfig(this.config);
           unusedEntities.lovelace = this.lovelace!;
           unusedEntities.hass = this.hass!;
         }

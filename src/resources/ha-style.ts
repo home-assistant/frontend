@@ -125,6 +125,7 @@ documentContainer.innerHTML = `<custom-style>
 
       /* mwc */
       --mdc-theme-primary: var(--primary-color);
+      --mdc-theme-secondary: var(--accent-color);
     }
   </style>
 

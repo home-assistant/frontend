@@ -7,10 +7,10 @@ import {
   css,
   CSSResult,
 } from "lit-element";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-item/paper-icon-item";
+
 import "../../../../components/dialog/ha-paper-dialog";
 import { toggleAttribute } from "../../../../common/dom/toggle_attribute";
+import "../../components/hui-views-list";
 
 // tslint:disable-next-line:no-duplicate-imports
 import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
@@ -49,42 +49,11 @@ export class HuiDialogSelectView extends LitElement {
         @opened-changed="${this._openedChanged}"
       >
         <h2>Choose a view</h2>
-        <paper-listbox>
-          ${this._params!.lovelace!.config.views.map(
-            (view, index) => html`
-              <paper-icon-item @click=${this._selectView} .index="${index}">
-                ${view.icon
-                  ? html`
-                      <ha-icon .icon=${view.icon} slot="item-icon"></ha-icon>
-                    `
-                  : ""}
-                ${view.title || view.path}
-              </paper-icon-item>
-            `
-          )}
-        </paper-listbox>
+        <hui-views-list 
+        .lovelaceConfig=${this._params!.lovelace.config} 
+        @view-selected=${this._selectView}>
+        </hui-view-list>
       </ha-paper-dialog>
-    `;
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      paper-listbox {
-        padding-top: 0;
-      }
-
-      paper-listbox ha-icon {
-        padding: 12px;
-        color: var(--secondary-text-color);
-      }
-
-      paper-icon-item {
-        cursor: pointer;
-      }
-
-      :host([hide-icons]) paper-icon-item {
-        --paper-item-icon-width: 0px;
-      }
     `;
   }
 
@@ -92,8 +61,8 @@ export class HuiDialogSelectView extends LitElement {
     return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
 
-  private _selectView(e: Event): void {
-    const view = (e.currentTarget! as any).index;
+  private _selectView(e: CustomEvent): void {
+    const view: number = e.detail.view;
     this._params!.viewSelectedCallback(view);
     this._dialog.close();
   }

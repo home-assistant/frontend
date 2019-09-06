@@ -4,10 +4,13 @@ import {
   TemplateResult,
   PropertyValues,
   property,
+  customElement,
+  css,
+  CSSResult,
 } from "lit-element";
 
 import { classMap } from "lit-html/directives/class-map";
-import "@polymer/paper-fab/paper-fab";
+import "../../../../components/ha-fab";
 
 import "./hui-select-row";
 
@@ -22,16 +25,16 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCard, Lovelace } from "../../types";
 import { LovelaceConfig } from "../../../../data/lovelace";
 
+@customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {
   @property() public lovelace?: Lovelace;
 
   @property() private _hass?: HomeAssistant;
 
-  @property() private _config?: LovelaceConfig;
-
   @property() private _elements?: LovelaceCard[];
 
   private _selectedEntities: string[] = [];
+
   private _unusedEntities: string[] = [];
 
   set hass(hass: HomeAssistant) {
@@ -45,30 +48,29 @@ export class HuiUnusedEntities extends LitElement {
     }
   }
 
-  public setConfig(config: LovelaceConfig): void {
-    this._config = config;
-    this._getUnusedEntities();
+  private get _config(): LovelaceConfig {
+    return this.lovelace!.config;
   }
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
-    const lovelace = this.lovelace!;
-
     if (changedProperties.has("lovelace")) {
-      if (lovelace.editMode === false) {
+      if (this.lovelace!.editMode === false) {
         navigate(this, "/lovelace");
+        return;
       }
+      this._getUnusedEntities();
     }
   }
 
   protected render(): TemplateResult | void {
-    if (!this._config || !this._hass || !this.lovelace) {
-      return;
+    if (!this._hass || !this.lovelace) {
+      return html``;
     }
 
     if (this.lovelace.editMode === false) {
-      return;
+      return html``;
     }
 
     return html`
@@ -104,72 +106,19 @@ export class HuiUnusedEntities extends LitElement {
           </tbody>
         </table>
       </ha-card>
-      <paper-fab
-        elevated="2"
+      <ha-fab
         class="${classMap({
           rtl: computeRTL(this._hass),
         })}"
         icon="hass:plus"
-        title="${this._hass.localize("ui.panel.lovelace.editor.edit_card.add")}"
+        label="${this._hass.localize("ui.panel.lovelace.editor.edit_card.add")}"
         @click="${this._selectView}"
-      ></paper-fab>
-    `;
-  }
-
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        :host {
-          background: var(--lovelace-background);
-          padding: 16px;
-        }
-        paper-fab {
-          position: sticky;
-          float: right;
-          bottom: 16px;
-          z-index: 1;
-        }
-        paper-fab.rtl {
-          float: left;
-        }
-
-        .entities {
-          border-collapse: collapse;
-          width: 100%;
-          margin: auto;
-          table-layout: fixed;
-        }
-
-        .entities th {
-          text-align: left;
-          padding: 12px 24px;
-          vertical-align: middle;
-          font-size: 13px;
-          line-height: 17px;
-        }
-
-        .entities hui-select-row {
-          border-bottom: 1px solid #e0e0e0;
-        }
-
-        .entities tbody hui-select-row:hover {
-          background-color: var(--table-row-alternative-background-color, #eee);
-        }
-
-        .entities td {
-          padding: 4px;
-        }
-
-        .entities td:nth-child(3) {
-          white-space: pre-wrap;
-          word-break: break-word;
-        }
-      </style>
+      ></ha-fab>
     `;
   }
 
   private _getUnusedEntities(): void {
-    if (!this._hass) {
+    if (!this._hass || !this.lovelace) {
       return;
     }
     this._selectedEntities = [];
@@ -201,6 +150,56 @@ export class HuiUnusedEntities extends LitElement {
       entities: this._selectedEntities,
     });
   }
+
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        background: var(--lovelace-background);
+        padding: 16px;
+      }
+      ha-fab {
+        position: sticky;
+        float: right;
+        bottom: 16px;
+        z-index: 1;
+      }
+      ha-fab.rtl {
+        float: left;
+      }
+
+      .entities {
+        border-collapse: collapse;
+        width: 100%;
+        margin: auto;
+        table-layout: fixed;
+      }
+
+      .entities th {
+        text-align: left;
+        padding: 12px 24px;
+        vertical-align: middle;
+        font-size: 13px;
+        line-height: 17px;
+      }
+
+      .entities hui-select-row {
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .entities tbody hui-select-row:hover {
+        background-color: var(--table-row-alternative-background-color, #eee);
+      }
+
+      .entities td {
+        padding: 4px;
+      }
+
+      .entities td:nth-child(3) {
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+    `;
+  }
 }
 
 declare global {
@@ -208,4 +207,3 @@ declare global {
     "hui-unused-entities": HuiUnusedEntities;
   }
 }
-customElements.define("hui-unused-entities", HuiUnusedEntities);

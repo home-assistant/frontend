@@ -8,14 +8,12 @@ import {
   CSSResult,
 } from "lit-element";
 
-import "@material/mwc-checkbox";
-// Not duplicate import, it's for typing
-// tslint:disable-next-line
 import { Checkbox } from "@material/mwc-checkbox";
 import { HomeAssistant } from "../../../../types";
 import computeStateName from "../../../../common/entity/compute_state_name";
 import computeDomain from "../../../../common/entity/compute_domain";
 
+import "../../../../components/ha-checkbox";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-relative-time";
 import "../../../../components/ha-icon";
@@ -37,6 +35,7 @@ export interface EntitySelectionChangedEvent {
 @customElement("hui-select-row")
 class HuiSelectRow extends LitElement {
   @property() public hass?: HomeAssistant;
+
   @property() public entity?: string;
 
   protected render(): TemplateResult | void {
@@ -52,7 +51,7 @@ class HuiSelectRow extends LitElement {
 
     return html`
       <td>
-        <mwc-checkbox @change=${this._handleSelect}></mwc-checkbox>
+        <ha-checkbox @change=${this._handleSelect}></ha-checkbox>
         <state-badge .hass=${this.hass} .stateObj=${stateObj}></state-badge>
         ${computeStateName(stateObj)}
       </td>
