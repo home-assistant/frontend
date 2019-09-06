@@ -74,7 +74,6 @@ export class HuiUnusedEntities extends LitElement {
     }
 
     return html`
-      ${this.renderStyle()}
       <ha-card header="Unused entities">
         <div class="card-content">
           These are the entities that you have available, but are not in your

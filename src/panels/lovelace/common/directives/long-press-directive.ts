@@ -1,8 +1,5 @@
 import { directive, PropertyPart } from "lit-html";
-// See https://github.com/home-assistant/home-assistant-polymer/pull/2457
-// on how to undo mwc -> paper migration
-// import "@material/mwc-ripple";
-import "@polymer/paper-ripple";
+import "@material/mwc-ripple";
 
 const isTouch =
   "ontouchstart" in window ||
@@ -19,7 +16,7 @@ interface LongPressElement extends Element {
 
 class LongPress extends HTMLElement implements LongPress {
   public holdTime: number;
-  protected ripple: any;
+  public ripple: any;
   protected timer: number | undefined;
   protected held: boolean;
   protected cooldownStart: boolean;
@@ -28,7 +25,7 @@ class LongPress extends HTMLElement implements LongPress {
   constructor() {
     super();
     this.holdTime = 500;
-    this.ripple = document.createElement("paper-ripple");
+    this.ripple = document.createElement("mwc-ripple");
     this.timer = undefined;
     this.held = false;
     this.cooldownStart = false;
@@ -37,7 +34,6 @@ class LongPress extends HTMLElement implements LongPress {
 
   public connectedCallback() {
     Object.assign(this.style, {
-      borderRadius: "50%", // paper-ripple
       position: "absolute",
       width: isTouch ? "100px" : "50px",
       height: isTouch ? "100px" : "50px",
@@ -46,9 +42,7 @@ class LongPress extends HTMLElement implements LongPress {
     });
 
     this.appendChild(this.ripple);
-    this.ripple.style.color = "#03a9f4"; // paper-ripple
-    this.ripple.style.color = "var(--primary-color)"; // paper-ripple
-    // this.ripple.primary = true;
+    this.ripple.primary = true;
 
     [
       "touchcancel",
@@ -154,17 +148,14 @@ class LongPress extends HTMLElement implements LongPress {
       top: `${y}px`,
       display: null,
     });
-    this.ripple.holdDown = true; // paper-ripple
-    this.ripple.simulatedRipple(); // paper-ripple
-    // this.ripple.disabled = false;
-    // this.ripple.active = true;
-    // this.ripple.unbounded = true;
+    this.ripple.disabled = false;
+    this.ripple.active = true;
+    this.ripple.unbounded = true;
   }
 
   private stopAnimation() {
-    this.ripple.holdDown = false; // paper-ripple
-    // this.ripple.active = false;
-    // this.ripple.disabled = true;
+    this.ripple.active = false;
+    this.ripple.disabled = true;
     this.style.display = "none";
   }
 }

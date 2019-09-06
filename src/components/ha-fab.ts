@@ -1,17 +1,10 @@
-import {
-  classMap,
-  customElement,
-  html,
-  LitElement,
-  property,
-} from "@material/mwc-base/base-element";
+import { classMap, html } from "@material/mwc-base/base-element";
 import { ripple } from "@material/mwc-ripple/ripple-directive.js";
 
 import "@material/mwc-fab";
 // tslint:disable-next-line
 const MwcFab = customElements.get("mwc-fab");
 
-@customElement("ha-fab")
 export class HaFab extends MwcFab {
   protected render() {
     const classes = {
@@ -44,3 +37,5 @@ declare global {
     "ha-fab": HaFab;
   }
 }
+
+customElements.define("ha-fab", HaFab);

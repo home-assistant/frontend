@@ -4,8 +4,6 @@ import {
   TemplateResult,
   customElement,
   property,
-  css,
-  CSSResult,
 } from "lit-element";
 
 import "../../../../components/dialog/ha-paper-dialog";
