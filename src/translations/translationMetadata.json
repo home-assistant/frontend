@@ -2,9 +2,6 @@
   "af": {
     "nativeName": "Afrikaans"
   },
-  "hy": {
-    "nativeName": "Հայերեն"
-  },
   "ar": {
     "nativeName": "العربية",
     "isRTL": true
@@ -72,6 +69,9 @@
   },
   "hu": {
     "nativeName": "Magyar"
+  },
+  "hy": {
+    "nativeName": "Հայերեն"
   },
   "id": {
     "nativeName": "Indonesia"
