@@ -22,7 +22,6 @@ import { WeatherForecastCardConfig } from "./types";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
-import { HassEntity } from "home-assistant-js-websocket";
 
 const cardinalDirections = [
   "N",
@@ -117,22 +116,25 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const forecast = this.computeForecast(stateObj.attributes.forecast);
+    const forecast = stateObj.attributes.forecast
+      ? stateObj.attributes.forecast.slice(0, 5)
+      : undefined;
 
     return html`
       <ha-card @click="${this.handleClick}">
         <div class="header">
-          ${this.computeState(stateObj.state)}
-          <div class="name">${this.computeName(stateObj)}</div>
+          ${this.hass.localize(`state.weather.${stateObj.state}`) ||
+            stateObj.state}
+          <div class="name">
+            ${(this._config && this._config.name) || computeStateName(stateObj)}
+          </div>
         </div>
         <div class="content">
           <div class="now">
             <div class="main">
-              ${this.showWeatherIcon(stateObj.state)
+              ${stateObj.state in weatherIcons
                 ? html`
-                    <ha-icon
-                      icon="${this.getWeatherIcon(stateObj.state)}"
-                    ></ha-icon>
+                    <ha-icon icon="${weatherIcons[stateObj.state]}"></ha-icon>
                   `
                 : ""}
               <div class="temp">
@@ -174,7 +176,8 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                         "ui.card.weather.attributes.wind_speed"
                       )}:
                       <span class="measurand">
-                        ${this.getWindSpeed(stateObj.attributes.wind_speed)}
+                        ${stateObj.attributes.wind_speed}
+                        ${this.getUnit("length")}/h
                       </span>
                       ${this.getWindBearing(stateObj.attributes.wind_bearing)}
                     </div>
@@ -189,10 +192,16 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                     (item) => html`
                       <div>
                         <div class="weekday">
-                          ${this.computeDate(item.datetime)}<br />
+                          ${new Date(item.datetime).toLocaleDateString(
+                            this.hass!.language,
+                            { weekday: "short" }
+                          )}<br />
                           ${!this._showValue(item.templow)
                             ? html`
-                                ${this.computeTime(item.datetime)}
+                                ${new Date(item.datetime).toLocaleTimeString(
+                                  this.hass!.language,
+                                  { hour: "numeric" }
+                                )}
                               `
                             : ""}
                         </div>
@@ -200,7 +209,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                           ? html`
                               <div class="icon">
                                 <ha-icon
-                                  .icon="${this.getWeatherIcon(item.condition)}"
+                                  .icon="${weatherIcons[item.condition]}"
                                 ></ha-icon>
                               </div>
                             `
@@ -247,10 +256,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
 
-  private computeForecast(forecast: any[]): any[] {
-    return forecast && forecast.slice(0, 5);
-  }
-
   private getUnit(measure: string): string {
     const lengthUnit = this.hass!.config.unit_system.length || "";
     switch (measure) {
@@ -265,22 +270,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private computeState(state: string): string {
-    return this.hass!.localize(`state.weather.${state}`) || state;
-  }
-
-  private computeName(stateObj: HassEntity): string {
-    return (this._config && this._config.name) || computeStateName(stateObj);
-  }
-
-  private showWeatherIcon(condition: string): boolean {
-    return condition in weatherIcons;
-  }
-
-  private getWeatherIcon(condition: string): string {
-    return weatherIcons[condition];
-  }
-
   private windBearingToText(degree: string): string {
     const degreenum = parseInt(degree, 10);
     if (isFinite(degreenum)) {
@@ -288,10 +277,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       return cardinalDirections[(((degreenum + 11.25) / 22.5) | 0) % 16];
     }
     return degree;
-  }
-
-  private getWindSpeed(speed: number): string {
-    return `${speed} ${this.getUnit("length")}/h`;
   }
 
   private getWindBearing(bearing: string): string {
@@ -306,16 +291,6 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   private _showValue(item: string): boolean {
     return typeof item !== "undefined" && item !== null;
-  }
-
-  private computeDate(data: string): string {
-    const date = new Date(data);
-    return date.toLocaleDateString(this.hass!.language, { weekday: "short" });
-  }
-
-  private computeTime(data: string): string {
-    const date = new Date(data);
-    return date.toLocaleTimeString(this.hass!.language, { hour: "numeric" });
   }
 
   static get styles(): CSSResult {
