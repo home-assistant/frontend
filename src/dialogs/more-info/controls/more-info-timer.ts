@@ -25,7 +25,10 @@ class MoreInfoTimer extends LitElement {
     }
 
     return html`
-      <ha-attributes .stateObj="${this.stateObj}"></ha-attributes>
+      <ha-attributes
+        .stateObj=${this.stateObj}
+        .extraFilters=${"remaining"}
+      ></ha-attributes>
       <div class="actions">
         ${this.stateObj.state === "idle" || this.stateObj.state === "paused"
           ? html`
