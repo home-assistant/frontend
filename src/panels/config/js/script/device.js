@@ -1,16 +1,16 @@
 import { h, Component } from "preact";
 
 import "../../../../components/device/ha-device-picker";
-import "../../../../components/device/ha-device-trigger-picker";
+import "../../../../components/device/ha-device-action-picker";
 
 import { onChangeEvent } from "../../../../common/preact/event";
 
-export default class DeviceTrigger extends Component {
+export default class DeviceAction extends Component {
   constructor() {
     super();
-    this.onChange = onChangeEvent.bind(this, "trigger");
+    this.onChange = onChangeEvent.bind(this, "action");
     this.devicePicked = this.devicePicked.bind(this);
-    this.deviceTriggerPicked = this.deviceTriggerPicked.bind(this);
+    this.deviceActionPicked = this.deviceActionPicked.bind(this);
     this.state.device_id = undefined;
   }
 
@@ -18,14 +18,14 @@ export default class DeviceTrigger extends Component {
     this.setState({ device_id: ev.target.value });
   }
 
-  deviceTriggerPicked(ev) {
-    const deviceTrigger = ev.target.value;
-    this.props.onChange(this.props.index, (this.props.trigger = deviceTrigger));
+  deviceActionPicked(ev) {
+    const deviceAction = ev.target.value;
+    this.props.onChange(this.props.index, (this.props.action = deviceAction));
   }
 
   /* eslint-disable camelcase */
-  render({ trigger, hass }, { device_id }) {
-    if (device_id === undefined) device_id = trigger.device_id;
+  render({ action, hass }, { device_id }) {
+    if (device_id === undefined) device_id = action.device_id;
 
     return (
       <div>
@@ -35,20 +35,21 @@ export default class DeviceTrigger extends Component {
           hass={hass}
           label="Device"
         />
-        <ha-device-trigger-picker
-          value={trigger}
+        <ha-device-action-picker
+          value={action}
           deviceId={device_id}
-          onChange={this.deviceTriggerPicked}
+          onChange={this.deviceActionPicked}
           hass={hass}
-          label="Trigger"
+          label="Action"
         />
       </div>
     );
   }
 }
 
-DeviceTrigger.defaultConfig = {
+DeviceAction.defaultConfig = {
   device_id: "",
+  device: "",
   domain: "",
   entity_id: "",
 };

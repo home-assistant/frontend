@@ -9,6 +9,10 @@ export interface DeviceAutomation {
   event?: string;
 }
 
+export interface DeviceAction extends DeviceAutomation {
+  device: string;
+}
+
 export interface DeviceCondition extends DeviceAutomation {
   condition: string;
 }
@@ -16,6 +20,12 @@ export interface DeviceCondition extends DeviceAutomation {
 export interface DeviceTrigger extends DeviceAutomation {
   platform: string;
 }
+
+export const fetchDeviceActions = (hass: HomeAssistant, deviceId: string) =>
+  hass.callWS<DeviceAction[]>({
+    type: "device_automation/action/list",
+    device_id: deviceId,
+  });
 
 export const fetchDeviceConditions = (hass: HomeAssistant, deviceId: string) =>
   hass.callWS<DeviceCondition[]>({
@@ -49,6 +59,18 @@ export const deviceAutomationsEqual = (
   }
 
   return true;
+};
+
+export const localizeDeviceAutomationAction = (
+  hass: HomeAssistant,
+  action: DeviceAction
+) => {
+  const state = action.entity_id ? hass.states[action.entity_id] : undefined;
+  return hass.localize(
+    `component.${action.domain}.device_automation.action_type.${action.type}`,
+    "name",
+    state ? compute_state_name(state) : "<unknown>"
+  );
 };
 
 export const localizeDeviceAutomationCondition = (
