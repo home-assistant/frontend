@@ -1,11 +1,21 @@
-import { classMap, html } from "@material/mwc-base/base-element";
+import {
+  classMap,
+  html,
+  customElement,
+  Constructor,
+} from "@material/mwc-base/base-element";
 import { ripple } from "@material/mwc-ripple/ripple-directive.js";
 
 import "@material/mwc-fab";
 // tslint:disable-next-line
-const MwcFab = customElements.get("mwc-fab");
+import { Fab } from "@material/mwc-fab";
+// tslint:disable-next-line
+const MwcFab = customElements.get("mwc-fab") as Constructor<Fab>;
 
+@customElement("ha-fab")
 export class HaFab extends MwcFab {
+  // We override the render method because we don't have an icon font and mwc-fab doesn't support our svg-icon sets.
+  // Based on version mwc-fab 0.8
   protected render() {
     const classes = {
       "mdc-fab--mini": this.mini,
@@ -37,5 +47,3 @@ declare global {
     "ha-fab": HaFab;
   }
 }
-
-customElements.define("ha-fab", HaFab);
