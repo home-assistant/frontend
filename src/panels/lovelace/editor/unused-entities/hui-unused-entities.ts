@@ -22,31 +22,18 @@ import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
 import { showEditCardDialog } from "../card-editor/show-edit-card-dialog";
 
 import { HomeAssistant } from "../../../../types";
-import { LovelaceCard, Lovelace } from "../../types";
+import { Lovelace } from "../../types";
 import { LovelaceConfig } from "../../../../data/lovelace";
 
 @customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {
   @property() public lovelace?: Lovelace;
 
-  @property() private _hass?: HomeAssistant;
+  @property() public hass?: HomeAssistant;
 
-  @property() private _elements?: LovelaceCard[];
+  @property() private _unusedEntities: string[] = [];
 
   private _selectedEntities: string[] = [];
-
-  private _unusedEntities: string[] = [];
-
-  set hass(hass: HomeAssistant) {
-    this._hass = hass;
-    if (!this._elements) {
-      this._getUnusedEntities();
-      return;
-    }
-    for (const element of this._elements) {
-      element.hass = this._hass;
-    }
-  }
 
   private get _config(): LovelaceConfig {
     return this.lovelace!.config;
@@ -68,7 +55,7 @@ export class HuiUnusedEntities extends LitElement {
   }
 
   protected render(): TemplateResult | void {
-    if (!this._hass || !this.lovelace) {
+    if (!this.hass || !this.lovelace) {
       return html``;
     }
 
@@ -105,7 +92,7 @@ export class HuiUnusedEntities extends LitElement {
               return html`
                 <hui-select-row
                   .selectable=${this.lovelace!.mode === "storage"}
-                  .hass=${this._hass}
+                  .hass=${this.hass}
                   .entity=${entity}
                 ></hui-select-row>
               `;
@@ -117,10 +104,10 @@ export class HuiUnusedEntities extends LitElement {
         ? html`
             <ha-fab
               class="${classMap({
-                rtl: computeRTL(this._hass),
+                rtl: computeRTL(this.hass),
               })}"
               icon="hass:plus"
-              label="${this._hass.localize(
+              label="${this.hass.localize(
                 "ui.panel.lovelace.editor.edit_card.add"
               )}"
               @click="${this._selectView}"
@@ -131,11 +118,11 @@ export class HuiUnusedEntities extends LitElement {
   }
 
   private _getUnusedEntities(): void {
-    if (!this._hass || !this.lovelace) {
+    if (!this.hass || !this.lovelace) {
       return;
     }
     this._selectedEntities = [];
-    this._unusedEntities = computeUnusedEntities(this._hass, this._config!);
+    this._unusedEntities = computeUnusedEntities(this.hass, this._config!);
   }
 
   private _handleSelectionChanged(ev: any): void {
