@@ -174,6 +174,16 @@ class HUIRoot extends LitElement {
                                 "ui.panel.lovelace.menu.refresh"
                               )}
                             </paper-item>
+                            <paper-item
+                              aria-label=${this.hass!.localize(
+                                "ui.panel.lovelace.menu.unused_entities"
+                              )}
+                              @tap="${this._handleUnusedEntities}"
+                            >
+                              ${this.hass!.localize(
+                                "ui.panel.lovelace.menu.unused_entities"
+                              )}
+                            </paper-item>
                           `
                         : ""}
                       <paper-item

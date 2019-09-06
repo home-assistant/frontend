@@ -38,6 +38,8 @@ class HuiSelectRow extends LitElement {
 
   @property() public entity?: string;
 
+  @property() public selectable = true;
+
   protected render(): TemplateResult | void {
     if (!this.entity || !this.hass) {
       return;
@@ -51,7 +53,11 @@ class HuiSelectRow extends LitElement {
 
     return html`
       <td>
-        <ha-checkbox @change=${this._handleSelect}></ha-checkbox>
+        ${this.selectable
+          ? html`
+              <ha-checkbox @change=${this._handleSelect}></ha-checkbox>
+            `
+          : ""}
         <state-badge .hass=${this.hass} .stateObj=${stateObj}></state-badge>
         ${computeStateName(stateObj)}
       </td>

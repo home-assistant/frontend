@@ -56,7 +56,10 @@ export class HuiUnusedEntities extends LitElement {
     super.updated(changedProperties);
 
     if (changedProperties.has("lovelace")) {
-      if (this.lovelace!.editMode === false) {
+      if (
+        this.lovelace!.mode === "storage" &&
+        this.lovelace!.editMode === false
+      ) {
         navigate(this, "/lovelace");
         return;
       }
@@ -69,7 +72,7 @@ export class HuiUnusedEntities extends LitElement {
       return html``;
     }
 
-    if (this.lovelace.editMode === false) {
+    if (this.lovelace.mode === "storage" && this.lovelace.editMode === false) {
       return html``;
     }
 
@@ -78,8 +81,12 @@ export class HuiUnusedEntities extends LitElement {
         <div class="card-content">
           These are the entities that you have available, but are not in your
           Lovelace UI yet.
-          <br />Select the entities you want to add to a card and then click the
-          add card button.
+          ${this.lovelace.mode === "storage"
+            ? html`
+                <br />Select the entities you want to add to a card and then
+                click the add card button.
+              `
+            : ""}
         </div>
         <table
           class="entities"
@@ -97,6 +104,7 @@ export class HuiUnusedEntities extends LitElement {
             ${this._unusedEntities.map((entity) => {
               return html`
                 <hui-select-row
+                  .selectable=${this.lovelace!.mode === "storage"}
                   .hass=${this._hass}
                   .entity=${entity}
                 ></hui-select-row>
@@ -105,14 +113,20 @@ export class HuiUnusedEntities extends LitElement {
           </tbody>
         </table>
       </ha-card>
-      <ha-fab
-        class="${classMap({
-          rtl: computeRTL(this._hass),
-        })}"
-        icon="hass:plus"
-        label="${this._hass.localize("ui.panel.lovelace.editor.edit_card.add")}"
-        @click="${this._selectView}"
-      ></ha-fab>
+      ${this.lovelace.mode === "storage"
+        ? html`
+            <ha-fab
+              class="${classMap({
+                rtl: computeRTL(this._hass),
+              })}"
+              icon="hass:plus"
+              label="${this._hass.localize(
+                "ui.panel.lovelace.editor.edit_card.add"
+              )}"
+              @click="${this._selectView}"
+            ></ha-fab>
+          `
+        : ""}
     `;
   }
 
