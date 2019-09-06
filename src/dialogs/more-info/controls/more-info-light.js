@@ -1,6 +1,8 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+import "@material/mwc-button";
+
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
@@ -35,6 +37,19 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
           max-height: 0px;
           overflow: hidden;
           transition: max-height 0.5s ease-in;
+        }
+
+        ha-paper-dropdown-menu {
+          max-width: 150px;
+        }
+
+        .effect_list {
+          display: flex;
+          align-items: flex-end;
+        }
+
+        .stop {
+          flex-grow: 2;
         }
 
         .color_temp {
@@ -196,6 +211,11 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
               </template>
             </paper-listbox>
           </ha-paper-dropdown-menu>
+          <template is="dom-if" if="[[stateObj.attributes.effect]]">
+            <mwc-button class="stop" on-click="stopEffect"
+              >Stop Effect</mwc-button
+            >
+          </template>
         </div>
 
         <ha-attributes
@@ -283,6 +303,13 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
       classes.push("is-unavailable");
     }
     return classes.join(" ");
+  }
+
+  stopEffect() {
+    this.hass.callService("light", "turn_on", {
+      entity_id: this.stateObj.entity_id,
+      effect: "stop",
+    });
   }
 
   effectChanged(ev) {
