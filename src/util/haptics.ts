@@ -1,4 +1,4 @@
-import { forwardHaptic, HapticType } from "../data/haptics";
+import { HapticType } from "../data/haptics";
 
 const hapticPatterns = {
   success: [50, 50, 50],
@@ -10,9 +10,8 @@ const hapticPatterns = {
   selection: [50],
 };
 
-export const haptic = (hapticType: HapticType) => {
+export const handleHaptic = (hapticType: HapticType) => {
   if (navigator.vibrate) {
     navigator.vibrate(hapticPatterns[hapticType]);
   }
-  forwardHaptic(hapticType);
 };
