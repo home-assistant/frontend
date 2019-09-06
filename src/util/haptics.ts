@@ -11,7 +11,5 @@ const hapticPatterns = {
 };
 
 export const handleHaptic = (hapticType: HapticType) => {
-  if (navigator.vibrate) {
-    navigator.vibrate(hapticPatterns[hapticType]);
-  }
+  navigator.vibrate(hapticPatterns[hapticType]);
 };

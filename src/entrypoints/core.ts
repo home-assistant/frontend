@@ -16,7 +16,6 @@ import { subscribeUser } from "../data/ws-user";
 import { HomeAssistant } from "../types";
 import { hassUrl } from "../data/auth";
 import { fetchConfig, WindowWithLovelaceProm } from "../data/lovelace";
-import { handleHaptic } from "../util/haptics";
 
 declare global {
   interface Window {
@@ -100,5 +99,3 @@ window.addEventListener("error", (e) => {
     });
   }
 });
-
-window.addEventListener("haptic", (e) => handleHaptic(e.detail));
