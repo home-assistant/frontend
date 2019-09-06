@@ -1,7 +1,6 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@material/mwc-button";
 
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -203,6 +202,7 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
               on-selected-changed="effectChanged"
               attr-for-selected="item-name"
             >
+              <paper-item item-name$="stop">stop</paper-item>
               <template
                 is="dom-repeat"
                 items="[[stateObj.attributes.effect_list]]"
@@ -211,11 +211,6 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
               </template>
             </paper-listbox>
           </ha-paper-dropdown-menu>
-          <template is="dom-if" if="[[stateObj.attributes.effect]]">
-            <mwc-button class="stop" on-click="stopEffect"
-              >Stop Effect</mwc-button
-            >
-          </template>
         </div>
 
         <ha-attributes
