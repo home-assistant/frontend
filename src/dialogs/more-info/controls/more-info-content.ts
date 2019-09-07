@@ -21,6 +21,7 @@ import "./more-info-lock";
 import "./more-info-media_player";
 import "./more-info-script";
 import "./more-info-sun";
+import "./more-info-timer";
 import "./more-info-updater";
 import "./more-info-vacuum";
 import "./more-info-water_heater";
