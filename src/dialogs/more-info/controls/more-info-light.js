@@ -38,19 +38,6 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
           transition: max-height 0.5s ease-in;
         }
 
-        ha-paper-dropdown-menu {
-          max-width: 150px;
-        }
-
-        .effect_list {
-          display: flex;
-          align-items: flex-end;
-        }
-
-        .stop {
-          flex-grow: 2;
-        }
-
         .color_temp {
           --ha-slider-background: -webkit-linear-gradient(
             right,
@@ -298,13 +285,6 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
       classes.push("is-unavailable");
     }
     return classes.join(" ");
-  }
-
-  stopEffect() {
-    this.hass.callService("light", "turn_on", {
-      entity_id: this.stateObj.entity_id,
-      effect: "stop",
-    });
   }
 
   effectChanged(ev) {
