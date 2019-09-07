@@ -118,7 +118,24 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
     devtool: genDevTool(isProdBuild),
     entry,
     module: {
-      rules: [babelLoaderConfig({ latestBuild }), cssLoader, htmlLoader],
+      rules: [
+        {
+          test: /\.ts|tsx$/,
+          exclude: /node_modules/,
+          use: [
+            {
+              loader: "ts-loader",
+              options: {
+                compilerOptions: latestBuild
+                  ? { noEmit: false }
+                  : { target: "es5", noEmit: false },
+              },
+            },
+          ],
+        },
+        cssLoader,
+        htmlLoader,
+      ],
     },
     optimization: optimization(latestBuild),
     plugins: [
