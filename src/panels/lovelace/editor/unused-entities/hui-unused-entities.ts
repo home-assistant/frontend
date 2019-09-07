@@ -43,13 +43,6 @@ export class HuiUnusedEntities extends LitElement {
     super.updated(changedProperties);
 
     if (changedProperties.has("lovelace")) {
-      if (
-        this.lovelace!.mode === "storage" &&
-        this.lovelace!.editMode === false
-      ) {
-        navigate(this, "/lovelace");
-        return;
-      }
       this._getUnusedEntities();
     }
   }
@@ -75,30 +68,28 @@ export class HuiUnusedEntities extends LitElement {
               `
             : ""}
         </div>
-        <table
-          class="entities"
+        <div
+          class="table-container"
+          role="table"
+          aria-label="Unused Entities"
           @entity-selection-changed=${this._handleSelectionChanged}
         >
-          <thead>
-            <tr>
-              <th>Entity</th>
-              <th>Entity id</th>
-              <th>Domain</th>
-              <th>Last changed</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${this._unusedEntities.map((entity) => {
-              return html`
-                <hui-select-row
-                  .selectable=${this.lovelace!.mode === "storage"}
-                  .hass=${this.hass}
-                  .entity=${entity}
-                ></hui-select-row>
-              `;
-            })}
-          </tbody>
-        </table>
+          <div class="flex-row header" role="rowgroup">
+            <div class="flex-cell" role="columnheader">Entity</div>
+            <div class="flex-cell" role="columnheader">Entity id</div>
+            <div class="flex-cell" role="columnheader">Domain</div>
+            <div class="flex-cell" role="columnheader">Last Changed</div>
+          </div>
+          ${this._unusedEntities.map((entity) => {
+            return html`
+              <hui-select-row
+                .selectable=${this.lovelace!.mode === "storage"}
+                .hass=${this.hass}
+                .entity=${entity}
+              ></hui-select-row>
+            `;
+          })}
+        </div>
       </ha-card>
       ${this.lovelace.mode === "storage"
         ? html`
@@ -167,36 +158,51 @@ export class HuiUnusedEntities extends LitElement {
         float: left;
       }
 
-      .entities {
-        border-collapse: collapse;
-        width: 100%;
+      div {
+        box-sizing: border-box;
+      }
+
+      .table-container {
+        display: block;
         margin: auto;
-        table-layout: fixed;
       }
 
-      .entities th {
-        text-align: left;
+      .flex-row {
+        display: flex;
+        flex-flow: row wrap;
+      }
+      .flex-row .flex-cell {
+        font-weight: bold;
+      }
+
+      .flex-cell {
+        width: calc(100% / 4);
         padding: 12px 24px;
-        vertical-align: middle;
-        font-size: 13px;
-        line-height: 17px;
-      }
-
-      .entities hui-select-row {
         border-bottom: 1px solid #e0e0e0;
+        vertical-align: middle;
       }
 
-      .entities tbody hui-select-row:hover {
-        background-color: var(--table-row-alternative-background-color, #eee);
+      @media all and (max-width: 767px) {
+        .flex-cell {
+          width: calc(100% / 3);
+        }
+        .flex-cell:first-child {
+          width: 100%;
+          border-bottom: 0;
+        }
       }
+      @media all and (max-width: 430px) {
+        .flex-cell {
+          border-bottom: 0;
+        }
 
-      .entities td {
-        padding: 4px;
-      }
+        .flex-cell:last-child {
+          border-bottom: 1px solid #e0e0e0;
+        }
 
-      .entities td:nth-child(3) {
-        white-space: pre-wrap;
-        word-break: break-word;
+        .flex-cell {
+          width: 100%;
+        }
       }
     `;
   }

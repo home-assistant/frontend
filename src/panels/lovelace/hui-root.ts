@@ -432,6 +432,15 @@ class HUIRoot extends LitElement {
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
+        // Leave unused entities when leaving edit mode
+        if (
+          this.lovelace!.mode === "storage" &&
+          this._routeData!.view === "hass-unused-entities"
+        ) {
+          const views = this.config && this.config.views;
+          navigate(this, `/lovelace/${views[0].path || 0}`);
+          newSelectView = 0;
+        }
         // On edit mode change, recreate the current view from scratch
         force = true;
         // Recalculate to see if we need to adjust content area for tab bar
