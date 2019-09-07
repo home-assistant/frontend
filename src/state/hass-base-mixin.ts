@@ -2,6 +2,7 @@ import {
   Constructor,
   // @ts-ignore
   property,
+  PropertyDeclarations,
 } from "lit-element";
 import { Auth, Connection } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
@@ -26,8 +27,15 @@ export default <T>(superClass: Constructor<T>): Constructor<T & HassBaseEl> =>
   class extends superClass {
     protected _pendingHass: Partial<HomeAssistant> = {};
     private __provideHass: HTMLElement[] = [];
-    // @ts-ignore
-    @property() protected hass: HomeAssistant;
+
+    // Decorators not possible in anonymous classes
+    static get properties(): PropertyDeclarations {
+      return {
+        hass: {},
+      };
+    }
+
+    protected hass!: HomeAssistant;
 
     // Exists so all methods can safely call super method
     protected hassConnected() {

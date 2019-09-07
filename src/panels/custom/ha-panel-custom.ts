@@ -52,6 +52,7 @@ export class HaPanelCustom extends UpdatingElement {
       return;
     }
     const props = {};
+    // @ts-ignore
     for (const key of changedProps.keys()) {
       props[key] = this[key];
     }
