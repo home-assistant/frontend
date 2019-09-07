@@ -16,8 +16,6 @@ import "./hui-select-row";
 
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import { computeUnusedEntities } from "../../common/compute-unused-entities";
-import { navigate } from "../../../../common/navigate";
-
 import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
 import { showEditCardDialog } from "../card-editor/show-edit-card-dialog";
 
