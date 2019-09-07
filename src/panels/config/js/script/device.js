@@ -19,8 +19,8 @@ export default class DeviceAction extends Component {
   }
 
   deviceActionPicked(ev) {
-    const deviceAction = ev.target.value;
-    this.props.onChange(this.props.index, (this.props.action = deviceAction));
+    const deviceAction = Object.assign({}, ev.target.value);
+    this.props.onChange(this.props.index, deviceAction);
   }
 
   /* eslint-disable camelcase */

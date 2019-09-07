@@ -19,11 +19,8 @@ export default class DeviceCondition extends Component {
   }
 
   deviceConditionPicked(ev) {
-    const deviceCondition = ev.target.value;
-    this.props.onChange(
-      this.props.index,
-      (this.props.condition = deviceCondition)
-    );
+    const deviceCondition = Object.assign({}, ev.target.value);
+    this.props.onChange(this.props.index, deviceCondition);
   }
 
   /* eslint-disable camelcase */

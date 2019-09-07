@@ -19,8 +19,8 @@ export default class DeviceTrigger extends Component {
   }
 
   deviceTriggerPicked(ev) {
-    const deviceTrigger = ev.target.value;
-    this.props.onChange(this.props.index, (this.props.trigger = deviceTrigger));
+    const deviceTrigger = Object.assign({}, ev.target.value);
+    this.props.onChange(this.props.index, deviceTrigger);
   }
 
   /* eslint-disable camelcase */
