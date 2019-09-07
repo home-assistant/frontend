@@ -446,6 +446,14 @@
       "script": {
         "execute": "Execute"
       },
+      "timer": {
+        "actions": {
+          "start": "start",
+          "pause": "pause",
+          "cancel": "cancel",
+          "finish": "finish"
+        }
+      },
       "vacuum": {
         "actions": {
           "resume_cleaning": "Resume cleaning",

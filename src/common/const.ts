@@ -45,6 +45,7 @@ export const DOMAINS_WITH_MORE_INFO = [
   "media_player",
   "script",
   "sun",
+  "timer",
   "updater",
   "vacuum",
   "water_heater",
