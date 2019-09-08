@@ -80,6 +80,15 @@ export const fetchDevices = (hass: HomeAssistant): Promise<ZHADevice[]> =>
     type: "zha/devices",
   });
 
+export const fetchZHADevice = (
+  hass: HomeAssistant,
+  ieeeAddress: string
+): Promise<ZHADevice> =>
+  hass.callWS({
+    type: "zha/device",
+    ieee: ieeeAddress,
+  });
+
 export const fetchBindableDevices = (
   hass: HomeAssistant,
   ieeeAddress: string

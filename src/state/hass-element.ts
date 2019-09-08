@@ -3,6 +3,7 @@ import AuthMixin from "./auth-mixin";
 import TranslationsMixin from "./translations-mixin";
 import ThemesMixin from "./themes-mixin";
 import MoreInfoMixin from "./more-info-mixin";
+import ZHADialogMixin from "./zha-dialog-mixin";
 import SidebarMixin from "./sidebar-mixin";
 import { dialogManagerMixin } from "./dialog-manager-mixin";
 import { connectionMixin } from "./connection-mixin";
@@ -25,4 +26,5 @@ export class HassElement extends ext(HassBaseMixin(LitElement), [
   NotificationMixin,
   dialogManagerMixin,
   urlSyncMixin,
+  ZHADialogMixin,
 ]) {}
