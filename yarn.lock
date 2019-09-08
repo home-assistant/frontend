@@ -532,7 +532,7 @@
     "@material/theme" "^3.1.0"
     "@material/typography" "^3.1.0"
 
-"@material/checkbox@^3.0.0":
+"@material/checkbox@^3.0.0", "@material/checkbox@^3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@material/checkbox/-/checkbox-3.1.0.tgz#bb8eadda0d260e75e8a7479418490eec846a8520"
   integrity sha512-Rcv6Srj2p3MTsODPLJLgRzGW142ovQTKblkCy9AxABZriQUPRCV/fkJwB0LlqecHgubhnjhtj2Zui0o9jhfu/w==
@@ -545,6 +545,24 @@
     "@material/rtl" "^3.1.0"
     "@material/theme" "^3.1.0"
     tslib "^1.9.3"
+
+"@material/data-table@^3.1.1":
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/@material/data-table/-/data-table-3.1.1.tgz#3e88e2f8ba7d8a56208cbe506b7db342911c5bd3"
+  integrity sha512-6p85gotXObC47KYaEOM1sJKqrXOFkhfHutmrsHMFDLr4B3mCS7XH9KxvBFX4uw9uEZlgiUJBJtbiUIXuHhLIEQ==
+  dependencies:
+    "@material/animation" "^3.1.0"
+    "@material/base" "^3.1.0"
+    "@material/checkbox" "^3.1.0"
+    "@material/dom" "^3.1.0"
+    "@material/elevation" "^3.1.0"
+    "@material/feature-targeting" "^3.1.0"
+    "@material/ripple" "^3.1.0"
+    "@material/rtl" "^3.1.0"
+    "@material/shape" "^3.1.0"
+    "@material/theme" "^3.1.0"
+    "@material/typography" "^3.1.0"
+    tslib "^1.10.0"
 
 "@material/dom@^3.1.0":
   version "3.1.0"
