@@ -96,6 +96,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
         return html`
           ${this.localize("ui.panel.page-authorize.abort_intro")}:
           <ha-markdown
+            allowsvg
             .content=${this.localize(
               `ui.panel.page-authorize.form.providers.${
                 step.handler[0]
