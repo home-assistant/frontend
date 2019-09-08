@@ -8,6 +8,10 @@ import "../../../data/ha-state-history-data";
 import { processConfigEntities } from "../common/process-config-entities";
 
 class HuiHistoryGraphCard extends PolymerElement {
+  static getStubConfig() {
+    return { entities: [] };
+  }
+
   static get template() {
     return html`
       <style>

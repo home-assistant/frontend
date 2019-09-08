@@ -33,7 +33,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-light-card-editor");
   }
   public static getStubConfig(): object {
-    return {};
+    return { entity: "" };
   }
 
   @property() public hass?: HomeAssistant;
