@@ -195,9 +195,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         ha-card {
           position: relative;
           overflow: hidden;
-          --brightness-font-color: white;
-          --brightness-font-text-shadow: -1px -1px 0 #000, 1px -1px 0 #000,
-            -1px 1px 0 #000, 1px 1px 0 #000;
           --name-font-size: 1.2rem;
           --brightness-font-size: 1.2rem;
           --rail-border-color: transparent;
@@ -290,15 +287,13 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           position: absolute;
           margin: 0 auto;
           left: 50%;
-          top: 10%;
+          top: 50%;
           transform: translate(-50%);
           opacity: 0;
           transition: opacity 0.5s ease-in-out;
           -moz-transition: opacity 0.5s ease-in-out;
           -webkit-transition: opacity 0.5s ease-in-out;
           cursor: pointer;
-          color: var(--brightness-font-color);
-          text-shadow: var(--brightness-font-text-shadow);
           pointer-events: none;
         }
 

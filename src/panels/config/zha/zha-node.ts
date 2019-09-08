@@ -105,13 +105,12 @@ export class ZHANode extends LitElement {
             ? html`
                 <zha-device-card
                   class="card"
-                  .hass="${this.hass}"
-                  .device="${this._selectedDevice}"
-                  .narrow="${!this.isWide}"
-                  .showHelp="${this._showHelp}"
-                  .showActions="${true}"
-                  @zha-device-removed="${this._onDeviceRemoved}"
-                  .isJoinPage="${false}"
+                  .hass=${this.hass}
+                  .device=${this._selectedDevice}
+                  .narrow=${!this.isWide}
+                  .showHelp=${this._showHelp}
+                  showActions
+                  @zha-device-removed=${this._onDeviceRemoved}
                 ></zha-device-card>
               `
             : ""}
