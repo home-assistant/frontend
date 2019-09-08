@@ -6,6 +6,7 @@ import {
   TemplateResult,
 } from "lit-element";
 
+import "@polymer/paper-fab/paper-fab";
 import "../../components/entity/ha-state-label-badge";
 // This one is for types
 // tslint:disable-next-line
@@ -16,7 +17,6 @@ import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 import { LovelaceViewConfig, LovelaceCardConfig } from "../../data/lovelace";
 import { HomeAssistant } from "../../types";
 import { classMap } from "lit-html/directives/class-map";
-
 import { Lovelace, LovelaceCard } from "./types";
 import { createCardElement } from "./common/create-card-element";
 import { computeCardSize } from "./common/compute-card-size";

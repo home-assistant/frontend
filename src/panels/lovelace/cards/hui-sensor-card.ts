@@ -146,7 +146,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
   }
 
   public static getStubConfig(): object {
-    return {};
+    return { entity: "" };
   }
 
   @property() public hass?: HomeAssistant;
