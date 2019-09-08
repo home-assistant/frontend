@@ -9,7 +9,7 @@ class HuiMediaControlCard extends LegacyWrapperCard {
   }
 
   static getStubConfig() {
-    return {};
+    return { entity: "" };
   }
 
   constructor() {
