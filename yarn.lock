@@ -1509,6 +1509,13 @@
   resolved "https://registry.yarnpkg.com/@sinonjs/text-encoding/-/text-encoding-0.7.1.tgz#8da5c6530915653f3a1f38fd5f101d8c3f8079c5"
   integrity sha512-+iTbntw2IZPb/anVDbypzfQa+ay64MW0Zo8aJ8gZPWMMK6/OubMVb6lUPMagqjOPnmtauXnFCACVl3O7ogjeqQ==
 
+"@thomasloven/round-slider@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@thomasloven/round-slider/-/round-slider-0.2.2.tgz#498e2d0b545cefd457c1249e3f90dec9b91dd91b"
+  integrity sha512-nh4Um3srnTnWaOWkq6sMaXsSgn07MfV/u5rjFZAoSETJrLCBkwWM5IToN3Tqy9SSQk6Zonk1/wpcY5tdACq2lg==
+  dependencies:
+    lit-element "^2.2.1"
+
 "@types/babel-generator@^6.25.1":
   version "6.25.3"
   resolved "https://registry.yarnpkg.com/@types/babel-generator/-/babel-generator-6.25.3.tgz#8f06caa12d0595a0538560abe771966d77d29286"
@@ -8585,6 +8592,13 @@ lit-element@^2.0.1, lit-element@^2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-2.2.0.tgz#e853be38021f0c7743a10180affdf84b8a02400c"
   integrity sha512-Mzs3H7IO4wAnpzqreHw6dQqp9IG+h/oN8X9pgNbMZbE7x6B0aNOwP5Nveox/5HE+65ZfW2PeULEjoHkrwpTnuQ==
+  dependencies:
+    lit-html "^1.0.0"
+
+lit-element@^2.2.1:
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-2.2.1.tgz#79c94d8cfdc2d73b245656e37991bd1e4811d96f"
+  integrity sha512-ipDcgQ1EpW6Va2Z6dWm79jYdimVepO5GL0eYkZrFvdr0OD/1N260Q9DH+K5HXHFrRoC7dOg+ZpED2XE0TgGdXw==
   dependencies:
     lit-html "^1.0.0"
 
