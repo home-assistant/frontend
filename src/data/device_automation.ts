@@ -6,6 +6,7 @@ export interface DeviceAutomation {
   domain: string;
   entity_id: string;
   type?: string;
+  subtype?: string;
   event?: string;
 }
 
@@ -62,8 +63,14 @@ export const localizeDeviceAutomationCondition = (
     `component.${condition.domain}.device_automation.condition_type.${
       condition.type
     }`,
-    "name",
-    state ? compute_state_name(state) : "<unknown>"
+    "entity_name",
+    state ? compute_state_name(state) : "<unknown>",
+    "subtype",
+    hass.localize(
+      `component.${condition.domain}.device_automation.condition_subtype.${
+        condition.subtype
+      }`
+    )
   );
 };
 
@@ -76,7 +83,13 @@ export const localizeDeviceAutomationTrigger = (
     `component.${trigger.domain}.device_automation.trigger_type.${
       trigger.type
     }`,
-    "name",
-    state ? compute_state_name(state) : "<unknown>"
+    "entity_name",
+    state ? compute_state_name(state) : "<unknown>",
+    "subtype",
+    hass.localize(
+      `component.${trigger.domain}.device_automation.trigger_subtype.${
+        trigger.subtype
+      }`
+    )
   );
 };
