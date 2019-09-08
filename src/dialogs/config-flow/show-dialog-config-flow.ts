@@ -45,7 +45,7 @@ export const showConfigFlowDialog = (
 
       return description
         ? html`
-            <ha-markdown .content=${description}></ha-markdown>
+            <ha-markdown allowsvg .content=${description}></ha-markdown>
           `
         : "";
     },
@@ -64,7 +64,7 @@ export const showConfigFlowDialog = (
       );
       return description
         ? html`
-            <ha-markdown .content=${description}></ha-markdown>
+            <ha-markdown allowsvg .content=${description}></ha-markdown>
           `
         : "";
     },
@@ -102,7 +102,7 @@ export const showConfigFlowDialog = (
         </p>
         ${description
           ? html`
-              <ha-markdown .content=${description}></ha-markdown>
+              <ha-markdown allowsvg .content=${description}></ha-markdown>
             `
           : ""}
       `;
@@ -119,7 +119,7 @@ export const showConfigFlowDialog = (
       return html`
         ${description
           ? html`
-              <ha-markdown .content=${description}></ha-markdown>
+              <ha-markdown allowsvg .content=${description}></ha-markdown>
             `
           : ""}
         <p>Created config for ${step.title}.</p>

@@ -73,6 +73,7 @@ class HaMfaModuleSetupFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
           <template is="dom-if" if="[[_step]]">
             <template is="dom-if" if="[[_equals(_step.type, 'abort')]]">
               <ha-markdown
+                allowsvg
                 content="[[_computeStepAbortedReason(localize, _step)]]"
               ></ha-markdown>
             </template>
@@ -90,6 +91,7 @@ class HaMfaModuleSetupFlow extends LocalizeMixin(EventsMixin(PolymerElement)) {
                 if="[[_computeStepDescription(localize, _step)]]"
               >
                 <ha-markdown
+                  allowsvg
                   content="[[_computeStepDescription(localize, _step)]]"
                 ></ha-markdown>
               </template>

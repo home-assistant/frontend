@@ -214,9 +214,7 @@ gulp.task(
             const lang = subtags.slice(0, i).join("-");
             if (lang === "test") {
               src.push(workDir + "/test.json");
-            } else if (lang === "en") {
-              src.push("src/translations/en.json");
-            } else {
+            } else if (lang !== "en") {
               src.push(inDir + "/" + lang + ".json");
             }
           }

@@ -55,11 +55,11 @@ declare global {
 @customElement("zha-device-card")
 class ZHADeviceCard extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public narrow?: boolean;
   @property() public device?: ZHADevice;
-  @property() public showHelp: boolean = false;
-  @property() public showActions?: boolean;
-  @property() public isJoinPage?: boolean;
+  @property({ type: Boolean }) public narrow?: boolean;
+  @property({ type: Boolean }) public showHelp?: boolean = false;
+  @property({ type: Boolean }) public showActions?: boolean;
+  @property({ type: Boolean }) public isJoinPage?: boolean;
   @property() private _serviceData?: NodeServiceData;
   @property() private _areas: AreaRegistryEntry[] = [];
   @property() private _selectedAreaIndex: number = -1;
@@ -139,7 +139,7 @@ class ZHADeviceCard extends LitElement {
                   <div class="model">${this.device!.model}</div>
                   <div class="manuf">
                     ${this.hass!.localize(
-                      "ui.panel.config.integrations.config_entry.manuf",
+                      "ui.dialogs.zha_device_info.manuf",
                       "manufacturer",
                       this.device!.manufacturer
                     )}
@@ -206,14 +206,14 @@ class ZHADeviceCard extends LitElement {
             @change="${this._saveCustomName}"
             .value="${this._userGivenName}"
             placeholder="${this.hass!.localize(
-              "ui.panel.config.zha.device_card.device_name_placeholder"
+              "ui.dialogs.zha_device_info.zha_device_card.device_name_placeholder"
             )}"
           ></paper-input>
         </div>
         <div class="node-picker">
           <paper-dropdown-menu
             label="${this.hass!.localize(
-              "ui.panel.config.zha.device_card.area_picker_label"
+              "ui.dialogs.zha_device_info.zha_device_card.area_picker_label"
             )}"
             class="flex"
           >
@@ -223,9 +223,7 @@ class ZHADeviceCard extends LitElement {
               @iron-select="${this._selectedAreaChanged}"
             >
               <paper-item>
-                ${this.hass!.localize(
-                  "ui.panel.config.integrations.config_entry.no_area"
-                )}
+                ${this.hass!.localize("ui.dialogs.zha_device_info.no_area")}
               </paper-item>
 
               ${this._areas.map(
@@ -247,7 +245,7 @@ class ZHADeviceCard extends LitElement {
                     ? html`
                         <div class="help-text">
                           ${this.hass!.localize(
-                            "ui.panel.config.zha.services.reconfigure"
+                            "ui.dialogs.zha_device_info.services.reconfigure"
                           )}
                         </div>
                       `
@@ -264,7 +262,7 @@ class ZHADeviceCard extends LitElement {
                     ? html`
                         <div class="help-text">
                           ${this.hass!.localize(
-                            "ui.panel.config.zha.services.remove"
+                            "ui.dialogs.zha_device_info.services.remove"
                           )}
                         </div>
                       `
@@ -381,6 +379,7 @@ class ZHADeviceCard extends LitElement {
         }
         .device .manuf {
           color: var(--secondary-text-color);
+          margin-bottom: 20px;
         }
         .extra-info {
           margin-top: 8px;
@@ -393,14 +392,17 @@ class ZHADeviceCard extends LitElement {
         .info {
           margin-left: 16px;
         }
+        dl {
+          display: grid;
+          grid-template-columns: 125px 1fr;
+        }
         dl dt {
           padding-left: 12px;
           float: left;
-          width: 100px;
           text-align: left;
         }
-        dt dd {
-          text-align: left;
+        dl dd {
+          max-width: 200px;
         }
         paper-icon-item {
           cursor: pointer;
