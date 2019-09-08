@@ -2,9 +2,12 @@ import marked from "marked";
 // @ts-ignore
 import filterXSS from "xss";
 
-const allowedSvgTags = ["svg", "path"];
+interface WhiteList {
+  [tag: string]: string[];
+}
 
-const allowedTag = (tag: string) => tag === "ha-icon";
+let whiteListNormal: WhiteList | undefined;
+let whiteListSvg: WhiteList | undefined;
 
 export const renderMarkdown = (
   content: string,
@@ -13,10 +16,30 @@ export const renderMarkdown = (
     // Do not allow SVG on untrusted content, it allows XSS.
     allowSvg?: boolean;
   } = {}
-) =>
-  filterXSS(marked(content, markedOptions), {
-    onIgnoreTag: hassOptions.allowSvg
-      ? (tag, html) =>
-          allowedTag(tag) || allowedSvgTags.includes(tag) ? html : null
-      : (tag, html) => (allowedTag(tag) ? html : null),
+) => {
+  if (!whiteListNormal) {
+    whiteListNormal = {
+      ...filterXSS.whiteList,
+      "ha-icon": ["icon"],
+    };
+  }
+
+  let whiteList: WhiteList | undefined;
+
+  if (hassOptions.allowSvg) {
+    if (!whiteListSvg) {
+      whiteListSvg = {
+        ...whiteListNormal,
+        svg: ["xmlns", "height", "width"],
+        path: ["transform", "stroke", "d"],
+      };
+    }
+    whiteList = whiteListSvg;
+  } else {
+    whiteList = whiteListNormal;
+  }
+
+  return filterXSS(marked(content, markedOptions), {
+    whiteList,
   });
+};
