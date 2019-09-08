@@ -116,6 +116,20 @@ class HUIRoot extends LitElement {
                       @iron-select="${this._deselect}"
                       slot="dropdown-content"
                     >
+                      ${__DEMO__ /* No unused entities available in the demo */
+                        ? ""
+                        : html`
+                            <paper-item
+                              aria-label=${this.hass!.localize(
+                                "ui.panel.lovelace.menu.unused_entities"
+                              )}
+                              @tap="${this._handleUnusedEntities}"
+                            >
+                              ${this.hass!.localize(
+                                "ui.panel.lovelace.menu.unused_entities"
+                              )}
+                            </paper-item>
+                          `}
                       <paper-item @tap="${this.lovelace!.enableFullEditMode}">
                         ${this.hass!.localize(
                           "ui.panel.lovelace.editor.menu.raw_editor"
@@ -160,11 +174,6 @@ class HUIRoot extends LitElement {
                                 "ui.panel.lovelace.menu.refresh"
                               )}
                             </paper-item>
-                          `
-                        : ""}
-                      ${__DEMO__ /* No unused entities available in the demo */
-                        ? ""
-                        : html`
                             <paper-item
                               aria-label=${this.hass!.localize(
                                 "ui.panel.lovelace.menu.unused_entities"
@@ -175,7 +184,8 @@ class HUIRoot extends LitElement {
                                 "ui.panel.lovelace.menu.unused_entities"
                               )}
                             </paper-item>
-                          `}
+                          `
+                        : ""}
                       <paper-item
                         aria-label=${this.hass!.localize(
                           "ui.panel.lovelace.menu.configure_ui"
@@ -422,6 +432,15 @@ class HUIRoot extends LitElement {
       }
 
       if (!oldLovelace || oldLovelace.editMode !== this.lovelace!.editMode) {
+        // Leave unused entities when leaving edit mode
+        if (
+          this.lovelace!.mode === "storage" &&
+          this._routeData!.view === "hass-unused-entities"
+        ) {
+          const views = this.config && this.config.views;
+          navigate(this, `/lovelace/${views[0].path || 0}`);
+          newSelectView = 0;
+        }
         // On edit mode change, recreate the current view from scratch
         force = true;
         // Recalculate to see if we need to adjust content area for tab bar
@@ -562,10 +581,10 @@ class HUIRoot extends LitElement {
     if (viewIndex === "hass-unused-entities") {
       const unusedEntities = document.createElement("hui-unused-entities");
       // Wait for promise to resolve so that the element has been upgraded.
-      import(/* webpackChunkName: "hui-unused-entities" */ "./hui-unused-entities").then(
+      import(/* webpackChunkName: "hui-unused-entities" */ "./editor/unused-entities/hui-unused-entities").then(
         () => {
-          unusedEntities.setConfig(this.config);
           unusedEntities.hass = this.hass!;
+          unusedEntities.lovelace = this.lovelace!;
         }
       );
       if (this.config.background) {

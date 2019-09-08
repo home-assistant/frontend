@@ -15,6 +15,7 @@ const dialogTag = "hui-dialog-edit-card";
 export interface EditCardDialogParams {
   lovelace: Lovelace;
   path: [number] | [number, number];
+  entities?: string[]; // We can pass entity id's that will be added to the config when a card is picked
 }
 
 const registerEditCardDialog = (element: HTMLElement): Event =>
