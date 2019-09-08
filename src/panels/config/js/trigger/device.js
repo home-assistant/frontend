@@ -2,6 +2,7 @@ import { h, Component } from "preact";
 
 import "../../../../components/device/ha-device-picker";
 import "../../../../components/device/ha-device-trigger-picker";
+import "../../../../components/device/ha-device-automation-picker";
 
 import { onChangeEvent } from "../../../../common/preact/event";
 
