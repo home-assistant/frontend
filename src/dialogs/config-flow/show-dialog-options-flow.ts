@@ -39,7 +39,7 @@ export const showOptionsFlowDialog = (
 
         return description
           ? html`
-              <ha-markdown .content=${description}></ha-markdown>
+              <ha-markdown allowsvg .content=${description}></ha-markdown>
             `
           : "";
       },

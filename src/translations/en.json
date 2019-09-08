@@ -446,6 +446,14 @@
       "script": {
         "execute": "Execute"
       },
+      "timer": {
+        "actions": {
+          "start": "start",
+          "pause": "pause",
+          "cancel": "cancel",
+          "finish": "finish"
+        }
+      },
       "vacuum": {
         "actions": {
           "resume_cleaning": "Resume cleaning",
@@ -1059,6 +1067,10 @@
             "save": "Save",
             "unsaved_changes": "Unsaved changes",
             "saved": "Saved"
+          },
+          "edit_lovelace": {
+            "header": "Title of your Lovelace UI",
+            "explanation": "This title is shown above all your views in Lovelace."
           },
           "edit_view": {
             "header": "View Configuration",
