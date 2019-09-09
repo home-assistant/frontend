@@ -31,6 +31,9 @@ import {
 } from "../../../data/automation";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import "../../lovelace/components/hui-yaml-editor.ts";
+import { HuiYamlEditor } from "../../lovelace/components/hui-yaml-editor.ts";
+import yaml from "js-yaml";
 
 function AutomationEditor(mountEl, props, mergeEl) {
   return render(h(Automation, props), mountEl, mergeEl);
@@ -45,6 +48,7 @@ class HaAutomationEditor extends LitElement {
   private _dirty?: boolean;
   private _rendered?: unknown;
   private _errors?: string;
+  private _showYaml: boolean;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -55,11 +59,15 @@ class HaAutomationEditor extends LitElement {
       _errors: {},
       _dirty: {},
       _config: {},
+      _showYaml: {},
+      _yaml: {},
+      _yamlEditor: {},
     };
   }
 
   constructor() {
     super();
+    this._showYaml = false;
     this._configChanged = this._configChanged.bind(this);
   }
 
@@ -89,6 +97,10 @@ class HaAutomationEditor extends LitElement {
                     "ui.panel.config.automation.editor.default_name"
                   )}
             </div>
+            <paper-icon-button
+              icon="mdi:code-braces"
+              @click=${this._toggleYaml}
+            ></paper-icon-button>
             ${this.creatingNew
               ? ""
               : html`
@@ -106,12 +118,22 @@ class HaAutomationEditor extends LitElement {
                 <div class="errors">${this._errors}</div>
               `
             : ""}
-          <div
-            id="root"
-            class="${classMap({
-              rtl: computeRTL(this.hass),
-            })}"
-          ></div>
+          ${this._showYaml
+            ? html`
+                <hui-yaml-editor
+                  .hass=${this.hass}
+                  .value=${this._yaml}
+                  @yaml-changed=${this._handleYamlChanged}
+                ></hui-yaml-editor>
+              `
+            : html`
+                <div
+                  id="root"
+                  class="${classMap({
+                    rtl: computeRTL(this.hass),
+                  })}"
+                ></div>
+              `}
         </div>
         <ha-fab
           slot="fab"
@@ -189,18 +211,28 @@ class HaAutomationEditor extends LitElement {
       };
     }
 
-    if (changedProps.has("_config") && this.hass) {
-      this._rendered = AutomationEditor(
-        this.shadowRoot!.querySelector("#root"),
-        {
-          automation: this._config,
-          onChange: this._configChanged,
-          isWide: this.isWide,
-          hass: this.hass,
-          localize: this.hass.localize,
-        },
-        this._rendered
-      );
+    if (
+      (changedProps.has("_config") || changedProps.has("_showYaml")) &&
+      this.hass
+    ) {
+      if (!this._showYaml) {
+        this._rendered = AutomationEditor(
+          this.shadowRoot!.querySelector("#root"),
+          {
+            automation: this._config,
+            onChange: this._configChanged,
+            isWide: this.isWide,
+            hass: this.hass,
+            localize: this.hass.localize,
+          },
+          this._rendered
+        );
+      } else {
+        if (this._yamlEditor) {
+          this._yamlEditor.value = this._yaml;
+          this._yamlEditor.codemirror.refresh();
+        }
+      }
     }
   }
 
@@ -255,6 +287,28 @@ class HaAutomationEditor extends LitElement {
         throw errors;
       }
     );
+  }
+
+  private _toggleYaml(): void {
+    this._showYaml = !this._showYaml;
+  }
+
+  private get _yamlEditor(): HuiYamlEditor | null {
+    return this.shadowRoot!.querySelector("hui-yaml-editor");
+  }
+
+  private get _yaml(): string {
+    if (this._config) {
+      return yaml.safeDump(this._config);
+    }
+    return "";
+  }
+
+  private _handleYamlChanged(ev): boolean {
+    ev.stopPropagation();
+    this._dirty = true;
+    this._config = yaml.safeLoad(ev.detail.value);
+    return true;
   }
 
   static get styles(): CSSResult[] {
