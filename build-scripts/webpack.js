@@ -7,7 +7,6 @@ const CompressionPlugin = require("compression-webpack-plugin");
 const zopfli = require("@gfx/zopfli");
 const ManifestPlugin = require("webpack-manifest-plugin");
 const paths = require("./paths.js");
-const { babelLoaderConfig } = require("./babel.js");
 
 let version = fs
   .readFileSync(path.resolve(paths.polymer_dir, "setup.py"), "utf8")
@@ -41,6 +40,20 @@ const resolve = {
   },
 };
 
+const tsLoader = (latestBuild) => ({
+  test: /\.ts|tsx$/,
+  exclude: /node_modules/,
+  use: [
+    {
+      loader: "ts-loader",
+      options: {
+        compilerOptions: latestBuild
+          ? { noEmit: false }
+          : { target: "es5", noEmit: false },
+      },
+    },
+  ],
+});
 const cssLoader = {
   test: /\.css$/,
   use: "raw-loader",
@@ -118,7 +131,7 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
     devtool: genDevTool(isProdBuild),
     entry,
     module: {
-      rules: [babelLoaderConfig({ latestBuild }), cssLoader, htmlLoader],
+      rules: [tsLoader(latestBuild), cssLoader, htmlLoader],
     },
     optimization: optimization(latestBuild),
     plugins: [
@@ -186,7 +199,7 @@ const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
       compatibility: "./src/entrypoints/compatibility.ts",
     },
     module: {
-      rules: [babelLoaderConfig({ latestBuild }), cssLoader, htmlLoader],
+      rules: [tsLoader(latestBuild), cssLoader, htmlLoader],
     },
     optimization: optimization(latestBuild),
     plugins: [
@@ -233,7 +246,7 @@ const createCastConfig = ({ isProdBuild, latestBuild }) => {
     devtool: genDevTool(isProdBuild),
     entry,
     module: {
-      rules: [babelLoaderConfig({ latestBuild }), cssLoader, htmlLoader],
+      rules: [tsLoader(latestBuild), cssLoader, htmlLoader],
     },
     optimization: optimization(latestBuild),
     plugins: [
