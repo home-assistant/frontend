@@ -2,7 +2,6 @@ import { h, Component } from "preact";
 
 import "../../../../components/device/ha-device-picker";
 import "../../../../components/device/ha-device-trigger-picker";
-import "../../../../components/device/ha-device-automation-picker";
 
 export default class DeviceTrigger extends Component<any, any> {
   constructor() {
