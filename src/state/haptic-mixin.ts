@@ -1,6 +1,21 @@
 import { Constructor, LitElement, PropertyValues } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
-import { handleHaptic } from "../util/haptics";
+
+import { HapticType } from "../data/haptics";
+
+const hapticPatterns = {
+  success: [50, 50, 50],
+  warning: [100, 50, 100],
+  failure: [200, 100, 200],
+  light: [50],
+  medium: [100],
+  heavy: [200],
+  selection: [20],
+};
+
+const handleHaptic = (hapticType: HapticType) => {
+  navigator.vibrate(hapticPatterns[hapticType]);
+};
 
 export const hapticMixin = (superClass: Constructor<LitElement & HassBaseEl>) =>
   class extends superClass {
