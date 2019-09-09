@@ -3,7 +3,6 @@ const CompressionPlugin = require("compression-webpack-plugin");
 const zopfli = require("@gfx/zopfli");
 
 const config = require("./config.js");
-const { babelLoaderConfig } = require("../build-scripts/babel.js");
 const webpackBase = require("../build-scripts/webpack.js");
 
 const isProdBuild = process.env.NODE_ENV === "production";
@@ -19,7 +18,20 @@ module.exports = {
   },
   module: {
     rules: [
-      babelLoaderConfig({ latestBuild }),
+      {
+        test: /\.ts$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: "ts-loader",
+            options: {
+              compilerOptions: latestBuild
+                ? { noEmit: false }
+                : { target: "es5", noEmit: false },
+            },
+          },
+        ],
+      },
       {
         test: /\.(html)$/,
         use: {
