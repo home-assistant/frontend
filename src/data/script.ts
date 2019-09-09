@@ -7,6 +7,12 @@ export interface EventAction {
   event_data_template?: { [key: string]: any };
 }
 
+export interface DeviceAction {
+  device_id: string;
+  domain: string;
+  entity_id: string;
+}
+
 export const triggerScript = (
   hass: HomeAssistant,
   entityId: string,
