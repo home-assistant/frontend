@@ -22,7 +22,9 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
-    for (const el of this.shadowRoot!.querySelectorAll("#root > *")) {
+    for (const el of Array.from(
+      this.shadowRoot!.querySelectorAll("#root > *")
+    )) {
       const element = el as LovelaceElement;
       element.hass = this._hass;
     }
