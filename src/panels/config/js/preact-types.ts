@@ -23,6 +23,7 @@ declare global {
       "ha-service-picker": any;
       "mwc-button": any;
       "ha-device-trigger-picker": any;
+      "ha-device-action-picker": any;
     }
   }
 }
