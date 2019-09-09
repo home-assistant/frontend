@@ -193,9 +193,10 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
     }
 
     if (this._cacheConfig.cacheKey !== `more_info.${newVal.entity_id}`) {
-      this._cacheConfig = Object.assign({}, this._cacheConfig, {
+      this._cacheConfig = {
+        ...this._cacheConfig,
         cacheKey: `more_info.${newVal.entity_id}`,
-      });
+      };
     }
   }
 

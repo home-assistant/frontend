@@ -102,7 +102,7 @@ export function parseTextToColoredPre(text) {
 
     if (match[1] === undefined) continue;
 
-    for (const colorCode of match[1].split(";")) {
+    match[1].split(";").forEach((colorCode) => {
       switch (parseInt(colorCode)) {
         case 0:
           // reset
@@ -195,7 +195,7 @@ export function parseTextToColoredPre(text) {
           state.backgroundColor = null;
           break;
       }
-    }
+    });
   }
   addSpan(text.substring(i));
 
