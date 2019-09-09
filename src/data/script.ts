@@ -8,7 +8,6 @@ export interface EventAction {
 }
 
 export interface DeviceAction {
-  device: string;
   device_id: string;
   domain: string;
   entity_id: string;

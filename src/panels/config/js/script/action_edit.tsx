@@ -16,7 +16,7 @@ const TYPES = {
   wait_template: WaitAction,
   condition: ConditionAction,
   event: EventAction,
-  device: DeviceAction,
+  device_id: DeviceAction,
 };
 
 const OPTIONS = Object.keys(TYPES).sort();

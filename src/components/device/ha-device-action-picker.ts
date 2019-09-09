@@ -18,7 +18,6 @@ class HaDeviceActionPicker extends HaDeviceAutomationPicker<DeviceAction> {
       fetchDeviceActions,
       (deviceId?: string) => ({
         device_id: deviceId || "",
-        device: "",
         domain: "",
         entity_id: "",
       })

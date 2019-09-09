@@ -10,9 +10,8 @@ export interface DeviceAutomation {
   event?: string;
 }
 
-export interface DeviceAction extends DeviceAutomation {
-  device: string;
-}
+// tslint:disable-next-line: no-empty-interface
+export interface DeviceAction extends DeviceAutomation {}
 
 export interface DeviceCondition extends DeviceAutomation {
   condition: string;
@@ -69,8 +68,14 @@ export const localizeDeviceAutomationAction = (
   const state = action.entity_id ? hass.states[action.entity_id] : undefined;
   return hass.localize(
     `component.${action.domain}.device_automation.action_type.${action.type}`,
-    "name",
-    state ? compute_state_name(state) : "<unknown>"
+    "entity_name",
+    state ? compute_state_name(state) : "<unknown>",
+    "subtype",
+    hass.localize(
+      `component.${action.domain}.device_automation.action_subtype.${
+        action.subtype
+      }`
+    )
   );
 };
 

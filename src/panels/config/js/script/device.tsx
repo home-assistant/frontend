@@ -18,7 +18,6 @@ export default class DeviceActionEditor extends Component<
 > {
   public static defaultConfig: DeviceAction = {
     device_id: "",
-    device: "",
     domain: "",
     entity_id: "",
   };
@@ -32,7 +31,7 @@ export default class DeviceActionEditor extends Component<
 
   public render() {
     const { action, hass } = this.props;
-    const deviceId = this.state.device_id || action.device;
+    const deviceId = this.state.device_id || action.device_id;
 
     return (
       <div>
