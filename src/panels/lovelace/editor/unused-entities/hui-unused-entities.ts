@@ -159,7 +159,6 @@ export class HuiUnusedEntities extends LitElement {
     this._selectedEntities = [];
     this._unusedEntities = computeUnusedEntities(this.hass, this._config!);
     this._filterUnusedEntities();
-    this._sortUnusedEntities();
   }
 
   private _filterUnusedEntities(): void {
@@ -170,6 +169,7 @@ export class HuiUnusedEntities extends LitElement {
         computeStateName(stateObj).includes(this._filter)
       );
     });
+    this._sortUnusedEntities();
   }
 
   private _sortUnusedEntities(): void {
