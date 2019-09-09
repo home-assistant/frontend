@@ -141,17 +141,15 @@ class HaFormCustomize extends PolymerElement {
   }
 
   _initOpenObject(key, value, secondary, config) {
-    return Object.assign(
-      {
-        attribute: key,
-        value: value,
-        closed: false,
-        domain: computeStateDomain(this.entity),
-        secondary: secondary,
-        description: key,
-      },
-      config
-    );
+    return {
+      attribute: key,
+      value: value,
+      closed: false,
+      domain: computeStateDomain(this.entity),
+      secondary: secondary,
+      description: key,
+      ...config,
+    };
   }
 
   loadEntity(entity) {
