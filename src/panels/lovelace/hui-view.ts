@@ -264,7 +264,8 @@ export class HUIView extends LitElement {
     }
 
     const elements: HUIView["_badges"] = [];
-    const badges = processConfigEntities(config.badges);
+    // It's possible that a null value was stored as a badge entry
+    const badges = processConfigEntities(config.badges.filter(Boolean));
     for (const badge of badges) {
       const element = document.createElement("ha-state-label-badge");
       const entityId = badge.entity;
