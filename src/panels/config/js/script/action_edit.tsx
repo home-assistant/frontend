@@ -6,6 +6,7 @@ import "@polymer/paper-item/paper-item";
 import CallServiceAction from "./call_service";
 import ConditionAction from "./condition";
 import DelayAction from "./delay";
+import DeviceAction from "./device";
 import EventAction from "./event";
 import WaitAction from "./wait";
 
@@ -15,6 +16,7 @@ const TYPES = {
   wait_template: WaitAction,
   condition: ConditionAction,
   event: EventAction,
+  device_id: DeviceAction,
 };
 
 const OPTIONS = Object.keys(TYPES).sort();
