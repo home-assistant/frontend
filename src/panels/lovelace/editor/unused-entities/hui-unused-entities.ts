@@ -42,7 +42,8 @@ export class HuiUnusedEntities extends LitElement {
   @property() public hass?: HomeAssistant;
 
   private _unusedEntities: string[] = [];
-  @property() private _filteredUnusedEntities: string[] = [];
+  private _filteredUnusedEntities: string[] = [];
+  @property() private _sortedUnusedEntities: string[] = [];
 
   @property() private _filter = "";
 
@@ -110,7 +111,7 @@ export class HuiUnusedEntities extends LitElement {
             direction: this._sortColumn === 3 ? this._sortDirection : null,
           },
         ]}
-        .data=${this._filteredUnusedEntities.map((entity) => {
+        .data=${this._sortedUnusedEntities.map((entity) => {
           const stateObj = entity ? this.hass!.states[entity] : undefined;
           return [
             html`
@@ -163,16 +164,87 @@ export class HuiUnusedEntities extends LitElement {
 
   private _filterUnusedEntities(): void {
     this._filteredUnusedEntities = this._unusedEntities.filter((entity) => {
-      const stateObj = entity ? this.hass!.states[entity] : undefined;
+      const stateObj = this.hass!.states[entity];
       return (
         entity.includes(this._filter) ||
-        computeStateName(stateObj!).includes(this._filter)
+        computeStateName(stateObj).includes(this._filter)
       );
     });
   }
 
   private _sortUnusedEntities(): void {
-    return;
+    this._sortedUnusedEntities = [...this._filteredUnusedEntities];
+    if (this._sortDirection) {
+      this._sortedUnusedEntities.sort((a, b) => {
+        let sort = 0;
+        switch (this._sortColumn) {
+          case 0:
+            sort = this._sortByEntityName(a, b);
+            break;
+          case 1:
+            sort = this._sortByEntityId(a, b);
+            break;
+          case 2:
+            sort = this._sortByDomain(a, b);
+            break;
+          case 3:
+            sort = this._sortByLastChanged(a, b);
+            break;
+          default:
+            return 0;
+        }
+        if (this._sortDirection === "desc") {
+          sort = sort * -1;
+        }
+        return sort;
+      });
+    }
+  }
+
+  private _sortByDomain(a, b): number {
+    const domainA = computeDomain(a).toUpperCase();
+    const domainB = computeDomain(b).toUpperCase();
+    if (domainA < domainB) {
+      return -1;
+    }
+    if (domainA > domainB) {
+      return 1;
+    }
+    return 0;
+  }
+
+  private _sortByEntityId(a, b): number {
+    if (a < b) {
+      return -1;
+    }
+    if (a > b) {
+      return 1;
+    }
+    return 0;
+  }
+
+  private _sortByEntityName(a, b): number {
+    const nameA = computeStateName(this.hass!.states[a]).toUpperCase();
+    const nameB = computeStateName(this.hass!.states[b]).toUpperCase();
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+    return 0;
+  }
+
+  private _sortByLastChanged(a, b): number {
+    const changedA = new Date(this.hass!.states[a].last_changed);
+    const changedB = new Date(this.hass!.states[b].last_changed);
+    if (changedA < changedB) {
+      return 1;
+    }
+    if (changedA > changedB) {
+      return -1;
+    }
+    return 0;
   }
 
   private _handleSearchChange(ev: CustomEvent): void {
