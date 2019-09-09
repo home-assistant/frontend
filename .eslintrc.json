@@ -1,12 +1,9 @@
 {
   "extends": "./.eslintrc-hound.json",
-  "plugins": [
-    "react"
-  ],
+  "plugins": ["react"],
   "env": {
     "browser": true
   },
-  "parser": "babel-eslint",
   "rules": {
     "import/no-unresolved": 2,
     "linebreak-style": 0,

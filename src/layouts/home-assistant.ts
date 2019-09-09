@@ -14,7 +14,7 @@ import { HassElement } from "../state/hass-element";
 
 export class HomeAssistantAppEl extends HassElement {
   @property() private _route?: Route;
-  @property() private _error?: boolean;
+  @property() private _error = false;
   @property() private _panelUrl?: string;
 
   protected render() {
@@ -49,6 +49,7 @@ export class HomeAssistantAppEl extends HassElement {
   }
 
   protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
     if (changedProps.has("_panelUrl")) {
       this.panelUrlChanged(this._panelUrl!);
       this._updateHass({ panelUrl: this._panelUrl });
@@ -70,7 +71,11 @@ export class HomeAssistantAppEl extends HassElement {
     }
   }
 
-  private _routeChanged(ev) {
+  private async _routeChanged(ev) {
+    // routeChangged event listener is called while we're doing the fist render,
+    // causing the update to be ignored. So delay it to next task (Lit render is sync).
+    await new Promise((resolve) => setTimeout(resolve, 0));
+
     const route = ev.detail.value as Route;
     // If it's the first route that we process,
     // check if we should navigate away from /
