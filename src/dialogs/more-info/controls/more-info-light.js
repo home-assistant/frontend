@@ -1,6 +1,7 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
@@ -188,6 +189,7 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
               on-selected-changed="effectChanged"
               attr-for-selected="item-name"
             >
+              <paper-item item-name$="stop">stop</paper-item>
               <template
                 is="dom-repeat"
                 items="[[stateObj.attributes.effect_list]]"
