@@ -231,6 +231,7 @@ class HaAutomationEditor extends LitElement {
         if (this._yamlEditor) {
           this._yamlEditor.value = this._yaml;
           this._yamlEditor.codemirror.refresh();
+          this._yamlEditor.codemirror.focus();
         }
       }
     }
@@ -306,9 +307,13 @@ class HaAutomationEditor extends LitElement {
 
   private _handleYamlChanged(ev): boolean {
     ev.stopPropagation();
-    this._dirty = true;
-    this._config = yaml.safeLoad(ev.detail.value);
-    return true;
+    try {
+      this._config = yaml.safeLoad(ev.detail.value);
+      this._dirty = true;
+      return true;
+    } catch (exception) {
+      return false;
+    }
   }
 
   static get styles(): CSSResult[] {
