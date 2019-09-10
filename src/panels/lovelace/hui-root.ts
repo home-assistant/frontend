@@ -186,16 +186,20 @@ class HUIRoot extends LitElement {
                             </paper-item>
                           `
                         : ""}
-                      <paper-item
-                        aria-label=${this.hass!.localize(
-                          "ui.panel.lovelace.menu.configure_ui"
-                        )}
-                        @tap="${this._editModeEnable}"
-                      >
-                        ${this.hass!.localize(
-                          "ui.panel.lovelace.menu.configure_ui"
-                        )}
-                      </paper-item>
+                      ${this.hass!.user!.is_admin
+                        ? html`
+                            <paper-item
+                              aria-label=${this.hass!.localize(
+                                "ui.panel.lovelace.menu.configure_ui"
+                              )}
+                              @tap="${this._editModeEnable}"
+                            >
+                              ${this.hass!.localize(
+                                "ui.panel.lovelace.menu.configure_ui"
+                              )}
+                            </paper-item>
+                          `
+                        : ""}
                       <paper-item
                         aria-label=${this.hass!.localize(
                           "ui.panel.lovelace.menu.help"
