@@ -32,8 +32,11 @@ import {
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../lovelace/components/hui-yaml-editor.ts";
-import { HuiYamlEditor } from "../../lovelace/components/hui-yaml-editor.ts";
+// This is not a duplicate import, one is for types, one is for element.
+// tslint:disable-next-line
+import { HuiYamlEditor } from "../../lovelace/components/hui-yaml-editor";
 import yaml from "js-yaml";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 function AutomationEditor(mountEl, props, mergeEl) {
   return render(h(Automation, props), mountEl, mergeEl);
@@ -227,12 +230,11 @@ class HaAutomationEditor extends LitElement {
           },
           this._rendered
         );
-      } else {
-        if (this._yamlEditor) {
-          this._yamlEditor.value = this._yaml;
-          this._yamlEditor.codemirror.refresh();
-          this._yamlEditor.codemirror.focus();
-        }
+      } else if (this._yamlEditor && changedProps.has("_showYaml")) {
+        this._yamlEditor.value = this._yaml;
+        this._yamlEditor.codemirror.refresh();
+        this._yamlEditor.codemirror.focus();
+        fireEvent(this as HTMLElement, "iron-resize");
       }
     }
   }
