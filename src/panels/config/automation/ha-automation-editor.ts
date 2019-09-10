@@ -182,6 +182,9 @@ class HaAutomationEditor extends LitElement {
                 config[key] = [value];
               }
             }
+            // Drop ID from config - this is already stored in routeData and shouldn't be editable
+            // @ts-ignore
+            delete config.id;
             this._dirty = false;
             this._config = config;
           },
