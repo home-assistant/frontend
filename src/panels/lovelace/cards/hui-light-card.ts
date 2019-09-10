@@ -96,25 +96,23 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
             @value-changing=${this._dragEvent}
             @value-changed=${this._setBrightness}
           ></round-slider>
+          <ha-icon
+            class="light-icon"
+            data-state="${stateObj.state}"
+            .icon="${stateIcon(stateObj)}"
+            style="${styleMap({
+              filter: this._computeBrightness(stateObj),
+              color: this._computeColor(stateObj),
+            })}"
+            @click="${this._handleTap}"
+          ></ha-icon>
         </div>
         <div id="tooltip">
-          <div class="icon-state">
-            <ha-icon
-              class="light-icon"
-              data-state="${stateObj.state}"
-              .icon="${stateIcon(stateObj)}"
-              style="${styleMap({
-                filter: this._computeBrightness(stateObj),
-                color: this._computeColor(stateObj),
-              })}"
-              @click="${this._handleTap}"
-            ></ha-icon>
-            <div class="brightness" @ha-click="${this._handleTap}">
-              ${brightness} %
-            </div>
-            <div class="name">
-              ${this._config.name || computeStateName(stateObj)}
-            </div>
+          <div class="brightness" @ha-click="${this._handleTap}">
+            ${brightness} %
+          </div>
+          <div class="name">
+            ${this._config.name || computeStateName(stateObj)}
           </div>
         </div>
       </ha-card>
@@ -165,19 +163,10 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           right: 0;
           height: 100%;
           text-align: center;
-          z-index: 15;
-        }
-
-        .icon-state {
-          display: block;
-          margin: auto;
-          width: 100%;
-          height: 100%;
-          transform: translate(0, 25%);
         }
 
         #light {
-          margin: 0 auto;
+          margin: auto;
           padding-top: 0;
           padding-bottom: 32px;
           display: flex;
@@ -187,19 +176,21 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           width: 160px;
         }
         #light round-slider {
-          z-index: 20 !important;
           margin: 0 auto;
           display: inline-block;
           --round-slider-path-color: var(--disabled-text-color);
           --round-slider-bar-color: var(--primary-color);
+          z-index: 20;
         }
 
         .light-icon {
-          margin: auto;
+          position: absolute;
+          margin: 0 auto;
           width: 76px;
           height: 76px;
           color: var(--paper-item-icon-color, #44739e);
           cursor: pointer;
+          z-index: 20;
         }
 
         .light-icon[data-state="on"] {
@@ -211,7 +202,10 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         }
 
         .name {
-          padding-top: 32px;
+          position: absolute;
+          top: 160px;
+          left: 50%;
+          transform: translate(-50%);
           font-size: var(--name-font-size);
         }
 
@@ -219,8 +213,8 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           font-size: var(--brightness-font-size);
           position: absolute;
           margin: 0 auto;
+          top: 135px;
           left: 50%;
-          top: 45%;
           transform: translate(-50%);
           opacity: 0;
           transition: opacity 0.5s ease-in-out;
