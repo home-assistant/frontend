@@ -6,7 +6,6 @@ import {
   TemplateResult,
 } from "lit-element";
 
-import "../../components/ha-fab";
 import "../../components/entity/ha-state-label-badge";
 // This one is for types
 // tslint:disable-next-line
