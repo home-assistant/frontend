@@ -189,7 +189,6 @@ class MoreInfoLight extends LocalizeMixin(EventsMixin(PolymerElement)) {
               on-selected-changed="effectChanged"
               attr-for-selected="item-name"
             >
-              <paper-item item-name$="stop">stop</paper-item>
               <template
                 is="dom-repeat"
                 items="[[stateObj.attributes.effect_list]]"
