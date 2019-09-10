@@ -8,7 +8,6 @@ import {
 } from "lit-element";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-fab/paper-fab";
 
 import { HomeAssistant } from "../../../types";
 import {
@@ -19,6 +18,7 @@ import {
   subscribeAreaRegistry,
 } from "../../../data/area_registry";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-loading-screen";
 import "../ha-config-section";
@@ -100,7 +100,7 @@ class HaConfigAreaRegistry extends LitElement {
         </ha-config-section>
       </hass-subpage>
 
-      <paper-fab
+      <ha-fab
         ?is-wide=${this.isWide}
         icon="hass:plus"
         title="${this.hass.localize(
@@ -110,7 +110,7 @@ class HaConfigAreaRegistry extends LitElement {
         class="${classMap({
           rtl: computeRTL(this.hass),
         })}"
-      ></paper-fab>
+      ></ha-fab>
     `;
   }
 
@@ -183,24 +183,24 @@ All devices in this area will become unassigned.`)
         padding-top: 4px;
         padding-bottom: 4px;
       }
-      paper-fab {
+      ha-fab {
         position: fixed;
         bottom: 16px;
         right: 16px;
         z-index: 1;
       }
 
-      paper-fab[is-wide] {
+      ha-fab[is-wide] {
         bottom: 24px;
         right: 24px;
       }
 
-      paper-fab.rtl {
+      ha-fab.rtl {
         right: auto;
         left: 16px;
       }
 
-      paper-fab[is-wide].rtl {
+      ha-fab[is-wide].rtl {
         bottom: 24px;
         right: auto;
         left: 24px;
