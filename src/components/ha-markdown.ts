@@ -50,7 +50,6 @@ class HaMarkdown extends UpdatingElement {
       // Open external links in a new window
       if (
         node.nodeName === "A" &&
-        node instanceof HTMLAnchorElement &&
         node.host !== document.location.host
       ) {
         node.target = "_blank";
