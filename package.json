@@ -47,7 +47,6 @@
     "@polymer/paper-dialog-scrollable": "^3.0.1",
     "@polymer/paper-drawer-panel": "^3.0.1",
     "@polymer/paper-dropdown-menu": "^3.0.1",
-    "@polymer/paper-fab": "^3.0.1",
     "@polymer/paper-icon-button": "^3.0.2",
     "@polymer/paper-input": "^3.0.1",
     "@polymer/paper-item": "^3.0.1",

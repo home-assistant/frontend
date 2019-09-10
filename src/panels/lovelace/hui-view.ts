@@ -6,7 +6,6 @@ import {
   TemplateResult,
 } from "lit-element";
 
-import "@polymer/paper-fab/paper-fab";
 import "../../components/entity/ha-state-label-badge";
 // This one is for types
 // tslint:disable-next-line
@@ -96,8 +95,7 @@ export class HUIView extends LitElement {
       <div id="columns"></div>
       ${this.lovelace!.editMode
         ? html`
-            <paper-fab
-              elevated="2"
+            <ha-fab
               icon="hass:plus"
               title="${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_card.add"
@@ -106,7 +104,7 @@ export class HUIView extends LitElement {
               class="${classMap({
                 rtl: computeRTL(this.hass!),
               })}"
-            ></paper-fab>
+            ></ha-fab>
           `
         : ""}
     `;
@@ -148,7 +146,7 @@ export class HUIView extends LitElement {
           margin: 4px 4px 8px;
         }
 
-        paper-fab {
+        ha-fab {
           position: sticky;
           float: right;
           bottom: 16px;
@@ -156,7 +154,7 @@ export class HUIView extends LitElement {
           z-index: 1;
         }
 
-        paper-fab.rtl {
+        ha-fab.rtl {
           float: left;
           right: auto;
           left: 16px;
