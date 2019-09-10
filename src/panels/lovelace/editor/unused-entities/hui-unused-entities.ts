@@ -82,7 +82,7 @@ export class HuiUnusedEntities extends LitElement {
             sortable: true,
             filterable: true,
             filterKey: "friendly_name",
-            direction: "desc",
+            direction: "asc",
             template: (stateObj) => html`
               <state-badge
                 .hass=${this.hass!}
@@ -91,7 +91,7 @@ export class HuiUnusedEntities extends LitElement {
               ${stateObj.friendly_name}
             `,
           },
-          id: {
+          entity_id: {
             title: "Entity id",
             sortable: true,
             filterable: true,
@@ -116,15 +116,16 @@ export class HuiUnusedEntities extends LitElement {
         .data=${this._unusedEntities.map((entity) => {
           const stateObj = this.hass!.states[entity];
           return {
+            entity_id: entity,
             entity: {
               ...stateObj,
               friendly_name: computeStateName(stateObj),
             },
-            id: entity,
             domain: computeDomain(entity),
             last_changed: stateObj!.last_changed,
           };
         })}
+        .id=${"entity_id"}
         .selectable=${this.lovelace!.mode === "storage"}
         @selection-changed=${this._handleSelectionChanged}
       ></ha-data-table>

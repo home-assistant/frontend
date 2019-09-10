@@ -17,6 +17,7 @@ import {
   unsafeCSS,
   classMap,
   TemplateResult,
+  PropertyValues,
 } from "@material/mwc-base/base-element.js";
 
 import memoizeOne from "memoize-one";
@@ -79,6 +80,8 @@ export class HaDataTable extends BaseElement {
 
   @property({ type: Boolean }) public selectable = false;
 
+  @property({ type: String }) public id = "id";
+
   protected mdcFoundation!: MDCDataTableFoundation;
 
   protected readonly mdcFoundationClass = MDCDataTableFoundation;
@@ -88,6 +91,8 @@ export class HaDataTable extends BaseElement {
   @queryAll(".mdc-data-table__row") protected rowElements!: HTMLElement[];
 
   @query("#header-checkbox") private _headerCheckbox!: HaCheckbox;
+
+  @property({ type: Boolean }) private _filterable = false;
 
   @property({ type: Boolean }) private _headerChecked = false;
 
@@ -107,13 +112,53 @@ export class HaDataTable extends BaseElement {
       sortColumn?: string
     ) =>
       sortColumn
-        ? this._sortData(this._filterData(data, filter), sortColumn, direction)
-        : this._filterData(data, filter)
+        ? this._memSortData(
+            this._memFilterData(data, filter),
+            direction,
+            sortColumn
+          )
+        : this._memFilterData(data, filter)
   );
+
+  private _memFilterData = memoizeOne(
+    (data: DataTabelRowData[], filter: string) => this._filterData(data, filter)
+  );
+
+  private _memSortData = memoizeOne(
+    (
+      data: DataTabelRowData[],
+      direction: SortingDirection,
+      sortColumn: string
+    ) => this._sortData(data, sortColumn, direction)
+  );
+
+  protected updated(properties: PropertyValues) {
+    super.updated(properties);
+
+    if (properties.has("columns")) {
+      this._filterable = Object.values(this.columns).some(
+        (column) => column.filterable
+      );
+
+      for (const columnId in this.columns) {
+        if (this.columns[columnId].direction) {
+          this._sortDirection = this.columns[columnId].direction!;
+          this._sortColumn = columnId;
+          break;
+        }
+      }
+    }
+  }
 
   protected render() {
     return html`
-      <search-input @value-changed=${this._handleSearchChange}></search-input>
+      ${this._filterable
+        ? html`
+            <search-input
+              @value-changed=${this._handleSearchChange}
+            ></search-input>
+          `
+        : ""}
       <div class="mdc-data-table">
         <table class="mdc-data-table__table">
           <thead>
@@ -178,9 +223,9 @@ export class HaDataTable extends BaseElement {
                 this._sortDirection,
                 this._sortColumn
               ),
-              (row: DataTabelRowData) => row.id,
+              (row: DataTabelRowData) => row[this.id],
               (row: DataTabelRowData) => html`
-                <tr data-row-id="${row.id}" class="mdc-data-table__row">
+                <tr data-row-id="${row[this.id]}" class="mdc-data-table__row">
                   ${this.selectable
                     ? html`
                         <td
@@ -189,7 +234,7 @@ export class HaDataTable extends BaseElement {
                           <ha-checkbox
                             class="mdc-data-table__row-checkbox"
                             @change=${this._handleRowCheckboxChange}
-                            .checked=${this._checkedRows.includes(row.id)}
+                            .checked=${this._checkedRows.includes(row[this.id])}
                           >
                           </ha-checkbox>
                         </td>
@@ -272,6 +317,9 @@ export class HaDataTable extends BaseElement {
 
   private _handleHeaderClick(ev: Event) {
     const columnId = (ev.target as HTMLElement).getAttribute("data-column-id")!;
+    if (!this.columns[columnId].sortable) {
+      return;
+    }
     if (!this._sortDirection) {
       this._sortDirection = "asc";
     } else if (this._sortDirection === "asc") {
