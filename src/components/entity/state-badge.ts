@@ -60,7 +60,7 @@ class StateBadge extends LitElement {
         (stateObj.attributes.entity_picture && !this.overrideIcon) ||
         this.overrideImage
       ) {
-        let imageUrl = stateObj.attributes.entity_picture || this.overrideImage;
+        let imageUrl = this.overrideImage || stateObj.attributes.entity_picture;
         if (this.hass) {
           imageUrl = this.hass.hassUrl(imageUrl);
         }
