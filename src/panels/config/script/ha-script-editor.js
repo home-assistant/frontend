@@ -1,13 +1,13 @@
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-fab/paper-fab";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { h, render } from "preact";
 
 import "../../../layouts/ha-app-layout";
 import "../../../components/ha-paper-icon-button-arrow-prev";
+import "../../../components/ha-fab";
 
 import Script from "../js/script";
 import unmountPreact from "../../../common/preact/unmount";
@@ -65,7 +65,7 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
         span[slot="introduction"] a {
           color: var(--primary-color);
         }
-        paper-fab {
+        ha-fab {
           position: fixed;
           bottom: 16px;
           right: 16px;
@@ -74,21 +74,21 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
           transition: margin-bottom 0.3s;
         }
 
-        paper-fab[is-wide] {
+        ha-fab[is-wide] {
           bottom: 24px;
           right: 24px;
         }
 
-        paper-fab[dirty] {
+        ha-fab[dirty] {
           margin-bottom: 0;
         }
 
-        paper-fab[rtl] {
+        ha-fab[rtl] {
           right: auto;
           left: 16px;
         }
 
-        paper-fab[rtl][is-wide] {
+        ha-fab[rtl][is-wide] {
           bottom: 24px;
           right: auto;
           left: 24px;
@@ -115,7 +115,7 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
           </template>
           <div id="root"></div>
         </div>
-        <paper-fab
+        <ha-fab
           slot="fab"
           is-wide$="[[isWide]]"
           dirty$="[[dirty]]"
@@ -123,7 +123,7 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
           title="Save"
           on-click="saveScript"
           rtl$="[[rtl]]"
-        ></paper-fab>
+        ></ha-fab>
       </ha-app-layout>
     `;
   }
