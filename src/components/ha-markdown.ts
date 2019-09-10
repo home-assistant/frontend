@@ -49,7 +49,7 @@ class HaMarkdown extends UpdatingElement {
 
       // Open external links in a new window
       if (
-        node.nodeName === "A" &&
+        node instanceof HTMLAnchorElement &&
         node.host !== document.location.host
       ) {
         node.target = "_blank";
@@ -59,7 +59,7 @@ class HaMarkdown extends UpdatingElement {
         node.rel = "noreferrer noopener";
 
         // Fire a resize event when images loaded to notify content resized
-      } else if (node.nodeName === "IMG") {
+      } else if (node) {
         node.addEventListener("load", this._resize);
       }
     }
