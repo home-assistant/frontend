@@ -8,7 +8,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "script/build_frontend",
-    "lint": "eslint src hassio/src gallery/src && tslint 'src/**/*.ts' 'src/**/*.tsx' 'hassio/src/**/*.ts' 'gallery/src/**/*.ts' 'cast/src/**/*.ts' 'test-mocha/**/*.ts' && polymer lint && tsc",
+    "lint": "eslint src hassio/src gallery/src && tslint 'src/**/*.ts' 'src/**/*.tsx' 'hassio/src/**/*.ts' 'gallery/src/**/*.ts' 'cast/src/**/*.ts' 'test-mocha/**/*.ts' && tsc",
     "mocha": "node_modules/.bin/ts-mocha -p test-mocha/tsconfig.test.json --opts test-mocha/mocha.opts",
     "test": "npm run lint && npm run mocha",
     "docker_build": "sh ./script/docker_run.sh build $npm_package_version",
@@ -143,7 +143,6 @@
     "merge-stream": "^1.0.1",
     "mocha": "^6.0.2",
     "parse5": "^5.1.0",
-    "polymer-cli": "^1.9.7",
     "prettier": "^1.16.4",
     "raw-loader": "^2.0.0",
     "reify": "^0.18.1",
