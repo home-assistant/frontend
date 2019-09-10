@@ -84,6 +84,7 @@ export interface ConfigEntity extends EntityConfig {
 
 export interface GlanceConfigEntity extends ConfigEntity {
   show_last_changed?: boolean;
+  image?: string;
 }
 
 export interface GlanceCardConfig extends LovelaceCardConfig {
