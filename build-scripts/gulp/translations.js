@@ -61,25 +61,14 @@ function flatten(data) {
   return recursiveFlatten("", data);
 }
 
-function hasHtml(data) {
-  return /<[a-z][\s\S]*>/i.test(data);
-}
-
-// Filter empty key's and key's that contain html
-function filterData(data, lang) {
+function emptyFilter(data) {
   const newData = {};
   Object.keys(data).forEach((key) => {
     if (data[key]) {
       if (typeof data[key] === "object") {
-        newData[key] = filterData(data[key], lang);
+        newData[key] = emptyFilter(data[key]);
       } else {
-        if (!hasHtml(data[key])) {
-          newData[key] = data[key];
-        } else {
-          console.warn(
-            `Skipping key ${key} in language ${lang}. Contains HTML content.`
-          );
-        }
+        newData[key] = data[key];
       }
     }
   });
@@ -231,7 +220,7 @@ gulp.task(
           }
           return gulp
             .src(src, { allowEmpty: true })
-            .pipe(transform((data) => filterData(data, tr)))
+            .pipe(transform((data) => emptyFilter(data)))
             .pipe(
               merge({
                 fileName: tr + ".json",
