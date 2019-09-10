@@ -14,14 +14,10 @@ import "../../../../components/ha-fab";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-relative-time";
 import "../../../../components/ha-icon";
-import "../../../../common/search/search-input";
 
 import "../../../../components/ha-data-table";
 // tslint:disable-next-line
-import {
-  SelectionChangedEvent,
-  SortingChangedEvent,
-} from "../../../../components/ha-data-table";
+import { SelectionChangedEvent } from "../../../../components/ha-data-table";
 
 import computeStateName from "../../../../common/entity/compute_state_name";
 import computeDomain from "../../../../common/entity/compute_domain";
@@ -41,14 +37,7 @@ export class HuiUnusedEntities extends LitElement {
 
   @property() public hass?: HomeAssistant;
 
-  private _unusedEntities: string[] = [];
-  private _filteredUnusedEntities: string[] = [];
-  @property() private _sortedUnusedEntities: string[] = [];
-
-  @property() private _filter = "";
-
-  @property() private _sortColumn?: number;
-  @property() private _sortDirection?: "asc" | "desc" | null;
+  @property() private _unusedEntities: string[] = [];
 
   private _selectedEntities: string[] = [];
 
@@ -86,54 +75,58 @@ export class HuiUnusedEntities extends LitElement {
             : ""}
         </div>
       </ha-card>
-      <search-input @value-changed=${this._handleSearchChange}></search-input>
       <ha-data-table
-        .headers=${[
-          {
-            name: "Entity",
+        .columns=${{
+          entity: {
+            title: "Entity",
             sortable: true,
-            direction: this._sortColumn === 0 ? this._sortDirection : null,
-          },
-          {
-            name: "Entity id",
-            sortable: true,
-            direction: this._sortColumn === 1 ? this._sortDirection : null,
-          },
-          {
-            name: "Domain",
-            sortable: true,
-            direction: this._sortColumn === 2 ? this._sortDirection : null,
-          },
-          {
-            name: "Last Changed",
-            type: "numeric",
-            sortable: true,
-            direction: this._sortColumn === 3 ? this._sortDirection : null,
-          },
-        ]}
-        .data=${this._sortedUnusedEntities.map((entity) => {
-          const stateObj = entity ? this.hass!.states[entity] : undefined;
-          return [
-            html`
+            filterable: true,
+            filterKey: "friendly_name",
+            direction: "desc",
+            template: (stateObj) => html`
               <state-badge
                 .hass=${this.hass!}
                 .stateObj=${stateObj}
               ></state-badge>
-              ${computeStateName(stateObj!)}
+              ${stateObj.friendly_name}
             `,
-            entity,
-            computeDomain(entity),
-            html`
+          },
+          id: {
+            title: "Entity id",
+            sortable: true,
+            filterable: true,
+          },
+          domain: {
+            title: "Domain",
+            sortable: true,
+            filterable: true,
+          },
+          last_changed: {
+            title: "Last Changed",
+            type: "numeric",
+            sortable: true,
+            template: (lastChanged: string) => html`
               <ha-relative-time
                 .hass=${this.hass!}
-                .datetime=${stateObj!.last_changed}
+                .datetime=${lastChanged}
               ></ha-relative-time>
             `,
-          ];
+          },
+        }}
+        .data=${this._unusedEntities.map((entity) => {
+          const stateObj = this.hass!.states[entity];
+          return {
+            entity: {
+              ...stateObj,
+              friendly_name: computeStateName(stateObj),
+            },
+            id: entity,
+            domain: computeDomain(entity),
+            last_changed: stateObj!.last_changed,
+          };
         })}
         .selectable=${this.lovelace!.mode === "storage"}
         @selection-changed=${this._handleSelectionChanged}
-        @sorting-changed=${this._handleSortingChanged}
       ></ha-data-table>
       ${this.lovelace.mode === "storage"
         ? html`
@@ -158,103 +151,11 @@ export class HuiUnusedEntities extends LitElement {
     }
     this._selectedEntities = [];
     this._unusedEntities = computeUnusedEntities(this.hass, this._config!);
-    this._filterUnusedEntities();
-  }
-
-  private _filterUnusedEntities(): void {
-    this._filteredUnusedEntities = this._unusedEntities.filter((entity) => {
-      const stateObj = this.hass!.states[entity];
-      return (
-        entity.includes(this._filter) ||
-        computeStateName(stateObj).includes(this._filter)
-      );
-    });
-    this._sortUnusedEntities();
-  }
-
-  private _sortUnusedEntities(): void {
-    this._sortedUnusedEntities = [...this._filteredUnusedEntities];
-    if (this._sortDirection) {
-      this._sortedUnusedEntities.sort((a, b) => {
-        let sort = 0;
-        switch (this._sortColumn) {
-          case 0:
-            sort = this._sortByEntityName(a, b);
-            break;
-          case 1:
-            sort = this._sortByEntityId(a, b);
-            break;
-          case 2:
-            sort = this._sortByDomain(a, b);
-            break;
-          case 3:
-            sort = this._sortByLastChanged(a, b);
-            break;
-          default:
-            return 0;
-        }
-        if (this._sortDirection === "desc") {
-          sort = sort * -1;
-        }
-        return sort;
-      });
-    }
-  }
-
-  private _sortByDomain(a, b): number {
-    const domainA = computeDomain(a).toUpperCase();
-    const domainB = computeDomain(b).toUpperCase();
-    if (domainA < domainB) {
-      return -1;
-    }
-    if (domainA > domainB) {
-      return 1;
-    }
-    return 0;
-  }
-
-  private _sortByEntityId(a, b): number {
-    if (a < b) {
-      return -1;
-    }
-    if (a > b) {
-      return 1;
-    }
-    return 0;
-  }
-
-  private _sortByEntityName(a, b): number {
-    const nameA = computeStateName(this.hass!.states[a]).toUpperCase();
-    const nameB = computeStateName(this.hass!.states[b]).toUpperCase();
-    if (nameA < nameB) {
-      return -1;
-    }
-    if (nameA > nameB) {
-      return 1;
-    }
-    return 0;
-  }
-
-  private _sortByLastChanged(a, b): number {
-    const changedA = new Date(this.hass!.states[a].last_changed);
-    const changedB = new Date(this.hass!.states[b].last_changed);
-    if (changedA < changedB) {
-      return 1;
-    }
-    if (changedA > changedB) {
-      return -1;
-    }
-    return 0;
-  }
-
-  private _handleSearchChange(ev: CustomEvent): void {
-    this._filter = ev.detail.value;
-    this._filterUnusedEntities();
   }
 
   private _handleSelectionChanged(ev: CustomEvent): void {
     const changedSelection = ev.detail as SelectionChangedEvent;
-    const entity = this._filteredUnusedEntities[changedSelection.index];
+    const entity = changedSelection.id;
     if (changedSelection.selected) {
       this._selectedEntities.push(entity);
     } else {
@@ -263,13 +164,6 @@ export class HuiUnusedEntities extends LitElement {
         this._selectedEntities.splice(index, 1);
       }
     }
-  }
-
-  private _handleSortingChanged(ev: CustomEvent): void {
-    const sort = ev.detail as SortingChangedEvent;
-    this._sortColumn = sort.column;
-    this._sortDirection = sort.direction;
-    this._sortUnusedEntities();
   }
 
   private _selectView(): void {
