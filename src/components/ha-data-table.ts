@@ -20,15 +20,14 @@ import {
   PropertyValues,
 } from "@material/mwc-base/base-element.js";
 
-import memoizeOne from "memoize-one";
-
 // @ts-ignore
 import styles from "@material/data-table/dist/mdc.data-table.min.css";
 
-import "./ha-icon";
-import "./ha-checkbox";
-import "../common/search/search-input";
+import memoizeOne from "memoize-one";
 
+import "./ha-icon";
+import "../common/search/search-input";
+import "./ha-checkbox";
 // tslint:disable-next-line
 import { HaCheckbox } from "./ha-checkbox";
 import { fireEvent } from "../common/dom/fire_event";
@@ -75,34 +74,21 @@ export interface DataTabelRowData {
 @customElement("ha-data-table")
 export class HaDataTable extends BaseElement {
   @property({ type: Object }) public columns: DataTabelColumnContainer = {};
-
   @property({ type: Array }) public data: DataTabelRowData[] = [];
-
   @property({ type: Boolean }) public selectable = false;
-
   @property({ type: String }) public id = "id";
-
   protected mdcFoundation!: MDCDataTableFoundation;
-
   protected readonly mdcFoundationClass = MDCDataTableFoundation;
-
   @query(".mdc-data-table") protected mdcRoot!: HTMLElement;
-
   @queryAll(".mdc-data-table__row") protected rowElements!: HTMLElement[];
-
   @query("#header-checkbox") private _headerCheckbox!: HaCheckbox;
-
   @property({ type: Boolean }) private _filterable = false;
-
   @property({ type: Boolean }) private _headerChecked = false;
-
   @property({ type: Boolean }) private _headerIndeterminate = false;
-
   @property({ type: Array }) private _checkedRows: string[] = [];
-
-  @property() private _filter = "";
-  @property() private _sortColumn?: string;
-  @property() private _sortDirection: SortingDirection = null;
+  @property({ type: String }) private _filter = "";
+  @property({ type: String }) private _sortColumn?: string;
+  @property({ type: String }) private _sortDirection: SortingDirection = null;
 
   private _filterSortData = memoizeOne(
     (
@@ -209,7 +195,7 @@ export class HaDataTable extends BaseElement {
                           ></ha-icon>
                         `
                       : ""}
-                    ${column.title}
+                    <span>${column.title}</span>
                   </th>
                 `;
               })}
@@ -275,10 +261,7 @@ export class HaDataTable extends BaseElement {
       getRowElements: () => this.rowElements,
       getRowIdAtIndex: (rowIndex: number) => this._getRowIdAtIndex(rowIndex),
       getRowIndexByChildElement: (el: Element) =>
-        Array.prototype.indexOf.call(
-          this.rowElements,
-          el.parentElement!.parentElement!
-        ),
+        Array.prototype.indexOf.call(this.rowElements, el.closest("tr")),
       getSelectedRowCount: () => this._checkedRows.length,
       isCheckboxAtRowIndexChecked: (rowIndex: number) =>
         this._checkedRows.includes(this._getRowIdAtIndex(rowIndex)),
@@ -316,7 +299,9 @@ export class HaDataTable extends BaseElement {
   }
 
   private _handleHeaderClick(ev: Event) {
-    const columnId = (ev.target as HTMLElement).getAttribute("data-column-id")!;
+    const columnId = (ev.target as HTMLElement)
+      .closest("th")!
+      .getAttribute("data-column-id")!;
     if (!this.columns[columnId].sortable) {
       return;
     }
@@ -444,16 +429,20 @@ export class HaDataTable extends BaseElement {
       .mdc-data-table__header-cell.sortable {
         cursor: pointer;
       }
-      .mdc-data-table__header-cell.not-sorted:not(.mdc-data-table__cell--numeric) {
-        padding-left: 0px;
-        transition: padding-left 0.2s ease 0s;
+      .mdc-data-table__header-cell.not-sorted:not(.mdc-data-table__cell--numeric)
+        span {
+        position: relative;
+        left: -24px;
+      }
+      .mdc-data-table__header-cell.not-sorted > * {
+        transition: left 0.2s ease 0s;
       }
       .mdc-data-table__header-cell.not-sorted ha-icon {
         left: -36px;
-        transition: left 0.2s ease 0s;
       }
-      .mdc-data-table__header-cell.not-sorted:not(.mdc-data-table__cell--numeric):hover {
-        padding-left: 16px;
+      .mdc-data-table__header-cell.not-sorted:not(.mdc-data-table__cell--numeric):hover
+        span {
+        left: 0px;
       }
       .mdc-data-table__header-cell:hover.not-sorted ha-icon {
         left: 0px;
