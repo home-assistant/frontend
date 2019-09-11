@@ -134,7 +134,13 @@ export class HcMain extends HassElement {
       this._error = err;
       return;
     }
-    const connection = await createConnection({ auth });
+    let connection;
+    try {
+      connection = await createConnection({ auth });
+    } catch (err) {
+      this._error = err;
+      return;
+    }
     if (this.hass) {
       this.hass.connection.close();
     }
