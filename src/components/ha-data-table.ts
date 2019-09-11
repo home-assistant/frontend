@@ -3,7 +3,7 @@ import { repeat } from "lit-html/directives/repeat";
 import {
   MDCDataTableAdapter,
   MDCDataTableFoundation,
-} from "../resources/mdc-data-table/index"; // Because mdc-data-table published ts files, temporary load them from own repo
+} from "../../mdc-data-table/index"; // Because mdc-data-table published ts files, temporary load them from own repo, outside src so our linters won't complain
 
 import {
   BaseElement,
