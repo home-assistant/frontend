@@ -17,6 +17,7 @@
   "author": "Paulus Schoutsen <Paulus@PaulusSchoutsen.nl> (http://paulusschoutsen.nl)",
   "license": "Apache-2.0",
   "dependencies": {
+    "@material/data-table": "^3.1.1",
     "@material/mwc-base": "^0.8.0",
     "@material/mwc-button": "^0.8.0",
     "@material/mwc-checkbox": "^0.8.0",
@@ -157,7 +158,6 @@
     "tslint-plugin-prettier": "^2.0.1",
     "typescript": "^3.4.1",
     "uglifyjs-webpack-plugin": "^2.1.2",
-    "wct-browser-legacy": "^1.0.2",
     "web-component-tester": "^6.9.2",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.3.0",
