@@ -21,6 +21,7 @@ class StateBadge extends LitElement {
   public hass?: HomeAssistant;
   @property() public stateObj?: HassEntity;
   @property() public overrideIcon?: string;
+  @property() public overrideImage?: string;
   @query("ha-icon") private _icon!: HaIcon;
 
   protected render(): TemplateResult | void {
@@ -55,8 +56,11 @@ class StateBadge extends LitElement {
     };
     if (stateObj) {
       // hide icon if we have entity picture
-      if (stateObj.attributes.entity_picture && !this.overrideIcon) {
-        let imageUrl = stateObj.attributes.entity_picture;
+      if (
+        (stateObj.attributes.entity_picture && !this.overrideIcon) ||
+        this.overrideImage
+      ) {
+        let imageUrl = this.overrideImage || stateObj.attributes.entity_picture;
         if (this.hass) {
           imageUrl = this.hass.hassUrl(imageUrl);
         }

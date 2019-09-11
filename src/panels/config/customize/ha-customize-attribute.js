@@ -48,9 +48,9 @@ class HaCustomizeAttribute extends PolymerElement {
 
   tapButton() {
     if (this.item.secondary) {
-      this.item = Object.assign({}, this.item, { secondary: false });
+      this.item = { ...this.item, secondary: false };
     } else {
-      this.item = Object.assign({}, this.item, { closed: true });
+      this.item = { ...this.item, closed: true };
     }
   }
 
@@ -73,7 +73,7 @@ class HaCustomizeAttribute extends PolymerElement {
       this.$.child = child = document.createElement(tag.toLowerCase());
       child.className = "form-control";
       child.addEventListener("item-changed", () => {
-        this.item = Object.assign({}, child.item);
+        this.item = { ...child.item };
       });
     }
     child.setProperties({ item: this.item });

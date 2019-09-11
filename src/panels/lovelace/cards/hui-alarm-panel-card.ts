@@ -43,7 +43,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
   }
 
   public static getStubConfig() {
-    return { states: ["arm_home", "arm_away"] };
+    return { states: ["arm_home", "arm_away"], entity: "" };
   }
 
   @property() public hass?: HomeAssistant;

@@ -10,11 +10,11 @@ import {
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-fab/paper-fab";
 import { classMap } from "lit-html/directives/class-map";
 
 import { h, render } from "preact";
 
+import "../../../components/ha-fab";
 import "../../../components/ha-paper-icon-button-arrow-prev";
 import "../../../layouts/ha-app-layout";
 
@@ -113,7 +113,7 @@ class HaAutomationEditor extends LitElement {
             })}"
           ></div>
         </div>
-        <paper-fab
+        <ha-fab
           slot="fab"
           ?is-wide="${this.isWide}"
           ?dirty="${this._dirty}"
@@ -125,7 +125,7 @@ class HaAutomationEditor extends LitElement {
           class="${classMap({
             rtl: computeRTL(this.hass),
           })}"
-        ></paper-fab>
+        ></ha-fab>
       </ha-app-layout>
     `;
   }
@@ -301,7 +301,7 @@ class HaAutomationEditor extends LitElement {
         span[slot="introduction"] a {
           color: var(--primary-color);
         }
-        paper-fab {
+        ha-fab {
           position: fixed;
           bottom: 16px;
           right: 16px;
@@ -310,21 +310,21 @@ class HaAutomationEditor extends LitElement {
           transition: margin-bottom 0.3s;
         }
 
-        paper-fab[is-wide] {
+        ha-fab[is-wide] {
           bottom: 24px;
           right: 24px;
         }
 
-        paper-fab[dirty] {
+        ha-fab[dirty] {
           margin-bottom: 0;
         }
 
-        paper-fab.rtl {
+        ha-fab.rtl {
           right: auto;
           left: 16px;
         }
 
-        paper-fab[is-wide].rtl {
+        ha-fab[is-wide].rtl {
           bottom: 24px;
           right: auto;
           left: 24px;
