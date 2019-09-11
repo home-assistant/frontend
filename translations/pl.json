@@ -251,7 +251,8 @@
             "snowy-rainy": "śnieżnie, deszczowo",
             "sunny": "słonecznie",
             "windy": "wietrznie",
-            "windy-variant": "wietrznie"
+            "windy-variant": "wietrznie",
+            "exceptional": "Wyjątkowy"
         },
         "vacuum": {
             "cleaning": "sprzątanie",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Informacje"
+                    },
+                    "logs": {
+                        "title": "Logi"
                     }
                 }
             },
@@ -498,6 +502,9 @@
                                     "event": "Zdarzenie:",
                                     "enter": "wejście",
                                     "leave": "wyjście"
+                                },
+                                "device": {
+                                    "label": "Urządzenie"
                                 }
                             },
                             "learn_more": "Dowiedz się więcej o wyzwalaczach"
@@ -544,6 +551,9 @@
                                     "label": "Strefa",
                                     "entity": "Encja z lokalizacją",
                                     "zone": "Strefa"
+                                },
+                                "device": {
+                                    "label": "Urządzenie"
                                 }
                             },
                             "learn_more": "Dowiedz się więcej o warunkach"
@@ -698,7 +708,7 @@
                     "caption": "ZHA",
                     "description": "Zarządzanie siecią automatyki domowej Zigbee",
                     "services": {
-                        "reconfigure": "Ponowna konfiguracja urządzenia ZHA (uzdrawianie urządzenia). Użyj tej usługi, jeśli masz problemy z urządzeniem. Jeśli urządzenie jest zasilane bateryjnie, upewnij się, że nie jest uśpione i przyjmie polecenie rekonfiguracji.",
+                        "reconfigure": "Ponowna konfiguracja urządzenia ZHA (uzdrawianie urządzenia). Użyj tego polecenia, jeśli masz problemy z urządzeniem. Jeśli urządzenie jest zasilane bateryjnie, upewnij się, że nie jest uśpione i przyjmie polecenie rekonfiguracji.",
                         "updateDeviceName": "Ustaw niestandardową nazwę tego urządzenia w rejestrze urządzeń.",
                         "remove": "Usuń urządzenie z sieci Zigbee."
                     },
@@ -787,7 +797,9 @@
                             "heading": "Zarządzanie serwerem",
                             "introduction": "Kontroluj serwer Home Assistant'a.",
                             "restart": "Uruchom ponownie",
-                            "stop": "Zatrzymaj"
+                            "stop": "Zatrzymaj",
+                            "confirm_restart": "Czy chcesz ponownie uruchomić Home Assistant?",
+                            "confirm_stop": "Czy chcesz zatrzymać Home Assistant?"
                         }
                     }
                 }
@@ -1054,21 +1066,25 @@
                         "save": "Zapisz",
                         "unsaved_changes": "Niezapisane zmiany",
                         "saved": "Zapisano"
+                    },
+                    "edit_lovelace": {
+                        "header": "Tytuł interfejsu użytkownika",
+                        "explanation": "Tytuł jest wyświetlany ponad wszystkimi widokami interfejsu użytkownika"
                     }
                 },
                 "menu": {
                     "configure_ui": "Konfiguracja interfejsu użytkownika",
                     "unused_entities": "Nieużywane encje",
                     "help": "Pomoc",
-                    "refresh": "Odśwież"
+                    "refresh": "Wczytaj ponownie"
                 },
                 "warning": {
                     "entity_not_found": "Encja niedostępna: {entity}",
                     "entity_non_numeric": "Encja nie jest numeryczna: {entity}"
                 },
                 "changed_toast": {
-                    "message": "Zaktualizowano konfigurację Lovelace, czy chcesz odświeżyć?",
-                    "refresh": "Odśwież"
+                    "message": "Zaktualizowano konfigurację interfejsu użytkownika, czy chcesz ją wczytać ponownie?",
+                    "refresh": "Wczytaj ponownie"
                 },
                 "reload_lovelace": "Wczytaj ponownie Lovelace"
             },
@@ -1123,7 +1139,8 @@
         "common": {
             "loading": "Ładowanie",
             "cancel": "Anuluj",
-            "save": "Zapisz"
+            "save": "Zapisz",
+            "successfully_saved": "Pomyślnie zapisano"
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {dzień}\n  other {dni}\n}",
@@ -1199,7 +1216,9 @@
             "fan": {
                 "speed": "Prędkość",
                 "oscillate": "Oscylacja",
-                "direction": "Kierunek"
+                "direction": "Kierunek",
+                "forward": "Naprzód",
+                "reverse": "Wstecz"
             },
             "light": {
                 "brightness": "Jasność",
@@ -1244,6 +1263,14 @@
                 "target_temperature": "Temperatura docelowa",
                 "operation": "Tryb działania",
                 "away_mode": "Tryb poza domem"
+            },
+            "timer": {
+                "actions": {
+                    "start": "start",
+                    "pause": "pauza",
+                    "cancel": "anuluj",
+                    "finish": "koniec"
+                }
             }
         },
         "components": {
@@ -1310,6 +1337,20 @@
                 "title": "Opcje systemu",
                 "enable_new_entities_label": "Włącz dodawanie nowych encji.",
                 "enable_new_entities_description": "Jeśli wyłączone, nowo wykryte encje nie będą automatycznie dodawane do Home Assistant'a."
+            },
+            "zha_device_info": {
+                "manuf": "przez: {manufacturer}",
+                "no_area": "brak",
+                "services": {
+                    "reconfigure": "Ponowna konfiguracja urządzenia ZHA (uzdrawianie urządzenia). Użyj tego polecenia, jeśli masz problemy z urządzeniem. Jeśli urządzenie jest zasilane bateryjnie, upewnij się, że nie jest uśpione i przyjmie polecenie rekonfiguracji.",
+                    "updateDeviceName": "Wprowadź niestandardową nazwę tego urządzenia w rejestrze urządzeń.",
+                    "remove": "Usuń urządzenie z sieci Zigbee."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Nazwa użytkownika",
+                    "area_picker_label": "Obszar",
+                    "update_name_button": "Aktualizuj nazwę"
+                }
             }
         },
         "auth_store": {
