@@ -25,6 +25,8 @@ import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { toggleEntity } from "../common/entity/toggle-entity";
 import { LightCardConfig } from "./types";
+import { supportsFeature } from "../../../common/entity/supports-feature";
+import { SUPPORT_BRIGHTNESS } from "../../../data/light";
 
 @customElement("hui-light-card")
 export class HuiLightCard extends LitElement implements LovelaceCard {
@@ -90,12 +92,17 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           class="more-info"
           @click="${this._handleMoreInfo}"
         ></paper-icon-button>
+
         <div id="light">
-          <round-slider
-            .value=${brightness}
-            @value-changing=${this._dragEvent}
-            @value-changed=${this._setBrightness}
-          ></round-slider>
+          ${supportsFeature(stateObj, SUPPORT_BRIGHTNESS)
+            ? html`
+                <round-slider
+                  .value=${brightness}
+                  @value-changing=${this._dragEvent}
+                  @value-changed=${this._setBrightness}
+                ></round-slider>
+              `
+            : ""}
           <ha-icon
             class="light-icon"
             data-state="${stateObj.state}"
@@ -107,6 +114,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
             @click="${this._handleTap}"
           ></ha-icon>
         </div>
+
         <div id="tooltip">
           <div class="brightness" @ha-click="${this._handleTap}">
             ${brightness} %
