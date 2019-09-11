@@ -14,7 +14,7 @@ export interface GetStatusMessage extends BaseCastMessage {
 export interface ConnectMessage extends BaseCastMessage {
   type: "connect";
   refreshToken: string;
-  clientId: string;
+  clientId: string | null;
   hassUrl: string;
 }
 

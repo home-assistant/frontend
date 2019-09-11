@@ -163,7 +163,7 @@ class HaStateHistoryData extends LocalizeMixin(PolymerElement) {
           localize,
           language
         ).then((stateHistory) => {
-          this._setData(Object.assign({}, stateHistory));
+          this._setData({ ...stateHistory });
         });
       }, cacheConfig.refresh * 1000);
     }

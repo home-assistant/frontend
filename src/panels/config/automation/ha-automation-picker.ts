@@ -8,13 +8,13 @@ import {
   customElement,
 } from "lit-element";
 import { ifDefined } from "lit-html/directives/if-defined";
-import "@polymer/paper-fab/paper-fab";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-tooltip/paper-tooltip";
 import "../../../layouts/hass-subpage";
 
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import "../../../components/entity/ha-entity-toggle";
 
 import "../ha-config-section";
@@ -136,7 +136,7 @@ class HaAutomationPicker extends LitElement {
         </ha-config-section>
 
         <a href="/config/automation/new">
-          <paper-fab
+          <ha-fab
             slot="fab"
             ?is-wide=${this.isWide}
             icon="hass:plus"
@@ -144,7 +144,7 @@ class HaAutomationPicker extends LitElement {
               "ui.panel.config.automation.picker.add_automation"
             )}
             ?rtl=${computeRTL(this.hass)}
-          ></paper-fab
+          ></ha-fab
         ></a>
       </hass-subpage>
     `;
@@ -186,24 +186,24 @@ class HaAutomationPicker extends LitElement {
           display: flex;
         }
 
-        paper-fab {
+        ha-fab {
           position: fixed;
           bottom: 16px;
           right: 16px;
           z-index: 1;
         }
 
-        paper-fab[is-wide] {
+        ha-fab[is-wide] {
           bottom: 24px;
           right: 24px;
         }
 
-        paper-fab[rtl] {
+        ha-fab[rtl] {
           right: auto;
           left: 16px;
         }
 
-        paper-fab[rtl][is-wide] {
+        ha-fab[rtl][is-wide] {
           bottom: 24px;
           right: auto;
           left: 24px;

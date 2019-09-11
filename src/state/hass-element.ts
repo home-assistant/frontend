@@ -9,6 +9,7 @@ import { dialogManagerMixin } from "./dialog-manager-mixin";
 import { connectionMixin } from "./connection-mixin";
 import NotificationMixin from "./notification-mixin";
 import DisconnectToastMixin from "./disconnect-toast-mixin";
+import { hapticMixin } from "./haptic-mixin";
 import { urlSyncMixin } from "./url-sync-mixin";
 import { LitElement } from "lit-element";
 
@@ -27,4 +28,5 @@ export class HassElement extends ext(HassBaseMixin(LitElement), [
   dialogManagerMixin,
   urlSyncMixin,
   ZHADialogMixin,
+  hapticMixin,
 ]) {}

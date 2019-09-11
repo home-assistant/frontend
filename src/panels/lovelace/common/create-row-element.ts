@@ -36,6 +36,7 @@ const SPECIAL_TYPES = new Set([
   "section",
   "weblink",
   "cast",
+  "select",
 ]);
 const DOMAIN_TO_ELEMENT_TYPE = {
   alert: "toggle",

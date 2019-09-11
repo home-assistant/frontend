@@ -7,7 +7,6 @@ import {
   property,
   customElement,
 } from "lit-element";
-import "@polymer/paper-fab/paper-fab";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item-body";
 import { HassEntity } from "home-assistant-js-websocket";
@@ -17,6 +16,7 @@ import "../../../layouts/hass-subpage";
 import { computeRTL } from "../../../common/util/compute_rtl";
 
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 
 import "../ha-config-section";
 
@@ -81,13 +81,13 @@ class HaScriptPicker extends LitElement {
         </ha-config-section>
 
         <a href="/config/script/new">
-          <paper-fab
+          <ha-fab
             slot="fab"
             ?is-wide=${this.isWide}
             icon="hass:plus"
             title="Add Script"
             ?rtl=${computeRTL(this.hass)}
-          ></paper-fab>
+          ></ha-fab>
         </a>
       </hass-subpage>
     `;
@@ -135,24 +135,24 @@ class HaScriptPicker extends LitElement {
           display: flex;
         }
 
-        paper-fab {
+        ha-fab {
           position: fixed;
           bottom: 16px;
           right: 16px;
           z-index: 1;
         }
 
-        paper-fab[is-wide] {
+        ha-fab[is-wide] {
           bottom: 24px;
           right: 24px;
         }
 
-        paper-fab[rtl] {
+        ha-fab[rtl] {
           right: auto;
           left: 16px;
         }
 
-        paper-fab[rtl][is-wide] {
+        ha-fab[rtl][is-wide] {
           bottom: 24px;
           right: auto;
           left: 24px;

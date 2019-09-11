@@ -16,7 +16,6 @@ import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 import { LovelaceViewConfig, LovelaceCardConfig } from "../../data/lovelace";
 import { HomeAssistant } from "../../types";
 import { classMap } from "lit-html/directives/class-map";
-
 import { Lovelace, LovelaceCard } from "./types";
 import { createCardElement } from "./common/create-card-element";
 import { computeCardSize } from "./common/compute-card-size";
@@ -96,8 +95,7 @@ export class HUIView extends LitElement {
       <div id="columns"></div>
       ${this.lovelace!.editMode
         ? html`
-            <paper-fab
-              elevated="2"
+            <ha-fab
               icon="hass:plus"
               title="${this.hass!.localize(
                 "ui.panel.lovelace.editor.edit_card.add"
@@ -106,7 +104,7 @@ export class HUIView extends LitElement {
               class="${classMap({
                 rtl: computeRTL(this.hass!),
               })}"
-            ></paper-fab>
+            ></ha-fab>
           `
         : ""}
     `;
@@ -148,7 +146,7 @@ export class HUIView extends LitElement {
           margin: 4px 4px 8px;
         }
 
-        paper-fab {
+        ha-fab {
           position: sticky;
           float: right;
           bottom: 16px;
@@ -156,7 +154,7 @@ export class HUIView extends LitElement {
           z-index: 1;
         }
 
-        paper-fab.rtl {
+        ha-fab.rtl {
           float: left;
           right: auto;
           left: 16px;
@@ -264,7 +262,8 @@ export class HUIView extends LitElement {
     }
 
     const elements: HUIView["_badges"] = [];
-    const badges = processConfigEntities(config.badges);
+    // It's possible that a null value was stored as a badge entry
+    const badges = processConfigEntities(config.badges.filter(Boolean));
     for (const badge of badges) {
       const element = document.createElement("ha-state-label-badge");
       const entityId = badge.entity;

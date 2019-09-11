@@ -327,6 +327,9 @@
                     },
                     "info": {
                         "title": "Info"
+                    },
+                    "logs": {
+                        "title": "Logger"
                     }
                 }
             },
@@ -498,6 +501,9 @@
                                     "event": "Hendelse:",
                                     "enter": "Ankommer",
                                     "leave": "Forlater"
+                                },
+                                "device": {
+                                    "label": "Enheten"
                                 }
                             },
                             "learn_more": "Lær mer om utløsere"
@@ -787,7 +793,9 @@
                             "heading": "Serveradministrasjon",
                             "introduction": "Kontroller din Home Assistant server... fra Home Assistant.",
                             "restart": "Omstart",
-                            "stop": "Stopp"
+                            "stop": "Stopp",
+                            "confirm_restart": "Er du sikker på at du vil starte Home Assistant på nytt?",
+                            "confirm_stop": "Er du sikker på at du vil stoppe Home Assistant?"
                         }
                     }
                 }
@@ -1199,7 +1207,9 @@
             "fan": {
                 "speed": "Hastighet",
                 "oscillate": "Vandring",
-                "direction": "Retning"
+                "direction": "Retning",
+                "forward": "Framover",
+                "reverse": "Omvendt"
             },
             "light": {
                 "brightness": "Lysstyrke",

@@ -224,7 +224,7 @@ class HaPanelDevService extends PolymerElement {
 
     const fields = serviceDomains[domain][service].fields;
     return Object.keys(fields).map(function(field) {
-      return Object.assign({ key: field }, fields[field]);
+      return { key: field, ...fields[field] };
     });
   }
 
@@ -282,9 +282,9 @@ class HaPanelDevService extends PolymerElement {
 
   _fillExampleData() {
     const example = {};
-    for (const attribute of this._attributes) {
+    this._attributes.forEach((attribute) => {
       example[attribute.key] = attribute.example;
-    }
+    });
     this.serviceData = JSON.stringify(example, null, 2);
   }
 

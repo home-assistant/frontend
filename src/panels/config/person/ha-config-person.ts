@@ -8,7 +8,6 @@ import {
 } from "lit-element";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-fab/paper-fab";
 
 import { HomeAssistant } from "../../../types";
 import {
@@ -19,6 +18,7 @@ import {
   createPerson,
 } from "../../../data/person";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-loading-screen";
 import { compare } from "../../../common/string/compare";
@@ -109,12 +109,12 @@ class HaConfigPerson extends LitElement {
         </ha-config-section>
       </hass-subpage>
 
-      <paper-fab
+      <ha-fab
         ?is-wide=${this.isWide}
         icon="hass:plus"
         title="Add Person"
         @click=${this._createPerson}
-      ></paper-fab>
+      ></ha-fab>
     `;
   }
 
@@ -221,14 +221,14 @@ All devices belonging to this person will become unassigned.`)
       ha-card.storage paper-item {
         cursor: pointer;
       }
-      paper-fab {
+      ha-fab {
         position: fixed;
         bottom: 16px;
         right: 16px;
         z-index: 1;
       }
 
-      paper-fab[is-wide] {
+      ha-fab[is-wide] {
         bottom: 24px;
         right: 24px;
       }
