@@ -327,6 +327,9 @@
                     },
                     "info": {
                         "title": "Info"
+                    },
+                    "logs": {
+                        "title": "Dnevniki"
                     }
                 }
             },
@@ -498,6 +501,9 @@
                                     "event": "Dogodek:",
                                     "enter": "Vnesite",
                                     "leave": "Odidi"
+                                },
+                                "device": {
+                                    "label": "Naprava"
                                 }
                             },
                             "learn_more": "Več o sprožilcih"
@@ -787,7 +793,9 @@
                             "heading": "Upravljanje strežnika",
                             "introduction": "Nadzirajte strežnik Home Assistant ... iz Home Assistant-a",
                             "restart": "Ponovni zagon",
-                            "stop": "Ustavi"
+                            "stop": "Ustavi",
+                            "confirm_restart": "Ali ste prepričani, da želite znova zagnati Home Assistant-a?",
+                            "confirm_stop": "Ali ste prepričani, da želite ustaviti Home Assistant-a?"
                         }
                     }
                 }
@@ -1199,7 +1207,9 @@
             "fan": {
                 "speed": "Hitrost",
                 "oscillate": "Nihanje",
-                "direction": "Smer"
+                "direction": "Smer",
+                "forward": "Naprej",
+                "reverse": "Obratno"
             },
             "light": {
                 "brightness": "Svetlost",
