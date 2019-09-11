@@ -52,6 +52,7 @@ class HaAutomationEditor extends LitElement {
   private _rendered?: unknown;
   private _errors?: string;
   private _showYaml: boolean;
+  private _yaml?: string;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -63,8 +64,6 @@ class HaAutomationEditor extends LitElement {
       _dirty: {},
       _config: {},
       _showYaml: {},
-      _yaml: {},
-      _yamlEditor: {},
     };
   }
 
@@ -182,11 +181,9 @@ class HaAutomationEditor extends LitElement {
                 config[key] = [value];
               }
             }
-            // Drop ID from config - this is already stored in routeData and shouldn't be editable
-            // @ts-ignore
-            delete config.id;
             this._dirty = false;
             this._config = config;
+            this._setYamlFromConfig(config);
           },
           (resp) => {
             alert(
@@ -234,7 +231,6 @@ class HaAutomationEditor extends LitElement {
           this._rendered
         );
       } else if (this._yamlEditor && changedProps.has("_showYaml")) {
-        this._yamlEditor.value = this._yaml;
         this._yamlEditor.codemirror.refresh();
         this._yamlEditor.codemirror.focus();
         fireEvent(this as HTMLElement, "iron-resize");
@@ -248,6 +244,7 @@ class HaAutomationEditor extends LitElement {
       return;
     }
     this._config = config;
+    this._setYamlFromConfig(config);
     this._errors = undefined;
     this._dirty = true;
   }
@@ -299,25 +296,26 @@ class HaAutomationEditor extends LitElement {
     this._showYaml = !this._showYaml;
   }
 
+  private _setYamlFromConfig(config: AutomationConfig) {
+    // Strip ID
+    // @ts-ignore
+    delete config.id;
+    this._yaml = yaml.safeDump(config);
+  }
+
   private get _yamlEditor(): HuiYamlEditor | null {
     return this.shadowRoot!.querySelector("hui-yaml-editor");
   }
 
-  private get _yaml(): string {
-    if (this._config) {
-      return yaml.safeDump(this._config);
-    }
-    return "";
-  }
-
-  private _handleYamlChanged(ev): boolean {
+  private _handleYamlChanged(ev): void {
     ev.stopPropagation();
     try {
       this._config = yaml.safeLoad(ev.detail.value);
       this._dirty = true;
-      return true;
+      this._errors = undefined;
     } catch (exception) {
-      return false;
+      this._errors = exception;
+      throw exception;
     }
   }
 
