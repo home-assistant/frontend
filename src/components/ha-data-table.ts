@@ -3,7 +3,7 @@ import { repeat } from "lit-html/directives/repeat";
 import {
   MDCDataTableAdapter,
   MDCDataTableFoundation,
-} from "@material/data-table/index.js";
+} from "../resources/mdc-data-table/index"; // Because mdc-data-table published ts files, temporary load them from own repo
 
 import {
   BaseElement,
@@ -18,7 +18,7 @@ import {
   classMap,
   TemplateResult,
   PropertyValues,
-} from "@material/mwc-base/base-element.js";
+} from "@material/mwc-base/base-element";
 
 // @ts-ignore
 import styles from "@material/data-table/dist/mdc.data-table.min.css";
@@ -93,29 +93,88 @@ export class HaDataTable extends BaseElement {
   private _filterSortData = memoizeOne(
     (
       data: DataTabelRowData[],
+      columns: DataTabelColumnContainer,
       filter: string,
       direction: SortingDirection,
       sortColumn?: string
     ) =>
       sortColumn
         ? this._memSortData(
-            this._memFilterData(data, filter),
+            this._memFilterData(data, columns, filter),
+            columns,
             direction,
             sortColumn
           )
-        : this._memFilterData(data, filter)
+        : this._memFilterData(data, columns, filter)
   );
 
   private _memFilterData = memoizeOne(
-    (data: DataTabelRowData[], filter: string) => this._filterData(data, filter)
+    (
+      data: DataTabelRowData[],
+      columns: DataTabelColumnContainer,
+      filter: string
+    ) => {
+      if (!filter) {
+        return data;
+      }
+      const ucFilter = filter.toUpperCase();
+      return data.filter((row) => {
+        return Object.entries(columns).some((columnEntry) => {
+          const [key, column] = columnEntry;
+          if (column.filterable) {
+            if (
+              (column.filterKey ? row[key][column.filterKey] : row[key])
+                .toUpperCase()
+                .includes(ucFilter)
+            ) {
+              return true;
+            }
+          }
+          return false;
+        });
+      });
+    }
   );
 
   private _memSortData = memoizeOne(
     (
       data: DataTabelRowData[],
+      columns: DataTabelColumnContainer,
       direction: SortingDirection,
       sortColumn: string
-    ) => this._sortData(data, sortColumn, direction)
+    ) => {
+      const sorted = [...data];
+      const column = columns[sortColumn];
+      return sorted.sort((a, b) => {
+        let sort = 1;
+        if (direction === "desc") {
+          sort = -1;
+        }
+
+        let valA = column.filterKey
+          ? a[sortColumn][column.filterKey]
+          : a[sortColumn];
+
+        let valB = column.filterKey
+          ? b[sortColumn][column.filterKey]
+          : b[sortColumn];
+
+        if (typeof valA === "string") {
+          valA = valA.toUpperCase();
+        }
+        if (typeof valB === "string") {
+          valB = valB.toUpperCase();
+        }
+
+        if (valA < valB) {
+          return sort * -1;
+        }
+        if (valA > valB) {
+          return sort * 1;
+        }
+        return 0;
+      });
+    }
   );
 
   protected updated(properties: PropertyValues) {
@@ -168,8 +227,7 @@ export class HaDataTable extends BaseElement {
                   `
                 : ""}
               ${Object.entries(this.columns).map((columnEntry) => {
-                const key = columnEntry[0];
-                const column = columnEntry[1];
+                const [key, column] = columnEntry;
                 const sorted = key === this._sortColumn;
                 const classes = {
                   "mdc-data-table__cell--numeric": Boolean(
@@ -205,6 +263,7 @@ export class HaDataTable extends BaseElement {
             ${repeat(
               this._filterSortData(
                 this.data,
+                this.columns,
                 this._filter,
                 this._sortDirection,
                 this._sortColumn
@@ -227,8 +286,7 @@ export class HaDataTable extends BaseElement {
                       `
                     : ""}
                   ${Object.entries(this.columns).map((columnEntry) => {
-                    const key = columnEntry[0];
-                    const column = columnEntry[1];
+                    const [key, column] = columnEntry;
                     return html`
                       <td
                         class="mdc-data-table__cell ${classMap({
@@ -305,7 +363,7 @@ export class HaDataTable extends BaseElement {
     if (!this.columns[columnId].sortable) {
       return;
     }
-    if (!this._sortDirection) {
+    if (!this._sortDirection || this._sortColumn !== columnId) {
       this._sortDirection = "asc";
     } else if (this._sortDirection === "asc") {
       this._sortDirection = "desc";
@@ -354,67 +412,6 @@ export class HaDataTable extends BaseElement {
 
   private _handleSearchChange(ev: CustomEvent): void {
     this._filter = ev.detail.value;
-  }
-
-  private _filterData(data: DataTabelRowData[], filter: string) {
-    if (!filter) {
-      return data;
-    }
-    const ucFilter = filter.toUpperCase();
-    return data.filter((row) => {
-      return Object.entries(this.columns).some((columnEntry) => {
-        const key = columnEntry[0];
-        const column = columnEntry[1];
-        if (column.filterable) {
-          if (
-            (column.filterKey ? row[key][column.filterKey] : row[key])
-              .toUpperCase()
-              .includes(ucFilter)
-          ) {
-            return true;
-          }
-        }
-        return false;
-      });
-    });
-  }
-
-  private _sortData(
-    data: DataTabelRowData[],
-    sortColumn: string,
-    direction: SortingDirection
-  ) {
-    const sorted = [...data];
-    const column = this.columns[sortColumn];
-    return sorted.sort((a, b) => {
-      let sort = 1;
-      if (direction === "desc") {
-        sort = -1;
-      }
-
-      let valA = column.filterKey
-        ? a[sortColumn][column.filterKey]
-        : a[sortColumn];
-
-      let valB = column.filterKey
-        ? b[sortColumn][column.filterKey]
-        : b[sortColumn];
-
-      if (typeof valA === "string") {
-        valA = valA.toUpperCase();
-      }
-      if (typeof valB === "string") {
-        valB = valB.toUpperCase();
-      }
-
-      if (valA < valB) {
-        return sort * -1;
-      }
-      if (valA > valB) {
-        return sort * 1;
-      }
-      return 0;
-    });
   }
 
   static get styles(): CSSResult {

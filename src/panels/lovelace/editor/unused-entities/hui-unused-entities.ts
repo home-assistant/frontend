@@ -45,6 +45,41 @@ export class HuiUnusedEntities extends LitElement {
     return this.lovelace!.config;
   }
 
+  private _columns = {
+    entity: {
+      title: "Entity",
+      sortable: true,
+      filterable: true,
+      filterKey: "friendly_name",
+      direction: "asc",
+      template: (stateObj) => html`
+        <state-badge .hass=${this.hass!} .stateObj=${stateObj}></state-badge>
+        ${stateObj.friendly_name}
+      `,
+    },
+    entity_id: {
+      title: "Entity id",
+      sortable: true,
+      filterable: true,
+    },
+    domain: {
+      title: "Domain",
+      sortable: true,
+      filterable: true,
+    },
+    last_changed: {
+      title: "Last Changed",
+      type: "numeric",
+      sortable: true,
+      template: (lastChanged: string) => html`
+        <ha-relative-time
+          .hass=${this.hass!}
+          .datetime=${lastChanged}
+        ></ha-relative-time>
+      `,
+    },
+  };
+
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
@@ -76,43 +111,7 @@ export class HuiUnusedEntities extends LitElement {
         </div>
       </ha-card>
       <ha-data-table
-        .columns=${{
-          entity: {
-            title: "Entity",
-            sortable: true,
-            filterable: true,
-            filterKey: "friendly_name",
-            direction: "asc",
-            template: (stateObj) => html`
-              <state-badge
-                .hass=${this.hass!}
-                .stateObj=${stateObj}
-              ></state-badge>
-              ${stateObj.friendly_name}
-            `,
-          },
-          entity_id: {
-            title: "Entity id",
-            sortable: true,
-            filterable: true,
-          },
-          domain: {
-            title: "Domain",
-            sortable: true,
-            filterable: true,
-          },
-          last_changed: {
-            title: "Last Changed",
-            type: "numeric",
-            sortable: true,
-            template: (lastChanged: string) => html`
-              <ha-relative-time
-                .hass=${this.hass!}
-                .datetime=${lastChanged}
-              ></ha-relative-time>
-            `,
-          },
-        }}
+        .columns=${this._columns}
         .data=${this._unusedEntities.map((entity) => {
           const stateObj = this.hass!.states[entity];
           return {
