@@ -1,7 +1,6 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-tooltip/paper-tooltip";
 import "@material/mwc-button";
-import "@polymer/paper-fab/paper-fab";
 import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -9,6 +8,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 import "../../../components/entity/ha-state-icon";
 import "../../../layouts/hass-subpage";
 import "../../../resources/ha-style";
@@ -53,24 +53,24 @@ class HaConfigManagerDashboard extends LocalizeMixin(
           color: var(--primary-text-color);
           text-decoration: none;
         }
-        paper-fab {
+        ha-fab {
           position: fixed;
           bottom: 16px;
           right: 16px;
           z-index: 1;
         }
 
-        paper-fab[is-wide] {
+        ha-fab[is-wide] {
           bottom: 24px;
           right: 24px;
         }
 
-        paper-fab[rtl] {
+        ha-fab[rtl] {
           right: auto;
           left: 16px;
         }
 
-        paper-fab[rtl][is-wide] {
+        ha-fab[rtl][is-wide] {
           bottom: 24px;
           right: auto;
           left: 24px;
@@ -141,13 +141,13 @@ class HaConfigManagerDashboard extends LocalizeMixin(
           </ha-card>
         </ha-config-section>
 
-        <paper-fab
+        <ha-fab
           icon="hass:plus"
           title="[[localize('ui.panel.config.integrations.new')]]"
           on-click="_createFlow"
           is-wide$="[[isWide]]"
           rtl$="[[rtl]]"
-        ></paper-fab>
+        ></ha-fab>
       </hass-subpage>
     `;
   }

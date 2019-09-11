@@ -251,7 +251,8 @@
             "snowy-rainy": "Snöigt, regnigt",
             "sunny": "Soligt",
             "windy": "Blåsigt",
-            "windy-variant": "Blåsigt"
+            "windy-variant": "Blåsigt",
+            "exceptional": "Exceptionellt"
         },
         "vacuum": {
             "cleaning": "Städar",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Info"
+                    },
+                    "logs": {
+                        "title": "Loggar"
                     }
                 }
             },
@@ -498,6 +502,9 @@
                                     "event": "Händelse:",
                                     "enter": "Ankomma",
                                     "leave": "Lämna"
+                                },
+                                "device": {
+                                    "label": "Enhet"
                                 }
                             },
                             "learn_more": "Lär dig mer om utlösare"
@@ -787,7 +794,9 @@
                             "heading": "Serverhantering",
                             "introduction": "Kontrollera din Home Assistant-server ... från Home Assistant.",
                             "restart": "Starta om",
-                            "stop": "Stoppa"
+                            "stop": "Stoppa",
+                            "confirm_restart": "Är du säker på att du vill starta om Home Assistant?",
+                            "confirm_stop": "Är du säker på att du vill stoppa Home Assistant?"
                         }
                     }
                 }
@@ -1123,7 +1132,8 @@
         "common": {
             "loading": "Läser in",
             "cancel": "Avbryt",
-            "save": "Spara"
+            "save": "Spara",
+            "successfully_saved": "Inställningar sparades"
         },
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",
@@ -1199,7 +1209,9 @@
             "fan": {
                 "speed": "Hastighet",
                 "oscillate": "Pendlar",
-                "direction": "Riktning"
+                "direction": "Riktning",
+                "forward": "Framåt",
+                "reverse": "Baklänges"
             },
             "light": {
                 "brightness": "Ljusstyrka",

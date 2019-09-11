@@ -8,6 +8,10 @@ import "../../../data/ha-state-history-data";
 import { processConfigEntities } from "../common/process-config-entities";
 
 class HuiHistoryGraphCard extends PolymerElement {
+  static getStubConfig() {
+    return { entities: [] };
+  }
+
   static get template() {
     return html`
       <style>
@@ -66,12 +70,12 @@ class HuiHistoryGraphCard extends PolymerElement {
 
     const _entities = [];
     const _names = {};
-    for (const entity of entities) {
+    entities.forEach((entity) => {
       _entities.push(entity.entity);
       if (entity.name) {
         _names[entity.entity] = entity.name;
       }
-    }
+    });
 
     this.setProperties({
       _cacheConfig: {

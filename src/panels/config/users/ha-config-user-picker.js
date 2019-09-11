@@ -1,4 +1,3 @@
-import "@polymer/paper-fab/paper-fab";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -7,6 +6,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../layouts/hass-subpage";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-card";
+import "../../../components/ha-fab";
 
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import NavigateMixin from "../../../mixins/navigate-mixin";
@@ -27,21 +27,21 @@ class HaUserPicker extends EventsMixin(
   static get template() {
     return html`
       <style>
-        paper-fab {
+        ha-fab {
           position: fixed;
           bottom: 16px;
           right: 16px;
           z-index: 1;
         }
-        paper-fab[is-wide] {
+        ha-fab[is-wide] {
           bottom: 24px;
           right: 24px;
         }
-        paper-fab[rtl] {
+        ha-fab[rtl] {
           right: auto;
           left: 16px;
         }
-        paper-fab[rtl][is-wide] {
+        ha-fab[rtl][is-wide] {
           bottom: 24px;
           right: auto;
           left: 24px;
@@ -78,13 +78,13 @@ class HaUserPicker extends EventsMixin(
           </template>
         </ha-card>
 
-        <paper-fab
+        <ha-fab
           is-wide$="[[isWide]]"
           icon="hass:plus"
           title="[[localize('ui.panel.config.users.picker.add_user')]]"
           on-click="_addUser"
           rtl$="[[rtl]]"
-        ></paper-fab>
+        ></ha-fab>
       </hass-subpage>
     `;
   }

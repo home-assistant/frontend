@@ -327,6 +327,9 @@
                     },
                     "info": {
                         "title": "信息"
+                    },
+                    "logs": {
+                        "title": "日志"
                     }
                 }
             },
@@ -498,6 +501,9 @@
                                     "event": "事件：",
                                     "enter": "进入",
                                     "leave": "离开"
+                                },
+                                "device": {
+                                    "label": "设备"
                                 }
                             },
                             "learn_more": "详细了解触发条件"
@@ -594,13 +600,14 @@
                     "caption": "Z-Wave",
                     "description": "管理 Z-Wave 网络",
                     "network_management": {
-                        "header": "Z-Wave网络管理"
+                        "header": "Z-Wave 网络管理",
+                        "introduction": "运行影响 Z-Wave 网络的命令。大多数命令无法反馈是否执行成功，但您可以尝试检查 OZW 日志来确认。"
                     },
                     "network_status": {
-                        "network_stopped": "Z-Wave网络已停止",
-                        "network_starting": "启动Z-Wave网络......",
+                        "network_stopped": "Z-Wave 网络已停止",
+                        "network_starting": "启动 Z-Wave 网络......",
                         "network_starting_note": "这可能需要一段时间，具体取决于您的网络规模。",
-                        "network_started": "Z-Wave网络开始",
+                        "network_started": "Z-Wave 网络已启动",
                         "network_started_note_some_queried": "已查询唤醒节点。睡眠节点将在唤醒时被查询。",
                         "network_started_note_all_queried": "已查询所有节点。"
                     },
@@ -746,7 +753,7 @@
                         "update": "更新",
                         "enabled_label": "启用实体",
                         "enabled_cause": "被{cause}禁用。",
-                        "enabled_description": "已禁用的实体不再添加到Home Assistant。"
+                        "enabled_description": "已禁用的实体不再添加到 Home Assistant。"
                     }
                 },
                 "person": {
@@ -760,19 +767,19 @@
                     }
                 },
                 "server_control": {
-                    "caption": "服务器控制",
-                    "description": "重新启动或停止Home Assistant服务器",
+                    "caption": "服务控制",
+                    "description": "重新启动或停止 Home Assistant 服务",
                     "section": {
                         "validation": {
                             "heading": "配置有效性",
                             "introduction": "此处可以帮助你检验最新修改的配置文件有效性",
-                            "check_config": "配置检查",
+                            "check_config": "检查配置",
                             "valid": "配置有效！",
                             "invalid": "配置无效"
                         },
                         "reloading": {
-                            "heading": "配置重载中",
-                            "introduction": "Home Assistant 中的部分设定可以直接重载，无需重启服务器。点击重载按钮将重新载入新的设定。",
+                            "heading": "配置重载",
+                            "introduction": "Home Assistant 中的部分配置可以直接重载，而无需重启服务。点击重载按钮将重新载入新的配置。",
                             "core": "重载核心模块",
                             "group": "重载分组",
                             "automation": "重载自动化",
@@ -783,7 +790,9 @@
                             "heading": "服务器管理",
                             "introduction": "在这里即可控制 Home Assistant 服务。",
                             "restart": "重新启动",
-                            "stop": "停止服务"
+                            "stop": "停止服务",
+                            "confirm_restart": "您确定要重新启动 Home Assistant 吗？",
+                            "confirm_stop": "您确定要停止 Home Assistant 吗？"
                         }
                     }
                 }
@@ -860,7 +869,7 @@
                 "logout": "退出",
                 "force_narrow": {
                     "header": "始终隐藏侧边栏",
-                    "description": "这将默认隐藏侧边栏，类似于移动设备上的体验。"
+                    "description": "这将默认隐藏侧边栏，体验与手机版类似。"
                 }
             },
             "page-authorize": {
@@ -1097,8 +1106,8 @@
                             "commute_home": "下班",
                             "entertainment": "娱乐",
                             "activity": "活动",
-                            "hdmi_input": "HDMI输入",
-                            "hdmi_switcher": "HDMI切换",
+                            "hdmi_input": "HDMI 输入",
+                            "hdmi_switcher": "HDMI 切换",
                             "volume": "音量",
                             "total_tv_time": "观看总时长",
                             "turn_tv_off": "关闭电视",
@@ -1305,7 +1314,7 @@
             "config_entry_system_options": {
                 "title": "系统选项",
                 "enable_new_entities_label": "启用新添加的实体。",
-                "enable_new_entities_description": "如果禁用，新发现的实体将不会自动添加到Home Assistant。"
+                "enable_new_entities_description": "如果禁用，新发现的实体将不会自动添加到 Home Assistant。"
             }
         },
         "auth_store": {
@@ -1393,7 +1402,7 @@
                 "cooling": "制冷",
                 "drying": "除湿",
                 "idle": "空闲",
-                "fan": "风扇"
+                "fan": "送风"
             }
         }
     },

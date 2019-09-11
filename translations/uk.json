@@ -199,7 +199,7 @@
             "standby": "Очікування"
         },
         "plant": {
-            "ok": "ОК",
+            "ok": "ТАК",
             "problem": "Халепа"
         },
         "remote": {
@@ -251,7 +251,8 @@
             "snowy-rainy": "Сніг, дощ",
             "sunny": "Сонячно",
             "windy": "Вітряно",
-            "windy-variant": "Вітряно"
+            "windy-variant": "Вітряно",
+            "exceptional": "Попередження"
         },
         "vacuum": {
             "cleaning": "Прибирання",
@@ -276,17 +277,17 @@
     "state_badge": {
         "default": {
             "unknown": "Невід",
-            "unavailable": "Недост",
+            "unavailable": "Недоступно",
             "error": "Помилка",
             "entity_not_found": "Об'єкт не знайдено"
         },
         "alarm_control_panel": {
             "armed": "Охорона",
-            "disarmed": "Вимкн",
+            "disarmed": "Знято з охорони",
             "armed_home": "Охорона",
             "armed_away": "Охорона",
             "armed_night": "Охорона",
-            "pending": "Очік",
+            "pending": "Очікування",
             "arming": "Ставлю",
             "disarming": "Зняття",
             "triggered": "Тривога",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Інформація"
+                    },
+                    "logs": {
+                        "title": "Лог"
                     }
                 }
             },
@@ -498,6 +502,9 @@
                                     "event": "Подія:",
                                     "enter": "Увійти",
                                     "leave": "Залишити"
+                                },
+                                "device": {
+                                    "label": "Пристрій"
                                 }
                             },
                             "learn_more": "Докладніше про тригери"
@@ -512,7 +519,12 @@
                             "unsupported_condition": "Непідтримувана умова: {condition}",
                             "type_select": "Тип умови",
                             "type": {
+                                "state": {
+                                    "label": "Статус",
+                                    "state": "Статус"
+                                },
                                 "numeric_state": {
+                                    "label": "Числовий статус",
                                     "above": "Над",
                                     "below": "Нижче"
                                 },
@@ -526,7 +538,8 @@
                                     "sunset": "Захід"
                                 },
                                 "template": {
-                                    "label": "Шаблон"
+                                    "label": "Шаблон",
+                                    "value_template": "Значення шаблону"
                                 },
                                 "time": {
                                     "label": "Час",
@@ -535,7 +548,11 @@
                                 },
                                 "zone": {
                                     "label": "Зона",
+                                    "entity": "Об'єкт з місцем розташування",
                                     "zone": "Зона"
+                                },
+                                "device": {
+                                    "label": "Пристрій"
                                 }
                             },
                             "learn_more": "Докладніше про умови"
@@ -585,21 +602,48 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Керуйте мережею Z-Wave",
+                    "network_management": {
+                        "header": "Керування мережею Z-Wave",
+                        "introduction": "Керуйте мережею Z-Wave за допомогою представлених команд. Інформацію про результат виконаних команд Ви можете отримати в журналі OZW."
+                    },
+                    "network_status": {
+                        "network_stopped": "Мережа Z-Wave вимкнена",
+                        "network_starting": "Запуск мережі Z-Wave ...",
+                        "network_starting_note": "Це може зайняти деякий час в залежності від розміру Вашої мережі.",
+                        "network_started": "Мережа Z-Wave працює",
+                        "network_started_note_some_queried": "Активні вузли були опитані. Сплячі вузли будуть опитані, коли вийдуть з режиму сну.",
+                        "network_started_note_all_queried": "Всі вузли були опитані."
+                    },
                     "services": {
+                        "start_network": "Увімкнути",
+                        "stop_network": "Вимкнути",
+                        "heal_network": "Виправити мережу",
+                        "test_network": "Тестувати ",
+                        "soft_reset": "Скидання",
                         "save_config": "Зберегти конфігурацію",
+                        "add_node_secure": "Додати захищений вузол",
                         "add_node": "Додати вузол",
                         "remove_node": "Видалити вузол",
                         "cancel_command": "Скасувати команду"
                     },
                     "common": {
+                        "value": "Значення",
+                        "instance": "Екземпляр",
+                        "index": "Індекс",
                         "unknown": "невідомо",
                         "wakeup_interval": "Інтервал пробудження"
                     },
+                    "values": {
+                        "header": "Значення вузлів"
+                    },
                     "node_config": {
+                        "header": "Параметри конфігурації вузла",
                         "seconds": "секунд",
                         "set_wakeup": "Встановити інтервал пробудження",
                         "config_parameter": "Параметр конфігурації",
                         "config_value": "Значення параметра",
+                        "true": "Істина",
+                        "false": "Брехня",
                         "set_config_parameter": "Встановити параметр налаштування"
                     }
                 },
@@ -752,7 +796,9 @@
                             "heading": "Управління сервером",
                             "introduction": "Контролюйте сервер Home Assistant ... з Home Assistant",
                             "restart": "Перезапустити",
-                            "stop": "Зупинити"
+                            "stop": "Зупинити",
+                            "confirm_restart": "Ви впевнені, що хочете перезапустити Home Assistant?",
+                            "confirm_stop": "Ви впевнені, що хочете зупинити Home Assistant?"
                         }
                     }
                 }
@@ -809,7 +855,7 @@
                     "header": "Змінити пароль",
                     "current_password": "Поточний пароль",
                     "new_password": "Новий пароль",
-                    "confirm_new_password": "Підтвердіть Новий Пароль",
+                    "confirm_new_password": "Підтвердіть новий пароль",
                     "error_required": "Необхідно",
                     "submit": "Відправити"
                 },
@@ -876,7 +922,8 @@
                                 "mfa": {
                                     "data": {
                                         "code": "Двофакторний Код Автентифікації"
-                                    }
+                                    },
+                                    "description": "Введіть код двофакторної аутентифікації, отриманий від **{mfa_module_name}**:"
                                 }
                             },
                             "error": {
@@ -902,6 +949,24 @@
                             }
                         },
                         "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Логін",
+                                        "password": "Пароль"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Код двофакторної аутентифікації"
+                                    },
+                                    "description": "Введіть код двофакторної аутентифікації, отриманий від **{mfa_module_name}**:"
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Невірний логін або пароль",
+                                "invalid_code": "Невірний код аутентифікації"
+                            },
                             "abort": {
                                 "login_expired": "Сесія закінчилася, увійдіть знову."
                             }
@@ -1000,6 +1065,10 @@
                         "save": "Зберегти",
                         "unsaved_changes": "Незбережені зміни",
                         "saved": "Збережено"
+                    },
+                    "edit_lovelace": {
+                        "header": "Заголовок для Lovelace",
+                        "explanation": "Цей заголовок буде показаний над вашими картками в Lovelace"
                     }
                 },
                 "menu": {
@@ -1069,7 +1138,8 @@
         "common": {
             "loading": "Завантаження",
             "cancel": "Скасувати",
-            "save": "Зберегти"
+            "save": "Зберегти",
+            "successfully_saved": "Успішно збережено"
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {д.}\n  other {д.}\n}",
@@ -1144,8 +1214,10 @@
             },
             "fan": {
                 "speed": "Швидкість",
-                "oscillate": "Коливатися",
-                "direction": "Напрямок"
+                "oscillate": "Коливання",
+                "direction": "Напрямок",
+                "forward": "Від себе",
+                "reverse": "На себе"
             },
             "light": {
                 "brightness": "Яскравість",
@@ -1167,7 +1239,8 @@
                 "fan_mode": "Режим вентилятора",
                 "swing_mode": "Режим гойдання",
                 "away_mode": "Режиму очікування",
-                "aux_heat": "Aux тепла"
+                "aux_heat": "Aux тепла",
+                "preset_mode": "Режим"
             },
             "lock": {
                 "code": "Код",
@@ -1189,12 +1262,20 @@
                 "target_temperature": "Задана температура",
                 "operation": "Операція",
                 "away_mode": "Режиму очікування"
+            },
+            "timer": {
+                "actions": {
+                    "start": "Запуск",
+                    "pause": "Пауза",
+                    "cancel": "Скасувати",
+                    "finish": "Готово"
+                }
             }
         },
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Entity"
+                    "entity": "Об'єкт"
                 }
             },
             "service-picker": {
@@ -1255,6 +1336,20 @@
                 "title": "Системні налаштування",
                 "enable_new_entities_label": "Додавати нові об'єкти.",
                 "enable_new_entities_description": "Автоматично додавати в Home Assistant знову виявлені об'єкти."
+            },
+            "zha_device_info": {
+                "manuf": "Виробник: {manufacturer}",
+                "no_area": "Не вказано",
+                "services": {
+                    "reconfigure": "Перенастроювання пристрою ZHA. Використовуйте цю службу, якщо у Вас є проблеми з пристроєм. Якщо даний пристрій працює від батареї, будь ласка, переконайтеся, що воно не знаходиться в режимі сну і приймає команди, коли ви запускаєте цю службу.",
+                    "updateDeviceName": "Встановіть ім'я для цього пристрою в реєстрі пристроїв.",
+                    "remove": "Видалити пристрій з мережі ZigBee."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Логін",
+                    "area_picker_label": "Приміщення",
+                    "update_name_button": "Оновити назву"
+                }
             }
         },
         "auth_store": {
@@ -1293,15 +1388,15 @@
         "mailbox": "Поштова скринька",
         "media_player": "Медіа плеєр",
         "notify": "Повідомлення",
-        "plant": "Рослини",
-        "proximity": "Близькість",
+        "plant": "Рослина",
+        "proximity": "Відстань",
         "remote": "Пульт ДУ",
         "scene": "Сцена",
         "script": "Сценарій",
         "sensor": "Датчик",
         "sun": "Сонце",
         "switch": "Перемикач",
-        "updater": "Оновлювач",
+        "updater": "Оновлення",
         "weblink": "Посилання",
         "zwave": "Z-Wave",
         "vacuum": "Пилосос",
@@ -1340,7 +1435,7 @@
                 "off": "Вимкнено",
                 "heating": "Опалення",
                 "cooling": "Охолодження",
-                "drying": "Сушіння",
+                "drying": "Осушення",
                 "idle": "Очікування",
                 "fan": "Вентилятор"
             }
