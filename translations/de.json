@@ -251,7 +251,8 @@
             "snowy-rainy": "Verschneit, regnerisch",
             "sunny": "Sonnig",
             "windy": "Windig",
-            "windy-variant": "Windig"
+            "windy-variant": "Windig",
+            "exceptional": "Außergewöhnlich"
         },
         "vacuum": {
             "cleaning": "Reinigen",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Info"
+                    },
+                    "logs": {
+                        "title": "Logs"
                     }
                 }
             },
@@ -498,6 +502,9 @@
                                     "event": "Ereignis:",
                                     "enter": "Betreten",
                                     "leave": "Verlassen"
+                                },
+                                "device": {
+                                    "label": "Gerät"
                                 }
                             },
                             "learn_more": "Erfahre mehr über Auslöser"
@@ -787,7 +794,9 @@
                             "heading": "Serververwaltung",
                             "introduction": "Verwalte Home Assistant… von Home Assistant aus.",
                             "restart": "Neu starten",
-                            "stop": "Stoppen"
+                            "stop": "Stoppen",
+                            "confirm_restart": "Möchten Sie Home Assistant wirklich neu starten?",
+                            "confirm_stop": "Möchten Sie Home Assistant wirklich beenden?"
                         }
                     }
                 }
@@ -1123,7 +1132,8 @@
         "common": {
             "loading": "Laden",
             "cancel": "Abbrechen",
-            "save": "Speichern"
+            "save": "Speichern",
+            "successfully_saved": "Erfolgreich gespeichert"
         },
         "duration": {
             "day": "{count} {count, plural,\none {Tag}\nother {Tage}\n}",
@@ -1199,7 +1209,9 @@
             "fan": {
                 "speed": "Geschwindigkeit",
                 "oscillate": "Oszillieren",
-                "direction": "Richtung"
+                "direction": "Richtung",
+                "forward": "Vorwärts",
+                "reverse": "Rückwärts"
             },
             "light": {
                 "brightness": "Helligkeit",
