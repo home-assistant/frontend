@@ -2,7 +2,7 @@ import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@material/mwc-switch";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
@@ -68,11 +68,11 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <div class="container-oscillating">
           <div class="center horizontal layout single-row">
             <div class="flex">[[localize('ui.card.fan.oscillate')]]</div>
-            <paper-toggle-button
+            <mwc-switch
               checked="[[oscillationToggleChecked]]"
               on-change="oscillationToggleChanged"
             >
-            </paper-toggle-button>
+            </mwc-switch>
           </div>
         </div>
 

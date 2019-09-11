@@ -1,4 +1,4 @@
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@material/mwc-switch";
 
 import { STATES_OFF } from "../../../common/const";
 

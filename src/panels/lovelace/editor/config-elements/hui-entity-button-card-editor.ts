@@ -119,17 +119,17 @@ export class HuiEntityButtonCardEditor extends LitElement
           ></paper-input>
         </div>
         <div class="side-by-side">
-          <paper-toggle-button
+          <mwc-switch
             ?checked="${this._config!.show_name !== false}"
             .configValue="${"show_name"}"
             @change="${this._valueChanged}"
-            >Show Name?</paper-toggle-button
+            >Show Name?</mwc-switch
           >
-          <paper-toggle-button
+          <mwc-switch
             ?checked="${this._config!.show_icon !== false}"
             .configValue="${"show_icon"}"
             @change="${this._valueChanged}"
-            >Show Icon?</paper-toggle-button
+            >Show Icon?</mwc-switch
           >
         </div>
         <div class="side-by-side">

@@ -8,7 +8,7 @@ import {
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@material/mwc-switch";
 
 import "../../../../components/entity/state-badge";
 import "../../components/hui-theme-select-editor";
@@ -88,11 +88,11 @@ export class HuiEntitiesCardEditor extends LitElement
           .configValue="${"theme"}"
           @theme-changed="${this._valueChanged}"
         ></hui-theme-select-editor>
-        <paper-toggle-button
+        <mwc-switch
           ?checked="${this._config!.show_header_toggle !== false}"
           .configValue="${"show_header_toggle"}"
           @change="${this._valueChanged}"
-          >Show Header Toggle?</paper-toggle-button
+          >Show Header Toggle?</mwc-switch
         >
       </div>
       <hui-entity-editor

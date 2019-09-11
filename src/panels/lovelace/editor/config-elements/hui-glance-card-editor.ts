@@ -8,7 +8,7 @@ import {
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@material/mwc-switch";
 
 import "../../../../components/entity/state-badge";
 import "../../components/hui-theme-select-editor";
@@ -114,23 +114,23 @@ export class HuiGlanceCardEditor extends LitElement
           ></paper-input>
         </div>
         <div class="side-by-side">
-          <paper-toggle-button
+          <mwc-switch
             ?checked="${this._show_name !== false}"
             .configValue="${"show_name"}"
             @change="${this._valueChanged}"
-            >Show Name?</paper-toggle-button
+            >Show Name?</mwc-switch
           >
-          <paper-toggle-button
+          <mwc-switch
             ?checked="${this._show_icon !== false}"
             .configValue="${"show_icon"}"
             @change="${this._valueChanged}"
-            >Show Icon?</paper-toggle-button
+            >Show Icon?</mwc-switch
           >
-          <paper-toggle-button
+          <mwc-switch
             ?checked="${this._show_state !== false}"
             .configValue="${"show_state"}"
             @change="${this._valueChanged}"
-            >Show State?</paper-toggle-button
+            >Show State?</mwc-switch
           >
         </div>
       </div>

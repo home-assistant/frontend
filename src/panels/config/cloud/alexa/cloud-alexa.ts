@@ -7,7 +7,7 @@ import {
   customElement,
   property,
 } from "lit-element";
-import "@polymer/paper-toggle-button";
+import "@material/mwc-switch";
 import "@polymer/paper-icon-button";
 import "../../../../layouts/hass-subpage";
 import "../../../../layouts/hass-loading-screen";
@@ -126,14 +126,14 @@ class CloudAlexa extends LitElement {
                 )
                 .join(", ")}
             </state-info>
-            <paper-toggle-button
+            <mwc-switch
               .entityId=${entity.entity_id}
               .disabled=${!emptyFilter}
               .checked=${isExposed}
               @checked-changed=${this._exposeChanged}
             >
               Expose to Alexa
-            </paper-toggle-button>
+            </mwc-switch>
           </div>
         </ha-card>
       `);
@@ -328,9 +328,8 @@ class CloudAlexa extends LitElement {
         display: flex;
         flex-wrap: wrap;
         padding: 4px;
-        --paper-toggle-button-label-spacing: 16px;
       }
-      paper-toggle-button {
+      mwc-switch {
         clear: both;
       }
       ha-card {
@@ -344,7 +343,7 @@ class CloudAlexa extends LitElement {
       state-info {
         cursor: pointer;
       }
-      paper-toggle-button {
+      mwc-switch {
         padding: 8px 0;
       }
 

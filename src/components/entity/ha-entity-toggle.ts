@@ -1,5 +1,5 @@
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@material/mwc-switch";
 
 import { STATES_OFF } from "../../common/const";
 import computeStateDomain from "../../common/entity/compute_state_domain";
@@ -29,7 +29,7 @@ class HaEntityToggle extends LitElement {
   protected render(): TemplateResult | void {
     if (!this.stateObj) {
       return html`
-        <paper-toggle-button disabled></paper-toggle-button>
+        <mwc-switch disabled></mwc-switch>
       `;
     }
 
@@ -51,13 +51,13 @@ class HaEntityToggle extends LitElement {
     }
 
     return html`
-      <paper-toggle-button
+      <mwc-switch
         aria-label=${`Toggle ${computeStateName(this.stateObj)} ${
           this._isOn ? "off" : "on"
         }`}
         .checked=${this._isOn}
         @change=${this._toggleChanged}
-      ></paper-toggle-button>
+      ></mwc-switch>
     `;
   }
 
@@ -149,9 +149,7 @@ class HaEntityToggle extends LitElement {
       paper-icon-button[state-active] {
         color: var(--paper-icon-button-active-color, var(--primary-color));
       }
-      paper-toggle-button {
-        cursor: pointer;
-        --paper-toggle-button-label-spacing: 0;
+      mwc-switch {
         padding: 13px 5px;
         margin: -4px -5px;
       }

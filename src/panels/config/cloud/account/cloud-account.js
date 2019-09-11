@@ -1,6 +1,6 @@
 import "@material/mwc-button";
+import "@material/mwc-switch";
 import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-toggle-button/paper-toggle-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 

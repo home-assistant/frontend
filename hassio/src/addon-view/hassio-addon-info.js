@@ -2,7 +2,7 @@ import "@polymer/iron-icon/iron-icon";
 import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-tooltip/paper-tooltip";
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@material/mwc-switch";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
@@ -122,7 +122,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
           width: 16px;
           color: var(--secondary-text-color);
         }
-        paper-toggle-button {
+        mwc-switch {
           display: inline;
         }
         iron-icon.running {
@@ -348,26 +348,26 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
           <template is="dom-if" if="[[addon.version]]">
             <div class="state">
               <div>Start on boot</div>
-              <paper-toggle-button
+              <mwc-switch
                 on-change="startOnBootToggled"
                 checked="[[computeStartOnBoot(addon.boot)]]"
-              ></paper-toggle-button>
+              ></mwc-switch>
             </div>
             <div class="state">
               <div>Auto update</div>
-              <paper-toggle-button
+              <mwc-switch
                 on-change="autoUpdateToggled"
                 checked="[[addon.auto_update]]"
-              ></paper-toggle-button>
+              ></mwc-switch>
             </div>
             <template is="dom-if" if="[[addon.ingress]]">
               <div class="state">
                 <div>Show in sidebar</div>
-                <paper-toggle-button
+                <mwc-switch
                   on-change="panelToggled"
                   checked="[[addon.ingress_panel]]"
                   disabled="[[_computeCannotIngressSidebar(hass, addon)]]"
-                ></paper-toggle-button>
+                ></mwc-switch>
                 <template is="dom-if" if="[[_computeCannotIngressSidebar(hass, addon)]]">
                   <span>This option requires Home Assistant 0.92 or later.</span>
                 </template>
@@ -381,10 +381,10 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
                   <paper-tooltip>Grant the add-on elevated system access.</paper-tooltip>
                 </span>
               </div>
-              <paper-toggle-button
+              <mwc-switch
                 on-change="protectionToggled"
                 checked="[[addon.protected]]"
-              ></paper-toggle-button>
+              ></mwc-switch>
             </div>
           </template>
         </div>

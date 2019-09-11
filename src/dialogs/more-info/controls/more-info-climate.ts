@@ -1,7 +1,7 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@material/mwc-switch";
 import {
   LitElement,
   html,
@@ -279,10 +279,10 @@ class MoreInfoClimate extends LitElement {
                   <div class="flex">
                     ${hass.localize("ui.card.climate.aux_heat")}
                   </div>
-                  <paper-toggle-button
+                  <mwc-switch
                     .checked=${stateObj.attributes.aux_heat === "on"}
                     @change=${this._auxToggleChanged}
-                  ></paper-toggle-button>
+                  ></mwc-switch>
                 </div>
               </div>
             `

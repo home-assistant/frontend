@@ -8,7 +8,7 @@ import {
   CSSResult,
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@material/mwc-switch";
 
 import "../../components/hui-theme-select-editor";
 import "../../components/hui-entity-editor";
@@ -130,10 +130,10 @@ export class HuiGaugeCardEditor extends LitElement
           ></paper-input>
         </div>
         <div class="side-by-side">
-          <paper-toggle-button
+          <mwc-switch
             ?checked="${this._useSeverity !== false}"
             @change="${this._toggleSeverity}"
-            >Define Severity?</paper-toggle-button
+            >Define Severity?</mwc-switch
           >
           <div class="severity">
             <paper-input
@@ -176,7 +176,7 @@ export class HuiGaugeCardEditor extends LitElement
         flex: 1 0 30%;
         padding-right: 4px;
       }
-      paper-toggle-button[checked] ~ .severity {
+      mwc-switch[checked] ~ .severity {
         display: flex;
       }
     `;

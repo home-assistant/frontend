@@ -7,9 +7,9 @@ import {
   property,
 } from "lit-element";
 import "@material/mwc-button";
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@material/mwc-switch";
 // tslint:disable-next-line
-import { PaperToggleButtonElement } from "@polymer/paper-toggle-button/paper-toggle-button";
+import { Switch } from "@material/mwc-switch";
 
 import "../../../../components/ha-card";
 
@@ -32,10 +32,10 @@ export class CloudAlexaPref extends LitElement {
 
     return html`
       <ha-card header="Alexa">
-        <paper-toggle-button
+        <mwc-switch
           .checked=${alexa_enabled}
           @change=${this._enabledToggleChanged}
-        ></paper-toggle-button>
+        ></mwc-switch>
         <div class="card-content">
           With the Alexa integration for Home Assistant Cloud you'll be able to
           control all your Home Assistant devices via any Alexa-enabled device.
@@ -70,10 +70,10 @@ export class CloudAlexaPref extends LitElement {
                   allows you to always see the latest states in the Alexa app
                   and use the state changes to create routines.
                 </p>
-                <paper-toggle-button
+                <mwc-switch
                   .checked=${alexa_report_state}
                   @change=${this._reportToggleChanged}
-                ></paper-toggle-button>
+                ></mwc-switch>
               `
             : ""}
         </div>
@@ -102,7 +102,7 @@ export class CloudAlexaPref extends LitElement {
   }
 
   private async _enabledToggleChanged(ev) {
-    const toggle = ev.target as PaperToggleButtonElement;
+    const toggle = ev.target as Switch;
     try {
       await updateCloudPref(this.hass!, { alexa_enabled: toggle.checked! });
       fireEvent(this, "ha-refresh-cloud-status");
@@ -112,7 +112,7 @@ export class CloudAlexaPref extends LitElement {
   }
 
   private async _reportToggleChanged(ev) {
-    const toggle = ev.target as PaperToggleButtonElement;
+    const toggle = ev.target as Switch;
     try {
       await updateCloudPref(this.hass!, {
         alexa_report_state: toggle.checked!,
@@ -133,7 +133,7 @@ export class CloudAlexaPref extends LitElement {
       a {
         color: var(--primary-color);
       }
-      ha-card > paper-toggle-button {
+      ha-card > mwc-switch {
         margin: -4px 0;
         position: absolute;
         right: 8px;

@@ -8,7 +8,7 @@ import {
 } from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@material/mwc-switch";
 
 import "../../../components/dialog/ha-paper-dialog";
 
@@ -95,7 +95,7 @@ class DialogEntityRegistryDetail extends LitElement {
               .disabled=${this._submitting}
             ></paper-input>
             <div class="row">
-              <paper-toggle-button
+              <mwc-switch
                 .checked=${!this._disabledBy}
                 @checked-changed=${this._disabledByChanged}
               >
@@ -121,7 +121,7 @@ class DialogEntityRegistryDetail extends LitElement {
                     <br />Note: this might not work yet with all integrations.
                   </div>
                 </div>
-              </paper-toggle-button>
+              </mwc-switch>
             </div>
           </div>
         </paper-dialog-scrollable>

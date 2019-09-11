@@ -4,7 +4,7 @@ import {
   PropertyDeclarations,
   PropertyValues,
 } from "lit-element";
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@material/mwc-switch";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-spinner/paper-spinner";
@@ -116,9 +116,7 @@ export class CloudWebhooks extends LitElement {
                 </mwc-button>
               `
             : html`
-                <paper-toggle-button
-                  @click="${this._enableWebhook}"
-                ></paper-toggle-button>
+                <mwc-switch @click="${this._enableWebhook}"></mwc-switch>
               `}
         </div>
       `

@@ -8,10 +8,10 @@ import {
   css,
 } from "lit-element";
 import "@material/mwc-button";
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@material/mwc-switch";
 import "@polymer/paper-item/paper-item-body";
 // tslint:disable-next-line
-import { PaperToggleButtonElement } from "@polymer/paper-toggle-button/paper-toggle-button";
+import { Switch } from "@material/mwc-switch";
 
 import "../../../../components/ha-card";
 
@@ -59,10 +59,10 @@ export class CloudRemotePref extends LitElement {
 
     return html`
       <ha-card header="Remote Control">
-        <paper-toggle-button
+        <mwc-switch
           .checked="${remote_connected}"
           @change="${this._toggleChanged}"
-        ></paper-toggle-button>
+        ></mwc-switch>
         <div class="card-content">
           Home Assistant Cloud provides a secure remote connection to your
           instance while away from home. Your instance
@@ -95,7 +95,7 @@ export class CloudRemotePref extends LitElement {
   }
 
   private async _toggleChanged(ev) {
-    const toggle = ev.target as PaperToggleButtonElement;
+    const toggle = ev.target as Switch;
 
     try {
       if (toggle.checked) {
@@ -118,7 +118,7 @@ export class CloudRemotePref extends LitElement {
       a {
         color: var(--primary-color);
       }
-      ha-card > paper-toggle-button {
+      ha-card > mwc-switch {
         margin: -4px 0;
         position: absolute;
         right: 8px;

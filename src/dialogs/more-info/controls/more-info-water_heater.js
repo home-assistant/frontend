@@ -1,7 +1,7 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@material/mwc-switch";
 import { timeOut } from "@polymer/polymer/lib/utils/async";
 import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -124,11 +124,11 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
               <div class="flex">
                 [[localize('ui.card.water_heater.away_mode')]]
               </div>
-              <paper-toggle-button
+              <mwc-switch
                 checked="[[awayToggleChecked]]"
                 on-change="awayToggleChanged"
               >
-              </paper-toggle-button>
+              </mwc-switch>
             </div>
           </div>
         </template>

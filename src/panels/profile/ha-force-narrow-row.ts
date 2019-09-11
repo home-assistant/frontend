@@ -5,7 +5,7 @@ import {
   property,
   customElement,
 } from "lit-element";
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@material/mwc-switch";
 
 import "./ha-settings-row";
 import { HomeAssistant } from "../../types";
@@ -26,10 +26,10 @@ class HaPushNotificationsRow extends LitElement {
         <span slot="description">
           ${this.hass.localize("ui.panel.profile.force_narrow.description")}
         </span>
-        <paper-toggle-button
+        <mwc-switch
           .checked=${this.hass.dockedSidebar === "always_hidden"}
           @checked-changed=${this._checkedChanged}
-        ></paper-toggle-button>
+        ></mwc-switch>
       </ha-settings-row>
     `;
   }

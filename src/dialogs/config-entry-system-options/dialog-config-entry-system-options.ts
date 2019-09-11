@@ -72,7 +72,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
                     `
                   : ""}
                 <div class="form">
-                  <paper-toggle-button
+                  <mwc-switch
                     .checked=${!this._disableNewEntities}
                     @checked-changed=${this._disableNewEntitiesChanged}
                     .disabled=${this._submitting}
@@ -87,7 +87,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
                         "ui.dialogs.config_entry_system_options.enable_new_entities_description"
                       )}
                     </div>
-                  </paper-toggle-button>
+                  </mwc-switch>
                 </div>
               `}
         </paper-dialog-scrollable>

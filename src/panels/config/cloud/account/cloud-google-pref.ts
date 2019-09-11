@@ -7,9 +7,9 @@ import {
   css,
 } from "lit-element";
 import "@material/mwc-button";
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@material/mwc-switch";
 // tslint:disable-next-line
-import { PaperToggleButtonElement } from "@polymer/paper-toggle-button/paper-toggle-button";
+import { Switch } from "@material/mwc-switch";
 import "../../../../components/buttons/ha-call-api-button";
 
 import "../../../../components/ha-card";
@@ -43,11 +43,11 @@ export class CloudGooglePref extends LitElement {
 
     return html`
       <ha-card header="Google Assistant">
-        <paper-toggle-button
+        <mwc-switch
           id="google_enabled"
           .checked="${google_enabled}"
           @change="${this._toggleChanged}"
-        ></paper-toggle-button>
+        ></mwc-switch>
         <div class="card-content">
           With the Google Assistant integration for Home Assistant Cloud you'll
           be able to control all your Home Assistant devices via any Google
@@ -110,7 +110,7 @@ export class CloudGooglePref extends LitElement {
   }
 
   private async _toggleChanged(ev) {
-    const toggle = ev.target as PaperToggleButtonElement;
+    const toggle = ev.target as Switch;
     try {
       await updateCloudPref(this.hass!, { [toggle.id]: toggle.checked! });
       fireEvent(this, "ha-refresh-cloud-status");
@@ -138,7 +138,7 @@ export class CloudGooglePref extends LitElement {
       a {
         color: var(--primary-color);
       }
-      ha-card > paper-toggle-button {
+      ha-card > mwc-switch {
         margin: -4px 0;
         position: absolute;
         right: 8px;

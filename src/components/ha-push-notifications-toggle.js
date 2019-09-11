@@ -1,4 +1,4 @@
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@material/mwc-switch";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
@@ -19,11 +19,11 @@ export const pushSupported =
 class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-      <paper-toggle-button
+      <mwc-switch
         disabled="[[_compDisabled(disabled, loading)]]"
         checked="{{pushChecked}}"
         on-change="handlePushChange"
-      ></paper-toggle-button>
+      ></mwc-switch>
     `;
   }
 

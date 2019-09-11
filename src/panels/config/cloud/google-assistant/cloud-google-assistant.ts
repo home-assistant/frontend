@@ -7,7 +7,7 @@ import {
   customElement,
   property,
 } from "lit-element";
-import "@polymer/paper-toggle-button";
+import "@material/mwc-switch";
 import "@polymer/paper-icon-button";
 import "../../../../layouts/hass-subpage";
 import "../../../../layouts/hass-loading-screen";
@@ -122,23 +122,23 @@ class CloudGoogleAssistant extends LitElement {
                 .map((trait) => trait.substr(trait.lastIndexOf(".") + 1))
                 .join(", ")}
             </state-info>
-            <paper-toggle-button
+            <mwc-switch
               .entityId=${entity.entity_id}
               .disabled=${!emptyFilter}
               .checked=${isExposed}
               @checked-changed=${this._exposeChanged}
             >
               Expose to Google Assistant
-            </paper-toggle-button>
+            </mwc-switch>
             ${entity.might_2fa
               ? html`
-                  <paper-toggle-button
+                  <mwc-switch
                     .entityId=${entity.entity_id}
                     .checked=${Boolean(config.disable_2fa)}
                     @checked-changed=${this._disable2FAChanged}
                   >
                     Disable two factor authentication
-                  </paper-toggle-button>
+                  </mwc-switch>
                 `
               : ""}
           </div>
@@ -348,7 +348,6 @@ class CloudGoogleAssistant extends LitElement {
         display: flex;
         flex-wrap: wrap;
         padding: 4px;
-        --paper-toggle-button-label-spacing: 16px;
       }
       ha-card {
         margin: 4px;
@@ -361,7 +360,7 @@ class CloudGoogleAssistant extends LitElement {
       state-info {
         cursor: pointer;
       }
-      paper-toggle-button {
+      mwc-switch {
         padding: 8px 0;
       }
 

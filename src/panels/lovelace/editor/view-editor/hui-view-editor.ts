@@ -6,7 +6,7 @@ import {
   property,
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@material/mwc-switch";
 
 import { EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
@@ -104,11 +104,11 @@ export class HuiViewEditor extends LitElement {
           .configValue=${"theme"}
           @theme-changed=${this._valueChanged}
         ></hui-theme-select-editor>
-        <paper-toggle-button
+        <mwc-switch
           ?checked=${this._panel !== false}
           .configValue=${"panel"}
           @change=${this._valueChanged}
-          >Panel Mode?</paper-toggle-button
+          >Panel Mode?</mwc-switch
         >
       </div>
     `;

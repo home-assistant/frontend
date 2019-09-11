@@ -1,7 +1,7 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@polymer/paper-toggle-button/paper-toggle-button";
+import "@material/mwc-switch";
 
 import "./demo-more-info";
 
@@ -26,9 +26,7 @@ class DemoMoreInfos extends PolymerElement {
       </style>
       <app-toolbar>
         <div class="filters">
-          <paper-toggle-button checked="{{_showConfig}}"
-            >Show entity</paper-toggle-button
-          >
+          <mwc-switch checked="{{_showConfig}}">Show entity</mwc-switch>
         </div>
       </app-toolbar>
       <div class="cards">
