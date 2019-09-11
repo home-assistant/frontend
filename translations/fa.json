@@ -892,7 +892,6 @@
             "day": "\n{count} {count, plural,\n  one {روز}\n  other {روز ها}\n}\n",
             "week": "\n{count} {count, plural,\n  one {هفته}\n  other {هفته ها}\n}\n",
             "second": "ویرایشگر اتوماسیون اجازه می دهد تا شما را به ایجاد و ویرایش اتوماسیون بپردازید. لطفا پیوند زیر را بخوانید تا دستورالعمل ها را متوجه بشید تا مطمئن شوید که صفحه اصلی دستیار را به درستی پیکربندی کرده اید.",
-            "minute": "{count} {count, plural, <span class=\"lokalise linebreak notranslate\"> one {<\/span> دقیقه {count, plural, <span class=\"lokalise linebreak notranslate\"> one {<\/span> دقیقه } <span class=\"lokalise linebreak notranslate\"> other {<\/span> دقیقه } <span class=\"lokalise linebreak notranslate\"> }<\/span>",
             "hour": "{count} {تعداد, جمع,\nیکی {ساعت}\nدیگر {ساعت}\n}"
         },
         "login-form": {

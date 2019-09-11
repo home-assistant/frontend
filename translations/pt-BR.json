@@ -251,7 +251,8 @@
             "snowy-rainy": "Neve, chuva",
             "sunny": "Ensolarado",
             "windy": "Ventoso",
-            "windy-variant": "Ventoso"
+            "windy-variant": "Ventoso",
+            "exceptional": "Excepcional"
         },
         "vacuum": {
             "cleaning": "Limpando",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Info"
+                    },
+                    "logs": {
+                        "title": "Logs"
                     }
                 }
             },
@@ -498,6 +502,9 @@
                                     "event": "Evento:",
                                     "enter": "Entrar",
                                     "leave": "Sair"
+                                },
+                                "device": {
+                                    "label": "Dispositivo"
                                 }
                             },
                             "learn_more": "Saiba mais sobre gatilhos"
@@ -620,12 +627,21 @@
                     "common": {
                         "value": "Valor",
                         "instance": "Instância",
-                        "index": "Índice"
+                        "index": "Índice",
+                        "unknown": "Desconhecido",
+                        "wakeup_interval": "Intervalo de ativação"
                     },
                     "values": {
                         "header": "Valores de nó"
                     },
                     "node_config": {
+                        "header": "Opções de configuração do nó",
+                        "seconds": "Segundos",
+                        "set_wakeup": "Definir intervalo de ativação",
+                        "config_parameter": "Parâmetro de configuração",
+                        "config_value": "Valor de configuração",
+                        "true": "Verdadeiro",
+                        "false": "Falso",
                         "set_config_parameter": "Definir o parâmetro de configuração"
                     }
                 },
@@ -738,7 +754,10 @@
                         "unavailable": "Esta entidade não está disponível no momento.",
                         "default_name": "Nova Área",
                         "delete": "APAGAR",
-                        "update": "ATUALIZAR"
+                        "update": "ATUALIZAR",
+                        "enabled_label": "Ativar entidade",
+                        "enabled_cause": "Desativado por {cause}.",
+                        "enabled_description": "As entidades desativadas não serão adicionadas ao Home Assistant."
                     }
                 },
                 "person": {
@@ -749,6 +768,36 @@
                         "device_tracker_intro": "Selecione os dispositivos que pertencem a essa pessoa.",
                         "device_tracker_picked": "Rastrear dispositivo",
                         "device_tracker_pick": "Escolha o dispositivo para rastrear"
+                    }
+                },
+                "server_control": {
+                    "caption": "Controle do servidor",
+                    "description": "Reinicie e interrompa o servidor do Home Assistant",
+                    "section": {
+                        "validation": {
+                            "heading": "Validação da configuração",
+                            "introduction": "Valide sua configuração se você recentemente fez algumas mudanças na sua configuração e quiser certificar-se de que tudo é válido.",
+                            "check_config": "Verificar a configuração",
+                            "valid": "Configuração válida!",
+                            "invalid": "Configuração inválida"
+                        },
+                        "reloading": {
+                            "heading": "Recarregando a configuração",
+                            "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem a necessidade de reiniciar. Pressionar recarregar descarregará sua configuração atual e carregará a nova.",
+                            "core": "Recarregar o Core",
+                            "group": "Recarregar os grupos",
+                            "automation": "Recarregar as automações",
+                            "script": "Recarregar os scripts",
+                            "scene": "Recarregar cenas"
+                        },
+                        "server_management": {
+                            "heading": "Gerenciamento do servidor",
+                            "introduction": "Controle o seu servidor Home Assistant... a partir do Home Assistant.",
+                            "restart": "Reiniciar",
+                            "stop": "Parar",
+                            "confirm_restart": "Tem certeza de que deseja reiniciar o Home Assistant?",
+                            "confirm_stop": "Tem certeza de que deseja parar o Home Assistant?"
+                        }
                     }
                 }
             },
@@ -1083,7 +1132,8 @@
         "common": {
             "loading": "Carregando",
             "cancel": "Cancelar",
-            "save": "Salvar"
+            "save": "Salvar",
+            "successfully_saved": "Salvo com sucesso"
         },
         "duration": {
             "day": "{count} {count, plural,\none {day}\nother {days}\n}",
@@ -1159,7 +1209,9 @@
             "fan": {
                 "speed": "Velocidade",
                 "oscillate": "Oscilar",
-                "direction": "Direção"
+                "direction": "Direção",
+                "forward": "Frente",
+                "reverse": "Reverter"
             },
             "light": {
                 "brightness": "Brilho",
@@ -1257,6 +1309,19 @@
                 "updater": {
                     "title": "Atualizar Instruções"
                 }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Opções"
+                },
+                "success": {
+                    "description": "Opções salvas com sucesso."
+                }
+            },
+            "config_entry_system_options": {
+                "title": "Opções do sistema",
+                "enable_new_entities_label": "Habilitar entidades recém-adicionadas.",
+                "enable_new_entities_description": "Se desativadas, as entidades recém-descobertas não serão automaticamente adicionadas ao Home Assistant."
             }
         },
         "auth_store": {
@@ -1352,5 +1417,12 @@
         "system-admin": "Administradores",
         "system-users": "Usuários",
         "system-read-only": "Usuários somente leitura"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Usuário",
+            "integration": "Integração",
+            "config_entry": "Entrada de configuração"
+        }
     }
 }
