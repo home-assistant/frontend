@@ -80,11 +80,7 @@ function initPushNotifications() {
         event.waitUntil(
           self.registration
             .getNotifications({ tag: data.tag })
-            .then(function(notifications) {
-              for (const n of notifications) {
-                n.close();
-              }
-            })
+            .then((notifications) => notifications.forEach((n) => n.close()))
         );
         return;
       }

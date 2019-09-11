@@ -97,14 +97,11 @@ class HaHistoryGraphCard extends EventsMixin(PolymerElement) {
       this.cacheConfig.refresh !== (stateObj.attributes.refresh || 0) ||
       this.cacheConfig.hoursToShow !== (stateObj.attributes.hours_to_show || 24)
     ) {
-      this.cacheConfig = Object.assign(
-        {},
-        {
-          refresh: stateObj.attributes.refresh || 0,
-          cacheKey: stateObj.entity_id,
-          hoursToShow: stateObj.attributes.hours_to_show || 24,
-        }
-      );
+      this.cacheConfig = {
+        refresh: stateObj.attributes.refresh || 0,
+        cacheKey: stateObj.entity_id,
+        hoursToShow: stateObj.attributes.hours_to_show || 24,
+      };
     }
   }
 

@@ -287,11 +287,12 @@ class HaChartBase extends mixinBehaviors(
     }
     positionX += this._chart.canvas.offsetLeft;
     // Display, position, and set styles for font
-    this.tooltip = Object.assign({}, this.tooltip, {
+    this.tooltip = {
+      ...this.tooltip,
       opacity: 1,
       left: `${positionX}px`,
       top: `${positionY}px`,
-    });
+    };
   }
 
   _legendClick(event) {

@@ -37,7 +37,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-gauge-card-editor");
   }
   public static getStubConfig(): object {
-    return {};
+    return { entity: "" };
   }
 
   @property() public hass?: HomeAssistant;

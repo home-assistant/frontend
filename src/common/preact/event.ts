@@ -1,11 +1,12 @@
-interface OnChangeComponent {
-  props: {
-    index: number;
-    onChange(index: number, data: object);
-  };
-}
+// interface OnChangeComponent {
+//   props: {
+//     index: number;
+//     onChange(index: number, data: object);
+//   };
+// }
 
-export function onChangeEvent(this: OnChangeComponent, prop, ev) {
+// export function onChangeEvent(this: OnChangeComponent, prop, ev) {
+export function onChangeEvent(this: any, prop, ev) {
   const origData = this.props[prop];
 
   if (ev.target.value === origData[ev.target.name]) {

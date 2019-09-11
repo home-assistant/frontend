@@ -251,7 +251,8 @@
             "snowy-rainy": "有雪、有雨",
             "sunny": "晴天",
             "windy": "有風",
-            "windy-variant": "有風"
+            "windy-variant": "有風",
+            "exceptional": "例外"
         },
         "vacuum": {
             "cleaning": "清掃中",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "資訊"
+                    },
+                    "logs": {
+                        "title": "記錄"
                     }
                 }
             },
@@ -498,6 +502,9 @@
                                     "event": "事件：",
                                     "enter": "進入區域",
                                     "leave": "離開區域"
+                                },
+                                "device": {
+                                    "label": "裝置"
                                 }
                             },
                             "learn_more": "詳細了解觸發條件"
@@ -544,6 +551,9 @@
                                     "label": "區域",
                                     "entity": "區域物件",
                                     "zone": "區域"
+                                },
+                                "device": {
+                                    "label": "裝置"
                                 }
                             },
                             "learn_more": "詳細了解觸發判斷"
@@ -640,7 +650,7 @@
                 },
                 "users": {
                     "caption": "用戶",
-                    "description": "管理用戶",
+                    "description": "用戶管理",
                     "picker": {
                         "title": "用戶"
                     },
@@ -670,7 +680,7 @@
                     "caption": "整合",
                     "description": "管理已連線裝置與服務",
                     "discovered": "已掃描",
-                    "configured": "設定成功",
+                    "configured": "已設定整合",
                     "new": "設定新整合",
                     "configure": "設定",
                     "none": "尚未設定",
@@ -787,7 +797,9 @@
                             "heading": "服務器管理",
                             "introduction": "由 Home Assistant，控制 Home Assistant 伺服器。",
                             "restart": "重啟",
-                            "stop": "停止"
+                            "stop": "停止",
+                            "confirm_restart": "確定要重啟 Home Assistant 嗎？",
+                            "confirm_stop": "確定要停止 Home Assistant 嗎？"
                         }
                     }
                 }
@@ -1054,6 +1066,9 @@
                         "save": "儲存",
                         "unsaved_changes": "未儲存的變更",
                         "saved": "已儲存"
+                    },
+                    "edit_lovelace": {
+                        "header": "Lovelace UI 的標題"
                     }
                 },
                 "menu": {
@@ -1123,7 +1138,8 @@
         "common": {
             "loading": "讀取中",
             "cancel": "取消",
-            "save": "儲存"
+            "save": "儲存",
+            "successfully_saved": "成功儲存"
         },
         "duration": {
             "day": "{count} {count, plural,\none {天}\nother {天}\n}",
@@ -1199,7 +1215,9 @@
             "fan": {
                 "speed": "風速",
                 "oscillate": "擺動",
-                "direction": "方向"
+                "direction": "方向",
+                "forward": "正向",
+                "reverse": "反向"
             },
             "light": {
                 "brightness": "亮度",
@@ -1244,6 +1262,14 @@
                 "target_temperature": "設定溫度",
                 "operation": "運轉模式",
                 "away_mode": "外出模式"
+            },
+            "timer": {
+                "actions": {
+                    "start": "開始",
+                    "pause": "暫停",
+                    "cancel": "取消",
+                    "finish": "完成"
+                }
             }
         },
         "components": {
@@ -1308,8 +1334,20 @@
             },
             "config_entry_system_options": {
                 "title": "系統選項",
-                "enable_new_entities_label": "啟用新增之物件。",
+                "enable_new_entities_label": "啟用新增物件",
                 "enable_new_entities_description": "關閉後，新發現的物件將不會自動新增至 Home Assistant。"
+            },
+            "zha_device_info": {
+                "manuf": "由 {manufacturer}",
+                "no_area": "無分區",
+                "services": {
+                    "remove": "從 Zigbee 網路移除裝置。"
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "使用者姓氏",
+                    "area_picker_label": "分區",
+                    "update_name_button": "更新名稱"
+                }
             }
         },
         "auth_store": {
