@@ -2,18 +2,19 @@ import { createCardElement } from "../common/create-card-element";
 import { processConfigEntities } from "../common/process-config-entities";
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
-import { EntityConfig } from "../entity-rows/types";
+import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 import { EntityFilterCardConfig } from "./types";
+import { evaluateFilter } from "../common/evaluate-filter";
 
 class EntityFilterCard extends HTMLElement implements LovelaceCard {
   public isPanel?: boolean;
   private _element?: LovelaceCard;
   private _config?: EntityFilterCardConfig;
-  private _configEntities?: EntityConfig[];
+  private _configEntities?: EntityFilterEntityConfig[];
   private _baseCardConfig?: LovelaceCardConfig;
   private _hass?: HomeAssistant;
-  private _oldEntities?: EntityConfig[];
+  private _oldEntities?: EntityFilterEntityConfig[];
 
   public getCardSize(): number {
     return this._element ? this._element.getCardSize() : 1;
@@ -50,13 +51,36 @@ class EntityFilterCard extends HTMLElement implements LovelaceCard {
 
     this._hass = hass;
 
+    if (!this._config.entities) {
+      return;
+    }
+
     if (!this._configEntities) {
       this._configEntities = processConfigEntities(this._config.entities);
     }
 
     const entitiesList = this._configEntities.filter((entityConf) => {
       const stateObj = hass.states[entityConf.entity];
-      return stateObj && this._config!.state_filter.includes(stateObj.state);
+
+      if (!stateObj) {
+        return false;
+      }
+
+      if (entityConf.state_filter) {
+        for (const filter of entityConf.state_filter) {
+          if (evaluateFilter(stateObj, filter)) {
+            return true;
+          }
+        }
+      } else {
+        for (const filter of this._config!.state_filter) {
+          if (evaluateFilter(stateObj, filter)) {
+            return true;
+          }
+        }
+      }
+
+      return false;
     });
 
     if (entitiesList.length === 0 && this._config.show_empty === false) {

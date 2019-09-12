@@ -51,7 +51,7 @@ export interface EntityButtonCardConfig extends LovelaceCardConfig {
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
   entities: Array<EntityConfig | string>;
-  state_filter: string[];
+  state_filter: Array<{ key: string } | string>;
   card: Partial<LovelaceCardConfig>;
   show_empty?: boolean;
 }
