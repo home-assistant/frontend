@@ -21,8 +21,7 @@ export const evaluateFilter = (stateObj: HassEntity, filter: any): boolean => {
     case "!=":
       return state !== value;
     case "regex": {
-      const matches = stateObj.state.match(value) ? true : false;
-      return matches;
+      return state.match(value);
     }
     default:
       return false;
