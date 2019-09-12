@@ -1,9 +1,9 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
-import "@material/mwc-switch";
 
 import "./demo-card";
+import "../../../src/components/ha-switch";
 
 class DemoCards extends PolymerElement {
   static get template() {
@@ -26,7 +26,7 @@ class DemoCards extends PolymerElement {
       </style>
       <app-toolbar>
         <div class="filters">
-          <mwc-switch checked="{{_showConfig}}">Show config</mwc-switch>
+          <ha-switch checked="{{_showConfig}}">Show config</ha-switch>
         </div>
       </app-toolbar>
       <div class="cards">

@@ -8,10 +8,10 @@ import {
   CSSResult,
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
-import "@material/mwc-switch";
 
 import "../../components/hui-theme-select-editor";
 import "../../components/hui-entity-editor";
+import "../../../../components/ha-switch";
 
 import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
@@ -130,10 +130,10 @@ export class HuiGaugeCardEditor extends LitElement
           ></paper-input>
         </div>
         <div class="side-by-side">
-          <mwc-switch
+          <ha-switch
             ?checked="${this._useSeverity !== false}"
             @change="${this._toggleSeverity}"
-            >Define Severity?</mwc-switch
+            >Define Severity?</ha-switch
           >
           <div class="severity">
             <paper-input
@@ -176,7 +176,7 @@ export class HuiGaugeCardEditor extends LitElement
         flex: 1 0 30%;
         padding-right: 4px;
       }
-      mwc-switch[checked] ~ .severity {
+      ha-switch[checked] ~ .severity {
         display: flex;
       }
     `;

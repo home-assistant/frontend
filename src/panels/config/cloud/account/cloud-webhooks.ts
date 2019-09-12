@@ -4,11 +4,12 @@ import {
   PropertyDeclarations,
   PropertyValues,
 } from "lit-element";
-import "@material/mwc-switch";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-spinner/paper-spinner";
+
 import "../../../../components/ha-card";
+import "../../../../components/ha-switch";
 
 import { HomeAssistant, WebhookError } from "../../../../types";
 import { Webhook, fetchWebhooks } from "../../../../data/webhook";
@@ -116,7 +117,7 @@ export class CloudWebhooks extends LitElement {
                 </mwc-button>
               `
             : html`
-                <mwc-switch @click="${this._enableWebhook}"></mwc-switch>
+                <ha-switch @click="${this._enableWebhook}"></ha-switch>
               `}
         </div>
       `

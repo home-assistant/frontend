@@ -5,9 +5,10 @@ import {
   property,
   customElement,
 } from "lit-element";
-import "@material/mwc-switch";
 
 import "./ha-settings-row";
+import "../../components/ha-switch";
+
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import { PolymerChangedEvent } from "../../polymer-types";
@@ -26,10 +27,10 @@ class HaPushNotificationsRow extends LitElement {
         <span slot="description">
           ${this.hass.localize("ui.panel.profile.force_narrow.description")}
         </span>
-        <mwc-switch
+        <ha-switch
           .checked=${this.hass.dockedSidebar === "always_hidden"}
           @checked-changed=${this._checkedChanged}
-        ></mwc-switch>
+        ></ha-switch>
       </ha-settings-row>
     `;
   }

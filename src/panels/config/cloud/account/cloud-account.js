@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@material/mwc-switch";
 import "@polymer/paper-item/paper-item-body";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -8,17 +7,18 @@ import "../../../../components/ha-card";
 import "../../../../components/buttons/ha-call-api-button";
 import "../../../../layouts/hass-subpage";
 import "../../../../resources/ha-style";
-
+import "../../../../components/ha-switch";
 import "../../ha-config-section";
 import "./cloud-webhooks";
-
-import formatDateTime from "../../../../common/datetime/format_date_time";
-import { EventsMixin } from "../../../../mixins/events-mixin";
-import LocalizeMixin from "../../../../mixins/localize-mixin";
-import { fetchCloudSubscriptionInfo } from "../../../../data/cloud";
 import "./cloud-alexa-pref";
 import "./cloud-google-pref";
 import "./cloud-remote-pref";
+
+import { EventsMixin } from "../../../../mixins/events-mixin";
+import { fetchCloudSubscriptionInfo } from "../../../../data/cloud";
+
+import formatDateTime from "../../../../common/datetime/format_date_time";
+import LocalizeMixin from "../../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin EventsMixin

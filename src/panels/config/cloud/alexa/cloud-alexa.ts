@@ -7,12 +7,15 @@ import {
   customElement,
   property,
 } from "lit-element";
-import "@material/mwc-switch";
 import "@polymer/paper-icon-button";
+import memoizeOne from "memoize-one";
+
 import "../../../../layouts/hass-subpage";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../components/ha-card";
+import "../../../../components/ha-switch";
 import "../../../../components/entity/state-info";
+
 import { HomeAssistant } from "../../../../types";
 import {
   CloudStatusLoggedIn,
@@ -20,19 +23,19 @@ import {
   updateCloudAlexaEntityConfig,
   AlexaEntityConfig,
 } from "../../../../data/cloud";
-import memoizeOne from "memoize-one";
 import {
   generateFilter,
   isEmptyFilter,
   EntityFilter,
 } from "../../../../common/entity/entity_filter";
 import { compare } from "../../../../common/string/compare";
-import computeStateName from "../../../../common/entity/compute_state_name";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { PolymerChangedEvent } from "../../../../polymer-types";
 import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
-import computeDomain from "../../../../common/entity/compute_domain";
 import { AlexaEntity, fetchCloudAlexaEntities } from "../../../../data/alexa";
+
+import computeStateName from "../../../../common/entity/compute_state_name";
+import computeDomain from "../../../../common/entity/compute_domain";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 const IGNORE_INTERFACES = ["Alexa.EndpointHealth"];
@@ -126,14 +129,14 @@ class CloudAlexa extends LitElement {
                 )
                 .join(", ")}
             </state-info>
-            <mwc-switch
+            <ha-switch
               .entityId=${entity.entity_id}
               .disabled=${!emptyFilter}
               .checked=${isExposed}
               @checked-changed=${this._exposeChanged}
             >
               Expose to Alexa
-            </mwc-switch>
+            </ha-switch>
           </div>
         </ha-card>
       `);
@@ -329,7 +332,7 @@ class CloudAlexa extends LitElement {
         flex-wrap: wrap;
         padding: 4px;
       }
-      mwc-switch {
+      ha-switch {
         clear: both;
       }
       ha-card {
@@ -343,7 +346,7 @@ class CloudAlexa extends LitElement {
       state-info {
         cursor: pointer;
       }
-      mwc-switch {
+      ha-switch {
         padding: 8px 0;
       }
 

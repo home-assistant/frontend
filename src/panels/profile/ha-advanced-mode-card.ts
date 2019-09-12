@@ -24,11 +24,11 @@ class AdvancedModeCard extends LitElement {
       <ha-card>
         <div class="card-header">
           <div class="title">Advanced mode</div>
-          <mwc-switch
+          <ha-switch
             .checked=${this.coreUserData && this.coreUserData.showAdvanced}
             .disabled=${this.coreUserData === undefined}
             @change=${this._advancedToggled}
-          ></mwc-switch>
+          ></ha-switch>
         </div>
         <div class="card-content">
           Home Assistant hides advanced features and options by default. You can

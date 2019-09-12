@@ -1,5 +1,3 @@
-import "@material/mwc-switch";
-
 import { STATES_OFF } from "../../../common/const";
 
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";

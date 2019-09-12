@@ -1,10 +1,10 @@
-import "@material/mwc-switch";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import { getAppKey } from "../data/notify_html5";
-
 import { EventsMixin } from "../mixins/events-mixin";
+
+import "./ha-switch";
 
 export const pushSupported =
   "serviceWorker" in navigator &&
@@ -19,11 +19,11 @@ export const pushSupported =
 class HaPushNotificationsToggle extends EventsMixin(PolymerElement) {
   static get template() {
     return html`
-      <mwc-switch
+      <ha-switch
         disabled="[[_compDisabled(disabled, loading)]]"
         checked="{{pushChecked}}"
         on-change="handlePushChange"
-      ></mwc-switch>
+      ></ha-switch>
     `;
   }
 

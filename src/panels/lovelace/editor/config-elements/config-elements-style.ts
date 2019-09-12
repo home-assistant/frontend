@@ -2,7 +2,7 @@ import { html } from "lit-element";
 
 export const configElementStyle = html`
   <style>
-    mwc-switch {
+    ha-switch {
       padding-top: 16px;
     }
     .side-by-side {

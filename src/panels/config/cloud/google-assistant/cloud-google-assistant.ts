@@ -7,12 +7,15 @@ import {
   customElement,
   property,
 } from "lit-element";
-import "@material/mwc-switch";
+import memoizeOne from "memoize-one";
 import "@polymer/paper-icon-button";
+
 import "../../../../layouts/hass-subpage";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../components/ha-card";
 import "../../../../components/entity/state-info";
+import "../../../../components/ha-switch";
+
 import { HomeAssistant } from "../../../../types";
 import {
   CloudStatusLoggedIn,
@@ -21,23 +24,23 @@ import {
   cloudSyncGoogleAssistant,
   GoogleEntityConfig,
 } from "../../../../data/cloud";
-import memoizeOne from "memoize-one";
 import {
   generateFilter,
   isEmptyFilter,
   EntityFilter,
 } from "../../../../common/entity/entity_filter";
 import { compare } from "../../../../common/string/compare";
-import computeStateName from "../../../../common/entity/compute_state_name";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { showToast } from "../../../../util/toast";
 import { PolymerChangedEvent } from "../../../../polymer-types";
 import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
-import computeDomain from "../../../../common/entity/compute_domain";
 import {
   GoogleEntity,
   fetchCloudGoogleEntities,
 } from "../../../../data/google_assistant";
+
+import computeStateName from "../../../../common/entity/compute_state_name";
+import computeDomain from "../../../../common/entity/compute_domain";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 
@@ -122,23 +125,23 @@ class CloudGoogleAssistant extends LitElement {
                 .map((trait) => trait.substr(trait.lastIndexOf(".") + 1))
                 .join(", ")}
             </state-info>
-            <mwc-switch
+            <ha-switch
               .entityId=${entity.entity_id}
               .disabled=${!emptyFilter}
               .checked=${isExposed}
               @checked-changed=${this._exposeChanged}
             >
               Expose to Google Assistant
-            </mwc-switch>
+            </ha-switch>
             ${entity.might_2fa
               ? html`
-                  <mwc-switch
+                  <ha-switch
                     .entityId=${entity.entity_id}
                     .checked=${Boolean(config.disable_2fa)}
                     @checked-changed=${this._disable2FAChanged}
                   >
                     Disable two factor authentication
-                  </mwc-switch>
+                  </ha-switch>
                 `
               : ""}
           </div>
@@ -360,7 +363,7 @@ class CloudGoogleAssistant extends LitElement {
       state-info {
         cursor: pointer;
       }
-      mwc-switch {
+      ha-switch {
         padding: 8px 0;
       }
 

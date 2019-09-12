@@ -6,16 +6,16 @@ import {
   property,
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
-import "@material/mwc-switch";
 
 import { EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { configElementStyle } from "../config-elements/config-elements-style";
-
-import "../../components/hui-theme-select-editor";
 import { LovelaceViewConfig } from "../../../../data/lovelace";
 import { slugify } from "../../../../common/string/slugify";
+
+import "../../components/hui-theme-select-editor";
+import "../../../../components/ha-switch";
 
 declare global {
   interface HASSDomEvents {
@@ -104,11 +104,11 @@ export class HuiViewEditor extends LitElement {
           .configValue=${"theme"}
           @theme-changed=${this._valueChanged}
         ></hui-theme-select-editor>
-        <mwc-switch
+        <ha-switch
           ?checked=${this._panel !== false}
           .configValue=${"panel"}
           @change=${this._valueChanged}
-          >Panel Mode?</mwc-switch
+          >Panel Mode?</ha-switch
         >
       </div>
     `;

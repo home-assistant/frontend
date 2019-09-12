@@ -8,16 +8,17 @@ import {
 } from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
-import "@material/mwc-switch";
 
 import "../../../components/dialog/ha-paper-dialog";
+import "../../../components/ha-switch";
 
 import { EntityRegistryDetailDialogParams } from "./show-dialog-entity-registry-detail";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import computeDomain from "../../../common/entity/compute_domain";
 import { HassEntity } from "home-assistant-js-websocket";
+
+import computeDomain from "../../../common/entity/compute_domain";
 import computeStateName from "../../../common/entity/compute_state_name";
 
 class DialogEntityRegistryDetail extends LitElement {
@@ -95,7 +96,7 @@ class DialogEntityRegistryDetail extends LitElement {
               .disabled=${this._submitting}
             ></paper-input>
             <div class="row">
-              <mwc-switch
+              <ha-switch
                 .checked=${!this._disabledBy}
                 @checked-changed=${this._disabledByChanged}
               >
@@ -121,7 +122,7 @@ class DialogEntityRegistryDetail extends LitElement {
                     <br />Note: this might not work yet with all integrations.
                   </div>
                 </div>
-              </mwc-switch>
+              </ha-switch>
             </div>
           </div>
         </paper-dialog-scrollable>
