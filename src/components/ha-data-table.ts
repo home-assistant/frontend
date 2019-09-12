@@ -68,7 +68,6 @@ export interface DataTabelColumnData {
 }
 
 export interface DataTabelRowData {
-  id: string;
   [key: string]: any;
 }
 

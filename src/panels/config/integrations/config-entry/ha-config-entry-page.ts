@@ -5,7 +5,7 @@ import "../../../../layouts/hass-error-screen";
 import "../../../../components/entity/state-badge";
 import { compare } from "../../../../common/string/compare";
 
-import "./ha-device-card";
+import "../../devices/ha-device-card";
 import "./ha-ce-entities-card";
 import { showOptionsFlowDialog } from "../../../../dialogs/config-flow/show-dialog-options-flow";
 import { property, LitElement, CSSResult, css, html } from "lit-element";
@@ -20,6 +20,10 @@ import { DeviceRegistryEntry } from "../../../../data/device_registry";
 import { AreaRegistryEntry } from "../../../../data/area_registry";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { showConfigEntrySystemOptionsDialog } from "../../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
+import {
+  RowClickedEvent,
+  DataTabelColumnContainer,
+} from "../../../../components/ha-data-table";
 
 class HaConfigEntryPage extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -66,6 +70,43 @@ class HaConfigEntryPage extends LitElement {
     }
   );
 
+  private _columns: DataTabelColumnContainer = {
+    device_name: {
+      title: "Device",
+      sortable: true,
+      filterable: true,
+      direction: "asc",
+    },
+    manufacturer: {
+      title: "Manufacturer",
+      sortable: true,
+      filterable: true,
+    },
+    model: {
+      title: "Model",
+      sortable: true,
+      filterable: true,
+    },
+    area: {
+      title: "Area",
+      sortable: true,
+      filterable: true,
+    },
+    entities: {
+      title: "Entities",
+      template: (entities) =>
+        entities.map((entity: EntityRegistryEntry) => {
+          const stateObj = this.hass.states[entity.entity_id];
+          return html`
+            <ha-state-icon
+              .stateObj=${stateObj}
+              style="color: var(--paper-item-body-secondary-color, var(--secondary-text-color))"
+            ></ha-state-icon>
+          `;
+        }),
+    },
+  };
+
   protected render() {
     const configEntry = this._configEntry;
 
@@ -106,6 +147,7 @@ class HaConfigEntryPage extends LitElement {
           icon="hass:delete"
           @click=${this._removeEntry}
         ></paper-icon-button>
+
         <div class="content">
           ${configEntryDevices.length === 0 && noDeviceEntities.length === 0
             ? html`
@@ -115,20 +157,29 @@ class HaConfigEntryPage extends LitElement {
                   )}
                 </p>
               `
-            : ""}
-          ${configEntryDevices.map(
-            (device) => html`
-              <ha-device-card
-                class="card"
-                .hass=${this.hass}
-                .areas=${this.areas}
-                .devices=${this.deviceRegistryEntries}
-                .device=${device}
-                .entities=${this.entityRegistryEntries}
-                .narrow=${this.narrow}
-              ></ha-device-card>
-            `
-          )}
+            : html`
+                <ha-data-table
+                  .columns=${this._columns}
+                  .data=${configEntryDevices.map((device) => {
+                    return {
+                      device_name: device.name_by_user || device.name,
+                      id: device.id,
+                      manufacturer: device.manufacturer,
+                      model: device.model,
+                      area:
+                        !this.areas || !device || !device.area_id
+                          ? "No area"
+                          : this.areas.find(
+                              (area) => area.area_id === device.area_id
+                            )!.name,
+                      entities: this.entityRegistryEntries.filter(
+                        (entity) => entity.device_id === device.id
+                      ),
+                    };
+                  })}
+                  @row-click=${this._handleRowClicked}
+                ></ha-data-table>
+              `}
           ${noDeviceEntities.length > 0
             ? html`
                 <ha-ce-entities-card
@@ -145,6 +196,11 @@ class HaConfigEntryPage extends LitElement {
         </div>
       </hass-subpage>
     `;
+  }
+
+  private _handleRowClicked(ev: CustomEvent) {
+    const deviceId = (ev.detail as RowClickedEvent).id;
+    navigate(this, `/config/devices/device/${deviceId}`);
   }
 
   private _showSettings() {
@@ -188,6 +244,9 @@ class HaConfigEntryPage extends LitElement {
         flex-wrap: wrap;
         padding: 4px;
         justify-content: center;
+      }
+      ha-data-table {
+        width: 100%;
       }
       .card {
         box-sizing: border-box;
