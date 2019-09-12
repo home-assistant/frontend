@@ -97,6 +97,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           ${supportsFeature(stateObj, SUPPORT_BRIGHTNESS)
             ? html`
                 <round-slider
+                  min="1"
                   .value=${brightness}
                   @value-changing=${this._dragEvent}
                   @value-changed=${this._setBrightness}
