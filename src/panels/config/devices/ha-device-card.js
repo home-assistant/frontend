@@ -14,15 +14,9 @@ import LocalizeMixin from "../../../mixins/localize-mixin";
 import computeStateName from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import { compare } from "../../../common/string/compare";
-import {
-  subscribeDeviceRegistry,
-  updateDeviceRegistryEntry,
-} from "../../../data/device_registry";
+import { subscribeDeviceRegistry } from "../../../data/device_registry";
 import { subscribeAreaRegistry } from "../../../data/area_registry";
-import {
-  loadDeviceRegistryDetailDialog,
-  showDeviceRegistryDetailDialog,
-} from "../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
+import { loadDeviceRegistryDetailDialog } from "../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
 
 function computeEntityName(hass, entity) {
   if (entity.name) return entity.name;
