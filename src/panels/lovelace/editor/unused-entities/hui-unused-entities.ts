@@ -17,7 +17,10 @@ import "../../../../components/ha-icon";
 
 import "../../../../components/ha-data-table";
 // tslint:disable-next-line
-import { SelectionChangedEvent } from "../../../../components/ha-data-table";
+import {
+  SelectionChangedEvent,
+  RowClickedEvent,
+} from "../../../../components/ha-data-table";
 
 import computeStateName from "../../../../common/entity/compute_state_name";
 import computeDomain from "../../../../common/entity/compute_domain";
@@ -30,6 +33,7 @@ import { showEditCardDialog } from "../card-editor/show-edit-card-dialog";
 import { HomeAssistant } from "../../../../types";
 import { Lovelace } from "../../types";
 import { LovelaceConfig } from "../../../../data/lovelace";
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {
@@ -127,6 +131,7 @@ export class HuiUnusedEntities extends LitElement {
         .id=${"entity_id"}
         .selectable=${this.lovelace!.mode === "storage"}
         @selection-changed=${this._handleSelectionChanged}
+        @row-click=${this._handleRowClicked}
       ></ha-data-table>
       ${this.lovelace.mode === "storage"
         ? html`
@@ -164,6 +169,13 @@ export class HuiUnusedEntities extends LitElement {
         this._selectedEntities.splice(index, 1);
       }
     }
+  }
+
+  private _handleRowClicked(ev: CustomEvent) {
+    const entityId = (ev.detail as RowClickedEvent).id;
+    fireEvent(this, "hass-more-info", {
+      entityId,
+    });
   }
 
   private _selectView(): void {
