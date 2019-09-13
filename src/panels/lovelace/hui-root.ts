@@ -42,7 +42,7 @@ import { HUIView } from "./hui-view";
 import { createCardElement } from "./common/create-card-element";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
-import { Lovelace } from "./types";
+import { Lovelace, LovelaceCard } from "./types";
 import { afterNextRender } from "../../common/util/render-status";
 import { haStyle } from "../../resources/styles";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
@@ -284,7 +284,7 @@ class HUIRoot extends LitElement {
             : ""
         }
       </app-header>
-      <div id='view' class="${classMap({
+      <div id='view' class="panel ${classMap({
         "tabs-hidden": this.lovelace!.config.views.length < 2,
       })}" @ll-rebuild='${this._debouncedConfigChanged}'></div>
     </app-header-layout>
@@ -349,7 +349,7 @@ class HUIRoot extends LitElement {
         mwc-button.warning:not([disabled]) {
           color: var(--google-red-500);
         }
-        #view {
+        .panel {
           min-height: calc(100vh - 112px);
           /**
          * Since we only set min-height, if child nodes need percentage
@@ -361,12 +361,15 @@ class HUIRoot extends LitElement {
           position: relative;
           display: flex;
         }
+        .panel > * {
+          flex: 1;
+          width: 100%;
+        }
         #view.tabs-hidden {
           min-height: calc(100vh - 64px);
         }
-        #view > * {
-          flex: 1;
-          width: 100%;
+        #panel {
+          background: var(--lovelace-background);
         }
         paper-item {
           cursor: pointer;
@@ -614,7 +617,13 @@ class HUIRoot extends LitElement {
     } else {
       if (viewConfig.panel && viewConfig.cards && viewConfig.cards.length > 0) {
         view = createCardElement(viewConfig.cards[0]);
-        view.isPanel = true;
+        view = document.createElement("div");
+        view.id = "panel";
+        view.classList.add("panel");
+        const card = createCardElement(viewConfig.cards[0]);
+        card.hass = this.hass;
+        (card as LovelaceCard).isPanel = true;
+        view.append(card);
       } else {
         view = document.createElement("hui-view");
         view.lovelace = this.lovelace;
