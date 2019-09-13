@@ -24,7 +24,7 @@ import { compare } from "../../common/string/compare";
 
 @customElement("ha-device-picker")
 class HaDevicePicker extends LitElement {
-  public hass?: HomeAssistant;
+  @property() public hass?: HomeAssistant;
   @property() public label?: string;
   @property() public value?: string;
   @property() public devices?: DeviceRegistryEntry[];
