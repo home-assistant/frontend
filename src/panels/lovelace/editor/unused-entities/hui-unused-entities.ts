@@ -17,10 +17,7 @@ import "../../../../components/ha-icon";
 
 import "../../../../components/ha-data-table";
 // tslint:disable-next-line
-import {
-  SelectionChangedEvent,
-  RowClickedEvent,
-} from "../../../../components/ha-data-table";
+import { SelectionChangedEvent } from "../../../../components/ha-data-table";
 
 import computeStateName from "../../../../common/entity/compute_state_name";
 import computeDomain from "../../../../common/entity/compute_domain";
@@ -57,8 +54,10 @@ export class HuiUnusedEntities extends LitElement {
       filterKey: "friendly_name",
       direction: "asc",
       template: (stateObj) => html`
-        <state-badge .hass=${this.hass!} .stateObj=${stateObj}></state-badge>
-        ${stateObj.friendly_name}
+        <div @click=${this._handleEntityClicked} style="cursor: pointer;">
+          <state-badge .hass=${this.hass!} .stateObj=${stateObj}></state-badge>
+          ${stateObj.friendly_name}
+        </div>
       `,
     },
     entity_id: {
@@ -131,7 +130,6 @@ export class HuiUnusedEntities extends LitElement {
         .id=${"entity_id"}
         .selectable=${this.lovelace!.mode === "storage"}
         @selection-changed=${this._handleSelectionChanged}
-        @row-click=${this._handleRowClicked}
       ></ha-data-table>
       ${this.lovelace.mode === "storage"
         ? html`
@@ -171,8 +169,10 @@ export class HuiUnusedEntities extends LitElement {
     }
   }
 
-  private _handleRowClicked(ev: CustomEvent) {
-    const entityId = (ev.detail as RowClickedEvent).id;
+  private _handleEntityClicked(ev: Event) {
+    const entityId = (ev.target as HTMLElement)
+      .closest("tr")!
+      .getAttribute("data-row-id")!;
     fireEvent(this, "hass-more-info", {
       entityId,
     });
