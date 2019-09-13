@@ -223,7 +223,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         value: sliderValue,
         disabled: sliderValue === null,
         min: stateObj.attributes.min_temp,
-        max: stateObj.attributes.max_temp
+        max: stateObj.attributes.max_temp,
       });
       this._updateSetTemp(uiValue);
     }
