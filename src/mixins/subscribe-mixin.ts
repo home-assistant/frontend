@@ -37,7 +37,7 @@ export const SubscribeMixin = <T extends LitElement>(
 
     private _subscribe(): void {
       if (
-        this._unsubs ||
+        this._unsubs !== undefined ||
         !((this as unknown) as Element).isConnected ||
         !super.hass
       ) {
