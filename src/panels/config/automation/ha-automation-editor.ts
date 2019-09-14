@@ -293,7 +293,14 @@ class HaAutomationEditor extends LitElement {
   }
 
   private _toggleYaml(): void {
-    this._showYaml = !this._showYaml;
+    // Block switching from YAML -> GUI if there is an error in the YAML
+    if (this._showYaml && this._errors) {
+      alert(
+        this.hass!.localize("ui.panel.config.automation.editor.yaml_error")
+      );
+    } else {
+      this._showYaml = !this._showYaml;
+    }
   }
 
   private _setYamlFromConfig(config: AutomationConfig) {
@@ -315,7 +322,6 @@ class HaAutomationEditor extends LitElement {
       this._errors = undefined;
     } catch (exception) {
       this._errors = exception;
-      throw exception;
     }
   }
 
