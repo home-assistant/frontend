@@ -48,11 +48,23 @@ class PanelDeveloperTools extends LitElement {
             .selected=${page}
             @iron-activate=${this.handlePageSelected}
           >
-            <paper-tab page-name="info">
-              ${this.hass.localize("ui.panel.developer-tools.tabs.info.title")}
+            <paper-tab page-name="state">
+              ${this.hass.localize(
+                "ui.panel.developer-tools.tabs.states.title"
+              )}
+            </paper-tab>
+            <paper-tab page-name="service">
+              ${this.hass.localize(
+                "ui.panel.developer-tools.tabs.services.title"
+              )}
             </paper-tab>
             <paper-tab page-name="logs">
               ${this.hass.localize("ui.panel.developer-tools.tabs.logs.title")}
+            </paper-tab>
+            <paper-tab page-name="template">
+              ${this.hass.localize(
+                "ui.panel.developer-tools.tabs.templates.title"
+              )}
             </paper-tab>
             <paper-tab page-name="event">
               ${this.hass.localize(
@@ -68,20 +80,8 @@ class PanelDeveloperTools extends LitElement {
                   </paper-tab>
                 `
               : ""}
-            <paper-tab page-name="service">
-              ${this.hass.localize(
-                "ui.panel.developer-tools.tabs.services.title"
-              )}
-            </paper-tab>
-            <paper-tab page-name="state">
-              ${this.hass.localize(
-                "ui.panel.developer-tools.tabs.states.title"
-              )}
-            </paper-tab>
-            <paper-tab page-name="template">
-              ${this.hass.localize(
-                "ui.panel.developer-tools.tabs.templates.title"
-              )}
+            <paper-tab page-name="info">
+              ${this.hass.localize("ui.panel.developer-tools.tabs.info.title")}
             </paper-tab>
           </paper-tabs>
         </app-header>
