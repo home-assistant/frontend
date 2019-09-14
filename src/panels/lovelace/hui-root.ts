@@ -589,6 +589,7 @@ class HUIRoot extends LitElement {
         () => {
           unusedEntities.hass = this.hass!;
           unusedEntities.lovelace = this.lovelace!;
+          unusedEntities.narrow = this.narrow;
         }
       );
       if (this.config.background) {
