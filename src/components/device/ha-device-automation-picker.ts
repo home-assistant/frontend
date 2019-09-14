@@ -24,7 +24,7 @@ const UNKNOWN_AUTOMATION_KEY = "UNKNOWN_AUTOMATION";
 export abstract class HaDeviceAutomationPicker<
   T extends DeviceAutomation
 > extends LitElement {
-  public hass!: HomeAssistant;
+  @property() public hass!: HomeAssistant;
   @property() public label?: string;
   @property() public deviceId?: string;
   @property() public value?: T;
