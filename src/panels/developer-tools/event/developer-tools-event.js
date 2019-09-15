@@ -52,7 +52,7 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
               target="_blank"
               >Events Documentation.</a
             >
-            </p>
+          </p>
           <div class="ha-form">
             <paper-input
               label="Event Type"
