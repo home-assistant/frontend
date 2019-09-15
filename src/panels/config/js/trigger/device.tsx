@@ -25,10 +25,6 @@ export default class DeviceTrigger extends Component<any, any> {
     const showFor = deviceTrigger.hasOwnProperty("for");
     if (showFor) {
       deviceTrigger = { ...deviceTrigger, for: trgFor };
-      // deviceTrigger = Object.assign(
-      //  {},
-      //  deviceTrigger, { for: trgFor }
-      // );
     }
     this.props.onChange(this.props.index, deviceTrigger);
   }
@@ -40,7 +36,6 @@ export default class DeviceTrigger extends Component<any, any> {
     const duration = ev.detail.value;
     this.props.onChange(
       this.props.index,
-      // Object.assign({}, this.props.trigger, { for: duration })
       { ...this.props.trigger, for: duration }
     );
   }
