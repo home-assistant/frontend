@@ -699,14 +699,17 @@
             "add_automation": "Add automation"
           },
           "editor": {
-            "introduction": "Use automations to bring your home alive. Automations rules can be complicated, optionally add an annotation to document what it does and how.",
+            "introduction": "Use automations to bring your home alive. Automations rules can be complicated, optionally add a comment to document what it does and how.",
             "default_name": "New Automation",
             "load_error_not_editable": "Only automations in automations.yaml are editable.",
             "load_error_unknown": "Error loading automation ({err_no}).",
             "save": "Save",
             "unsaved_confirm": "You have unsaved changes. Are you sure you want to leave?",
             "alias": "Name",
-            "annotation": "Annotation",
+            "comment": {
+              "label": "Comment",
+              "placeholder": "Optional comment"
+            },
             "triggers": {
               "header": "Triggers",
               "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.",

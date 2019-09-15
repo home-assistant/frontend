@@ -57,7 +57,8 @@ export default class Automation extends Component<any> {
                 onvalue-changed={this.onChange}
               />
               <ha-textarea
-                label={localize("ui.panel.config.automation.editor.annotation")}
+                label={localize("ui.panel.config.automation.editor.comment.label")}
+                placeholder={localize("ui.panel.config.automation.editor.comment.placeholder")}
                 name="annotation"
                 value={annotation}
                 onvalue-changed={this.onChange}
