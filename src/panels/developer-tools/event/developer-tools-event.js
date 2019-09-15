@@ -48,11 +48,11 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
           <p>
             Fire an event on the event bus.
             <a
-            href="https://www.home-assistant.io/docs/configuration/events/"
-            target="_blank"
-            >Events Documentation.</a
+              href="https://www.home-assistant.io/docs/configuration/events/"
+              target="_blank"
+              >Events Documentation.</a
             >
-          </p>
+            </p>
           <div class="ha-form">
             <paper-input
               label="Event Type"
