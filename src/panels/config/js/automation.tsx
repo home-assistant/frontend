@@ -3,6 +3,7 @@ import { h, Component } from "preact";
 import "@polymer/paper-input/paper-input";
 import "../ha-config-section";
 import "../../../components/ha-card";
+import "../../../components/ha-textarea";
 
 import Trigger from "./trigger/index";
 import Condition from "./condition/index";
@@ -38,7 +39,7 @@ export default class Automation extends Component<any> {
   }
 
   public render({ automation, isWide, hass, localize }) {
-    const { alias, trigger, condition, action } = automation;
+    const { alias, annotation, trigger, condition, action } = automation;
 
     return (
       <div>
@@ -53,6 +54,12 @@ export default class Automation extends Component<any> {
                 label={localize("ui.panel.config.automation.editor.alias")}
                 name="alias"
                 value={alias}
+                onvalue-changed={this.onChange}
+              />
+              <ha-textarea
+                label={localize("ui.panel.config.automation.editor.annotation")}
+                name="annotation"
+                value={annotation}
                 onvalue-changed={this.onChange}
               />
             </div>

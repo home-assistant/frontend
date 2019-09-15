@@ -183,6 +183,7 @@ class HaAutomationEditor extends LitElement {
         alias: this.hass.localize(
           "ui.panel.config.automation.editor.default_name"
         ),
+        annotation: "",
         trigger: [{ platform: "state" }],
         condition: [],
         action: [{ service: "" }],
