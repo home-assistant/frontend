@@ -3,8 +3,10 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
 
+import AndCondition from "./and";
 import DeviceCondition from "./device";
 import NumericStateCondition from "./numeric_state";
+import OrCondition from "./or";
 import StateCondition from "./state";
 import SunCondition from "./sun";
 import TemplateCondition from "./template";
@@ -12,9 +14,11 @@ import TimeCondition from "./time";
 import ZoneCondition from "./zone";
 
 const TYPES = {
+  and: AndCondition,
   device: DeviceCondition,
-  state: StateCondition,
   numeric_state: NumericStateCondition,
+  or: OrCondition,
+  state: StateCondition,
   sun: SunCondition,
   template: TemplateCondition,
   time: TimeCondition,
@@ -23,7 +27,7 @@ const TYPES = {
 
 const OPTIONS = Object.keys(TYPES).sort();
 
-export default class ConditionRow extends Component<any> {
+export default class ConditionEdit extends Component<any> {
   constructor() {
     super();
 
