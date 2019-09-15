@@ -39,6 +39,8 @@ export const fetchDeviceTriggers = (hass: HomeAssistant, deviceId: string) =>
     device_id: deviceId,
   });
 
+const whitelist = ["for"];
+
 export const deviceAutomationsEqual = (
   a: DeviceAutomation,
   b: DeviceAutomation
@@ -48,11 +50,17 @@ export const deviceAutomationsEqual = (
   }
 
   for (const property in a) {
+    if (whitelist.includes(property)) {
+      continue;
+    }
     if (!Object.is(a[property], b[property])) {
       return false;
     }
   }
   for (const property in b) {
+    if (whitelist.includes(property)) {
+      continue;
+    }
     if (!Object.is(a[property], b[property])) {
       return false;
     }

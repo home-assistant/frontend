@@ -49,6 +49,7 @@ export class PaperTimeInput extends PolymerElement {
             display: none;
           }
           --paper-input-container-shared-input-style_-_-webkit-appearance: textfield;
+          --paper-input-container-invalid-color: red;
         }
 
         paper-dropdown-menu {
@@ -286,7 +287,7 @@ export class PaperTimeInput extends PolymerElement {
    * Create time string
    */
   _computeTime(min, hour, sec, amPm) {
-    let str = undefined;
+    let str;
     if (hour && min) {
       str = hour + ":" + min;
       // add sec field
@@ -313,17 +314,15 @@ export class PaperTimeInput extends PolymerElement {
    * Format min
    */
   _formatMin() {
-    if (this.min.toString().length === 1) {
-      this.min = this.min < 10 ? "0" + this.min : this.min;
-    }
+    this.min = this.min.toString().padStart(2, "0");
   }
 
   /**
    * Hour needs a leading zero in 24hr format
    */
   _shouldFormatHour() {
-    if (this.format === 24 && this.hour.toString().length === 1) {
-      this.hour = this.hour < 10 ? "0" + this.hour : this.hour;
+    if (this.format === 24) {
+      this.hour = this.hour.toString().padStart(2, "0");
     }
   }
 
