@@ -134,6 +134,25 @@ export class PaperTimeInput extends PolymerElement {
           no-label-float=""
           disabled="[[disabled]]"
         >
+          <span hidden$="[[!enableSecond]]" suffix slot="suffix">:</span>
+        </paper-input>
+
+        <!-- Sec Input -->
+        <paper-input
+          id="sec"
+          type="number"
+          value="{{sec}}"
+          on-change="_formatSec"
+          required
+          auto-validate="[[autoValidate]]"
+          prevent-invalid-input
+          maxlength="2"
+          max="59"
+          min="0"
+          no-label-float
+          disabled="[[disabled]]"
+          hidden$="[[!enableSecond]]"
+        >
         </paper-input>
 
         <!-- Dropdown Menu -->
@@ -209,6 +228,20 @@ export class PaperTimeInput extends PolymerElement {
         notify: true,
       },
       /**
+       * second
+       */
+      sec: {
+        type: String,
+        notify: true,
+      },
+      /**
+       * show the sec field
+       */
+      enableSecond: {
+        type: Boolean,
+        value: false,
+      },
+      /**
        * AM or PM
        */
       amPm: {
@@ -223,7 +256,7 @@ export class PaperTimeInput extends PolymerElement {
         type: String,
         notify: true,
         readOnly: true,
-        computed: "_computeTime(min, hour, amPm)",
+        computed: "_computeTime(min, hour, sec, amPm)",
       },
     };
   }
@@ -238,6 +271,10 @@ export class PaperTimeInput extends PolymerElement {
     if (!this.$.hour.validate() | !this.$.min.validate()) {
       valid = false;
     }
+    // Validate second field
+    if (this.enableSecond && !this.$.sec.validate()) {
+      valid = false;
+    }
     // Validate AM PM if 12 hour time
     if (this.format === 12 && !this.$.dropdown.validate()) {
       valid = false;
@@ -248,15 +285,28 @@ export class PaperTimeInput extends PolymerElement {
   /**
    * Create time string
    */
-  _computeTime(min, hour, amPm) {
+  _computeTime(min, hour, sec, amPm) {
+    let str = undefined;
     if (hour && min) {
-      // No ampm on 24 hr time
-      if (this.format === 24) {
-        amPm = "";
+      str = hour + ":" + min;
+      // add sec field
+      if (this.enableSecond && sec) {
+        str = str + ":" + sec;
       }
-      return hour + ":" + min + " " + amPm;
+      // No ampm on 24 hr time
+      if (this.format === 12) {
+        str = str + " " + amPm;
+      }
     }
-    return undefined;
+
+    return str;
+  }
+
+  /**
+   * Format sec
+   */
+  _formatSec() {
+    this.sec = this.sec.toString().padStart(2, "0");
   }
 
   /**
