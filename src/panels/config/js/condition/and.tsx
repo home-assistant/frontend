@@ -6,12 +6,13 @@ export default class AndCondition extends Component<any, any> {
   constructor() {
     super();
     this.conditionChanged = this.conditionChanged.bind(this);
-    console.log("AndCondition()", this);
   }
 
   public conditionChanged(conditions) {
-    console.log("AndCondition.conditionChanged()", this, conditions);
-    this.props.onChange(this.props.index, { ...this.props.condition, conditions:conditions });
+    this.props.onChange(this.props.index, {
+      ...this.props.condition,
+      conditions,
+    });
   }
 
   /* eslint-disable camelcase */
@@ -30,5 +31,5 @@ export default class AndCondition extends Component<any, any> {
 }
 
 (AndCondition as any).defaultConfig = {
-  conditions: [{condition: "state"}],
+  conditions: [{ condition: "state" }],
 };

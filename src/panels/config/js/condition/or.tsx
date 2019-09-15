@@ -9,7 +9,10 @@ export default class OrCondition extends Component<any, any> {
   }
 
   public conditionChanged(conditions) {
-    this.props.onChange(this.props.index, { ...this.props.condition, conditions:conditions });
+    this.props.onChange(this.props.index, {
+      ...this.props.condition,
+      conditions,
+    });
   }
 
   /* eslint-disable camelcase */
@@ -28,5 +31,5 @@ export default class OrCondition extends Component<any, any> {
 }
 
 (OrCondition as any).defaultConfig = {
-  conditions: [{condition: "state"}],
+  conditions: [{ condition: "state" }],
 };
