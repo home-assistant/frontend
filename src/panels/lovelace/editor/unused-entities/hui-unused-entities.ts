@@ -20,7 +20,10 @@ import "../../../../components/ha-icon";
 
 import "../../../../components/ha-data-table";
 // tslint:disable-next-line
-import { SelectionChangedEvent } from "../../../../components/ha-data-table";
+import {
+  SelectionChangedEvent,
+  DataTabelColumnContainer,
+} from "../../../../components/ha-data-table";
 
 import computeStateName from "../../../../common/entity/compute_state_name";
 import computeDomain from "../../../../common/entity/compute_domain";
@@ -52,7 +55,7 @@ export class HuiUnusedEntities extends LitElement {
   }
 
   private _columns = memoizeOne((narrow: boolean) => {
-    const columns = {
+    const columns: DataTabelColumnContainer = {
       entity: {
         title: "Entity",
         sortable: true,
@@ -71,32 +74,33 @@ export class HuiUnusedEntities extends LitElement {
       },
     };
 
-    return narrow
-      ? columns
-      : {
-          ...columns,
-          entity_id: {
-            title: "Entity id",
-            sortable: true,
-            filterable: true,
-          },
-          domain: {
-            title: "Domain",
-            sortable: true,
-            filterable: true,
-          },
-          last_changed: {
-            title: "Last Changed",
-            type: "numeric",
-            sortable: true,
-            template: (lastChanged: string) => html`
-              <ha-relative-time
-                .hass=${this.hass!}
-                .datetime=${lastChanged}
-              ></ha-relative-time>
-            `,
-          },
-        };
+    if (narrow) {
+      return columns;
+    }
+
+    columns.entity_id = {
+      title: "Entity id",
+      sortable: true,
+      filterable: true,
+    };
+    columns.domain = {
+      title: "Domain",
+      sortable: true,
+      filterable: true,
+    };
+    columns.last_changed = {
+      title: "Last Changed",
+      type: "numeric",
+      sortable: true,
+      template: (lastChanged: string) => html`
+        <ha-relative-time
+          .hass=${this.hass!}
+          .datetime=${lastChanged}
+        ></ha-relative-time>
+      `,
+    };
+
+    return columns;
   });
 
   protected updated(changedProperties: PropertyValues): void {
