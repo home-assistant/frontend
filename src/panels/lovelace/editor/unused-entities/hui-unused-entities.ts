@@ -30,6 +30,7 @@ import { showEditCardDialog } from "../card-editor/show-edit-card-dialog";
 import { HomeAssistant } from "../../../../types";
 import { Lovelace } from "../../types";
 import { LovelaceConfig } from "../../../../data/lovelace";
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {
@@ -53,8 +54,10 @@ export class HuiUnusedEntities extends LitElement {
       filterKey: "friendly_name",
       direction: "asc",
       template: (stateObj) => html`
-        <state-badge .hass=${this.hass!} .stateObj=${stateObj}></state-badge>
-        ${stateObj.friendly_name}
+        <div @click=${this._handleEntityClicked} style="cursor: pointer;">
+          <state-badge .hass=${this.hass!} .stateObj=${stateObj}></state-badge>
+          ${stateObj.friendly_name}
+        </div>
       `,
     },
     entity_id: {
@@ -164,6 +167,15 @@ export class HuiUnusedEntities extends LitElement {
         this._selectedEntities.splice(index, 1);
       }
     }
+  }
+
+  private _handleEntityClicked(ev: Event) {
+    const entityId = (ev.target as HTMLElement)
+      .closest("tr")!
+      .getAttribute("data-row-id")!;
+    fireEvent(this, "hass-more-info", {
+      entityId,
+    });
   }
 
   private _selectView(): void {
