@@ -51,25 +51,25 @@ export class HuiUnusedEntities extends LitElement {
     return this.lovelace!.config;
   }
 
-  private _columns = memoizeOne((narrow: boolean) =>
-    narrow
-      ? {
-          entity: {
-            title: "Entity",
-            sortable: true,
-            filterable: true,
-            filterKey: "friendly_name",
-            direction: "asc",
-            template: (stateObj) => html`
-              <state-badge
-                .hass=${this.hass!}
-                .stateObj=${stateObj}
-              ></state-badge>
-              ${stateObj.friendly_name}
-            `,
-          },
-        }
+  private _columns = memoizeOne((narrow: boolean) => {
+    const columns = {
+      entity: {
+        title: "Entity",
+        sortable: true,
+        filterable: true,
+        filterKey: "friendly_name",
+        direction: "asc",
+        template: (stateObj) => html`
+          <state-badge .hass=${this.hass!} .stateObj=${stateObj}></state-badge>
+          ${stateObj.friendly_name}
+        `,
+      },
+    };
+
+    return narrow
+      ? columns
       : {
+          ...columns,
           entity: {
             title: "Entity",
             sortable: true,
@@ -105,8 +105,8 @@ export class HuiUnusedEntities extends LitElement {
               ></ha-relative-time>
             `,
           },
-        }
-  );
+        };
+  });
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
