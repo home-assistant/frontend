@@ -626,7 +626,6 @@ class HUIRoot extends LitElement {
       view = this._viewCache![viewIndex];
     } else {
       if (viewConfig.panel && viewConfig.cards && viewConfig.cards.length > 0) {
-        view = createCardElement(viewConfig.cards[0]);
         view = document.createElement("div");
         view.id = "panel";
         if (viewConfig.theme) {
