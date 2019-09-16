@@ -38,18 +38,20 @@ export default function applyThemesOnElement(
   if (themeName !== "default") {
     const theme = themes.themes[themeName];
     Object.keys(theme).forEach((key) => {
-      const prefixedKey = "--" + key;
+      const prefixedKey = `--${key}`;
       element._themes[prefixedKey] = "";
       styles[prefixedKey] = theme[key];
-      if (!key.startsWith("rgb")) {
-        const rgbKey = "--rgb-" + key;
-        if (theme[rgbKey] === undefined) {
-          element._themes[rgbKey] = "";
-          const rgbValue = hexToRgb(theme[key]);
-          if (rgbValue !== null) {
-            styles[rgbKey] = rgbValue;
-          }
-        }
+      if (key.startsWith("rgb")) {
+        return;
+      }
+      const rgbKey = `--rgb-${key}`;
+      if (theme[rgbKey] === undefined) {
+        return;
+      }
+      element._themes[rgbKey] = "";
+      const rgbValue = hexToRgb(theme[key]);
+      if (rgbValue !== null) {
+        styles[rgbKey] = rgbValue;
       }
     });
   }
