@@ -144,13 +144,13 @@ export class PaperTimeInput extends PolymerElement {
           type="number"
           value="{{sec}}"
           on-change="_formatSec"
-          required
+          required=""
           auto-validate="[[autoValidate]]"
           prevent-invalid-input
           maxlength="2"
           max="59"
           min="0"
-          no-label-float
+          no-label-float=""
           disabled="[[disabled]]"
           hidden$="[[!enableSecond]]"
         >
