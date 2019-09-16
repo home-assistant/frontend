@@ -555,7 +555,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           font-size: var(--current-mode-font-size);
           color: var(--secondary-text-color);
         }
-        .modes {
+        .large .modes {
           margin-top: 16px;
         }
         .modes ha-icon {
