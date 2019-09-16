@@ -44,6 +44,7 @@ import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { Lovelace, LovelaceCard } from "./types";
 import { afterNextRender } from "../../common/util/render-status";
+import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 import { haStyle } from "../../resources/styles";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { loadLovelaceResources } from "./common/load-resources";
@@ -284,7 +285,7 @@ class HUIRoot extends LitElement {
             : ""
         }
       </app-header>
-      <div id='view' class="panel ${classMap({
+      <div id='view' class="${classMap({
         "tabs-hidden": this.lovelace!.config.views.length < 2,
       })}" @ll-rebuild='${this._debouncedConfigChanged}'></div>
     </app-header-layout>
@@ -349,7 +350,7 @@ class HUIRoot extends LitElement {
         mwc-button.warning:not([disabled]) {
           color: var(--google-red-500);
         }
-        .panel {
+        #view {
           min-height: calc(100vh - 112px);
           /**
          * Since we only set min-height, if child nodes need percentage
@@ -361,7 +362,7 @@ class HUIRoot extends LitElement {
           position: relative;
           display: flex;
         }
-        .panel > * {
+        #view > * {
           flex: 1;
           width: 100%;
         }
@@ -370,6 +371,13 @@ class HUIRoot extends LitElement {
         }
         #panel {
           background: var(--lovelace-background);
+          min-height: calc(100vh - 112px);
+          position: relative;
+          display: flex;
+        }
+        #panel > * {
+          flex: 1;
+          width: 100%;
         }
         paper-item {
           cursor: pointer;
@@ -619,7 +627,9 @@ class HUIRoot extends LitElement {
         view = createCardElement(viewConfig.cards[0]);
         view = document.createElement("div");
         view.id = "panel";
-        view.classList.add("panel");
+        if (viewConfig.theme) {
+          applyThemesOnElement(view, this.hass!.themes, viewConfig.theme);
+        }
         const card = createCardElement(viewConfig.cards[0]);
         card.hass = this.hass;
         (card as LovelaceCard).isPanel = true;
