@@ -284,7 +284,7 @@ class HaWeatherCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
       exceptional: "hass:alert-circle-outline",
       fog: "hass:weather-fog",
       hail: "hass:weather-hail",
-      'hazy': "hass:weather-hazy",
+      hazy: "hass:weather-hazy",
       lightning: "hass:weather-lightning",
       "lightning-rainy": "hass:weather-lightning-rainy",
       partlycloudy: "hass:weather-partly-cloudy",
