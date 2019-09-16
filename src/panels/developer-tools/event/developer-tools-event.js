@@ -45,8 +45,14 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
 
       <div class$="[[computeFormClasses(narrow)]]">
         <div class="flex">
-          <p>Fire an event on the event bus.</p>
-
+          <p>
+            Fire an event on the event bus.
+            <a
+              href="https://www.home-assistant.io/docs/configuration/events/"
+              target="_blank"
+              >Events Documentation.</a
+            >
+          </p>
           <div class="ha-form">
             <paper-input
               label="Event Type"
