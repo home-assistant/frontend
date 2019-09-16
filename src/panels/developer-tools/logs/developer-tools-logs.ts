@@ -25,7 +25,7 @@ export class HaPanelDevLogs extends LitElement {
 
   public connectedCallback() {
     super.connectedCallback();
-    if (this.systemLog) {
+    if (this.systemLog && this.systemLog.loaded) {
       this.systemLog.fetchData();
     }
   }

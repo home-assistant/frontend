@@ -33,6 +33,7 @@ const formatLogTime = (date, language: string) => {
 @customElement("system-log-card")
 export class SystemLogCard extends LitElement {
   public hass?: HomeAssistant;
+  public loaded = false;
   private _items?: LoggedError[];
 
   static get properties(): PropertyDeclarations {
@@ -111,6 +112,7 @@ export class SystemLogCard extends LitElement {
   protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
     this.fetchData();
+    this.loaded = true;
     this.addEventListener("hass-service-called", (ev) =>
       this.serviceCalled(ev)
     );
