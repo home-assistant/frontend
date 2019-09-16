@@ -39,14 +39,16 @@ export default function applyThemesOnElement(
     const theme = themes.themes[themeName];
     Object.keys(theme).forEach((key) => {
       const prefixedKey = "--" + key;
-      const rgbKey = "--rgb-" + key;
       element._themes[prefixedKey] = "";
       styles[prefixedKey] = theme[key];
-      if (theme[rgbKey] === undefined) {
-        element._themes[rgbKey] = "";
-        const rgbValue = hexToRgb(theme[key]);
-        if (rgbValue !== null) {
-          styles[rgbKey] = rgbValue;
+      if (!key.startsWith("rgb")) {
+        const rgbKey = "--rgb-" + key;
+        if (theme[rgbKey] === undefined) {
+          element._themes[rgbKey] = "";
+          const rgbValue = hexToRgb(theme[key]);
+          if (rgbValue !== null) {
+            styles[rgbKey] = rgbValue;
+          }
         }
       }
     });
