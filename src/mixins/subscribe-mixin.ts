@@ -11,39 +11,44 @@ export const SubscribeMixin = <T extends LitElement>(
 ): Constructor<T & HassSubscribeElement> =>
   // @ts-ignore
   class extends superClass {
-    private _unsubs?: UnsubscribeFunc[];
+    /* tslint:disable-next-line */
+    private __unsubs?: UnsubscribeFunc[];
 
     public connectedCallback() {
       super.connectedCallback();
-      this._subscribe();
+      this.__checkSubscribed();
     }
 
     public disconnectedCallback() {
       super.disconnectedCallback();
-      if (this._unsubs) {
-        while (this._unsubs.length) {
-          this._unsubs.pop()!();
+      if (this.__unsubs) {
+        while (this.__unsubs.length) {
+          this.__unsubs.pop()!();
         }
-        this._unsubs = undefined;
+        this.__unsubs = undefined;
       }
     }
 
     protected updated(changedProps: PropertyValues) {
       super.updated(changedProps);
       if (changedProps.has("hass")) {
-        this._subscribe();
+        this.__checkSubscribed();
       }
     }
 
-    private _subscribe(): void {
+    protected hassSubscribe(): UnsubscribeFunc[] {
+      super.hassSubscribe();
+      return [];
+    }
+
+    private __checkSubscribed(): void {
       if (
-        this._unsubs !== undefined ||
+        this.__unsubs !== undefined ||
         !((this as unknown) as Element).isConnected ||
         super.hass !== undefined
       ) {
         return;
       }
-
-      this._unsubs = super.hassSubscribe();
+      this.__unsubs = this.hassSubscribe();
     }
   };
