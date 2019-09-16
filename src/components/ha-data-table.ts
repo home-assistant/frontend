@@ -32,8 +32,13 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "selection-changed": SelectionChangedEvent;
+    "row-click": RowClickedEvent;
     "sorting-changed": SortingChangedEvent;
   }
+}
+
+export interface RowClickedEvent {
+  id: string;
 }
 
 export interface SelectionChangedEvent {
@@ -266,7 +271,11 @@ export class HaDataTable extends BaseElement {
               ),
               (row: DataTabelRowData) => row[this.id],
               (row: DataTabelRowData) => html`
-                <tr data-row-id="${row[this.id]}" class="mdc-data-table__row">
+                <tr
+                  data-row-id="${row[this.id]}"
+                  @click=${this._handleRowClick}
+                  class="mdc-data-table__row"
+                >
                   ${this.selectable
                     ? html`
                         <td
@@ -383,12 +392,19 @@ export class HaDataTable extends BaseElement {
 
   private _handleRowCheckboxChange(ev: Event) {
     const checkbox = ev.target as HaCheckbox;
-    const rowId = checkbox.parentElement!.parentElement!.getAttribute(
-      "data-row-id"
-    );
+    const rowId = checkbox.closest("tr")!.getAttribute("data-row-id");
 
     this._setRowChecked(rowId!, checkbox.checked);
     this.mdcFoundation.handleRowCheckboxChange(ev);
+  }
+
+  private _handleRowClick(ev: Event) {
+    const rowId = (ev.target as HTMLElement)
+      .closest("tr")!
+      .getAttribute("data-row-id")!;
+    fireEvent(this, "row-click", {
+      id: rowId,
+    });
   }
 
   private _setRowChecked(rowId: string, checked: boolean) {
