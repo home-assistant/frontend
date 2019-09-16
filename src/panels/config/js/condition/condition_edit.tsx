@@ -3,10 +3,9 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
 
-import AndCondition from "./and";
 import DeviceCondition from "./device";
+import LogicalCondition from "./logical";
 import NumericStateCondition from "./numeric_state";
-import OrCondition from "./or";
 import StateCondition from "./state";
 import SunCondition from "./sun";
 import TemplateCondition from "./template";
@@ -14,10 +13,10 @@ import TimeCondition from "./time";
 import ZoneCondition from "./zone";
 
 const TYPES = {
-  and: AndCondition,
+  and: LogicalCondition,
   device: DeviceCondition,
   numeric_state: NumericStateCondition,
-  or: OrCondition,
+  or: LogicalCondition,
   state: StateCondition,
   sun: SunCondition,
   template: TemplateCondition,
