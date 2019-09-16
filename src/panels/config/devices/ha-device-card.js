@@ -83,8 +83,8 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
       </style>
       <ha-card>
         <div class="card-header">
-          <div class="name">[[_deviceName(device)]]</div>
           <template is="dom-if" if="[[!hideSettings]]">
+            <div class="name">[[_deviceName(device)]]</div>
             <paper-icon-button
               icon="hass:settings"
               on-click="_gotoSettings"
@@ -156,7 +156,7 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
         type: Boolean,
         reflectToAttribute: true,
       },
-      hideSettings: Boolean,
+      hideSettings: { type: Boolean, value: false },
       _childDevices: {
         type: Array,
         computed: "_computeChildDevices(device, devices)",

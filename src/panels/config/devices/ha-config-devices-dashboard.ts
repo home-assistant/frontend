@@ -35,6 +35,7 @@ import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { navigate } from "../../../common/navigate";
+import { HassEntity } from "home-assistant-js-websocket";
 
 @customElement("ha-config-devices-dashboard")
 export class HaConfigDeviceDashboard extends LitElement {
@@ -90,18 +91,23 @@ export class HaConfigDeviceDashboard extends LitElement {
       sortable: true,
       filterable: true,
     },
-    entities: {
-      title: "Entities",
-      template: (entities) =>
-        entities.map((entity: EntityRegistryEntry) => {
-          const stateObj = this.hass.states[entity.entity_id];
-          return html`
-            <ha-state-icon
-              .stateObj=${stateObj}
-              style="color: var(--paper-item-body-secondary-color, var(--secondary-text-color))"
-            ></ha-state-icon>
-          `;
-        }),
+    battery: {
+      title: "Battery",
+      sortable: true,
+      filterable: true,
+      type: "numeric",
+      template: (battery: HassEntity) =>
+        battery
+          ? html`
+              ${battery.state}%
+              <ha-state-icon
+                .hass=${this.hass!}
+                .stateObj=${battery}
+              ></ha-state-icon>
+            `
+          : html`
+              n/a
+            `,
     },
   };
 
@@ -131,9 +137,7 @@ export class HaConfigDeviceDashboard extends LitElement {
                     : this.entries.find((entry) =>
                         device.config_entries.includes(entry.entry_id)
                       )!.domain,
-                entities: this.entities.filter(
-                  (entity) => entity.device_id === device.id
-                ),
+                battery: this._batteryEntity(device),
               };
             }
           )}
@@ -141,6 +145,19 @@ export class HaConfigDeviceDashboard extends LitElement {
         ></ha-data-table>
       </hass-subpage>
     `;
+  }
+
+  private _batteryEntity(device): HassEntity | undefined {
+    const batteryEntity = this.entities.find(
+      (entity) =>
+        entity.device_id === device.id &&
+        this.hass.states[entity.entity_id] &&
+        this.hass.states[entity.entity_id].attributes.device_class === "battery"
+    );
+
+    return batteryEntity
+      ? this.hass.states[batteryEntity.entity_id]
+      : undefined;
   }
 
   private _handleRowClicked(ev: CustomEvent) {
