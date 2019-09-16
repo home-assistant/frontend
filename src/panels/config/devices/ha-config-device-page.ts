@@ -58,6 +58,7 @@ export class HaConfigDevicePage extends LitElement {
           .devices=${this.devices}
           .device=${device}
           .entities=${this.entities}
+          .hide-settings="true"
         ></ha-device-card>
       </hass-subpage>
     `;

@@ -15,8 +15,6 @@ import "../../../layouts/hass-subpage";
 import "../../../resources/ha-style";
 import "../../../components/ha-icon";
 
-import { showConfigEntrySystemOptionsDialog } from "../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
-
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../ha-config-section";
 
@@ -36,10 +34,9 @@ import {
   CSSResult,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
-import { ConfigEntry, deleteConfigEntry } from "../../../data/config_entries";
+import { ConfigEntry } from "../../../data/config_entries";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
-import { navigate } from "../../../common/navigate";
 
 @customElement("ha-config-entries-dashboard")
 export class HaConfigManagerDashboard extends LitElement {
@@ -134,21 +131,6 @@ export class HaConfigManagerDashboard extends LitElement {
                             )}
                           </div>
                         </paper-item-body>
-                        ${this._hasEntities(item)
-                          ? html`
-                              <a href="/config/devices/dashboard/${item.domain}"
-                                ><ha-icon icon="hass:open-in-new"></ha-icon
-                              ></a>
-                            `
-                          : ""}
-                        <ha-icon
-                          @click=${this._showSystemOptions}
-                          icon="hass:message-settings-variant"
-                        ></ha-icon>
-                        <ha-icon
-                          @click=${this._removeEntry}
-                          icon="hass:delete"
-                        ></ha-icon>
                         <ha-icon-next></ha-icon-next>
                       </paper-item>
                     </a>
@@ -179,51 +161,6 @@ export class HaConfigManagerDashboard extends LitElement {
     `;
   }
 
-  private _showSystemOptions(ev: Event) {
-    ev.preventDefault();
-    const index = Number(
-      (ev.target as HTMLElement)
-        .closest("paper-item")!
-        .getAttribute("data-index")
-    );
-    const entry = this.entries[index];
-    showConfigEntrySystemOptionsDialog(this, {
-      entry,
-    });
-  }
-
-  private _removeEntry(ev: Event) {
-    ev.preventDefault();
-    if (
-      !confirm(
-        this.hass.localize(
-          "ui.panel.config.integrations.config_entry.delete_confirm"
-        )
-      )
-    ) {
-      return;
-    }
-
-    const index = Number(
-      (ev.target as HTMLElement)
-        .closest("paper-item")!
-        .getAttribute("data-index")
-    );
-    const entry: ConfigEntry = this.entries[index];
-
-    deleteConfigEntry(this.hass, entry.entry_id).then((result) => {
-      fireEvent(this, "hass-reload-entries");
-      if (result.require_restart) {
-        alert(
-          this.hass.localize(
-            "ui.panel.config.integrations.config_entry.restart_confirm"
-          )
-        );
-      }
-      navigate(this, "/config/integrations/dashboard", true);
-    });
-  }
-
   private _createFlow() {
     showConfigFlowDialog(this, {
       dialogClosedCallback: () => fireEvent(this, "hass-reload-entries"),
@@ -235,15 +172,6 @@ export class HaConfigManagerDashboard extends LitElement {
       continueFlowId: ev.model.item.flow_id,
       dialogClosedCallback: () => fireEvent(this, "hass-reload-entries"),
     });
-  }
-
-  private _hasEntities(configEntry) {
-    if (!this.entities) {
-      return false;
-    }
-    return this.entities.some(
-      (entity) => entity.config_entry_id === configEntry.entry_id
-    );
   }
 
   private _getEntities(configEntry: ConfigEntry): HassEntity[] {

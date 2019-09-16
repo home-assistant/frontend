@@ -14,9 +14,15 @@ import LocalizeMixin from "../../../mixins/localize-mixin";
 import computeStateName from "../../../common/entity/compute_state_name";
 import "../../../components/entity/state-badge";
 import { compare } from "../../../common/string/compare";
-import { subscribeDeviceRegistry } from "../../../data/device_registry";
+import {
+  subscribeDeviceRegistry,
+  updateDeviceRegistryEntry,
+} from "../../../data/device_registry";
 import { subscribeAreaRegistry } from "../../../data/area_registry";
-import { loadDeviceRegistryDetailDialog } from "../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
+import {
+  loadDeviceRegistryDetailDialog,
+  showDeviceRegistryDetailDialog,
+} from "../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
 
 function computeEntityName(hass, entity) {
   if (entity.name) return entity.name;
@@ -31,10 +37,21 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
       <style>
+        :host(:not([narrow])) .device-entities {
+          max-height: 225px;
+          overflow: auto;
+        }
         ha-card {
-          width: 100%;
-          max-width: 500px;
-          margin: 16px auto;
+          flex: 1 0 100%;
+          padding-bottom: 10px;
+          min-width: 0;
+        }
+        .card-header {
+          display: flex;
+          justify-content: space-between;
+        }
+        .card-header .name {
+          width: 90%;
         }
         .device {
           width: 30%;
@@ -65,6 +82,15 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
         }
       </style>
       <ha-card>
+        <div class="card-header">
+          <div class="name">[[_deviceName(device)]]</div>
+          <template is="dom-if" if="[[!hideSettings]]">
+            <paper-icon-button
+              icon="hass:settings"
+              on-click="_gotoSettings"
+            ></paper-icon-button>
+          </template>
+        </div>
         <div class="card-content">
           <div class="info">
             <div class="model">[[device.model]]</div>
@@ -130,6 +156,7 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
         type: Boolean,
         reflectToAttribute: true,
       },
+      hideSettings: Boolean,
       _childDevices: {
         type: Array,
         computed: "_computeChildDevices(device, devices)",
@@ -202,6 +229,29 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
         "ui.panel.config.integrations.config_entry.entity_unavailable"
       )})`
     );
+  }
+
+  _deviceName(device) {
+    return device.name_by_user || device.name;
+  }
+
+  _computeDeviceName(devices, deviceId) {
+    const device = devices.find((dev) => dev.id === deviceId);
+    return device
+      ? this._deviceName(device)
+      : `(${this.localize(
+          "ui.panel.config.integrations.config_entry.device_unavailable"
+        )})`;
+  }
+
+  _gotoSettings() {
+    const device = this.device;
+    showDeviceRegistryDetailDialog(this, {
+      device,
+      updateEntry: async (updates) => {
+        await updateDeviceRegistryEntry(this.hass, device.id, updates);
+      },
+    });
   }
 
   _openMoreInfo(ev) {
