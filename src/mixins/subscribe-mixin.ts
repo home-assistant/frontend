@@ -1,4 +1,9 @@
-import { LitElement, Constructor, PropertyValues } from "lit-element";
+import {
+  LitElement,
+  Constructor,
+  PropertyValues,
+  PropertyDeclarations,
+} from "lit-element";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 
 export interface HassSubscribeElement {
@@ -13,6 +18,12 @@ export const SubscribeMixin = <T extends LitElement>(
   class extends superClass {
     /* tslint:disable-next-line */
     private __unsubs?: UnsubscribeFunc[];
+
+    static get properties(): PropertyDeclarations {
+      return {
+        hass: {},
+      };
+    }
 
     public connectedCallback() {
       super.connectedCallback();
