@@ -12,7 +12,7 @@ export default function coverIcon(state: HassEntity): string {
     case "shutter":
       return open ? "hass:window-shutter-open" : "hass:window-shutter";
     case "blind":
-      return open ? "hass:blinds-open" : "hass:blinds";  
+      return open ? "hass:blinds-open" : "hass:blinds";
     case "window":
       return open ? "hass:window-open" : "hass:window-closed";
     default:
