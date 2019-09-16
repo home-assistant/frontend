@@ -372,8 +372,10 @@ class HUIRoot extends LitElement {
         #panel {
           background: var(--lovelace-background);
           min-height: calc(100vh - 112px);
-          position: relative;
           display: flex;
+        }
+        #panel.tabs-hidden {
+          min-height: calc(100vh - 64px);
         }
         #panel > * {
           flex: 1;
