@@ -5,6 +5,8 @@ import {
   css,
   TemplateResult,
   property,
+  query,
+  customElement,
 } from "lit-element";
 
 import { HomeAssistant } from "../../../types";
@@ -12,9 +14,21 @@ import { haStyle } from "../../../resources/styles";
 
 import "../logs/system-log-card";
 import "../logs/error-log-card";
+// tslint:disable-next-line
+import { SystemLogCard } from "../logs/system-log-card";
 
-class HaPanelDevLogs extends LitElement {
+@customElement("developer-tools-logs")
+export class HaPanelDevLogs extends LitElement {
   @property() public hass!: HomeAssistant;
+
+  @query("system-log-card") private systemLog?: SystemLogCard;
+
+  public connectedCallback() {
+    super.connectedCallback();
+    if (this.systemLog && this.systemLog.loaded) {
+      this.systemLog.fetchData();
+    }
+  }
 
   protected render(): TemplateResult | void {
     return html`
@@ -48,5 +62,3 @@ declare global {
     "developer-tools-logs": HaPanelDevLogs;
   }
 }
-
-customElements.define("developer-tools-logs", HaPanelDevLogs);
