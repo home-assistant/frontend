@@ -60,8 +60,13 @@ export class HuiUnusedEntities extends LitElement {
         filterKey: "friendly_name",
         direction: "asc",
         template: (stateObj) => html`
-          <state-badge .hass=${this.hass!} .stateObj=${stateObj}></state-badge>
-          ${stateObj.friendly_name}
+          <div @click=${this._handleEntityClicked} style="cursor: pointer;">
+            <state-badge
+              .hass=${this.hass!}
+              .stateObj=${stateObj}
+            ></state-badge>
+            ${stateObj.friendly_name}
+          </div>
         `,
       },
     };
@@ -70,20 +75,6 @@ export class HuiUnusedEntities extends LitElement {
       ? columns
       : {
           ...columns,
-          entity: {
-            title: "Entity",
-            sortable: true,
-            filterable: true,
-            filterKey: "friendly_name",
-            direction: "asc",
-            template: (stateObj) => html`
-              <state-badge
-                .hass=${this.hass!}
-                .stateObj=${stateObj}
-              ></state-badge>
-              ${stateObj.friendly_name}
-            `,
-          },
           entity_id: {
             title: "Entity id",
             sortable: true,
