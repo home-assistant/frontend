@@ -57,7 +57,13 @@ export class HcMain extends HassElement {
       `;
     }
 
-    if (!this._lovelaceConfig || this._lovelacePath === null) {
+    if (
+      !this._lovelaceConfig ||
+      this._lovelacePath === null ||
+      // Guard against part of HA not being loaded yet.
+      (this.hass &&
+        (!this.hass.states || !this.hass.config || !this.hass.services))
+    ) {
       return html`
         <hc-launch-screen
           .hass=${this.hass}
