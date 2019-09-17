@@ -31,7 +31,6 @@ class HaConfigDevices extends HassRouterPage {
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
-    preloadAll: true,
     routes: {
       dashboard: {
         tag: "ha-config-devices-dashboard",

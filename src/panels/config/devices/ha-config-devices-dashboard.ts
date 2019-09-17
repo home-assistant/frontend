@@ -12,7 +12,6 @@ import "../../../resources/ha-style";
 import "../../../components/ha-icon-next";
 
 import "../ha-config-section";
-// import { computeRTL } from "../../../common/util/compute_rtl";
 
 import memoizeOne from "memoize-one";
 
@@ -62,7 +61,7 @@ export class HaConfigDeviceDashboard extends LitElement {
       areas: AreaRegistryEntry[],
       domain: string
     ) => {
-      let outputDevices: DeviceRowData[] = [...devices];
+      let outputDevices: DeviceRowData[] = devices;
       if (domain) {
         outputDevices = outputDevices.filter(
           (device) =>
@@ -73,23 +72,24 @@ export class HaConfigDeviceDashboard extends LitElement {
       }
 
       outputDevices = outputDevices.map((device) => {
-        device.name = device.name_by_user || device.name;
+        const output = { ...device };
+        output.name = device.name_by_user || device.name || "No name";
 
-        device.area =
+        output.area =
           !areas || !device || !device.area_id
             ? "No area"
             : areas.find((area) => area.area_id === device.area_id)!.name;
 
-        device.integration =
+        output.integration =
           !entries || !device || !device.config_entries
             ? "No integration"
             : entries.find((entry) =>
                 device.config_entries.includes(entry.entry_id)
               )!.domain;
 
-        device.battery_entity = this._batteryEntity(device, entities);
+        output.battery_entity = this._batteryEntity(device, entities);
 
-        return device;
+        return output;
       });
 
       return outputDevices;

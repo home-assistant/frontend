@@ -1,8 +1,11 @@
+import { property, LitElement, html, customElement } from "lit-element";
+
+import memoizeOne from "memoize-one";
+
 import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-error-screen";
 
 import "./ha-device-card";
-import { property, LitElement, html, customElement } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { ConfigEntry } from "../../../data/config_entries";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
@@ -25,11 +28,13 @@ export class HaConfigDevicePage extends LitElement {
   @property() public areas!: AreaRegistryEntry[];
   @property() public deviceId!: string;
 
-  private get _device(): DeviceRegistryEntry | undefined {
-    return this.devices
-      ? this.devices.find((device) => device.id === this.deviceId)
-      : undefined;
-  }
+  private _device = memoizeOne(
+    (
+      deviceId: string,
+      devices: DeviceRegistryEntry[]
+    ): DeviceRegistryEntry | undefined =>
+      devices ? devices.find((device) => device.id === deviceId) : undefined
+  );
 
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
@@ -37,7 +42,7 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   protected render() {
-    const device = this._device;
+    const device = this._device(this.deviceId, this.devices);
 
     if (!device) {
       return html`
@@ -58,7 +63,7 @@ export class HaConfigDevicePage extends LitElement {
           .devices=${this.devices}
           .device=${device}
           .entities=${this.entities}
-          .hideSettings=${true}
+          hide-settings
         ></ha-device-card>
       </hass-subpage>
     `;
@@ -66,9 +71,9 @@ export class HaConfigDevicePage extends LitElement {
 
   private _showSettings() {
     showDeviceRegistryDetailDialog(this, {
-      device: this._device!,
+      device: this._device(this.deviceId, this.devices)!,
       updateEntry: async (updates) => {
-        await updateDeviceRegistryEntry(this.hass, this._device!.id, updates);
+        await updateDeviceRegistryEntry(this.hass, this.deviceId, updates);
       },
     });
   }
