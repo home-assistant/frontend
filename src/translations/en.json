@@ -889,6 +889,10 @@
           "description_not_login": "Not logged in",
           "description_features": "Control away from home, integrate with Alexa and Google Assistant."
         },
+        "devices": {
+          "caption": "Devices",
+          "description": "Manage connected devices"
+        },
         "entity_registry": {
           "caption": "Entity Registry",
           "description": "Overview of all known entities.",
@@ -920,7 +924,7 @@
         },
         "integrations": {
           "caption": "Integrations",
-          "description": "Manage connected devices and services",
+          "description": "Manage and setup integrations",
           "discovered": "Discovered",
           "configured": "Configured",
           "new": "Set up a new integration",
