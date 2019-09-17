@@ -42,8 +42,9 @@ import { HUIView } from "./hui-view";
 import { createCardElement } from "./common/create-card-element";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
-import { Lovelace } from "./types";
+import { Lovelace, LovelaceCard } from "./types";
 import { afterNextRender } from "../../common/util/render-status";
+import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 import { haStyle } from "../../resources/styles";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { loadLovelaceResources } from "./common/load-resources";
@@ -361,10 +362,22 @@ class HUIRoot extends LitElement {
           position: relative;
           display: flex;
         }
+        #view > * {
+          flex: 1;
+          width: 100%;
+        }
         #view.tabs-hidden {
           min-height: calc(100vh - 64px);
         }
-        #view > * {
+        #panel {
+          background: var(--lovelace-background);
+          min-height: calc(100vh - 112px);
+          display: flex;
+        }
+        #panel.tabs-hidden {
+          min-height: calc(100vh - 64px);
+        }
+        #panel > * {
           flex: 1;
           width: 100%;
         }
@@ -589,6 +602,7 @@ class HUIRoot extends LitElement {
         () => {
           unusedEntities.hass = this.hass!;
           unusedEntities.lovelace = this.lovelace!;
+          unusedEntities.narrow = this.narrow;
         }
       );
       if (this.config.background) {
@@ -613,8 +627,15 @@ class HUIRoot extends LitElement {
       view = this._viewCache![viewIndex];
     } else {
       if (viewConfig.panel && viewConfig.cards && viewConfig.cards.length > 0) {
-        view = createCardElement(viewConfig.cards[0]);
-        view.isPanel = true;
+        view = document.createElement("div");
+        view.id = "panel";
+        if (viewConfig.theme) {
+          applyThemesOnElement(view, this.hass!.themes, viewConfig.theme);
+        }
+        const card = createCardElement(viewConfig.cards[0]);
+        card.hass = this.hass;
+        (card as LovelaceCard).isPanel = true;
+        view.append(card);
       } else {
         view = document.createElement("hui-view");
         view.lovelace = this.lovelace;
