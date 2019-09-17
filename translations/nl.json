@@ -588,6 +588,9 @@
                                     "label": "Gebeurtenis uitvoeren",
                                     "event": "Gebeurtenis:",
                                     "service_data": "Service data"
+                                },
+                                "device_id": {
+                                    "label": "Apparaat"
                                 }
                             },
                             "learn_more": "Meer informatie over acties"
