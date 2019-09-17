@@ -5,7 +5,7 @@ import "../../../../layouts/hass-error-screen";
 import "../../../../components/entity/state-badge";
 import { compare } from "../../../../common/string/compare";
 
-import "./ha-device-card";
+import "../../devices/ha-device-card";
 import "./ha-ce-entities-card";
 import { showOptionsFlowDialog } from "../../../../dialogs/config-flow/show-dialog-options-flow";
 import { property, LitElement, CSSResult, css, html } from "lit-element";
@@ -106,6 +106,7 @@ class HaConfigEntryPage extends LitElement {
           icon="hass:delete"
           @click=${this._removeEntry}
         ></paper-icon-button>
+
         <div class="content">
           ${configEntryDevices.length === 0 && noDeviceEntities.length === 0
             ? html`
