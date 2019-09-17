@@ -137,7 +137,7 @@ documentContainer.innerHTML = `<custom-style>
       --mdc-theme-surface: var(--paper-card-background-color, var(--card-background-color));
 
       /* mwc text styles */
-      --mdc-theme-on-primary: var(--primary-text-color);
+      --mdc-theme-on-primary: var(--text-primary-color);
       --mdc-theme-on-secondary: var(--text-primary-color);
       --mdc-theme-on-surface: var(--primary-text-color);
     }

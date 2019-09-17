@@ -68,7 +68,6 @@ export interface DataTabelColumnData {
 }
 
 export interface DataTabelRowData {
-  id: string;
   [key: string]: any;
 }
 
@@ -402,9 +401,7 @@ export class HaDataTable extends BaseElement {
     const rowId = (ev.target as HTMLElement)
       .closest("tr")!
       .getAttribute("data-row-id")!;
-    fireEvent(this, "row-click", {
-      id: rowId,
-    });
+    fireEvent(this, "row-click", { id: rowId }, { bubbles: false });
   }
 
   private _setRowChecked(rowId: string, checked: boolean) {

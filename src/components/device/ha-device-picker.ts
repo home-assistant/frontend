@@ -14,7 +14,7 @@ import {
   property,
 } from "lit-element";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { SubscribeMixin } from "../../../src/mixins/subscribe-mixin";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
 
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
