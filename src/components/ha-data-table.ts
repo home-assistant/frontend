@@ -14,14 +14,10 @@ import {
   css,
   customElement,
   property,
-  unsafeCSS,
   classMap,
   TemplateResult,
   PropertyValues,
 } from "@material/mwc-base/base-element";
-
-// @ts-ignore
-import styles from "@material/data-table/dist/mdc.data-table.min.css";
 
 import memoizeOne from "memoize-one";
 
@@ -36,8 +32,13 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "selection-changed": SelectionChangedEvent;
+    "row-click": RowClickedEvent;
     "sorting-changed": SortingChangedEvent;
   }
+}
+
+export interface RowClickedEvent {
+  id: string;
 }
 
 export interface SelectionChangedEvent {
@@ -270,7 +271,11 @@ export class HaDataTable extends BaseElement {
               ),
               (row: DataTabelRowData) => row[this.id],
               (row: DataTabelRowData) => html`
-                <tr data-row-id="${row[this.id]}" class="mdc-data-table__row">
+                <tr
+                  data-row-id="${row[this.id]}"
+                  @click=${this._handleRowClick}
+                  class="mdc-data-table__row"
+                >
                   ${this.selectable
                     ? html`
                         <td
@@ -387,12 +392,19 @@ export class HaDataTable extends BaseElement {
 
   private _handleRowCheckboxChange(ev: Event) {
     const checkbox = ev.target as HaCheckbox;
-    const rowId = checkbox.parentElement!.parentElement!.getAttribute(
-      "data-row-id"
-    );
+    const rowId = checkbox.closest("tr")!.getAttribute("data-row-id");
 
     this._setRowChecked(rowId!, checkbox.checked);
     this.mdcFoundation.handleRowCheckboxChange(ev);
+  }
+
+  private _handleRowClick(ev: Event) {
+    const rowId = (ev.target as HTMLElement)
+      .closest("tr")!
+      .getAttribute("data-row-id")!;
+    fireEvent(this, "row-click", {
+      id: rowId,
+    });
   }
 
   private _setRowChecked(rowId: string, checked: boolean) {
@@ -416,7 +428,145 @@ export class HaDataTable extends BaseElement {
 
   static get styles(): CSSResult {
     return css`
-      ${unsafeCSS(styles)}
+      /* default mdc styles, colors changed, without checkbox styles */
+
+      .mdc-data-table__content {
+        font-family: Roboto, sans-serif;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-smoothing: antialiased;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        font-weight: 400;
+        letter-spacing: 0.0178571429em;
+        text-decoration: inherit;
+        text-transform: inherit;
+      }
+
+      .mdc-data-table {
+        background-color: var(--card-background-color);
+        border-radius: 4px;
+        border-width: 1px;
+        border-style: solid;
+        border-color: rgba(var(--rgb-primary-text-color), 0.12);
+        display: inline-flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        overflow-x: auto;
+      }
+
+      .mdc-data-table__row--selected {
+        background-color: rgba(var(--rgb-primary-color), 0.04);
+      }
+
+      .mdc-data-table__row {
+        border-top-color: rgba(var(--rgb-primary-text-color), 0.12);
+      }
+
+      .mdc-data-table__row {
+        border-top-width: 1px;
+        border-top-style: solid;
+      }
+
+      .mdc-data-table__row:not(.mdc-data-table__row--selected):hover {
+        background-color: rgba(var(--rgb-primary-text-color), 0.04);
+      }
+
+      .mdc-data-table__header-cell {
+        color: var(--primary-text-color);
+      }
+
+      .mdc-data-table__cell {
+        color: var(--primary-text-color);
+      }
+
+      .mdc-data-table__header-row {
+        height: 56px;
+      }
+
+      .mdc-data-table__row {
+        height: 52px;
+      }
+
+      .mdc-data-table__cell,
+      .mdc-data-table__header-cell {
+        padding-right: 16px;
+        padding-left: 16px;
+      }
+
+      .mdc-data-table__header-cell--checkbox,
+      .mdc-data-table__cell--checkbox {
+        /* @noflip */
+        padding-left: 16px;
+        /* @noflip */
+        padding-right: 0;
+      }
+      [dir="rtl"] .mdc-data-table__header-cell--checkbox,
+      .mdc-data-table__header-cell--checkbox[dir="rtl"],
+      [dir="rtl"] .mdc-data-table__cell--checkbox,
+      .mdc-data-table__cell--checkbox[dir="rtl"] {
+        /* @noflip */
+        padding-left: 0;
+        /* @noflip */
+        padding-right: 16px;
+      }
+
+      .mdc-data-table__table {
+        width: 100%;
+        border: 0;
+        white-space: nowrap;
+        border-collapse: collapse;
+      }
+
+      .mdc-data-table__cell {
+        font-family: Roboto, sans-serif;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-smoothing: antialiased;
+        font-size: 0.875rem;
+        line-height: 1.25rem;
+        font-weight: 400;
+        letter-spacing: 0.0178571429em;
+        text-decoration: inherit;
+        text-transform: inherit;
+      }
+
+      .mdc-data-table__cell--numeric {
+        text-align: right;
+      }
+      [dir="rtl"] .mdc-data-table__cell--numeric,
+      .mdc-data-table__cell--numeric[dir="rtl"] {
+        /* @noflip */
+        text-align: left;
+      }
+
+      .mdc-data-table__header-cell {
+        font-family: Roboto, sans-serif;
+        -moz-osx-font-smoothing: grayscale;
+        -webkit-font-smoothing: antialiased;
+        font-size: 0.875rem;
+        line-height: 1.375rem;
+        font-weight: 500;
+        letter-spacing: 0.0071428571em;
+        text-decoration: inherit;
+        text-transform: inherit;
+        text-align: left;
+      }
+      [dir="rtl"] .mdc-data-table__header-cell,
+      .mdc-data-table__header-cell[dir="rtl"] {
+        /* @noflip */
+        text-align: right;
+      }
+
+      .mdc-data-table__header-cell--numeric {
+        text-align: right;
+      }
+      [dir="rtl"] .mdc-data-table__header-cell--numeric,
+      .mdc-data-table__header-cell--numeric[dir="rtl"] {
+        /* @noflip */
+        text-align: left;
+      }
+
+      /* custom from here */
+
       .mdc-data-table {
         display: block;
       }

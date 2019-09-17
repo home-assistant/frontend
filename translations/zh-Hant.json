@@ -588,6 +588,9 @@
                                     "label": "執行事件",
                                     "event": "事件：",
                                     "service_data": "資料"
+                                },
+                                "device_id": {
+                                    "label": "裝置"
                                 }
                             },
                             "learn_more": "詳細了解動作"
@@ -674,7 +677,7 @@
                     "caption": "Home Assistant Cloud",
                     "description_login": "登入帳號：{email}",
                     "description_not_login": "未登入",
-                    "description_features": "整合 Alexa 及 Google 助理，遠端控制智能家居。"
+                    "description_features": "整合 Alexa 及 Google 助理，遠端控制智能家居"
                 },
                 "integrations": {
                     "caption": "整合",
@@ -725,7 +728,7 @@
                 },
                 "area_registry": {
                     "caption": "分區 ID",
-                    "description": "家中所有分區概觀。",
+                    "description": "家中所有分區概觀",
                     "picker": {
                         "header": "分區 ID",
                         "introduction": "分區主要用以管理裝置所在位置。此資訊將會於 Home Assistant 中使用以協助您管理介面、權限，並與其他系統進行整合。",
@@ -745,7 +748,7 @@
                 },
                 "entity_registry": {
                     "caption": "物件 ID",
-                    "description": "所有已知物件概觀。",
+                    "description": "所有已知物件概觀",
                     "picker": {
                         "header": "物件 ID",
                         "unavailable": "（不可用）",
@@ -1068,7 +1071,8 @@
                         "saved": "已儲存"
                     },
                     "edit_lovelace": {
-                        "header": "Lovelace UI 的標題"
+                        "header": "Lovelace UI 的標題",
+                        "explanation": "此為 Lovelace 所有分視圖上方之標題。"
                     }
                 },
                 "menu": {
@@ -1341,6 +1345,8 @@
                 "manuf": "由 {manufacturer}",
                 "no_area": "無分區",
                 "services": {
+                    "reconfigure": "重新設定 ZHA Zibgee 裝置（健康裝置）。假如遇到裝置問題，請使用此選項。假如有問題的裝置為使用電池的裝置，請先確定裝置已喚醒並處於接受命令狀態。",
+                    "updateDeviceName": "於物件 ID 中自訂此設備名稱。",
                     "remove": "從 Zigbee 網路移除裝置。"
                 },
                 "zha_device_card": {

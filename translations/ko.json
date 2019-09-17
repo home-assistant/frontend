@@ -588,6 +588,9 @@
                                     "label": "이벤트 발생",
                                     "event": "이벤트:",
                                     "service_data": "서비스 데이터"
+                                },
+                                "device_id": {
+                                    "label": "기기"
                                 }
                             },
                             "learn_more": "동작에 대해 더 알아보기"
