@@ -136,13 +136,17 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             </div>
             <div class="current-temperature">
               <span class="current-temperature-text">
-                ${stateObj.attributes.current_temperature}
+                ${stateObj.attributes.current_temperature
+                  ? stateObj.attributes.current_temperature
+                  : stateObj.attributes.current_humidity}
                 ${stateObj.attributes.current_temperature
                   ? html`
                       <span class="uom"
                         >${this.hass.config.unit_system.temperature}</span
                       >
                     `
+                  : stateObj.attributes.current_humidity
+                  ? "%"
                   : ""}
               </span>
             </div>
@@ -222,8 +226,12 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         sliderType,
         value: sliderValue,
         disabled: sliderValue === null,
-        min: stateObj.attributes.min_temp,
-        max: stateObj.attributes.max_temp,
+        min: stateObj.attributes.current_temperature
+          ? stateObj.attributes.min_temp
+          : stateObj.attributes.min_humidity,
+        max: stateObj.attributes.current_temperature
+          ? stateObj.attributes.max_temp
+          : stateObj.attributes.max_humidity,
       });
       this._updateSetTemp(uiValue);
     }
@@ -232,6 +240,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   private get _stepSize(): number {
     const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
 
+    if (!stateObj.attributes.current_temperature) {
+      return 0.5;
+    }
     if (stateObj.attributes.target_temp_step) {
       return stateObj.attributes.target_temp_step;
     }
@@ -271,8 +282,12 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     this._jQuery("#thermostat", this.shadowRoot).roundSlider({
       ...thermostatConfig,
       radius,
-      min: stateObj.attributes.min_temp,
-      max: stateObj.attributes.max_temp,
+      min: stateObj.attributes.current_temperature
+        ? stateObj.attributes.min_temp
+        : stateObj.attributes.min_humidity,
+      max: stateObj.attributes.current_temperature
+        ? stateObj.attributes.max_temp
+        : stateObj.attributes.max_humidity,
       sliderType,
       change: (value) => this._setTemperature(value),
       drag: (value) => this._dragEvent(value),
@@ -295,6 +310,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       sliderValue = null;
       uiValue = this.hass!.localize("state.default.unavailable");
     } else if (
+      stateObj.attributes.current_temperature &&
       stateObj.attributes.target_temp_low &&
       stateObj.attributes.target_temp_high
     ) {
@@ -309,10 +325,16 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         ],
         false
       );
-    } else {
+    } else if (stateObj.attributes.current_temperature) {
       sliderType = "min-range";
       sliderValue = Number.isFinite(Number(stateObj.attributes.temperature))
         ? stateObj.attributes.temperature
+        : null;
+      uiValue = sliderValue !== null ? String(sliderValue) : "";
+    } else {
+      sliderType = "min-range";
+      sliderValue = stateObj.attributes.humidity
+        ? stateObj.attributes.humidity
         : null;
       uiValue = sliderValue !== null ? String(sliderValue) : "";
     }
@@ -330,7 +352,12 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   private _setTemperature(e): void {
     const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
-    if (
+    if (!stateObj.attributes.current_temperature) {
+      this.hass!.callService("climate", "set_humidity", {
+        entity_id: this._config!.entity,
+        humidity: e.value,
+      });
+    } else if (
       stateObj.attributes.target_temp_low &&
       stateObj.attributes.target_temp_high
     ) {

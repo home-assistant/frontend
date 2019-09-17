@@ -12,6 +12,8 @@ const LINE_ATTRIBUTES_TO_KEEP = [
   "target_temp_low",
   "target_temp_high",
   "hvac_action",
+  "humidity",
+  "current_humidity",
 ];
 
 export interface LineChartState {

@@ -163,11 +163,23 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
           domain === "climate"
             ? (state) => state.attributes.hvac_action === "cooling"
             : (state) => state.state === "cool";
+        const isDrying =
+          domain === "climate"
+            ? (state) => state.attributes.hvac_action === "drying"
+            : (state) => state.state === "dry";
 
         // We differentiate between thermostats that have a target temperature
         // range versus ones that have just a target temperature
 
         // Using step chart by step-before so manually interpolation not needed.
+        const hasTemp = states.states.some(
+          (state) =>
+            state.attributes && isFinite(state.attributes.current_temperature)
+        );
+        const hasHumidity = states.states.some(
+          (state) =>
+            state.attributes && isFinite(state.attributes.current_humidity)
+        );
         const hasTargetRange = states.states.some(
           (state) =>
             state.attributes &&
@@ -176,8 +188,14 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
         );
         const hasHeat = states.states.some(isHeating);
         const hasCool = states.states.some(isCooling);
+        const hasDry = states.states.some(isDrying);
 
-        addColumn(name + " current temperature", true);
+        if (hasTemp) {
+          addColumn(name + " current temperature", true);
+        }
+        if (hasHumidity) {
+          addColumn(name + " current humidity", true);
+        }
         if (hasHeat) {
           addColumn(name + " heating", true, true);
           // The "heating" series uses steppedArea to shade the area below the current
@@ -188,23 +206,42 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
           // The "cooling" series uses steppedArea to shade the area below the current
           // temperature when the thermostat is calling for heat.
         }
+        if (hasDry) {
+          addColumn(name + " drying", true, true);
+          // The "drying" series uses steppedArea to shade the area below the current
+          // humidity when the device is calling for dry.
+        }
 
         if (hasTargetRange) {
           addColumn(name + " target temperature high", true);
           addColumn(name + " target temperature low", true);
-        } else {
+        } else if (hasTemp) {
           addColumn(name + " target temperature", true);
+        }
+
+        if (hasHumidity) {
+          addColumn(name + " target humidity", true);
         }
 
         states.states.forEach((state) => {
           if (!state.attributes) return;
+          const series = [];
           const curTemp = safeParseFloat(state.attributes.current_temperature);
-          const series = [curTemp];
+          if (hasTemp) {
+            series.push(curTemp);
+          }
+          const curHumidity = safeParseFloat(state.attributes.current_humidity);
+          if (hasHumidity) {
+            series.push(curHumidity);
+          }
           if (hasHeat) {
             series.push(isHeating(state) ? curTemp : null);
           }
           if (hasCool) {
             series.push(isCooling(state) ? curTemp : null);
+          }
+          if (hasDry) {
+            series.push(isDrying(state) ? curHumidity : null);
           }
           if (hasTargetRange) {
             const targetHigh = safeParseFloat(
@@ -212,12 +249,15 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
             );
             const targetLow = safeParseFloat(state.attributes.target_temp_low);
             series.push(targetHigh, targetLow);
-            pushData(new Date(state.last_changed), series);
-          } else {
+          } else if (hasTemp) {
             const target = safeParseFloat(state.attributes.temperature);
             series.push(target);
-            pushData(new Date(state.last_changed), series);
           }
+          if (hasHumidity) {
+            const target = safeParseFloat(state.attributes.humidity);
+            series.push(target);
+          }
+          pushData(new Date(state.last_changed), series);
         });
       } else {
         // Only disable interpolation for sensors
