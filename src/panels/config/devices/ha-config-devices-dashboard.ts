@@ -35,7 +35,12 @@ import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { navigate } from "../../../common/navigate";
-import { HassEntity } from "home-assistant-js-websocket";
+
+interface DeviceRowData extends DeviceRegistryEntry {
+  area?: string;
+  integration?: string;
+  battery_entity?: string;
+}
 
 @customElement("ha-config-devices-dashboard")
 export class HaConfigDeviceDashboard extends LitElement {
@@ -50,17 +55,39 @@ export class HaConfigDeviceDashboard extends LitElement {
     (
       devices: DeviceRegistryEntry[],
       entries: ConfigEntry[],
+      entities: EntityRegistryEntry[],
+      areas: AreaRegistryEntry[],
       domain: string
     ) => {
-      if (!domain) {
-        return devices;
+      let outputDevices: DeviceRowData[] = [...devices];
+      if (domain) {
+        outputDevices = outputDevices.filter(
+          (device) =>
+            entries.find((entry) =>
+              device.config_entries.includes(entry.entry_id)
+            )!.domain === domain
+        );
       }
-      return devices.filter(
-        (device) =>
-          entries.find((entry) =>
-            device.config_entries.includes(entry.entry_id)
-          )!.domain === domain
-      );
+
+      outputDevices = outputDevices.map((device) => {
+        device.area =
+          !areas || !device || !device.area_id
+            ? "No area"
+            : areas.find((area) => area.area_id === device.area_id)!.name;
+
+        device.integration =
+          !entries || !device || !device.config_entries
+            ? "No integration"
+            : entries.find((entry) =>
+                device.config_entries.includes(entry.entry_id)
+              )!.domain;
+
+        device.battery_entity = this._batteryEntity(device, entities);
+
+        return device;
+      });
+
+      return outputDevices;
     }
   );
 
@@ -94,10 +121,15 @@ export class HaConfigDeviceDashboard extends LitElement {
     battery: {
       title: "Battery",
       sortable: true,
-      filterable: true,
       type: "numeric",
-      template: (battery: HassEntity) =>
-        battery
+      template: (batteryEntity: string) => {
+        if (!batteryEntity) {
+          return html`
+            n/a
+          `;
+        }
+        const battery = this.hass.states[batteryEntity];
+        return battery
           ? html`
               ${battery.state}%
               <ha-state-icon
@@ -107,7 +139,8 @@ export class HaConfigDeviceDashboard extends LitElement {
             `
           : html`
               n/a
-            `,
+            `;
+      },
     },
   };
 
@@ -118,46 +151,38 @@ export class HaConfigDeviceDashboard extends LitElement {
       >
         <ha-data-table
           .columns=${this._columns}
-          .data=${this._devices(this.devices, this.entries, this.domain).map(
-            (device) => {
-              return {
-                device_name: device.name_by_user || device.name,
-                id: device.id,
-                manufacturer: device.manufacturer,
-                model: device.model,
-                area:
-                  !this.areas || !device || !device.area_id
-                    ? "No area"
-                    : this.areas.find(
-                        (area) => area.area_id === device.area_id
-                      )!.name,
-                integration:
-                  !this.entries || !device || !device.config_entries
-                    ? "No integration"
-                    : this.entries.find((entry) =>
-                        device.config_entries.includes(entry.entry_id)
-                      )!.domain,
-                battery: this._batteryEntity(device),
-              };
-            }
-          )}
+          .data=${this._devices(
+            this.devices,
+            this.entries,
+            this.entities,
+            this.areas,
+            this.domain
+          ).map((device: DeviceRowData) => {
+            return {
+              device_name: device.name_by_user || device.name,
+              id: device.id,
+              manufacturer: device.manufacturer,
+              model: device.model,
+              area: device.area,
+              integration: device.integration,
+              battery: device.battery_entity,
+            };
+          })}
           @row-click=${this._handleRowClicked}
         ></ha-data-table>
       </hass-subpage>
     `;
   }
 
-  private _batteryEntity(device): HassEntity | undefined {
-    const batteryEntity = this.entities.find(
+  private _batteryEntity(device, entities): string | undefined {
+    const batteryEntity = entities.find(
       (entity) =>
         entity.device_id === device.id &&
         this.hass.states[entity.entity_id] &&
         this.hass.states[entity.entity_id].attributes.device_class === "battery"
     );
 
-    return batteryEntity
-      ? this.hass.states[batteryEntity.entity_id]
-      : undefined;
+    return batteryEntity ? batteryEntity.entity_id : undefined;
   }
 
   private _handleRowClicked(ev: CustomEvent) {
