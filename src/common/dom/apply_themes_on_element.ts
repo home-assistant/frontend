@@ -44,14 +44,15 @@ export default function applyThemesOnElement(
       if (key.startsWith("rgb")) {
         return;
       }
-      const rgbKey = `--rgb-${key}`;
-      if (theme[rgbKey] === undefined) {
+      const rgbKey = `rgb-${key}`;
+      if (theme[rgbKey] !== undefined) {
         return;
       }
-      element._themes[rgbKey] = "";
+      const prefixedRgbKey = `--${rgbKey}`;
+      element._themes[prefixedRgbKey] = "";
       const rgbValue = hexToRgb(theme[key]);
       if (rgbValue !== null) {
-        styles[rgbKey] = rgbValue;
+        styles[prefixedRgbKey] = rgbValue;
       }
     });
   }
