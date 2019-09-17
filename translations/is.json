@@ -452,6 +452,9 @@
                                     "event": "Viðburður:",
                                     "enter": "Koma",
                                     "leave": "Brottför"
+                                },
+                                "device": {
+                                    "label": "Tæki"
                                 }
                             },
                             "learn_more": "Læra meira um kveikjur"
@@ -528,6 +531,9 @@
                                     "label": "Skjóta viðburði",
                                     "event": "Viðburður:",
                                     "service_data": "Þjónustu gögn"
+                                },
+                                "device_id": {
+                                    "label": "Tæki"
                                 }
                             },
                             "learn_more": "Læra meira um aðgerðir"
@@ -560,6 +566,9 @@
                         "soft_reset": "Mjúk endurstilling",
                         "save_config": "Vista stillingar",
                         "cancel_command": "Hætta við skipun"
+                    },
+                    "common": {
+                        "unknown": "óþekkt"
                     },
                     "node_config": {
                         "seconds": "sekúndur",
@@ -1143,6 +1152,14 @@
                 "target_temperature": "Viðmiðunarhitastig",
                 "operation": "Aðgerð",
                 "away_mode": "Fjarverandi hamur"
+            },
+            "timer": {
+                "actions": {
+                    "start": "byrja",
+                    "pause": "hlé",
+                    "cancel": "hætta við",
+                    "finish": "lokið"
+                }
             }
         },
         "components": {
@@ -1195,6 +1212,11 @@
                 },
                 "updater": {
                     "title": "Uppfærslu leiðbeiningar"
+                }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Valkostir"
                 }
             }
         },
@@ -1278,5 +1300,10 @@
         "system-admin": "Stjórnendur",
         "system-users": "Notendur",
         "system-read-only": "Notendur með lesaðgang"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Notandi"
+        }
     }
 }

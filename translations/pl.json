@@ -588,6 +588,9 @@
                                     "label": "Wywołanie zdarzenia",
                                     "event": "Zdarzenie:",
                                     "service_data": "Dane usługi"
+                                },
+                                "device_id": {
+                                    "label": "Urządzenie"
                                 }
                             },
                             "learn_more": "Dowiedz się więcej o akcjach"

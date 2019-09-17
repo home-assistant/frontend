@@ -142,7 +142,7 @@
             "heat_pump": "Varmepumpe",
             "gas": "Gas",
             "manual": "Manual",
-            "heat_cool": "Varme\/køl"
+            "heat_cool": "Opvarm\/køl"
         },
         "configurator": {
             "configure": "Konfigurer",
@@ -588,6 +588,9 @@
                                     "label": "Afsend hændelse",
                                     "event": "Hændelse:",
                                     "service_data": "Service data"
+                                },
+                                "device_id": {
+                                    "label": "Enhed"
                                 }
                             },
                             "learn_more": "Lær om handlinger"

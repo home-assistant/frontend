@@ -321,7 +321,7 @@
                         "title": "Événements"
                     },
                     "templates": {
-                        "title": "Gabarit"
+                        "title": "Template"
                     },
                     "mqtt": {
                         "title": "MQTT"
@@ -516,7 +516,7 @@
                             "duplicate": "Dupliquer",
                             "delete": "Effacement",
                             "delete_confirm": "Voulez-vous vraiment effacer ?",
-                            "unsupported_condition": "Condition non supportée : {condition}",
+                            "unsupported_condition": "Condition non supportée: {condition}",
                             "type_select": "Type de condition",
                             "type": {
                                 "state": {
@@ -539,8 +539,8 @@
                                     "sunset": "Coucher du soleil"
                                 },
                                 "template": {
-                                    "label": "Gabarit",
-                                    "value_template": "Valeur du gabarit"
+                                    "label": "Template",
+                                    "value_template": "Contenu du template"
                                 },
                                 "time": {
                                     "label": "Heure",
@@ -588,6 +588,9 @@
                                     "label": "Déclencher l'évènement",
                                     "event": "Évènement :",
                                     "service_data": "Données du service"
+                                },
+                                "device_id": {
+                                    "label": "Appareil"
                                 }
                             },
                             "learn_more": "En savoir plus sur les actions"
@@ -850,7 +853,7 @@
                     "last_used": "Dernière utilisation le {date} à partir de {location}",
                     "not_used": "N'a jamais été utilisé"
                 },
-                "current_user": "Vous êtes actuellement connecté tant que {fullName}.",
+                "current_user": "Vous êtes actuellement connecté en tant que {fullName}.",
                 "is_owner": "Vous êtes propriétaire",
                 "change_password": {
                     "header": "Changer le mot de passe",
@@ -1207,7 +1210,7 @@
             },
             "automation": {
                 "last_triggered": "Dernier déclenchement",
-                "trigger": "Déclencheur"
+                "trigger": "Déclencher"
             },
             "cover": {
                 "position": "Emplacement",
