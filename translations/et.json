@@ -588,6 +588,9 @@
                                     "label": "Vallanda sündmus",
                                     "event": "Sündmus:",
                                     "service_data": "Teenuse andmed"
+                                },
+                                "device_id": {
+                                    "label": "Seade"
                                 }
                             },
                             "learn_more": "Lisateave tegevuste kohta"

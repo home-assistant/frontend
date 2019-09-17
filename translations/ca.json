@@ -454,7 +454,7 @@
                                 "mqtt": {
                                     "label": "MQTT",
                                     "topic": "Topic",
-                                    "payload": "Dades (opcional)"
+                                    "payload": "Dades\/payload (opcional)"
                                 },
                                 "numeric_state": {
                                     "label": "Estat numèric",
@@ -588,6 +588,9 @@
                                     "label": "Disparar esdeveniment",
                                     "event": "Esdeveniment:",
                                     "service_data": "Dades de servei"
+                                },
+                                "device_id": {
+                                    "label": "Dispositiu"
                                 }
                             },
                             "learn_more": "Més informació sobre les accions"

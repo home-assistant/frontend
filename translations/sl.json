@@ -251,7 +251,8 @@
             "snowy-rainy": "Snežno, deževno",
             "sunny": "Sončno",
             "windy": "Vetrovno",
-            "windy-variant": "Vetrovno"
+            "windy-variant": "Vetrovno",
+            "exceptional": "Izjemno"
         },
         "vacuum": {
             "cleaning": "Čistim",
@@ -550,6 +551,9 @@
                                     "label": "Območje",
                                     "entity": "Entitete z lokacijo",
                                     "zone": "Območje"
+                                },
+                                "device": {
+                                    "label": "Naprava"
                                 }
                             },
                             "learn_more": "Več o pogojih"
@@ -584,6 +588,9 @@
                                     "label": "Požarni dogodek",
                                     "event": "Dogodek:",
                                     "service_data": "Podatki storitve"
+                                },
+                                "device_id": {
+                                    "label": "Naprava"
                                 }
                             },
                             "learn_more": "Več o akcijah"
@@ -1062,6 +1069,10 @@
                         "save": "Shrani",
                         "unsaved_changes": "Neshranjene spremembe",
                         "saved": "Shranjeno"
+                    },
+                    "edit_lovelace": {
+                        "header": "Naslov vašega uporabniškega vmesnika Lovelace",
+                        "explanation": "Ta naslov je prikazan nad vsemi vašimi pogledi v Lovelace-u."
                     }
                 },
                 "menu": {
@@ -1131,7 +1142,8 @@
         "common": {
             "loading": "Nalaganje",
             "cancel": "Prekliči",
-            "save": "Shrani"
+            "save": "Shrani",
+            "successfully_saved": "Shranjeno"
         },
         "duration": {
             "day": "{count} {count, plural,\none {Dan}\nother {Dni}\n}",
@@ -1254,6 +1266,14 @@
                 "target_temperature": "Ciljna temperatura",
                 "operation": "Delovanje",
                 "away_mode": "Način odsotnosti"
+            },
+            "timer": {
+                "actions": {
+                    "start": "Zagon",
+                    "pause": "pavza",
+                    "cancel": "Prekliči",
+                    "finish": "Dokončaj"
+                }
             }
         },
         "components": {
@@ -1320,6 +1340,20 @@
                 "title": "Sistemske možnosti",
                 "enable_new_entities_label": "Omogočite novo dodane subjekte.",
                 "enable_new_entities_description": "Če je onemogočeno, novo odkrite entitete ne bodo samodejno dodane v Home Assistant."
+            },
+            "zha_device_info": {
+                "manuf": "naredil: {manufacturer}",
+                "no_area": "Brez območja",
+                "services": {
+                    "reconfigure": "Ponovno konfigurirajte napravo ZHA (\"pozdravite\" napravo). To uporabite, če imate z njo težave. Če ta naprava deluje na baterije, se prepričajte, da je budna in sprejema ukaze pri uporabi te storitve.",
+                    "updateDeviceName": "Nastavite ime po meri za to napravo v registru naprav.",
+                    "remove": "Odstranite napravo iz omrežja ZigBee."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Ime, ki ga je dodelil uporabnik",
+                    "area_picker_label": "Območje",
+                    "update_name_button": "Posodobi ime"
+                }
             }
         },
         "auth_store": {
