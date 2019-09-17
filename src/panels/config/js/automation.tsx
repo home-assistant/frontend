@@ -57,8 +57,12 @@ export default class Automation extends Component<any> {
                 onvalue-changed={this.onChange}
               />
               <ha-textarea
-                label={localize("ui.panel.config.automation.editor.description.label")}
-                placeholder={localize("ui.panel.config.automation.editor.description.placeholder")}
+                label={localize(
+                  "ui.panel.config.automation.editor.description.label"
+                )}
+                placeholder={localize(
+                  "ui.panel.config.automation.editor.description.placeholder"
+                )}
                 name="description"
                 value={description}
                 onvalue-changed={this.onChange}

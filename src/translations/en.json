@@ -699,7 +699,7 @@
             "add_automation": "Add automation"
           },
           "editor": {
-            "introduction": "Use automations to bring your home alive. Automations rules can be complicated, optionally add a description to document what it does and how.",
+            "introduction": "Use automations to bring your home alive.",
             "default_name": "New Automation",
             "load_error_not_editable": "Only automations in automations.yaml are editable.",
             "load_error_unknown": "Error loading automation ({err_no}).",
