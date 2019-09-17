@@ -5,6 +5,7 @@ import {
   PropertyDeclarations,
 } from "lit-element";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { HomeAssistant } from "../types";
 
 export interface HassSubscribeElement {
   hassSubscribe(): UnsubscribeFunc[];
@@ -16,6 +17,7 @@ export const SubscribeMixin = <T extends LitElement>(
 ): Constructor<T & HassSubscribeElement> =>
   // @ts-ignore
   class extends superClass {
+    private hass?: HomeAssistant;
     /* tslint:disable-next-line */
     private __unsubs?: UnsubscribeFunc[];
 
@@ -56,7 +58,7 @@ export const SubscribeMixin = <T extends LitElement>(
       if (
         this.__unsubs !== undefined ||
         !((this as unknown) as Element).isConnected ||
-        super.hass === undefined
+        this.hass === undefined
       ) {
         return;
       }
