@@ -2,15 +2,7 @@ import { h, Component } from "preact";
 
 import "../../../../components/device/ha-device-picker";
 import "../../../../components/device/ha-device-trigger-picker";
-import "../../../../components/paper-time-input.js";
-
-declare global {
-  namespace JSX {
-    interface IntrinsicElements {
-      "paper-time-input": any;
-    }
-  }
-}
+import "../../../../components/paper-time-input";
 
 export default class DeviceTrigger extends Component<any, any> {
   constructor() {
@@ -76,20 +68,21 @@ export default class DeviceTrigger extends Component<any, any> {
           hass={hass}
           label="Trigger"
         />
-        <paper-time-input
-          label={hass.localize(
-            "ui.panel.config.automation.editor.triggers.type.state.for"
-          )}
-          hour={hours}
-          min={minutes}
-          sec={seconds}
-          enable-second
-          format={24}
-          onhour-changed={this.hourChanged}
-          onmin-changed={this.minuteChanged}
-          onsec-changed={this.secondChanged}
-          hidden={!showFor}
-        />
+        {showFor && (
+          <paper-time-input
+            label={hass.localize(
+              "ui.panel.config.automation.editor.triggers.type.state.for"
+            )}
+            hour={hours}
+            min={minutes}
+            sec={seconds}
+            enable-second
+            format={24}
+            onhour-changed={this.hourChanged}
+            onmin-changed={this.minuteChanged}
+            onsec-changed={this.secondChanged}
+          />
+        )}
       </div>
     );
   }

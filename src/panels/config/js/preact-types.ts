@@ -17,6 +17,7 @@ declare global {
       "paper-menu-button": any;
       "paper-dropdown-menu-light": any;
       "paper-icon-button": any;
+      "paper-time-input": any;
       "ha-device-picker": any;
       "ha-device-condition-picker": any;
       "ha-textarea": any;
