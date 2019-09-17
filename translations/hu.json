@@ -588,6 +588,9 @@
                                     "label": "Esemény meghívása",
                                     "event": "Esemény:",
                                     "service_data": "Szolgáltatás adatai"
+                                },
+                                "device_id": {
+                                    "label": "Eszköz"
                                 }
                             },
                             "learn_more": "Tudj meg többet a műveletekről"

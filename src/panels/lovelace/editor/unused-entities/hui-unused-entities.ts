@@ -10,6 +10,9 @@ import {
 } from "lit-element";
 
 import { classMap } from "lit-html/directives/class-map";
+
+import memoizeOne from "memoize-one";
+
 import "../../../../components/ha-fab";
 import "../../../../components/entity/state-badge";
 import "../../../../components/ha-relative-time";
@@ -17,7 +20,10 @@ import "../../../../components/ha-icon";
 
 import "../../../../components/ha-data-table";
 // tslint:disable-next-line
-import { SelectionChangedEvent } from "../../../../components/ha-data-table";
+import {
+  SelectionChangedEvent,
+  DataTabelColumnContainer,
+} from "../../../../components/ha-data-table";
 
 import computeStateName from "../../../../common/entity/compute_state_name";
 import computeDomain from "../../../../common/entity/compute_domain";
@@ -30,12 +36,15 @@ import { showEditCardDialog } from "../card-editor/show-edit-card-dialog";
 import { HomeAssistant } from "../../../../types";
 import { Lovelace } from "../../types";
 import { LovelaceConfig } from "../../../../data/lovelace";
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {
   @property() public lovelace?: Lovelace;
 
   @property() public hass?: HomeAssistant;
+
+  @property() public narrow?: boolean;
 
   @property() private _unusedEntities: string[] = [];
 
@@ -45,29 +54,41 @@ export class HuiUnusedEntities extends LitElement {
     return this.lovelace!.config;
   }
 
-  private _columns = {
-    entity: {
-      title: "Entity",
-      sortable: true,
-      filterable: true,
-      filterKey: "friendly_name",
-      direction: "asc",
-      template: (stateObj) => html`
-        <state-badge .hass=${this.hass!} .stateObj=${stateObj}></state-badge>
-        ${stateObj.friendly_name}
-      `,
-    },
-    entity_id: {
+  private _columns = memoizeOne((narrow: boolean) => {
+    const columns: DataTabelColumnContainer = {
+      entity: {
+        title: "Entity",
+        sortable: true,
+        filterable: true,
+        filterKey: "friendly_name",
+        direction: "asc",
+        template: (stateObj) => html`
+          <div @click=${this._handleEntityClicked} style="cursor: pointer;">
+            <state-badge
+              .hass=${this.hass!}
+              .stateObj=${stateObj}
+            ></state-badge>
+            ${stateObj.friendly_name}
+          </div>
+        `,
+      },
+    };
+
+    if (narrow) {
+      return columns;
+    }
+
+    columns.entity_id = {
       title: "Entity id",
       sortable: true,
       filterable: true,
-    },
-    domain: {
+    };
+    columns.domain = {
       title: "Domain",
       sortable: true,
       filterable: true,
-    },
-    last_changed: {
+    };
+    columns.last_changed = {
       title: "Last Changed",
       type: "numeric",
       sortable: true,
@@ -77,8 +98,10 @@ export class HuiUnusedEntities extends LitElement {
           .datetime=${lastChanged}
         ></ha-relative-time>
       `,
-    },
-  };
+    };
+
+    return columns;
+  });
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
@@ -111,7 +134,7 @@ export class HuiUnusedEntities extends LitElement {
         </div>
       </ha-card>
       <ha-data-table
-        .columns=${this._columns}
+        .columns=${this._columns(this.narrow!)}
         .data=${this._unusedEntities.map((entity) => {
           const stateObj = this.hass!.states[entity];
           return {
@@ -164,6 +187,15 @@ export class HuiUnusedEntities extends LitElement {
         this._selectedEntities.splice(index, 1);
       }
     }
+  }
+
+  private _handleEntityClicked(ev: Event) {
+    const entityId = (ev.target as HTMLElement)
+      .closest("tr")!
+      .getAttribute("data-row-id")!;
+    fireEvent(this, "hass-more-info", {
+      entityId,
+    });
   }
 
   private _selectView(): void {

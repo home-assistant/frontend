@@ -5,6 +5,7 @@ import {
   css,
   PropertyDeclarations,
   TemplateResult,
+  customElement,
 } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item-body";
@@ -29,8 +30,10 @@ const formatLogTime = (date, language: string) => {
     : formatTime(dateTime, language);
 };
 
-class SystemLogCard extends LitElement {
+@customElement("system-log-card")
+export class SystemLogCard extends LitElement {
   public hass?: HomeAssistant;
+  public loaded = false;
   private _items?: LoggedError[];
 
   static get properties(): PropertyDeclarations {
@@ -38,6 +41,11 @@ class SystemLogCard extends LitElement {
       hass: {},
       _items: {},
     };
+  }
+
+  public async fetchData(): Promise<void> {
+    this._items = undefined;
+    this._items = await fetchSystemLog(this.hass!);
   }
 
   protected render(): TemplateResult | void {
@@ -91,7 +99,7 @@ class SystemLogCard extends LitElement {
                     service="clear"
                     >Clear</ha-call-service-button
                   >
-                  <ha-progress-button @click=${this._fetchData}
+                  <ha-progress-button @click=${this.fetchData}
                     >Refresh</ha-progress-button
                   >
                 </div>
@@ -103,7 +111,8 @@ class SystemLogCard extends LitElement {
 
   protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
-    this._fetchData();
+    this.fetchData();
+    this.loaded = true;
     this.addEventListener("hass-service-called", (ev) =>
       this.serviceCalled(ev)
     );
@@ -117,11 +126,6 @@ class SystemLogCard extends LitElement {
         this._items = [];
       }
     }
-  }
-
-  private async _fetchData(): Promise<void> {
-    this._items = undefined;
-    this._items = await fetchSystemLog(this.hass!);
   }
 
   private _openLog(ev: Event): void {
@@ -153,4 +157,8 @@ class SystemLogCard extends LitElement {
   }
 }
 
-customElements.define("system-log-card", SystemLogCard);
+declare global {
+  interface HTMLElementTagNameMap {
+    "system-log-card": SystemLogCard;
+  }
+}
