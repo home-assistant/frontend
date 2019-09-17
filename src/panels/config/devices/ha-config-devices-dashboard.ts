@@ -28,6 +28,7 @@ import { HomeAssistant } from "../../../types";
 import {
   DataTabelColumnContainer,
   RowClickedEvent,
+  DataTabelRowData,
 } from "../../../components/ha-data-table";
 // tslint:disable-next-line
 import { DeviceRegistryEntry } from "../../../data/device_registry";
@@ -37,6 +38,7 @@ import { AreaRegistryEntry } from "../../../data/area_registry";
 import { navigate } from "../../../common/navigate";
 
 interface DeviceRowData extends DeviceRegistryEntry {
+  device?: DeviceRowData;
   area?: string;
   integration?: string;
   battery_entity?: string;
@@ -45,6 +47,7 @@ interface DeviceRowData extends DeviceRegistryEntry {
 @customElement("ha-config-devices-dashboard")
 export class HaConfigDeviceDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
+  @property() public narrow = false;
   @property() public devices!: DeviceRegistryEntry[];
   @property() public entries!: ConfigEntry[];
   @property() public entities!: EntityRegistryEntry[];
@@ -91,58 +94,87 @@ export class HaConfigDeviceDashboard extends LitElement {
     }
   );
 
-  private _columns: DataTabelColumnContainer = {
-    device_name: {
-      title: "Device",
-      sortable: true,
-      filterable: true,
-      direction: "asc",
-    },
-    manufacturer: {
-      title: "Manufacturer",
-      sortable: true,
-      filterable: true,
-    },
-    model: {
-      title: "Model",
-      sortable: true,
-      filterable: true,
-    },
-    area: {
-      title: "Area",
-      sortable: true,
-      filterable: true,
-    },
-    integration: {
-      title: "Integration",
-      sortable: true,
-      filterable: true,
-    },
-    battery: {
-      title: "Battery",
-      sortable: true,
-      type: "numeric",
-      template: (batteryEntity: string) => {
-        if (!batteryEntity) {
-          return html`
-            n/a
-          `;
-        }
-        const battery = this.hass.states[batteryEntity];
-        return battery
-          ? html`
-              ${battery.state}%
-              <ha-state-icon
-                .hass=${this.hass!}
-                .stateObj=${battery}
-              ></ha-state-icon>
-            `
-          : html`
-              n/a
-            `;
-      },
-    },
-  };
+  private _columns = memoizeOne(
+    (narrow: boolean): DataTabelColumnContainer =>
+      narrow
+        ? {
+            device: {
+              title: "Device",
+              sortable: true,
+              filterKey: "name_by_user",
+              filterable: true,
+              direction: "asc",
+              template: (device: DeviceRowData) => {
+                const battery = device.battery_entity
+                  ? this.hass.states[device.battery_entity]
+                  : undefined;
+                // Have to work on a nice layout for mobile
+                return html`
+                  ${device.name_by_user || device.name}<br />
+                  ${device.area} | ${device.integration}<br />
+                  ${battery
+                    ? html`
+                        ${battery.state}%
+                        <ha-state-icon
+                          .hass=${this.hass!}
+                          .stateObj=${battery}
+                        ></ha-state-icon>
+                      `
+                    : ""}
+                `;
+              },
+            },
+          }
+        : {
+            device_name: {
+              title: "Device",
+              sortable: true,
+              filterable: true,
+              direction: "asc",
+            },
+            manufacturer: {
+              title: "Manufacturer",
+              sortable: true,
+              filterable: true,
+            },
+            model: {
+              title: "Model",
+              sortable: true,
+              filterable: true,
+            },
+            area: {
+              title: "Area",
+              sortable: true,
+              filterable: true,
+            },
+            integration: {
+              title: "Integration",
+              sortable: true,
+              filterable: true,
+            },
+            battery: {
+              title: "Battery",
+              sortable: true,
+              type: "numeric",
+              template: (batteryEntity: string) => {
+                const battery = batteryEntity
+                  ? this.hass.states[batteryEntity]
+                  : undefined;
+                return battery
+                  ? html`
+                      ${battery.state}%
+                      <ha-state-icon
+                        .hass=${this.hass!}
+                        .stateObj=${battery}
+                      ></ha-state-icon>
+                    `
+                  : html`
+                      n/a
+                    `;
+              },
+            },
+          }
+  );
 
   protected render(): TemplateResult {
     return html`
@@ -150,7 +182,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         header=${this.hass.localize("ui.panel.config.devices.caption")}
       >
         <ha-data-table
-          .columns=${this._columns}
+          .columns=${this._columns(this.narrow)}
           .data=${this._devices(
             this.devices,
             this.entries,
@@ -158,15 +190,21 @@ export class HaConfigDeviceDashboard extends LitElement {
             this.areas,
             this.domain
           ).map((device: DeviceRowData) => {
-            return {
+            // We don't need a lot of this data for mobile view, but kept it for filtering...
+            const data: DataTabelRowData = {
               device_name: device.name_by_user || device.name,
               id: device.id,
               manufacturer: device.manufacturer,
               model: device.model,
               area: device.area,
               integration: device.integration,
-              battery: device.battery_entity,
             };
+            if (this.narrow) {
+              data.device = device;
+              return data;
+            }
+            data.battery = device.battery_entity;
+            return data;
           })}
           @row-click=${this._handleRowClicked}
         ></ha-data-table>
