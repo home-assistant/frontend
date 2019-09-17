@@ -588,6 +588,9 @@
                                     "label": "Fire event",
                                     "event": "Event:",
                                     "service_data": "Service data"
+                                },
+                                "device_id": {
+                                    "label": "Device"
                                 }
                             },
                             "learn_more": "Learn more about actions"

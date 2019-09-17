@@ -588,6 +588,9 @@
                                     "label": "Disparar evento",
                                     "event": "Evento:",
                                     "service_data": "Datos de servicio"
+                                },
+                                "device_id": {
+                                    "label": "Dispositivo"
                                 }
                             },
                             "learn_more": "Aprende más sobre las acciones."
