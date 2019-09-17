@@ -39,7 +39,7 @@ export default class Automation extends Component<any> {
   }
 
   public render({ automation, isWide, hass, localize }) {
-    const { alias, annotation, trigger, condition, action } = automation;
+    const { alias, description, trigger, condition, action } = automation;
 
     return (
       <div>
@@ -57,10 +57,10 @@ export default class Automation extends Component<any> {
                 onvalue-changed={this.onChange}
               />
               <ha-textarea
-                label={localize("ui.panel.config.automation.editor.comment.label")}
-                placeholder={localize("ui.panel.config.automation.editor.comment.placeholder")}
-                name="annotation"
-                value={annotation}
+                label={localize("ui.panel.config.automation.editor.description.label")}
+                placeholder={localize("ui.panel.config.automation.editor.description.placeholder")}
+                name="description"
+                value={description}
                 onvalue-changed={this.onChange}
               />
             </div>
