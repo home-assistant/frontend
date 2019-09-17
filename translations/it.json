@@ -588,6 +588,9 @@
                                     "label": "Scatena Evento",
                                     "event": "Evento:",
                                     "service_data": "Dati servizio"
+                                },
+                                "device_id": {
+                                    "label": "Dispositivo"
                                 }
                             },
                             "learn_more": "Per saperne di più sulle azioni"
@@ -1354,7 +1357,7 @@
             }
         },
         "auth_store": {
-            "ask": "Vuoi salvare questo login?",
+            "ask": "Salvare questo account di accesso?",
             "decline": "No grazie",
             "confirm": "Salva login"
         },

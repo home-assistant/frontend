@@ -123,9 +123,23 @@ documentContainer.innerHTML = `<custom-style>
       --paper-slider-container-color: var(--slider-bar-color);
       --ha-paper-slider-pin-font-size: 15px;
 
+      /* rgb */
+      --rgb-primary-color: 3, 169, 244;
+      --rgb-accent-color: 255, 152, 0;
+      --rgb-primary-text-color: 33, 33, 33;
+      --rgb-secondary-text-color: 114, 114, 114;
+      --rgb-text-primary-color: 255, 255, 255;
+
       /* mwc */
       --mdc-theme-primary: var(--primary-color);
       --mdc-theme-secondary: var(--accent-color);
+      --mdc-theme-background: var(--primary-background-color);
+      --mdc-theme-surface: var(--paper-card-background-color, var(--card-background-color));
+
+      /* mwc text styles */
+      --mdc-theme-on-primary: var(--primary-text-color);
+      --mdc-theme-on-secondary: var(--text-primary-color);
+      --mdc-theme-on-surface: var(--primary-text-color);
     }
   </style>
 
