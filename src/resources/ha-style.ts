@@ -134,7 +134,7 @@ documentContainer.innerHTML = `<custom-style>
       --mdc-theme-primary: var(--primary-color);
       --mdc-theme-secondary: var(--accent-color);
       --mdc-theme-background: var(--primary-background-color);
-      --mdc-theme-surface: var(--card-background-color);
+      --mdc-theme-surface: var(--paper-card-background-color, var(--card-background-color));
 
       /* mwc text styles */
       --mdc-theme-on-primary: var(--primary-text-color);
