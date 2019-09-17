@@ -73,6 +73,8 @@ export class HaConfigDeviceDashboard extends LitElement {
       }
 
       outputDevices = outputDevices.map((device) => {
+        device.name = device.name_by_user || device.name;
+
         device.area =
           !areas || !device || !device.area_id
             ? "No area"
@@ -101,7 +103,7 @@ export class HaConfigDeviceDashboard extends LitElement {
             device: {
               title: "Device",
               sortable: true,
-              filterKey: "name_by_user",
+              filterKey: "name",
               filterable: true,
               direction: "asc",
               template: (device: DeviceRowData) => {
@@ -192,7 +194,7 @@ export class HaConfigDeviceDashboard extends LitElement {
           ).map((device: DeviceRowData) => {
             // We don't need a lot of this data for mobile view, but kept it for filtering...
             const data: DataTabelRowData = {
-              device_name: device.name_by_user || device.name,
+              device_name: device.name,
               id: device.id,
               manufacturer: device.manufacturer,
               model: device.model,
