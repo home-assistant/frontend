@@ -39,12 +39,13 @@ import "./hui-view";
 // Not a duplicate import, this one is for type
 // tslint:disable-next-line
 import { HUIView } from "./hui-view";
-import { createCardElement } from "./common/create-card-element";
+import "./hui-panel-view";
+// tslint:disable-next-line
+import { HUIPanelView } from "./hui-panel-view";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
-import { Lovelace, LovelaceCard } from "./types";
+import { Lovelace } from "./types";
 import { afterNextRender } from "../../common/util/render-status";
-import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 import { haStyle } from "../../resources/styles";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { loadLovelaceResources } from "./common/load-resources";
@@ -369,18 +370,6 @@ class HUIRoot extends LitElement {
         #view.tabs-hidden {
           min-height: calc(100vh - 64px);
         }
-        #panel {
-          background: var(--lovelace-background);
-          min-height: calc(100vh - 112px);
-          display: flex;
-        }
-        #panel.tabs-hidden {
-          min-height: calc(100vh - 64px);
-        }
-        #panel > * {
-          flex: 1;
-          width: 100%;
-        }
         paper-item {
           cursor: pointer;
         }
@@ -392,9 +381,13 @@ class HUIRoot extends LitElement {
     super.updated(changedProperties);
 
     const view = this._viewRoot;
-    const huiView = view.lastChild as HUIView;
+    const huiView = view.lastChild as HUIView | HUIPanelView;
 
-    if (changedProperties.has("columns") && huiView) {
+    if (
+      changedProperties.has("columns") &&
+      huiView &&
+      huiView instanceof HUIView
+    ) {
       huiView.columns = this.columns;
     }
 
@@ -627,15 +620,8 @@ class HUIRoot extends LitElement {
       view = this._viewCache![viewIndex];
     } else {
       if (viewConfig.panel && viewConfig.cards && viewConfig.cards.length > 0) {
-        view = document.createElement("div");
-        view.id = "panel";
-        if (viewConfig.theme) {
-          applyThemesOnElement(view, this.hass!.themes, viewConfig.theme);
-        }
-        const card = createCardElement(viewConfig.cards[0]);
-        card.hass = this.hass;
-        (card as LovelaceCard).isPanel = true;
-        view.append(card);
+        view = document.createElement("hui-panel-view");
+        view.config = viewConfig;
       } else {
         view = document.createElement("hui-view");
         view.lovelace = this.lovelace;
