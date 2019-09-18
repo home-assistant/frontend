@@ -41,10 +41,10 @@ class HaConfigDevices extends HassRouterPage {
     },
   };
 
-  @property() private _configEntries?: ConfigEntry[];
-  @property() private _entityRegistryEntries?: EntityRegistryEntry[];
-  @property() private _deviceRegistryEntries?: DeviceRegistryEntry[];
-  @property() private _areas?: AreaRegistryEntry[];
+  @property() private _configEntries: ConfigEntry[] = [];
+  @property() private _entityRegistryEntries: EntityRegistryEntry[] = [];
+  @property() private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
+  @property() private _areas: AreaRegistryEntry[] = [];
 
   private _unsubs?: UnsubscribeFunc[];
 
