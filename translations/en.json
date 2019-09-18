@@ -681,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "Integrations",
-                    "description": "Manage connected devices and services",
+                    "description": "Manage and setup integrations",
                     "discovered": "Discovered",
                     "configured": "Configured",
                     "new": "Set up a new integration",
@@ -805,6 +805,10 @@
                             "confirm_stop": "Are you sure you want to stop Home Assistant?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Devices",
+                    "description": "Manage connected devices"
                 }
             },
             "profile": {
