@@ -681,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "통합 구성요소",
-                    "description": "연결된 기기 및 서비스를 관리합니다",
+                    "description": "통합 구성요소를 관리하고 설정합니다",
                     "discovered": "발견된 구성요소",
                     "configured": "설정된 구성요소",
                     "new": "새로운 통합 구성요소 설정",
@@ -805,6 +805,10 @@
                             "confirm_stop": "Home Assistant 를 중지 하시겠습니까?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "기기",
+                    "description": "연결된 기기 관리"
                 }
             },
             "profile": {
