@@ -1,4 +1,5 @@
 import "@polymer/app-route/app-route";
+import { property, customElement, PropertyValues } from "lit-element";
 
 import "./ha-config-entries-dashboard";
 import "./config-entry/ha-config-entry-page";
@@ -11,7 +12,6 @@ import {
   HassRouterPage,
   RouterOptions,
 } from "../../../layouts/hass-router-page";
-import { property, customElement, PropertyValues } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { ConfigEntry, getConfigEntries } from "../../../data/config_entries";
 import {
@@ -42,7 +42,6 @@ class HaConfigIntegrations extends HassRouterPage {
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
-    preloadAll: true,
     routes: {
       dashboard: {
         tag: "ha-config-entries-dashboard",
@@ -53,11 +52,11 @@ class HaConfigIntegrations extends HassRouterPage {
     },
   };
 
-  @property() private _configEntries?: ConfigEntry[];
-  @property() private _configEntriesInProgress?: DataEntryFlowProgress[];
-  @property() private _entityRegistryEntries?: EntityRegistryEntry[];
-  @property() private _deviceRegistryEntries?: DeviceRegistryEntry[];
-  @property() private _areas?: AreaRegistryEntry[];
+  @property() private _configEntries: ConfigEntry[] = [];
+  @property() private _configEntriesInProgress: DataEntryFlowProgress[] = [];
+  @property() private _entityRegistryEntries: EntityRegistryEntry[] = [];
+  @property() private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
+  @property() private _areas: AreaRegistryEntry[] = [];
 
   private _unsubs?: UnsubscribeFunc[];
 
@@ -98,15 +97,14 @@ class HaConfigIntegrations extends HassRouterPage {
   protected updatePageEl(pageEl) {
     pageEl.hass = this.hass;
 
+    pageEl.entityRegistryEntries = this._entityRegistryEntries;
+    pageEl.configEntries = this._configEntries;
+
     if (this._currentPage === "dashboard") {
-      pageEl.entities = this._entityRegistryEntries;
-      pageEl.entries = this._configEntries;
-      pageEl.progress = this._configEntriesInProgress;
+      pageEl.configEntriesInProgress = this._configEntriesInProgress;
       return;
     }
 
-    pageEl.entityRegistryEntries = this._entityRegistryEntries;
-    pageEl.configEntries = this._configEntries;
     pageEl.configEntryId = this.routeTail.path.substr(1);
     pageEl.deviceRegistryEntries = this._deviceRegistryEntries;
     pageEl.areas = this._areas;

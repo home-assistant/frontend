@@ -681,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "Integracions",
-                    "description": "Gestiona dispositius i serveis connectats",
+                    "description": "Gestiona i configura la integració",
                     "discovered": "Descobertes",
                     "configured": "Configurades",
                     "new": "Configura una nova integració",
@@ -805,6 +805,10 @@
                             "confirm_stop": "Segur que vols aturar Home Assistant?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Dispositius",
+                    "description": "Gestiona els dispositius connectats"
                 }
             },
             "profile": {

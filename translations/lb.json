@@ -805,6 +805,10 @@
                             "confirm_stop": "Sécher fir Home Assistant ze stoppen?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Apparater",
+                    "description": "Verwalt verbonnen Apparater"
                 }
             },
             "profile": {
