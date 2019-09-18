@@ -9,6 +9,7 @@ import {
 } from "lit-element";
 import { LovelaceConfig } from "../../../../src/data/lovelace";
 import "../../../../src/panels/lovelace/views/hui-view";
+import "../../../../src/panels/lovelace/views/hui-panel-view";
 import { HomeAssistant } from "../../../../src/types";
 import { Lovelace } from "../../../../src/panels/lovelace/types";
 import "./hc-launch-screen";
@@ -40,14 +41,21 @@ class HcLovelace extends LitElement {
       saveConfig: async () => undefined,
       setEditMode: () => undefined,
     };
-    return html`
-      <hui-view
-        .hass=${this.hass}
-        .lovelace=${lovelace}
-        .index=${index}
-        columns="2"
-      ></hui-view>
-    `;
+    return this.lovelaceConfig.views[index].panel
+      ? html`
+          <hui-panel-view
+            .hass=${this.hass}
+            .config=${this.lovelaceConfig.views[index]}
+          ></hui-panel-view>
+        `
+      : html`
+          <hui-view
+            .hass=${this.hass}
+            .lovelace=${lovelace}
+            .index=${index}
+            columns="2"
+          ></hui-view>
+        `;
   }
 
   protected updated(changedProps) {
