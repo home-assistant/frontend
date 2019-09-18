@@ -34,6 +34,7 @@ class HaConfigDevices extends HassRouterPage {
     routes: {
       dashboard: {
         tag: "ha-config-devices-dashboard",
+        cache: true,
       },
       device: {
         tag: "ha-config-device-page",
