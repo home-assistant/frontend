@@ -28,18 +28,20 @@ export class HUIPanelView extends UpdatingElement {
     const hass = this.hass!;
     const hassChanged = changedProperties.has("hass");
     const oldHass = changedProperties.get("hass") as this["hass"] | undefined;
+    const configChanged = changedProperties.has("config");
 
-    if (changedProperties.has("config")) {
+    if (configChanged) {
       this._createCard();
     } else if (hassChanged) {
       (this.lastChild! as LovelaceCard).hass = this.hass;
     }
 
     if (
-      hassChanged &&
-      oldHass &&
-      (hass.themes !== oldHass.themes ||
-        hass.selectedTheme !== oldHass.selectedTheme)
+      configChanged ||
+      (hassChanged &&
+        oldHass &&
+        (hass.themes !== oldHass.themes ||
+          hass.selectedTheme !== oldHass.selectedTheme))
     ) {
       applyThemesOnElement(this, hass.themes, this.config!.theme);
     }
