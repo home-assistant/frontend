@@ -1,16 +1,9 @@
 import {
-  html,
-  css,
-  CSSResult,
-  LitElement,
   property,
-  query,
   PropertyValues,
-  TemplateResult,
   customElement,
+  UpdatingElement,
 } from "lit-element";
-
-import { classMap } from "lit-html/directives/class-map";
 
 import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
 
@@ -20,21 +13,13 @@ import { createCardElement } from "./common/create-card-element";
 import { LovelaceViewConfig } from "../../data/lovelace";
 
 @customElement("hui-panel-view")
-export class HUIPanelView extends LitElement {
+export class HUIPanelView extends UpdatingElement {
   @property() public hass?: HomeAssistant;
   @property() public config?: LovelaceViewConfig;
-  @property() public tabsHidden = false;
-  @query("#panel") private _panel;
 
-  protected render(): TemplateResult | void {
-    return html`
-      <div
-        id="panel"
-        class="${classMap({
-          "tabs-hidden": this.tabsHidden,
-        })}"
-      ></div>
-    `;
+  protected firstUpdated(changedProperties: PropertyValues): void {
+    super.firstUpdated(changedProperties);
+    this.style.setProperty("background", "var(--lovelace-background)");
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -47,7 +32,7 @@ export class HUIPanelView extends LitElement {
     if (changedProperties.has("config")) {
       this._createCard();
     } else if (hassChanged) {
-      this._panel.lastChild.hass = this.hass;
+      (this.lastChild! as LovelaceCard).hass = this.hass;
     }
 
     if (
@@ -61,33 +46,14 @@ export class HUIPanelView extends LitElement {
   }
 
   private _createCard(): void {
-    const panel = this._panel;
-
-    if (panel.lastChild) {
-      panel.removeChild(panel.lastChild);
+    if (this.lastChild) {
+      this.removeChild(this.lastChild);
     }
 
     const card: LovelaceCard = createCardElement(this.config!.cards![0]);
     card.hass = this.hass;
     card.isPanel = true;
-    panel.append(card);
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      #panel {
-        background: var(--lovelace-background);
-        min-height: calc(100vh - 112px);
-        display: flex;
-      }
-      #panel.tabs-hidden {
-        min-height: calc(100vh - 64px);
-      }
-      #panel > * {
-        flex: 1;
-        width: 100%;
-      }
-    `;
+    this.append(card);
   }
 }
 

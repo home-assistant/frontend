@@ -621,7 +621,6 @@ class HUIRoot extends LitElement {
     } else {
       if (viewConfig.panel && viewConfig.cards && viewConfig.cards.length > 0) {
         view = document.createElement("hui-panel-view");
-        view.tabsHidden = this.lovelace!.config.views.length < 2;
         view.config = viewConfig;
       } else {
         view = document.createElement("hui-view");
