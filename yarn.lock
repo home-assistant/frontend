@@ -699,10 +699,10 @@
   dependencies:
     "@material/feature-targeting" "^3.1.0"
 
-"@mdi/svg@4.3.95":
-  version "4.3.95"
-  resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-4.3.95.tgz#f2121132baab9e8953ee7ef71834cbe2f03065bb"
-  integrity sha512-RRda3q+270vhiL0Nt7oyeGX03zndEzkGJQJSz8dny1Yjwx2iVRUz51Xop6PTBPaEH4csa3sRkFY3q2PeIa2fKg==
+"@mdi/svg@4.4.95":
+  version "4.4.95"
+  resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-4.4.95.tgz#0af47ecd777deb75bd2e1514afa52cfbd81ac262"
+  integrity sha512-ttQWCXZE8tAvqzFh4vijuuBJNbF2VsGB61rny5MAytWorqf0LKd3XyCrFxODi3uo/BH3Skb+7iXYav3E/9+sIw==
 
 "@polymer/app-layout@^3.0.2":
   version "3.0.2"
