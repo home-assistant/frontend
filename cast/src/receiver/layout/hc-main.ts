@@ -224,7 +224,7 @@ export class HcMain extends HassElement {
       case 4:
         return "Missing hassUrl. This is required.";
       case 5:
-        return "You can't fetch tokens from a Home Assistant instance via a non secure context (http) on a secure context (https).";
+        return "Home Assistant needs to be served over https:// to use with Home Assistant Cast.";
       default:
         return "Unknown Error";
     }
