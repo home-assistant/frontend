@@ -34,6 +34,7 @@ class HaConfigDevices extends HassRouterPage {
     routes: {
       dashboard: {
         tag: "ha-config-devices-dashboard",
+        cache: true,
       },
       device: {
         tag: "ha-config-device-page",
@@ -41,10 +42,10 @@ class HaConfigDevices extends HassRouterPage {
     },
   };
 
-  @property() private _configEntries?: ConfigEntry[];
-  @property() private _entityRegistryEntries?: EntityRegistryEntry[];
-  @property() private _deviceRegistryEntries?: DeviceRegistryEntry[];
-  @property() private _areas?: AreaRegistryEntry[];
+  @property() private _configEntries: ConfigEntry[] = [];
+  @property() private _entityRegistryEntries: EntityRegistryEntry[] = [];
+  @property() private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
+  @property() private _areas: AreaRegistryEntry[] = [];
 
   private _unsubs?: UnsubscribeFunc[];
 

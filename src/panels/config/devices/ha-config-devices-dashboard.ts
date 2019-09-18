@@ -35,12 +35,18 @@ import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { navigate } from "../../../common/navigate";
+import { LocalizeFunc } from "../../../common/translations/localize";
+import computeStateName from "../../../common/entity/compute_state_name";
 
 interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
   area?: string;
   integration?: string;
   battery_entity?: string;
+}
+
+interface DeviceEntityLookup {
+  [deviceId: string]: EntityRegistryEntry[];
 }
 
 @customElement("ha-config-devices-dashboard")
@@ -59,37 +65,73 @@ export class HaConfigDeviceDashboard extends LitElement {
       entries: ConfigEntry[],
       entities: EntityRegistryEntry[],
       areas: AreaRegistryEntry[],
-      domain: string
+      domain: string,
+      localize: LocalizeFunc
     ) => {
+      // Some older installations might have devices pointing at invalid entryIDs
+      // So we guard for that.
+
       let outputDevices: DeviceRowData[] = devices;
+
+      const deviceLookup: { [deviceId: string]: DeviceRegistryEntry } = {};
+      for (const device of devices) {
+        deviceLookup[device.id] = device;
+      }
+
+      const deviceEntityLookup: DeviceEntityLookup = {};
+      for (const entity of entities) {
+        if (!entity.device_id) {
+          continue;
+        }
+        if (!(entity.device_id in deviceEntityLookup)) {
+          deviceEntityLookup[entity.device_id] = [];
+        }
+        deviceEntityLookup[entity.device_id].push(entity);
+      }
+
+      const entryLookup: { [entryId: string]: ConfigEntry } = {};
+      for (const entry of entries) {
+        entryLookup[entry.entry_id] = entry;
+      }
+
+      const areaLookup: { [areaId: string]: AreaRegistryEntry } = {};
+      for (const area of areas) {
+        areaLookup[area.area_id] = area;
+      }
+
       if (domain) {
-        outputDevices = outputDevices.filter(
-          (device) =>
-            entries.find((entry) =>
-              device.config_entries.includes(entry.entry_id)
-            )!.domain === domain
+        outputDevices = outputDevices.filter((device) =>
+          device.config_entries.find(
+            (entryId) =>
+              entryId in entryLookup && entryLookup[entryId].domain === domain
+          )
         );
       }
 
       outputDevices = outputDevices.map((device) => {
-        const output = { ...device };
-        output.name = device.name_by_user || device.name || "No name";
-
-        output.area =
-          !areas || !device || !device.area_id
-            ? "No area"
-            : areas.find((area) => area.area_id === device.area_id)!.name;
-
-        output.integration =
-          !entries || !device || !device.config_entries
-            ? "No integration"
-            : entries.find((entry) =>
-                device.config_entries.includes(entry.entry_id)
-              )!.domain;
-
-        output.battery_entity = this._batteryEntity(device, entities);
-
-        return output;
+        return {
+          ...device,
+          name:
+            device.name_by_user ||
+            device.name ||
+            this._fallbackDeviceName(device.id, deviceEntityLookup) ||
+            "No name",
+          model: device.model || "<unknown>",
+          manufacturer: device.manufacturer || "<unknown>",
+          area: device.area_id ? areaLookup[device.area_id].name : "No area",
+          integration: device.config_entries.length
+            ? device.config_entries
+                .filter((entId) => entId in entryLookup)
+                .map(
+                  (entId) =>
+                    localize(
+                      `component.${entryLookup[entId].domain}.config.title`
+                    ) || entryLookup[entId].domain
+                )
+                .join(", ")
+            : "No integration",
+          battery_entity: this._batteryEntity(device.id, deviceEntityLookup),
+        };
       });
 
       return outputDevices;
@@ -171,7 +213,7 @@ export class HaConfigDeviceDashboard extends LitElement {
                       ></ha-state-icon>
                     `
                   : html`
-                      n/a
+                      -
                     `;
               },
             },
@@ -190,7 +232,8 @@ export class HaConfigDeviceDashboard extends LitElement {
             this.entries,
             this.entities,
             this.areas,
-            this.domain
+            this.domain,
+            this.hass.localize
           ).map((device: DeviceRowData) => {
             // We don't need a lot of this data for mobile view, but kept it for filtering...
             const data: DataTabelRowData = {
@@ -214,15 +257,31 @@ export class HaConfigDeviceDashboard extends LitElement {
     `;
   }
 
-  private _batteryEntity(device, entities): string | undefined {
-    const batteryEntity = entities.find(
+  private _batteryEntity(
+    deviceId: string,
+    deviceEntityLookup: DeviceEntityLookup
+  ): string | undefined {
+    const batteryEntity = (deviceEntityLookup[deviceId] || []).find(
       (entity) =>
-        entity.device_id === device.id &&
         this.hass.states[entity.entity_id] &&
         this.hass.states[entity.entity_id].attributes.device_class === "battery"
     );
 
     return batteryEntity ? batteryEntity.entity_id : undefined;
+  }
+
+  private _fallbackDeviceName(
+    deviceId: string,
+    deviceEntityLookup: DeviceEntityLookup
+  ): string | undefined {
+    for (const entity of deviceEntityLookup[deviceId] || []) {
+      const stateObj = this.hass.states[entity.entity_id];
+      if (stateObj) {
+        return computeStateName(stateObj);
+      }
+    }
+
+    return undefined;
   }
 
   private _handleRowClicked(ev: CustomEvent) {

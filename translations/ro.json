@@ -544,6 +544,9 @@
                                     "label": "Zone",
                                     "entity": "Entitate cu localizare",
                                     "zone": "Zone"
+                                },
+                                "device": {
+                                    "label": "Dispozitiv"
                                 }
                             },
                             "learn_more": "Aflați mai multe despre condiții"
@@ -578,6 +581,9 @@
                                     "label": "Eveniment declansare",
                                     "event": "Eveniment",
                                     "service_data": "Date serviciu"
+                                },
+                                "device_id": {
+                                    "label": "Dispozitiv"
                                 }
                             },
                             "learn_more": "Aflați mai multe despre acțiuni"
@@ -626,6 +632,8 @@
                         "header": "Valoare nod"
                     },
                     "node_config": {
+                        "true": "Adevărat",
+                        "false": "Fals",
                         "set_config_parameter": "Setați parametrul de configurare"
                     }
                 },
@@ -738,7 +746,9 @@
                         "unavailable": "Această entitate nu este disponibilă momentan.",
                         "default_name": "Zonă nouă",
                         "delete": "ȘTERGE",
-                        "update": "ACTUALIZAȚI"
+                        "update": "ACTUALIZAȚI",
+                        "enabled_label": "Activează entitatea",
+                        "enabled_description": "Entitățile dezactivate nu vof fi adăugate in Home Assistant"
                     }
                 },
                 "person": {
@@ -749,6 +759,26 @@
                         "device_tracker_intro": "Selectați dispozitivele care aparțin acestei persoane.",
                         "device_tracker_picked": "Urmăriți dispozitivul",
                         "device_tracker_pick": "Alegeți dispozitivul pentru a urmări"
+                    }
+                },
+                "server_control": {
+                    "caption": "Control server",
+                    "description": "Repornește si oprește serverul Home Assistant",
+                    "section": {
+                        "validation": {
+                            "heading": "Validare configurație",
+                            "introduction": "Validați configurația dvs. dacă ați făcut recent unele modificări și doriți să vă asigurați că aceasta este validă",
+                            "check_config": "Verificați configurația",
+                            "valid": "Configurația este validă!",
+                            "invalid": "Configurația este invalidă"
+                        },
+                        "reloading": {
+                            "heading": "Reîncărcarea configurației",
+                            "core": "Reîncărcați nucleul",
+                            "group": "Reîncărcați grupurile",
+                            "automation": "Reîncarcă automatizările",
+                            "script": "Reîncărcați script-uri"
+                        }
                     }
                 }
             },
@@ -1090,7 +1120,7 @@
             "week": "{count}{count, plural,\n  one { săptămână }\n  other { săptămâni }\n}",
             "second": "{count} {count, plural,\none {secunda}\nother {secunde}\n}",
             "minute": "{count} {count, plural,\n  one { minut }\n  other { minute }\n}",
-            "hour": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}"
+            "hour": "{count}{count, plural,\n  one { ora }\n  other { ore }\n}"
         },
         "login-form": {
             "password": "Parola",
@@ -1159,7 +1189,8 @@
             "fan": {
                 "speed": "Viteză",
                 "oscillate": "Oscilare",
-                "direction": "Direcţie"
+                "direction": "Direcţie",
+                "forward": "Înainte"
             },
             "light": {
                 "brightness": "Luminozitate",
@@ -1204,6 +1235,11 @@
                 "target_temperature": "Temperatura țintă",
                 "operation": "Operație",
                 "away_mode": "Plecat"
+            },
+            "timer": {
+                "actions": {
+                    "finish": "Termina"
+                }
             }
         },
         "components": {
@@ -1222,7 +1258,7 @@
                 "duration": {
                     "second": "{count} {count, plural,\none {secunda}\nother {secunde}\n}",
                     "minute": "{count} {count, plural,\n  one { minut }\n  other { minute }\n}",
-                    "hour": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}",
+                    "hour": "{count}{count, plural,\n  one { ora }\n  other { ore }\n}",
                     "day": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}",
                     "week": "{count}{count, plural,\n  one { săptămână }\n  other { săptămâni }\n}"
                 }
@@ -1256,6 +1292,31 @@
                 },
                 "updater": {
                     "title": "Actualizați instrucțiunile"
+                }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Opțiuni"
+                },
+                "success": {
+                    "description": "Opțiunile salvate cu succes."
+                }
+            },
+            "config_entry_system_options": {
+                "title": "Setări de sistem",
+                "enable_new_entities_label": "Activează entitățile nou adăugate"
+            },
+            "zha_device_info": {
+                "manuf": "de {producator}",
+                "no_area": "Nici o zonă",
+                "services": {
+                    "updateDeviceName": "Setați un nume personalizat pentru acest dispozitiv în registrul de dispozitive.",
+                    "remove": "Eliminați un dispozitiv din rețeaua ZigBee."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Nume dat de utilizator",
+                    "area_picker_label": "Zonă",
+                    "update_name_button": "Actualizați numele"
                 }
             }
         },
@@ -1352,5 +1413,10 @@
         "system-admin": "Administratori",
         "system-users": "Utilizatori",
         "system-read-only": "Utilizatori cu drepturi de citire"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Utilizator"
+        }
     }
 }
