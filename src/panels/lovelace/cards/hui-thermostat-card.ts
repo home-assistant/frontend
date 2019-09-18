@@ -93,8 +93,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       <ha-card
         class="${classMap({
           [mode]: true,
-          large: this.clientWidth > 390,
-          small: !(this.clientWidth > 390),
+          large: this.clientWidth > 450,
+          medium: this.clientWidth <= 450 && this.clientWidth >= 350,
+          small: this.clientWidth < 350,
         })}"
       >
         <div id="root">
@@ -107,19 +108,15 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             ${stateObj.state === "unavailable"
               ? html`
                   <round-slider
-                    value=${null}
-                    .radius=${this.clientWidth / 4.2}
-                    .min=${stateObj.attributes.min_temp}
-                    .max=${stateObj.attributes.max_temp}
-                    @value-changing=${this._dragEvent}
-                    @value-changed=${this._setTemperature}
+                    .radius=${this.clientWidth / 3.9}
+                    disabled="true"
                   ></round-slider>
                 `
               : stateObj.attributes.target_temp_low &&
                 stateObj.attributes.target_temp_high
               ? html`
                   <round-slider
-                    .radius=${this.clientWidth / 4.2}
+                    .radius=${this.clientWidth / 3.9}
                     .low=${stateObj.attributes.target_temp_low}
                     .high=${stateObj.attributes.target_temp_high}
                     .min=${stateObj.attributes.min_temp}
@@ -127,21 +124,22 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                     .step=${this._stepSize}
                     @value-changing=${this._dragEvent}
                     @value-changed=${this._setTemperature}
+                    handleSize="10"
                   ></round-slider>
                 `
               : html`
                   <round-slider
-                    .radius=${this.clientWidth / 4.2}
-                    .value=${Number.isFinite(
-                      Number(stateObj.attributes.temperature)
-                    )
+                    .radius=${this.clientWidth / 3.9}
+                    .value=${stateObj.attributes.temperature !== null &&
+                    Number.isFinite(Number(stateObj.attributes.temperature))
                       ? stateObj.attributes.temperature
-                      : null}
+                      : stateObj.attributes.min_temp}
                     .step=${this._stepSize}
                     .min=${stateObj.attributes.min_temp}
                     .max=${stateObj.attributes.max_temp}
                     @value-changing=${this._dragEvent}
                     @value-changed=${this._setTemperature}
+                    handleSize="10"
                   ></round-slider>
                 `}
           </div>
@@ -285,7 +283,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     } else {
       this.hass!.callService("climate", "set_temperature", {
         entity_id: this._config!.entity,
-        temperature: e.value,
+        temperature: e.detail.value,
       });
     }
   }
@@ -392,10 +390,10 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       }
       .large {
         --thermostat-padding-top: 25px;
-        --thermostat-margin-bottom: 25px;
+        --thermostat-margin-bottom: 32px;
         --title-font-size: 28px;
         --title-position-top: 27%;
-        --climate-info-position-top: 81%;
+        --climate-info-position-top: 83%;
         --set-temperature-font-size: 25px;
         --current-temperature-font-size: 71px;
         --current-temperature-position-top: 10%;
@@ -403,6 +401,25 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         --uom-font-size: 20px;
         --uom-margin-left: -18px;
         --current-mode-font-size: 18px;
+        --current-mod-margin-top: 6px;
+        --current-mod-margin-bottom: 6px;
+        --set-temperature-margin-bottom: -5px;
+      }
+      .medium {
+        --thermostat-padding-top: 20px;
+        --thermostat-margin-bottom: 20px;
+        --title-font-size: 23px;
+        --title-position-top: 27%;
+        --climate-info-position-top: 84%;
+        --set-temperature-font-size: 20px;
+        --current-temperature-font-size: 65px;
+        --current-temperature-position-top: 10%;
+        --current-temperature-text-padding-left: 15px;
+        --uom-font-size: 18px;
+        --uom-margin-left: -16px;
+        --current-mode-font-size: 16px;
+        --current-mod-margin-top: 4px;
+        --current-mod-margin-bottom: 4px;
         --set-temperature-margin-bottom: -5px;
       }
       .small {
@@ -410,14 +427,16 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         --thermostat-margin-bottom: 15px;
         --title-font-size: 18px;
         --title-position-top: 28%;
-        --climate-info-position-top: 79%;
+        --climate-info-position-top: 78%;
         --set-temperature-font-size: 16px;
-        --current-temperature-font-size: 25px;
+        --current-temperature-font-size: 55px;
         --current-temperature-position-top: 5%;
-        --current-temperature-text-padding-left: 7px;
-        --uom-font-size: 12px;
-        --uom-margin-left: -5px;
+        --current-temperature-text-padding-left: 16px;
+        --uom-font-size: 16px;
+        --uom-margin-left: -14px;
         --current-mode-font-size: 14px;
+        --current-mod-margin-top: 2px;
+        --current-mod-margin-bottom: 4px;
         --set-temperature-margin-bottom: 0px;
       }
       #thermostat {
@@ -469,9 +488,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       .current-mode {
         font-size: var(--current-mode-font-size);
         color: var(--secondary-text-color);
-      }
-      .modes {
-        margin-top: 16px;
+        margin-top: var(--current-mod-margin-top);
+        margin-bottom: var(--current-mod-mbarin-bottom);
       }
       .modes ha-icon {
         color: var(--disabled-text-color);
