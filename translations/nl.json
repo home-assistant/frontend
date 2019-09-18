@@ -681,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "Integraties",
-                    "description": "Beheer verbonden apparaten en services",
+                    "description": "Beheer en installeer integraties",
                     "discovered": "Ontdekt",
                     "configured": "Geconfigureerd",
                     "new": "Stel een nieuwe integratie in",
@@ -805,6 +805,10 @@
                             "confirm_stop": "Weet je zeker dat je Home Assistant wilt afsluiten?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Apparaten",
+                    "description": "Beheer verbonden apparaten"
                 }
             },
             "profile": {

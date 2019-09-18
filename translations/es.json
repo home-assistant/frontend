@@ -805,6 +805,10 @@
                             "confirm_stop": "¿Seguro que quieres detener Home Assistant?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Dispositivos",
+                    "description": "Administrar dispositivos conectados"
                 }
             },
             "profile": {
