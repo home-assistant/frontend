@@ -36,6 +36,7 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
         app-toolbar mwc-button {
           font-size: 0.8em;
           margin: 0;
+          --mdc-theme-primary: var(--more-info-header-color);
         }
 
         .form {
