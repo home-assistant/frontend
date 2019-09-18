@@ -115,10 +115,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       attributes: {
         friendly_name: "Abode Updates",
         icon: "hademo:security",
-        templates: {
-          icon_color:
-            "if (state === 'on') return 'rgb(251, 210, 41)'; return 'rgb(54, 95, 140)';\n",
-        },
       },
     },
     "input_boolean.tv": {
@@ -127,10 +123,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       attributes: {
         friendly_name: "TV",
         icon: "hademo:television",
-        templates: {
-          icon_color:
-            "if (state === 'on') return 'rgb(251, 210, 41)'; return 'rgb(54, 95, 140)';\n",
-        },
       },
     },
     "input_boolean.homeautomation": {
@@ -139,10 +131,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       attributes: {
         friendly_name: "Home Automation",
         icon: "hass:home-automation",
-        templates: {
-          icon_color:
-            "if (state === 'on') return 'rgb(251, 210, 41)'; return 'rgb(54, 95, 140)';\n",
-        },
       },
     },
     "input_boolean.tvtime": {
@@ -151,12 +139,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       attributes: {
         friendly_name: "TV Time",
         icon: "hademo:television-guide",
-        templates: {
-          icon:
-            "if (state === 'on') return 'hademo:television-classic'; return 'hademo:television-classic-off';\n",
-          icon_color:
-            "if (state === 'on') return 'rgb(251, 210, 41)'; return 'rgb(54, 95, 140)';\n",
-        },
       },
     },
     "input_select.livingroomharmony": {
@@ -560,12 +542,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       state: "off",
       attributes: {
         friendly_name: "Driveway Light",
-        templates: {
-          icon_color:
-            "if (state === 'on') return 'rgb(251, 210, 41)'; return 'rgb(54, 95, 140)';\n",
-          icon:
-            "if (state === 'on') return 'hademo:lightbulb-on'; return 'hademo:lightbulb';\n",
-        },
       },
     },
     "switch.wemoporch": {
@@ -573,12 +549,6 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
       state: "off",
       attributes: {
         friendly_name: "Porch Lights",
-        templates: {
-          icon_color:
-            "if (state === 'on') return 'rgb(251, 210, 41)'; return 'rgb(54, 95, 140)';\n",
-          icon:
-            "if (state === 'on') return 'hademo:lightbulb-on'; return 'hademo:lightbulb';\n",
-        },
       },
     },
   });
