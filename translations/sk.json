@@ -348,7 +348,7 @@
                     "description": "Skontrolujte Váš konfiguračný súbor a ovládajte server",
                     "section": {
                         "core": {
-                            "header": "Konfigurácia a ovládanie servera",
+                            "header": "Všeobecná konfigurácia",
                             "introduction": "Zmena konfigurácie môže byť ťažkým procesom. My vieme. Táto sekcia sa Vám pokúsi zjednodušiť život.",
                             "core_config": {
                                 "edit_requires_storage": "Editor je zablokovaný, pretože konfigurácia je uložená v configuration.yaml",
@@ -540,6 +540,9 @@
                                     "label": "Zóna",
                                     "entity": "Entita s umiestnením",
                                     "zone": "Zóna"
+                                },
+                                "device": {
+                                    "label": "Zariadenie"
                                 }
                             },
                             "learn_more": "Získajte viac informácií o podmienkach"
@@ -574,6 +577,9 @@
                                     "label": "Odpáliť udalosť",
                                     "event": "Udalosť:",
                                     "service_data": "Dáta služby"
+                                },
+                                "device_id": {
+                                    "label": "Zariadenie"
                                 }
                             },
                             "learn_more": "Získajte viac informácií o akciách"
@@ -1006,6 +1012,10 @@
                         "save": "Uložiť",
                         "unsaved_changes": "Neuložené zmeny",
                         "saved": "Uložené"
+                    },
+                    "edit_lovelace": {
+                        "header": "Názov vášho Lovelace UI",
+                        "explanation": "Tento názov sa zobrazuje nad všetkými vašimi zobrazeniami v Lovelace."
                     }
                 },
                 "menu": {
@@ -1248,6 +1258,12 @@
                 },
                 "updater": {
                     "title": "Pokyny pre aktualizáciu"
+                }
+            },
+            "zha_device_info": {
+                "zha_device_card": {
+                    "area_picker_label": "Oblasť",
+                    "update_name_button": "Aktualizovať názov"
                 }
             }
         },
