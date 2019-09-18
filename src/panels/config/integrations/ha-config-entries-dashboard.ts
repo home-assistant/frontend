@@ -37,25 +37,24 @@ import { HomeAssistant } from "../../../types";
 import { ConfigEntry } from "../../../data/config_entries";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
+import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 
 @customElement("ha-config-entries-dashboard")
 export class HaConfigManagerDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @property() public isWide = false;
-
-  @property() private entries = [];
+  @property() private configEntries!: ConfigEntry[];
 
   /**
    * Entity Registry entries.
    */
-  @property() private entities: EntityRegistryEntry[] = [];
+  @property() private entityRegistryEntries!: EntityRegistryEntry[];
 
   /**
    * Current flows that are in progress and have not been started by a user.
    * For example, can be discovered devices that require more config.
    */
-  @property() private progress = [];
+  @property() private configEntriesInProgress!: DataEntryFlowProgress[];
 
   public connectedCallback() {
     super.connectedCallback();
@@ -67,7 +66,7 @@ export class HaConfigManagerDashboard extends LitElement {
       <hass-subpage
         header=${this.hass.localize("ui.panel.config.integrations.caption")}
       >
-        ${this.progress.length
+        ${this.configEntriesInProgress.length
           ? html`
               <ha-config-section>
                 <span slot="header"
@@ -76,7 +75,7 @@ export class HaConfigManagerDashboard extends LitElement {
                   )}</span
                 >
                 <ha-card>
-                  ${this.progress.map(
+                  ${this.configEntriesInProgress.map(
                     (flow) => html`
                       <div class="config-entry-row">
                         <paper-item-body>
@@ -102,8 +101,8 @@ export class HaConfigManagerDashboard extends LitElement {
             )}</span
           >
           <ha-card>
-            ${this.entities.length
-              ? this.entries.map(
+            ${this.entityRegistryEntries.length
+              ? this.configEntries.map(
                   (item: any, idx) => html`
                     <a
                       href="/config/integrations/config_entry/${item.entry_id}"
@@ -155,7 +154,6 @@ export class HaConfigManagerDashboard extends LitElement {
           title=${this.hass.localize("ui.panel.config.integrations.new")}
           @click=${this._createFlow}
           ?rtl=${computeRTL(this.hass!)}
-          ?isWide=${this.isWide}
         ></ha-fab>
       </hass-subpage>
     `;
@@ -175,11 +173,11 @@ export class HaConfigManagerDashboard extends LitElement {
   }
 
   private _getEntities(configEntry: ConfigEntry): HassEntity[] {
-    if (!this.entities) {
+    if (!this.entityRegistryEntries) {
       return [];
     }
     const states: HassEntity[] = [];
-    this.entities.forEach((entity) => {
+    this.entityRegistryEntries.forEach((entity) => {
       if (
         entity.config_entry_id === configEntry.entry_id &&
         entity.entity_id in this.hass.states
@@ -217,20 +215,9 @@ export class HaConfigManagerDashboard extends LitElement {
         z-index: 1;
       }
 
-      ha-fab[is-wide] {
-        bottom: 24px;
-        right: 24px;
-      }
-
       ha-fab[rtl] {
         right: auto;
         left: 16px;
-      }
-
-      ha-fab[rtl][is-wide] {
-        bottom: 24px;
-        right: auto;
-        left: 24px;
       }
     `;
   }
