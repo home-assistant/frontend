@@ -19,6 +19,7 @@ import {
   ActionConfig,
   NavigateActionConfig,
   CallServiceActionConfig,
+  UrlActionConfig,
 } from "../../../data/lovelace";
 
 declare global {
@@ -49,6 +50,11 @@ export class HuiActionEditor extends LitElement {
   get _navigation_path(): string {
     const config = this.config! as NavigateActionConfig;
     return config.navigation_path || "";
+  }
+
+  get _url_path(): string {
+    const config = this.config! as UrlActionConfig;
+    return config.url_path || "";
   }
 
   get _service(): string {
@@ -83,6 +89,16 @@ export class HuiActionEditor extends LitElement {
               label="Navigation Path"
               .value="${this._navigation_path}"
               .configValue="${"navigation_path"}"
+              @value-changed="${this._valueChanged}"
+            ></paper-input>
+          `
+        : ""}
+      ${this._action === "url"
+        ? html`
+            <paper-input
+              label="Url Path"
+              .value="${this._url_path}"
+              .configValue="${"url_path"}"
               @value-changed="${this._valueChanged}"
             ></paper-input>
           `

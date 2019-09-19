@@ -43,6 +43,11 @@ export const handleClick = (
         navigate(node, actionConfig.navigation_path);
       }
       break;
+    case "url":
+      if (actionConfig.url_path) {
+        window.open(actionConfig.url_path);
+      }
+      break;
     case "toggle":
       if (config.entity) {
         toggleEntity(hass, config.entity!);
