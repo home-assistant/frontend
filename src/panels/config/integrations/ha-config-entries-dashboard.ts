@@ -93,7 +93,7 @@ export class HaConfigManagerDashboard extends LitElement {
                         We found this integration, would you like to set it up?
                         <mwc-button
                           @click=${this._continueFlow}
-                          data-id="${flow.flow_id}"
+                          .flowId=${flow.flow_id}
                           >${this.hass.localize(
                             "ui.panel.config.integrations.configure"
                           )}</mwc-button
@@ -167,8 +167,7 @@ export class HaConfigManagerDashboard extends LitElement {
 
   private _continueFlow(ev: Event) {
     showConfigFlowDialog(this, {
-      continueFlowId:
-        (ev.target as HTMLElement).getAttribute("data-id") || undefined,
+      continueFlowId: ev.target.flowId,
       dialogClosedCallback: () => fireEvent(this, "hass-reload-entries"),
     });
   }
