@@ -11,6 +11,7 @@ import LocalizeMixin from "../../mixins/localize-mixin";
 import computeStateName from "../../common/entity/compute_state_name";
 import computeDomain from "../../common/entity/compute_domain";
 import { updateEntityRegistryEntry } from "../../data/entity_registry";
+import { showSaveSuccessToast } from "../../util/toast-saved-success";
 
 import "../../components/ha-paper-icon-button-arrow-prev";
 /*
@@ -122,6 +123,8 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
           new_entity_id: this._entityId,
         }
       );
+
+      showSaveSuccessToast(this, this.hass);
 
       this.registryInfo = info;
 
