@@ -251,7 +251,8 @@
             "snowy-rainy": "Lapoviță și ninsoare",
             "sunny": "însorit",
             "windy": "Vant",
-            "windy-variant": "Vant"
+            "windy-variant": "Vant",
+            "exceptional": "Excepţional"
         },
         "vacuum": {
             "cleaning": "Curățare",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Info"
+                    },
+                    "logs": {
+                        "title": "Jurnale"
                     }
                 }
             },
@@ -498,6 +502,9 @@
                                     "event": "Eveniment:",
                                     "enter": "Intră",
                                     "leave": "Ieși"
+                                },
+                                "device": {
+                                    "label": "Dispozitiv"
                                 }
                             },
                             "learn_more": "Aflați mai multe despre triggeri"
@@ -632,6 +639,7 @@
                         "header": "Valoare nod"
                     },
                     "node_config": {
+                        "seconds": "Secunde",
                         "true": "Adevărat",
                         "false": "Fals",
                         "set_config_parameter": "Setați parametrul de configurare"
@@ -748,6 +756,7 @@
                         "delete": "ȘTERGE",
                         "update": "ACTUALIZAȚI",
                         "enabled_label": "Activează entitatea",
+                        "enabled_cause": "Dezactivat de {cause} .",
                         "enabled_description": "Entitățile dezactivate nu vof fi adăugate in Home Assistant"
                     }
                 },
@@ -774,12 +783,24 @@
                         },
                         "reloading": {
                             "heading": "Reîncărcarea configurației",
+                            "introduction": "Unele părți din Home Assistant se pot reîncărca fără a necesita o repornire. Apăsarea reîncărcării va dezactiva configurația actuală și va încărca noua configurație.",
                             "core": "Reîncărcați nucleul",
                             "group": "Reîncărcați grupurile",
                             "automation": "Reîncarcă automatizările",
                             "script": "Reîncărcați script-uri"
+                        },
+                        "server_management": {
+                            "heading": "Managementul serverului",
+                            "restart": "Repornire",
+                            "stop": "Oprire",
+                            "confirm_restart": "Sigur doriți să reporniți Home Assistant?",
+                            "confirm_stop": "Sigur doriți să opriți Home Assistant?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Dispozitive",
+                    "description": "Gestionați dispozitivele conectate"
                 }
             },
             "profile": {
@@ -1044,6 +1065,9 @@
                         "save": "Salvați",
                         "unsaved_changes": "Modificări nesalvate",
                         "saved": "Salvat"
+                    },
+                    "edit_lovelace": {
+                        "header": "Titlul interfeței dvs. Lovelace"
                     }
                 },
                 "menu": {
@@ -1113,7 +1137,8 @@
         "common": {
             "loading": "Se încarcă",
             "cancel": "Revocare",
-            "save": "Salvați"
+            "save": "Salvați",
+            "successfully_saved": "Opțiunile salvate cu succes."
         },
         "duration": {
             "day": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}",
@@ -1238,6 +1263,9 @@
             },
             "timer": {
                 "actions": {
+                    "start": "Începe",
+                    "pause": "Pauză",
+                    "cancel": "Revocare",
                     "finish": "Termina"
                 }
             }
@@ -1416,7 +1444,8 @@
     },
     "config_entry": {
         "disabled_by": {
-            "user": "Utilizator"
+            "user": "Utilizator",
+            "integration": "Integrare"
         }
     }
 }
