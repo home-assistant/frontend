@@ -681,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "Integracije",
-                    "description": "Upravljanje povezanih naprav in storitev",
+                    "description": "Upravljanje in nastavitev integracij",
                     "discovered": "Odkrito",
                     "configured": "Konfigurirano",
                     "new": "Nastavite novo integracijo",
@@ -805,6 +805,10 @@
                             "confirm_stop": "Ali ste prepričani, da želite ustaviti Home Assistant-a?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Naprave",
+                    "description": "Upravljajte povezane naprave"
                 }
             },
             "profile": {
@@ -1004,7 +1008,7 @@
                     "intro": "Pozdravljeni {name}, dobrodošli v Home Assistantu. Kako bi radi poimenovali vaš dom?",
                     "intro_location": "Radi bi vedeli, kje živite. Te informacije vam bodo pomagale pri prikazovanju informacij in postavitvi avtomatizacij, ki temeljijo na soncu. Ti podatki se nikoli ne delijo izven vašega omrežja.",
                     "intro_location_detect": "Lahko vam pomagamo izpolniti te informacije z enkratno zahtevo za zunanjo storitev.",
-                    "location_name_default": "Domov",
+                    "location_name_default": "Dom",
                     "button_detect": "Odkrij",
                     "finish": "Naslednji"
                 }
