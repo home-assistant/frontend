@@ -102,6 +102,7 @@ class HaConfigIntegrations extends HassRouterPage {
 
     if (this._currentPage === "dashboard") {
       pageEl.configEntriesInProgress = this._configEntriesInProgress;
+      pageEl.narrow = this.narrow;
       return;
     }
 
