@@ -19,6 +19,7 @@ import {
   EntitiesEditorEvent,
   EditorTarget,
   actionConfigStruct,
+  entitiesConfigStruct,
 } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
@@ -28,15 +29,6 @@ import { ActionConfig } from "../../../../data/lovelace";
 import { PictureGlanceCardConfig } from "../../cards/types";
 import { EntityConfig } from "../../entity-rows/types";
 import { processEditorEntities } from "../process-editor-entities";
-
-const entitiesConfigStruct = struct.union([
-  {
-    entity: "entity-id",
-    name: "string?",
-    icon: "icon?",
-  },
-  "entity-id",
-]);
 
 const cardConfigStruct = struct({
   type: "string",
@@ -122,31 +114,32 @@ export class HuiPictureGlanceCardEditor extends LitElement
     return html`
       ${configElementStyle}
       <div class="card-config">
-        <ha-entity-picker
-          .hass="${this.hass}"
-          .value="${this._entity}"
-          .configValue=${"entity"}
-          @change="${this._valueChanged}"
-          allow-custom-entity
-        ></ha-entity-picker>
+        <a
+          href="https://www.home-assistant.io/lovelace/picture-glance/"
+          target="_blank"
+          >Documentation</a
+        >
         <paper-input
-          label="Title"
+          label="Title (Optional)"
           .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <paper-input
-          label="Image Url"
+          label="Image Url (Optional)"
           .value="${this._image}"
           .configValue="${"image"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
-        <paper-input
-          label="Camera Image"
+        <ha-entity-picker
+          label="Camera Image (Optional)"
+          .hass="${this.hass}"
           .value="${this._camera_image}"
-          .configValue="${"camera_image"}"
-          @value-changed="${this._valueChanged}"
-        ></paper-input>
+          .configValue=${"camera_image"}
+          @change="${this._valueChanged}"
+          allow-custom-entity
+          domain-filter="camera"
+        ></ha-entity-picker>
         <div class="side-by-side">
           <paper-dropdown-menu
             label="Camera View"
@@ -172,7 +165,15 @@ export class HuiPictureGlanceCardEditor extends LitElement
             @value-changed="${this._valueChanged}"
           ></paper-input>
         </div>
-        <h3>Toggle Editor to input State Image</h3>
+        <ha-entity-picker
+          label="Entity (Optional: only used for actions and state images)"
+          .hass="${this.hass}"
+          .value="${this._entity}"
+          .configValue=${"entity"}
+          @change="${this._valueChanged}"
+          allow-custom-entity
+        ></ha-entity-picker>
+        <h3>Toggle Editor to input State Image options</h3>
         <div class="side-by-side">
           <hui-action-editor
             label="Tap Action"
