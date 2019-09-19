@@ -35,13 +35,13 @@ import { navigate } from "../../common/navigate";
 import { fireEvent } from "../../common/dom/fire_event";
 import { swapView } from "./editor/config-util";
 
-import "./hui-view";
+import "./views/hui-view";
 // Not a duplicate import, this one is for type
 // tslint:disable-next-line
-import { HUIView } from "./hui-view";
-import "./hui-panel-view";
+import { HUIView } from "./views/hui-view";
+import "./views/hui-panel-view";
 // tslint:disable-next-line
-import { HUIPanelView } from "./hui-panel-view";
+import { HUIPanelView } from "./views/hui-panel-view";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { Lovelace } from "./types";

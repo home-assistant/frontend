@@ -8,7 +8,7 @@ import {
   property,
 } from "lit-element";
 import { LovelaceConfig } from "../../../../src/data/lovelace";
-import "../../../../src/panels/lovelace/hui-view";
+import "../../../../src/panels/lovelace/views/hui-view";
 import { HomeAssistant } from "../../../../src/types";
 import { Lovelace } from "../../../../src/panels/lovelace/types";
 import "./hc-launch-screen";
