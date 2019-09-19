@@ -106,24 +106,6 @@ export class HaConfigManagerDashboard extends LitElement {
               )}
             `
           : ""}
-        <ha-card>
-          <div class="card-content">
-            <div class="item-header">
-              <div class="item-icon">
-                <ha-icon icon="hass:link"></ha-icon>
-              </div>
-              <h2 class="item-title">Deconz</h2>
-            </div>
-            <p class="item-description">
-              We found this integration, would you like to set it up?
-            </p>
-            <mwc-button unelevated @click=${this._continueFlow}
-              >${this.hass.localize(
-                "ui.panel.config.integrations.configure"
-              )}</mwc-button
-            >
-          </div>
-        </ha-card>
 
         <h1>
           ${this.hass.localize("ui.panel.config.integrations.configured")}
