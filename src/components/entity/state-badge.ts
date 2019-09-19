@@ -104,6 +104,7 @@ class StateBadge extends LitElement {
         text-align: center;
         background-size: cover;
         line-height: 40px;
+        vertical-align: middle;
       }
 
       ha-icon {
