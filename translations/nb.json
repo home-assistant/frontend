@@ -504,7 +504,7 @@
                                     "leave": "Forlater"
                                 },
                                 "device": {
-                                    "label": "Enheten"
+                                    "label": "Enhet"
                                 }
                             },
                             "learn_more": "Lær mer om utløsere"
@@ -805,6 +805,10 @@
                             "confirm_stop": "Er du sikker på at du vil stoppe Home Assistant?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Enheter",
+                    "description": "Administrer tilkoblede enheter"
                 }
             },
             "profile": {
