@@ -66,11 +66,6 @@ export class HaConfigManagerDashboard extends LitElement {
       <hass-subpage
         header=${this.hass.localize("ui.panel.config.integrations.caption")}
       >
-        <mwc-button @click=${this._continueFlow} data-id="blabla"
-          >${this.hass.localize(
-            "ui.panel.config.integrations.configure"
-          )}</mwc-button
-        >
         ${this.configEntriesInProgress.length
           ? html`
               <ha-config-section>
