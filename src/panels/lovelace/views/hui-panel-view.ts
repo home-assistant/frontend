@@ -22,8 +22,8 @@ export class HUIPanelView extends UpdatingElement {
     this.style.setProperty("background", "var(--lovelace-background)");
   }
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  protected update(changedProperties: PropertyValues): void {
+    super.update(changedProperties);
 
     const hass = this.hass!;
     const hassChanged = changedProperties.has("hass");
