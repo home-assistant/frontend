@@ -66,6 +66,11 @@ export class HaConfigManagerDashboard extends LitElement {
       <hass-subpage
         header=${this.hass.localize("ui.panel.config.integrations.caption")}
       >
+        <mwc-button @click=${this._continueFlow} data-id="blabla"
+          >${this.hass.localize(
+            "ui.panel.config.integrations.configure"
+          )}</mwc-button
+        >
         ${this.configEntriesInProgress.length
           ? html`
               <ha-config-section>
@@ -81,7 +86,9 @@ export class HaConfigManagerDashboard extends LitElement {
                         <paper-item-body>
                           ${localizeConfigFlowTitle(this.hass.localize, flow)}
                         </paper-item-body>
-                        <mwc-button @click=${this._continueFlow}
+                        <mwc-button
+                          @click=${this._continueFlow}
+                          data-id="${flow.flow_id}"
                           >${this.hass.localize(
                             "ui.panel.config.integrations.configure"
                           )}</mwc-button
@@ -165,9 +172,10 @@ export class HaConfigManagerDashboard extends LitElement {
     });
   }
 
-  private _continueFlow(ev) {
+  private _continueFlow(ev: Event) {
     showConfigFlowDialog(this, {
-      continueFlowId: ev.model.item.flow_id,
+      continueFlowId:
+        (ev.target as HTMLElement).getAttribute("data-id") || undefined,
       dialogClosedCallback: () => fireEvent(this, "hass-reload-entries"),
     });
   }
