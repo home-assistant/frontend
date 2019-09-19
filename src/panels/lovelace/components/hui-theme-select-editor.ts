@@ -26,7 +26,7 @@ declare global {
 @customElement("hui-theme-select-editor")
 export class HuiThemeSelectEditor extends LitElement {
   @property() public value?: string;
-
+  @property() public label?: string;
   @property() public hass?: HomeAssistant;
 
   protected render(): TemplateResult | void {
@@ -36,7 +36,7 @@ export class HuiThemeSelectEditor extends LitElement {
 
     return html`
       <paper-dropdown-menu
-        label="Theme"
+        .label=${this.label ? this.label : "Theme"}
         dynamic-align
         @value-changed="${this._changed}"
       >
