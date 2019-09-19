@@ -516,7 +516,7 @@
                             "duplicate": "Duplikuj",
                             "delete": "Usuń",
                             "delete_confirm": "Czy chcesz usunąć?",
-                            "unsupported_condition": "Stan nieobsługiwany: {condition}",
+                            "unsupported_condition": "Nieobsługiwany warunek: {condition}",
                             "type_select": "Typ warunku",
                             "type": {
                                 "state": {
@@ -681,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "Integracje",
-                    "description": "Zarządzaj podłączonymi urządzeniami i usługami",
+                    "description": "Zarządzaj integracjami",
                     "discovered": "Wykryte",
                     "configured": "Skonfigurowane",
                     "new": "Konfiguruj nową integrację",
@@ -805,6 +805,10 @@
                             "confirm_stop": "Czy chcesz zatrzymać Home Assistant?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Urządzenia",
+                    "description": "Zarządzaj podłączonymi urządzeniami"
                 }
             },
             "profile": {

@@ -681,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "整合",
-                    "description": "管理已連線裝置與服務",
+                    "description": "管理已連線裝置與整合",
                     "discovered": "已掃描",
                     "configured": "已設定整合",
                     "new": "設定新整合",
@@ -805,6 +805,10 @@
                             "confirm_stop": "確定要停止 Home Assistant 嗎？"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "裝置",
+                    "description": "管理已連線裝置"
                 }
             },
             "profile": {
