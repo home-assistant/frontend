@@ -440,7 +440,7 @@ export class HaDataTable extends BaseElement {
       }
 
       .mdc-data-table {
-        background-color: var(--card-background-color);
+        background-color: var(--paper-card-background-color);
         border-radius: 4px;
         border-width: 1px;
         border-style: solid;
