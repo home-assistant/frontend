@@ -11,9 +11,8 @@ import { HaDeviceAutomationCard } from "./ha-device-automation-card";
 export class HaDeviceTriggersCard extends HaDeviceAutomationCard<
   DeviceTrigger
 > {
+  protected type = "trigger";
   protected headerKey = "ui.panel.config.devices.automation.triggers.caption";
-  protected noAutomationHeaderKey =
-    "ui.panel.config.devices.automation.triggers.no_triggers";
 
   constructor() {
     super(localizeDeviceAutomationTrigger, fetchDeviceTriggers);

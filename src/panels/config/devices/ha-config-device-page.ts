@@ -104,6 +104,9 @@ export class HaConfigDevicePage extends LitElement {
 
   static get styles(): CSSResult {
     return css`
+      .content {
+        padding: 16px;
+      }
       .content > * {
         display: block;
         margin-bottom: 16px;

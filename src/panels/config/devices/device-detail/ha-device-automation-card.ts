@@ -4,6 +4,7 @@ import { DeviceAutomation } from "../../../../data/device_automation";
 
 import "../../../../components/ha-card";
 import "../../../../components/ha-chips";
+import { showAutomationEditor } from "../../../../data/automation";
 
 export abstract class HaDeviceAutomationCard<
   T extends DeviceAutomation
@@ -12,7 +13,7 @@ export abstract class HaDeviceAutomationCard<
   @property() public deviceId?: string;
 
   protected headerKey = "";
-  protected noAutomationHeaderKey = "";
+  protected type = "";
 
   @property() private _automations: T[] = [];
 
@@ -58,28 +59,34 @@ export abstract class HaDeviceAutomationCard<
   }
 
   protected render(): TemplateResult {
+    if (this._automations.length === 0) {
+      return html``;
+    }
     return html`
       <ha-card>
-        ${this._automations.length === 0
-          ? html`
-              <div class="card-header">
-                ${this.hass.localize(this.noAutomationHeaderKey)}
-              </div>
-            `
-          : html`
-              <div class="card-header">
-                ${this.hass.localize(this.headerKey)}
-              </div>
-              <div class="card-content">
-                <ha-chips
-                  .items=${this._automations.map((automation) =>
-                    this._localizeDeviceAutomation(this.hass, automation)
-                  )}
-                >
-                </ha-chips>
-              </div>
-            `}
+        <div class="card-header">
+          ${this.hass.localize(this.headerKey)}
+        </div>
+        <div class="card-content">
+          <ha-chips
+            @chip-clicked=${this._handleAutomationClicked}
+            .items=${this._automations.map((automation) =>
+              this._localizeDeviceAutomation(this.hass, automation)
+            )}
+          >
+          </ha-chips>
+        </div>
       </ha-card>
     `;
+  }
+
+  private _handleAutomationClicked(ev: CustomEvent) {
+    const automation = this._automations[ev.detail.index];
+    if (!automation) {
+      return;
+    }
+    const data = {};
+    data[this.type] = [automation];
+    showAutomationEditor(this, data);
   }
 }

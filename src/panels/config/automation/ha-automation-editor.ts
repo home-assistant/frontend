@@ -28,6 +28,7 @@ import {
   AutomationEntity,
   AutomationConfig,
   deleteAutomation,
+  getAutomationEditorInitData,
 } from "../../../data/automation";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -36,7 +37,11 @@ function AutomationEditor(mountEl, props, mergeEl) {
   return render(h(Automation, props), mountEl, mergeEl);
 }
 
-class HaAutomationEditor extends LitElement {
+const defaultTriggers = [{ platform: "state" }];
+const defaultConditions = [];
+const defaultActions = [{ service: "" }];
+
+export class HaAutomationEditor extends LitElement {
   public hass!: HomeAssistant;
   public automation!: AutomationEntity;
   public isWide?: boolean;
@@ -184,9 +189,10 @@ class HaAutomationEditor extends LitElement {
           "ui.panel.config.automation.editor.default_name"
         ),
         description: "",
-        trigger: [{ platform: "state" }],
-        condition: [],
-        action: [{ service: "" }],
+        trigger: defaultTriggers,
+        condition: defaultConditions,
+        action: defaultActions,
+        ...getAutomationEditorInitData(),
       };
     }
 

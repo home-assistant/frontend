@@ -898,16 +898,13 @@
           "description": "Manage connected devices",
           "automation": {
             "triggers": {
-              "caption": "Do something when...",
-              "no_triggers": "This device does not support triggers."
+              "caption": "Do something when..."
             },
             "conditions": {
-              "caption": "Only do something if...",
-              "no_conditions": "This device does not support conditions."
+              "caption": "Only do something if..."
             },
             "actions": {
-              "caption": "When something is triggered do...",
-              "no_actions": "This device does not support actions."
+              "caption": "When something is triggered..."
             }
           }
         },
