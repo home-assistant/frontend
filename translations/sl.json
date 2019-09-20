@@ -251,7 +251,8 @@
             "snowy-rainy": "Snežno, deževno",
             "sunny": "Sončno",
             "windy": "Vetrovno",
-            "windy-variant": "Vetrovno"
+            "windy-variant": "Vetrovno",
+            "exceptional": "Izjemno"
         },
         "vacuum": {
             "cleaning": "Čistim",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Info"
+                    },
+                    "logs": {
+                        "title": "Dnevniki"
                     }
                 }
             },
@@ -498,6 +502,9 @@
                                     "event": "Dogodek:",
                                     "enter": "Vnesite",
                                     "leave": "Odidi"
+                                },
+                                "device": {
+                                    "label": "Naprava"
                                 }
                             },
                             "learn_more": "Več o sprožilcih"
@@ -544,6 +551,9 @@
                                     "label": "Območje",
                                     "entity": "Entitete z lokacijo",
                                     "zone": "Območje"
+                                },
+                                "device": {
+                                    "label": "Naprava"
                                 }
                             },
                             "learn_more": "Več o pogojih"
@@ -578,6 +588,9 @@
                                     "label": "Požarni dogodek",
                                     "event": "Dogodek:",
                                     "service_data": "Podatki storitve"
+                                },
+                                "device_id": {
+                                    "label": "Naprava"
                                 }
                             },
                             "learn_more": "Več o akcijah"
@@ -668,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "Integracije",
-                    "description": "Upravljanje povezanih naprav in storitev",
+                    "description": "Upravljanje in nastavitev integracij",
                     "discovered": "Odkrito",
                     "configured": "Konfigurirano",
                     "new": "Nastavite novo integracijo",
@@ -787,9 +800,15 @@
                             "heading": "Upravljanje strežnika",
                             "introduction": "Nadzirajte strežnik Home Assistant ... iz Home Assistant-a",
                             "restart": "Ponovni zagon",
-                            "stop": "Ustavi"
+                            "stop": "Ustavi",
+                            "confirm_restart": "Ali ste prepričani, da želite znova zagnati Home Assistant-a?",
+                            "confirm_stop": "Ali ste prepričani, da želite ustaviti Home Assistant-a?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Naprave",
+                    "description": "Upravljajte povezane naprave"
                 }
             },
             "profile": {
@@ -989,7 +1008,7 @@
                     "intro": "Pozdravljeni {name}, dobrodošli v Home Assistantu. Kako bi radi poimenovali vaš dom?",
                     "intro_location": "Radi bi vedeli, kje živite. Te informacije vam bodo pomagale pri prikazovanju informacij in postavitvi avtomatizacij, ki temeljijo na soncu. Ti podatki se nikoli ne delijo izven vašega omrežja.",
                     "intro_location_detect": "Lahko vam pomagamo izpolniti te informacije z enkratno zahtevo za zunanjo storitev.",
-                    "location_name_default": "Domov",
+                    "location_name_default": "Dom",
                     "button_detect": "Odkrij",
                     "finish": "Naslednji"
                 }
@@ -1054,6 +1073,10 @@
                         "save": "Shrani",
                         "unsaved_changes": "Neshranjene spremembe",
                         "saved": "Shranjeno"
+                    },
+                    "edit_lovelace": {
+                        "header": "Naslov vašega uporabniškega vmesnika Lovelace",
+                        "explanation": "Ta naslov je prikazan nad vsemi vašimi pogledi v Lovelace-u."
                     }
                 },
                 "menu": {
@@ -1123,7 +1146,8 @@
         "common": {
             "loading": "Nalaganje",
             "cancel": "Prekliči",
-            "save": "Shrani"
+            "save": "Shrani",
+            "successfully_saved": "Shranjeno"
         },
         "duration": {
             "day": "{count} {count, plural,\none {Dan}\nother {Dni}\n}",
@@ -1199,7 +1223,9 @@
             "fan": {
                 "speed": "Hitrost",
                 "oscillate": "Nihanje",
-                "direction": "Smer"
+                "direction": "Smer",
+                "forward": "Naprej",
+                "reverse": "Obratno"
             },
             "light": {
                 "brightness": "Svetlost",
@@ -1244,6 +1270,14 @@
                 "target_temperature": "Ciljna temperatura",
                 "operation": "Delovanje",
                 "away_mode": "Način odsotnosti"
+            },
+            "timer": {
+                "actions": {
+                    "start": "Zagon",
+                    "pause": "pavza",
+                    "cancel": "Prekliči",
+                    "finish": "Dokončaj"
+                }
             }
         },
         "components": {
@@ -1310,6 +1344,20 @@
                 "title": "Sistemske možnosti",
                 "enable_new_entities_label": "Omogočite novo dodane subjekte.",
                 "enable_new_entities_description": "Če je onemogočeno, novo odkrite entitete ne bodo samodejno dodane v Home Assistant."
+            },
+            "zha_device_info": {
+                "manuf": "naredil: {manufacturer}",
+                "no_area": "Brez območja",
+                "services": {
+                    "reconfigure": "Ponovno konfigurirajte napravo ZHA (\"pozdravite\" napravo). To uporabite, če imate z njo težave. Če ta naprava deluje na baterije, se prepričajte, da je budna in sprejema ukaze pri uporabi te storitve.",
+                    "updateDeviceName": "Nastavite ime po meri za to napravo v registru naprav.",
+                    "remove": "Odstranite napravo iz omrežja ZigBee."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Ime, ki ga je dodelil uporabnik",
+                    "area_picker_label": "Območje",
+                    "update_name_button": "Posodobi ime"
+                }
             }
         },
         "auth_store": {

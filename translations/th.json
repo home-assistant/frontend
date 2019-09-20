@@ -323,6 +323,9 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "ข้อมูล"
                     }
                 }
             },
@@ -589,7 +592,12 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "จัดการเครือข่าย Z-Wave",
+                    "common": {
+                        "value": "ค่า",
+                        "unknown": "ไม่ทราบ"
+                    },
                     "node_config": {
+                        "seconds": "วินาที",
                         "set_config_parameter": "ตั้งค่าพารามิเตอร์การกำหนดค่า"
                     }
                 },
@@ -713,6 +721,23 @@
                         "device_tracker_picked": "ติดตามอุปกรณ์",
                         "device_tracker_pick": "เลือกอุปกรณ์ที่จะติดตาม"
                     }
+                },
+                "server_control": {
+                    "section": {
+                        "validation": {
+                            "check_config": "ตรวจสอบการกำหนดค่า"
+                        },
+                        "reloading": {
+                            "core": "โหลดส่วนกลางใหม่",
+                            "group": "โหลดกลุ่มใหม่",
+                            "script": "โหลดสคริปต์อีกครั้ง"
+                        },
+                        "server_management": {
+                            "heading": "การจัดการเซิร์ฟเวอร์",
+                            "restart": "เริ่มต้นใหม่",
+                            "stop": "หยุด"
+                        }
+                    }
                 }
             },
             "profile": {
@@ -783,6 +808,9 @@
                     "step_done": "ติดตั้งเสร็จแล้วในขั้นตอนที่ {step}",
                     "close": "ปิด",
                     "submit": "ส่งข้อมูล"
+                },
+                "force_narrow": {
+                    "header": "ซ่อนแถบด้านข้างเสมอ"
                 }
             },
             "page-authorize": {
@@ -1241,6 +1269,14 @@
                 "off": "ปิด",
                 "on": "เปิด",
                 "auto": "อัตโนมัติ"
+            },
+            "preset_mode": {
+                "home": "บ้าน",
+                "activity": "กิจกรรม"
+            },
+            "hvac_action": {
+                "off": "ปิด",
+                "idle": "ไม่ได้ใช้งาน"
             }
         }
     },

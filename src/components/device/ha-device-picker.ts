@@ -14,6 +14,8 @@ import {
   property,
 } from "lit-element";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { SubscribeMixin } from "../../mixins/subscribe-mixin";
+
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import {
@@ -23,12 +25,11 @@ import {
 import { compare } from "../../common/string/compare";
 
 @customElement("ha-device-picker")
-class HaDevicePicker extends LitElement {
-  public hass?: HomeAssistant;
+class HaDevicePicker extends SubscribeMixin(LitElement) {
+  @property() public hass?: HomeAssistant;
   @property() public label?: string;
   @property() public value?: string;
   @property() public devices?: DeviceRegistryEntry[];
-  private _unsubDevices?: UnsubscribeFunc;
 
   private _sortedDevices = memoizeOne((devices?: DeviceRegistryEntry[]) => {
     if (!devices || devices.length === 1) {
@@ -39,22 +40,12 @@ class HaDevicePicker extends LitElement {
     return sorted;
   });
 
-  public connectedCallback() {
-    super.connectedCallback();
-    this._unsubDevices = subscribeDeviceRegistry(
-      this.hass!.connection!,
-      (devices) => {
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeDeviceRegistry(this.hass!.connection!, (devices) => {
         this.devices = devices;
-      }
-    );
-  }
-
-  public disconnectedCallback() {
-    super.disconnectedCallback();
-    if (this._unsubDevices) {
-      this._unsubDevices();
-      this._unsubDevices = undefined;
-    }
+      }),
+    ];
   }
 
   protected render(): TemplateResult | void {

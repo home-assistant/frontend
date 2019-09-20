@@ -251,7 +251,8 @@
             "snowy-rainy": "Aiguaneu",
             "sunny": "Assolellat",
             "windy": "Ventós",
-            "windy-variant": "Ventós"
+            "windy-variant": "Ventós",
+            "exceptional": "Excepcional"
         },
         "vacuum": {
             "cleaning": "Netejant",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Informació"
+                    },
+                    "logs": {
+                        "title": "Registres"
                     }
                 }
             },
@@ -450,7 +454,7 @@
                                 "mqtt": {
                                     "label": "MQTT",
                                     "topic": "Topic",
-                                    "payload": "Dades (opcional)"
+                                    "payload": "Dades\/payload (opcional)"
                                 },
                                 "numeric_state": {
                                     "label": "Estat numèric",
@@ -498,6 +502,9 @@
                                     "event": "Esdeveniment:",
                                     "enter": "Entrar",
                                     "leave": "Sortir"
+                                },
+                                "device": {
+                                    "label": "Dispositiu"
                                 }
                             },
                             "learn_more": "Més informació sobre els activadors"
@@ -544,6 +551,9 @@
                                     "label": "Zona",
                                     "entity": "Entitat amb ubicació",
                                     "zone": "Zona"
+                                },
+                                "device": {
+                                    "label": "Dispositiu"
                                 }
                             },
                             "learn_more": "Més informació sobre les condicions"
@@ -578,6 +588,9 @@
                                     "label": "Disparar esdeveniment",
                                     "event": "Esdeveniment:",
                                     "service_data": "Dades de servei"
+                                },
+                                "device_id": {
+                                    "label": "Dispositiu"
                                 }
                             },
                             "learn_more": "Més informació sobre les accions"
@@ -668,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "Integracions",
-                    "description": "Gestiona dispositius i serveis connectats",
+                    "description": "Gestiona i configura la integració",
                     "discovered": "Descobertes",
                     "configured": "Configurades",
                     "new": "Configura una nova integració",
@@ -787,9 +800,15 @@
                             "heading": "Gestió del servidor",
                             "introduction": "Controla el servidor de Home Assistant... des de Home Assistant.",
                             "restart": "Reinicia",
-                            "stop": "Atura"
+                            "stop": "Atura",
+                            "confirm_restart": "Segur que vols reiniciar Home Assistant?",
+                            "confirm_stop": "Segur que vols aturar Home Assistant?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Dispositius",
+                    "description": "Gestiona els dispositius connectats"
                 }
             },
             "profile": {
@@ -1054,6 +1073,10 @@
                         "save": "Desa",
                         "unsaved_changes": "Canvis sense desar",
                         "saved": "Desat"
+                    },
+                    "edit_lovelace": {
+                        "header": "Títol de la interfície d'usuari Lovelace",
+                        "explanation": "Aquest títol es mostra a sobre de cada visualització a Lovelace."
                     }
                 },
                 "menu": {
@@ -1123,7 +1146,8 @@
         "common": {
             "loading": "Carregant",
             "cancel": "Cancel·la",
-            "save": "Desa"
+            "save": "Desa",
+            "successfully_saved": "S'ha desat correctament"
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {dia}\n  other {dies}\n}",
@@ -1199,7 +1223,9 @@
             "fan": {
                 "speed": "Velocitat",
                 "oscillate": "Oscil·lació",
-                "direction": "Direcció"
+                "direction": "Direcció",
+                "forward": "Endavant",
+                "reverse": "Invers"
             },
             "light": {
                 "brightness": "Brillantor",
@@ -1244,6 +1270,14 @@
                 "target_temperature": "Temperatura desitjada",
                 "operation": "Funcionament",
                 "away_mode": "Mode fora"
+            },
+            "timer": {
+                "actions": {
+                    "start": "inicia",
+                    "pause": "pausa",
+                    "cancel": "cancel·la",
+                    "finish": "finalitza"
+                }
             }
         },
         "components": {
@@ -1310,6 +1344,20 @@
                 "title": "Opcions de sistema",
                 "enable_new_entities_label": "Activa entitats afegides recentment.",
                 "enable_new_entities_description": "Si està desactivat, les entitats descobertes recentment no s’afegiran automàticament a Home Assistant."
+            },
+            "zha_device_info": {
+                "manuf": "per {manufacturer}",
+                "no_area": "Sense Àrea",
+                "services": {
+                    "reconfigure": "Reconfigura el dispositiu ZHA (dispositiu curatiu). Utilitza-ho si tens problemes amb el dispositiu. Si el dispositiu en qüestió està alimentat per bateria, assegura't que estigui despert i accepti ordres quan utilitzis aquest servei.",
+                    "updateDeviceName": "Estableix un nom personalitzat pel dispositiu al registre de dispositius.",
+                    "remove": "Elimina un dispositiu de la xarxa ZigBee."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Nom donat per l'usuari",
+                    "area_picker_label": "Àrea",
+                    "update_name_button": "Actualitzar Nom"
+                }
             }
         },
         "auth_store": {

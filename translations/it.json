@@ -251,7 +251,8 @@
             "snowy-rainy": "Nevoso, piovoso",
             "sunny": "Soleggiato",
             "windy": "Ventoso",
-            "windy-variant": "Ventoso"
+            "windy-variant": "Ventoso",
+            "exceptional": "Eccezionale"
         },
         "vacuum": {
             "cleaning": "Pulendo",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Informazioni"
+                    },
+                    "logs": {
+                        "title": "Registri"
                     }
                 }
             },
@@ -349,7 +353,7 @@
                 "introduction": "Qui è possibile configurare i componenti e Home Assistant. Non è ancora possibile configurare tutto dall'interfaccia utente, ma ci stiamo lavorando.",
                 "core": {
                     "caption": "Generale",
-                    "description": "Convalidare il file di configurazione e controllare il server",
+                    "description": "Modifica la configurazione generale di Home Assistant",
                     "section": {
                         "core": {
                             "header": "Configurazione e controllo del server",
@@ -364,7 +368,7 @@
                                 "time_zone": "Fuso orario",
                                 "unit_system": "Unità di misura",
                                 "unit_system_imperial": "Imperiale",
-                                "unit_system_metric": "metrico",
+                                "unit_system_metric": "Metrico",
                                 "imperial_example": "Fahrenheit, libbre",
                                 "metric_example": "Celsius, chilogrammi",
                                 "save_button": "Salva"
@@ -498,6 +502,9 @@
                                     "event": "Evento:",
                                     "enter": "Ingresso",
                                     "leave": "Uscita"
+                                },
+                                "device": {
+                                    "label": "Dispositivo"
                                 }
                             },
                             "learn_more": "Per saperne di più sui trigger"
@@ -544,6 +551,9 @@
                                     "label": "Zona",
                                     "entity": "Entità con posizione",
                                     "zone": "Zona"
+                                },
+                                "device": {
+                                    "label": "Dispositivo"
                                 }
                             },
                             "learn_more": "Per saperne di più sulle condizioni"
@@ -578,6 +588,9 @@
                                     "label": "Scatena Evento",
                                     "event": "Evento:",
                                     "service_data": "Dati servizio"
+                                },
+                                "device_id": {
+                                    "label": "Dispositivo"
                                 }
                             },
                             "learn_more": "Per saperne di più sulle azioni"
@@ -747,7 +760,10 @@
                         "unavailable": "Questa entità non è attualmente disponibile.",
                         "default_name": "Nuova area",
                         "delete": "ELIMINA",
-                        "update": "AGGIORNA"
+                        "update": "AGGIORNA",
+                        "enabled_label": "Abilita entità",
+                        "enabled_cause": "Disabilitato da {cause}.",
+                        "enabled_description": "Le entità disabilitate non verranno aggiunte a Home Assistant."
                     }
                 },
                 "person": {
@@ -784,7 +800,9 @@
                             "heading": "Gestione del server",
                             "introduction": "Controllare il server Home Assistant... da Home Assistant.",
                             "restart": "Riavviare",
-                            "stop": "Stop"
+                            "stop": "Stop",
+                            "confirm_restart": "Sei sicuro di voler riavviare Home Assistant?",
+                            "confirm_stop": "Sei sicuro di voler fermare Home Assistant?"
                         }
                     }
                 }
@@ -866,7 +884,7 @@
             },
             "page-authorize": {
                 "initializing": "Inizializzazione",
-                "authorizing_client": "Stai per dare accesso {clientId} alla tua istanza di Assistente Home.",
+                "authorizing_client": "Stai per dare a {clientId} accesso alla tua istanza di Home Assistant.",
                 "logging_in_with": "Accesso con **{authProviderName}**.",
                 "pick_auth_provider": "Oppure accedi con",
                 "abort_intro": "Login interrotto",
@@ -980,7 +998,7 @@
                 "integration": {
                     "intro": "Dispositivi e servizi sono rappresentati in Home Assistant come integrazioni. È possibile impostarli ora, o farlo in seguito dalla schermata di configurazione.",
                     "more_integrations": "Di Più",
-                    "finish": "finire"
+                    "finish": "Finire"
                 },
                 "core-config": {
                     "intro": "Salve {name} , benvenuto su Home Assistant. Come vorresti nominare la tua casa?",
@@ -1051,6 +1069,10 @@
                         "save": "Salva",
                         "unsaved_changes": "Modifiche non salvate",
                         "saved": "Salvato"
+                    },
+                    "edit_lovelace": {
+                        "header": "Titolo della tua interfaccia utente di Lovelace",
+                        "explanation": "Questo titolo è mostrato sopra tutte le tue viste in Lovelace."
                     }
                 },
                 "menu": {
@@ -1120,7 +1142,8 @@
         "common": {
             "loading": "Caricamento",
             "cancel": "Annulla",
-            "save": "Salva"
+            "save": "Salva",
+            "successfully_saved": "Salvataggio riuscito"
         },
         "duration": {
             "day": "{count} {count, plural,\none {giorno}\nother {giorni}\n}",
@@ -1196,7 +1219,9 @@
             "fan": {
                 "speed": "Velocità",
                 "oscillate": "Oscillazione",
-                "direction": "Direzione"
+                "direction": "Direzione",
+                "forward": "Avanti",
+                "reverse": "Indietro"
             },
             "light": {
                 "brightness": "Luminosità",
@@ -1241,6 +1266,14 @@
                 "target_temperature": "Temperatura da raggiungere",
                 "operation": "Operazione",
                 "away_mode": "Modalità fuori casa"
+            },
+            "timer": {
+                "actions": {
+                    "start": "avvio",
+                    "pause": "pausa",
+                    "cancel": "annulla",
+                    "finish": "finire"
+                }
             }
         },
         "components": {
@@ -1302,10 +1335,29 @@
                 "success": {
                     "description": "Opzioni salvate correttamente."
                 }
+            },
+            "config_entry_system_options": {
+                "title": "Opzioni di sistema",
+                "enable_new_entities_label": "Abilita nuove entità aggiunte.",
+                "enable_new_entities_description": "Se disabilitato, le entità appena individuate non verranno automaticamente aggiunte a Home Assistant."
+            },
+            "zha_device_info": {
+                "manuf": "da {manufacturer}",
+                "no_area": "Nessuna Area",
+                "services": {
+                    "reconfigure": "Riconfigurare il dispositivo ZHA (dispositivo di cura). Utilizzare questa opzione se riscontri problemi con il dispositivo. Se il dispositivo in questione è un dispositivo alimentato a batteria, assicurarsi che sia attivo e che accetti i comandi quando si utilizza questo servizio.",
+                    "updateDeviceName": "Imposta un nome personalizzato per questo dispositivo nel registro dispositivi.",
+                    "remove": "Rimuovi un dispositivo dalla rete ZigBee."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Nome assegnato dall'utente",
+                    "area_picker_label": "Area",
+                    "update_name_button": "Aggiorna nome"
+                }
             }
         },
         "auth_store": {
-            "ask": "Vuoi salvare questo login?",
+            "ask": "Salvare questo account di accesso?",
             "decline": "No grazie",
             "confirm": "Salva login"
         },
@@ -1397,5 +1449,12 @@
         "system-admin": "Amministratori",
         "system-users": "Utenti",
         "system-read-only": "Utenti di sola lettura"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Utente",
+            "integration": "Integrazione",
+            "config_entry": "Voce di configurazione"
+        }
     }
 }

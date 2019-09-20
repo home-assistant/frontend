@@ -251,7 +251,8 @@
             "snowy-rainy": "Lörtsine",
             "sunny": "Päikeseline",
             "windy": "Tuuline",
-            "windy-variant": "Tuuline"
+            "windy-variant": "Tuuline",
+            "exceptional": "Erakordne"
         },
         "vacuum": {
             "cleaning": "Puhastamine",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Info"
+                    },
+                    "logs": {
+                        "title": "Logid"
                     }
                 }
             },
@@ -345,8 +349,8 @@
                 "delete_button": "Kustuta"
             },
             "config": {
-                "header": "Home Assistant-i seadistamine",
-                "introduction": "Siin saab seadistada oma komponente ja Home Assistant-i. Mitte kõike ei saa veel kasutajaliidese kaudu seadistada, kuid me töötame selle nimel.",
+                "header": "Home Assistant'i seadistamine",
+                "introduction": "Siin saab seadistada oma komponente ja Home Assistant'i. Mitte kõike ei saa veel kasutajaliidese kaudu seadistada, kuid me töötame selle nimel.",
                 "core": {
                     "caption": "Üldine",
                     "description": "Home Assistant'i üldiste seadete muutmine",
@@ -380,7 +384,7 @@
                             },
                             "reloading": {
                                 "heading": "Seadete taaslaadimine",
-                                "introduction": "Mõned Home Assistant-i komponendid on taaslaetavad ilma taaskäivituseta. Taaslaadimise klõpsamisel tühistatakse nende praegused seaded ja laetakse uued.",
+                                "introduction": "Mõned Home Assistant'i komponendid on taaslaetavad ilma taaskäivituseta. Taaslaadimise klõpsamisel tühistatakse nende praegused seaded ja laetakse uued.",
                                 "core": "Taaslae tuum",
                                 "group": "Taaslae grupid",
                                 "automation": "Taaslae automatiseeringud",
@@ -388,7 +392,7 @@
                             },
                             "server_management": {
                                 "heading": "Serveri haldamine",
-                                "introduction": "Kontrolli oma Home Assistant serverit... Home Assistant-ist.",
+                                "introduction": "Kontrolli oma Home Assistant serverit... Home Assistant'ist.",
                                 "restart": "Taaskäivita",
                                 "stop": "Peata"
                             }
@@ -408,7 +412,7 @@
                     "description": "Loo ja redigeeri automatiseeringuid",
                     "picker": {
                         "header": "Automaatika redaktor",
-                        "introduction": "Automaatika redaktor võimaldab teil luua ja muuta automatiseeringuid. Palun järgige allolevat linki, veendumaks, et oled Home Assistant-i õigesti seadistanud.",
+                        "introduction": "Automaatika redaktor võimaldab teil luua ja muuta automatiseeringuid. Palun järgige allolevat linki, veendumaks, et oled Home Assistant'i õigesti seadistanud.",
                         "pick_automation": "Vali muudetav automatiseering",
                         "no_automations": "Me ei leidnud ühtegi muudetavat automatiseeringut",
                         "add_automation": "Lisa automatiseering",
@@ -498,6 +502,9 @@
                                     "event": "Sündmus:",
                                     "enter": "Sisenemine",
                                     "leave": "Väljumine"
+                                },
+                                "device": {
+                                    "label": "Seade"
                                 }
                             },
                             "learn_more": "Lisateave päästikute kohta"
@@ -544,6 +551,9 @@
                                     "label": "Ala",
                                     "entity": "Asukohaga olem",
                                     "zone": "Ala"
+                                },
+                                "device": {
+                                    "label": "Seade"
                                 }
                             },
                             "learn_more": "Lisateave tingimuste kohta"
@@ -578,6 +588,9 @@
                                     "label": "Vallanda sündmus",
                                     "event": "Sündmus:",
                                     "service_data": "Teenuse andmed"
+                                },
+                                "device_id": {
+                                    "label": "Seade"
                                 }
                             },
                             "learn_more": "Lisateave tegevuste kohta"
@@ -776,7 +789,7 @@
                         },
                         "reloading": {
                             "heading": "Konfiguratsiooni taaslaadimine",
-                            "introduction": "Mõned Home Assistant-i komponendid on taaslaetavad ilma taaskäivituseta. Taaslaadimise klõpsamisel tühistatakse nende praegused seaded ja laetakse uued.",
+                            "introduction": "Mõned Home Assistant'i komponendid on taaslaetavad ilma taaskäivituseta. Taaslaadimise klõpsamisel tühistatakse nende praegused seaded ja laetakse uued.",
                             "core": "Taaslae tuum",
                             "group": "Taaslae grupid",
                             "automation": "Taaslae automatiseeringud",
@@ -785,9 +798,11 @@
                         },
                         "server_management": {
                             "heading": "Serveri haldamine",
-                            "introduction": "Kontrolli oma Home Assistant serverit... Home Assistant-ist.",
+                            "introduction": "Kontrolli oma Home Assistant serverit... Home Assistant'ist.",
                             "restart": "Taaskäivita",
-                            "stop": "Peata"
+                            "stop": "Peata",
+                            "confirm_restart": "Oled kindel, et soovid taaskäivitada Home Assistant'i?",
+                            "confirm_stop": "Oled kindel, et soovid seisata Home Assistant'i?"
                         }
                     }
                 }
@@ -1054,6 +1069,10 @@
                         "save": "Salvesta",
                         "unsaved_changes": "Salvestamata muudatused",
                         "saved": "Salvestatud"
+                    },
+                    "edit_lovelace": {
+                        "header": "Lovelace kasutajaliidese pealkiri",
+                        "explanation": "Seda pealkirja näidatakse kõikide Lovelace'i vaadete kohal."
                     }
                 },
                 "menu": {
@@ -1123,7 +1142,8 @@
         "common": {
             "loading": "Laadimine",
             "cancel": "Loobu",
-            "save": "Salvesta"
+            "save": "Salvesta",
+            "successfully_saved": "Edukalt salvestatud"
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n}",
@@ -1199,7 +1219,9 @@
             "fan": {
                 "speed": "Kiirus",
                 "oscillate": "Võnkumine",
-                "direction": "Suund"
+                "direction": "Suund",
+                "forward": "Edaspidi",
+                "reverse": "Tagurpidi"
             },
             "light": {
                 "brightness": "Heledus",
@@ -1244,6 +1266,14 @@
                 "target_temperature": "Soovitud temperatuur",
                 "operation": "Töörežiim",
                 "away_mode": "Eemalolekurežiim"
+            },
+            "timer": {
+                "actions": {
+                    "start": "käivita",
+                    "pause": "peata",
+                    "cancel": "loobu",
+                    "finish": "lõpeta"
+                }
             }
         },
         "components": {
@@ -1310,6 +1340,20 @@
                 "title": "Süsteemi valikud",
                 "enable_new_entities_label": "Luba äsja lisatud olemid.",
                 "enable_new_entities_description": "Kui see on keelatud, ei lisata äsja avastatud olemeid automaatselt Home Assistant'i."
+            },
+            "zha_device_info": {
+                "manuf": "{manufacturer}",
+                "no_area": "Ala puudub",
+                "services": {
+                    "reconfigure": "Taasseadista (tervenda) ZHA seade. Kasuta seda, kui seadmega on probleeme. Kui seade on akutoitega, siis veendu, et see oleks ärkvel ja oleks valmis käske vastu võtma.",
+                    "updateDeviceName": "Anna sellele seadmele seadmete registris kohandatud nimi.",
+                    "remove": "Eemalda seade ZigBee võrgust."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Kasutaja antud nimi",
+                    "area_picker_label": "Ala",
+                    "update_name_button": "Värskenda nime"
+                }
             }
         },
         "auth_store": {

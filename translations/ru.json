@@ -251,7 +251,8 @@
             "snowy-rainy": "Снег с дождем",
             "sunny": "Ясно",
             "windy": "Ветрено",
-            "windy-variant": "Ветрено"
+            "windy-variant": "Ветрено",
+            "exceptional": "Предупреждение"
         },
         "vacuum": {
             "cleaning": "Уборка",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "О системе"
+                    },
+                    "logs": {
+                        "title": "Лог"
                     }
                 }
             },
@@ -498,6 +502,9 @@
                                     "event": "Событие:",
                                     "enter": "Войти",
                                     "leave": "Покинуть"
+                                },
+                                "device": {
+                                    "label": "Устройство"
                                 }
                             },
                             "learn_more": "Узнайте больше о триггерах"
@@ -544,6 +551,9 @@
                                     "label": "Зона",
                                     "entity": "Объект с местоположением",
                                     "zone": "Зона"
+                                },
+                                "device": {
+                                    "label": "Устройство"
                                 }
                             },
                             "learn_more": "Узнайте больше об условиях"
@@ -578,6 +588,9 @@
                                     "label": "Создание события",
                                     "event": "Событие:",
                                     "service_data": "Данные"
+                                },
+                                "device_id": {
+                                    "label": "Устройство"
                                 }
                             },
                             "learn_more": "Узнайте больше о действиях"
@@ -668,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "Интеграции",
-                    "description": "Управляйте подключенными устройствами и службами",
+                    "description": "Добавляйте и настраивайте интеграции",
                     "discovered": "Обнаружено",
                     "configured": "Настроено",
                     "new": "Интеграции",
@@ -787,9 +800,15 @@
                             "heading": "Управление сервером",
                             "introduction": "Управляйте Вашим сервером Home Assistant... из Home Assistant.",
                             "restart": "Перезапустить",
-                            "stop": "Остановить"
+                            "stop": "Остановить",
+                            "confirm_restart": "Вы уверены, что хотите перезапустить Home Assistant?",
+                            "confirm_stop": "Вы уверены, что хотите остановить Home Assistant?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Устройства",
+                    "description": "Управляйте подключенными устройствами"
                 }
             },
             "profile": {
@@ -1054,6 +1073,10 @@
                         "save": "Сохранить",
                         "unsaved_changes": "Несохраненные изменения",
                         "saved": "Сохранено"
+                    },
+                    "edit_lovelace": {
+                        "header": "Заголовок для Lovelace",
+                        "explanation": "Этот заголовок будет показан над вашими карточками в Lovelace"
                     }
                 },
                 "menu": {
@@ -1123,7 +1146,8 @@
         "common": {
             "loading": "Загрузка",
             "cancel": "Отменить",
-            "save": "Сохранить"
+            "save": "Сохранить",
+            "successfully_saved": "Успешно сохранено"
         },
         "duration": {
             "day": "{count} {count, plural,\none {д.}\nother {д.}\n}",
@@ -1199,7 +1223,9 @@
             "fan": {
                 "speed": "Скорость",
                 "oscillate": "Колебания",
-                "direction": "Направление"
+                "direction": "Направление",
+                "forward": "От себя",
+                "reverse": "На себя"
             },
             "light": {
                 "brightness": "Яркость",
@@ -1244,6 +1270,14 @@
                 "target_temperature": "Заданная температура",
                 "operation": "Операция",
                 "away_mode": "Режим \"не дома\""
+            },
+            "timer": {
+                "actions": {
+                    "start": "Запуск",
+                    "pause": "Пауза",
+                    "cancel": "Отмена",
+                    "finish": "Готово"
+                }
             }
         },
         "components": {
@@ -1310,6 +1344,20 @@
                 "title": "Системные настройки",
                 "enable_new_entities_label": "Добавлять новые объекты.",
                 "enable_new_entities_description": "Автоматически добавлять в Home Assistant вновь обнаруженные объекты."
+            },
+            "zha_device_info": {
+                "manuf": "Производитель: {manufacturer}",
+                "no_area": "Не указано",
+                "services": {
+                    "reconfigure": "Перенастройка устройства ZHA. Используйте эту службу, если у Вас есть проблемы с устройством. Если рассматриваемое устройство работает от батареи, пожалуйста, убедитесь, что оно не находится в режиме сна и принимает команды, когда вы запускаете эту службу.",
+                    "updateDeviceName": "Установите имя для этого устройства в реестре устройств.",
+                    "remove": "Удалить устройство из сети ZigBee."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Логин",
+                    "area_picker_label": "Помещение",
+                    "update_name_button": "Обновить название"
+                }
             }
         },
         "auth_store": {

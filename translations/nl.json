@@ -251,7 +251,8 @@
             "snowy-rainy": "Sneeuw-, regenachtig",
             "sunny": "Zonnig",
             "windy": "Winderig",
-            "windy-variant": "Winderig"
+            "windy-variant": "Winderig",
+            "exceptional": "Uitzonderlijk"
         },
         "vacuum": {
             "cleaning": "Reinigen",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Info"
+                    },
+                    "logs": {
+                        "title": "Logboek"
                     }
                 }
             },
@@ -498,6 +502,9 @@
                                     "event": "Gebeurtenis:",
                                     "enter": "Invoeren",
                                     "leave": "Verlaten"
+                                },
+                                "device": {
+                                    "label": "Apparaat"
                                 }
                             },
                             "learn_more": "Meer informatie over triggers"
@@ -544,6 +551,9 @@
                                     "label": "Zone",
                                     "entity": "Entiteit met locatie",
                                     "zone": "Zone"
+                                },
+                                "device": {
+                                    "label": "Apparaat"
                                 }
                             },
                             "learn_more": "Meer informatie over condities"
@@ -578,6 +588,9 @@
                                     "label": "Gebeurtenis uitvoeren",
                                     "event": "Gebeurtenis:",
                                     "service_data": "Service data"
+                                },
+                                "device_id": {
+                                    "label": "Apparaat"
                                 }
                             },
                             "learn_more": "Meer informatie over acties"
@@ -595,7 +608,7 @@
                     "description": "Beheer je Z-Wave-netwerk",
                     "network_management": {
                         "header": "Z-Wave netwerkbeheer",
-                        "introduction": "Voer opdrachten uit die van invloed zijn op het Z-Wave-netwerk. Je krijgt geen feedback of de meeste commando's gelukt zijn, maar je kunt wel het OZW Logboek raadplegen om te proberen uit te vinden of het gelukt is."
+                        "introduction": "Voer opdrachten uit die van invloed zijn op het Z-Wave-netwerk. Je krijgt geen terugkoppeling of de meeste commando's gelukt zijn, maar je kunt wel het OZW Logboek raadplegen om te proberen uit te vinden of het gelukt is."
                     },
                     "network_status": {
                         "network_stopped": "Z-Wave netwerk gestopt",
@@ -630,7 +643,7 @@
                     "node_config": {
                         "header": "Node Configuratie Opties",
                         "seconds": "Seconden",
-                        "set_wakeup": "Wakeup-interval instellen",
+                        "set_wakeup": "Activeringsinterval instellen",
                         "config_parameter": "Configuratie Parameter",
                         "config_value": "Configuratie Waarde",
                         "true": "Waar",
@@ -668,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "Integraties",
-                    "description": "Beheer verbonden apparaten en services",
+                    "description": "Beheer en installeer integraties",
                     "discovered": "Ontdekt",
                     "configured": "Geconfigureerd",
                     "new": "Stel een nieuwe integratie in",
@@ -787,9 +800,15 @@
                             "heading": "Serverbeheer",
                             "introduction": "Beheer je Home Assistant-server ... vanuit Home Assistant.",
                             "restart": "Herstarten",
-                            "stop": "Stop"
+                            "stop": "Stop",
+                            "confirm_restart": "Weet je zeker dat je Home Assistant opnieuw wilt starten?",
+                            "confirm_stop": "Weet je zeker dat je Home Assistant wilt afsluiten?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Apparaten",
+                    "description": "Beheer verbonden apparaten"
                 }
             },
             "profile": {
@@ -825,7 +844,7 @@
                 },
                 "long_lived_access_tokens": {
                     "header": "Toegangtokens met lange levensduur",
-                    "description": "Maak toegangstokens met een lange levensduur zodat je scripts kunnen communiceren met je Home Assistant-instantie. Elk token is tien jaar geldig vanaf geldig vanaf de aanmaakdatum. De volgende langlevende toegangstokens zijn momenteel actief.",
+                    "description": "Maak toegangstokens met een lange levensduur zodat je scripts kunnen communiceren met je Home Assistant-instantie. Elk token is tien jaar geldig vanaf de aanmaakdatum. De volgende langlevende toegangstokens zijn momenteel actief.",
                     "learn_auth_requests": "Kom te weten hoe je geverifieerde verzoeken kunt maken",
                     "created_at": "Gemaakt op {date}",
                     "confirm_delete": "Weet je zeker dat je de toegangstoken voor {name} wilt verwijderen?",
@@ -1054,6 +1073,10 @@
                         "save": "Opslaan",
                         "unsaved_changes": "Niet-opgeslagen wijzigingen",
                         "saved": "Opgeslagen"
+                    },
+                    "edit_lovelace": {
+                        "header": "Titel van je Lovelace UI",
+                        "explanation": "Deze titel wordt vooral weergegeven in al je weergaven in Lovelace."
                     }
                 },
                 "menu": {
@@ -1123,7 +1146,8 @@
         "common": {
             "loading": "Bezig met laden",
             "cancel": "Annuleren",
-            "save": "Opslaan"
+            "save": "Opslaan",
+            "successfully_saved": "Succesvol opgeslagen"
         },
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dagen}\n}",
@@ -1199,7 +1223,9 @@
             "fan": {
                 "speed": "Snelheid",
                 "oscillate": "Oscilleren",
-                "direction": "Richting"
+                "direction": "Richting",
+                "forward": "Voorwaarts",
+                "reverse": "Omkeren"
             },
             "light": {
                 "brightness": "Helderheid",
@@ -1244,6 +1270,14 @@
                 "target_temperature": "Gewenste temperatuur",
                 "operation": "Werking",
                 "away_mode": "Afwezigheidsmodus"
+            },
+            "timer": {
+                "actions": {
+                    "start": "start",
+                    "pause": "pauze",
+                    "cancel": "annuleren",
+                    "finish": "voltooien"
+                }
             }
         },
         "components": {
@@ -1309,7 +1343,21 @@
             "config_entry_system_options": {
                 "title": "Systeemopties",
                 "enable_new_entities_label": "Voeg nieuwe entiteiten automatisch toe",
-                "enable_new_entities_description": "Indien uitgeschakeld, zullen entiteiten niet aan Home Assistant worden toegevoegd"
+                "enable_new_entities_description": "Als uitgeschakeld, worden nieuw ontdekte entiteiten niet aan Home Assistant toegevoegd."
+            },
+            "zha_device_info": {
+                "manuf": "door {manufacturer}",
+                "no_area": "Geen Gebied",
+                "services": {
+                    "reconfigure": "Herconfigureer het ZHA-apparaat (heal device). Gebruik dit als je problemen hebt met het apparaat. Als het een apparaat met batterij is, zorg dan dat het wakker is en commando's accepteert wanneer je deze service gebruikt.",
+                    "updateDeviceName": "Stel een aangepaste naam in voor dit apparaat in het apparaatregister.",
+                    "remove": "Verwijder een apparaat uit het ZigBee-netwerk."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Door gebruiker ingegeven naam",
+                    "area_picker_label": "Gebied",
+                    "update_name_button": "Naam bijwerken"
+                }
             }
         },
         "auth_store": {

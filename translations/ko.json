@@ -251,7 +251,8 @@
             "snowy-rainy": "진눈개비",
             "sunny": "맑음",
             "windy": "바람",
-            "windy-variant": "바람"
+            "windy-variant": "바람",
+            "exceptional": "예외사항"
         },
         "vacuum": {
             "cleaning": "청소중",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "정보"
+                    },
+                    "logs": {
+                        "title": "로그"
                     }
                 }
             },
@@ -498,6 +502,9 @@
                                     "event": "이벤트:",
                                     "enter": "입장",
                                     "leave": "퇴장"
+                                },
+                                "device": {
+                                    "label": "기기"
                                 }
                             },
                             "learn_more": "트리거에 대해 더 알아보기"
@@ -544,6 +551,9 @@
                                     "label": "구역",
                                     "entity": "위치기반 구성요소",
                                     "zone": "구역"
+                                },
+                                "device": {
+                                    "label": "기기"
                                 }
                             },
                             "learn_more": "조건에 대해 더 알아보기"
@@ -578,6 +588,9 @@
                                     "label": "이벤트 발생",
                                     "event": "이벤트:",
                                     "service_data": "서비스 데이터"
+                                },
+                                "device_id": {
+                                    "label": "기기"
                                 }
                             },
                             "learn_more": "동작에 대해 더 알아보기"
@@ -668,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "통합 구성요소",
-                    "description": "연결된 기기 및 서비스를 관리합니다",
+                    "description": "통합 구성요소를 관리하고 설정합니다",
                     "discovered": "발견된 구성요소",
                     "configured": "설정된 구성요소",
                     "new": "새로운 통합 구성요소 설정",
@@ -787,9 +800,15 @@
                             "heading": "서버 관리",
                             "introduction": "Home Assistant 서버를 제어합니다.",
                             "restart": "재시작",
-                            "stop": "중지"
+                            "stop": "중지",
+                            "confirm_restart": "Home Assistant 를 재시작 하시겠습니까?",
+                            "confirm_stop": "Home Assistant 를 중지 하시겠습니까?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "기기",
+                    "description": "연결된 기기 관리"
                 }
             },
             "profile": {
@@ -1054,6 +1073,10 @@
                         "save": "저장하기",
                         "unsaved_changes": "저장되지 않은 변경사항",
                         "saved": "저장되었습니다"
+                    },
+                    "edit_lovelace": {
+                        "header": "Lovelace UI 의 제목",
+                        "explanation": "이 제목은 Lovelace 의 모든 화면의 상단에 표시됩니다."
                     }
                 },
                 "menu": {
@@ -1123,7 +1146,8 @@
         "common": {
             "loading": "읽는중",
             "cancel": "취소",
-            "save": "저장"
+            "save": "저장",
+            "successfully_saved": "성공적으로 저장되었습니다"
         },
         "duration": {
             "day": "{count} {count, plural,\none {일}\nother {일}\n}",
@@ -1199,7 +1223,9 @@
             "fan": {
                 "speed": "속도",
                 "oscillate": "회전",
-                "direction": "방향"
+                "direction": "방향",
+                "forward": "앞으로",
+                "reverse": "뒤로"
             },
             "light": {
                 "brightness": "밝기",
@@ -1244,6 +1270,14 @@
                 "target_temperature": "희망 온도",
                 "operation": "운전",
                 "away_mode": "외출 모드"
+            },
+            "timer": {
+                "actions": {
+                    "start": "시작",
+                    "pause": "일시정지",
+                    "cancel": "취소",
+                    "finish": "완료"
+                }
             }
         },
         "components": {
@@ -1310,6 +1344,20 @@
                 "title": "시스템 옵션",
                 "enable_new_entities_label": "새로 추가된 구성요소를 활성화합니다.",
                 "enable_new_entities_description": "비활성화한 경우 새로 검색된 구성요소는 Home Assistant 에 자동으로 추가되지 않습니다."
+            },
+            "zha_device_info": {
+                "manuf": "{manufacturer} 제조",
+                "no_area": "영역 없음",
+                "services": {
+                    "reconfigure": "ZHA 장치를 다시 구성 합니다. (장치 복구). 장치에 문제가 있는 경우 사용해주세요. 장치가 배터리로 작동하는 경우, 이 서비스를 사용할 때 장치가 켜져있고 통신이 가능한 상태여야 합니다.",
+                    "updateDeviceName": "이 기기의 사용자 정의 이름을 기기 레지스트리에 설정합니다.",
+                    "remove": "Zigbee 네트워크에서 기기를 제거해주세요."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "사용자 지정 이름",
+                    "area_picker_label": "영역",
+                    "update_name_button": "이름 업데이트"
+                }
             }
         },
         "auth_store": {

@@ -699,13 +699,17 @@
             "add_automation": "Add automation"
           },
           "editor": {
-            "introduction": "Use automations to bring your home alive",
+            "introduction": "Use automations to bring your home alive.",
             "default_name": "New Automation",
             "load_error_not_editable": "Only automations in automations.yaml are editable.",
             "load_error_unknown": "Error loading automation ({err_no}).",
             "save": "Save",
             "unsaved_confirm": "You have unsaved changes. Are you sure you want to leave?",
             "alias": "Name",
+            "description": {
+              "label": "Description",
+              "placeholder": "Optional description"
+            },
             "triggers": {
               "header": "Triggers",
               "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.",
@@ -889,6 +893,10 @@
           "description_not_login": "Not logged in",
           "description_features": "Control away from home, integrate with Alexa and Google Assistant."
         },
+        "devices": {
+          "caption": "Devices",
+          "description": "Manage connected devices"
+        },
         "entity_registry": {
           "caption": "Entity Registry",
           "description": "Overview of all known entities.",
@@ -920,7 +928,7 @@
         },
         "integrations": {
           "caption": "Integrations",
-          "description": "Manage connected devices and services",
+          "description": "Manage and setup integrations",
           "discovered": "Discovered",
           "configured": "Configured",
           "new": "Set up a new integration",

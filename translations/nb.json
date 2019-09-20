@@ -251,7 +251,8 @@
             "snowy-rainy": "Sludd",
             "sunny": "Solfylt",
             "windy": "Vind",
-            "windy-variant": "Vind"
+            "windy-variant": "Vind",
+            "exceptional": "Eksepsjonell"
         },
         "vacuum": {
             "cleaning": "Rengjør",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Info"
+                    },
+                    "logs": {
+                        "title": "Logger"
                     }
                 }
             },
@@ -498,6 +502,9 @@
                                     "event": "Hendelse:",
                                     "enter": "Ankommer",
                                     "leave": "Forlater"
+                                },
+                                "device": {
+                                    "label": "Enhet"
                                 }
                             },
                             "learn_more": "Lær mer om utløsere"
@@ -544,6 +551,9 @@
                                     "label": "Sone",
                                     "entity": "Enhet med posisjon",
                                     "zone": "Sone"
+                                },
+                                "device": {
+                                    "label": "Enhet"
                                 }
                             },
                             "learn_more": "Lær mer om betingelser"
@@ -578,6 +588,9 @@
                                     "label": "Kjør hendelse",
                                     "event": "Hendelse",
                                     "service_data": "Tjeneste data"
+                                },
+                                "device_id": {
+                                    "label": "Enhet"
                                 }
                             },
                             "learn_more": "Lær mer om handlinger"
@@ -787,9 +800,15 @@
                             "heading": "Serveradministrasjon",
                             "introduction": "Kontroller din Home Assistant server... fra Home Assistant.",
                             "restart": "Omstart",
-                            "stop": "Stopp"
+                            "stop": "Stopp",
+                            "confirm_restart": "Er du sikker på at du vil starte Home Assistant på nytt?",
+                            "confirm_stop": "Er du sikker på at du vil stoppe Home Assistant?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Enheter",
+                    "description": "Administrer tilkoblede enheter"
                 }
             },
             "profile": {
@@ -1054,6 +1073,10 @@
                         "save": "Lagre",
                         "unsaved_changes": "Ulagrede endringer",
                         "saved": "Lagret"
+                    },
+                    "edit_lovelace": {
+                        "header": "Tittel på Lovelace UI",
+                        "explanation": "Denne tittelen vises over alle visningene dine i Lovelace."
                     }
                 },
                 "menu": {
@@ -1123,7 +1146,8 @@
         "common": {
             "loading": "Laster",
             "cancel": "Avbryt",
-            "save": "Lagre"
+            "save": "Lagre",
+            "successfully_saved": "Vellykket lagring"
         },
         "duration": {
             "day": "{count} {count, plural,\none {dag}\nother {dager}\n}",
@@ -1199,7 +1223,9 @@
             "fan": {
                 "speed": "Hastighet",
                 "oscillate": "Vandring",
-                "direction": "Retning"
+                "direction": "Retning",
+                "forward": "Framover",
+                "reverse": "Omvendt"
             },
             "light": {
                 "brightness": "Lysstyrke",
@@ -1244,6 +1270,14 @@
                 "target_temperature": "Ønsket temperatur",
                 "operation": "Drift",
                 "away_mode": "Bortemodus"
+            },
+            "timer": {
+                "actions": {
+                    "start": "start",
+                    "pause": "pause",
+                    "cancel": "Avbryt",
+                    "finish": "Fullføre"
+                }
             }
         },
         "components": {
@@ -1310,6 +1344,20 @@
                 "title": "Systemalternativer",
                 "enable_new_entities_label": "Aktiver enheter som nylig er lagt til.",
                 "enable_new_entities_description": "Hvis deaktivert, vil ikke nyoppdagede enheter automatisk bli lagt til i Home Assistant."
+            },
+            "zha_device_info": {
+                "manuf": "av {manufacturer}",
+                "no_area": "Intet område",
+                "services": {
+                    "reconfigure": "Rekonfigurer ZHA-enhet (heal enhet). Bruk dette hvis du har problemer med enheten. Hvis den aktuelle enheten er en batteridrevet enhet, sørg for at den er våken og aksepterer kommandoer når du bruker denne tjenesten.",
+                    "updateDeviceName": "Angi et egendefinert navn for denne enheten i enhetsregisteret.",
+                    "remove": "Fjern en enhet fra ZigBee-nettverket."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Brukers navn",
+                    "area_picker_label": "Område",
+                    "update_name_button": "Oppdater navn"
+                }
             }
         },
         "auth_store": {
