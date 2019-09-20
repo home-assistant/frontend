@@ -36,7 +36,8 @@ export class HuiThemeSelectEditor extends LitElement {
 
     return html`
       <paper-dropdown-menu
-        .label=${this.label ? this.label : "Theme"}
+        .label=${this.label ||
+          this.hass!.localize("ui.panel.lovelace.editor.theme_select.theme")}
         dynamic-align
         @value-changed="${this._changed}"
       >
