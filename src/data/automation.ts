@@ -13,6 +13,7 @@ export interface AutomationEntity extends HassEntityBase {
 
 export interface AutomationConfig {
   alias: string;
+  description: string;
   trigger: any[];
   condition?: any[];
   action: any[];
