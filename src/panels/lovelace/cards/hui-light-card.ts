@@ -107,7 +107,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           <ha-icon
             class="light-icon"
             data-state="${stateObj.state}"
-            .icon="${stateIcon(stateObj)}"
+            .icon="${this._config.icon || stateIcon(stateObj)}"
             style="${styleMap({
               filter: this._computeBrightness(stateObj),
               color: this._computeColor(stateObj),
