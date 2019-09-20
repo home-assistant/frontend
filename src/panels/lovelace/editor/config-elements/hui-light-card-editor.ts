@@ -23,6 +23,7 @@ const cardConfigStruct = struct({
   name: "string?",
   entity: "string?",
   theme: "string?",
+  icon: "string?",
 });
 
 @customElement("hui-light-card-editor")
@@ -49,6 +50,10 @@ export class HuiLightCardEditor extends LitElement
     return this._config!.entity || "";
   }
 
+  get _icon(): string {
+    return this._config!.icon || "";
+  }
+
   protected render(): TemplateResult | void {
     if (!this.hass) {
       return html``;
@@ -57,28 +62,37 @@ export class HuiLightCardEditor extends LitElement
     return html`
       ${configElementStyle}
       <div class="card-config">
-        <paper-input
-          label="Name"
-          .value="${this._name}"
-          .configValue="${"name"}"
-          @value-changed="${this._valueChanged}"
-        ></paper-input>
+        <ha-entity-picker
+          label="Light Entity (Required)"
+          .hass="${this.hass}"
+          .value="${this._entity}"
+          .configValue=${"entity"}
+          domain-filter="light"
+          @change="${this._valueChanged}"
+          allow-custom-entity
+        ></ha-entity-picker>
         <div class="side-by-side">
-          <ha-entity-picker
-            .hass="${this.hass}"
-            .value="${this._entity}"
-            .configValue=${"entity"}
-            domain-filter="light"
-            @change="${this._valueChanged}"
-            allow-custom-entity
-          ></ha-entity-picker>
-          <hui-theme-select-editor
-            .hass="${this.hass}"
-            .value="${this._theme}"
-            .configValue="${"theme"}"
-            @theme-changed="${this._valueChanged}"
-          ></hui-theme-select-editor>
+          <paper-input
+            label="Name (Optional)"
+            .value="${this._name}"
+            .configValue="${"name"}"
+            @value-changed="${this._valueChanged}"
+          ></paper-input>
+          <paper-input
+            label="Icon (Optional)"
+            .value="${this._icon}"
+            .configValue="${"icon"}"
+            @value-changed="${this._valueChanged}"
+          ></paper-input>
         </div>
+
+        <hui-theme-select-editor
+          label="Theme (Optional)"
+          .hass="${this.hass}"
+          .value="${this._theme}"
+          .configValue="${"theme"}"
+          @theme-changed="${this._valueChanged}"
+        ></hui-theme-select-editor>
       </div>
     `;
   }
