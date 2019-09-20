@@ -33,7 +33,6 @@ const cardConfigStruct = struct({
   image: "string?",
   camera_image: "string?",
   camera_view: "string?",
-  state_iamge: "object?",
   aspect_ratio: "string?",
   tap_action: struct.optional(actionConfigStruct),
   hold_action: struct.optional(actionConfigStruct),
@@ -70,31 +69,27 @@ export class HuiPictureEntityCardEditor extends LitElement
   }
 
   get _camera_view(): string {
-    return this._config!.camera_view || "";
-  }
-
-  get _state_image(): {} {
-    return this._config!.state_image || {};
+    return this._config!.camera_view || "auto";
   }
 
   get _aspect_ratio(): string {
-    return this._config!.aspect_ratio || "";
+    return this._config!.aspect_ratio || "50";
   }
 
   get _tap_action(): ActionConfig {
-    return this._config!.tap_action || { action: "none" };
+    return this._config!.tap_action || { action: "more-info" };
   }
 
   get _hold_action(): ActionConfig {
-    return this._config!.hold_action || { action: "none" };
+    return this._config!.hold_action || { action: "more-info" };
   }
 
   get _show_name(): boolean {
-    return this._config!.show_name || false;
+    return this._config!.show_name || true;
   }
 
   get _show_state(): boolean {
-    return this._config!.show_state || false;
+    return this._config!.show_state || true;
   }
 
   protected render(): TemplateResult | void {
@@ -109,6 +104,7 @@ export class HuiPictureEntityCardEditor extends LitElement
       ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
+          label="Entity (Required)"
           .hass="${this.hass}"
           .value="${this._entity}"
           .configValue=${"entity"}
@@ -116,26 +112,29 @@ export class HuiPictureEntityCardEditor extends LitElement
           allow-custom-entity
         ></ha-entity-picker>
         <paper-input
-          label="Name"
+          label="Name (Optional)"
           .value="${this._name}"
           .configValue="${"name"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <paper-input
-          label="Image Url"
+          label="Image Url (Optional)"
           .value="${this._image}"
           .configValue="${"image"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
-        <paper-input
-          label="Camera Image"
+        <ha-entity-picker
+          label="Camera Image (Optional)"
+          .hass="${this.hass}"
           .value="${this._camera_image}"
-          .configValue="${"camera_image"}"
-          @value-changed="${this._valueChanged}"
-        ></paper-input>
+          .configValue=${"camera_image"}
+          @change="${this._valueChanged}"
+          domain-filter="camera"
+          allow-custom-entity
+        ></ha-entity-picker>
         <div class="side-by-side">
           <paper-dropdown-menu
-            label="Camera View"
+            label="Camera View (Optional)"
             .configValue="${"camera_view"}"
             @value-changed="${this._valueChanged}"
           >
@@ -151,14 +150,13 @@ export class HuiPictureEntityCardEditor extends LitElement
             </paper-listbox>
           </paper-dropdown-menu>
           <paper-input
-            label="Aspect Ratio"
+            label="Aspect Ratio (Optional)"
             type="number"
             .value="${Number(this._aspect_ratio.replace("%", ""))}"
             .configValue="${"aspect_ratio"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
         </div>
-        <h3>Toggle Editor to input State Image</h3>
         <div class="side-by-side">
           <paper-toggle-button
             ?checked="${this._show_name !== false}"
@@ -175,7 +173,7 @@ export class HuiPictureEntityCardEditor extends LitElement
         </div>
         <div class="side-by-side">
           <hui-action-editor
-            label="Tap Action"
+            label="Tap Action (Optional)"
             .hass="${this.hass}"
             .config="${this._tap_action}"
             .actions="${actions}"
@@ -183,7 +181,7 @@ export class HuiPictureEntityCardEditor extends LitElement
             @action-changed="${this._valueChanged}"
           ></hui-action-editor>
           <hui-action-editor
-            label="Hold Action"
+            label="Hold Action (Optional)"
             .hass="${this.hass}"
             .config="${this._hold_action}"
             .actions="${actions}"

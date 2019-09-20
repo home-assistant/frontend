@@ -37,12 +37,6 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
       entity: "",
       image:
         "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
-      camera_view: "auto",
-      aspect_ratio: "50%",
-      tap_action: { action: "more-info" },
-      hold_action: { action: "more-info" },
-      show_name: true,
-      show_state: true,
     };
   }
 
