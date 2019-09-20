@@ -6,8 +6,8 @@ import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-card";
-import "../../../layouts/hass-subpage";
+import "../../../../components/ha-card";
+import "../../../../layouts/hass-subpage";
 
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
@@ -17,12 +17,12 @@ import { compare } from "../../../common/string/compare";
 import {
   subscribeDeviceRegistry,
   updateDeviceRegistryEntry,
-} from "../../../data/device_registry";
-import { subscribeAreaRegistry } from "../../../data/area_registry";
+} from "../../../../data/device_registry";
+import { subscribeAreaRegistry } from "../../../../data/area_registry";
 import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
-} from "../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
+} from "../../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
 
 function computeEntityName(hass, entity) {
   if (entity.name) return entity.name;

@@ -5,7 +5,10 @@ import memoizeOne from "memoize-one";
 import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-error-screen";
 
-import "./ha-device-card";
+import "./device-detail/ha-device-card";
+import "./device-detail/ha-device-triggers-card";
+import "./device-detail/ha-device-conditions-card";
+import "./device-detail/ha-device-actions-card";
 import { HomeAssistant } from "../../../types";
 import { ConfigEntry } from "../../../data/config_entries";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
@@ -65,6 +68,18 @@ export class HaConfigDevicePage extends LitElement {
           .entities=${this.entities}
           hide-settings
         ></ha-device-card>
+        <ha-device-triggers-card
+          .hass=${this.hass}
+          .deviceId=${this.deviceId}
+        ></ha-device-triggers-card>
+        <ha-device-conditions-card
+          .hass=${this.hass}
+          .deviceId=${this.deviceId}
+        ></ha-device-conditions-card>
+        <ha-device-actions-card
+          .hass=${this.hass}
+          .deviceId=${this.deviceId}
+        ></ha-device-actions-card>
       </hass-subpage>
     `;
   }
