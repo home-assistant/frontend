@@ -895,7 +895,21 @@
         },
         "devices": {
           "caption": "Devices",
-          "description": "Manage connected devices"
+          "description": "Manage connected devices",
+          "automation": {
+            "triggers": {
+              "caption": "Do something when...",
+              "no_triggers": "This device does not support triggers."
+            },
+            "conditions": {
+              "caption": "Only do something if...",
+              "no_conditions": "This device does not support conditions."
+            },
+            "actions": {
+              "caption": "When something is triggered do...",
+              "no_actions": "This device does not support actions."
+            }
+          }
         },
         "entity_registry": {
           "caption": "Entity Registry",

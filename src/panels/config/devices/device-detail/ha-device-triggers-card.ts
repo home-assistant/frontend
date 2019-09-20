@@ -5,14 +5,16 @@ import {
   localizeDeviceAutomationTrigger,
 } from "../../../../data/device_automation";
 
-import "../../../../components/ha-card";
-
 import { HaDeviceAutomationCard } from "./ha-device-automation-card";
 
 @customElement("ha-device-triggers-card")
 export class HaDeviceTriggersCard extends HaDeviceAutomationCard<
   DeviceTrigger
 > {
+  protected headerKey = "ui.panel.config.devices.automation.triggers.caption";
+  protected noAutomationHeaderKey =
+    "ui.panel.config.devices.automation.triggers.no_triggers";
+
   constructor() {
     super(localizeDeviceAutomationTrigger, fetchDeviceTriggers);
   }

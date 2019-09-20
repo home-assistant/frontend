@@ -1,19 +1,19 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  css,
-  CSSResult,
-  property,
-} from "lit-element";
+import { LitElement, TemplateResult, html, property } from "lit-element";
 import { HomeAssistant } from "../../../../types";
 import { DeviceAutomation } from "../../../../data/device_automation";
+
+import "../../../../components/ha-card";
+import "../../../../components/ha-chips";
 
 export abstract class HaDeviceAutomationCard<
   T extends DeviceAutomation
 > extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public deviceId?: string;
+
+  protected headerKey = "";
+  protected noAutomationHeaderKey = "";
+
   @property() private _automations: T[] = [];
 
   private _localizeDeviceAutomation: (
@@ -58,24 +58,28 @@ export abstract class HaDeviceAutomationCard<
   }
 
   protected render(): TemplateResult {
-    if (!this.hass || this._automations.length === 0) {
-      return html``;
-    }
     return html`
       <ha-card>
-        <div class="card-content">
-          <ha-chips
-            .items=${this._automations.map((automation) =>
-              this._localizeDeviceAutomation(this.hass, automation)
-            )}
-          >
-          </ha-chips>
-        </div>
+        ${this._automations.length === 0
+          ? html`
+              <div class="card-header">
+                ${this.hass.localize(this.noAutomationHeaderKey)}
+              </div>
+            `
+          : html`
+              <div class="card-header">
+                ${this.hass.localize(this.headerKey)}
+              </div>
+              <div class="card-content">
+                <ha-chips
+                  .items=${this._automations.map((automation) =>
+                    this._localizeDeviceAutomation(this.hass, automation)
+                  )}
+                >
+                </ha-chips>
+              </div>
+            `}
       </ha-card>
     `;
-  }
-
-  static get styles(): CSSResult {
-    return css``;
   }
 }

@@ -9,15 +9,15 @@ import {
   unsafeCSS,
 } from "lit-element";
 
-// tslint:disable-next-line
-import chipStyles from "@material/chips/dist/mdc.chips.min.js";
+// @ts-ignore
+import chipStyles from "@material/chips/dist/mdc.chips.min.css";
 
 @customElement("ha-chips")
 export class HaChips extends LitElement {
-  @property() public items?: [];
+  @property() public items = [];
 
   protected render(): TemplateResult {
-    if (!this.items) {
+    if (this.items.length === 0) {
       return html``;
     }
     return html`
