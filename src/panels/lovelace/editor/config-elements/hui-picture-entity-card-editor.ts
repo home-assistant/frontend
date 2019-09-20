@@ -104,7 +104,9 @@ export class HuiPictureEntityCardEditor extends LitElement
       ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
-          label="Entity (Required)"
+          label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.entity_required"
+          )}"
           .hass="${this.hass}"
           .value="${this._entity}"
           .configValue=${"entity"}
