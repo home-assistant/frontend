@@ -107,6 +107,7 @@ export interface LightCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
   theme?: string;
+  icon?: string;
 }
 
 export interface MapCardConfig extends LovelaceCardConfig {
