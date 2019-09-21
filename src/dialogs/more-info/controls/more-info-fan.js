@@ -2,15 +2,16 @@ import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-toggle-button/paper-toggle-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/ha-attributes";
 import "../../../components/ha-paper-dropdown-menu";
+import "../../../components/ha-switch";
+
+import { EventsMixin } from "../../../mixins/events-mixin";
 
 import attributeClassNames from "../../../common/entity/attribute_class_names";
-import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
@@ -68,11 +69,11 @@ class MoreInfoFan extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <div class="container-oscillating">
           <div class="center horizontal layout single-row">
             <div class="flex">[[localize('ui.card.fan.oscillate')]]</div>
-            <paper-toggle-button
+            <ha-switch
               checked="[[oscillationToggleChecked]]"
               on-change="oscillationToggleChanged"
             >
-            </paper-toggle-button>
+            </ha-switch>
           </div>
         </div>
 
