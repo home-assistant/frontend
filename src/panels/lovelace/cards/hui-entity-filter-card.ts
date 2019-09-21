@@ -21,6 +21,10 @@ class EntityFilterCard extends HTMLElement implements LovelaceCard {
   }
 
   public setConfig(config: EntityFilterCardConfig): void {
+    if (!config.entities || !Array.isArray(config.entities)) {
+      throw new Error("entities must be specified.");
+    }
+
     if (
       (!config.state_filter || !Array.isArray(config.state_filter)) &&
       config.entities.filter((entity) => {
@@ -32,10 +36,6 @@ class EntityFilterCard extends HTMLElement implements LovelaceCard {
       }).length !== config.entities.length
     ) {
       throw new Error("Incorrect filter config.");
-    }
-
-    if (!config.entities) {
-      throw new Error("entities must be specified.");
     }
 
     this._config = config;
