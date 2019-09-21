@@ -1,7 +1,6 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-toggle-button/paper-toggle-button";
 import { timeOut } from "@polymer/polymer/lib/utils/async";
 import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
@@ -10,11 +9,12 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../../components/ha-water_heater-control";
 import "../../../components/ha-paper-slider";
 import "../../../components/ha-paper-dropdown-menu";
+import "../../../components/ha-switch";
+
+import { supportsFeature } from "../../../common/entity/supports-feature";
+import { EventsMixin } from "../../../mixins/events-mixin";
 
 import featureClassNames from "../../../common/entity/feature_class_names";
-import { supportsFeature } from "../../../common/entity/supports-feature";
-
-import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
@@ -124,11 +124,11 @@ class MoreInfoWaterHeater extends LocalizeMixin(EventsMixin(PolymerElement)) {
               <div class="flex">
                 [[localize('ui.card.water_heater.away_mode')]]
               </div>
-              <paper-toggle-button
+              <ha-switch
                 checked="[[awayToggleChecked]]"
                 on-change="awayToggleChanged"
               >
-              </paper-toggle-button>
+              </ha-switch>
             </div>
           </div>
         </template>

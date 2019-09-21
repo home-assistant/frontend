@@ -1,8 +1,6 @@
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-toggle-button/paper-toggle-button";
 
 import { STATES_OFF } from "../../common/const";
-import computeStateDomain from "../../common/entity/compute_state_domain";
 import {
   LitElement,
   TemplateResult,
@@ -15,7 +13,11 @@ import {
 import { HomeAssistant } from "../../types";
 import { HassEntity } from "home-assistant-js-websocket";
 import { forwardHaptic } from "../../data/haptics";
+
+import computeStateDomain from "../../common/entity/compute_state_domain";
 import computeStateName from "../../common/entity/compute_state_name";
+
+import "../ha-switch";
 
 const isOn = (stateObj?: HassEntity) =>
   stateObj !== undefined && !STATES_OFF.includes(stateObj.state);
@@ -29,7 +31,7 @@ class HaEntityToggle extends LitElement {
   protected render(): TemplateResult | void {
     if (!this.stateObj) {
       return html`
-        <paper-toggle-button disabled></paper-toggle-button>
+        <ha-switch disabled></ha-switch>
       `;
     }
 
@@ -51,13 +53,13 @@ class HaEntityToggle extends LitElement {
     }
 
     return html`
-      <paper-toggle-button
+      <ha-switch
         aria-label=${`Toggle ${computeStateName(this.stateObj)} ${
           this._isOn ? "off" : "on"
         }`}
         .checked=${this._isOn}
         @change=${this._toggleChanged}
-      ></paper-toggle-button>
+      ></ha-switch>
     `;
   }
 
@@ -149,9 +151,7 @@ class HaEntityToggle extends LitElement {
       paper-icon-button[state-active] {
         color: var(--paper-icon-button-active-color, var(--primary-color));
       }
-      paper-toggle-button {
-        cursor: pointer;
-        --paper-toggle-button-label-spacing: 0;
+      ha-switch {
         padding: 13px 5px;
         margin: -4px -5px;
       }

@@ -4,11 +4,12 @@ import {
   PropertyDeclarations,
   PropertyValues,
 } from "lit-element";
-import "@polymer/paper-toggle-button/paper-toggle-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-spinner/paper-spinner";
+
 import "../../../../components/ha-card";
+import "../../../../components/ha-switch";
 
 import { HomeAssistant, WebhookError } from "../../../../types";
 import { Webhook, fetchWebhooks } from "../../../../data/webhook";
@@ -116,9 +117,7 @@ export class CloudWebhooks extends LitElement {
                 </mwc-button>
               `
             : html`
-                <paper-toggle-button
-                  @click="${this._enableWebhook}"
-                ></paper-toggle-button>
+                <ha-switch @click="${this._enableWebhook}"></ha-switch>
               `}
         </div>
       `
