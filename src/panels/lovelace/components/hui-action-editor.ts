@@ -122,10 +122,7 @@ export class HuiActionEditor extends LitElement {
       return;
     }
     const target = ev.target! as EditorTarget;
-    if (
-      this.config &&
-      this.config[this[`${target.configValue}`]] === target.value
-    ) {
+    if (this[`_${target.configValue}`] === target.value) {
       return;
     }
     if (target.configValue === "action") {
