@@ -11,7 +11,8 @@ import "../../components/ha-switch";
 
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
-import { PolymerChangedEvent } from "../../polymer-types";
+// tslint:disable-next-line: no-duplicate-imports
+import { HaSwitch } from "../../components/ha-switch";
 
 @customElement("ha-force-narrow-row")
 class HaPushNotificationsRow extends LitElement {
@@ -29,14 +30,14 @@ class HaPushNotificationsRow extends LitElement {
         </span>
         <ha-switch
           .checked=${this.hass.dockedSidebar === "always_hidden"}
-          @checked-changed=${this._checkedChanged}
+          @change=${this._checkedChanged}
         ></ha-switch>
       </ha-settings-row>
     `;
   }
 
-  private async _checkedChanged(ev: PolymerChangedEvent<boolean>) {
-    const newValue = ev.detail.value;
+  private async _checkedChanged(ev: Event) {
+    const newValue = (ev.target as HaSwitch).checked;
     if (newValue === (this.hass.dockedSidebar === "always_hidden")) {
       return;
     }

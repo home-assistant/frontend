@@ -17,6 +17,8 @@ import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { HassEntity } from "home-assistant-js-websocket";
+// tslint:disable-next-line: no-duplicate-imports
+import { HaSwitch } from "../../../components/ha-switch";
 
 import computeDomain from "../../../common/entity/compute_domain";
 import computeStateName from "../../../common/entity/compute_state_name";
@@ -98,7 +100,7 @@ class DialogEntityRegistryDetail extends LitElement {
             <div class="row">
               <ha-switch
                 .checked=${!this._disabledBy}
-                @checked-changed=${this._disabledByChanged}
+                @change=${this._disabledByChanged}
               >
                 <div>
                   <div>
@@ -191,8 +193,8 @@ class DialogEntityRegistryDetail extends LitElement {
       this._params = undefined;
     }
   }
-  private _disabledByChanged(ev: PolymerChangedEvent<boolean>): void {
-    this._disabledBy = ev.detail.value ? null : "user";
+  private _disabledByChanged(ev: Event): void {
+    this._disabledBy = (ev.target as HaSwitch).checked ? null : "user";
   }
 
   static get styles(): CSSResult[] {

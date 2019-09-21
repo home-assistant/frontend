@@ -30,9 +30,10 @@ import {
 } from "../../../../common/entity/entity_filter";
 import { compare } from "../../../../common/string/compare";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { PolymerChangedEvent } from "../../../../polymer-types";
 import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
 import { AlexaEntity, fetchCloudAlexaEntities } from "../../../../data/alexa";
+// tslint:disable-next-line: no-duplicate-imports
+import { HaSwitch } from "../../../../components/ha-switch";
 
 import computeStateName from "../../../../common/entity/compute_state_name";
 import computeDomain from "../../../../common/entity/compute_domain";
@@ -133,7 +134,7 @@ class CloudAlexa extends LitElement {
               .entityId=${entity.entity_id}
               .disabled=${!emptyFilter}
               .checked=${isExposed}
-              @checked-changed=${this._exposeChanged}
+              @change=${this._exposeChanged}
             >
               Expose to Alexa
             </ha-switch>
@@ -230,9 +231,9 @@ class CloudAlexa extends LitElement {
     fireEvent(this, "hass-more-info", { entityId });
   }
 
-  private async _exposeChanged(ev: PolymerChangedEvent<boolean>) {
+  private async _exposeChanged(ev: Event) {
     const entityId = (ev.currentTarget as any).entityId;
-    const newExposed = ev.detail.value;
+    const newExposed = (ev.target as HaSwitch).checked;
     await this._updateExposed(entityId, newExposed);
   }
 

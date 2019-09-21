@@ -7,7 +7,6 @@ import "../../../../components/ha-card";
 import "../../../../components/buttons/ha-call-api-button";
 import "../../../../layouts/hass-subpage";
 import "../../../../resources/ha-style";
-import "../../../../components/ha-switch";
 import "../../ha-config-section";
 import "./cloud-webhooks";
 import "./cloud-alexa-pref";
