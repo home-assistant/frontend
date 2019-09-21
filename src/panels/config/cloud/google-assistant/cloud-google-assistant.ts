@@ -7,12 +7,15 @@ import {
   customElement,
   property,
 } from "lit-element";
-import "@polymer/paper-toggle-button";
+import memoizeOne from "memoize-one";
 import "@polymer/paper-icon-button";
+
 import "../../../../layouts/hass-subpage";
 import "../../../../layouts/hass-loading-screen";
 import "../../../../components/ha-card";
 import "../../../../components/entity/state-info";
+import "../../../../components/ha-switch";
+
 import { HomeAssistant } from "../../../../types";
 import {
   CloudStatusLoggedIn,
@@ -21,23 +24,24 @@ import {
   cloudSyncGoogleAssistant,
   GoogleEntityConfig,
 } from "../../../../data/cloud";
-import memoizeOne from "memoize-one";
 import {
   generateFilter,
   isEmptyFilter,
   EntityFilter,
 } from "../../../../common/entity/entity_filter";
 import { compare } from "../../../../common/string/compare";
-import computeStateName from "../../../../common/entity/compute_state_name";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { showToast } from "../../../../util/toast";
-import { PolymerChangedEvent } from "../../../../polymer-types";
 import { showDomainTogglerDialog } from "../../../../dialogs/domain-toggler/show-dialog-domain-toggler";
-import computeDomain from "../../../../common/entity/compute_domain";
 import {
   GoogleEntity,
   fetchCloudGoogleEntities,
 } from "../../../../data/google_assistant";
+// tslint:disable-next-line: no-duplicate-imports
+import { HaSwitch } from "../../../../components/ha-switch";
+
+import computeStateName from "../../../../common/entity/compute_state_name";
+import computeDomain from "../../../../common/entity/compute_domain";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 
@@ -122,23 +126,23 @@ class CloudGoogleAssistant extends LitElement {
                 .map((trait) => trait.substr(trait.lastIndexOf(".") + 1))
                 .join(", ")}
             </state-info>
-            <paper-toggle-button
+            <ha-switch
               .entityId=${entity.entity_id}
               .disabled=${!emptyFilter}
               .checked=${isExposed}
-              @checked-changed=${this._exposeChanged}
+              @change=${this._exposeChanged}
             >
               Expose to Google Assistant
-            </paper-toggle-button>
+            </ha-switch>
             ${entity.might_2fa
               ? html`
-                  <paper-toggle-button
+                  <ha-switch
                     .entityId=${entity.entity_id}
                     .checked=${Boolean(config.disable_2fa)}
-                    @checked-changed=${this._disable2FAChanged}
+                    @change=${this._disable2FAChanged}
                   >
                     Disable two factor authentication
-                  </paper-toggle-button>
+                  </ha-switch>
                 `
               : ""}
           </div>
@@ -234,9 +238,9 @@ class CloudGoogleAssistant extends LitElement {
     fireEvent(this, "hass-more-info", { entityId });
   }
 
-  private async _exposeChanged(ev: PolymerChangedEvent<boolean>) {
+  private async _exposeChanged(ev: Event) {
     const entityId = (ev.currentTarget as any).entityId;
-    const newExposed = ev.detail.value;
+    const newExposed = (ev.target as HaSwitch).checked;
     await this._updateExposed(entityId, newExposed);
   }
 
@@ -251,9 +255,9 @@ class CloudGoogleAssistant extends LitElement {
     this._ensureEntitySync();
   }
 
-  private async _disable2FAChanged(ev: PolymerChangedEvent<boolean>) {
+  private async _disable2FAChanged(ev: Event) {
     const entityId = (ev.currentTarget as any).entityId;
-    const newDisable2FA = ev.detail.value;
+    const newDisable2FA = (ev.target as HaSwitch).checked;
     const curDisable2FA = Boolean(
       (this._entityConfigs[entityId] || {}).disable_2fa
     );
@@ -348,7 +352,6 @@ class CloudGoogleAssistant extends LitElement {
         display: flex;
         flex-wrap: wrap;
         padding: 4px;
-        --paper-toggle-button-label-spacing: 16px;
       }
       ha-card {
         margin: 4px;
@@ -361,7 +364,7 @@ class CloudGoogleAssistant extends LitElement {
       state-info {
         cursor: pointer;
       }
-      paper-toggle-button {
+      ha-switch {
         padding: 8px 0;
       }
 

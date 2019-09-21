@@ -661,6 +661,16 @@
     lit-html "^1.0.0"
     tslib "^1.10.0"
 
+"@material/mwc-switch@^0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@material/mwc-switch/-/mwc-switch-0.8.0.tgz#5a2afc95e5f65ad077781fe16b6231cf5caddc9b"
+  integrity sha512-q6VWrtOJIOjyl35xo6G2npq0guac0avqUH+gR8TvQXSO0E2+pB+2GX+PhSryVBbFxgJRiVmfRlWBeIzlYtI4mg==
+  dependencies:
+    "@material/mwc-base" "^0.8.0"
+    "@material/mwc-ripple" "^0.8.0"
+    "@material/switch" "^3.0.0"
+    tslib "^1.10.0"
+
 "@material/ripple@^3.0.0", "@material/ripple@^3.1.0":
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/@material/ripple/-/ripple-3.1.0.tgz#5cb581e9a70415c50c8b92ecd8628d5eeae34c74"
@@ -684,6 +694,21 @@
   integrity sha512-Oyvs7YjHfByA0e9IVVp7ojAlPwgSu3Bl0cioiE0OdkidkAaNu0izM2ryRzMBDH5o8+lRD0kpZoT+9CVVCdaYIg==
   dependencies:
     "@material/feature-targeting" "^3.1.0"
+
+"@material/switch@^3.0.0":
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/@material/switch/-/switch-3.1.0.tgz#6a610b05339ce4d145f7791debb37302b8f2ef70"
+  integrity sha512-DhxFN3aRrShkkiDG1fFLp1TZZCinnkLlCoxhhyCKEdCl+jaCaTl2Ii3SIw2SvN1KwMLHBX33jIzm+odOLsz7/Q==
+  dependencies:
+    "@material/animation" "^3.1.0"
+    "@material/base" "^3.1.0"
+    "@material/dom" "^3.1.0"
+    "@material/elevation" "^3.1.0"
+    "@material/feature-targeting" "^3.1.0"
+    "@material/ripple" "^3.1.0"
+    "@material/rtl" "^3.1.0"
+    "@material/theme" "^3.1.0"
+    tslib "^1.9.3"
 
 "@material/theme@^3.1.0":
   version "3.1.0"
@@ -1220,16 +1245,6 @@
     "@polymer/iron-a11y-announcer" "^3.0.0-pre.26"
     "@polymer/iron-fit-behavior" "^3.0.0-pre.26"
     "@polymer/iron-overlay-behavior" "^3.0.0-pre.27"
-    "@polymer/polymer" "^3.0.0"
-
-"@polymer/paper-toggle-button@^3.0.1":
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/@polymer/paper-toggle-button/-/paper-toggle-button-3.0.1.tgz#7d855420f0df96e7f812a9f1bdcfbc5ab082e819"
-  integrity sha512-jadZB60fycT7YnSAH0H23LYo6/2HYmMZTtNr9LpdSIRFPLX6mqqxewex92cFz019bMKaRJgORn308hRlJo2u6A==
-  dependencies:
-    "@polymer/iron-checked-element-behavior" "^3.0.0-pre.26"
-    "@polymer/paper-behaviors" "^3.0.0-pre.27"
-    "@polymer/paper-styles" "^3.0.0-pre.26"
     "@polymer/polymer" "^3.0.0"
 
 "@polymer/paper-tooltip@^3.0.1":

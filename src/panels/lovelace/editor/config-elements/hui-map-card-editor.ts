@@ -105,11 +105,11 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
             @value-changed="${this._valueChanged}"
           ></paper-input>
         </div>
-        <paper-toggle-button
+        <ha-switch
           ?checked="${this._dark_mode !== false}"
           .configValue="${"dark_mode"}"
           @change="${this._valueChanged}"
-          >Dark Mode?</paper-toggle-button
+          >Dark Mode?</ha-switch
         >
         <hui-entity-editor
           .hass="${this.hass}"
