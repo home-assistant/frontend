@@ -157,7 +157,6 @@
     "tslint-eslint-rules": "^5.4.0",
     "tslint-plugin-prettier": "^2.0.1",
     "typescript": "^3.6.3",
-    "uglifyjs-webpack-plugin": "^2.1.2",
     "web-component-tester": "^6.9.2",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.3.0",
