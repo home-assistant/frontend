@@ -21,7 +21,11 @@ class HaTextarea extends PolymerElement {
           display: block;
         }
       </style>
-      <paper-textarea label="[[label]]" value="{{value}}"></paper-textarea>
+      <paper-textarea
+        label="[[label]]"
+        placeholder="[[placeholder]]"
+        value="{{value}}"
+      ></paper-textarea>
     `;
   }
 
@@ -29,6 +33,7 @@ class HaTextarea extends PolymerElement {
     return {
       name: String,
       label: String,
+      placeholder: String,
       value: {
         type: String,
         notify: true,

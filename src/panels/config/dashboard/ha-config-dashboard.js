@@ -92,6 +92,17 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
                 <ha-icon-next></ha-icon-next>
               </paper-item>
             </a>
+            <a href='/config/devices/dashboard' tabindex="-1">
+              <paper-item>
+                <paper-item-body two-line>
+                  [[localize('ui.panel.config.devices.caption')]]
+                  <div secondary>
+                    [[localize('ui.panel.config.devices.description')]]
+                  </div>
+                </paper-item-body>
+                <ha-icon-next></ha-icon-next>
+              </paper-item>
+            </a>
 
             <a href='/config/users' tabindex="-1">
               <paper-item>

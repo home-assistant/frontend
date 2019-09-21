@@ -251,7 +251,8 @@
             "snowy-rainy": "Havas, esős",
             "sunny": "Napos",
             "windy": "Szeles",
-            "windy-variant": "Szeles"
+            "windy-variant": "Szeles",
+            "exceptional": "Kivételes"
         },
         "vacuum": {
             "cleaning": "Takarítás",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Infó"
+                    },
+                    "logs": {
+                        "title": "Naplók"
                     }
                 }
             },
@@ -498,6 +502,9 @@
                                     "event": "Esemény:",
                                     "enter": "Érkezés",
                                     "leave": "Távozás"
+                                },
+                                "device": {
+                                    "label": "Eszköz"
                                 }
                             },
                             "learn_more": "Tudj meg többet a triggerekről"
@@ -544,6 +551,9 @@
                                     "label": "Zóna",
                                     "entity": "Entitás helyszínnel",
                                     "zone": "Zóna"
+                                },
+                                "device": {
+                                    "label": "Eszköz"
                                 }
                             },
                             "learn_more": "Tudj meg többet a feltételekről"
@@ -578,6 +588,9 @@
                                     "label": "Esemény meghívása",
                                     "event": "Esemény:",
                                     "service_data": "Szolgáltatás adatai"
+                                },
+                                "device_id": {
+                                    "label": "Eszköz"
                                 }
                             },
                             "learn_more": "Tudj meg többet a műveletekről"
@@ -783,7 +796,9 @@
                             "heading": "Szerver menedzsment",
                             "introduction": "Home Assistant szerver vezérlése... a Home Assistant-ból.",
                             "restart": "Újraindítás",
-                            "stop": "Leállítás"
+                            "stop": "Leállítás",
+                            "confirm_restart": "Biztosan újra akarod indítani a Home Assistantet?",
+                            "confirm_stop": "Biztosan le akarod állítani a Home Assistantet?"
                         }
                     }
                 }
@@ -1050,6 +1065,10 @@
                         "save": "Mentés",
                         "unsaved_changes": "Nem mentett változások",
                         "saved": "Mentett"
+                    },
+                    "edit_lovelace": {
+                        "header": "Lovelace UI címe",
+                        "explanation": "Ez a cím jelenik meg minden nézet felett a Lovelace-ben."
                     }
                 },
                 "menu": {
@@ -1119,7 +1138,8 @@
         "common": {
             "loading": "Betöltés",
             "cancel": "Mégse",
-            "save": "Mentés"
+            "save": "Mentés",
+            "successfully_saved": "Sikeresen elmentve"
         },
         "duration": {
             "day": "{count} {count, plural,\none {nap}\nother {nap}\n}",
@@ -1195,7 +1215,9 @@
             "fan": {
                 "speed": "Sebesség",
                 "oscillate": "Oszcilláció",
-                "direction": "Irány"
+                "direction": "Irány",
+                "forward": "Előre",
+                "reverse": "Fordított"
             },
             "light": {
                 "brightness": "Fényerő",
@@ -1240,6 +1262,14 @@
                 "target_temperature": "Kívánt hőmérséklet",
                 "operation": "Üzemmód",
                 "away_mode": "Távoli mód"
+            },
+            "timer": {
+                "actions": {
+                    "start": "indítás",
+                    "pause": "szünet",
+                    "cancel": "elvet",
+                    "finish": "befejezés"
+                }
             }
         },
         "components": {
@@ -1306,6 +1336,19 @@
                 "title": "Rendszerbeállítások",
                 "enable_new_entities_label": "Újonnan hozzáadott entitások engedélyezése.",
                 "enable_new_entities_description": "Ha le van tiltva, akkor az újonnan felfedezett entitások nem lesznek automatikusan hozzáadva a Home Assistant-hoz."
+            },
+            "zha_device_info": {
+                "manuf": "{manufacurer} által",
+                "no_area": "Nincs Terület",
+                "services": {
+                    "updateDeviceName": "Egyedi név beállítása ehhez az eszközhöz az eszköz nyilvántartásban.",
+                    "remove": "Törölj egy eszközt a Zigbee hálózatból"
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Felhasználó utóneve",
+                    "area_picker_label": "Terület",
+                    "update_name_button": "Név frissítése"
+                }
             }
         },
         "auth_store": {

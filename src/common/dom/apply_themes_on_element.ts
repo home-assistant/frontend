@@ -1,3 +1,18 @@
+const hexToRgb = (hex: string): string | null => {
+  const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
+  const checkHex = hex.replace(shorthandRegex, (_m, r, g, b) => {
+    return r + r + g + g + b + b;
+  });
+
+  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(checkHex);
+  return result
+    ? `${parseInt(result[1], 16)}, ${parseInt(result[2], 16)}, ${parseInt(
+        result[3],
+        16
+      )}`
+    : null;
+};
+
 /**
  * Apply a theme to an element by setting the CSS variables on it.
  *
@@ -23,15 +38,28 @@ export default function applyThemesOnElement(
   if (themeName !== "default") {
     const theme = themes.themes[themeName];
     Object.keys(theme).forEach((key) => {
-      const prefixedKey = "--" + key;
+      const prefixedKey = `--${key}`;
       element._themes[prefixedKey] = "";
       styles[prefixedKey] = theme[key];
+      if (key.startsWith("rgb")) {
+        return;
+      }
+      const rgbKey = `rgb-${key}`;
+      if (theme[rgbKey] !== undefined) {
+        return;
+      }
+      const prefixedRgbKey = `--${rgbKey}`;
+      element._themes[prefixedRgbKey] = "";
+      const rgbValue = hexToRgb(theme[key]);
+      if (rgbValue !== null) {
+        styles[prefixedRgbKey] = rgbValue;
+      }
     });
   }
   if (element.updateStyles) {
     element.updateStyles(styles);
   } else if (window.ShadyCSS) {
-    // implement updateStyles() method of Polemer elements
+    // implement updateStyles() method of Polymer elements
     window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */ (element), styles);
   }
 

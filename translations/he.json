@@ -1301,6 +1301,11 @@
             },
             "config_entry_system_options": {
                 "title": "אפשרויות מערכת"
+            },
+            "zha_device_info": {
+                "services": {
+                    "remove": "הסר מכשיר מרשת ה-ZigBee"
+                }
             }
         },
         "auth_store": {

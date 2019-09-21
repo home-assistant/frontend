@@ -251,7 +251,8 @@
             "snowy-rainy": "Nevado, lluvioso",
             "sunny": "Soleado",
             "windy": "Ventoso",
-            "windy-variant": "Ventoso"
+            "windy-variant": "Ventoso",
+            "exceptional": "Excepcional"
         },
         "vacuum": {
             "cleaning": "Limpiando",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Información"
+                    },
+                    "logs": {
+                        "title": "Registros"
                     }
                 }
             },
@@ -498,6 +502,9 @@
                                     "event": "Evento:",
                                     "enter": "Entrar",
                                     "leave": "Salir"
+                                },
+                                "device": {
+                                    "label": "Dispositivo"
                                 }
                             },
                             "learn_more": "Aprende más sobre los desencadenantes"
@@ -544,6 +551,9 @@
                                     "label": "Zona",
                                     "entity": "Entidad con la ubicación",
                                     "zone": "Zona"
+                                },
+                                "device": {
+                                    "label": "Dispositivo"
                                 }
                             },
                             "learn_more": "Aprende más sobre las condiciones"
@@ -578,6 +588,9 @@
                                     "label": "Disparar evento",
                                     "event": "Evento:",
                                     "service_data": "Datos de servicio"
+                                },
+                                "device_id": {
+                                    "label": "Dispositivo"
                                 }
                             },
                             "learn_more": "Aprende más sobre las acciones."
@@ -787,9 +800,15 @@
                             "heading": "Gestión del servidor",
                             "introduction": "Controla tu servidor de Home Assistant... desde Home Assistant.",
                             "restart": "Reiniciar",
-                            "stop": "Detener"
+                            "stop": "Detener",
+                            "confirm_restart": "¿Seguro que quieres reiniciar Home Assistant?",
+                            "confirm_stop": "¿Seguro que quieres detener Home Assistant?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Dispositivos",
+                    "description": "Administrar dispositivos conectados"
                 }
             },
             "profile": {
@@ -1054,6 +1073,10 @@
                         "save": "Guardar",
                         "unsaved_changes": "Cambios no guardados",
                         "saved": "Guardado"
+                    },
+                    "edit_lovelace": {
+                        "header": "Título de tu interfaz de usuario de Lovelace",
+                        "explanation": "Este título se muestra sobre todas tus vistas en Lovelace."
                     }
                 },
                 "menu": {
@@ -1123,7 +1146,8 @@
         "common": {
             "loading": "Cargando",
             "cancel": "Cancelar",
-            "save": "Guardar"
+            "save": "Guardar",
+            "successfully_saved": "Guardado correctamente"
         },
         "duration": {
             "day": "{count} {count, plural,\none {día}\nother {días}\n}",
@@ -1199,7 +1223,9 @@
             "fan": {
                 "speed": "Velocidad",
                 "oscillate": "Oscilar",
-                "direction": "Dirección"
+                "direction": "Dirección",
+                "forward": "Adelante",
+                "reverse": "Inverso"
             },
             "light": {
                 "brightness": "Brillo",
@@ -1244,6 +1270,14 @@
                 "target_temperature": "Temperatura deseada",
                 "operation": "Operación",
                 "away_mode": "Modo ausente"
+            },
+            "timer": {
+                "actions": {
+                    "start": "Iniciar",
+                    "pause": "Pausar",
+                    "cancel": "Cancelar",
+                    "finish": "Terminar"
+                }
             }
         },
         "components": {
@@ -1310,6 +1344,20 @@
                 "title": "Opciones del sistema",
                 "enable_new_entities_label": "Activar entidades recién añadidas.",
                 "enable_new_entities_description": "Si está desactivado, las entidades recién descubiertas no se añadirán automáticamente a Home Assistant."
+            },
+            "zha_device_info": {
+                "manuf": "por {manufacturer}",
+                "no_area": "Ningún área",
+                "services": {
+                    "reconfigure": "Reconfigura el dispositivo ZHA (curar dispositivo). Usa esto si tienes problemas con el dispositivo. Si el dispositivo en cuestión es un dispositivo alimentado por batería, asegúrate de que está activo y aceptando comandos cuando uses este servicio.",
+                    "updateDeviceName": "Establece un nombre personalizado para este dispositivo en el registro de dispositivos.",
+                    "remove": "Eliminar un dispositivo de la red ZigBee."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Nombre dado por el usuario",
+                    "area_picker_label": "Área",
+                    "update_name_button": "Cambiar nombre"
+                }
             }
         },
         "auth_store": {

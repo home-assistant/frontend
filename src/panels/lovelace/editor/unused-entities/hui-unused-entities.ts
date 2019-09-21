@@ -10,9 +10,23 @@ import {
 } from "lit-element";
 
 import { classMap } from "lit-html/directives/class-map";
-import "../../../../components/ha-fab";
 
-import "./hui-select-row";
+import memoizeOne from "memoize-one";
+
+import "../../../../components/ha-fab";
+import "../../../../components/entity/state-badge";
+import "../../../../components/ha-relative-time";
+import "../../../../components/ha-icon";
+
+import "../../../../components/ha-data-table";
+// tslint:disable-next-line
+import {
+  SelectionChangedEvent,
+  DataTabelColumnContainer,
+} from "../../../../components/ha-data-table";
+
+import computeStateName from "../../../../common/entity/compute_state_name";
+import computeDomain from "../../../../common/entity/compute_domain";
 
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import { computeUnusedEntities } from "../../common/compute-unused-entities";
@@ -22,12 +36,15 @@ import { showEditCardDialog } from "../card-editor/show-edit-card-dialog";
 import { HomeAssistant } from "../../../../types";
 import { Lovelace } from "../../types";
 import { LovelaceConfig } from "../../../../data/lovelace";
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 @customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {
   @property() public lovelace?: Lovelace;
 
   @property() public hass?: HomeAssistant;
+
+  @property() public narrow?: boolean;
 
   @property() private _unusedEntities: string[] = [];
 
@@ -36,6 +53,55 @@ export class HuiUnusedEntities extends LitElement {
   private get _config(): LovelaceConfig {
     return this.lovelace!.config;
   }
+
+  private _columns = memoizeOne((narrow: boolean) => {
+    const columns: DataTabelColumnContainer = {
+      entity: {
+        title: "Entity",
+        sortable: true,
+        filterable: true,
+        filterKey: "friendly_name",
+        direction: "asc",
+        template: (stateObj) => html`
+          <div @click=${this._handleEntityClicked} style="cursor: pointer;">
+            <state-badge
+              .hass=${this.hass!}
+              .stateObj=${stateObj}
+            ></state-badge>
+            ${stateObj.friendly_name}
+          </div>
+        `,
+      },
+    };
+
+    if (narrow) {
+      return columns;
+    }
+
+    columns.entity_id = {
+      title: "Entity id",
+      sortable: true,
+      filterable: true,
+    };
+    columns.domain = {
+      title: "Domain",
+      sortable: true,
+      filterable: true,
+    };
+    columns.last_changed = {
+      title: "Last Changed",
+      type: "numeric",
+      sortable: true,
+      template: (lastChanged: string) => html`
+        <ha-relative-time
+          .hass=${this.hass!}
+          .datetime=${lastChanged}
+        ></ha-relative-time>
+      `,
+    };
+
+    return columns;
+  });
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
@@ -66,29 +132,25 @@ export class HuiUnusedEntities extends LitElement {
               `
             : ""}
         </div>
-        <div
-          class="table-container"
-          role="table"
-          aria-label="Unused Entities"
-          @entity-selection-changed=${this._handleSelectionChanged}
-        >
-          <div class="flex-row header" role="rowgroup">
-            <div class="flex-cell" role="columnheader">Entity</div>
-            <div class="flex-cell" role="columnheader">Entity id</div>
-            <div class="flex-cell" role="columnheader">Domain</div>
-            <div class="flex-cell" role="columnheader">Last Changed</div>
-          </div>
-          ${this._unusedEntities.map((entity) => {
-            return html`
-              <hui-select-row
-                .selectable=${this.lovelace!.mode === "storage"}
-                .hass=${this.hass}
-                .entity=${entity}
-              ></hui-select-row>
-            `;
-          })}
-        </div>
       </ha-card>
+      <ha-data-table
+        .columns=${this._columns(this.narrow!)}
+        .data=${this._unusedEntities.map((entity) => {
+          const stateObj = this.hass!.states[entity];
+          return {
+            entity_id: entity,
+            entity: {
+              ...stateObj,
+              friendly_name: computeStateName(stateObj),
+            },
+            domain: computeDomain(entity),
+            last_changed: stateObj!.last_changed,
+          };
+        })}
+        .id=${"entity_id"}
+        .selectable=${this.lovelace!.mode === "storage"}
+        @selection-changed=${this._handleSelectionChanged}
+      ></ha-data-table>
       ${this.lovelace.mode === "storage"
         ? html`
             <ha-fab
@@ -114,15 +176,26 @@ export class HuiUnusedEntities extends LitElement {
     this._unusedEntities = computeUnusedEntities(this.hass, this._config!);
   }
 
-  private _handleSelectionChanged(ev: any): void {
-    if (ev.detail.selected) {
-      this._selectedEntities.push(ev.detail.entity);
+  private _handleSelectionChanged(ev: CustomEvent): void {
+    const changedSelection = ev.detail as SelectionChangedEvent;
+    const entity = changedSelection.id;
+    if (changedSelection.selected) {
+      this._selectedEntities.push(entity);
     } else {
-      const index = this._selectedEntities.indexOf(ev.detail.entity);
+      const index = this._selectedEntities.indexOf(entity);
       if (index !== -1) {
         this._selectedEntities.splice(index, 1);
       }
     }
+  }
+
+  private _handleEntityClicked(ev: Event) {
+    const entityId = (ev.target as HTMLElement)
+      .closest("tr")!
+      .getAttribute("data-row-id")!;
+    fireEvent(this, "hass-more-info", {
+      entityId,
+    });
   }
 
   private _selectView(): void {
@@ -155,52 +228,8 @@ export class HuiUnusedEntities extends LitElement {
       ha-fab.rtl {
         float: left;
       }
-
-      div {
-        box-sizing: border-box;
-      }
-
-      .table-container {
-        display: block;
-        margin: auto;
-      }
-
-      .flex-row {
-        display: flex;
-        flex-flow: row wrap;
-      }
-      .flex-row .flex-cell {
-        font-weight: bold;
-      }
-
-      .flex-cell {
-        width: calc(100% / 4);
-        padding: 12px 24px;
-        border-bottom: 1px solid #e0e0e0;
-        vertical-align: middle;
-      }
-
-      @media all and (max-width: 767px) {
-        .flex-cell {
-          width: calc(100% / 3);
-        }
-        .flex-cell:first-child {
-          width: 100%;
-          border-bottom: 0;
-        }
-      }
-      @media all and (max-width: 430px) {
-        .flex-cell {
-          border-bottom: 0;
-        }
-
-        .flex-cell:last-child {
-          border-bottom: 1px solid #e0e0e0;
-        }
-
-        .flex-cell {
-          width: 100%;
-        }
+      ha-card {
+        margin-bottom: 16px;
       }
     `;
   }

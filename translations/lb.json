@@ -251,7 +251,8 @@
             "snowy-rainy": "Schnéi, Reen",
             "sunny": "Sonneg",
             "windy": "Lëfteg",
-            "windy-variant": "Lëfteg"
+            "windy-variant": "Lëfteg",
+            "exceptional": "Aussergewéinlech"
         },
         "vacuum": {
             "cleaning": "Botzt",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Info"
+                    },
+                    "logs": {
+                        "title": "Logbicher"
                     }
                 }
             },
@@ -349,7 +353,7 @@
                 "introduction": "Hei ass et méiglech är Komponenten vum Home Assistant ze konfiguréieren. Net alles ass méiglech fir iwwert den Interface anzestellen, mee mir schaffen drun.",
                 "core": {
                     "caption": "Generell",
-                    "description": "Konfiguratioun validéieren an de Server kontrolléieren",
+                    "description": "Ännert är generell Home Assistant Konfiguratioun",
                     "section": {
                         "core": {
                             "header": "Konfiguratioun an Server Kontroll",
@@ -498,6 +502,9 @@
                                     "event": "Evenement",
                                     "enter": "Betrieden",
                                     "leave": "Verloossen"
+                                },
+                                "device": {
+                                    "label": "Apparat"
                                 }
                             },
                             "learn_more": "Méi iwwert Ausléiser liesen"
@@ -506,7 +513,7 @@
                             "header": "Konditiounen",
                             "introduction": "Konditioune sinn een optionalen Deel vun engem Automatismus a kënne benotzt gi fir ze bestëmme wann eng Aktioun ausgeféiert gëtt. Konditioune gläichen den Ausléiser mee sinn awer ganz ënnerschiddlech. Een Ausléiser iwwerwaacht d'Evenementer am System, an eng Konditioun iwwerwaacht de Status vum System. Een Ausléiser gesäit wann ee Schalter ugeschalt gëtt. Eng Konditioun gesäit nëmmen op de Schalter un oder aus ass.\n\n[Léier méi iwwer Konditioune.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
                             "add": "Konditioun dobäisetzen",
-                            "duplicate": "Replikéiere",
+                            "duplicate": "Duplikéiere",
                             "delete": "Läschen",
                             "delete_confirm": "Sëcher fir ze läschen?",
                             "unsupported_condition": "Net ënnerstëtzte Konditioun: {condition}",
@@ -544,6 +551,9 @@
                                     "label": "Zon",
                                     "entity": "Entitéit mam Standuert",
                                     "zone": "Zon"
+                                },
+                                "device": {
+                                    "label": "Apparat"
                                 }
                             },
                             "learn_more": "Méi iwwert Konditioune liesen"
@@ -552,7 +562,7 @@
                             "header": "Aktiounen",
                             "introduction": "Aktioune déi den Home Assistant ausféiert wann den Automatismus ausgeléist gouf.\n[Léier méi iwwert Aktiounen.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Aktioun dobäisetzen",
-                            "duplicate": "Replikéiere",
+                            "duplicate": "Duplikéiere",
                             "delete": "Läschen",
                             "delete_confirm": "Element sécher läschen?",
                             "unsupported_action": "Net ënnerstëtzten Aktioun: {action}",
@@ -578,6 +588,9 @@
                                     "label": "Evenement starten",
                                     "event": "Evenement:",
                                     "service_data": "Service-Donnéeën"
+                                },
+                                "device_id": {
+                                    "label": "Apparat"
                                 }
                             },
                             "learn_more": "Méi iwwert Aktioune liesen"
@@ -787,9 +800,15 @@
                             "heading": "Serververwaltung",
                             "introduction": "Kontrolléiert ären Home Assistant Server ... vun Home Assistant aus.",
                             "restart": "Neistart",
-                            "stop": "Stop"
+                            "stop": "Stop",
+                            "confirm_restart": "Sécher fir Home Assistant frësch ze starten?",
+                            "confirm_stop": "Sécher fir Home Assistant ze stoppen?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Apparater",
+                    "description": "Verwalt verbonnen Apparater"
                 }
             },
             "profile": {
@@ -1054,6 +1073,10 @@
                         "save": "Späicheren",
                         "unsaved_changes": "Net gespäicherten Ännerungen",
                         "saved": "Gespäichert"
+                    },
+                    "edit_lovelace": {
+                        "header": "Titel vun ärem Lovelace Benotzer Interface",
+                        "explanation": "Dësen Titel gëtt iwwert den Usiichte vu Lovelace ugewisen."
                     }
                 },
                 "menu": {
@@ -1123,7 +1146,8 @@
         "common": {
             "loading": "Lued",
             "cancel": "Ofbriechen",
-            "save": "Späicheren"
+            "save": "Späicheren",
+            "successfully_saved": "Erfollegräich gespäichert."
         },
         "duration": {
             "day": "{count} {count, plural,\none {Dag}\nother {Deeg}\n}",
@@ -1199,7 +1223,9 @@
             "fan": {
                 "speed": "Vitesse",
                 "oscillate": "Pendele",
-                "direction": "Richtung"
+                "direction": "Richtung",
+                "forward": "Vir",
+                "reverse": "Hannerzeg"
             },
             "light": {
                 "brightness": "Hellegkeet",
@@ -1244,6 +1270,14 @@
                 "target_temperature": "Zieltemperatur",
                 "operation": "Aktioun",
                 "away_mode": "Modus Keen Doheem"
+            },
+            "timer": {
+                "actions": {
+                    "start": "Start",
+                    "pause": "Pause",
+                    "cancel": "Ofbriechen",
+                    "finish": "Ofschléissen"
+                }
             }
         },
         "components": {
@@ -1282,7 +1316,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Späicheren",
-                "name": "Numm",
+                "name": "Numm iwwerschreiwen",
                 "entity_id": "Entitéit ID"
             },
             "more_info_control": {
@@ -1310,6 +1344,20 @@
                 "title": "System Optiounen",
                 "enable_new_entities_label": "Aktivéiert nei dobäigesate Entitéiten.",
                 "enable_new_entities_description": "Falls desaktivéiert, ginn nei entdeckten Entitéiten net automatesch zu Home Assistant dobäigesat."
+            },
+            "zha_device_info": {
+                "manuf": "vun {manufacturer}",
+                "no_area": "Kee Beräich",
+                "services": {
+                    "reconfigure": "ZHA Apparat rekonfiguréieren (Apparat heelen). Benotzt dëst am Fall vu Problemer mam Apparat. Falls den Apparat duerch eng Batterie gespeist gëtt stellt sécher dass en un ass a Befeeler entgéint kann huelen",
+                    "updateDeviceName": "Personaliséiert den Numm fir dësen Apparat an der Iwwersiicht vun den Apparaten.",
+                    "remove": "Een Apparat vum Zigbee Reseau läschen."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Virnumm",
+                    "area_picker_label": "Beräich",
+                    "update_name_button": "Numm änneren"
+                }
             }
         },
         "auth_store": {

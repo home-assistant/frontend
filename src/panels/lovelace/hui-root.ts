@@ -35,11 +35,13 @@ import { navigate } from "../../common/navigate";
 import { fireEvent } from "../../common/dom/fire_event";
 import { swapView } from "./editor/config-util";
 
-import "./hui-view";
+import "./views/hui-view";
 // Not a duplicate import, this one is for type
 // tslint:disable-next-line
-import { HUIView } from "./hui-view";
-import { createCardElement } from "./common/create-card-element";
+import { HUIView } from "./views/hui-view";
+import "./views/hui-panel-view";
+// tslint:disable-next-line
+import { HUIPanelView } from "./views/hui-panel-view";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { Lovelace } from "./types";
@@ -186,16 +188,20 @@ class HUIRoot extends LitElement {
                             </paper-item>
                           `
                         : ""}
-                      <paper-item
-                        aria-label=${this.hass!.localize(
-                          "ui.panel.lovelace.menu.configure_ui"
-                        )}
-                        @tap="${this._editModeEnable}"
-                      >
-                        ${this.hass!.localize(
-                          "ui.panel.lovelace.menu.configure_ui"
-                        )}
-                      </paper-item>
+                      ${this.hass!.user!.is_admin
+                        ? html`
+                            <paper-item
+                              aria-label=${this.hass!.localize(
+                                "ui.panel.lovelace.menu.configure_ui"
+                              )}
+                              @tap="${this._editModeEnable}"
+                            >
+                              ${this.hass!.localize(
+                                "ui.panel.lovelace.menu.configure_ui"
+                              )}
+                            </paper-item>
+                          `
+                        : ""}
                       <paper-item
                         aria-label=${this.hass!.localize(
                           "ui.panel.lovelace.menu.help"
@@ -357,12 +363,12 @@ class HUIRoot extends LitElement {
           position: relative;
           display: flex;
         }
-        #view.tabs-hidden {
-          min-height: calc(100vh - 64px);
-        }
         #view > * {
           flex: 1;
           width: 100%;
+        }
+        #view.tabs-hidden {
+          min-height: calc(100vh - 64px);
         }
         paper-item {
           cursor: pointer;
@@ -375,9 +381,13 @@ class HUIRoot extends LitElement {
     super.updated(changedProperties);
 
     const view = this._viewRoot;
-    const huiView = view.lastChild as HUIView;
+    const huiView = view.lastChild as HUIView | HUIPanelView;
 
-    if (changedProperties.has("columns") && huiView) {
+    if (
+      changedProperties.has("columns") &&
+      huiView &&
+      huiView instanceof HUIView
+    ) {
       huiView.columns = this.columns;
     }
 
@@ -585,6 +595,7 @@ class HUIRoot extends LitElement {
         () => {
           unusedEntities.hass = this.hass!;
           unusedEntities.lovelace = this.lovelace!;
+          unusedEntities.narrow = this.narrow;
         }
       );
       if (this.config.background) {
@@ -609,8 +620,8 @@ class HUIRoot extends LitElement {
       view = this._viewCache![viewIndex];
     } else {
       if (viewConfig.panel && viewConfig.cards && viewConfig.cards.length > 0) {
-        view = createCardElement(viewConfig.cards[0]);
-        view.isPanel = true;
+        view = document.createElement("hui-panel-view");
+        view.config = viewConfig;
       } else {
         view = document.createElement("hui-view");
         view.lovelace = this.lovelace;

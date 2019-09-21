@@ -57,7 +57,13 @@ export class HcMain extends HassElement {
       `;
     }
 
-    if (!this._lovelaceConfig || this._lovelacePath === null) {
+    if (
+      !this._lovelaceConfig ||
+      this._lovelacePath === null ||
+      // Guard against part of HA not being loaded yet.
+      (this.hass &&
+        (!this.hass.states || !this.hass.config || !this.hass.services))
+    ) {
       return html`
         <hc-launch-screen
           .hass=${this.hass}
@@ -131,10 +137,16 @@ export class HcMain extends HassElement {
         }),
       });
     } catch (err) {
-      this._error = err;
+      this._error = this._getErrorMessage(err);
       return;
     }
-    const connection = await createConnection({ auth });
+    let connection;
+    try {
+      connection = await createConnection({ auth });
+    } catch (err) {
+      this._error = this._getErrorMessage(err);
+      return;
+    }
     if (this.hass) {
       this.hass.connection.close();
     }
@@ -199,6 +211,23 @@ export class HcMain extends HassElement {
         this._breakFree();
       }
     });
+  }
+
+  private _getErrorMessage(error: number): string {
+    switch (error) {
+      case 1:
+        return "Unable to connect to the Home Assistant websocket API.";
+      case 2:
+        return "The supplied authentication is invalid.";
+      case 3:
+        return "The connection to Home Assistant was lost.";
+      case 4:
+        return "Missing hassUrl. This is required.";
+      case 5:
+        return "Home Assistant needs to be served over https:// to use with Home Assistant Cast.";
+      default:
+        return "Unknown Error";
+    }
   }
 
   private _breakFree() {

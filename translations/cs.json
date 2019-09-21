@@ -730,7 +730,7 @@
                 },
                 "server_control": {
                     "caption": "Ovládání serveru",
-                    "description": "Restart a zastavení serveru Home Asistent ",
+                    "description": "Restart a zastavení serveru Home Asistent",
                     "section": {
                         "validation": {
                             "heading": "Ověření konfigurace",
@@ -752,7 +752,9 @@
                             "heading": "Správa serveru",
                             "introduction": "Ovládejte svůj Home Assistant server... z Home Assistant.",
                             "restart": "Restartovat",
-                            "stop": "Zastavit"
+                            "stop": "Zastavit",
+                            "confirm_restart": "Opravdu chcete restartovat Home Assistant?",
+                            "confirm_stop": "Opravdu chcete zastavit službu Home Assistant?"
                         }
                     }
                 }
@@ -1261,6 +1263,11 @@
                 "updater": {
                     "title": "Pokyny pro aktualizaci"
                 }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Nastavení"
+                }
             }
         },
         "auth_store": {
@@ -1346,5 +1353,11 @@
         "system-admin": "Správci",
         "system-users": "Uživatelé",
         "system-read-only": "Uživatelé jen pro čtení"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Uživatel",
+            "integration": "Integrace"
+        }
     }
 }

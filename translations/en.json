@@ -251,7 +251,8 @@
             "snowy-rainy": "Snowy, rainy",
             "sunny": "Sunny",
             "windy": "Windy",
-            "windy-variant": "Windy"
+            "windy-variant": "Windy",
+            "exceptional": "Exceptional"
         },
         "vacuum": {
             "cleaning": "Cleaning",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Info"
+                    },
+                    "logs": {
+                        "title": "Logs"
                     }
                 }
             },
@@ -498,6 +502,9 @@
                                     "event": "Event:",
                                     "enter": "Enter",
                                     "leave": "Leave"
+                                },
+                                "device": {
+                                    "label": "Device"
                                 }
                             },
                             "learn_more": "Learn more about triggers"
@@ -544,6 +551,9 @@
                                     "label": "Zone",
                                     "entity": "Entity with location",
                                     "zone": "Zone"
+                                },
+                                "device": {
+                                    "label": "Device"
                                 }
                             },
                             "learn_more": "Learn more about conditions"
@@ -578,6 +588,9 @@
                                     "label": "Fire event",
                                     "event": "Event:",
                                     "service_data": "Service data"
+                                },
+                                "device_id": {
+                                    "label": "Device"
                                 }
                             },
                             "learn_more": "Learn more about actions"
@@ -668,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "Integrations",
-                    "description": "Manage connected devices and services",
+                    "description": "Manage and setup integrations",
                     "discovered": "Discovered",
                     "configured": "Configured",
                     "new": "Set up a new integration",
@@ -787,9 +800,15 @@
                             "heading": "Server management",
                             "introduction": "Control your Home Assistant server… from Home Assistant.",
                             "restart": "Restart",
-                            "stop": "Stop"
+                            "stop": "Stop",
+                            "confirm_restart": "Are you sure you want to restart Home Assistant?",
+                            "confirm_stop": "Are you sure you want to stop Home Assistant?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Devices",
+                    "description": "Manage connected devices"
                 }
             },
             "profile": {
@@ -1054,6 +1073,10 @@
                         "save": "Save",
                         "unsaved_changes": "Unsaved changes",
                         "saved": "Saved"
+                    },
+                    "edit_lovelace": {
+                        "header": "Title of your Lovelace UI",
+                        "explanation": "This title is shown above all your views in Lovelace."
                     }
                 },
                 "menu": {
@@ -1123,7 +1146,8 @@
         "common": {
             "loading": "Loading",
             "cancel": "Cancel",
-            "save": "Save"
+            "save": "Save",
+            "successfully_saved": "Successfully saved"
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
@@ -1199,7 +1223,9 @@
             "fan": {
                 "speed": "Speed",
                 "oscillate": "Oscillate",
-                "direction": "Direction"
+                "direction": "Direction",
+                "forward": "Forward",
+                "reverse": "Reverse"
             },
             "light": {
                 "brightness": "Brightness",
@@ -1244,6 +1270,14 @@
                 "target_temperature": "Target temperature",
                 "operation": "Operation",
                 "away_mode": "Away mode"
+            },
+            "timer": {
+                "actions": {
+                    "start": "start",
+                    "pause": "pause",
+                    "cancel": "cancel",
+                    "finish": "finish"
+                }
             }
         },
         "components": {
@@ -1310,6 +1344,20 @@
                 "title": "System Options",
                 "enable_new_entities_label": "Enable newly added entities.",
                 "enable_new_entities_description": "If disabled, newly discovered entities will not be automatically added to Home Assistant."
+            },
+            "zha_device_info": {
+                "manuf": "by {manufacturer}",
+                "no_area": "No Area",
+                "services": {
+                    "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
+                    "updateDeviceName": "Set a custom name for this device in the device registry.",
+                    "remove": "Remove a device from the ZigBee network."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "User given name",
+                    "area_picker_label": "Area",
+                    "update_name_button": "Update Name"
+                }
             }
         },
         "auth_store": {
