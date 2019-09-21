@@ -8,13 +8,13 @@ import {
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-toggle-button/paper-toggle-button";
 
 import "../../../../components/entity/state-badge";
 import "../../components/hui-theme-select-editor";
 import "../../components/hui-entity-editor";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
+import "../../../../components/ha-switch";
 
 import { processEditorEntities } from "../process-editor-entities";
 import { struct } from "../../common/structs/struct";
@@ -88,11 +88,11 @@ export class HuiEntitiesCardEditor extends LitElement
           .configValue="${"theme"}"
           @theme-changed="${this._valueChanged}"
         ></hui-theme-select-editor>
-        <paper-toggle-button
+        <ha-switch
           ?checked="${this._config!.show_header_toggle !== false}"
           .configValue="${"show_header_toggle"}"
           @change="${this._valueChanged}"
-          >Show Header Toggle?</paper-toggle-button
+          >Show Header Toggle?</ha-switch
         >
       </div>
       <hui-entity-editor
