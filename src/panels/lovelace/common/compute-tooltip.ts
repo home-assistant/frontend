@@ -66,6 +66,13 @@ function computeActionTooltip(
         config.navigation_path
       )}`;
       break;
+    case "url":
+      tooltip += `${hass.localize(
+        "ui.panel.lovelace.cards.picture-elements.url",
+        "url_path",
+        config.url_path
+      )}`;
+      break;
     case "toggle":
       tooltip += `${hass.localize(
         "ui.panel.lovelace.cards.picture-elements.toggle",

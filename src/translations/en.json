@@ -1057,6 +1057,7 @@
             "hold": "Hold:",
             "tap": "Tap:",
             "navigate_to": "Navigate to {location}",
+            "url": "Open window to {url_path}",
             "toggle": "Toggle {name}",
             "call_service": "Call service {name}",
             "more_info": "Show more-info: {name}"

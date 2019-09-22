@@ -58,7 +58,7 @@ export class HuiPictureCardEditor extends LitElement
       return html``;
     }
 
-    const actions = ["navigate", "call-service", "none"];
+    const actions = ["navigate", "url", "call-service", "none"];
 
     return html`
       ${configElementStyle}
