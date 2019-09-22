@@ -26,14 +26,13 @@ class EntityFilterCard extends HTMLElement implements LovelaceCard {
     }
 
     if (
-      (!config.state_filter || !Array.isArray(config.state_filter)) &&
-      config.entities.filter((entity) => {
-        return Boolean(
+      !(config.state_filter && Array.isArray(config.state_filter)) &&
+      !config.entities.every(
+        (entity) =>
           typeof entity === "object" &&
-            entity.state_filter &&
-            Array.isArray(entity.state_filter)
-        );
-      }).length !== config.entities.length
+          entity.state_filter &&
+          Array.isArray(entity.state_filter)
+      )
     ) {
       throw new Error("Incorrect filter config.");
     }
