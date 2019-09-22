@@ -92,7 +92,14 @@ export class HuiEntityButtonCardEditor extends LitElement
       return html``;
     }
 
-    const actions = ["more-info", "toggle", "navigate", "call-service", "none"];
+    const actions = [
+      "more-info",
+      "toggle",
+      "navigate",
+      "url",
+      "call-service",
+      "none",
+    ];
 
     return html`
       ${configElementStyle}
