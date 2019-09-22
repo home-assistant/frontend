@@ -1,8 +1,8 @@
 /** Return an icon representing a cover state. */
 import { HassEntity } from "home-assistant-js-websocket";
-import domainIcon from "./domain_icon";
+import { domainIcon } from "./domain_icon";
 
-export default function coverIcon(state: HassEntity): string {
+export const coverIcon = (state: HassEntity): string => {
   const open = state.state !== "closed";
   switch (state.attributes.device_class) {
     case "garage":
@@ -18,4 +18,4 @@ export default function coverIcon(state: HassEntity): string {
     default:
       return domainIcon("cover", state.state);
   }
-}
+};

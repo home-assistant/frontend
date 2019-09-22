@@ -4,7 +4,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../state-summary/state-card-content";
 
-import computeStateDomain from "../../../common/entity/compute_state_domain";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import dynamicContentUpdater from "../../../common/dom/dynamic_content_updater";
 
 class MoreInfoGroup extends PolymerElement {

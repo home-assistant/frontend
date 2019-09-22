@@ -13,7 +13,7 @@ import { fireEvent } from "../common/dom/fire_event";
 import { HomeAssistant } from "../types";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { subscribeNotifications } from "../data/persistent_notification";
-import computeDomain from "../common/entity/compute_domain";
+import { computeDomain } from "../common/entity/compute_domain";
 
 @customElement("ha-menu-button")
 class HaMenuButton extends LitElement {

@@ -5,7 +5,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "./ha-automation-editor";
 import "./ha-automation-picker";
 
-import computeStateDomain from "../../../common/entity/compute_state_domain";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 
 class HaConfigAutomation extends PolymerElement {
   static get template() {

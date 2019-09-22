@@ -1,6 +1,6 @@
 import { HomeAssistant } from "../../types";
 
-export default function canToggleDomain(hass: HomeAssistant, domain: string) {
+export const canToggleDomain = (hass: HomeAssistant, domain: string) => {
   const services = hass.services[domain];
   if (!services) {
     return false;
@@ -13,4 +13,4 @@ export default function canToggleDomain(hass: HomeAssistant, domain: string) {
     return "open_cover" in services;
   }
   return "turn_on" in services;
-}
+};

@@ -8,7 +8,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import HassMediaPlayerEntity from "../util/hass-media-player-model";
 import { fetchMediaPlayerThumbnailWithCache } from "../data/media-player";
 
-import computeStateName from "../common/entity/compute_state_name";
+import { computeStateName } from "../common/entity/compute_state_name";
 import { EventsMixin } from "../mixins/events-mixin";
 import LocalizeMixin from "../mixins/localize-mixin";
 

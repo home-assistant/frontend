@@ -1,4 +1,4 @@
-import computeStateName from "../../../common/entity/compute_state_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { HomeAssistant } from "../../../types";
 import { LovelaceElementConfig } from "../elements/types";
 import { ActionConfig } from "../../../data/lovelace";

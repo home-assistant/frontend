@@ -3,10 +3,11 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../components/entity/state-info";
+
 import LocalizeMixin from "../mixins/localize-mixin";
 
-import computeStateDisplay from "../common/entity/compute_state_display";
-import attributeClassNames from "../common/entity/attribute_class_names";
+import { attributeClassNames } from "../common/entity/attribute_class_names";
+import { computeStateDisplay } from "../common/entity/compute_state_display";
 import { computeRTL } from "../common/util/compute_rtl";
 
 /*
