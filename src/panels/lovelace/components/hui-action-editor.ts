@@ -19,6 +19,7 @@ import {
   ActionConfig,
   NavigateActionConfig,
   CallServiceActionConfig,
+  UrlActionConfig,
 } from "../../../data/lovelace";
 
 declare global {
@@ -49,6 +50,11 @@ export class HuiActionEditor extends LitElement {
   get _navigation_path(): string {
     const config = this.config! as NavigateActionConfig;
     return config.navigation_path || "";
+  }
+
+  get _url_path(): string {
+    const config = this.config! as UrlActionConfig;
+    return config.url_path || "";
   }
 
   get _service(): string {
@@ -87,6 +93,16 @@ export class HuiActionEditor extends LitElement {
             ></paper-input>
           `
         : ""}
+      ${this._action === "url"
+        ? html`
+            <paper-input
+              label="Url Path"
+              .value="${this._url_path}"
+              .configValue="${"url_path"}"
+              @value-changed="${this._valueChanged}"
+            ></paper-input>
+          `
+        : ""}
       ${this.config && this.config.action === "call-service"
         ? html`
             <ha-service-picker
@@ -106,10 +122,7 @@ export class HuiActionEditor extends LitElement {
       return;
     }
     const target = ev.target! as EditorTarget;
-    if (
-      this.config &&
-      this.config[this[`${target.configValue}`]] === target.value
-    ) {
+    if (this[`_${target.configValue}`] === target.value) {
       return;
     }
     if (target.configValue === "action") {
