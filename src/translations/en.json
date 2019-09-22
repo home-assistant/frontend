@@ -1113,6 +1113,12 @@
           },
           "theme": {
             "theme": "Theme (Optional)"
+          },
+          "card": {
+            "entity": {
+              "required": "Entity (Required)",
+              "optitional": "Entity (Optional)"
+            }
           }
         },
         "warning": {
