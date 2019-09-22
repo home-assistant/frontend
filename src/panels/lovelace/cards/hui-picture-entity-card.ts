@@ -20,7 +20,7 @@ import computeStateName from "../../../common/entity/compute_state_name";
 
 import { longPress } from "../common/directives/long-press-directive";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { handleClick } from "../common/handle-click";
 import { UNAVAILABLE } from "../../../data/entity";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -28,6 +28,18 @@ import { PictureEntityCardConfig } from "./types";
 
 @customElement("hui-picture-entity-card")
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import(/* webpackChunkName: "hui-picture-entity-card-editor" */ "../editor/config-elements/hui-picture-entity-card-editor");
+    return document.createElement("hui-picture-entity-card-editor");
+  }
+  public static getStubConfig(): object {
+    return {
+      entity: "",
+      image:
+        "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
+    };
+  }
+
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: PictureEntityCardConfig;
