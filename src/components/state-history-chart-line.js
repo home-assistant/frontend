@@ -155,14 +155,14 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
         domain === "climate" ||
         domain === "water_heater"
       ) {
-        const isHeating =
-          domain === "climate"
-            ? (state) => state.attributes.hvac_action === "heating"
-            : (state) => state.state === "heat";
-        const isCooling =
-          domain === "climate"
-            ? (state) => state.attributes.hvac_action === "cooling"
-            : (state) => state.state === "cool";
+        const isHeating = (state) =>
+          domain === "climate" && state.attributes.hvac_action
+            ? state.attributes.hvac_action === "heating"
+            : state.state === "heat";
+        const isCooling = (state) =>
+          domain === "climate" && state.attributes.hvac_action
+            ? state.attributes.hvac_action === "cooling"
+            : state.state === "cool";
 
         // We differentiate between thermostats that have a target temperature
         // range versus ones that have just a target temperature
