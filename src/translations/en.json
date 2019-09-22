@@ -1111,14 +1111,20 @@
             "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate config' button.",
             "migrate": "Migrate config"
           },
-          "theme": {
-            "theme": "Theme (Optional)"
-          },
           "card": {
-            "entity": {
-              "required": "Entity (Required)",
-              "optitional": "Entity (Optional)"
-            }
+            "required": "Required",
+            "optional": "Optional",
+            "aspect_ratio": "Aspect Ratio",
+            "camera_image": "Camera Entity",
+            "camera_view": "Camera View",
+            "entity": "Entity",
+            "hold_action": "Hold Action",
+            "image": "Image Path",
+            "name": "Name",
+            "show_name": "Show Name?",
+            "show_state": "Show State?",
+            "tap_action": "Tap Action",
+            "theme": "Theme"
           }
         },
         "warning": {
