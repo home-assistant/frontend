@@ -85,20 +85,30 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       ${configElementStyle}
       <div class="card-config">
         <paper-input
-          label="Title"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.title"
+          )} (${this.hass.localize("ui.panel.lovelace.editor.card.optional")})"
           .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <div class="side-by-side">
           <paper-input
-            label="Aspect Ratio"
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.aspect_ratio"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.optional"
+            )})"
             .value="${this._aspect_ratio}"
             .configValue="${"aspect_ratio"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
           <paper-input
-            label="Default Zoom"
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.default_zoom"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.optional"
+            )})"
             type="number"
             .value="${this._default_zoom}"
             .configValue="${"default_zoom"}"
@@ -109,14 +119,20 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           ?checked="${this._dark_mode !== false}"
           .configValue="${"dark_mode"}"
           @change="${this._valueChanged}"
-          >Dark Mode?</ha-switch
+          >${this.hass.localize(
+            "ui.panel.lovelace.editor.card.dark_mode"
+          )}</ha-switch
         >
         <hui-entity-editor
           .hass="${this.hass}"
           .entities="${this._configEntities}"
           @entities-changed="${this._entitiesValueChanged}"
         ></hui-entity-editor>
-        <h3>Geolocation Sources</h3>
+        <h3>
+          ${this.hass.localize(
+            "ui.panel.lovelace.editor.card.geo_location_sources"
+          )}
+        </h3>
         <div class="geo_location_sources">
           <hui-input-list-editor
             inputLabel="Source"

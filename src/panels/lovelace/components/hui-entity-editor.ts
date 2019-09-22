@@ -22,13 +22,21 @@ export class HuiEntityEditor extends LitElement {
 
   @property() protected entities?: EntityConfig[];
 
+  @property() protected label?: string;
+
   protected render(): TemplateResult | void {
     if (!this.entities) {
       return html``;
     }
 
     return html`
-      <h3>Entities</h3>
+      <h3>
+        ${this.label ||
+          this.hass!.localize("ui.panel.lovelace.editor.card.entities") +
+            " (" +
+            this.hass!.localize("ui.panel.lovelace.editor.card.required") +
+            ")"}
+      </h3>
       <div class="entities">
         ${this.entities.map((entityConf, index) => {
           return html`

@@ -77,7 +77,9 @@ export class HuiEntitiesCardEditor extends LitElement
       ${configElementStyle}
       <div class="card-config">
         <paper-input
-          label="Title"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.title"
+          )} (${this.hass.localize("ui.panel.lovelace.editor.card.optional")})"
           .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"

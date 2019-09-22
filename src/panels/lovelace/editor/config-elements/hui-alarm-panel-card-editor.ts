@@ -63,22 +63,25 @@ export class HuiAlarmPanelCardEditor extends LitElement
     return html`
       ${configElementStyle}
       <div class="card-config">
-        <div class="side-by-side">
-          <paper-input
-            label="Name"
-            .value="${this._name}"
-            .configValue="${"name"}"
-            @value-changed="${this._valueChanged}"
-          ></paper-input>
-          <ha-entity-picker
-            .hass="${this.hass}"
-            .value="${this._entity}"
-            .configValue=${"entity"}
-            domain-filter="alarm_control_panel"
-            @change="${this._valueChanged}"
-            allow-custom-entity
-          ></ha-entity-picker>
-        </div>
+        <ha-entity-picker
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.entity"
+          )} (${this.hass.localize("ui.panel.lovelace.editor.card.required")})"
+          .hass="${this.hass}"
+          .value="${this._entity}"
+          .configValue=${"entity"}
+          domain-filter="alarm_control_panel"
+          @change="${this._valueChanged}"
+          allow-custom-entity
+        ></ha-entity-picker>
+        <paper-input
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.name"
+          )} (${this.hass.localize("ui.panel.lovelace.editor.card.optional")})"
+          .value="${this._name}"
+          .configValue="${"name"}"
+          @value-changed="${this._valueChanged}"
+        ></paper-input>
         <span>Used States</span> ${this._states.map((state, index) => {
           return html`
             <div class="states">
@@ -93,7 +96,9 @@ export class HuiAlarmPanelCardEditor extends LitElement
           `;
         })}
         <paper-dropdown-menu
-          label="Available States"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.available_states"
+          )}"
           @value-changed="${this._stateAdded}"
         >
           <paper-listbox slot="dropdown-content">
