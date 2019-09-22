@@ -7,12 +7,12 @@ import {
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-toggle-button/paper-toggle-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 
 import "../../components/hui-action-editor";
 import "../../components/hui-entity-editor";
+import "../../../../components/ha-switch";
 
 import { struct } from "../../common/structs/struct";
 import {
@@ -174,21 +174,21 @@ export class HuiPictureEntityCardEditor extends LitElement
           ></paper-input>
         </div>
         <div class="side-by-side">
-          <paper-toggle-button
+          <ha-switch
             ?checked="${this._show_name !== false}"
             .configValue="${"show_name"}"
             @change="${this._valueChanged}"
             >${this.hass.localize(
               "ui.panel.lovelace.editor.card.show_name"
-            )}</paper-toggle-button
+            )}</ha-switch
           >
-          <paper-toggle-button
+          <ha-switch
             ?checked="${this._show_state !== false}"
             .configValue="${"show_state"}"
             @change="${this._valueChanged}"
             >${this.hass.localize(
               "ui.panel.lovelace.editor.card.show_state"
-            )}</paper-toggle-button
+            )}</ha-switch
           >
         </div>
         <div class="side-by-side">
