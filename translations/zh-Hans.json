@@ -556,7 +556,7 @@
                         },
                         "actions": {
                             "header": "动作",
-                            "introduction": "Actions（动作）是当自动化条件满足时 Home Assistant 执行的操作。\n\n[了解更多关于 Actions 的信息](https:\/\/home-assistant.io\/docs\/automation\/action)",
+                            "introduction": "Actions（动作）是当自动化条件满足时 Home Assistant 执行的操作。",
                             "add": "添加动作",
                             "duplicate": "复制",
                             "delete": "删除",
