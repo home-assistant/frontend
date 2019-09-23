@@ -144,6 +144,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: {};
+  state_filter: string[];
   aspect_ratio?: string;
   entity?: string;
   elements: LovelaceElementConfig[];
@@ -156,6 +157,7 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: {};
+  state_filter: string[];
   aspect_ratio?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
@@ -170,6 +172,7 @@ export interface PictureGlanceCardConfig extends LovelaceCardConfig {
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: {};
+  state_filter: string[];
   aspect_ratio?: string;
   entity?: string;
   tap_action?: ActionConfig;
