@@ -12,7 +12,7 @@ import {
 import "../../../components/entity/ha-state-label-badge";
 import "../components/hui-warning-element";
 
-import computeStateDisplay from "../../../common/entity/compute_state_display";
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { computeTooltip } from "../common/compute-tooltip";
 import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";

@@ -16,7 +16,7 @@ import "@polymer/paper-listbox/paper-listbox";
 
 import "../components/entity/state-badge";
 
-import computeStateName from "../common/entity/compute_state_name";
+import { computeStateName } from "../common/entity/compute_state_name";
 import { HomeAssistant, InputSelectEntity } from "../types";
 import { setInputSelectOption } from "../data/input-select";
 import { PolymerIronSelectEvent } from "../polymer-types";

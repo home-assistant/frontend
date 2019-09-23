@@ -26,9 +26,9 @@ import "./zwave-usercodes";
 import "./zwave-values";
 import "./zwave-node-protection";
 
-import sortByName from "../../../common/entity/states_sort_by_name";
-import computeStateName from "../../../common/entity/compute_state_name";
-import computeStateDomain from "../../../common/entity/compute_state_domain";
+import { sortStatesByName } from "../../../common/entity/states_sort_by_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
@@ -461,7 +461,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return Object.keys(hass.states)
       .map((key) => hass.states[key])
       .filter((ent) => ent.entity_id.match("zwave[.]"))
-      .sort(sortByName);
+      .sort(sortStatesByName);
   }
 
   computeEntities(selectedNode) {
@@ -481,7 +481,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
           !ent.entity_id.match("zwave[.]")
         );
       })
-      .sort(sortByName);
+      .sort(sortStatesByName);
   }
 
   selectedNodeChanged(selectedNode) {

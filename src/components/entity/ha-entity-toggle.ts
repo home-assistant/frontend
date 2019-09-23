@@ -14,8 +14,8 @@ import { HomeAssistant } from "../../types";
 import { HassEntity } from "home-assistant-js-websocket";
 import { forwardHaptic } from "../../data/haptics";
 
-import computeStateDomain from "../../common/entity/compute_state_domain";
-import computeStateName from "../../common/entity/compute_state_name";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { computeStateName } from "../../common/entity/compute_state_name";
 
 import "../ha-switch";
 

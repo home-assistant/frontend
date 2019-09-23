@@ -1,7 +1,7 @@
 /** Return an icon representing a sensor state. */
 import { HassEntity } from "home-assistant-js-websocket";
 import { UNIT_C, UNIT_F } from "../const";
-import domainIcon from "./domain_icon";
+import { domainIcon } from "./domain_icon";
 
 const fixedDeviceClassIcons = {
   humidity: "hass:water-percent",
@@ -12,7 +12,7 @@ const fixedDeviceClassIcons = {
   signal_strength: "hass:wifi",
 };
 
-export default function sensorIcon(state: HassEntity) {
+export const sensorIcon = (state: HassEntity) => {
   const dclass = state.attributes.device_class;
 
   if (dclass && dclass in fixedDeviceClassIcons) {
@@ -49,4 +49,4 @@ export default function sensorIcon(state: HassEntity) {
     return "hass:thermometer";
   }
   return domainIcon("sensor");
-}
+};

@@ -16,10 +16,10 @@ import "../../components/ha-start-voice-button";
 
 import "../../layouts/ha-app-layout";
 
-import extractViews from "../../common/entity/extract_views";
-import getViewEntities from "../../common/entity/get_view_entities";
-import computeStateName from "../../common/entity/compute_state_name";
-import computeStateDomain from "../../common/entity/compute_state_domain";
+import { extractViews } from "../../common/entity/extract_views";
+import { getViewEntities } from "../../common/entity/get_view_entities";
+import { computeStateName } from "../../common/entity/compute_state_name";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import computeLocationName from "../../common/config/location_name";
 import NavigateMixin from "../../mixins/navigate-mixin";
 import { EventsMixin } from "../../mixins/events-mixin";

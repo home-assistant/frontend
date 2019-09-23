@@ -9,7 +9,7 @@ import {
   customElement,
 } from "lit-element";
 
-import computeStateName from "../common/entity/compute_state_name";
+import { computeStateName } from "../common/entity/compute_state_name";
 import { HomeAssistant, CameraEntity } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
 import {
