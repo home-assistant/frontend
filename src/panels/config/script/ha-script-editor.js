@@ -12,8 +12,8 @@ import "../../../components/ha-fab";
 import Script from "../js/script";
 import unmountPreact from "../../../common/preact/unmount";
 
-import computeObjectId from "../../../common/entity/compute_object_id";
-import computeStateName from "../../../common/entity/compute_state_name";
+import { computeObjectId } from "../../../common/entity/compute_object_id";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import NavigateMixin from "../../../mixins/navigate-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 

@@ -7,7 +7,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../components/ha-card";
 
-import computeStateName from "../../common/entity/compute_state_name";
+import { computeStateName } from "../../common/entity/compute_state_name";
 
 class HaEntityConfig extends PolymerElement {
   static get template() {

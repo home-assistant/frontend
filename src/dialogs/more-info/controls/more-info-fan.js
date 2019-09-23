@@ -10,8 +10,8 @@ import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/ha-switch";
 
 import { EventsMixin } from "../../../mixins/events-mixin";
+import { attributeClassNames } from "../../../common/entity/attribute_class_names";
 
-import attributeClassNames from "../../../common/entity/attribute_class_names";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*

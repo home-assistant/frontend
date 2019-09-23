@@ -20,7 +20,7 @@ import "../../../layouts/ha-app-layout";
 
 import Automation from "../js/automation";
 import unmountPreact from "../../../common/preact/unmount";
-import computeStateName from "../../../common/entity/compute_state_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";

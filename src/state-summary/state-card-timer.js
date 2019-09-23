@@ -4,7 +4,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../components/entity/state-info";
 
-import timerTimeRemaining from "../common/entity/timer_time_remaining";
+import { timerTimeRemaining } from "../common/entity/timer_time_remaining";
 import secondsToDuration from "../common/datetime/seconds_to_duration";
 
 class StateCardTimer extends PolymerElement {
