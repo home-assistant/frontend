@@ -1,11 +1,21 @@
-import { property, LitElement, html, customElement } from "lit-element";
+import {
+  property,
+  LitElement,
+  html,
+  customElement,
+  css,
+  CSSResult,
+} from "lit-element";
 
 import memoizeOne from "memoize-one";
 
 import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-error-screen";
 
-import "./ha-device-card";
+import "./device-detail/ha-device-card";
+import "./device-detail/ha-device-triggers-card";
+import "./device-detail/ha-device-conditions-card";
+import "./device-detail/ha-device-actions-card";
 import { HomeAssistant } from "../../../types";
 import { ConfigEntry } from "../../../data/config_entries";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
@@ -57,14 +67,28 @@ export class HaConfigDevicePage extends LitElement {
           icon="hass:settings"
           @click=${this._showSettings}
         ></paper-icon-button>
-        <ha-device-card
-          .hass=${this.hass}
-          .areas=${this.areas}
-          .devices=${this.devices}
-          .device=${device}
-          .entities=${this.entities}
-          hide-settings
-        ></ha-device-card>
+        <div class="content">
+          <ha-device-card
+            .hass=${this.hass}
+            .areas=${this.areas}
+            .devices=${this.devices}
+            .device=${device}
+            .entities=${this.entities}
+            hide-settings
+          ></ha-device-card>
+          <ha-device-triggers-card
+            .hass=${this.hass}
+            .deviceId=${this.deviceId}
+          ></ha-device-triggers-card>
+          <ha-device-conditions-card
+            .hass=${this.hass}
+            .deviceId=${this.deviceId}
+          ></ha-device-conditions-card>
+          <ha-device-actions-card
+            .hass=${this.hass}
+            .deviceId=${this.deviceId}
+          ></ha-device-actions-card>
+        </div>
       </hass-subpage>
     `;
   }
@@ -76,5 +100,17 @@ export class HaConfigDevicePage extends LitElement {
         await updateDeviceRegistryEntry(this.hass, this.deviceId, updates);
       },
     });
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      .content {
+        padding: 16px;
+      }
+      .content > * {
+        display: block;
+        margin-bottom: 16px;
+      }
+    `;
   }
 }
