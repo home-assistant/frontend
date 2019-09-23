@@ -64,8 +64,10 @@ export class HuiLightCardEditor extends LitElement
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.entity"
-          )} (${this.hass.localize("ui.panel.lovelace.editor.card.required")})"
+            "ui.panel.lovelace.editor.card.generic.entity"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.required"
+          )})"
           .hass="${this.hass}"
           .value="${this._entity}"
           .configValue=${"entity"}
@@ -76,9 +78,9 @@ export class HuiLightCardEditor extends LitElement
         <div class="side-by-side">
           <paper-input
             .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.name"
+              "ui.panel.lovelace.editor.card.generic.name"
             )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.optional"
+              "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value="${this._name}"
             .configValue="${"name"}"
@@ -86,9 +88,9 @@ export class HuiLightCardEditor extends LitElement
           ></paper-input>
           <paper-input
             .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.icon"
+              "ui.panel.lovelace.editor.card.generic.icon"
             )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.optional"
+              "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value="${this._icon}"
             .configValue="${"icon"}"

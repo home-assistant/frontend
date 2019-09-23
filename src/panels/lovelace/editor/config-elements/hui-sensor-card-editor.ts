@@ -89,8 +89,10 @@ export class HuiSensorCardEditor extends LitElement
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.entity"
-          )} (${this.hass.localize("ui.panel.lovelace.editor.card.required")})"
+            "ui.panel.lovelace.editor.card.generic.entity"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.required"
+          )})"
           .hass="${this.hass}"
           .value="${this._entity}"
           .configValue=${"entity"}
@@ -100,8 +102,10 @@ export class HuiSensorCardEditor extends LitElement
         ></ha-entity-picker>
         <paper-input
           .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.name"
-          )} (${this.hass.localize("ui.panel.lovelace.editor.card.optional")})"
+            "ui.panel.lovelace.editor.card.generic.name"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value="${this._name}"
           .configValue="${"name"}"
           @value-changed="${this._valueChanged}"
@@ -109,9 +113,9 @@ export class HuiSensorCardEditor extends LitElement
         <div class="side-by-side">
           <paper-input
             .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.icon"
+              "ui.panel.lovelace.editor.card.generic.icon"
             )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.optional"
+              "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value="${this._icon}"
             .configValue="${"icon"}"
@@ -119,9 +123,9 @@ export class HuiSensorCardEditor extends LitElement
           ></paper-input>
           <paper-dropdown-menu
             .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.graph_type"
+              "ui.panel.lovelace.editor.card.sensor.graph_type"
             )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.optional"
+              "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .configValue="${"graph"}"
             @value-changed="${this._valueChanged}"
@@ -141,9 +145,9 @@ export class HuiSensorCardEditor extends LitElement
         <div class="side-by-side">
           <paper-input
             .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.unit"
+              "ui.panel.lovelace.editor.card.generic.unit"
             )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.optional"
+              "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value="${this._unit}"
             .configValue="${"unit"}"
@@ -151,9 +155,9 @@ export class HuiSensorCardEditor extends LitElement
           ></paper-input>
           <paper-input
             .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.graph_detail"
+              "ui.panel.lovelace.editor.card.sensor.graph_detail"
             )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.optional"
+              "ui.panel.lovelace.editor.card.config.optional"
             )})"
             type="number"
             .value="${this._detail}"
@@ -170,9 +174,9 @@ export class HuiSensorCardEditor extends LitElement
           ></hui-theme-select-editor>
           <paper-input
             .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.hours_to_show"
+              "ui.panel.lovelace.editor.card.sensor.hours_to_show"
             )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.optional"
+              "ui.panel.lovelace.editor.card.config.optional"
             )})"
             type="number"
             .value="${this._hours_to_show}"

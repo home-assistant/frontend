@@ -32,9 +32,13 @@ export class HuiEntityEditor extends LitElement {
     return html`
       <h3>
         ${this.label ||
-          this.hass!.localize("ui.panel.lovelace.editor.card.entities") +
+          this.hass!.localize(
+            "ui.panel.lovelace.editor.card.generic.entities"
+          ) +
             " (" +
-            this.hass!.localize("ui.panel.lovelace.editor.card.required") +
+            this.hass!.localize(
+              "ui.panel.lovelace.editor.card.config.required"
+            ) +
             ")"}
       </h3>
       <div class="entities">

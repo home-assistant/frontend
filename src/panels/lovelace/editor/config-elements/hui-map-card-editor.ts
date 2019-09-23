@@ -86,8 +86,10 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       <div class="card-config">
         <paper-input
           .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.title"
-          )} (${this.hass.localize("ui.panel.lovelace.editor.card.optional")})"
+            "ui.panel.lovelace.editor.card.generic.title"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
@@ -95,9 +97,9 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         <div class="side-by-side">
           <paper-input
             .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.aspect_ratio"
+              "ui.panel.lovelace.editor.card.generic.aspect_ratio"
             )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.optional"
+              "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .value="${this._aspect_ratio}"
             .configValue="${"aspect_ratio"}"
@@ -105,9 +107,9 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           ></paper-input>
           <paper-input
             .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.default_zoom"
+              "ui.panel.lovelace.editor.card.map.default_zoom"
             )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.optional"
+              "ui.panel.lovelace.editor.card.config.optional"
             )})"
             type="number"
             .value="${this._default_zoom}"
@@ -120,7 +122,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
           .configValue="${"dark_mode"}"
           @change="${this._valueChanged}"
           >${this.hass.localize(
-            "ui.panel.lovelace.editor.card.dark_mode"
+            "ui.panel.lovelace.editor.card.map.dark_mode"
           )}</ha-switch
         >
         <hui-entity-editor
@@ -130,12 +132,14 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
         ></hui-entity-editor>
         <h3>
           ${this.hass.localize(
-            "ui.panel.lovelace.editor.card.geo_location_sources"
+            "ui.panel.lovelace.editor.card.map.geo_location_sources"
           )}
         </h3>
         <div class="geo_location_sources">
           <hui-input-list-editor
-            inputLabel="Source"
+            inputLabel=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.map.source"
+            )}
             .hass="${this.hass}"
             .value="${this._geo_location_sources}"
             .configValue="${"geo_location_sources"}"
