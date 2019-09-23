@@ -806,18 +806,24 @@
               "unsupported_condition": "Unsupported condition: {condition}",
               "type_select": "Condition type",
               "type": {
+                "and": {
+                  "label": "And"
+                },
                 "device": {
                   "label": "Device"
-                },
-                "state": {
-                  "label": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
-                  "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]"
                 },
                 "numeric_state": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::label%]",
                   "above": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::above%]",
                   "below": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::below%]",
                   "value_template": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::value_template%]"
+                },
+                "or": {
+                  "label": "Or"
+                },
+                "state": {
+                  "label": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]",
+                  "state": "[%key:ui::panel::config::automation::editor::triggers::type::state::label%]"
                 },
                 "sun": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::sun::label%]",
