@@ -23,8 +23,6 @@ const rules = [
             ? { noEmit: false }
             : {
                 target: "es5",
-                checkJs: false,
-                allowJs: true,
                 noEmit: false,
               },
         },
