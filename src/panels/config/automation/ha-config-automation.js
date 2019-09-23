@@ -75,6 +75,11 @@ class HaConfigAutomation extends PolymerElement {
     };
   }
 
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    this.route = { path: "", prefix: "" };
+  }
+
   computeAutomation(automations, edittingAddon, routeData) {
     if (!automations || !edittingAddon) {
       return null;
