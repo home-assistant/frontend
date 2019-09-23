@@ -70,7 +70,9 @@ class HcLovelace extends LitElement {
           this.lovelaceConfig.background;
 
         if (configBackground) {
-          this.shadowRoot!.querySelector("hui-view")!.style.setProperty(
+          (this.shadowRoot!.querySelector(
+            "hui-view, hui-panel-view"
+          ) as HTMLElement)!.style.setProperty(
             "--lovelace-background",
             configBackground
           );
@@ -102,7 +104,7 @@ class HcLovelace extends LitElement {
         box-sizing: border-box;
         background: var(--primary-background-color);
       }
-      hui-view {
+      :host > * {
         flex: 1;
       }
     `;
