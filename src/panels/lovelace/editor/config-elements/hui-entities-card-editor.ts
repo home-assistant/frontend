@@ -77,7 +77,11 @@ export class HuiEntitiesCardEditor extends LitElement
       ${configElementStyle}
       <div class="card-config">
         <paper-input
-          label="Title"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.title"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
@@ -92,7 +96,9 @@ export class HuiEntitiesCardEditor extends LitElement
           ?checked="${this._config!.show_header_toggle !== false}"
           .configValue="${"show_header_toggle"}"
           @change="${this._valueChanged}"
-          >Show Header Toggle?</ha-switch
+          >${this.hass.localize(
+            "ui.panel.lovelace.editor.card.entities.show_header_toggle"
+          )}</ha-switch
         >
       </div>
       <hui-entity-editor

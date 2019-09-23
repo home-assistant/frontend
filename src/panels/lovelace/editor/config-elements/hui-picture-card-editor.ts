@@ -64,14 +64,22 @@ export class HuiPictureCardEditor extends LitElement
       ${configElementStyle}
       <div class="card-config">
         <paper-input
-          label="Image Url"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.image"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.required"
+          )})"
           .value="${this._image}"
           .configValue="${"image"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <div class="side-by-side">
           <hui-action-editor
-            label="Tap Action"
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.tap_action"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
             .hass="${this.hass}"
             .config="${this._tap_action}"
             .actions="${actions}"
@@ -79,7 +87,11 @@ export class HuiPictureCardEditor extends LitElement
             @action-changed="${this._valueChanged}"
           ></hui-action-editor>
           <hui-action-editor
-            label="Hold Action"
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.hold_action"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
             .hass="${this.hass}"
             .config="${this._hold_action}"
             .actions="${actions}"
