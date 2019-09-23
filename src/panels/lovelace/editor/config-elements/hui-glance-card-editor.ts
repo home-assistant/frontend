@@ -93,7 +93,11 @@ export class HuiGlanceCardEditor extends LitElement
       ${configElementStyle}
       <div class="card-config">
         <paper-input
-          label="Title"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.title"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
@@ -106,7 +110,11 @@ export class HuiGlanceCardEditor extends LitElement
             @theme-changed="${this._valueChanged}"
           ></hui-theme-select-editor>
           <paper-input
-            label="Columns"
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.glance.columns"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
             type="number"
             .value="${this._columns}"
             .configValue="${"columns"}"
@@ -118,19 +126,25 @@ export class HuiGlanceCardEditor extends LitElement
             ?checked="${this._show_name !== false}"
             .configValue="${"show_name"}"
             @change="${this._valueChanged}"
-            >Show Name?</ha-switch
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.show_name"
+            )}</ha-switch
           >
           <ha-switch
             ?checked="${this._show_icon !== false}"
             .configValue="${"show_icon"}"
             @change="${this._valueChanged}"
-            >Show Icon?</ha-switch
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.show_icon"
+            )}</ha-switch
           >
           <ha-switch
             ?checked="${this._show_state !== false}"
             .configValue="${"show_state"}"
             @change="${this._valueChanged}"
-            >Show State?</ha-switch
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.show_state"
+            )}</ha-switch
           >
         </div>
       </div>

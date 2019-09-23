@@ -51,13 +51,21 @@ export class HuiMarkdownCardEditor extends LitElement
       ${configElementStyle}
       <div class="card-config">
         <paper-input
-          label="Title"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.title"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <paper-textarea
-          label="Content"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.markdown.content"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.required"
+          )})"
           .value="${this._content}"
           .configValue="${"content"}"
           @value-changed="${this._valueChanged}"

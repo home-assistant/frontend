@@ -105,6 +105,11 @@ export class HuiEntityButtonCardEditor extends LitElement
       ${configElementStyle}
       <div class="card-config">
         <ha-entity-picker
+        .label="${this.hass.localize(
+          "ui.panel.lovelace.editor.card.generic.entity"
+        )} (${this.hass.localize(
+      "ui.panel.lovelace.editor.card.config.required"
+    )})"
           .hass="${this.hass}"
           .value="${this._entity}"
           .configValue=${"entity"}
@@ -113,13 +118,21 @@ export class HuiEntityButtonCardEditor extends LitElement
         ></ha-entity-picker>
         <div class="side-by-side">
           <paper-input
-            label="Name (Optional)"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.name"
+          )} (${this.hass.localize(
+      "ui.panel.lovelace.editor.card.config.optional"
+    )})"
             .value="${this._name}"
             .configValue="${"name"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
           <paper-input
-            label="Icon (Optional)"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.icon"
+          )} (${this.hass.localize(
+      "ui.panel.lovelace.editor.card.config.optional"
+    )})"
             .value="${this._icon}"
             .configValue="${"icon"}"
             @value-changed="${this._valueChanged}"
@@ -130,18 +143,26 @@ export class HuiEntityButtonCardEditor extends LitElement
             ?checked="${this._config!.show_name !== false}"
             .configValue="${"show_name"}"
             @change="${this._valueChanged}"
-            >Show Name?</ha-switch
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.show_name"
+            )}</ha-switch
           >
           <ha-switch
             ?checked="${this._config!.show_icon !== false}"
             .configValue="${"show_icon"}"
             @change="${this._valueChanged}"
-            >Show Icon?</ha-switch
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.show_icon"
+            )}</ha-switch
           >
         </div>
         <div class="side-by-side">
           <paper-input
-            label="Icon Height (Optional)"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.icon_height"
+          )} (${this.hass.localize(
+      "ui.panel.lovelace.editor.card.config.optional"
+    )})"
             .value="${this._icon_height}"
             .configValue="${"icon_height"}"
             @value-changed="${this._valueChanged}"
@@ -159,7 +180,11 @@ export class HuiEntityButtonCardEditor extends LitElement
         </div>
         <div class="side-by-side">
           <hui-action-editor
-            label="Tap Action"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.tap_action"
+          )} (${this.hass.localize(
+      "ui.panel.lovelace.editor.card.config.optional"
+    )})"
             .hass="${this.hass}"
             .config="${this._tap_action}"
             .actions="${actions}"
@@ -167,7 +192,11 @@ export class HuiEntityButtonCardEditor extends LitElement
             @action-changed="${this._valueChanged}"
           ></hui-action-editor>
           <hui-action-editor
-            label="Hold Action"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.hold_action"
+          )} (${this.hass.localize(
+      "ui.panel.lovelace.editor.card.config.optional"
+    )})"
             .hass="${this.hass}"
             .config="${this._hold_action}"
             .actions="${actions}"
