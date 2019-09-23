@@ -105,8 +105,10 @@ export class HuiPictureEntityCardEditor extends LitElement
       <div class="card-config">
         <ha-entity-picker
           .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.entity"
-          )} (${this.hass.localize("ui.panel.lovelace.editor.card.required")})"
+            "ui.panel.lovelace.editor.card.generic.entity"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.required"
+          )})"
           .hass="${this.hass}"
           .value="${this._entity}"
           .configValue=${"entity"}
@@ -115,24 +117,30 @@ export class HuiPictureEntityCardEditor extends LitElement
         ></ha-entity-picker>
         <paper-input
           .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.name"
-          )} (${this.hass.localize("ui.panel.lovelace.editor.card.optional")})"
+            "ui.panel.lovelace.editor.card.generic.name"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value="${this._name}"
           .configValue="${"name"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <paper-input
           .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.image"
-          )} (${this.hass.localize("ui.panel.lovelace.editor.card.optional")})"
+            "ui.panel.lovelace.editor.card.generic.image"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value="${this._image}"
           .configValue="${"image"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <ha-entity-picker
           .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.camera_image"
-          )} (${this.hass.localize("ui.panel.lovelace.editor.card.optional")})"
+            "ui.panel.lovelace.editor.card.generic.camera_image"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .hass="${this.hass}"
           .value="${this._camera_image}"
           .configValue=${"camera_image"}
@@ -143,9 +151,9 @@ export class HuiPictureEntityCardEditor extends LitElement
         <div class="side-by-side">
           <paper-dropdown-menu
             .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.camera_view"
+              "ui.panel.lovelace.editor.card.generic.camera_view"
             )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.optional"
+              "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .configValue="${"camera_view"}"
             @value-changed="${this._valueChanged}"
@@ -163,9 +171,9 @@ export class HuiPictureEntityCardEditor extends LitElement
           </paper-dropdown-menu>
           <paper-input
             .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.aspect_ratio"
+              "ui.panel.lovelace.editor.card.generic.aspect_ratio"
             )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.optional"
+              "ui.panel.lovelace.editor.card.config.optional"
             )})"
             type="number"
             .value="${Number(this._aspect_ratio.replace("%", ""))}"
@@ -179,7 +187,7 @@ export class HuiPictureEntityCardEditor extends LitElement
             .configValue="${"show_name"}"
             @change="${this._valueChanged}"
             >${this.hass.localize(
-              "ui.panel.lovelace.editor.card.show_name"
+              "ui.panel.lovelace.editor.card.generic.show_name"
             )}</ha-switch
           >
           <ha-switch
@@ -187,16 +195,16 @@ export class HuiPictureEntityCardEditor extends LitElement
             .configValue="${"show_state"}"
             @change="${this._valueChanged}"
             >${this.hass.localize(
-              "ui.panel.lovelace.editor.card.show_state"
+              "ui.panel.lovelace.editor.card.generic.show_state"
             )}</ha-switch
           >
         </div>
         <div class="side-by-side">
           <hui-action-editor
             .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.tap_action"
+              "ui.panel.lovelace.editor.card.generic.tap_action"
             )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.optional"
+              "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .hass="${this.hass}"
             .config="${this._tap_action}"
@@ -206,9 +214,9 @@ export class HuiPictureEntityCardEditor extends LitElement
           ></hui-action-editor>
           <hui-action-editor
             .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.hold_action"
+              "ui.panel.lovelace.editor.card.generic.hold_action"
             )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.optional"
+              "ui.panel.lovelace.editor.card.config.optional"
             )})"
             .hass="${this.hass}"
             .config="${this._hold_action}"
