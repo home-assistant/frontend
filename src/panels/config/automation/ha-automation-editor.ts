@@ -28,6 +28,7 @@ import {
   AutomationEntity,
   AutomationConfig,
   deleteAutomation,
+  getAutomationEditorInitData,
 } from "../../../data/automation";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
@@ -36,7 +37,7 @@ function AutomationEditor(mountEl, props, mergeEl) {
   return render(h(Automation, props), mountEl, mergeEl);
 }
 
-class HaAutomationEditor extends LitElement {
+export class HaAutomationEditor extends LitElement {
   public hass!: HomeAssistant;
   public automation!: AutomationEntity;
   public isWide?: boolean;
@@ -187,6 +188,7 @@ class HaAutomationEditor extends LitElement {
         trigger: [{ platform: "state" }],
         condition: [],
         action: [{ service: "" }],
+        ...getAutomationEditorInitData(),
       };
     }
 
