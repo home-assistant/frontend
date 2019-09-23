@@ -14,7 +14,7 @@ import "../../../components/ha-switch";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { EventsMixin } from "../../../mixins/events-mixin";
 
-import featureClassNames from "../../../common/entity/feature_class_names";
+import { featureClassNames } from "../../../common/entity/feature_class_names";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*

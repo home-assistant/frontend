@@ -12,9 +12,9 @@ import "../ha-config-section";
 import "../ha-entity-config";
 import "./ha-form-customize";
 
-import computeStateName from "../../../common/entity/compute_state_name";
-import computeStateDomain from "../../../common/entity/compute_state_domain";
-import sortByName from "../../../common/entity/states_sort_by_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
+import { sortStatesByName } from "../../../common/entity/states_sort_by_name";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
@@ -93,7 +93,7 @@ class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
   computeEntities(hass) {
     return Object.keys(hass.states)
       .map((key) => hass.states[key])
-      .sort(sortByName);
+      .sort(sortStatesByName);
   }
 }
 customElements.define("ha-config-customize", HaConfigCustomize);

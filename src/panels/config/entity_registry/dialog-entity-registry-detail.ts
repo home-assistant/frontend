@@ -20,8 +20,8 @@ import { HassEntity } from "home-assistant-js-websocket";
 // tslint:disable-next-line: no-duplicate-imports
 import { HaSwitch } from "../../../components/ha-switch";
 
-import computeDomain from "../../../common/entity/compute_domain";
-import computeStateName from "../../../common/entity/compute_state_name";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 
 class DialogEntityRegistryDetail extends LitElement {
   @property() public hass!: HomeAssistant;

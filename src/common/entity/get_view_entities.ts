@@ -1,14 +1,14 @@
 import { HassEntities } from "home-assistant-js-websocket";
-import computeDomain from "./compute_domain";
-import getGroupEntities from "./get_group_entities";
+import { computeDomain } from "./compute_domain";
+import { getGroupEntities } from "./get_group_entities";
 import { GroupEntity } from "../../types";
 
 // Return an object containing all entities that the view will show
 // including embedded groups.
-export default function getViewEntities(
+export const getViewEntities = (
   entities: HassEntities,
   view: GroupEntity
-): HassEntities {
+): HassEntities => {
   const viewEntities = {};
 
   view.attributes.entity_id.forEach((entityId) => {
@@ -32,4 +32,4 @@ export default function getViewEntities(
   });
 
   return viewEntities;
-}
+};

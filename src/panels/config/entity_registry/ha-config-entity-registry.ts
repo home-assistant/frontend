@@ -21,9 +21,9 @@ import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-loading-screen";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import domainIcon from "../../../common/entity/domain_icon";
-import stateIcon from "../../../common/entity/state_icon";
-import computeDomain from "../../../common/entity/compute_domain";
+import { domainIcon } from "../../../common/entity/domain_icon";
+import { stateIcon } from "../../../common/entity/state_icon";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import "../ha-config-section";
 import {
   showEntityRegistryDetailDialog,

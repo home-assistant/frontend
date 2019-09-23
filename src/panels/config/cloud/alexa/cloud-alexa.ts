@@ -35,8 +35,8 @@ import { AlexaEntity, fetchCloudAlexaEntities } from "../../../../data/alexa";
 // tslint:disable-next-line: no-duplicate-imports
 import { HaSwitch } from "../../../../components/ha-switch";
 
-import computeStateName from "../../../../common/entity/compute_state_name";
-import computeDomain from "../../../../common/entity/compute_domain";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 
 const DEFAULT_CONFIG_EXPOSE = true;
 const IGNORE_INTERFACES = ["Alexa.EndpointHealth"];

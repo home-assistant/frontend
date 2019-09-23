@@ -20,7 +20,7 @@ import "../../../components/ha-fab";
 
 import "../ha-config-section";
 
-import computeStateName from "../../../common/entity/compute_state_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { triggerScript } from "../../../data/script";
