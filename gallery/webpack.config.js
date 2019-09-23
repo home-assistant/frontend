@@ -1,12 +1,50 @@
 const path = require("path");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const webpackBase = require("../build-scripts/webpack.js");
+const { babelLoaderConfig } = require("../build-scripts/babel.js");
 
 const isProd = process.env.NODE_ENV === "production";
 const chunkFilename = isProd ? "chunk.[chunkhash].js" : "[name].chunk.js";
 const buildPath = path.resolve(__dirname, "dist");
 const publicPath = isProd ? "./" : "http://localhost:8080/";
 const latestBuild = true;
+
+const rules = [
+  {
+    exclude: [path.resolve(__dirname, "../node_modules")],
+    test: /\.ts$/,
+    use: [
+      {
+        loader: "ts-loader",
+        options: {
+          compilerOptions: latestBuild
+            ? { noEmit: false }
+            : {
+                target: "es5",
+                noEmit: false,
+              },
+        },
+      },
+    ],
+  },
+  {
+    test: /\.css$/,
+    use: "raw-loader",
+  },
+  {
+    test: /\.(html)$/,
+    use: {
+      loader: "html-loader",
+      options: {
+        exportAsEs6Default: true,
+      },
+    },
+  },
+];
+
+if (!latestBuild) {
+  rules.push(babelLoaderConfig({ latestBuild }));
+}
 
 module.exports = {
   mode: isProd ? "production" : "development",
@@ -15,35 +53,7 @@ module.exports = {
   devtool: isProd ? "none" : "inline-source-map",
   entry: "./src/entrypoint.js",
   module: {
-    rules: [
-      {
-        test: /\.ts$/,
-        exclude: /node_modules/,
-        use: [
-          {
-            loader: "ts-loader",
-            options: {
-              compilerOptions: latestBuild
-                ? { noEmit: false }
-                : { target: "es5", noEmit: false },
-            },
-          },
-        ],
-      },
-      {
-        test: /\.css$/,
-        use: "raw-loader",
-      },
-      {
-        test: /\.(html)$/,
-        use: {
-          loader: "html-loader",
-          options: {
-            exportAsEs6Default: true,
-          },
-        },
-      },
-    ],
+    rules,
   },
   optimization: webpackBase.optimization(latestBuild),
   plugins: [
