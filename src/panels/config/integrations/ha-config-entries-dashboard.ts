@@ -2,8 +2,6 @@ import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-tooltip/paper-tooltip";
 import "@material/mwc-button";
 import "@polymer/iron-icon/iron-icon";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-item/paper-item-body";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
@@ -77,40 +75,83 @@ export class HaConfigManagerDashboard extends LitElement {
       >
         ${this.configEntriesInProgress.length
           ? html`
-              ${this.configEntriesInProgress.map(
-                (flow) => html`
-                  <ha-card>
-                    <div class="card-content">
-                      <div class="item-header">
-                        <div class="item-icon">
-                          <ha-icon icon="hass:link"></ha-icon>
+              <h1>
+                ${this.hass.localize("ui.panel.config.integrations.discovered")}
+              </h1>
+              <div class="container">
+                ${this.configEntriesInProgress.map(
+                  (flow) => html`
+                    <ha-card class="discovered">
+                      <div class="card-content">
+                        <div class="item-header">
+                          <div class="item-icon">
+                            <ha-icon icon="hass:link"></ha-icon>
+                          </div>
+                          <h2 class="item-title">
+                            ${localizeConfigFlowTitle(this.hass.localize, flow)}
+                          </h2>
                         </div>
-                        <h2 class="item-title">
-                          ${localizeConfigFlowTitle(this.hass.localize, flow)}
-                        </h2>
+                        <p class="item-description">
+                          <mwc-button
+                            @click=${this._continueFlow}
+                            .flowId=${flow.flow_id}
+                            >${this.hass.localize(
+                              "ui.panel.config.integrations.configure"
+                            )}</mwc-button
+                          >
+                        </p>
                       </div>
-                      <p class="item-description">
-                        We found this integration, would you like to set it up?
-                        <mwc-button
-                          @click=${this._continueFlow}
-                          .flowId=${flow.flow_id}
-                          >${this.hass.localize(
-                            "ui.panel.config.integrations.configure"
-                          )}</mwc-button
-                        >
-                      </p>
-                    </div>
-                    <ha-icon-next></ha-icon-next>
-                  </ha-card>
-                `
-              )}
+                    </ha-card>
+                  `
+                )}
+              </div>
             `
-          : ""}
+          : html`
+              <h1>
+                ${this.hass.localize("ui.panel.config.integrations.discovered")}
+              </h1>
+              <div class="container">
+                <ha-card class="discovered">
+                  <div class="card-content">
+                    <div class="item-header">
+                      <div class="item-icon">
+                        <ha-icon icon="hass:link"></ha-icon>
+                      </div>
+                      <h2 class="item-title">
+                        Deconz
+                      </h2>
+                    </div>
+                    <mwc-button unelevated
+                      >${this.hass.localize(
+                        "ui.panel.config.integrations.configure"
+                      )}</mwc-button
+                    >
+                  </div>
+                </ha-card>
+                <ha-card class="discovered">
+                  <div class="card-content">
+                    <div class="item-header">
+                      <div class="item-icon">
+                        <ha-icon icon="hass:link"></ha-icon>
+                      </div>
+                      <h2 class="item-title">
+                        Adguard Home
+                      </h2>
+                    </div>
+                    <mwc-button unelevated
+                      >${this.hass.localize(
+                        "ui.panel.config.integrations.configure"
+                      )}</mwc-button
+                    >
+                  </div>
+                </ha-card>
+              </div>
+            `}
 
         <h1>
           ${this.hass.localize("ui.panel.config.integrations.configured")}
         </h1>
-        <div class="configured">
+        <div class="container">
           ${this.entityRegistryEntries.length
             ? this.configEntries.map((item: any, idx) => {
                 const integrationTitle = this.hass.localize(
@@ -134,18 +175,13 @@ export class HaConfigManagerDashboard extends LitElement {
                         </div>
                         <p class="item-description"></p>
                       </div>
-                      <ha-icon-next></ha-icon-next>
                     </ha-card>
                   </a>
                 `;
               })
             : html`
-                <div class="config-entry-row">
-                  <paper-item-body two-line>
-                    <div>
-                      ${this.hass.localize("ui.panel.config.integrations.none")}
-                    </div>
-                  </paper-item-body>
+                <div>
+                  ${this.hass.localize("ui.panel.config.integrations.none")}
                 </div>
               `}
         </div>
@@ -165,7 +201,7 @@ export class HaConfigManagerDashboard extends LitElement {
     });
   }
 
-  private _continueFlow(ev: Event) {
+  private _continueFlow(ev) {
     showConfigFlowDialog(this, {
       continueFlowId: ev.target.flowId,
       dialogClosedCallback: () => fireEvent(this, "hass-reload-entries"),
@@ -182,31 +218,40 @@ export class HaConfigManagerDashboard extends LitElement {
         margin-right: -0.57em;
       }
       ha-icon {
-        cursor: pointer;
         margin: 8px;
       }
-      .configured {
+      .container {
         display: flex;
         flex-wrap: wrap;
         align-content: flex-start;
         justify-content: space-between;
         margin: 8px;
       }
-      .configured > * {
+      .container > * {
         flex: 0 1 calc(33% - 6px);
         margin: 4px;
         height: 84px;
         box-sizing: border-box;
       }
-      :host([narrow]) .configured > * {
+      :host([narrow]) .container > * {
         flex: 0 0 100%;
       }
-      .configured a {
+      .container a {
         color: var(--primary-text-color);
         text-decoration: none;
       }
-      .configured ha-card {
+      .container ha-card {
         height: 100%;
+      }
+      .discovered {
+        flex: 1 0 100%;
+      }
+      .discovered .card-content {
+        display: flex;
+        align-items: center;
+      }
+      .discovered .item-header {
+        flex: 1 0;
       }
       .item-header {
         display: flex;
@@ -246,11 +291,6 @@ export class HaConfigManagerDashboard extends LitElement {
         font-weight: var(--paper-font-display1_-_font-weight);
         letter-spacing: var(--paper-font-display1_-_letter-spacing);
         line-height: var(--paper-font-display1_-_line-height);
-      }
-      ha-icon-next {
-        position: absolute;
-        right: 10px;
-        top: 28px;
       }
       ha-fab {
         position: fixed;
