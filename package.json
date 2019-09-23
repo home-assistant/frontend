@@ -105,6 +105,13 @@
     "xss": "^1.0.6"
   },
   "devDependencies": {
+    "@babel/core": "^7.4.0",
+    "@babel/plugin-external-helpers": "^7.2.0",
+    "@babel/plugin-proposal-class-properties": "^7.4.0",
+    "@babel/plugin-proposal-decorators": "^7.4.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.4.0",
+    "@babel/plugin-syntax-dynamic-import": "^7.2.0",
+    "@babel/preset-env": "^7.4.0",
     "@gfx/zopfli": "^1.0.11",
     "@types/chai": "^4.1.7",
     "@types/chromecast-caf-receiver": "^3.0.12",
@@ -113,6 +120,7 @@
     "@types/leaflet": "^1.4.3",
     "@types/memoize-one": "4.1.0",
     "@types/mocha": "^5.2.6",
+    "babel-loader": "^8.0.5",
     "chai": "^4.2.0",
     "compression-webpack-plugin": "^2.0.0",
     "copy-webpack-plugin": "^5.0.2",

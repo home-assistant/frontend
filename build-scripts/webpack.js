@@ -7,6 +7,7 @@ const CompressionPlugin = require("compression-webpack-plugin");
 const zopfli = require("@gfx/zopfli");
 const ManifestPlugin = require("webpack-manifest-plugin");
 const paths = require("./paths.js");
+const { babelLoaderConfig } = require("./babel.js");
 
 let version = fs
   .readFileSync(path.resolve(paths.polymer_dir, "setup.py"), "utf8")
@@ -42,7 +43,7 @@ const resolve = {
 
 const tsLoader = (latestBuild) => ({
   test: /\.ts|tsx$/,
-  exclude: /node_modules/,
+  exclude: [path.resolve(paths.polymer_dir, "node_modules")],
   use: [
     {
       loader: "ts-loader",
@@ -126,12 +127,17 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
     "hass-icons": "./src/entrypoints/hass-icons.ts",
   };
 
+  const rules = [tsLoader(latestBuild), cssLoader, htmlLoader];
+  if (!latestBuild) {
+    rules.push(babelLoaderConfig({ latestBuild }));
+  }
+
   return {
     mode: genMode(isProdBuild),
     devtool: genDevTool(isProdBuild),
     entry,
     module: {
-      rules: [tsLoader(latestBuild), cssLoader, htmlLoader],
+      rules,
     },
     optimization: optimization(latestBuild),
     plugins: [
@@ -191,6 +197,11 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
 };
 
 const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
+  const rules = [tsLoader(latestBuild), cssLoader, htmlLoader];
+  if (!latestBuild) {
+    rules.push(babelLoaderConfig({ latestBuild }));
+  }
+
   return {
     mode: genMode(isProdBuild),
     devtool: genDevTool(isProdBuild),
@@ -199,7 +210,7 @@ const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
       compatibility: "./src/entrypoints/compatibility.ts",
     },
     module: {
-      rules: [tsLoader(latestBuild), cssLoader, htmlLoader],
+      rules,
     },
     optimization: optimization(latestBuild),
     plugins: [
@@ -241,12 +252,17 @@ const createCastConfig = ({ isProdBuild, latestBuild }) => {
     entry.receiver = "./cast/src/receiver/entrypoint.ts";
   }
 
+  const rules = [tsLoader(latestBuild), cssLoader, htmlLoader];
+  if (!latestBuild) {
+    rules.push(babelLoaderConfig({ latestBuild }));
+  }
+
   return {
     mode: genMode(isProdBuild),
     devtool: genDevTool(isProdBuild),
     entry,
     module: {
-      rules: [tsLoader(latestBuild), cssLoader, htmlLoader],
+      rules,
     },
     optimization: optimization(latestBuild),
     plugins: [
