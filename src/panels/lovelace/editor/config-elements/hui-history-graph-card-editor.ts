@@ -75,7 +75,11 @@ export class HuiHistoryGraphCardEditor extends LitElement
       ${configElementStyle}
       <div class="card-config">
         <paper-input
-          label="Title"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.title"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
@@ -83,14 +87,22 @@ export class HuiHistoryGraphCardEditor extends LitElement
         <div class="side-by-side">
           <paper-input
             type="number"
-            label="Hours to Show (Optional)"
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.hours_to_show"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
             .value="${this._hours_to_show}"
             .configValue=${"hours_to_show"}
             @value-changed="${this._valueChanged}"
           ></paper-input>
           <paper-input
             type="number"
-            label="Refresh Interval (Optional)"
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.refresh_interval"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
             .value="${this._refresh_interval}"
             .configValue=${"refresh_interval"}
             @value-changed="${this._valueChanged}"

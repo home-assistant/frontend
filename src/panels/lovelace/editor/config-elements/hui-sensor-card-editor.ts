@@ -174,7 +174,7 @@ export class HuiSensorCardEditor extends LitElement
           ></hui-theme-select-editor>
           <paper-input
             .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.sensor.hours_to_show"
+              "ui.panel.lovelace.editor.card.generic.hours_to_show"
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
