@@ -7,7 +7,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import hassAttributeUtil from "../../../util/hass-attributes-util";
 import "./ha-form-customize-attributes";
 
-import computeStateDomain from "../../../common/entity/compute_state_domain";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 
 class HaFormCustomize extends PolymerElement {
   static get template() {

@@ -2,7 +2,7 @@ import "@polymer/paper-styles/element-styles/paper-material-styles";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import computeStateName from "../common/entity/compute_state_name";
+import { computeStateName } from "../common/entity/compute_state_name";
 import { EventsMixin } from "../mixins/events-mixin";
 import LocalizeMixin from "../mixins/localize-mixin";
 import { fetchThumbnailUrlWithCache } from "../data/camera";

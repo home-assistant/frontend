@@ -1,11 +1,11 @@
-import computeDomain from "./compute_domain";
+import { computeDomain } from "./compute_domain";
 import { HassEntities } from "home-assistant-js-websocket";
 import { GroupEntity } from "../../types";
 
 // Split a collection into a list of groups and a 'rest' list of ungrouped
 // entities.
 // Returns { groups: [], ungrouped: {} }
-export default function splitByGroups(entities: HassEntities) {
+export const splitByGroups = (entities: HassEntities) => {
   const groups: GroupEntity[] = [];
   const ungrouped: HassEntities = {};
 
@@ -26,4 +26,4 @@ export default function splitByGroups(entities: HassEntities) {
   );
 
   return { groups, ungrouped };
-}
+};
