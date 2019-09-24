@@ -288,7 +288,10 @@ export class PaperTimeInput extends PolymerElement {
    */
   _computeTime(min, hour, sec, amPm) {
     let str;
-    if (hour && min) {
+    if (hour || min || (sec && this.enableSecond)) {
+      hour = hour || "00";
+      min = min || "00";
+      sec = sec || "00";
       str = hour + ":" + min;
       // add sec field
       if (this.enableSecond && sec) {
@@ -307,21 +310,25 @@ export class PaperTimeInput extends PolymerElement {
    * Format sec
    */
   _formatSec() {
-    this.sec = this.sec.toString().padStart(2, "0");
+    if (this.sec.toString().length === 1) {
+      this.sec = this.sec.toString().padStart(2, "0");
+    }
   }
 
   /**
    * Format min
    */
   _formatMin() {
-    this.min = this.min.toString().padStart(2, "0");
+    if (this.min.toString().length === 1) {
+      this.min = this.min.toString().padStart(2, "0");
+    }
   }
 
   /**
    * Hour needs a leading zero in 24hr format
    */
   _shouldFormatHour() {
-    if (this.format === 24) {
+    if (this.format === 24 && this.hour.toString().length === 1) {
       this.hour = this.hour.toString().padStart(2, "0");
     }
   }

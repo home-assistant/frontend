@@ -39,7 +39,7 @@ export const fetchDeviceTriggers = (hass: HomeAssistant, deviceId: string) =>
     device_id: deviceId,
   });
 
-const whitelist = ["for"];
+const whitelist = ["for", "supports"];
 
 export const deviceAutomationsEqual = (
   a: DeviceAutomation,

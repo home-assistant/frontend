@@ -4,14 +4,18 @@ import "../../../../components/device/ha-device-picker";
 import "../../../../components/device/ha-device-trigger-picker";
 import "../../../../components/paper-time-input";
 
+import { onChangeEvent } from "../../../../common/preact/event";
+
 export default class DeviceTrigger extends Component<any, any> {
+  private onChange: (obj: any) => void;
   constructor() {
     super();
+
+    this.onChange = onChangeEvent.bind(this, "trigger");
+    this.daysChanged = this.daysChanged.bind(this);
     this.devicePicked = this.devicePicked.bind(this);
     this.deviceTriggerPicked = this.deviceTriggerPicked.bind(this);
-    this.hourChanged = this.hourChanged.bind(this);
-    this.minuteChanged = this.minuteChanged.bind(this);
-    this.secondChanged = this.secondChanged.bind(this);
+    this.timeChanged = this.timeChanged.bind(this);
     this.state = { device_id: undefined };
   }
 
@@ -20,25 +24,44 @@ export default class DeviceTrigger extends Component<any, any> {
   }
 
   public deviceTriggerPicked(ev) {
-    const trgFor = this.props.trigger.for;
     let deviceTrigger = ev.target.value;
-    const showFor = deviceTrigger.hasOwnProperty("for");
-    if (showFor) {
-      deviceTrigger = { ...deviceTrigger, for: trgFor };
-    }
     this.props.onChange(this.props.index, deviceTrigger);
   }
 
-  public hourChanged(ev) {
-    this._timeChanged(ev, "hours");
+  private daysChanged(ev) {
+    const showFor = this.props.trigger.supports && this.props.trigger.supports.includes("for");
+    if (!showFor) {
+      return;
+    }
+    const days = ev.detail.value || 0;
+    let duration = this._parseTime(this.props.trigger.for);
+    duration = {
+      ...duration,
+      hours: (parseInt(duration.hours%24,10) + parseInt(days, 10)*24).toString(),
+    };
+
+    this.props.onChange(this.props.index, {
+      ...this.props.trigger,
+      for: duration,
+    });
+    console.log(this.props.trigger)
   }
 
-  public minuteChanged(ev) {
-    this._timeChanged(ev, "minutes");
-  }
-
-  public secondChanged(ev) {
-    this._timeChanged(ev, "seconds");
+  private timeChanged(ev) {
+    const showFor = this.props.trigger.supports && this.props.trigger.supports.includes("for");
+    if (!showFor) {
+      return;
+    }
+    const days = Math.floor(parseInt(this._parseTime(this.props.trigger.for).hours/24, 10);
+    let duration = this._parseTime(ev.detail.value);
+    duration = {
+      ...duration,
+      hours: (parseInt(duration.hours,10) + days*24).toString(),
+    };
+    this.props.onChange(this.props.index, {
+      ...this.props.trigger,
+      for: duration,
+    });
   }
 
   /* eslint-disable camelcase */
@@ -46,9 +69,12 @@ export default class DeviceTrigger extends Component<any, any> {
     if (device_id === undefined) {
       device_id = trigger.device_id;
     }
-    const showFor = trigger.hasOwnProperty("for");
+    const stateObj = trigger.entity_id && hass.states[trigger.entity_id];
+    const showFor = trigger.supports && trigger.supports.includes("for");
     const trgFor = trigger.for;
     let { hours, minutes, seconds } = this._parseTime(trgFor);
+    let days = Math.floor(parseInt(hours, 10)/24).toString();
+    hours = (parseInt(hours, 10)%24).toString();
     hours = this._pad(hours);
     minutes = this._pad(minutes);
     seconds = this._pad(seconds);
@@ -69,6 +95,15 @@ export default class DeviceTrigger extends Component<any, any> {
           label="Trigger"
         />
         {showFor && (
+          <div
+          >
+          <paper-input
+            label="days"
+            name="days"
+            type="number"
+            value={days}
+            onvalue-changed={this.daysChanged}
+          />
           <paper-time-input
             label={hass.localize(
               "ui.panel.config.automation.editor.triggers.type.state.for"
@@ -78,10 +113,10 @@ export default class DeviceTrigger extends Component<any, any> {
             sec={seconds}
             enable-second
             format={24}
-            onhour-changed={this.hourChanged}
-            onmin-changed={this.minuteChanged}
-            onsec-changed={this.secondChanged}
+            onvalue-changed={this.timeChanged}
           />
+          </div>
+        )}
         )}
       </div>
     );
@@ -107,28 +142,6 @@ export default class DeviceTrigger extends Component<any, any> {
       [hours = "00", minutes = "00", seconds = "00"] = trgFor.split(":");
     }
     return { hours, minutes, seconds };
-  }
-
-  private _formatTime({ hours, minutes, seconds }) {
-    hours = this._pad(hours);
-    minutes = this._pad(minutes);
-    seconds = this._pad(seconds);
-    return hours + ":" + minutes + ":" + seconds;
-  }
-
-  private _timeChanged(ev, unit) {
-    if (!this.props.trigger.hasOwnProperty("for")) {
-      return;
-    }
-    const value = ev.detail.value || 0;
-    const duration = {
-      ...this._parseTime(this.props.trigger.for),
-      [unit]: value,
-    };
-    this.props.onChange(this.props.index, {
-      ...this.props.trigger,
-      for: this._formatTime(duration),
-    });
   }
 }
 
