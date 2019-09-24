@@ -8,8 +8,6 @@ import {
   customElement,
 } from "lit-element";
 import "./hassio-addons";
-import "./hassio-supervisor-update";
-import "./hassio-hassos-update";
 import "./hassio-update";
 import { HomeAssistant } from "../../../src/types";
 import {
