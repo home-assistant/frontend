@@ -7,6 +7,9 @@ export interface EntityConfig {
   icon?: string;
   image?: string;
 }
+export interface EntityFilterEntityConfig extends EntityConfig {
+  state_filter?: Array<{ key: string } | string>;
+}
 export interface DividerConfig {
   type: "divider";
   style: string;
