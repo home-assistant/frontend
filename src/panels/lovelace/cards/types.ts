@@ -1,6 +1,6 @@
 import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { Condition } from "../common/validate-condition";
-import { EntityConfig } from "../entity-rows/types";
+import { EntityConfig, EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceElementConfig } from "../elements/types";
 import { HuiImage } from "../components/hui-image";
 
@@ -50,8 +50,8 @@ export interface EntityButtonCardConfig extends LovelaceCardConfig {
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
-  entities: Array<EntityConfig | string>;
-  state_filter: string[];
+  entities: Array<EntityFilterEntityConfig | string>;
+  state_filter: Array<{ key: string } | string>;
   card: Partial<LovelaceCardConfig>;
   show_empty?: boolean;
 }
