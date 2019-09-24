@@ -10,7 +10,7 @@ import {
 import "./hassio-addons";
 import "./hassio-supervisor-update";
 import "./hassio-hassos-update";
-import "./hassio-hass-update";
+import "./hassio-update";
 import { HomeAssistant } from "../../../src/types";
 import {
   HassioSupervisorInfo,
@@ -29,18 +29,12 @@ class HassioDashboard extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <div class="content">
-        <hassio-hass-update
+        <hassio-update
           .hass=${this.hass}
           .hassInfo=${this.hassInfo}
-        ></hassio-hass-update>
-        <hassio-supervisor-update
-          .hass=${this.hass}
           .supervisorInfo=${this.supervisorInfo}
-        ></hassio-supervisor-update>
-        <hassio-hassos-update
-          .hass=${this.hass}
           .hassOsInfo=${this.hassOsInfo}
-        ></hassio-hassos-update>
+        ></hassio-update>
         <hassio-addons
           .hass=${this.hass}
           .addons=${this.supervisorInfo.addons}
