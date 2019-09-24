@@ -134,15 +134,15 @@ export class HassioUpdate extends LitElement {
           width: 33%;
         }
         paper-card {
-          display: block;
+          display: inline-block;
           margin-bottom: 32px;
         }
         .errors {
           color: var(--google-red-500);
-          margin-top: 16px;
+          padding: 16px;
         }
         a {
-          color: var(--primary-color);
+          text-decoration: none;
         }
       `,
     ];
