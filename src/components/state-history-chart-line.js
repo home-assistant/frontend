@@ -159,14 +159,14 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
           (state) => state.attributes && state.attributes.hvac_action
         );
 
-        const isHeating = (state) =>
+        const isHeating =
           domain === "climate" && hasHvacAction
-            ? state.attributes.hvac_action === "heating"
-            : state.state === "heat";
-        const isCooling = (state) =>
+            ? (state) => state.attributes.hvac_action === "heating"
+            : (state) => state.state === "heat";
+        const isCooling =
           domain === "climate" && hasHvacAction
-            ? state.attributes.hvac_action === "cooling"
-            : state.state === "cool";
+            ? (state) => state.attributes.hvac_action === "cooling"
+            : (state) => state.state === "cool";
 
         const hasHeat = states.states.some(isHeating);
         const hasCool = states.states.some(isCooling);
