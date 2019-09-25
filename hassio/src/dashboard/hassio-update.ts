@@ -24,10 +24,10 @@ import "../components/hassio-card-content";
 
 @customElement("hassio-update")
 export class HassioUpdate extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property() public hass!: HomeAssistant;
 
   @property() public hassInfo: HassioHomeAssistantInfo;
-  @property() public hassOsInfo!: HassioHassOSInfo;
+  @property() public hassOsInfo?: HassioHassOSInfo;
   @property() public supervisorInfo: HassioSupervisorInfo;
 
   @property() public error?: string;
@@ -36,7 +36,8 @@ export class HassioUpdate extends LitElement {
     if (
       this.hassInfo.version === this.hassInfo.last_version &&
       this.supervisorInfo.version === this.supervisorInfo.last_version &&
-      this.hassOsInfo.version === this.hassOsInfo.version_latest
+      (!this.hassOsInfo ||
+        this.hassOsInfo.version === this.hassOsInfo.version_latest)
     ) {
       return html``;
     }
@@ -67,15 +68,17 @@ export class HassioUpdate extends LitElement {
               this.supervisorInfo.last_version
             }`
           )}
-          ${this._renderUpdateCard(
-            "HassOS",
-            this.hassOsInfo.version,
-            this.hassOsInfo.version_latest,
-            "hassio/hassos/update",
-            `https://github.com//home-assistant/hassos/releases/tag/${
-              this.hassOsInfo.version_latest
-            }`
-          )}
+          ${this.hassOsInfo
+            ? this._renderUpdateCard(
+                "HassOS",
+                this.hassOsInfo.version,
+                this.hassOsInfo.version_latest,
+                "hassio/hassos/update",
+                `https://github.com//home-assistant/hassos/releases/tag/${
+                  this.hassOsInfo.version_latest
+                }`
+              )
+            : ""}
         </div>
       </div>
     `;

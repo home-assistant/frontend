@@ -136,16 +136,18 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
       return;
     }
 
-    const [supervisorInfo, hostInfo, hassOsInfo, hassInfo] = await Promise.all([
+    const [supervisorInfo, hostInfo, hassInfo] = await Promise.all([
       fetchHassioSupervisorInfo(this.hass),
       fetchHassioHostInfo(this.hass),
-      fetchHassioHassOsInfo(this.hass),
       fetchHassioHomeAssistantInfo(this.hass),
     ]);
     this._supervisorInfo = supervisorInfo;
     this._hostInfo = hostInfo;
-    this._hassOsInfo = hassOsInfo;
     this._hassInfo = hassInfo;
+
+    if (this._hostInfo.features && this._hostInfo.features.includes("hassos")) {
+      this._hassOsInfo = await fetchHassioHassOsInfo(this.hass);
+    }
   }
 
   private async _redirectIngress(addonSlug: string) {
