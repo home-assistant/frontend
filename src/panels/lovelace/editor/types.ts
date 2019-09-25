@@ -56,3 +56,12 @@ export const actionConfigStruct = struct({
   service: "string?",
   service_data: "object?",
 });
+
+export const entitiesConfigStruct = struct.union([
+  {
+    entity: "entity-id",
+    name: "string?",
+    icon: "icon?",
+  },
+  "entity-id",
+]);

@@ -21,7 +21,7 @@ import "../components/hui-warning-element";
 
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { DOMAINS_TOGGLE } from "../../../common/const";
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { EntityConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 import { longPress } from "../common/directives/long-press-directive";
@@ -35,6 +35,18 @@ const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 
 @customElement("hui-picture-glance-card")
 class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import(/* webpackChunkName: "hui-picture-glance-card-editor" */ "../editor/config-elements/hui-picture-glance-card-editor");
+    return document.createElement("hui-picture-glance-card-editor");
+  }
+  public static getStubConfig(): object {
+    return {
+      image:
+        "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
+      entities: [],
+    };
+  }
+
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: PictureGlanceCardConfig;
