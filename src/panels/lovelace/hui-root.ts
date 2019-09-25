@@ -364,8 +364,8 @@ class HUIRoot extends LitElement {
           display: flex;
         }
         #view > * {
-          flex: 1;
-          width: 100%;
+          flex: 1 1 100%;
+          max-width: 100%;
         }
         #view.tabs-hidden {
           min-height: calc(100vh - 64px);
