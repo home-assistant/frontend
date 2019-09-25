@@ -31,6 +31,7 @@ const cardConfigStruct = struct({
   type: "string",
   entity: "string",
   image: "string?",
+  name: "string?",
   camera_image: "string?",
   camera_view: "string?",
   aspect_ratio: "string?",
