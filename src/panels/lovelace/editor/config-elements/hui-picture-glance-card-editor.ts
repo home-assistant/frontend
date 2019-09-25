@@ -37,7 +37,6 @@ const cardConfigStruct = struct({
   image: "string?",
   camera_image: "string?",
   camera_view: "string?",
-  state_iamge: "object?",
   aspect_ratio: "string?",
   tap_action: struct.optional(actionConfigStruct),
   hold_action: struct.optional(actionConfigStruct),
