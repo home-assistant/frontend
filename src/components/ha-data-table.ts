@@ -1,4 +1,5 @@
 import { repeat } from "lit-html/directives/repeat";
+import deepClone from "deep-clone-simple";
 
 import {
   MDCDataTableAdapter,
@@ -128,7 +129,11 @@ export class HaDataTable extends BaseElement {
       if (!worker) {
         worker = filterWorker();
       }
-      return worker.filterData(data, columns, filter.toUpperCase());
+      const clonedColumns: DataTabelColumnContainer = deepClone(columns);
+      Object.values(clonedColumns).forEach((column: DataTabelColumnData) => {
+        delete column.template;
+      });
+      return worker.filterData(data, clonedColumns, filter.toUpperCase());
     }
   );
 
