@@ -3,8 +3,6 @@ import "@polymer/paper-card/paper-card";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import { fetchHassioHassOsInfo } from "../../../src/data/hassio";
-
 import "../../../src/components/buttons/ha-call-api-button";
 import { EventsMixin } from "../../../src/mixins/events-mixin";
 
