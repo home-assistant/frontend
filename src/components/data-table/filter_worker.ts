@@ -1,7 +1,4 @@
-import {
-  DataTabelColumnContainer,
-  DataTabelRowData,
-} from "../components/ha-data-table";
+import { DataTabelColumnContainer, DataTabelRowData } from "./ha-data-table";
 
 export const filterData = (
   data: DataTabelRowData[],

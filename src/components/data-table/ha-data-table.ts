@@ -4,7 +4,7 @@ import deepClone from "deep-clone-simple";
 import {
   MDCDataTableAdapter,
   MDCDataTableFoundation,
-} from "../../mdc-data-table/index"; // Because mdc-data-table published ts files, temporary load them from own repo, outside src so our linters won't complain
+} from "../../../mdc-data-table/index"; // Because mdc-data-table published ts files, temporary load them from own repo, outside src so our linters won't complain
 
 import {
   BaseElement,
@@ -25,14 +25,14 @@ import memoizeOne from "memoize-one";
 // eslint-disable-next-line import/no-webpack-loader-syntax
 // @ts-ignore
 // tslint:disable-next-line: no-implicit-dependencies
-import filterWorker from "workerize-loader!../resources/filter_worker";
+import filterWorker from "workerize-loader!./filter_worker";
 
-import "./ha-icon";
-import "../common/search/search-input";
-import "./ha-checkbox";
+import "../ha-icon";
+import "../../common/search/search-input";
+import "../ha-checkbox";
 // tslint:disable-next-line
-import { HaCheckbox } from "./ha-checkbox";
-import { fireEvent } from "../common/dom/fire_event";
+import { HaCheckbox } from "../ha-checkbox";
+import { fireEvent } from "../../common/dom/fire_event";
 
 declare global {
   // for fire event
