@@ -179,7 +179,6 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-icon
-        .entity=${stateObj.entity_id}
         @ha-click=${this._handleTap}
         @ha-hold=${this._handleHold}
         .longPress=${longPress()}
