@@ -13,7 +13,11 @@ import "../../components/hui-entity-editor";
 import "../../components/hui-input-list-editor";
 
 import { struct } from "../../common/structs/struct";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
+import {
+  EntitiesEditorEvent,
+  EditorTarget,
+  entitiesConfigStruct,
+} from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -22,15 +26,6 @@ import { processEditorEntities } from "../process-editor-entities";
 import { EntityConfig } from "../../entity-rows/types";
 import { PolymerChangedEvent } from "../../../../polymer-types";
 import { MapCardConfig } from "../../cards/types";
-
-const entitiesConfigStruct = struct.union([
-  {
-    entity: "entity-id",
-    name: "string?",
-    icon: "icon?",
-  },
-  "entity-id",
-]);
 
 const cardConfigStruct = struct({
   type: "string",
