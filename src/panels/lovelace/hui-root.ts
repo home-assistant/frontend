@@ -354,18 +354,26 @@ class HUIRoot extends LitElement {
         #view {
           min-height: calc(100vh - 112px);
           /**
-         * Since we only set min-height, if child nodes need percentage
-         * heights they must use absolute positioning so we need relative
-         * positioning here.
-         *
-         * https://www.w3.org/TR/CSS2/visudet.html#the-height-property
-         */
+          * Since we only set min-height, if child nodes need percentage
+          * heights they must use absolute positioning so we need relative
+          * positioning here.
+          *
+          * https://www.w3.org/TR/CSS2/visudet.html#the-height-property
+          */
           position: relative;
           display: flex;
         }
         #view > * {
-          flex: 1;
-          width: 100%;
+          /**
+          * The view could get larger than the window in Firefox
+          * to prevent that we set the max-width to 100%
+          * flex-grow: 1 and flex-basis: 100% should make sure the view
+          * stays full width.
+          *
+          * https://github.com/home-assistant/home-assistant-polymer/pull/3806
+          */
+          flex: 1 1 100%;
+          max-width: 100%;
         }
         #view.tabs-hidden {
           min-height: calc(100vh - 64px);
