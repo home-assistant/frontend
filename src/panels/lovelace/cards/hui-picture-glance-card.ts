@@ -41,13 +41,6 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
   }
   public static getStubConfig(): object {
     return {
-      entity: "",
-      image:
-        "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
-      camera_view: "auto",
-      aspect_ratio: "50%",
-      tap_action: { action: "more-info" },
-      hold_action: { action: "more-info" },
       entities: [],
     };
   }
