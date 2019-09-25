@@ -68,7 +68,9 @@ export class HuiPictureGlanceCardEditor extends LitElement
   }
 
   get _image(): string {
-    return this._config!.image || "";
+    return this._config!.image || this._camera_image
+      ? ""
+      : "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png";
   }
 
   get _camera_image(): string {
@@ -76,7 +78,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
   }
 
   get _camera_view(): string {
-    return this._config!.camera_view || "";
+    return this._config!.camera_view || this._camera_image ? "auto" : "";
   }
 
   get _state_image(): {} {
@@ -84,15 +86,15 @@ export class HuiPictureGlanceCardEditor extends LitElement
   }
 
   get _aspect_ratio(): string {
-    return this._config!.aspect_ratio || "";
+    return this._config!.aspect_ratio || "50%";
   }
 
   get _tap_action(): ActionConfig {
-    return this._config!.tap_action || { action: "none" };
+    return this._config!.tap_action || { action: "more-info" };
   }
 
   get _hold_action(): ActionConfig {
-    return this._config!.hold_action || { action: "none" };
+    return this._config!.hold_action || { action: "more-info" };
   }
 
   get _show_name(): boolean {
@@ -114,25 +116,32 @@ export class HuiPictureGlanceCardEditor extends LitElement
     return html`
       ${configElementStyle}
       <div class="card-config">
-        <a
-          href="https://www.home-assistant.io/lovelace/picture-glance/"
-          target="_blank"
-          >Documentation</a
-        >
         <paper-input
-          label="Title (Optional)"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.title"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <paper-input
-          label="Image Url (Optional)"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.image"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value="${this._image}"
           .configValue="${"image"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <ha-entity-picker
-          label="Camera Image (Optional)"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.camera_image"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .hass="${this.hass}"
           .value="${this._camera_image}"
           .configValue=${"camera_image"}
@@ -142,7 +151,11 @@ export class HuiPictureGlanceCardEditor extends LitElement
         ></ha-entity-picker>
         <div class="side-by-side">
           <paper-dropdown-menu
-            label="Camera View"
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.camera_view"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
             .configValue="${"camera_view"}"
             @value-changed="${this._valueChanged}"
           >
@@ -158,7 +171,11 @@ export class HuiPictureGlanceCardEditor extends LitElement
             </paper-listbox>
           </paper-dropdown-menu>
           <paper-input
-            label="Aspect Ratio"
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.aspect_ratio"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
             type="number"
             .value="${Number(this._aspect_ratio.replace("%", ""))}"
             .configValue="${"aspect_ratio"}"
@@ -166,17 +183,24 @@ export class HuiPictureGlanceCardEditor extends LitElement
           ></paper-input>
         </div>
         <ha-entity-picker
-          label="Entity (Optional: only used for actions and state images)"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.entity"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .hass="${this.hass}"
           .value="${this._entity}"
           .configValue=${"entity"}
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>
-        <h3>Toggle Editor to input State Image options</h3>
         <div class="side-by-side">
           <hui-action-editor
-            label="Tap Action"
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.tap_action"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
             .hass="${this.hass}"
             .config="${this._tap_action}"
             .actions="${actions}"
@@ -184,7 +208,11 @@ export class HuiPictureGlanceCardEditor extends LitElement
             @action-changed="${this._valueChanged}"
           ></hui-action-editor>
           <hui-action-editor
-            label="Hold Action"
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.hold_action"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
             .hass="${this.hass}"
             .config="${this._hold_action}"
             .actions="${actions}"
