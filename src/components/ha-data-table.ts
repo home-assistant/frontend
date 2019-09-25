@@ -21,6 +21,11 @@ import {
 
 import memoizeOne from "memoize-one";
 
+// eslint-disable-next-line import/no-webpack-loader-syntax
+// @ts-ignore
+// tslint:disable-next-line: no-implicit-dependencies
+import filterWorker from "workerize-loader!../resources/filter_worker";
+
 import "./ha-icon";
 import "../common/search/search-input";
 import "./ha-checkbox";
@@ -71,6 +76,8 @@ export interface DataTabelRowData {
   [key: string]: any;
 }
 
+let worker: any | undefined;
+
 @customElement("ha-data-table")
 export class HaDataTable extends BaseElement {
   @property({ type: Object }) public columns: DataTabelColumnContainer = {};
@@ -89,9 +96,10 @@ export class HaDataTable extends BaseElement {
   @property({ type: String }) private _filter = "";
   @property({ type: String }) private _sortColumn?: string;
   @property({ type: String }) private _sortDirection: SortingDirection = null;
+  private _filteredData: DataTabelRowData[] = [];
 
   private _filterSortData = memoizeOne(
-    (
+    async (
       data: DataTabelRowData[],
       columns: DataTabelColumnContainer,
       filter: string,
@@ -100,7 +108,7 @@ export class HaDataTable extends BaseElement {
     ) =>
       sortColumn
         ? this._memSortData(
-            this._memFilterData(data, columns, filter),
+            await this._memFilterData(data, columns, filter),
             columns,
             direction,
             sortColumn
@@ -117,22 +125,10 @@ export class HaDataTable extends BaseElement {
       if (!filter) {
         return data;
       }
-      const ucFilter = filter.toUpperCase();
-      return data.filter((row) => {
-        return Object.entries(columns).some((columnEntry) => {
-          const [key, column] = columnEntry;
-          if (column.filterable) {
-            if (
-              (column.filterKey ? row[key][column.filterKey] : row[key])
-                .toUpperCase()
-                .includes(ucFilter)
-            ) {
-              return true;
-            }
-          }
-          return false;
-        });
-      });
+      if (!worker) {
+        worker = filterWorker();
+      }
+      return worker.filterData(data, columns, filter.toUpperCase());
     }
   );
 
@@ -176,6 +172,17 @@ export class HaDataTable extends BaseElement {
       });
     }
   );
+
+  protected async performUpdate(): Promise<void> {
+    this._filteredData = await this._filterSortData(
+      this.data,
+      this.columns,
+      this._filter,
+      this._sortDirection,
+      this._sortColumn
+    );
+    super.performUpdate();
+  }
 
   protected updated(properties: PropertyValues) {
     super.updated(properties);
@@ -261,13 +268,7 @@ export class HaDataTable extends BaseElement {
           </thead>
           <tbody class="mdc-data-table__content">
             ${repeat(
-              this._filterSortData(
-                this.data,
-                this.columns,
-                this._filter,
-                this._sortDirection,
-                this._sortColumn
-              ),
+              this._filteredData,
               (row: DataTabelRowData) => row[this.id],
               (row: DataTabelRowData) => html`
                 <tr
