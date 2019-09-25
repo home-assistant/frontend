@@ -364,6 +364,14 @@ class HUIRoot extends LitElement {
           display: flex;
         }
         #view > * {
+          /**
+         * The view could get larger than the window in Firefox
+         * to prevent that we set the max-width to 100%
+         * flex-grow: 1 and flex-basis: 100% should make sure the view
+         * stays full width.
+         *
+         * https://github.com/home-assistant/home-assistant-polymer/pull/3806
+         */
           flex: 1 1 100%;
           max-width: 100%;
         }
