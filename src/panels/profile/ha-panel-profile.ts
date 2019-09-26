@@ -24,6 +24,7 @@ import "./ha-pick-language-row";
 import "./ha-pick-theme-row";
 import "./ha-push-notifications-row";
 import "./ha-force-narrow-row";
+import "./ha-set-vibrate-row";
 import {
   LitElement,
   TemplateResult,
@@ -103,6 +104,14 @@ class HaPanelProfile extends LitElement {
                     .narrow=${this.narrow}
                     .hass=${this.hass}
                   ></ha-force-narrow-row>
+                `
+              : ""}
+            ${navigator.vibrate
+              ? html`
+                  <ha-set-vibrate-row
+                    .narrow=${this.narrow}
+                    .hass=${this.hass}
+                  ></ha-set-vibrate-row>
                 `
               : ""}
             <ha-push-notifications-row
