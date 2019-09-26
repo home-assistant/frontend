@@ -22,7 +22,6 @@ import "../components/hui-warning-element";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { EntityConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 import { longPress } from "../common/directives/long-press-directive";
 import { processConfigEntities } from "../common/process-config-entities";
