@@ -15,6 +15,7 @@ import {
   HassioSupervisorInfo,
   HassioHostInfo,
   HassioHomeAssistantInfo,
+  HassioHassOSInfo,
 } from "../../src/data/hassio";
 
 @customElement("hassio-tabs-router")
@@ -23,6 +24,7 @@ class HassioTabsRouter extends HassRouterPage {
   @property() public supervisorInfo: HassioSupervisorInfo;
   @property() public hostInfo: HassioHostInfo;
   @property() public hassInfo: HassioHomeAssistantInfo;
+  @property() public hassOsInfo!: HassioHassOSInfo;
 
   protected routerOptions: RouterOptions = {
     routes: {
@@ -49,12 +51,14 @@ class HassioTabsRouter extends HassRouterPage {
         supervisorInfo: this.supervisorInfo,
         hostInfo: this.hostInfo,
         hassInfo: this.hassInfo,
+        hassOsInfo: this.hassOsInfo,
       });
     } else {
       el.hass = this.hass;
       el.supervisorInfo = this.supervisorInfo;
       el.hostInfo = this.hostInfo;
       el.hassInfo = this.hassInfo;
+      el.hassOsInfo = this.hassOsInfo;
     }
   }
 }

@@ -12,57 +12,64 @@ import "@polymer/paper-listbox/paper-listbox";
 
 import "../../components/hui-action-editor";
 import "../../components/hui-entity-editor";
-import "../../../../components/ha-switch";
+import "../../../../components/entity/ha-entity-picker";
 
 import { struct } from "../../common/structs/struct";
 import {
   EntitiesEditorEvent,
   EditorTarget,
   actionConfigStruct,
+  entitiesConfigStruct,
 } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { configElementStyle } from "./config-elements-style";
 import { ActionConfig } from "../../../../data/lovelace";
-import { PictureEntityCardConfig } from "../../cards/types";
+import { PictureGlanceCardConfig } from "../../cards/types";
+import { EntityConfig } from "../../entity-rows/types";
+import { processEditorEntities } from "../process-editor-entities";
 
 const cardConfigStruct = struct({
   type: "string",
-  entity: "string",
+  title: "string?",
+  entity: "string?",
   image: "string?",
-  name: "string?",
   camera_image: "string?",
   camera_view: "string?",
   aspect_ratio: "string?",
   tap_action: struct.optional(actionConfigStruct),
   hold_action: struct.optional(actionConfigStruct),
-  show_name: "boolean?",
-  show_state: "boolean?",
+  entities: [entitiesConfigStruct],
 });
 
-@customElement("hui-picture-entity-card-editor")
-export class HuiPictureEntityCardEditor extends LitElement
+@customElement("hui-picture-glance-card-editor")
+export class HuiPictureGlanceCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: PictureEntityCardConfig;
+  @property() private _config?: PictureGlanceCardConfig;
 
-  public setConfig(config: PictureEntityCardConfig): void {
+  @property() private _configEntities?: EntityConfig[];
+
+  public setConfig(config: PictureGlanceCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
+    this._configEntities = processEditorEntities(config.entities);
   }
 
   get _entity(): string {
     return this._config!.entity || "";
   }
 
-  get _name(): string {
-    return this._config!.name || "";
+  get _title(): string {
+    return this._config!.title || "";
   }
 
   get _image(): string {
-    return this._config!.image || "";
+    return this._config!.image || this._camera_image
+      ? ""
+      : "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png";
   }
 
   get _camera_image(): string {
@@ -70,11 +77,15 @@ export class HuiPictureEntityCardEditor extends LitElement
   }
 
   get _camera_view(): string {
-    return this._config!.camera_view || "auto";
+    return this._config!.camera_view || this._camera_image ? "auto" : "";
+  }
+
+  get _state_image(): {} {
+    return this._config!.state_image || {};
   }
 
   get _aspect_ratio(): string {
-    return this._config!.aspect_ratio || "50";
+    return this._config!.aspect_ratio || "";
   }
 
   get _tap_action(): ActionConfig {
@@ -86,11 +97,11 @@ export class HuiPictureEntityCardEditor extends LitElement
   }
 
   get _show_name(): boolean {
-    return this._config!.show_name || true;
+    return this._config!.show_name || false;
   }
 
   get _show_state(): boolean {
-    return this._config!.show_state || true;
+    return this._config!.show_state || false;
   }
 
   protected render(): TemplateResult | void {
@@ -104,26 +115,14 @@ export class HuiPictureEntityCardEditor extends LitElement
     return html`
       ${configElementStyle}
       <div class="card-config">
-        <ha-entity-picker
-          .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.entity"
-          )} (${this.hass.localize(
-            "ui.panel.lovelace.editor.card.config.required"
-          )})"
-          .hass="${this.hass}"
-          .value="${this._entity}"
-          .configValue=${"entity"}
-          @change="${this._valueChanged}"
-          allow-custom-entity
-        ></ha-entity-picker>
         <paper-input
           .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.generic.name"
+            "ui.panel.lovelace.editor.card.generic.title"
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .value="${this._name}"
-          .configValue="${"name"}"
+          .value="${this._title}"
+          .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <paper-input
@@ -146,8 +145,8 @@ export class HuiPictureEntityCardEditor extends LitElement
           .value="${this._camera_image}"
           .configValue=${"camera_image"}
           @change="${this._valueChanged}"
-          domain-filter="camera"
           allow-custom-entity
+          domain-filter="camera"
         ></ha-entity-picker>
         <div class="side-by-side">
           <paper-dropdown-menu
@@ -182,24 +181,18 @@ export class HuiPictureEntityCardEditor extends LitElement
             @value-changed="${this._valueChanged}"
           ></paper-input>
         </div>
-        <div class="side-by-side">
-          <ha-switch
-            ?checked="${this._show_name !== false}"
-            .configValue="${"show_name"}"
-            @change="${this._valueChanged}"
-            >${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.show_name"
-            )}</ha-switch
-          >
-          <ha-switch
-            ?checked="${this._show_state !== false}"
-            .configValue="${"show_state"}"
-            @change="${this._valueChanged}"
-            >${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.show_state"
-            )}</ha-switch
-          >
-        </div>
+        <ha-entity-picker
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.entity"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          .hass="${this.hass}"
+          .value="${this._entity}"
+          .configValue=${"entity"}
+          @change="${this._valueChanged}"
+          allow-custom-entity
+        ></ha-entity-picker>
         <div class="side-by-side">
           <hui-action-editor
             .label="${this.hass.localize(
@@ -226,6 +219,11 @@ export class HuiPictureEntityCardEditor extends LitElement
             @action-changed="${this._valueChanged}"
           ></hui-action-editor>
         </div>
+        <hui-entity-editor
+          .hass="${this.hass}"
+          .entities="${this._configEntities}"
+          @entities-changed="${this._valueChanged}"
+        ></hui-entity-editor>
       </div>
     `;
   }
@@ -241,24 +239,23 @@ export class HuiPictureEntityCardEditor extends LitElement
       value += "%";
     }
 
-    if (
-      this[`_${target.configValue}`] === value ||
-      this[`_${target.configValue}`] === target.config
-    ) {
-      return;
-    }
-    if (target.configValue) {
+    if (ev.detail && ev.detail.entities) {
+      this._config.entities = ev.detail.entities;
+      this._configEntities = processEditorEntities(this._config.entities);
+    } else if (target.configValue) {
+      if (
+        this[`_${target.configValue}`] === value ||
+        this[`_${target.configValue}`] === target.config
+      ) {
+        return;
+      }
+
       if (value === "") {
         delete this._config[target.configValue!];
       } else {
         this._config = {
           ...this._config,
-          [target.configValue!]:
-            target.checked !== undefined
-              ? target.checked
-              : value
-              ? value
-              : target.config,
+          [target.configValue!]: value ? value : target.config,
         };
       }
     }
@@ -268,6 +265,6 @@ export class HuiPictureEntityCardEditor extends LitElement
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-picture-entity-card-editor": HuiPictureEntityCardEditor;
+    "hui-picture-glance-card-editor": HuiPictureGlanceCardEditor;
   }
 }
