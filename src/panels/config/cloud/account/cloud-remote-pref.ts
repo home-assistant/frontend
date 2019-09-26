@@ -120,7 +120,7 @@ export class CloudRemotePref extends LitElement {
       }
       ha-card > ha-switch {
         margin: -4px 0;
-        position: absolute;
+        position: absolute !important;
         right: 8px;
         top: 32px;
       }
