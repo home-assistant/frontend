@@ -27,6 +27,7 @@ import {
   HassioSupervisorInfo,
   HassioHostInfo,
   HassioHomeAssistantInfo,
+  HassioHassOSInfo,
 } from "../../src/data/hassio";
 
 const HAS_REFRESH_BUTTON = ["store", "snapshots"];
@@ -39,6 +40,7 @@ class HassioPagesWithTabs extends LitElement {
   @property() public supervisorInfo!: HassioSupervisorInfo;
   @property() public hostInfo!: HassioHostInfo;
   @property() public hassInfo!: HassioHomeAssistantInfo;
+  @property() public hassOsInfo!: HassioHassOSInfo;
 
   protected render(): TemplateResult | void {
     const page = this._page;
@@ -79,6 +81,7 @@ class HassioPagesWithTabs extends LitElement {
           .supervisorInfo=${this.supervisorInfo}
           .hostInfo=${this.hostInfo}
           .hassInfo=${this.hassInfo}
+          .hassOsInfo=${this.hassOsInfo}
         ></hassio-tabs-router>
       </app-header-layout>
     `;

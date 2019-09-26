@@ -30,6 +30,7 @@ class HassioSystem extends PolymerElement {
         <hassio-host-info
           hass="[[hass]]"
           data="[[hostInfo]]"
+          hass-os-info="[[hassOsInfo]]"
         ></hassio-host-info>
         <div class="title">System log</div>
         <hassio-supervisor-log hass="[[hass]]"></hassio-supervisor-log>
@@ -42,6 +43,7 @@ class HassioSystem extends PolymerElement {
       hass: Object,
       supervisorInfo: Object,
       hostInfo: Object,
+      hassOsInfo: Object,
     };
   }
 }
