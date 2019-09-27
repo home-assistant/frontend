@@ -25,7 +25,7 @@ import memoizeOne from "memoize-one";
 // eslint-disable-next-line import/no-webpack-loader-syntax
 // @ts-ignore
 // tslint:disable-next-line: no-implicit-dependencies
-import filterWorker from "workerize-loader!./filter_worker";
+import sortFilterWorker from "workerize-loader!./sort_filter_worker";
 
 import "../ha-icon";
 import "../../common/search/search-input";
@@ -33,6 +33,8 @@ import "../ha-checkbox";
 // tslint:disable-next-line
 import { HaCheckbox } from "../ha-checkbox";
 import { fireEvent } from "../../common/dom/fire_event";
+import { nextRender } from "../../common/util/render-status";
+import { debounce } from "../../common/util/debounce";
 
 declare global {
   // for fire event
@@ -99,6 +101,14 @@ export class HaDataTable extends BaseElement {
   @property({ type: String }) private _sortDirection: SortingDirection = null;
   private _filteredData: DataTabelRowData[] = [];
 
+  private _debounceSearch = debounce(
+    (ev) => {
+      this._filter = ev.detail.value;
+    },
+    200,
+    false
+  );
+
   private _filterSortData = memoizeOne(
     async (
       data: DataTabelRowData[],
@@ -106,28 +116,29 @@ export class HaDataTable extends BaseElement {
       filter: string,
       direction: SortingDirection,
       sortColumn?: string
-    ) =>
-      sortColumn
+    ) => {
+      if (!worker) {
+        worker = sortFilterWorker();
+      }
+      return sortColumn
         ? this._memSortData(
             await this._memFilterData(data, columns, filter),
             columns,
             direction,
             sortColumn
           )
-        : this._memFilterData(data, columns, filter)
+        : this._memFilterData(data, columns, filter);
+    }
   );
 
   private _memFilterData = memoizeOne(
-    (
+    async (
       data: DataTabelRowData[],
       columns: DataTabelColumnContainer,
       filter: string
     ) => {
       if (!filter) {
         return data;
-      }
-      if (!worker) {
-        worker = filterWorker();
       }
       const clonedColumns: DataTabelColumnContainer = deepClone(columns);
       Object.values(clonedColumns).forEach((column: DataTabelColumnData) => {
@@ -144,48 +155,22 @@ export class HaDataTable extends BaseElement {
       direction: SortingDirection,
       sortColumn: string
     ) => {
-      const sorted = [...data];
-      const column = columns[sortColumn];
-      return sorted.sort((a, b) => {
-        let sort = 1;
-        if (direction === "desc") {
-          sort = -1;
-        }
-
-        let valA = column.filterKey
-          ? a[sortColumn][column.filterKey]
-          : a[sortColumn];
-
-        let valB = column.filterKey
-          ? b[sortColumn][column.filterKey]
-          : b[sortColumn];
-
-        if (typeof valA === "string") {
-          valA = valA.toUpperCase();
-        }
-        if (typeof valB === "string") {
-          valB = valB.toUpperCase();
-        }
-
-        if (valA < valB) {
-          return sort * -1;
-        }
-        if (valA > valB) {
-          return sort * 1;
-        }
-        return 0;
-      });
+      const column = { ...columns[sortColumn] };
+      delete column.template;
+      return worker.sortData(data, column, direction, sortColumn);
     }
   );
 
   protected async performUpdate(): Promise<void> {
-    this._filteredData = await this._filterSortData(
+    const filterProm = this._filterSortData(
       this.data,
       this.columns,
       this._filter,
       this._sortDirection,
       this._sortColumn
     );
+    const [data] = await Promise.all([filterProm, nextRender]);
+    this._filteredData = data;
     super.performUpdate();
   }
 
@@ -426,7 +411,7 @@ export class HaDataTable extends BaseElement {
   }
 
   private _handleSearchChange(ev: CustomEvent): void {
-    this._filter = ev.detail.value;
+    this._debounceSearch(ev);
   }
 
   static get styles(): CSSResult {
