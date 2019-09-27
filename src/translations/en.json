@@ -1214,6 +1214,10 @@
           "header": "Always hide the sidebar",
           "description": "This will hide the sidebar by default, similar to the mobile experience."
         },
+        "vibrate": {
+          "header": "Vibrate",
+          "description": "Enable or disable vibration on this device when controlling devices."
+        },
         "push_notifications": {
           "header": "Push Notifications",
           "description": "Send notifications to this device.",
