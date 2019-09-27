@@ -8,11 +8,11 @@ import {
 
 import "../../../components/entity/ha-state-label-badge";
 // This one is for types
-// tslint:disable-next-line
-import { HaStateLabelBadge } from "../../../components/entity/ha-state-label-badge";
 
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
+// tslint:disable-next-line
+import { HaStateLabelBadge } from "../../../components/entity/ha-state-label-badge";
 import { LovelaceViewConfig, LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { classMap } from "lit-html/directives/class-map";
@@ -21,9 +21,9 @@ import { createCardElement } from "../common/create-card-element";
 import { computeCardSize } from "../common/compute-card-size";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { HuiErrorCard } from "../cards/hui-error-card";
-
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { processConfigEntities } from "../common/process-config-entities";
+import { evaluateFilter } from "../common/evaluate-filter";
 
 let editCodeLoaded = false;
 
@@ -263,12 +263,38 @@ export class HUIView extends LitElement {
 
     const elements: HUIView["_badges"] = [];
     // It's possible that a null value was stored as a badge entry
-    const badges = processConfigEntities(config.badges.filter(Boolean));
+    const badges = processConfigEntities(
+      config.badges.filter((badgeConf) => {
+        if (typeof badgeConf === "object") {
+          const stateObj = this.hass!.states[badgeConf.entity];
+
+          if (!stateObj) {
+            return false;
+          }
+
+          if (badgeConf.state_filter) {
+            for (const filter of badgeConf.state_filter) {
+              if (evaluateFilter(stateObj, filter)) {
+                return true;
+              }
+            }
+          } else {
+            return true;
+          }
+
+          return false;
+        }
+
+        return true;
+      })
+    );
+
     for (const badge of badges) {
-      const element = document.createElement("ha-state-label-badge");
       const entityId = badge.entity;
+      const stateObj = this.hass!.states[entityId];
+      const element = document.createElement("ha-state-label-badge");
       element.hass = this.hass;
-      element.state = this.hass!.states[entityId];
+      element.state = stateObj;
       element.name = badge.name;
       element.icon = badge.icon;
       element.image = badge.image;

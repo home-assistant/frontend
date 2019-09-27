@@ -26,11 +26,11 @@ import { HomeAssistant } from "../../../../types";
 import {
   LovelaceViewConfig,
   LovelaceCardConfig,
+  LovelaceBadgeConfig,
 } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { EntitiesEditorEvent, ViewEditEvent } from "../types";
 import { processEditorEntities } from "../process-editor-entities";
-import { EntityConfig } from "../../entity-rows/types";
 import { navigate } from "../../../../common/navigate";
 import { Lovelace } from "../../types";
 import { deleteView, addView, replaceView } from "../config-util";
@@ -45,7 +45,7 @@ export class HuiEditView extends LitElement {
 
   @property() private _config?: LovelaceViewConfig;
 
-  @property() private _badges?: EntityConfig[];
+  @property() private _badges?: LovelaceBadgeConfig[];
 
   @property() private _cards?: LovelaceCardConfig[];
 
@@ -216,7 +216,9 @@ export class HuiEditView extends LitElement {
 
     const viewConf: LovelaceViewConfig = {
       cards: this._cards,
-      badges: this._badges!.map((entityConf) => entityConf.entity),
+      badges: this._badges!.map((entityConf) =>
+        Object.keys(entityConf).length > 1 ? entityConf : entityConf.entity
+      ),
       ...this._config,
     };
 
