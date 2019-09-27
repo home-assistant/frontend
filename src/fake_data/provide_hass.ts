@@ -178,6 +178,7 @@ export const provideHass = (
 
     translationMetadata: translationMetadata as any,
     dockedSidebar: "auto",
+    vibrate: true,
     moreInfoEntityId: null as any,
     async callService(domain, service, data) {
       if (data && "entity_id" in data) {
