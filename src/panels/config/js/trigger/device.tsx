@@ -23,7 +23,6 @@ export default class DeviceTrigger extends Component<any, any> {
     this.deviceTriggerPicked = this.deviceTriggerPicked.bind(this);
     this.state = { device_id: undefined, capabilities: undefined };
   }
-  }
 
   public devicePicked(ev) {
     this.setState({ ...this.state, device_id: ev.target.value });
