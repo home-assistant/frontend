@@ -4,17 +4,13 @@ import "../../../../components/device/ha-device-picker";
 import "../../../../components/device/ha-device-trigger-picker";
 import "../../../../components/paper-time-input";
 
-import { onChangeEvent } from "../../../../common/preact/event";
-
 import { fetchDeviceTriggerCapabilities } from "../../../../data/device_automation";
 
 export default class DeviceTrigger extends Component<any, any> {
-  private onChange: (obj: any) => void;
   private hass;
   constructor() {
     super();
 
-    this.onChange = onChangeEvent.bind(this, "trigger");
     this.daysChanged = this.daysChanged.bind(this);
     this.hoursChanged = this.hoursChanged.bind(this);
     this.minutesChanged = this.minutesChanged.bind(this);
