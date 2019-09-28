@@ -333,7 +333,7 @@ export class HaAutomationEditor extends LitElement {
           left: 24px;
         }
 
-        paper-input {
+        #device-trigger-days {
           display: inline-block;
           width: 50px;
         }

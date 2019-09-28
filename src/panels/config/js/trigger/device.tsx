@@ -96,6 +96,7 @@ export default class DeviceTrigger extends Component<any, any> {
         {showFor && (
           <div>
             <paper-input
+              id="device-trigger-days"
               label="Days"
               name="days"
               type="number"
@@ -116,7 +117,6 @@ export default class DeviceTrigger extends Component<any, any> {
               onsec-changed={this.secondsChanged}
             />
           </div>
-        )}
         )}
       </div>
     );
