@@ -6,10 +6,7 @@ import "../../../../components/paper-time-input";
 
 import { onChangeEvent } from "../../../../common/preact/event";
 
-import {
-  fetchDeviceTriggerCapabilities,
-} from "../../../../data/device_automation";
-
+import { fetchDeviceTriggerCapabilities } from "../../../../data/device_automation";
 
 export default class DeviceTrigger extends Component<any, any> {
   private onChange: (obj: any) => void;
@@ -33,13 +30,15 @@ export default class DeviceTrigger extends Component<any, any> {
   }
 
   public async deviceTriggerPicked(ev) {
-    let deviceTrigger = ev.target.value;
-    const capabilities = deviceTrigger.domain ? await fetchDeviceTriggerCapabilities(this.hass, deviceTrigger) : null;
-    this.setState({ ...this.state, capabilities: capabilities });
+    const deviceTrigger = ev.target.value;
+    const capabilities = deviceTrigger.domain
+      ? await fetchDeviceTriggerCapabilities(this.hass, deviceTrigger)
+      : null;
+    this.setState({ ...this.state, capabilities });
     this.props.onChange(this.props.index, deviceTrigger);
   }
 
-  private daysChanged(ev) {
+  public daysChanged(ev) {
     this._timeChanged(ev, "days");
   }
 
@@ -59,12 +58,19 @@ export default class DeviceTrigger extends Component<any, any> {
   public render({ trigger, hass }, { device_id }) {
     this.hass = hass;
     if (!this.state.capabilities && trigger.domain) {
-      fetchDeviceTriggerCapabilities(this.hass, trigger).then((capabilities) => {this.setState({ ...this.state, capabilities: capabilities });})
+      fetchDeviceTriggerCapabilities(this.hass, trigger).then(
+        (capabilities) => {
+          this.setState({ ...this.state, capabilities });
+        }
+      );
     }
     if (device_id === undefined) {
       device_id = trigger.device_id;
     }
-    const showFor = this.state.capabilities && this.state.capabilities.supports && this.state.capabilities.supports.includes("for");
+    const showFor =
+      this.state.capabilities &&
+      this.state.capabilities.supports &&
+      this.state.capabilities.supports.includes("for");
     const trgFor = trigger.for;
     let { days, hours, minutes, seconds } = this._parseTime(trgFor);
     days = days.toString();
@@ -88,26 +94,27 @@ export default class DeviceTrigger extends Component<any, any> {
           label="Trigger"
         />
         {showFor && (
-          <paper-input
-            label="days"
-            name="days"
-            type="number"
-            value={days}
-            onvalue-changed={this.daysChanged}
-          />
-          <paper-time-input
-            label={hass.localize(
-              "ui.panel.config.automation.editor.triggers.type.state.for"
-            )}
-            hour={hours}
-            min={minutes}
-            sec={seconds}
-            enable-second
-            format={24}
-            onhour-changed={this.hoursChanged}
-            onmin-changed={this.minutesChanged}
-            onsec-changed={this.secondsChanged}
-          />
+          <div>
+            <paper-input
+              label="Days"
+              name="days"
+              type="number"
+              value={days}
+              onvalue-changed={this.daysChanged}
+            />
+            <paper-time-input
+              label={hass.localize(
+                "ui.panel.config.automation.editor.triggers.type.state.for"
+              )}
+              hour={hours}
+              min={minutes}
+              sec={seconds}
+              enable-second
+              format={24}
+              onhour-changed={this.hoursChanged}
+              onmin-changed={this.minutesChanged}
+              onsec-changed={this.secondsChanged}
+            />
           </div>
         )}
         )}
@@ -123,7 +130,7 @@ export default class DeviceTrigger extends Component<any, any> {
   }
 
   private _parseTime(trgFor) {
-    let days = "0"
+    let days = "0";
     let hours = "00";
     let minutes = "00";
     let seconds = "00";
@@ -139,7 +146,10 @@ export default class DeviceTrigger extends Component<any, any> {
   }
 
   private _timeChanged(ev, unit) {
-    const showFor = this.state.capabilities && this.state.capabilities.supports && this.state.capabilities.supports.includes("for");
+    const showFor =
+      this.state.capabilities &&
+      this.state.capabilities.supports &&
+      this.state.capabilities.supports.includes("for");
     if (!showFor) {
       return;
     }

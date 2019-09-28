@@ -45,8 +45,10 @@ export const fetchDeviceTriggerCapabilities = (
 ) =>
   hass.callWS<DeviceTrigger[]>({
     type: "device_automation/trigger/capabilities",
-    trigger: trigger,
+    trigger,
   });
+
+const whitelist = ["for"];
 
 export const deviceAutomationsEqual = (
   a: DeviceAutomation,

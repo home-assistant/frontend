@@ -332,6 +332,15 @@ export class HaAutomationEditor extends LitElement {
           right: auto;
           left: 24px;
         }
+
+        paper-input {
+          display: inline-block;
+          width: 50px;
+        }
+
+        paper-time-input {
+          display: inline-block;
+        }
       `,
     ];
   }
