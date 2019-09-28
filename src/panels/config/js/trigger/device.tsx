@@ -6,78 +6,71 @@ import "../../../../components/paper-time-input";
 
 import { onChangeEvent } from "../../../../common/preact/event";
 
+import {
+  fetchDeviceTriggerCapabilities,
+} from "../../../../data/device_automation";
+
+
 export default class DeviceTrigger extends Component<any, any> {
   private onChange: (obj: any) => void;
+  private hass;
   constructor() {
     super();
 
     this.onChange = onChangeEvent.bind(this, "trigger");
     this.daysChanged = this.daysChanged.bind(this);
+    this.hoursChanged = this.hoursChanged.bind(this);
+    this.minutesChanged = this.minutesChanged.bind(this);
+    this.secondsChanged = this.secondsChanged.bind(this);
     this.devicePicked = this.devicePicked.bind(this);
     this.deviceTriggerPicked = this.deviceTriggerPicked.bind(this);
-    this.timeChanged = this.timeChanged.bind(this);
-    this.state = { device_id: undefined };
+    this.state = { device_id: undefined, capabilities: undefined };
+  }
   }
 
   public devicePicked(ev) {
-    this.setState({ device_id: ev.target.value });
+    this.setState({ ...this.state, device_id: ev.target.value });
   }
 
-  public deviceTriggerPicked(ev) {
+  public async deviceTriggerPicked(ev) {
     let deviceTrigger = ev.target.value;
+    const capabilities = deviceTrigger.domain ? await fetchDeviceTriggerCapabilities(this.hass, deviceTrigger) : null;
+    this.setState({ ...this.state, capabilities: capabilities });
     this.props.onChange(this.props.index, deviceTrigger);
   }
 
   private daysChanged(ev) {
-    const showFor = this.props.trigger.supports && this.props.trigger.supports.includes("for");
-    if (!showFor) {
-      return;
-    }
-    const days = ev.detail.value || 0;
-    let duration = this._parseTime(this.props.trigger.for);
-    duration = {
-      ...duration,
-      hours: (parseInt(duration.hours%24,10) + parseInt(days, 10)*24).toString(),
-    };
-
-    this.props.onChange(this.props.index, {
-      ...this.props.trigger,
-      for: duration,
-    });
-    console.log(this.props.trigger)
+    this._timeChanged(ev, "days");
   }
 
-  private timeChanged(ev) {
-    const showFor = this.props.trigger.supports && this.props.trigger.supports.includes("for");
-    if (!showFor) {
-      return;
-    }
-    const days = Math.floor(parseInt(this._parseTime(this.props.trigger.for).hours/24, 10);
-    let duration = this._parseTime(ev.detail.value);
-    duration = {
-      ...duration,
-      hours: (parseInt(duration.hours,10) + days*24).toString(),
-    };
-    this.props.onChange(this.props.index, {
-      ...this.props.trigger,
-      for: duration,
-    });
+  public hoursChanged(ev) {
+    this._timeChanged(ev, "hours");
+  }
+
+  public minutesChanged(ev) {
+    this._timeChanged(ev, "minutes");
+  }
+
+  public secondsChanged(ev) {
+    this._timeChanged(ev, "seconds");
   }
 
   /* eslint-disable camelcase */
   public render({ trigger, hass }, { device_id }) {
+    this.hass = hass;
+    if (!this.state.capabilities && trigger.domain) {
+      fetchDeviceTriggerCapabilities(this.hass, trigger).then((capabilities) => {this.setState({ ...this.state, capabilities: capabilities });})
+    }
     if (device_id === undefined) {
       device_id = trigger.device_id;
     }
-    const stateObj = trigger.entity_id && hass.states[trigger.entity_id];
-    const showFor = trigger.supports && trigger.supports.includes("for");
+    const showFor = this.state.capabilities && this.state.capabilities.supports && this.state.capabilities.supports.includes("for");
     const trgFor = trigger.for;
-    let { hours, minutes, seconds } = this._parseTime(trgFor);
-    let days = Math.floor(parseInt(hours, 10)/24).toString();
-    hours = (parseInt(hours, 10)%24).toString();
-    hours = this._pad(hours);
-    minutes = this._pad(minutes);
-    seconds = this._pad(seconds);
+    let { days, hours, minutes, seconds } = this._parseTime(trgFor);
+    days = days.toString();
+    hours = this._pad(hours.toString());
+    minutes = this._pad(minutes.toString());
+    seconds = this._pad(seconds.toString());
 
     return (
       <div>
@@ -95,8 +88,6 @@ export default class DeviceTrigger extends Component<any, any> {
           label="Trigger"
         />
         {showFor && (
-          <div
-          >
           <paper-input
             label="days"
             name="days"
@@ -113,7 +104,9 @@ export default class DeviceTrigger extends Component<any, any> {
             sec={seconds}
             enable-second
             format={24}
-            onvalue-changed={this.timeChanged}
+            onhour-changed={this.hoursChanged}
+            onmin-changed={this.minutesChanged}
+            onsec-changed={this.secondsChanged}
           />
           </div>
         )}
@@ -130,18 +123,35 @@ export default class DeviceTrigger extends Component<any, any> {
   }
 
   private _parseTime(trgFor) {
+    let days = "0"
     let hours = "00";
     let minutes = "00";
     let seconds = "00";
     if (trgFor && (trgFor.hours || trgFor.minutes || trgFor.seconds)) {
-      // If the trigger was defined using the yaml dict syntax, extract hours, minutes and seconds
-      ({ hours = "00", minutes = "00", seconds = "00" } = trgFor);
+      // If the trigger was defined using the yaml dict syntax, extract days, hours, minutes and seconds
+      ({ days = "0", hours = "00", minutes = "00", seconds = "00" } = trgFor);
     }
     if (typeof trgFor === "string" && trgFor.includes(":")) {
       // Parse hours, minutes and seconds from ':'-delimited string
       [hours = "00", minutes = "00", seconds = "00"] = trgFor.split(":");
     }
-    return { hours, minutes, seconds };
+    return { days, hours, minutes, seconds };
+  }
+
+  private _timeChanged(ev, unit) {
+    const showFor = this.state.capabilities && this.state.capabilities.supports && this.state.capabilities.supports.includes("for");
+    if (!showFor) {
+      return;
+    }
+    const value = ev.detail.value || 0;
+    const duration = {
+      ...this._parseTime(this.props.trigger.for),
+      [unit]: value,
+    };
+    this.props.onChange(this.props.index, {
+      ...this.props.trigger,
+      for: duration,
+    });
   }
 }
 
