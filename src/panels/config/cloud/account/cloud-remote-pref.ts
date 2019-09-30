@@ -59,10 +59,12 @@ export class CloudRemotePref extends LitElement {
 
     return html`
       <ha-card header="Remote Control">
-        <ha-switch
-          .checked="${remote_connected}"
-          @change="${this._toggleChanged}"
-        ></ha-switch>
+        <div class="switch">
+          <ha-switch
+            .checked="${remote_connected}"
+            @change="${this._toggleChanged}"
+          ></ha-switch>
+        </div>
         <div class="card-content">
           Home Assistant Cloud provides a secure remote connection to your
           instance while away from home. Your instance
@@ -118,7 +120,7 @@ export class CloudRemotePref extends LitElement {
       a {
         color: var(--primary-color);
       }
-      ha-card > ha-switch {
+      .switch {
         margin: -4px 0;
         position: absolute;
         right: 8px;
