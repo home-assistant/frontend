@@ -142,7 +142,7 @@ export class CloudGooglePref extends LitElement {
       }
       .switch {
         margin: -4px 0;
-        position: absolute !important;
+        position: absolute;
         right: 8px;
         top: 32px;
       }
