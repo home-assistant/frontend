@@ -114,21 +114,22 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card>
         <hui-image
-          .hass="${this.hass}"
-          .image="${this._config.image}"
-          .stateImage="${this._config.state_image}"
-          .cameraImage="${computeDomain(this._config.entity) === "camera"
+          .hass=${this.hass}
+          .image=${this._config.image}
+          .stateImage=${this._config.state_image}
+          .stateFilter=${this._config.state_filter}
+          .cameraImage=${computeDomain(this._config.entity) === "camera"
             ? this._config.entity
-            : this._config.camera_image}"
-          .cameraView="${this._config.camera_view}"
-          .entity="${this._config.entity}"
-          .aspectRatio="${this._config.aspect_ratio}"
-          @ha-click="${this._handleTap}"
-          @ha-hold="${this._handleHold}"
-          .longPress="${longPress()}"
-          class="${classMap({
+            : this._config.camera_image}
+          .cameraView=${this._config.camera_view}
+          .entity=${this._config.entity}
+          .aspectRatio=${this._config.aspect_ratio}
+          @ha-click=${this._handleTap}
+          @ha-hold=${this._handleHold}
+          .longPress=${longPress()}
+          class=${classMap({
             clickable: stateObj.state !== UNAVAILABLE,
-          })}"
+          })}
         ></hui-image>
         ${footer}
       </ha-card>
