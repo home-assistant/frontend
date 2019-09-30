@@ -32,10 +32,12 @@ export class CloudAlexaPref extends LitElement {
 
     return html`
       <ha-card header="Alexa">
-        <ha-switch
-          .checked=${alexa_enabled}
-          @change=${this._enabledToggleChanged}
-        ></ha-switch>
+        <div class="switch">
+          <ha-switch
+            .checked=${alexa_enabled}
+            @change=${this._enabledToggleChanged}
+          ></ha-switch>
+        </div>
         <div class="card-content">
           With the Alexa integration for Home Assistant Cloud you'll be able to
           control all your Home Assistant devices via any Alexa-enabled device.
@@ -133,7 +135,7 @@ export class CloudAlexaPref extends LitElement {
       a {
         color: var(--primary-color);
       }
-      ha-card > ha-switch {
+      .switch {
         margin: -4px 0;
         position: absolute;
         right: 8px;
