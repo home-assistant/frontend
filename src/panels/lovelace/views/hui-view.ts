@@ -262,39 +262,33 @@ export class HUIView extends LitElement {
     }
 
     const elements: HUIView["_badges"] = [];
-    // It's possible that a null value was stored as a badge entry
     const badges = processConfigEntities(
       config.badges.filter((badgeConf) => {
-        if (typeof badgeConf === "object") {
-          const stateObj = this.hass!.states[badgeConf.entity];
+        if (typeof badgeConf !== "object" || !badgeConf.state_filter) {
+          return true;
+        }
 
-          if (!stateObj) {
-            return false;
-          }
+        const stateObj = this.hass!.states[badgeConf.entity];
 
-          if (badgeConf.state_filter) {
-            for (const filter of badgeConf.state_filter) {
-              if (evaluateFilter(stateObj, filter)) {
-                return true;
-              }
-            }
-          } else {
-            return true;
-          }
-
+        if (!stateObj) {
           return false;
         }
 
-        return true;
+        for (const filter of badgeConf.state_filter) {
+          if (evaluateFilter(stateObj, filter)) {
+            return true;
+          }
+        }
+
+        return false;
       })
     );
 
     for (const badge of badges) {
-      const entityId = badge.entity;
-      const stateObj = this.hass!.states[entityId];
       const element = document.createElement("ha-state-label-badge");
+      const entityId = badge.entity;
       element.hass = this.hass;
-      element.state = stateObj;
+      element.state = this.hass!.states[entityId];
       element.name = badge.name;
       element.icon = badge.icon;
       element.image = badge.image;
