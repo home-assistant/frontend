@@ -43,11 +43,13 @@ export class CloudGooglePref extends LitElement {
 
     return html`
       <ha-card header="Google Assistant">
-        <ha-switch
-          id="google_enabled"
-          .checked="${google_enabled}"
-          @change="${this._toggleChanged}"
-        ></ha-switch>
+        <div class="switch">
+          <ha-switch
+            id="google_enabled"
+            .checked="${google_enabled}"
+            @change="${this._toggleChanged}"
+          ></ha-switch>
+        </div>
         <div class="card-content">
           With the Google Assistant integration for Home Assistant Cloud you'll
           be able to control all your Home Assistant devices via any Google
@@ -138,7 +140,7 @@ export class CloudGooglePref extends LitElement {
       a {
         color: var(--primary-color);
       }
-      ha-card > ha-switch {
+      .switch {
         margin: -4px 0;
         position: absolute;
         right: 8px;
