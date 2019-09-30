@@ -136,16 +136,17 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
                 this._config.camera_image
             ),
           })}"
-          @ha-click="${this._handleTap}"
-          @ha-hold="${this._handleHold}"
-          .longPress="${longPress()}"
-          .hass="${this.hass}"
-          .image="${this._config.image}"
-          .stateImage="${this._config.state_image}"
-          .cameraImage="${this._config.camera_image}"
-          .cameraView="${this._config.camera_view}"
-          .entity="${this._config.entity}"
-          .aspectRatio="${this._config.aspect_ratio}"
+          @ha-click=${this._handleTap}
+          @ha-hold=${this._handleHold}
+          .longPress=${longPress()}
+          .hass=${this.hass}
+          .image=${this._config.image}
+          .stateImage=${this._config.state_image}
+          .stateFilter=${this._config.state_filter}
+          .cameraImage=${this._config.camera_image}
+          .cameraView=${this._config.camera_view}
+          .entity=${this._config.entity}
+          .aspectRatio=${this._config.aspect_ratio}
         ></hui-image>
         <div class="box">
           ${this._config.title
