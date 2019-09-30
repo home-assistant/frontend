@@ -234,7 +234,7 @@ class HUIRoot extends LitElement {
                             "hide-tab": Boolean(
                               !this._editMode &&
                                 view.hide &&
-                                ((!Array.isArray(view.hide) && view.hide) ||
+                                (view.hide === true ||
                                   (Array.isArray(view.hide) &&
                                     view.hide.includes(this.hass!.user!.name)))
                             ),
