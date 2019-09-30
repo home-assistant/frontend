@@ -118,7 +118,7 @@ export class HaDataTable extends BaseElement {
     this._worker = sortFilterWorker();
   }
 
-  protected async updated(properties: PropertyValues) {
+  protected updated(properties: PropertyValues) {
     super.updated(properties);
 
     if (properties.has("columns")) {
@@ -151,30 +151,7 @@ export class HaDataTable extends BaseElement {
       properties.has("_sortColumn") ||
       properties.has("_sortDirection")
     ) {
-      const startTime = new Date().getTime();
-      this.curRequest++;
-      const curRequest = this.curRequest;
-
-      const filterProm = this._worker.filterSortData(
-        this.data,
-        this._sortColumns,
-        this._filter,
-        this._sortDirection,
-        this._sortColumn
-      );
-
-      const [data] = await Promise.all([filterProm, nextRender]);
-
-      const curTime = new Date().getTime();
-      const elapsed = curTime - startTime;
-
-      if (elapsed < 100) {
-        await new Promise((resolve) => setTimeout(resolve, 100 - elapsed));
-      }
-      if (this.curRequest !== curRequest) {
-        return;
-      }
-      this._filteredData = data;
+      this._filterData();
     }
   }
 
@@ -331,6 +308,33 @@ export class HaDataTable extends BaseElement {
         this._setRowChecked(this._getRowIdAtIndex(rowIndex), checked);
       },
     };
+  }
+
+  private async _filterData() {
+    const startTime = new Date().getTime();
+    this.curRequest++;
+    const curRequest = this.curRequest;
+
+    const filterProm = this._worker.filterSortData(
+      this.data,
+      this._sortColumns,
+      this._filter,
+      this._sortDirection,
+      this._sortColumn
+    );
+
+    const [data] = await Promise.all([filterProm, nextRender]);
+
+    const curTime = new Date().getTime();
+    const elapsed = curTime - startTime;
+
+    if (elapsed < 100) {
+      await new Promise((resolve) => setTimeout(resolve, 100 - elapsed));
+    }
+    if (this.curRequest !== curRequest) {
+      return;
+    }
+    this._filteredData = data;
   }
 
   private _getRowIdAtIndex(rowIndex: number): string {
