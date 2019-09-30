@@ -160,6 +160,31 @@ class HaForm extends EventsMixin(PolymerElement) {
             </paper-listbox>
           </paper-dropdown-menu>
         </template>
+
+        <template
+          is="dom-if"
+          if='[[_equals(schema.type, "time_period_dict")]]'
+          restamp=""
+        >
+          <paper-time-input
+            label="[[computeLabel(schema)]]"
+            type="number"
+            required="[[schema.required]]"
+            auto-validate="[[schema.required]]"
+            error-message="Required"
+            enable-day
+            enable-second
+            format="24"
+            day$="[[_parseDuration(data, 'days')]]"
+            hour$="[[_parseDuration(data, 'hours')]]"
+            min$="[[_parseDuration(data, 'minutes')]]"
+            sec$="[[_parseDuration(data, 'seconds')]]"
+            on-day-changed="_dayChanged"
+            on-hour-changed="_hourChanged"
+            on-min-changed="_minChanged"
+            on-sec-changed="_secChanged"
+          ></paper-time-input>
+        </template>
       </template>
     `;
   }
@@ -230,6 +255,60 @@ class HaForm extends EventsMixin(PolymerElement) {
       value = Number(ev.detail.value);
     }
     this.set(["data", ev.model.item.name], value);
+  }
+
+  _dayChanged(ev) {
+    this._durationChanged(ev, "days");
+  }
+
+  _hourChanged(ev) {
+    this._durationChanged(ev, "hours");
+  }
+
+  _minChanged(ev) {
+    this._durationChanged(ev, "minutes");
+  }
+
+  _secChanged(ev) {
+    this._durationChanged(ev, "seconds");
+  }
+
+  _durationChanged(ev, unit) {
+    const value = ev.detail.value;
+    this.set(
+      ["data"],
+      Object.assign({}, this.get(["data"]), { [unit]: value })
+    );
+  }
+
+  _parseDuration(duration, unit) {
+    let days = "0";
+    let hours = "00";
+    let minutes = "00";
+    let seconds = "00";
+    if (
+      duration &&
+      (duration.days || duration.hours || duration.minutes || duration.seconds)
+    ) {
+      // If the duration was defined using yaml dict syntax, extract days, hours, minutes and seconds
+      ({ days = "0", hours = "00", minutes = "00", seconds = "00" } = duration);
+    }
+    duration = {
+      days,
+      hours: this._pad(hours),
+      minutes: this._pad(minutes),
+      seconds: this._pad(seconds),
+    };
+    return duration[unit];
+  }
+
+  _pad(value) {
+    // Convert to zero-padded string for display
+    value = parseInt(value, 10).toString();
+    if (value.length === 1) {
+      value = value.padStart(2, "0");
+    }
+    return value;
   }
 
   _passwordFieldType(unmaskedPassword) {
