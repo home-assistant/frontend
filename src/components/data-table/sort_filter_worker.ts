@@ -5,6 +5,50 @@ import {
   SortingDirection,
 } from "./ha-data-table";
 
+import memoizeOne from "memoize-one";
+
+export const filterSortData = memoizeOne(
+  async (
+    data: DataTabelRowData[],
+    columns: DataTabelColumnContainer,
+    filter: string,
+    direction: SortingDirection,
+    sortColumn?: string
+  ) =>
+    sortColumn
+      ? _memSortData(
+          await _memFilterData(data, columns, filter),
+          columns,
+          direction,
+          sortColumn
+        )
+      : _memFilterData(data, columns, filter)
+);
+
+const _memFilterData = memoizeOne(
+  async (
+    data: DataTabelRowData[],
+    columns: DataTabelColumnContainer,
+    filter: string
+  ) => {
+    if (!filter) {
+      return data;
+    }
+    return filterData(data, columns, filter.toUpperCase());
+  }
+);
+
+const _memSortData = memoizeOne(
+  (
+    data: DataTabelRowData[],
+    columns: DataTabelColumnContainer,
+    direction: SortingDirection,
+    sortColumn: string
+  ) => {
+    return sortData(data, columns[sortColumn], direction, sortColumn);
+  }
+);
+
 export const filterData = (
   data: DataTabelRowData[],
   columns: DataTabelColumnContainer,
