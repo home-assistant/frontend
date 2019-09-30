@@ -140,6 +140,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           .hass=${this.hass}
           .image=${this._config.image}
           .stateImage=${this._config.state_image}
+          .stateFilter=${this._config.state_filter}
           .cameraImage=${this._config.camera_image}
           .cameraView=${this._config.camera_view}
           .entity=${this._config.entity}

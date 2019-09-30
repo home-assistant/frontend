@@ -13,9 +13,10 @@ import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 // tslint:disable-next-line: no-duplicate-imports
 import { HaSwitch } from "../../components/ha-switch";
+import { forwardHaptic } from "../../data/haptics";
 
-@customElement("ha-force-narrow-row")
-class HaForcedNarrowRow extends LitElement {
+@customElement("ha-set-vibrate-row")
+class HaSetVibrateRow extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
 
@@ -23,13 +24,13 @@ class HaForcedNarrowRow extends LitElement {
     return html`
       <ha-settings-row .narrow=${this.narrow}>
         <span slot="heading">
-          ${this.hass.localize("ui.panel.profile.force_narrow.header")}
+          ${this.hass.localize("ui.panel.profile.vibrate.header")}
         </span>
         <span slot="description">
-          ${this.hass.localize("ui.panel.profile.force_narrow.description")}
+          ${this.hass.localize("ui.panel.profile.vibrate.description")}
         </span>
         <ha-switch
-          .checked=${this.hass.dockedSidebar === "always_hidden"}
+          .checked=${this.hass.vibrate}
           @change=${this._checkedChanged}
         ></ha-switch>
       </ha-settings-row>
@@ -37,18 +38,19 @@ class HaForcedNarrowRow extends LitElement {
   }
 
   private async _checkedChanged(ev: Event) {
-    const newValue = (ev.target as HaSwitch).checked;
-    if (newValue === (this.hass.dockedSidebar === "always_hidden")) {
+    const vibrate = (ev.target as HaSwitch).checked;
+    if (vibrate === this.hass.vibrate) {
       return;
     }
-    fireEvent(this, "hass-dock-sidebar", {
-      dock: newValue ? "always_hidden" : "auto",
+    fireEvent(this, "hass-vibrate", {
+      vibrate,
     });
+    forwardHaptic("light");
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-force-narrow-row": HaForcedNarrowRow;
+    "ha-set-vibrate-row": HaSetVibrateRow;
   }
 }

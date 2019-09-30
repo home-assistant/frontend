@@ -139,6 +139,7 @@ export interface HomeAssistant {
   localize: LocalizeFunc;
   translationMetadata: TranslationMetadata;
 
+  vibrate: boolean;
   dockedSidebar: "docked" | "always_hidden" | "auto";
   moreInfoEntityId: string | null;
   user?: CurrentUser;
