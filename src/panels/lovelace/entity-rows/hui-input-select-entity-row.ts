@@ -14,15 +14,17 @@ import "@polymer/paper-listbox/paper-listbox";
 import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/entity/state-badge";
 import "../components/hui-warning";
+import "../components/hui-generic-entity-row";
 
 import { computeStateName } from "../../../common/entity/compute_state_name";
-
 import { HomeAssistant, InputSelectEntity } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 import { setInputSelectOption } from "../../../data/input-select";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { forwardHaptic } from "../../../data/haptics";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
+import { longPress } from "../common/directives/long-press-directive";
+import { handleClick } from "../common/handle-click";
 
 @customElement("hui-input-select-entity-row")
 class HuiInputSelectEntityRow extends LitElement implements EntityRow {
@@ -64,7 +66,12 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
     }
 
     return html`
-      <state-badge .stateObj="${stateObj}"></state-badge>
+      <state-badge
+        @ha-click="${this._handleTap}"
+        @ha-hold="${this._handleHold}"
+        .longPress="${longPress()}"
+        .stateObj="${stateObj}"
+      ></state-badge>
       <ha-paper-dropdown-menu
         .label=${this._config.name || computeStateName(stateObj)}
         .value=${stateObj.state}
@@ -131,6 +138,14 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
     forwardHaptic("light");
 
     setInputSelectOption(this.hass!, stateObj.entity_id, option);
+  }
+
+  private _handleTap() {
+    handleClick(this, this.hass!, this._config!, false);
+  }
+
+  private _handleHold() {
+    handleClick(this, this.hass!, this._config!, true);
   }
 }
 

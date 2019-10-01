@@ -62,6 +62,8 @@ export const entitiesConfigStruct = struct.union([
     entity: "entity-id",
     name: "string?",
     icon: "icon?",
+    tap_action: struct.optional(actionConfigStruct),
+    hold_action: struct.optional(actionConfigStruct),
   },
   "entity-id",
 ]);

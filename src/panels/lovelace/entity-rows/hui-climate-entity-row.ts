@@ -16,6 +16,8 @@ import "../components/hui-warning";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { longPress } from "../common/directives/long-press-directive";
+import { handleClick } from "../common/handle-click";
 
 @customElement("hui-climate-entity-row")
 class HuiClimateEntityRow extends LitElement implements EntityRow {
@@ -55,7 +57,13 @@ class HuiClimateEntityRow extends LitElement implements EntityRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
+      <hui-generic-entity-row
+        @ha-click=${this._handleTap}
+        @ha-hold=${this._handleHold}
+        .longPress=${longPress()}
+        .hass=${this.hass}
+        .config=${this._config}
+      >
         <ha-climate-state
           .hass="${this.hass}"
           .stateObj="${stateObj}"
@@ -70,6 +78,14 @@ class HuiClimateEntityRow extends LitElement implements EntityRow {
         text-align: right;
       }
     `;
+  }
+
+  private _handleTap() {
+    handleClick(this, this.hass!, this._config!, false);
+  }
+
+  private _handleHold() {
+    handleClick(this, this.hass!, this._config!, true);
   }
 }
 

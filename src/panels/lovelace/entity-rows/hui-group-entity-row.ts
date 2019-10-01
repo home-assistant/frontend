@@ -16,6 +16,8 @@ import { DOMAINS_TOGGLE } from "../../../common/const";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { longPress } from "../common/directives/long-press-directive";
+import { handleClick } from "../common/handle-click";
 
 @customElement("hui-group-entity-row")
 class HuiGroupEntityRow extends LitElement implements EntityRow {
@@ -54,7 +56,13 @@ class HuiGroupEntityRow extends LitElement implements EntityRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
+      <hui-generic-entity-row
+        @ha-click=${this._handleTap}
+        @ha-hold=${this._handleHold}
+        .longPress=${longPress()}
+        .hass=${this.hass}
+        .config=${this._config}
+      >
         ${this._computeCanToggle(stateObj.attributes.entity_id)
           ? html`
               <ha-entity-toggle
@@ -79,6 +87,14 @@ class HuiGroupEntityRow extends LitElement implements EntityRow {
     return entityIds.some((entityId) =>
       DOMAINS_TOGGLE.has(entityId.split(".", 1)[0])
     );
+  }
+
+  private _handleTap() {
+    handleClick(this, this.hass!, this._config!, false);
+  }
+
+  private _handleHold() {
+    handleClick(this, this.hass!, this._config!, true);
   }
 }
 
