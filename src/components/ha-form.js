@@ -175,14 +175,20 @@ class HaForm extends EventsMixin(PolymerElement) {
             enable-day
             enable-second
             format="24"
-            day$="[[_parseDuration(data, 'days')]]"
-            hour$="[[_parseDuration(data, 'hours')]]"
-            min$="[[_parseDuration(data, 'minutes')]]"
-            sec$="[[_parseDuration(data, 'seconds')]]"
+            day="[[_parseDuration(data, 'days')]]"
+            hour="[[_parseDuration(data, 'hours')]]"
+            min="[[_parseDuration(data, 'minutes')]]"
+            sec="[[_parseDuration(data, 'seconds')]]"
             on-day-changed="_dayChanged"
             on-hour-changed="_hourChanged"
             on-min-changed="_minChanged"
             on-sec-changed="_secChanged"
+            float-input-labels="true"
+            always-float-input-labels="true"
+            day-label="days"
+            hour-label="hh"
+            min-label="mm"
+            sec-label="ss"
           ></paper-time-input>
         </template>
       </template>
@@ -292,20 +298,11 @@ class HaForm extends EventsMixin(PolymerElement) {
     }
     duration = {
       days,
-      hours: this._pad(hours),
-      minutes: this._pad(minutes),
-      seconds: this._pad(seconds),
+      hours,
+      minutes,
+      seconds,
     };
     return duration[unit];
-  }
-
-  _pad(value) {
-    // Convert to zero-padded string for display
-    value = parseInt(value, 10).toString();
-    if (value.length === 1) {
-      value = value.padStart(2, "0");
-    }
-    return value;
   }
 
   _passwordFieldType(unmaskedPassword) {

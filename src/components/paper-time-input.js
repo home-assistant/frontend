@@ -49,7 +49,11 @@ export class PaperTimeInput extends PolymerElement {
             display: none;
           }
           --paper-input-container-shared-input-style_-_-webkit-appearance: textfield;
-          --paper-input-container-invalid-color: red;
+        }
+
+        .day-input {
+          width: 40px;
+          text-align: left;
         }
 
         paper-dropdown-menu {
@@ -88,6 +92,10 @@ export class PaperTimeInput extends PolymerElement {
 
         label {
           @apply --paper-font-caption;
+          color: var(
+            --paper-input-container-color,
+            var(--secondary-text-color)
+          );
         }
 
         .time-input-wrap {
@@ -104,9 +112,11 @@ export class PaperTimeInput extends PolymerElement {
       <div class="time-input-wrap">
         <!-- Day Input -->
         <paper-input
+          class="day-input"
           id="day"
           type="number"
           value="{{day}}"
+          label="[[dayLabel]]"
           on-change="_formatDay"
           required=""
           auto-validate="[[autoValidate]]"
@@ -114,11 +124,13 @@ export class PaperTimeInput extends PolymerElement {
           maxlength="2"
           max="99"
           min="0"
-          no-label-float=""
+          ?no-label-float="[[!floatInputLabels]]"
+          ?always-float-label="[[alwaysFloatInputLabels]]"
+          always-float-label=""
           disabled="[[disabled]]"
           hidden$="[[!enableDay]]"
         >
-          <span hidden$="[[!enableDay]]" suffix slot="suffix"> </span>
+          <span hidden$="[[!enableDay]]" suffix slot="suffix"></span>
         </paper-input>
 
         <!-- Hour Input -->
@@ -126,6 +138,7 @@ export class PaperTimeInput extends PolymerElement {
           id="hour"
           type="number"
           value="{{hour}}"
+          label="[[hourLabel]]"
           on-change="_shouldFormatHour"
           required=""
           auto-validate="[[autoValidate]]"
@@ -133,7 +146,9 @@ export class PaperTimeInput extends PolymerElement {
           maxlength="2"
           max="[[_computeHourMax(format)]]"
           min="0"
-          no-label-float=""
+          ?no-label-float="[[!floatInputLabels]]"
+          ?always-float-label="[[alwaysFloatInputLabels]]"
+          always-float-label=""
           disabled="[[disabled]]"
         >
           <span suffix="" slot="suffix">:</span>
@@ -144,6 +159,7 @@ export class PaperTimeInput extends PolymerElement {
           id="min"
           type="number"
           value="{{min}}"
+          label="[[minLabel]]"
           on-change="_formatMin"
           required=""
           auto-validate="[[autoValidate]]"
@@ -151,7 +167,9 @@ export class PaperTimeInput extends PolymerElement {
           maxlength="2"
           max="59"
           min="0"
-          no-label-float=""
+          ?no-label-float="[[!floatInputLabels]]"
+          ?always-float-label="[[alwaysFloatInputLabels]]"
+          always-float-label=""
           disabled="[[disabled]]"
         >
           <span hidden$="[[!enableSecond]]" suffix slot="suffix">:</span>
@@ -162,6 +180,7 @@ export class PaperTimeInput extends PolymerElement {
           id="sec"
           type="number"
           value="{{sec}}"
+          label="[[secLabel]]"
           on-change="_formatSec"
           required=""
           auto-validate="[[autoValidate]]"
@@ -169,7 +188,9 @@ export class PaperTimeInput extends PolymerElement {
           maxlength="2"
           max="59"
           min="0"
-          no-label-float=""
+          ?no-label-float="[[!floatInputLabels]]"
+          ?always-float-label="[[alwaysFloatInputLabels]]"
+          always-float-label=""
           disabled="[[disabled]]"
           hidden$="[[!enableSecond]]"
         >
@@ -220,6 +241,20 @@ export class PaperTimeInput extends PolymerElement {
         value: false,
       },
       /**
+       * float the input labels
+       */
+      floatInputLabels: {
+        type: Boolean,
+        value: false,
+      },
+      /**
+       * always float the input labels
+       */
+      alwaysFloatInputLabels: {
+        type: Boolean,
+        value: true,
+      },
+      /**
        * 12 or 24 hr format
        */
       format: {
@@ -260,6 +295,34 @@ export class PaperTimeInput extends PolymerElement {
       sec: {
         type: String,
         notify: true,
+      },
+      /**
+       * Label for the day input
+       */
+      dayLabel: {
+        type: String,
+        value: "days",
+      },
+      /**
+       * Suffix for the hour input
+       */
+      hourLabel: {
+        type: String,
+        value: "",
+      },
+      /**
+       * Suffix for the min input
+       */
+      minLabel: {
+        type: String,
+        value: ":",
+      },
+      /**
+       * Suffix for the sec input
+       */
+      secLabel: {
+        type: String,
+        value: "",
       },
       /**
        * show the day field
@@ -347,33 +410,35 @@ export class PaperTimeInput extends PolymerElement {
    * Format sec
    */
   _formatSec() {
-    if (this.sec.toString().length === 1) {
-      this.sec = this.sec.toString().padStart(2, "0");
-    }
+    this.sec = this.sec.toString().padStart(2, "0");
+    this.sec = this.sec.substring(0, 2);
   }
 
   /**
    * Format min
    */
   _formatMin() {
-    if (this.min.toString().length === 1) {
-      this.min = this.min.toString().padStart(2, "0");
-    }
+    this.min = this.min.toString().padStart(2, "0");
+    this.min = this.min.substring(0, 2);
   }
 
   /**
    * Hour needs a leading zero in 24hr format
    */
   _shouldFormatHour() {
-    if (this.format === 24 && this.hour.toString().length === 1) {
+    if (this.format === 24) {
       this.hour = this.hour.toString().padStart(2, "0");
     }
+    this.hour = this.hour.substring(0, 2);
   }
 
   /**
    * Format day
    */
-  _formatDay() {}
+  _formatDay() {
+    this.hour = this.hour.toString().padStart(1, "0");
+    this.day = this.day.substring(0, 2);
+  }
 
   /**
    * 24 hour format has a max hr of 23
