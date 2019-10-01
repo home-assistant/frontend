@@ -3,7 +3,7 @@ import { html } from "lit-element";
 export const configElementStyle = html`
   <style>
     ha-switch {
-      padding-top: 16px;
+      padding: 16px 0;
     }
     .side-by-side {
       display: flex;

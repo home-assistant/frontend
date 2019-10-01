@@ -141,9 +141,8 @@ export class CloudGooglePref extends LitElement {
         color: var(--primary-color);
       }
       .switch {
-        margin: -4px 0;
         position: absolute;
-        right: 8px;
+        right: 24px;
         top: 32px;
       }
       ha-call-api-button {
