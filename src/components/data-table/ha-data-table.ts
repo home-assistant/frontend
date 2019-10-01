@@ -4,7 +4,7 @@ import deepClone from "deep-clone-simple";
 import {
   MDCDataTableAdapter,
   MDCDataTableFoundation,
-} from "../../../mdc-data-table/index"; // Because mdc-data-table published ts files, temporary load them from own repo, outside src so our linters won't complain
+} from "@material/data-table";
 
 import {
   BaseElement,
