@@ -76,7 +76,9 @@ export class HuiEditView extends LitElement {
         this.viewIndex
       ];
       this._config = viewConfig;
-      this._badges = badges ? processEditorEntities(badges) : [];
+      this._badges = badges
+        ? processEditorEntities(badges.filter(Boolean))
+        : [];
       this._cards = cards;
     }
 
@@ -215,9 +217,9 @@ export class HuiEditView extends LitElement {
     this._saving = true;
 
     const viewConf: LovelaceViewConfig = {
-      cards: this._cards,
-      badges: this._badges!.map((entityConf) => entityConf.entity),
       ...this._config,
+      badges: this._badges!.map((entityConf) => entityConf.entity),
+      cards: this._cards,
     };
 
     const lovelace = this.lovelace!;
