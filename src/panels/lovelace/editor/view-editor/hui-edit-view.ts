@@ -216,9 +216,7 @@ export class HuiEditView extends LitElement {
 
     const viewConf: LovelaceViewConfig = {
       cards: this._cards,
-      badges: this._badges!.map((entityConf) =>
-        Object.keys(entityConf).length > 1 ? entityConf : entityConf.entity
-      ),
+      badges: this._badges,
       ...this._config,
     };
 
