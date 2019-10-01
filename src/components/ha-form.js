@@ -163,7 +163,7 @@ class HaForm extends EventsMixin(PolymerElement) {
 
         <template
           is="dom-if"
-          if='[[_equals(schema.type, "positive_time_delta_dict")]]'
+          if='[[_equals(schema.type, "positive_time_period_dict")]]'
           restamp=""
         >
           <paper-time-input
