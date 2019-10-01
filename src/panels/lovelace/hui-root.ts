@@ -73,11 +73,10 @@ class HUIRoot extends LitElement {
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
-    const userAgent = navigator.userAgent;
-
-    if (userAgent.match(/Android/) && userAgent.match(/Chrome/)) {
-      this.classList.toggle("disable-text-select", true);
-    }
+    this.classList.toggle(
+      "disable-text-select",
+      /Chrome/.test(navigator.userAgent) && /Android/.test(navigator.userAgent)
+    );
   }
 
   protected render(): TemplateResult | void {
@@ -295,7 +294,7 @@ class HUIRoot extends LitElement {
           --text-dark-color: #fff;
         }
 
-        .disable-text-select {
+        :host(.disable-text-select) {
           -ms-user-select: none;
           -webkit-user-select: none;
           -moz-user-select: none;
