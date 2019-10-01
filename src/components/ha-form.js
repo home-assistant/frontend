@@ -163,7 +163,7 @@ class HaForm extends EventsMixin(PolymerElement) {
 
         <template
           is="dom-if"
-          if='[[_equals(schema.type, "time_period_dict")]]'
+          if='[[_equals(schema.type, "positive_time_delta_dict")]]'
           restamp=""
         >
           <paper-time-input
@@ -275,10 +275,7 @@ class HaForm extends EventsMixin(PolymerElement) {
 
   _durationChanged(ev, unit) {
     const value = ev.detail.value;
-    this.set(
-      ["data"],
-      Object.assign({}, this.get(["data"]), { [unit]: value })
-    );
+    this.set(["data"], { ...this.get(["data"]), [unit]: value });
   }
 
   _parseDuration(duration, unit) {

@@ -44,15 +44,15 @@ export default class DeviceTrigger extends Component<any, any> {
     if (device_id === undefined) {
       device_id = trigger.device_id;
     }
-    let extra_fields_data = {}
+    let extraFieldsData = {};
     if (this.state.capabilities && this.state.capabilities.extra_fields) {
-      for (let i in this.state.capabilities.extra_fields) {
-        let item = this.state.capabilities.extra_fields[i]
-        extra_fields_data = {
-          ...extra_fields_data,
-          [item.name]: this.props.trigger[item.name],
-        };
-      }
+      this.state.capabilities.extra_fields.forEach(
+        (item) =>
+          (extraFieldsData = {
+            ...extraFieldsData,
+            [item.name]: this.props.trigger[item.name],
+          })
+      );
     }
 
     return (
@@ -72,23 +72,19 @@ export default class DeviceTrigger extends Component<any, any> {
         />
         {this.state.capabilities && this.state.capabilities.extra_fields && (
           <ha-form
-            data={ extra_fields_data }
-            data-changed={this._extraFieldsChanged}
-            ondata-changed={this._extraFieldsChanged}
+            data={extraFieldsData}
             onData-changed={this._extraFieldsChanged}
-            on-data-changed={this._extraFieldsChanged}
             schema={this.state.capabilities.extra_fields}
-            //.error=${step.errors}
-            //.computeLabel=${this._labelCallback}
-            //.computeError=${this._errorCallback}
-          ></ha-form>
+            // .error=${step.errors}
+            computeLabel={this._extraFieldsComputeLabelCallback(hass.localize)}
+            // .computeError=${this._errorCallback}
+          />
         )}
       </div>
     );
   }
 
   private _extraFieldsChanged(ev) {
-    console.log(ev, ev.detail.value, JSON.stringify(ev.detail));
     if (!ev.detail.path) {
       return;
     }
@@ -99,6 +95,16 @@ export default class DeviceTrigger extends Component<any, any> {
       ...this.props.trigger,
       [item]: value,
     });
+  }
+
+  private _extraFieldsComputeLabelCallback(localize) {
+    // Returns a callback for ha-form to calculate labels per schema object
+    return (schema) =>
+      localize(
+        `ui.panel.config.automation.editor.triggers.type.device.extra_fields.${
+          schema.name
+        }`
+      ) || schema.name;
   }
 }
 

@@ -25,6 +25,7 @@ declare global {
       "mwc-button": any;
       "ha-device-trigger-picker": any;
       "ha-device-action-picker": any;
+      "ha-form": any;
     }
   }
 }
