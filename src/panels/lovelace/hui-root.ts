@@ -71,6 +71,15 @@ class HUIRoot extends LitElement {
     );
   }
 
+  protected firstUpdated(changedProperties: PropertyValues): void {
+    super.firstUpdated(changedProperties);
+    const userAgent = navigator.userAgent;
+
+    if (userAgent.match(/Android/) && userAgent.match(/Chrome/)) {
+      this.classList.toggle("disable-text-select", true);
+    }
+  }
+
   protected render(): TemplateResult | void {
     return html`
     <app-route .route="${this.route}" pattern="/:view" data="${
@@ -282,9 +291,14 @@ class HUIRoot extends LitElement {
       haStyle,
       css`
         :host {
-          tabindex: -1,
           --dark-color: #455a64;
           --text-dark-color: #fff;
+        }
+
+        .disable-text-select {
+          -ms-user-select: none;
+          -webkit-user-select: none;
+          -moz-user-select: none;
         }
 
         ha-app-layout {
