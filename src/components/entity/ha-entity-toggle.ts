@@ -153,7 +153,6 @@ class HaEntityToggle extends LitElement {
       }
       ha-switch {
         padding: 13px 5px;
-        margin: -4px -5px;
       }
     `;
   }
