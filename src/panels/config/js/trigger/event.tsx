@@ -48,5 +48,5 @@ export default class EventTrigger extends Component<any> {
 
 (EventTrigger as any).defaultConfig = {
   event_type: "",
-  event_data: undefined,
+  event_data: {},
 };

@@ -19,7 +19,7 @@ export default class EventActionForm extends Component<Props> {
   static get defaultConfig(): EventAction {
     return {
       event: "",
-      event_data: undefined,
+      event_data: {},
     };
   }
 

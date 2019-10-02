@@ -47,5 +47,5 @@ export default class CallServiceAction extends Component<any> {
 (CallServiceAction as any).defaultConfig = {
   alias: "",
   service: "",
-  data: undefined,
+  data: {},
 };

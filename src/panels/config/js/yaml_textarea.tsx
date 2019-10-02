@@ -2,12 +2,24 @@ import { h, Component } from "preact";
 import yaml from "js-yaml";
 import "../../../components/ha-textarea";
 
+const isEmpty = (obj) => {
+  for (const key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      return false;
+    }
+  }
+  return true;
+};
+
 export default class JSONTextArea extends Component<any, any> {
   constructor(props) {
     super(props);
     this.state = {
       isvalid: true,
-      value: props.value ? yaml.safeDump(props.value) : undefined,
+      value:
+        props.value && !isEmpty(props.value)
+          ? yaml.safeDump(props.value)
+          : undefined,
     };
 
     this.onChange = this.onChange.bind(this);
@@ -26,6 +38,8 @@ export default class JSONTextArea extends Component<any, any> {
         // Invalid YAML
         isValid = false;
       }
+    } else {
+      parsed = {};
     }
 
     this.setState({
