@@ -34,6 +34,7 @@ import { compare } from "../../../common/string/compare";
 import { classMap } from "lit-html/directives/class-map";
 // tslint:disable-next-line
 import { HaSwitch } from "../../../components/ha-switch";
+import memoize from "memoize-one";
 
 class HaConfigEntityRegistry extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -41,6 +42,13 @@ class HaConfigEntityRegistry extends LitElement {
   @property() private _entities?: EntityRegistryEntry[];
   @property() private _showDisabled = false;
   private _unsubEntities?: UnsubscribeFunc;
+
+  private _filteredEntities = memoize(
+    (entities: EntityRegistryEntry[], showDisabled: boolean) =>
+      showDisabled
+        ? entities
+        : entities.filter((entity) => !Boolean(entity.disabled_by))
+  );
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -92,43 +100,44 @@ class HaConfigEntityRegistry extends LitElement {
                 )}</ha-switch
               ></paper-item
             >
-            ${this._entities.map((entry) => {
-              if (!this._showDisabled && entry.disabled_by) {
-                return "";
+            ${this._filteredEntities(this._entities, this._showDisabled).map(
+              (entry) => {
+                const state = this.hass!.states[entry.entity_id];
+                return html`
+                  <paper-icon-item
+                    @click=${this._openEditEntry}
+                    .entry=${entry}
+                    class=${classMap({ "disabled-entry": !!entry.disabled_by })}
+                  >
+                    <ha-icon
+                      slot="item-icon"
+                      .icon=${state
+                        ? stateIcon(state)
+                        : domainIcon(computeDomain(entry.entity_id))}
+                    ></ha-icon>
+                    <paper-item-body two-line>
+                      <div class="name">
+                        ${computeEntityRegistryName(this.hass!, entry) ||
+                          `(${this.hass!.localize(
+                            "state.default.unavailable"
+                          )})`}
+                      </div>
+                      <div class="secondary entity-id">
+                        ${entry.entity_id}
+                      </div>
+                    </paper-item-body>
+                    <div class="platform">
+                      ${entry.platform}
+                      ${entry.disabled_by
+                        ? html`
+                            <br />(disabled)
+                          `
+                        : ""}
+                    </div>
+                  </paper-icon-item>
+                `;
               }
-              const state = this.hass!.states[entry.entity_id];
-              return html`
-                <paper-icon-item
-                  @click=${this._openEditEntry}
-                  .entry=${entry}
-                  class=${classMap({ "disabled-entry": !!entry.disabled_by })}
-                >
-                  <ha-icon
-                    slot="item-icon"
-                    .icon=${state
-                      ? stateIcon(state)
-                      : domainIcon(computeDomain(entry.entity_id))}
-                  ></ha-icon>
-                  <paper-item-body two-line>
-                    <div class="name">
-                      ${computeEntityRegistryName(this.hass!, entry) ||
-                        `(${this.hass!.localize("state.default.unavailable")})`}
-                    </div>
-                    <div class="secondary entity-id">
-                      ${entry.entity_id}
-                    </div>
-                  </paper-item-body>
-                  <div class="platform">
-                    ${entry.platform}
-                    ${entry.disabled_by
-                      ? html`
-                          <br />(disabled)
-                        `
-                      : ""}
-                  </div>
-                </paper-icon-item>
-              `;
-            })}
+            )}
           </ha-card>
         </ha-config-section>
       </hass-subpage>
