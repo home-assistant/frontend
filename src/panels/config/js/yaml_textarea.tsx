@@ -22,7 +22,7 @@ export default class YAMLTextArea extends Component<any, any> {
           ? yaml.safeDump(props.value)
           : undefined;
     } catch (err) {
-      alert(`There is an error in the YAML: ${err}`);
+      alert(`There was an error converting to YAML: ${err}`);
     }
 
     this.state = {
