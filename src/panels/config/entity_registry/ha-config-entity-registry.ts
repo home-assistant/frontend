@@ -87,7 +87,9 @@ class HaConfigEntityRegistry extends LitElement {
               <ha-switch
                 ?checked=${this._showDisabled}
                 @change=${this._showDisabledChanged}
-                >Show disabled entities</ha-switch
+                >${this.hass.localize(
+                  "ui.panel.config.entity_registry.picker.show_disabled"
+                )}</ha-switch
               ></paper-item
             >
             ${this._entities.map((entry) => {
