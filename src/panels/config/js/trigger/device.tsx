@@ -8,7 +8,6 @@ import "../../../../components/paper-time-input";
 import { fetchDeviceTriggerCapabilities } from "../../../../data/device_automation";
 
 export default class DeviceTrigger extends Component<any, any> {
-  private hass;
   constructor() {
     super();
 
@@ -25,7 +24,7 @@ export default class DeviceTrigger extends Component<any, any> {
   public async deviceTriggerPicked(ev) {
     const deviceTrigger = ev.target.value;
     const capabilities = deviceTrigger.domain
-      ? await fetchDeviceTriggerCapabilities(this.hass, deviceTrigger)
+      ? await fetchDeviceTriggerCapabilities(this.props.hass, deviceTrigger)
       : null;
     this.setState({ ...this.state, capabilities });
     this.props.onChange(this.props.index, deviceTrigger);
@@ -33,14 +32,6 @@ export default class DeviceTrigger extends Component<any, any> {
 
   /* eslint-disable camelcase */
   public render({ trigger, hass }, { device_id }) {
-    this.hass = hass;
-    if (!this.state.capabilities && trigger.domain) {
-      fetchDeviceTriggerCapabilities(this.hass, trigger).then(
-        (capabilities) => {
-          this.setState({ ...this.state, capabilities });
-        }
-      );
-    }
     if (device_id === undefined) {
       device_id = trigger.device_id;
     }
@@ -82,6 +73,17 @@ export default class DeviceTrigger extends Component<any, any> {
         )}
       </div>
     );
+  }
+
+  public componentDidMount() {
+    const hass = this.props.hass;
+    const trigger = this.props.trigger;
+
+    if (!this.state.capabilities && trigger.domain) {
+      fetchDeviceTriggerCapabilities(hass, trigger).then((capabilities) => {
+        this.setState({ ...this.state, capabilities });
+      });
+    }
   }
 
   private _extraFieldsChanged(ev) {

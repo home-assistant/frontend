@@ -124,9 +124,8 @@ export class PaperTimeInput extends PolymerElement {
           maxlength="2"
           max="99"
           min="0"
-          ?no-label-float="[[!floatInputLabels]]"
-          ?always-float-label="[[alwaysFloatInputLabels]]"
-          always-float-label=""
+          no-label-float="[[!floatInputLabels]]"
+          always-float-label="[[alwaysFloatInputLabels]]"
           disabled="[[disabled]]"
           hidden$="[[!enableDay]]"
         >
@@ -146,9 +145,8 @@ export class PaperTimeInput extends PolymerElement {
           maxlength="2"
           max="[[_computeHourMax(format)]]"
           min="0"
-          ?no-label-float="[[!floatInputLabels]]"
-          ?always-float-label="[[alwaysFloatInputLabels]]"
-          always-float-label=""
+          no-label-float$="[[!floatInputLabels]]"
+          always-float-label$="[[alwaysFloatInputLabels]]"
           disabled="[[disabled]]"
         >
           <span suffix="" slot="suffix">:</span>
@@ -167,9 +165,8 @@ export class PaperTimeInput extends PolymerElement {
           maxlength="2"
           max="59"
           min="0"
-          ?no-label-float="[[!floatInputLabels]]"
-          ?always-float-label="[[alwaysFloatInputLabels]]"
-          always-float-label=""
+          no-label-float$="[[!floatInputLabels]]"
+          always-float-label$="[[alwaysFloatInputLabels]]"
           disabled="[[disabled]]"
         >
           <span hidden$="[[!enableSecond]]" suffix slot="suffix">:</span>
@@ -188,9 +185,8 @@ export class PaperTimeInput extends PolymerElement {
           maxlength="2"
           max="59"
           min="0"
-          ?no-label-float="[[!floatInputLabels]]"
-          ?always-float-label="[[alwaysFloatInputLabels]]"
-          always-float-label=""
+          no-label-float$="[[!floatInputLabels]]"
+          always-float-label$="[[alwaysFloatInputLabels]]"
           disabled="[[disabled]]"
           hidden$="[[!enableSecond]]"
         >
@@ -252,7 +248,7 @@ export class PaperTimeInput extends PolymerElement {
        */
       alwaysFloatInputLabels: {
         type: Boolean,
-        value: true,
+        value: false,
       },
       /**
        * 12 or 24 hr format

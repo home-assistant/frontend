@@ -183,8 +183,8 @@ class HaForm extends EventsMixin(PolymerElement) {
             on-hour-changed="_hourChanged"
             on-min-changed="_minChanged"
             on-sec-changed="_secChanged"
-            float-input-labels="true"
-            always-float-input-labels="true"
+            float-input-labels
+            always-float-input-labels
             day-label="days"
             hour-label="hh"
             min-label="mm"
