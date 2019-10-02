@@ -15,17 +15,21 @@ import memoizeOne from "memoize-one";
 import { compare } from "../../../../common/string/compare";
 import "../../../../components/entity/state-badge";
 
+import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
 
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
+import "../../../../components/ha-switch";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
 import { EntityRegistryEntry } from "../../../../data/entity_registry";
 import { showEntityRegistryDetailDialog } from "../../entity_registry/show-dialog-entity-registry-detail";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
+// tslint:disable-next-line
+import { HaSwitch } from "../../../../components/ha-switch";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
@@ -33,6 +37,7 @@ export class HaDeviceEntitiesCard extends LitElement {
   @property() public deviceId!: string;
   @property() public entities!: EntityRegistryEntry[];
   @property() public narrow!: boolean;
+  @property() private _showDisabled = false;
 
   private _entities = memoizeOne(
     (
@@ -53,8 +58,20 @@ export class HaDeviceEntitiesCard extends LitElement {
     const entities = this._entities(this.deviceId, this.entities);
     return html`
       <ha-card>
+        <paper-item>
+          <ha-switch
+            ?checked=${this._showDisabled}
+            @change=${this._showDisabledChanged}
+            >${this.hass.localize(
+              "ui.panel.config.entity_registry.picker.show_disabled"
+            )}
+          </ha-switch>
+        </paper-item>
         ${entities.length
           ? entities.map((entry: EntityRegistryEntry) => {
+              if (!this._showDisabled && entry.disabled_by) {
+                return "";
+              }
               const stateObj = this.hass.states[entry.entity_id];
               return html`
                 <paper-icon-item
@@ -108,6 +125,10 @@ export class HaDeviceEntitiesCard extends LitElement {
             `}
       </ha-card>
     `;
+  }
+
+  private _showDisabledChanged(ev: Event) {
+    this._showDisabled = (ev.target as HaSwitch).checked;
   }
 
   private _openEditEntry(ev: MouseEvent): void {
