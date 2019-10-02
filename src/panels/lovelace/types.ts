@@ -18,6 +18,11 @@ export interface Lovelace {
   saveConfig: (newConfig: LovelaceConfig) => Promise<void>;
 }
 
+export interface LovelaceBadge extends HTMLElement {
+  hass?: HomeAssistant;
+  setConfig(config: LovelaceCardConfig): void;
+}
+
 export interface LovelaceCard extends HTMLElement {
   hass?: HomeAssistant;
   isPanel?: boolean;

@@ -20,6 +20,14 @@ export interface LovelaceViewConfig {
   background?: string;
 }
 
+export interface LovelaceBadgeConfig {
+  type: string;
+  entity: string;
+  name?: string;
+  icon?: string;
+  image?: string;
+}
+
 export interface LovelaceCardConfig {
   index?: number;
   view_index?: number;
