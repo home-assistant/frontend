@@ -97,7 +97,7 @@ export const mockTranslations = (hass: MockHomeAssistant) => {
       "component.nest.config.abort.authorize_url_timeout":
         "Timeout generating authorize url.",
       "component.nest.config.abort.no_flows":
-        "You need to configure Nest before being able to authenticate with it. [Please read the instructions](https://www.home-assistant.io/components/nest/).",
+        "You need to configure Nest before being able to authenticate with it. [Please read the instructions](https://www.home-assistant.io/integrations/nest/).",
       "component.nest.config.error.internal_error":
         "Internal error validating code",
       "component.nest.config.error.invalid_code": "Invalid code",
@@ -199,7 +199,7 @@ export const mockTranslations = (hass: MockHomeAssistant) => {
       "component.point.config.abort.external_setup":
         "Point successfully configured from another flow.",
       "component.point.config.abort.no_flows":
-        "You need to configure Point before being able to authenticate with it. [Please read the instructions](https://www.home-assistant.io/components/point/).",
+        "You need to configure Point before being able to authenticate with it. [Please read the instructions](https://www.home-assistant.io/integrations/point/).",
       "component.point.config.create_entry.default":
         "Successfully authenticated with Minut for your Point device(s)",
       "component.point.config.error.follow_link":
