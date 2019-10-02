@@ -90,7 +90,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
           class="state-input"
         ></paper-input>
         <paper-textarea
-          label="State attributes (YAML or JSON, optional)"
+          label="State attributes (YAML, optional)"
           autocapitalize="none"
           autocomplete="off"
           spellcheck="false"
