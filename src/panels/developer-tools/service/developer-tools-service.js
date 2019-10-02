@@ -3,6 +3,8 @@ import "@polymer/paper-input/paper-textarea";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import yaml from "js-yaml";
+
 import { ENTITY_COMPONENT_DOMAINS } from "../../../data/entity";
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-service-picker";
@@ -109,7 +111,7 @@ class HaPanelDevService extends PolymerElement {
           </template>
           <paper-textarea
             always-float-label
-            label="Service Data (JSON, optional)"
+            label="Service Data (YAML, optional)"
             value="{{serviceData}}"
             autocapitalize="none"
             autocomplete="off"
@@ -119,7 +121,7 @@ class HaPanelDevService extends PolymerElement {
             Call Service
           </mwc-button>
           <template is="dom-if" if="[[!validJSON]]">
-            <span class="error">Invalid JSON</span>
+            <span class="error">Invalid YAML</span>
           </template>
         </div>
 
@@ -249,7 +251,7 @@ class HaPanelDevService extends PolymerElement {
 
   _computeParsedServiceData(serviceData) {
     try {
-      return serviceData ? JSON.parse(serviceData) : {};
+      return serviceData ? yaml.safeLoad(serviceData) : {};
     } catch (err) {
       return ERROR_SENTINEL;
     }
@@ -283,17 +285,24 @@ class HaPanelDevService extends PolymerElement {
   _fillExampleData() {
     const example = {};
     this._attributes.forEach((attribute) => {
-      example[attribute.key] = attribute.example;
+      if (attribute.example) {
+        let value = "";
+        try {
+          value = yaml.safeLoad(attribute.example);
+        } catch (err) {
+          value = attribute.example;
+        }
+        example[attribute.key] = value;
+      }
     });
-    this.serviceData = JSON.stringify(example, null, 2);
+    this.serviceData = yaml.safeDump(example);
   }
 
   _entityPicked(ev) {
-    this.serviceData = JSON.stringify(
-      { ...this.parsedJSON, entity_id: ev.target.value },
-      null,
-      2
-    );
+    this.serviceData = yaml.safeDump({
+      ...this.parsedJSON,
+      entity_id: ev.target.value,
+    });
   }
 }
 
