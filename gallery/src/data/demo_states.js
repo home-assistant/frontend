@@ -36,7 +36,7 @@ export default {
     attributes: {
       title: "Welcome Home!",
       message:
-        "Here are some resources to get started:\n\n - [Configuring Home Assistant](https://home-assistant.io/getting-started/configuration/)\n - [Available components](https://home-assistant.io/components/)\n - [Troubleshooting your configuration](https://home-assistant.io/docs/configuration/troubleshooting/)\n - [Getting help](https://home-assistant.io/help/)\n\nTo not see this card popup in the future, edit your config in\n`configuration.yaml` and disable the `introduction` component.",
+        "Here are some resources to get started:\n\n - [Configuring Home Assistant](https://home-assistant.io/getting-started/configuration/)\n - [Available integrations](https://home-assistant.io/integrations/)\n - [Troubleshooting your configuration](https://home-assistant.io/docs/configuration/troubleshooting/)\n - [Getting help](https://home-assistant.io/help/)\n\nTo not see this card popup in the future, edit your config in\n`configuration.yaml` and disable the `introduction` integration.",
     },
     last_changed: "2018-07-19T10:44:45.922241+00:00",
     last_updated: "2018-07-19T10:44:45.922241+00:00",
