@@ -597,7 +597,8 @@
     },
     "notification_toast": {
       "service_call_failed": "Failed to call service {service}.",
-      "connection_lost": "Connection lost. Reconnecting…"
+      "connection_lost": "Connection lost. Reconnecting…",
+      "triggered": "Triggered"
     },
     "sidebar": {
       "external_app_configuration": "App Configuration"
@@ -891,7 +892,15 @@
         },
         "script": {
           "caption": "Script",
-          "description": "Create and edit scripts"
+          "description": "Create and edit scripts",
+          "picker": {
+            "header": "Script Editor",
+            "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
+            "learn_more": "Learn more about scripts",
+            "pick_script": "Pick script to edit",
+            "no_scripts": "We couldn’t find any editable scripts",
+            "add_script": "Add script"
+          }
         },
         "cloud": {
           "caption": "Home Assistant Cloud",
