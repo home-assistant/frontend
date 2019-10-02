@@ -11,11 +11,12 @@ import memoizeOne from "memoize-one";
 
 import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-error-screen";
+import "../ha-config-section";
 
-import "./device-detail/ha-device-card";
 import "./device-detail/ha-device-triggers-card";
 import "./device-detail/ha-device-conditions-card";
 import "./device-detail/ha-device-actions-card";
+import "./device-detail/ha-device-entities-card";
 import { HomeAssistant } from "../../../types";
 import { ConfigEntry } from "../../../data/config_entries";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
@@ -37,6 +38,7 @@ export class HaConfigDevicePage extends LitElement {
   @property() public entities!: EntityRegistryEntry[];
   @property() public areas!: AreaRegistryEntry[];
   @property() public deviceId!: string;
+  @property() public narrow!: boolean;
 
   private _device = memoizeOne(
     (
@@ -67,7 +69,11 @@ export class HaConfigDevicePage extends LitElement {
           icon="hass:settings"
           @click=${this._showSettings}
         ></paper-icon-button>
-        <div class="content">
+        <ha-config-section .isWide=${!this.narrow}>
+          <span slot="header">Device info</span>
+          <span slot="introduction">
+            Here are all the details of your device.
+          </span>
           <ha-device-card
             .hass=${this.hass}
             .areas=${this.areas}
@@ -75,7 +81,18 @@ export class HaConfigDevicePage extends LitElement {
             .device=${device}
             .entities=${this.entities}
             hide-settings
+            hide-entities
           ></ha-device-card>
+
+          <div class="header">Entities</div>
+          <ha-device-entities-card
+            .hass=${this.hass}
+            .deviceId=${this.deviceId}
+            .entities=${this.entities}
+          >
+          </ha-device-entities-card>
+
+          <div class="header">Automations</div>
           <ha-device-triggers-card
             .hass=${this.hass}
             .deviceId=${this.deviceId}
@@ -88,7 +105,7 @@ export class HaConfigDevicePage extends LitElement {
             .hass=${this.hass}
             .deviceId=${this.deviceId}
           ></ha-device-actions-card>
-        </div>
+        </ha-config-section>
       </hass-subpage>
     `;
   }
@@ -104,12 +121,20 @@ export class HaConfigDevicePage extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      .content {
-        padding: 16px;
+      .header {
+        font-family: var(--paper-font-display1_-_font-family);
+        -webkit-font-smoothing: var(
+          --paper-font-display1_-_-webkit-font-smoothing
+        );
+        font-size: var(--paper-font-display1_-_font-size);
+        font-weight: var(--paper-font-display1_-_font-weight);
+        letter-spacing: var(--paper-font-display1_-_letter-spacing);
+        line-height: var(--paper-font-display1_-_line-height);
+        opacity: var(--dark-primary-opacity);
       }
-      .content > * {
-        display: block;
-        margin-bottom: 16px;
+
+      ha-config-section *:last-child {
+        padding-bottom: 24px;
       }
     `;
   }

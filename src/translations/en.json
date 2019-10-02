@@ -930,6 +930,8 @@
             "enabled_cause": "Disabled by {cause}.",
             "enabled_description": "Disabled entities will not be added to Home Assistant.",
             "delete": "DELETE",
+            "confirm_delete": "Are you sure you want to delete this entry?",
+            "confirm_delete2": "Deleting an entry will not remove the entity from Home Assistant. To do this, you will need to remove the integration '{platform}' from Home Assistant.",
             "update": "UPDATE"
           }
         },
