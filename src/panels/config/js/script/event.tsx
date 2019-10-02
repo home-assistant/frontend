@@ -1,7 +1,7 @@
 import { h, Component } from "preact";
 import "@polymer/paper-input/paper-input";
 
-import JSONTextArea from "../json_textarea";
+import YAMLTextArea from "../yaml_textarea";
 import { onChangeEvent } from "../../../../common/preact/event";
 import { LocalizeFunc } from "../../../../common/translations/localize";
 import { EventAction } from "../../../../data/script";
@@ -45,7 +45,7 @@ export default class EventActionForm extends Component<Props> {
           value={event}
           onvalue-changed={this.onChange}
         />
-        <JSONTextArea
+        <YAMLTextArea
           label={localize(
             "ui.panel.config.automation.editor.actions.type.event.service_data"
           )}

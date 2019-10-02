@@ -1,7 +1,7 @@
 import { h, Component } from "preact";
 import "../../../../components/ha-service-picker";
 
-import JSONTextArea from "../json_textarea";
+import YAMLTextArea from "../yaml_textarea";
 
 export default class CallServiceAction extends Component<any> {
   constructor() {
@@ -32,7 +32,7 @@ export default class CallServiceAction extends Component<any> {
           value={service}
           onChange={this.serviceChanged}
         />
-        <JSONTextArea
+        <YAMLTextArea
           label={localize(
             "ui.panel.config.automation.editor.actions.type.service.service_data"
           )}
