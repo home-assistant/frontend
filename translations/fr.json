@@ -78,7 +78,7 @@
             },
             "presence": {
                 "off": "Absent.e",
-                "on": "Présent.e"
+                "on": "Présent"
             },
             "battery": {
                 "off": "Normal",
@@ -233,8 +233,8 @@
                 "ready": "Prêt"
             },
             "query_stage": {
-                "initializing": "Initialisation ({query_stage})",
-                "dead": "Morte ({query_stage})"
+                "initializing": "Initialisation ( {query_stage} )",
+                "dead": "Morte ( {query_stage} )"
             }
         },
         "weather": {
@@ -285,17 +285,17 @@
             "armed": "Activé",
             "disarmed": "Désactivé",
             "armed_home": "Armé",
-            "armed_away": "Armé",
+            "armed_away": "Activé",
             "armed_night": "Activé",
             "pending": "En cours",
             "arming": "Activer",
             "disarming": "Désarmement",
             "triggered": "Déclenchée",
-            "armed_custom_bypass": "Armée"
+            "armed_custom_bypass": "Activé"
         },
         "device_tracker": {
             "home": "Maison",
-            "not_home": "Absent(e)"
+            "not_home": "Absent"
         },
         "person": {
             "home": "Présent",
@@ -429,7 +429,7 @@
                             "introduction": "Les déclencheurs sont ce qui lance le traitement d'une règle d'automatisation. Il est possible de spécifier plusieurs déclencheurs pour une même règle. Dès qu'un déclencheur est activé, Home Assistant validera les conditions, s'il y en a, et appellera l'action.\n\n[En apprendre plus sur les déclencheurs.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
                             "add": "Ajouter un déclencheur",
                             "duplicate": "Dupliquer",
-                            "delete": "Efface",
+                            "delete": "Effacer",
                             "delete_confirm": "Voulez-vous effacer ?",
                             "unsupported_platform": "Platefome non supportée : {platform}",
                             "type_select": "Type de déclencheur",
@@ -483,7 +483,7 @@
                                     "zone": "Zone",
                                     "event": "Événement :",
                                     "enter": "Entre",
-                                    "leave": "Quitter"
+                                    "leave": "Quitte"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -514,7 +514,7 @@
                             "introduction": "Les conditions sont une partie optionnelle d'une règle d'automatisation et peuvent être utilisées pour empêcher une action d'avoir lieu lorsque la règle est déclenchée. Les conditions ressemblent aux déclencheurs mais sont très différentes. Un déclencheur regardera les événements sur le système tandis qu'une condition ne regarde que l'état courant du système. Un déclencheur peut observer qu'un interrupteur est en train d'être allumé. Une condition ne peut que voir si l'interrupteur est allumé ou éteint.",
                             "add": "Ajouter une condition",
                             "duplicate": "Dupliquer",
-                            "delete": "Effacement",
+                            "delete": "Effacer",
                             "delete_confirm": "Voulez-vous vraiment effacer ?",
                             "unsupported_condition": "Condition non supportée: {condition}",
                             "type_select": "Type de condition",
@@ -676,7 +676,7 @@
                 "cloud": {
                     "caption": "Cloud Home Assistant",
                     "description_login": "Connecté en tant que {email}",
-                    "description_not_login": "Pas connecté",
+                    "description_not_login": "Non connecté",
                     "description_features": "Contrôle hors de la maison, intégration avec Alexa et Google Assistant."
                 },
                 "integrations": {
@@ -709,11 +709,11 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Gestion de réseau domotique ZigBee",
+                    "description": "Gestion de réseau domotique Zigbee",
                     "services": {
                         "reconfigure": "Reconfigurer le périphérique ZHA. Utilisez cette option si vous rencontrez des problèmes avec le périphérique. Si l'appareil en question est un appareil alimenté par batterie, assurez-vous qu'il soit allumé et qu'il accepte les commandes lorsque vous utilisez ce service.",
                         "updateDeviceName": "Définissez un nom personnalisé pour ce périphérique dans le registre de périphériques.",
-                        "remove": "Supprimer un appareil du réseau ZigBee."
+                        "remove": "Supprimer un appareil du réseau Zigbee."
                     },
                     "device_card": {
                         "device_name_placeholder": "Nom d'utilisateur",
@@ -752,7 +752,7 @@
                     "picker": {
                         "header": "Registre des entités",
                         "unavailable": "(indisponible)",
-                        "introduction": "Home Assistant tient un registre de chaque entité qu'il n’a jamais vue et qui peut être identifié de manière unique. Chacune de ces entités se verra attribuer un identifiant qui sera réservé à cette seule entité.",
+                        "introduction": "Home Assistant tient un registre de chaque entité qu'il a déjà vu au moins une fois et qui peut être identifié de manière unique. Chacune de ces entités se verra attribuer un identifiant qui sera réservé à cette seule entité.",
                         "introduction2": "Utilisez le registre d'entités pour remplacer le nom, modifier l'ID d'entité ou supprimer l'entrée d'Home Assistant. Remarque: la suppression de l'entrée de registre d'entité ne supprime pas l'entité. Pour ce faire, suivez le lien ci-dessous et supprimez-le de la page des intégrations.",
                         "integrations_page": "Page des intégrations"
                     },
@@ -805,6 +805,10 @@
                             "confirm_stop": "Êtes-vous sûr de vouloir arrêter Home Assistant?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Appareils",
+                    "description": "Gérer les appareils connectés"
                 }
             },
             "profile": {
@@ -1013,7 +1017,7 @@
                 "cards": {
                     "shopping-list": {
                         "checked_items": "Éléments cochés",
-                        "clear_items": "Effacer éléments cochés",
+                        "clear_items": "Effacer les éléments cochés",
                         "add_item": "Ajouter un élément"
                     },
                     "empty_state": {
@@ -1347,7 +1351,7 @@
                 "services": {
                     "reconfigure": "Reconfigurer le périphérique ZHA. Utilisez cette option si vous rencontrez des problèmes avec le périphérique. Si l'appareil en question est un appareil alimenté par batterie, assurez-vous qu'il soit allumé et qu'il accepte les commandes lorsque vous utilisez ce service.",
                     "updateDeviceName": "Définissez un nom personnalisé pour ce périphérique dans le registre de périphériques.",
-                    "remove": "Supprimer un appareil du réseau ZigBee."
+                    "remove": "Supprimer un appareil du réseau Zigbee."
                 },
                 "zha_device_card": {
                     "device_name_placeholder": "Nom personnalisé",

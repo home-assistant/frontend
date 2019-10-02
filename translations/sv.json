@@ -291,7 +291,7 @@
             "arming": "Tillkopplar",
             "disarming": "Frånkopplar",
             "triggered": "Utlöst",
-            "armed_custom_bypass": "Larmat"
+            "armed_custom_bypass": "Tillkopplat"
         },
         "device_tracker": {
             "home": "Hemma",
@@ -360,13 +360,13 @@
                             "introduction": "Att ändra din konfiguration kan vara en tröttsam process. Vi vet. Den här avdelningen försöker göra ditt liv lite enklare.",
                             "core_config": {
                                 "edit_requires_storage": "Redigeraren är inaktiverad eftersom konfigurationen lagras i configuration.yaml.",
-                                "location_name": "Namn på din Home Assistant installation",
+                                "location_name": "Namn på din Home Assistant-installation",
                                 "latitude": "Latitud",
                                 "longitude": "Longitud",
                                 "elevation": "Höjd över havet",
                                 "elevation_meters": "meter",
                                 "time_zone": "Tidszon",
-                                "unit_system": "Enhets system",
+                                "unit_system": "Enhetssystem",
                                 "unit_system_imperial": "Imperial",
                                 "unit_system_metric": "Metrisk",
                                 "imperial_example": "Fahrenheit, pounds",
@@ -426,7 +426,7 @@
                         "alias": "Namn",
                         "triggers": {
                             "header": "Triggers",
-                            "introduction": "Triggers är det som startar en automation. Det är möjligt att ange flera triggers för samma regel. När en trigger inträffar kommer Home Assistant att validera eventuella villkor och sedan köra åtgärden\n\n[Läs mer om triggers.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Triggers är det som startar en automation. Det är möjligt att ange flera triggers för samma regel. När en trigger inträffar kommer Home Assistant att validera eventuella villkor och sedan köra åtgärden.",
                             "add": "Lägg till händelse",
                             "duplicate": "Duplicera",
                             "delete": "Radera",
@@ -511,7 +511,7 @@
                         },
                         "conditions": {
                             "header": "Villkor",
-                            "introduction": "Villkor är en valfri del av en automatiseringsregel och kan användas för att förhindra att en åtgärd inträffar när den triggas. Villkoren liknar triggers men är väldigt olika. En trigger reagerar på händelser som händer i systemet medan ett villkor bara utvärderar hur systemet ser ut just nu. En trigger kan reagera på att en strömbrytare slås på. Ett villkor kan bara se om en strömbrytare är på eller av. \n\n [Lär dig mer om villkoren.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Villkor är en valfri del av en automatiseringsregel och kan användas för att förhindra att en åtgärd inträffar när den triggas. Villkoren liknar triggers men är väldigt olika. En trigger reagerar på händelser som händer i systemet medan ett villkor bara utvärderar hur systemet ser ut just nu. En trigger kan reagera på att en strömbrytare slås på. Ett villkor kan bara se om en strömbrytare är på eller av. ",
                             "add": "Lägg till villkor",
                             "duplicate": "Duplicera",
                             "delete": "Radera",
@@ -551,13 +551,16 @@
                                     "label": "Zon",
                                     "entity": "Entitet med position",
                                     "zone": "Zon"
+                                },
+                                "device": {
+                                    "label": "Enhet"
                                 }
                             },
                             "learn_more": "Lär dig mer om villkor"
                         },
                         "actions": {
                             "header": "Åtgärder",
-                            "introduction": "Åtgärderna är vad Home Assistent gör när automatiseringen utlöses. \n\n [Lär dig mer om åtgärder.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Åtgärderna är vad Home Assistant gör när automatiseringen triggas.",
                             "add": "Lägg till åtgärd",
                             "duplicate": "Duplicera",
                             "delete": "Radera",
@@ -585,6 +588,9 @@
                                     "label": "Utlös händelse",
                                     "event": "Händelse",
                                     "service_data": "Tjänstedata"
+                                },
+                                "device_id": {
+                                    "label": "Enhet"
                                 }
                             },
                             "learn_more": "Lär dig mer om händelser"
@@ -675,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "Integrationer",
-                    "description": "Hantera anslutna enheter och tjänster",
+                    "description": "Hantera och konfigurera integrationer",
                     "discovered": "Upptäckt",
                     "configured": "Konfigurerad",
                     "new": "Skapa en ny integration",
@@ -707,7 +713,7 @@
                     "services": {
                         "reconfigure": "Omkonfigurera ZHA-enheten (läk enheten). Använd det här om du har problem med enheten. Om den aktuella enheten är en batteridriven enhet, se till att den är påslagen och accepterar kommandon när du använder den här tjänstens funktion.",
                         "updateDeviceName": "Ange ett anpassat namn för den här enheten i enhetsregistret",
-                        "remove": "Ta bort en enhet från ZigBee-nätverket."
+                        "remove": "Ta bort en enhet från Zigbee-nätverket."
                     },
                     "device_card": {
                         "device_name_placeholder": "Användarnamn",
@@ -799,6 +805,10 @@
                             "confirm_stop": "Är du säker på att du vill stoppa Home Assistant?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Enheter",
+                    "description": "Hantera anslutna enheter"
                 }
             },
             "profile": {
@@ -919,7 +929,7 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "Tvåfaktors autentiseringskod"
+                                        "code": "Tvåfaktorsautentiseringskod"
                                     },
                                     "description": "Öppna **{mfa_module_name}** på din enhet för att visa din tvåfaktors autentiseringskod och verifiera din identitet:"
                                 }
@@ -992,10 +1002,10 @@
                 "integration": {
                     "intro": "Enheter och tjänster representeras i Home Assistant som integrationer. Du kan ställa in dem nu eller göra det senare från konfigurations-skärmen.",
                     "more_integrations": "Mer",
-                    "finish": "Avsluta"
+                    "finish": "Slutför"
                 },
                 "core-config": {
-                    "intro": "Hej {name} , välkommen till Home Assistant. Hur skulle du vilja namnge ditt hem?",
+                    "intro": "Hej {name}, välkommen till Home Assistant. Hur skulle du vilja namnge ditt hem?",
                     "intro_location": "Vi skulle vilja veta var du bor. Den här informationen hjälper dig att visa information och ställa in solbaserade automatiseringar. Dessa data delas aldrig utanför nätverket.",
                     "intro_location_detect": "Vi kan hjälpa dig att fylla i denna information genom att göra en engångsförfrågan till en extern tjänst.",
                     "location_name_default": "Hem",
@@ -1063,6 +1073,10 @@
                         "save": "Spara",
                         "unsaved_changes": "Osparade ändringar",
                         "saved": "Sparad"
+                    },
+                    "edit_lovelace": {
+                        "header": "Titel på ditt Lovelace-gränssnitt",
+                        "explanation": "Den här titeln visas ovanför alla dina vyer i Lovelace."
                     }
                 },
                 "menu": {
@@ -1256,6 +1270,14 @@
                 "target_temperature": "Måltemperatur",
                 "operation": "Operation",
                 "away_mode": "Bortaläge"
+            },
+            "timer": {
+                "actions": {
+                    "start": "starta",
+                    "pause": "pausa",
+                    "cancel": "avbryt",
+                    "finish": "slutför"
+                }
             }
         },
         "components": {
@@ -1322,6 +1344,20 @@
                 "title": "Inställningar",
                 "enable_new_entities_label": "Aktivera nyligen tillagda enheter.",
                 "enable_new_entities_description": "Nyupptäckta enheter kommer ej läggas till automatiskt i Home Assistant om de är inaktiverade."
+            },
+            "zha_device_info": {
+                "manuf": "av {manufacturer}",
+                "no_area": "Inget område",
+                "services": {
+                    "reconfigure": "Konfigurera om ZHA-enheten (läk enheten). Använd det här om du har problem med enheten. Om den aktuella enheten är en batteridriven enhet, se till att den är påslagen och accepterar kommandon när du använder den här tjänsten.",
+                    "updateDeviceName": "Ange ett anpassat namn för den här enheten i enhetsregistret",
+                    "remove": "Ta bort en enhet från Zigbee-nätverket."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Användarnamn",
+                    "area_picker_label": "Område",
+                    "update_name_button": "Uppdatera namn"
+                }
             }
         },
         "auth_store": {
@@ -1421,7 +1457,8 @@
     "config_entry": {
         "disabled_by": {
             "user": "Användare",
-            "integration": "Integration"
+            "integration": "Integration",
+            "config_entry": "Konfigurationsvärde"
         }
     }
 }

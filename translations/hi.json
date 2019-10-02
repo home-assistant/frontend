@@ -16,13 +16,46 @@
             "unknown": "अनजान",
             "unavailable": "अनुपलब्ध"
         },
+        "automation": {
+            "off": "बंद"
+        },
         "binary_sensor": {
+            "motion": {
+                "off": "विशद",
+                "on": "अनुसन्धानित"
+            },
             "opening": {
                 "on": "खुला"
             },
+            "presence": {
+                "on": "घर"
+            },
             "battery": {
-                "off": "보통",
-                "on": " 낮음"
+                "off": "साधारण",
+                "on": "कम"
+            },
+            "connectivity": {
+                "off": "डिस्कनेक्ट किया गया",
+                "on": "जुड़े हुए"
+            },
+            "cold": {
+                "off": "साधारण",
+                "on": "सर्दी"
+            },
+            "door": {
+                "off": "बंद",
+                "on": "खुला"
+            },
+            "garage_door": {
+                "off": "बंद",
+                "on": "खुला"
+            },
+            "heat": {
+                "on": "गर्म"
+            },
+            "window": {
+                "off": "बंद",
+                "on": "खुली"
             }
         },
         "camera": {
@@ -41,7 +74,10 @@
             "on": "चालू"
         },
         "group": {
-            "on": "चालू"
+            "off": "बंद",
+            "on": "चालू",
+            "home": "घर",
+            "problem": "समस्या"
         },
         "input_boolean": {
             "off": "बंद",
@@ -89,7 +125,8 @@
                 "ready": "तैयार"
             },
             "query_stage": {
-                "initializing": "आरंभ ({query_stage})"
+                "initializing": "आरंभ ({query_stage})",
+                "dead": " ( {query_stage} )"
             }
         }
     },
@@ -104,8 +141,7 @@
             "pending": "अपूर्ण"
         },
         "device_tracker": {
-            "home": "घर",
-            "not_home": "बाहर"
+            "home": "घर"
         }
     },
     "ui": {
@@ -127,6 +163,9 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "logs": {
+                        "title": "लॉग्स"
                     }
                 }
             },
@@ -223,10 +262,19 @@
         },
         "sidebar": {
             "log_out": "लॉग आउट"
+        },
+        "duration": {
+            "day": "{count} {count, plural,\n  one {दिन}\n  other {दिन}\n}",
+            "week": "{count} {count, plural,\n  one {हफ़्ता}\n  other {हफ़्ते}\n}"
+        },
+        "notification_drawer": {
+            "empty": "सूचनाएँ नहीं हैं",
+            "title": "सूचनाएँ"
         }
     },
     "domain": {
         "automation": "स्वचालन",
+        "binary_sensor": "बाइनरी सेंसर",
         "climate": "जलवायु",
         "device_tracker": "डिवाइस ट्रैकर",
         "fan": "पंखा",
@@ -246,10 +294,18 @@
         "proximity": "निकटता",
         "remote": "रिमोट",
         "scene": "दृश्य",
+        "script": "स्क्रिप्ट",
         "sensor": "सेंसर",
         "sun": "सूरज",
         "switch": "स्विच",
         "weblink": "वेब लिंक",
         "zwave": "Z-Wave"
+    },
+    "attribute": {
+        "weather": {
+            "humidity": "नमी",
+            "visibility": "दृश्यता",
+            "wind_speed": "हवा की गति"
+        }
     }
 }
