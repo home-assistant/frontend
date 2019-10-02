@@ -13,8 +13,6 @@ import { HomeAssistant } from "../../../types";
 import {
   EntityRegistryEntry,
   computeEntityRegistryName,
-  updateEntityRegistryEntry,
-  removeEntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import "../../../layouts/hass-subpage";
@@ -143,35 +141,6 @@ class HaConfigEntityRegistry extends LitElement {
     const entry = (ev.currentTarget! as any).entry;
     showEntityRegistryDetailDialog(this, {
       entry,
-      updateEntry: async (updates) => {
-        const updated = await updateEntityRegistryEntry(
-          this.hass!,
-          entry.entity_id,
-          updates
-        );
-        this._entities = this._entities!.map((ent) =>
-          ent === entry ? updated : ent
-        );
-      },
-      removeEntry: async () => {
-        if (
-          !confirm(`Are you sure you want to delete this entry?
-
-Deleting an entry will not remove the entity from Home Assistant. To do this, you will need to remove the integration "${
-            entry.platform
-          }" from Home Assistant.`)
-        ) {
-          return false;
-        }
-
-        try {
-          await removeEntityRegistryEntry(this.hass!, entry.entity_id);
-          this._entities = this._entities!.filter((ent) => ent !== entry);
-          return true;
-        } catch (err) {
-          return false;
-        }
-      },
     });
   }
 

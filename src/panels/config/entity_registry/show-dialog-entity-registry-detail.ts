@@ -1,15 +1,8 @@
 import { fireEvent } from "../../../common/dom/fire_event";
-import {
-  EntityRegistryEntry,
-  EntityRegistryEntryUpdateParams,
-} from "../../../data/entity_registry";
+import { EntityRegistryEntry } from "../../../data/entity_registry";
 
 export interface EntityRegistryDetailDialogParams {
   entry: EntityRegistryEntry;
-  updateEntry: (
-    updates: Partial<EntityRegistryEntryUpdateParams>
-  ) => Promise<unknown>;
-  removeEntry: () => Promise<boolean>;
 }
 
 export const loadEntityRegistryDetailDialog = () =>
