@@ -84,6 +84,14 @@ export class HaConfigDevicePage extends LitElement {
             hide-entities
           ></ha-device-card>
 
+          <div class="header">Entities</div>
+          <ha-device-entities-card
+            .hass=${this.hass}
+            .deviceId=${this.deviceId}
+            .entities=${this.entities}
+          >
+          </ha-device-entities-card>
+
           <div class="header">Automations</div>
           <ha-device-triggers-card
             .hass=${this.hass}
@@ -97,14 +105,6 @@ export class HaConfigDevicePage extends LitElement {
             .hass=${this.hass}
             .deviceId=${this.deviceId}
           ></ha-device-actions-card>
-
-          <div class="header">Entities</div>
-          <ha-device-entities-card
-            .hass=${this.hass}
-            .deviceId=${this.deviceId}
-            .entities=${this.entities}
-          >
-          </ha-device-entities-card>
         </ha-config-section>
       </hass-subpage>
     `;

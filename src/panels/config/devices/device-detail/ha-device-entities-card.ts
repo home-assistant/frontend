@@ -21,11 +21,7 @@ import "@polymer/paper-item/paper-item-body";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import { computeStateName } from "../../../../common/entity/compute_state_name";
-import {
-  EntityRegistryEntry,
-  updateEntityRegistryEntry,
-  removeEntityRegistryEntry,
-} from "../../../../data/entity_registry";
+import { EntityRegistryEntry } from "../../../../data/entity_registry";
 import { showEntityRegistryDetailDialog } from "../../entity_registry/show-dialog-entity-registry-detail";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
@@ -118,27 +114,6 @@ export class HaDeviceEntitiesCard extends LitElement {
     const entry = (ev.currentTarget! as any).closest("paper-icon-item").entry;
     showEntityRegistryDetailDialog(this, {
       entry,
-      updateEntry: async (updates) => {
-        await updateEntityRegistryEntry(this.hass!, entry.entity_id, updates);
-      },
-      removeEntry: async () => {
-        if (
-          !confirm(`Are you sure you want to delete this entry?
-
-Deleting an entry will not remove the entity from Home Assistant. To do this, you will need to remove the integration "${
-            entry.platform
-          }" from Home Assistant.`)
-        ) {
-          return false;
-        }
-
-        try {
-          await removeEntityRegistryEntry(this.hass!, entry.entity_id);
-          return true;
-        } catch (err) {
-          return false;
-        }
-      },
     });
   }
 
