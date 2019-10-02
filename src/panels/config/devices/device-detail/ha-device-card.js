@@ -123,24 +123,26 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
           </template>
         </div>
 
-        <div class="device-entities">
-          <template
-            is="dom-repeat"
-            items="[[_computeDeviceEntities(hass, device, entities)]]"
-            as="entity"
-          >
-            <paper-icon-item on-click="_openMoreInfo">
-              <state-badge
-                state-obj="[[_computeStateObj(entity, hass)]]"
-                slot="item-icon"
-              ></state-badge>
-              <paper-item-body>
-                <div class="name">[[_computeEntityName(entity, hass)]]</div>
-                <div class="secondary entity-id">[[entity.entity_id]]</div>
-              </paper-item-body>
-            </paper-icon-item>
-          </template>
-        </div>
+        <template is="dom-if" if="[[!hideEntities]]">
+          <div class="device-entities">
+            <template
+              is="dom-repeat"
+              items="[[_computeDeviceEntities(hass, device, entities)]]"
+              as="entity"
+            >
+              <paper-icon-item on-click="_openMoreInfo">
+                <state-badge
+                  state-obj="[[_computeStateObj(entity, hass)]]"
+                  slot="item-icon"
+                ></state-badge>
+                <paper-item-body>
+                  <div class="name">[[_computeEntityName(entity, hass)]]</div>
+                  <div class="secondary entity-id">[[entity.entity_id]]</div>
+                </paper-item-body>
+              </paper-icon-item>
+            </template>
+          </div>
+        </template>
       </ha-card>
     `;
   }
@@ -157,6 +159,7 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
         reflectToAttribute: true,
       },
       hideSettings: { type: Boolean, value: false },
+      hideEntities: { type: Boolean, value: false },
       _childDevices: {
         type: Array,
         computed: "_computeChildDevices(device, devices)",
