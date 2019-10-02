@@ -32,7 +32,7 @@
             "armed_custom_bypass": "Armada zona específica"
         },
         "automation": {
-            "off": "Apagado",
+            "off": "Desactivado",
             "on": "Encendido"
         },
         "binary_sensor": {
@@ -78,7 +78,7 @@
             },
             "presence": {
                 "off": "Fuera de casa",
-                "on": "En casa"
+                "on": "En Casa"
             },
             "battery": {
                 "off": "Normal",
@@ -233,8 +233,8 @@
                 "ready": "Listo"
             },
             "query_stage": {
-                "initializing": "Inicializando ({query_stage})",
-                "dead": "No encontrado ({query_stage})"
+                "initializing": "Iniciando ( {query_stage} )",
+                "dead": "Desconectado ({query_stage})"
             }
         },
         "weather": {
@@ -284,17 +284,17 @@
             "armed": "Activado",
             "disarmed": "Desactivado",
             "armed_home": "Activada",
-            "armed_away": "Activada",
-            "armed_night": "Activada",
+            "armed_away": "Activado",
+            "armed_night": "Activado",
             "pending": "Pendiente",
             "arming": "Activando",
             "disarming": "Desarmar",
             "triggered": "Activado",
-            "armed_custom_bypass": "Protegido"
+            "armed_custom_bypass": "Activado"
         },
         "device_tracker": {
             "home": "En casa",
-            "not_home": "Fuera de casa"
+            "not_home": "Fuera de Casa"
         },
         "person": {
             "home": "En casa",
@@ -327,6 +327,9 @@
                     },
                     "info": {
                         "title": "Información"
+                    },
+                    "logs": {
+                        "title": "Registros"
                     }
                 }
             },
@@ -698,7 +701,7 @@
                     "services": {
                         "reconfigure": "Reconfigure el dispositivo ZHA (dispositivo de curación). Use esto si tiene problemas con el dispositivo. Si el dispositivo en cuestión es un dispositivo alimentado por batería, asegúrese de que esté activado y acepte los comandos cuando utilice este servicio.",
                         "updateDeviceName": "Establecer un nombre personalizado para este dispositivo en el registro de dispositivos.",
-                        "remove": "Eliminar un dispositivo de la red ZigBee."
+                        "remove": "Eliminar un dispositivo de la red Zigbee."
                     },
                     "device_card": {
                         "device_name_placeholder": "Nombre de usuario",
@@ -833,7 +836,7 @@
                     "prompt_name": "¿Nombre?",
                     "prompt_copy_token": "Copia tu token de acceso. No se volverá a mostrar",
                     "empty_state": "Aún no tienes tokens de acceso de larga duración.",
-                    "last_used": "Utilizado por última vez en {fecha} desde {localización}.",
+                    "last_used": "Utilizado por última vez en {date} desde {location}.",
                     "not_used": "Nunca se ha utilizado"
                 },
                 "current_user": "Actualmente estás conectado como {fullName} .",
@@ -1010,7 +1013,7 @@
                         "navigate_to": "Navegue a {location}",
                         "toggle": "Alternar {name}",
                         "call_service": "Servicio de llamadas {name}",
-                        "more_info": "Mostrar más información: {nombre}"
+                        "more_info": "Mostrar más información: {name}"
                     }
                 },
                 "editor": {
@@ -1308,6 +1311,9 @@
                 "title": "Opciones del sistema",
                 "enable_new_entities_label": "Habilitar entidades recién agregadas.",
                 "enable_new_entities_description": "Si está deshabilitado, las entidades recién descubiertas no se agregarán automáticamente a Home Assistant."
+            },
+            "zha_device_info": {
+                "manuf": "por {manufacturer}"
             }
         },
         "auth_store": {
@@ -1316,7 +1322,7 @@
             "confirm": "Guardar inicio de sesión"
         },
         "notification_drawer": {
-            "click_to_configure": "Haga clic en el botón para configurar {entidad}.",
+            "click_to_configure": "Haga clic en el botón para configurar {entity}.",
             "empty": "Sin Notificaciones",
             "title": "Notificaciones"
         }

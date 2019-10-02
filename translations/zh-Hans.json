@@ -234,7 +234,7 @@
             },
             "query_stage": {
                 "initializing": "初始化 ({query_stage})",
-                "dead": "断线 ({query_stage})"
+                "dead": "断开 ({query_stage})"
             }
         },
         "weather": {
@@ -584,6 +584,9 @@
                                     "label": "触发事件",
                                     "event": "事件：",
                                     "service_data": "服务数据"
+                                },
+                                "device_id": {
+                                    "label": "设备"
                                 }
                             },
                             "learn_more": "详细了解动作"
@@ -703,7 +706,7 @@
                     "services": {
                         "reconfigure": "重新配置ZHA设备（唤醒设备）。如果您的设备遇到问题，请使用此项。如果有问题的设备是电池供电的，请确保在使用此服务时它处于唤醒状态并可以接受指令。",
                         "updateDeviceName": "在设备注册表中为此设备设置自定义名称。",
-                        "remove": "从 ZigBee 网络中删除设备。"
+                        "remove": "从 Zigbee 网络中删除设备。"
                     },
                     "device_card": {
                         "device_name_placeholder": "用户指定的名称",
@@ -767,7 +770,7 @@
                     }
                 },
                 "server_control": {
-                    "caption": "服务控制",
+                    "caption": "服务器控制",
                     "description": "重新启动或停止 Home Assistant 服务",
                     "section": {
                         "validation": {
@@ -795,6 +798,10 @@
                             "confirm_stop": "您确定要停止 Home Assistant 吗？"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "设备",
+                    "description": "已连接设备管理"
                 }
             },
             "profile": {
@@ -1059,6 +1066,9 @@
                         "save": "保存",
                         "unsaved_changes": "未保存的更改",
                         "saved": "已保存"
+                    },
+                    "edit_lovelace": {
+                        "header": "Lovelace UI标题"
                     }
                 },
                 "menu": {
@@ -1128,7 +1138,8 @@
         "common": {
             "loading": "加载中",
             "cancel": "取消",
-            "save": "保存"
+            "save": "保存",
+            "successfully_saved": "保存成功"
         },
         "duration": {
             "day": "{count} {count, plural,\none {天}\nother {天}\n}",
@@ -1249,6 +1260,12 @@
                 "target_temperature": "设定温度",
                 "operation": "操作",
                 "away_mode": "离开模式"
+            },
+            "timer": {
+                "actions": {
+                    "start": "开始",
+                    "pause": "暂停"
+                }
             }
         },
         "components": {

@@ -141,7 +141,8 @@
             "high_demand": "Necessidade alta",
             "heat_pump": "Bomba de calor",
             "gas": "Gás",
-            "manual": "Manual"
+            "manual": "Manual",
+            "heat_cool": "Calor \/ Frio"
         },
         "configurator": {
             "configure": "Configurar",
@@ -250,7 +251,8 @@
             "snowy-rainy": "Neve, chuva",
             "sunny": "Sol",
             "windy": "Vento fraco",
-            "windy-variant": "Vento fraco"
+            "windy-variant": "Vento fraco",
+            "exceptional": "Excepcional"
         },
         "vacuum": {
             "cleaning": "A limpar",
@@ -323,6 +325,12 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "Informações"
+                    },
+                    "logs": {
+                        "title": "Logs"
                     }
                 }
             },
@@ -494,6 +502,9 @@
                                     "event": "Evento:",
                                     "enter": "Entrar",
                                     "leave": "Sair"
+                                },
+                                "device": {
+                                    "label": "Dispositivo"
                                 }
                             },
                             "learn_more": "Saber mais sobre acionadores"
@@ -540,6 +551,9 @@
                                     "label": "Zona",
                                     "entity": "Entidade com localização",
                                     "zone": "Zona"
+                                },
+                                "device": {
+                                    "label": "Dispositivo"
                                 }
                             },
                             "learn_more": "Saber mais sobre condições"
@@ -574,6 +588,9 @@
                                     "label": "Disparar evento",
                                     "event": "Evento",
                                     "service_data": "Informação de Serviço"
+                                },
+                                "device_id": {
+                                    "label": "Dispositivo"
                                 }
                             },
                             "learn_more": "Saber mais sobre ações"
@@ -589,7 +606,48 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Gerir a sua rede Z-Wave",
+                    "network_management": {
+                        "header": "Gestão da rede Z-Wave",
+                        "introduction": "Executar comando que afeta a rede Z-Wave. Não obterá feedback se grande parte dos comandos concluírem com sucesso, mas pode verificar o registo OZW para tentar descobrir."
+                    },
+                    "network_status": {
+                        "network_stopped": "Rede Z-Wave parada.",
+                        "network_starting": "A iniciar a rede Z-Wave…",
+                        "network_starting_note": "Isto pode demorar algum tempo dependendo do tamanho da sua rede.",
+                        "network_started": "Rede Z-Wave iniciada.",
+                        "network_started_note_some_queried": "Os nós acordados foram inquiridos. Os nós adormecidos serão inquiridos quando acordarem.",
+                        "network_started_note_all_queried": "Todos os nós foram inquiridos."
+                    },
+                    "services": {
+                        "start_network": "Iniciar a rede",
+                        "stop_network": "Parar a rede",
+                        "heal_network": "Curar a Rede",
+                        "test_network": "Testar rede",
+                        "soft_reset": "Reinicio suave",
+                        "save_config": "Salvar configuração",
+                        "add_node_secure": "Adicionar nó seguro",
+                        "add_node": "Adicionar nó",
+                        "remove_node": "Remover nó",
+                        "cancel_command": "Cancelar comando"
+                    },
+                    "common": {
+                        "value": "Valor",
+                        "instance": "Instância",
+                        "index": "Índice",
+                        "unknown": "Desconhecido",
+                        "wakeup_interval": "Intervalo de acordar"
+                    },
+                    "values": {
+                        "header": "Valores do Nó"
+                    },
                     "node_config": {
+                        "header": "Configurar opçoes do nó",
+                        "seconds": "Segundos",
+                        "set_wakeup": "Definir intervalo de acordar",
+                        "config_parameter": "Configurar parâmetro",
+                        "config_value": "Cofigurar valor",
+                        "true": "Verdadeiro",
+                        "false": "Falso",
                         "set_config_parameter": "Definir o parâmetro de configuração"
                     }
                 },
@@ -623,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "Integrações",
-                    "description": "Gerir dispositivos e serviços conectados",
+                    "description": "Gerir e configurar integrações",
                     "discovered": "Detetados",
                     "configured": "Configurado",
                     "new": "Configurar uma nova integração",
@@ -644,7 +702,7 @@
                     },
                     "config_flow": {
                         "external_step": {
-                            "description": "Para ser concluída, esta etapa exige que visite um site externo.",
+                            "description": "Para ser concluída, esta etapa exige que visite um sítio web externo.",
                             "open_site": "Abrir site"
                         }
                     }
@@ -655,7 +713,7 @@
                     "services": {
                         "reconfigure": "Reconfigure o dispositivo ZHA (curar dispositivo). Utilize isto se estiver a ter problemas com o dispositivo. Se o dispositivo em questão for um dispositivo alimentado por uma bateria, ao utilizar este serviço certifique-se de que o equipamento está ativo e a aceitar comandos.",
                         "updateDeviceName": "Definir um nome personalizado para este dispositivo no registo do dispositivo.",
-                        "remove": "Remover um dispositivo da rede ZigBee."
+                        "remove": "Remover um dispositivo da rede Zigbee."
                     },
                     "device_card": {
                         "device_name_placeholder": "Nome do utilizador",
@@ -663,7 +721,7 @@
                         "update_name_button": "Atualizar Nome"
                     },
                     "add_device_page": {
-                        "header": "Zigbee Home Automation - Adicionar Dispositivos",
+                        "header": "Zigbee Home Automation - Adicionar dispositivos",
                         "spinner": "À procura de dispositivos ZHA Zigbee...",
                         "discovery_text": "Os dispositivos descobertos aparecerão aqui. Siga as instruções para o(s) seu(s) dispositivo(s) e coloque o(s) dispositivo(s) em modo de emparelhamento."
                     }
@@ -702,7 +760,10 @@
                         "unavailable": "Esta entidade não está atualmente disponível.",
                         "default_name": "Nova Área",
                         "delete": "APAGAR",
-                        "update": "ATUALIZAR"
+                        "update": "ATUALIZAR",
+                        "enabled_label": "Entidade permitida",
+                        "enabled_cause": "Desativado por {cause}.",
+                        "enabled_description": "Entidades desativadas não serão adicionadas ao Home Assistant."
                     }
                 },
                 "person": {
@@ -714,6 +775,40 @@
                         "device_tracker_picked": "Seguir dispositivo",
                         "device_tracker_pick": "Escolha o dispositivo a seguir"
                     }
+                },
+                "server_control": {
+                    "caption": "Controlo do servidor",
+                    "description": "Reiniciar e parar o servidor do Home Assistant",
+                    "section": {
+                        "validation": {
+                            "heading": "Validar configuração",
+                            "introduction": "Valide a sua configuração caso tenha alterado recentemente a mesma e quiser certificar-se de que tudo é válido.",
+                            "check_config": "Verificar a configuração",
+                            "valid": "Configuração válida!",
+                            "invalid": "Configuração inválida"
+                        },
+                        "reloading": {
+                            "heading": "A recarregar configuração",
+                            "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem necessidade de reiniciar. Ao carregar em Recarregar configuração irá descarregar a configuração atual e carregar a nova.",
+                            "core": "Recarregar núcleo",
+                            "group": "Recarregar grupos",
+                            "automation": "Recarregar automatizações",
+                            "script": "Recarregar scripts",
+                            "scene": "Recarregar cenas"
+                        },
+                        "server_management": {
+                            "heading": "Gestão do servidor",
+                            "introduction": "Controlar o seu servidor do Home Assistant... de dentro do Home Assistant.",
+                            "restart": "Reiniciar",
+                            "stop": "Parar",
+                            "confirm_restart": "Tem certeza de que reiniciar o Home Assistant?",
+                            "confirm_stop": "Tem certeza de que parar o Home Assistant?"
+                        }
+                    }
+                },
+                "devices": {
+                    "caption": "Dispositivos",
+                    "description": "Gerir dispositivos ligados"
                 }
             },
             "profile": {
@@ -784,6 +879,11 @@
                     "step_done": "Configuração concluída para {step}",
                     "close": "Fechar",
                     "submit": "Enviar"
+                },
+                "logout": "Sair",
+                "force_narrow": {
+                    "header": "Esconder sempre a barra lateral.",
+                    "description": "Isto esconderá por defeito a barra lateral, semelhante à experiência no telemóvel."
                 }
             },
             "page-authorize": {
@@ -973,6 +1073,10 @@
                         "save": "Guardar",
                         "unsaved_changes": "Alterações não guardadas",
                         "saved": "Guardada"
+                    },
+                    "edit_lovelace": {
+                        "header": "Título da sua interface do Lovelace",
+                        "explanation": "Este título é mostrado acima de todas as vista em Lovelace."
                     }
                 },
                 "menu": {
@@ -994,7 +1098,7 @@
             "page-demo": {
                 "cards": {
                     "demo": {
-                        "demo_by": "por {nome}",
+                        "demo_by": "por {name}",
                         "next_demo": "Próxima demonstração",
                         "introduction": "Bem vindo a casa! Chegou à demonstração do Home Assistant, onde exibimos as melhores UIs criadas pela nossa comunidade.",
                         "learn_more": "Saiba mais sobre o Home Assistant"
@@ -1042,7 +1146,8 @@
         "common": {
             "loading": "A carregar",
             "cancel": "Cancelar",
-            "save": "Guardar"
+            "save": "Guardar",
+            "successfully_saved": "Salva com sucesso"
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {dia}\n  other {dias}\n}",
@@ -1118,7 +1223,9 @@
             "fan": {
                 "speed": "Velocidade",
                 "oscillate": "Oscilar",
-                "direction": "Direção"
+                "direction": "Direção",
+                "forward": "Seguinte",
+                "reverse": "Reverter"
             },
             "light": {
                 "brightness": "Brilho",
@@ -1140,7 +1247,8 @@
                 "fan_mode": "Modo ventilar",
                 "swing_mode": "Modo oscilante",
                 "away_mode": "Modo ausente",
-                "aux_heat": "Calor auxiliar"
+                "aux_heat": "Calor auxiliar",
+                "preset_mode": "Predefinição"
             },
             "lock": {
                 "code": "Código",
@@ -1162,6 +1270,14 @@
                 "target_temperature": "Temperatura pretendida",
                 "operation": "Operação",
                 "away_mode": "Modo ausente"
+            },
+            "timer": {
+                "actions": {
+                    "start": "Iniciar",
+                    "pause": "pausa",
+                    "cancel": "Cancelar",
+                    "finish": "Terminar"
+                }
             }
         },
         "components": {
@@ -1191,10 +1307,10 @@
             }
         },
         "notification_toast": {
-            "entity_turned_on": "Ativou {entity} .",
-            "entity_turned_off": "Desativou {entity} .",
+            "entity_turned_on": "Ativou {entity}.",
+            "entity_turned_off": "Desativou {entity}.",
             "service_called": "Serviço {service} chamado.",
-            "service_call_failed": "Falha ao chamar o serviço {service} .",
+            "service_call_failed": "Falha ao chamar o serviço {service}.",
             "connection_lost": "Ligação perdida. A ligar de novo..."
         },
         "dialogs": {
@@ -1214,6 +1330,33 @@
                 },
                 "updater": {
                     "title": "Instruções para atualização"
+                }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Opções do sistema"
+                },
+                "success": {
+                    "description": "Salva com sucesso"
+                }
+            },
+            "config_entry_system_options": {
+                "title": "Opções do sistema",
+                "enable_new_entities_label": "Ativar novas entidades adicionadas.",
+                "enable_new_entities_description": "Se desativado, novas entidades descobertas não serão automaticamente adicionadas ao Home Assistant."
+            },
+            "zha_device_info": {
+                "manuf": "por {manufacturer}",
+                "no_area": "Nenhuma Área",
+                "services": {
+                    "reconfigure": "Reconfigure o dispositivo ZHA (curar dispositivo). Utilize isto se estiver a ter problemas com o dispositivo. Se o dispositivo em questão for um dispositivo alimentado por uma bateria, ao utilizar este serviço certifique-se de que o equipamento está ativo e a aceitar comandos.",
+                    "updateDeviceName": "Definir um nome personalizado para este dispositivo no registo do dispositivo.",
+                    "remove": "Remover um dispositivo da rede Zigbee."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Nome do utilizador",
+                    "area_picker_label": "Área",
+                    "update_name_button": "Atualizar Nome"
                 }
             }
         },
@@ -1285,6 +1428,24 @@
                 "off": "Desligar",
                 "on": "Ligar",
                 "auto": "Automático"
+            },
+            "preset_mode": {
+                "none": "Nenhum",
+                "eco": "Eco",
+                "away": "Ausente",
+                "boost": "Impulso",
+                "comfort": "Conforto",
+                "home": "Início",
+                "sleep": "Dormir",
+                "activity": "Atividade"
+            },
+            "hvac_action": {
+                "off": "Desligado",
+                "heating": "Aquecimento",
+                "cooling": "Resfriar",
+                "drying": "Secagem",
+                "idle": "Em espera",
+                "fan": "Ventoinha"
             }
         }
     },
@@ -1292,5 +1453,12 @@
         "system-admin": "Administradores",
         "system-users": "Utilizadores",
         "system-read-only": "Utilizadores só com permissões de leitura"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Utilizador",
+            "integration": "Integração",
+            "config_entry": "Editar configuração"
+        }
     }
 }

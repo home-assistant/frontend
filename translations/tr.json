@@ -232,7 +232,7 @@
                 "ready": "Hazır"
             },
             "query_stage": {
-                "initializing": "Başlatılıyor ({query_stage})",
+                "initializing": "Başlatılıyor ( {query_stage} )",
                 "dead": "Ölü ({query_stage})"
             }
         },
@@ -400,7 +400,7 @@
                             "duplicate": "Kopya",
                             "delete": "Sil",
                             "delete_confirm": "Silmek istediğinizden emin misiniz?",
-                            "unsupported_condition": "Desteklenmeyen durum: {durum}",
+                            "unsupported_condition": "Desteklenmeyen durum: {condition}",
                             "type": {
                                 "state": {
                                     "label": "Durum",
@@ -622,7 +622,7 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "İki adımlı doğrulama kodu"
+                                        "code": "İki adımlı kimlik doğrulama kodu"
                                     }
                                 }
                             },
