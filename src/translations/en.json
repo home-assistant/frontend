@@ -900,6 +900,12 @@
             "pick_script": "Pick script to edit",
             "no_scripts": "We couldn’t find any editable scripts",
             "add_script": "Add script"
+          },
+          "editor": {
+            "default_name": "New Script",
+            "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
+            "unsaved_confirm": "You have unsaved changes. Are you sure you want to leave?",
+            "delete_confirm": "Are you sure you want to delete this script?"
           }
         },
         "cloud": {

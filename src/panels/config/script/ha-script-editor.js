@@ -100,7 +100,7 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
             <ha-paper-icon-button-arrow-prev
               on-click="backTapped"
             ></ha-paper-icon-button-arrow-prev>
-            <div main-title>Script [[computeName(script)]]</div>
+            <div main-title>[[localize('ui.panel.config.script.caption')]] [[computeName(script)]]</div>
             <template is="dom-if" if="[[!creatingNew]]">
               <paper-icon-button
                 icon="hass:delete"
@@ -120,7 +120,7 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
           is-wide$="[[isWide]]"
           dirty$="[[dirty]]"
           icon="hass:content-save"
-          title="Save"
+          title="[[localize('ui.common.save')]]"
           on-click="saveScript"
           rtl$="[[rtl]]"
         ></ha-fab>
@@ -232,7 +232,7 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
           this._updateComponent();
         },
         () => {
-          alert("Only scripts inside scripts.yaml are editable.");
+          alert("[[localize('ui.panel.config.script.editor.load_error_not_editable')]]");
           history.back();
         }
       );
@@ -244,7 +244,7 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
     }
     this.dirty = false;
     this.config = {
-      alias: "New Script",
+      alias: "[[localize('ui.panel.config.script.editor.default_name')]]",
       sequence: [{ service: "", data: {} }],
     };
     this._updateComponent();
@@ -254,7 +254,7 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
     if (
       this.dirty &&
       // eslint-disable-next-line
-      !confirm("You have unsaved changes. Are you sure you want to leave?")
+      !confirm("[[localize('ui.panel.config.script.editor.unsaved_confirm')]]")
     ) {
       return;
     }
@@ -281,7 +281,7 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
   }
 
   async _delete() {
-    if (!confirm("Are you sure you want to delete this script?")) {
+    if (!confirm("[[localize('ui.panel.config.script.editor.delete_confirm')]]")) {
       return;
     }
     await deleteScript(this.hass, computeObjectId(this.script.entity_id));
