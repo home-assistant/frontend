@@ -1,5 +1,9 @@
 import { HomeAssistant } from "../../types";
-import { LovelaceCardConfig, LovelaceConfig } from "../../data/lovelace";
+import {
+  LovelaceCardConfig,
+  LovelaceConfig,
+  LovelaceBadgeConfig,
+} from "../../data/lovelace";
 
 declare global {
   // tslint:disable-next-line
@@ -20,7 +24,7 @@ export interface Lovelace {
 
 export interface LovelaceBadge extends HTMLElement {
   hass?: HomeAssistant;
-  setConfig(config: LovelaceCardConfig): void;
+  setConfig(config: LovelaceBadgeConfig): void;
 }
 
 export interface LovelaceCard extends HTMLElement {

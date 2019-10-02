@@ -1,5 +1,6 @@
 import { HomeAssistant } from "../types";
 import { Connection, getCollection } from "home-assistant-js-websocket";
+import { EntityConfig } from "../panels/lovelace/entity-rows/types";
 
 export interface LovelaceConfig {
   title?: string;
@@ -11,7 +12,7 @@ export interface LovelaceConfig {
 export interface LovelaceViewConfig {
   index?: number;
   title?: string;
-  badges?: string[];
+  badges?: LovelaceBadgeConfig[];
   cards?: LovelaceCardConfig[];
   path?: string;
   icon?: string;
@@ -20,13 +21,8 @@ export interface LovelaceViewConfig {
   background?: string;
 }
 
-export interface LovelaceBadgeConfig {
-  type: string;
-  entity: string;
-  name?: string;
-  icon?: string;
-  image?: string;
-}
+// tslint:disable-next-line: no-empty-interface
+export interface LovelaceBadgeConfig extends EntityConfig {}
 
 export interface LovelaceCardConfig {
   index?: number;

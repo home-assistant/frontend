@@ -8,22 +8,19 @@ import {
 
 import "../../../components/entity/ha-state-label-badge";
 // This one is for types
-// tslint:disable-next-line
-import { HaStateLabelBadge } from "../../../components/entity/ha-state-label-badge";
 
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
 import { LovelaceViewConfig, LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { classMap } from "lit-html/directives/class-map";
-import { Lovelace, LovelaceCard } from "../types";
+import { Lovelace, LovelaceCard, LovelaceBadge } from "../types";
 import { createCardElement } from "../common/create-card-element";
 import { computeCardSize } from "../common/compute-card-size";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { HuiErrorCard } from "../cards/hui-error-card";
-
 import { computeRTL } from "../../../common/util/compute_rtl";
-import { processConfigEntities } from "../common/process-config-entities";
+import { createBadgeElement } from "../common/create-badge-element";
 
 let editCodeLoaded = false;
 
@@ -51,7 +48,7 @@ export class HUIView extends LitElement {
   public columns?: number;
   public index?: number;
   private _cards: Array<LovelaceCard | HuiErrorCard>;
-  private _badges: Array<{ element: HaStateLabelBadge; entityId: string }>;
+  private _badges: Array<{ element: LovelaceBadge; entityId: string }>;
 
   static get properties(): PropertyDeclarations {
     return {
@@ -209,9 +206,8 @@ export class HUIView extends LitElement {
       this._createBadges(lovelace.config.views[this.index!]);
     } else if (hassChanged) {
       this._badges.forEach((badge) => {
-        const { element, entityId } = badge;
+        const { element } = badge;
         element.hass = hass;
-        element.state = hass.states[entityId];
       });
     }
 
@@ -262,16 +258,14 @@ export class HUIView extends LitElement {
     }
 
     const elements: HUIView["_badges"] = [];
-    // It's possible that a null value was stored as a badge entry
-    const badges = processConfigEntities(config.badges.filter(Boolean));
-    for (const badge of badges) {
-      const element = document.createElement("ha-state-label-badge");
+    for (const badge of config.badges) {
+      const element = createBadgeElement(badge);
       const entityId = badge.entity;
       element.hass = this.hass;
-      element.state = this.hass!.states[entityId];
-      element.name = badge.name;
-      element.icon = badge.icon;
-      element.image = badge.image;
+      // element.state = this.hass!.states[entityId];
+      // element.name = badge.name;
+      // element.icon = badge.icon;
+      // element.image = badge.image;
       elements.push({ element, entityId });
       root.appendChild(element);
     }

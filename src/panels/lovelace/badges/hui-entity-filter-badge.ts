@@ -93,19 +93,21 @@ class EntityFilterBadge extends HTMLElement implements LovelaceBadge {
       return;
     }
 
-    if (element.tagName !== "HUI-ERROR-CARD") {
-      const isSame =
-        this._oldEntities &&
-        entitiesList.length === this._oldEntities.length &&
-        entitiesList.every((entity, idx) => entity === this._oldEntities![idx]);
+    // TODO Create badgeElements for each entity
 
-      if (!isSame) {
-        this._oldEntities = entitiesList;
-        element.setConfig({ ...this._baseCardConfig!, entities: entitiesList });
-      }
+    // if (element.tagName !== "HUI-ERROR-CARD") {
+    //   const isSame =
+    //     this._oldEntities &&
+    //     entitiesList.length === this._oldEntities.length &&
+    //     entitiesList.every((entity, idx) => entity === this._oldEntities![idx]);
 
-      element.hass = hass;
-    }
+    //   if (!isSame) {
+    //     this._oldEntities = entitiesList;
+    //     element.setConfig({ ...this._baseCardConfig!, entities: entitiesList });
+    //   }
+
+    //   element.hass = hass;
+    // }
 
     // Attach element if it has never been attached.
     if (!this.lastChild) {

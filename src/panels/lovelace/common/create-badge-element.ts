@@ -8,7 +8,7 @@ import {
   createErrorBadgeConfig,
   HuiErrorBadge,
 } from "../badges/hui-error-badge";
-import "../badges/hui-state-label-card";
+import "../badges/hui-state-label-badge";
 import { LovelaceBadge } from "../types";
 import { LovelaceBadgeConfig } from "../../../data/lovelace";
 
@@ -40,8 +40,12 @@ const _createErrorElement = (
 export const createBadgeElement = (
   config: LovelaceBadgeConfig
 ): LovelaceBadge | HuiErrorBadge => {
-  if (!config || typeof config !== "object" || !config.type) {
+  if (!config || typeof config !== "object") {
     return _createErrorElement("No badge type configured.", config);
+  }
+
+  if (!config.type) {
+    config.type = "state-label";
   }
 
   if (config.type.startsWith(CUSTOM_TYPE_PREFIX)) {
