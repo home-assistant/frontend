@@ -8,8 +8,8 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 
-import computeStateName from "../../common/entity/compute_state_name";
-import computeDomain from "../../common/entity/compute_domain";
+import { computeStateName } from "../../common/entity/compute_state_name";
+import { computeDomain } from "../../common/entity/compute_domain";
 import { updateEntityRegistryEntry } from "../../data/entity_registry";
 import { showSaveSuccessToast } from "../../util/toast-saved-success";
 

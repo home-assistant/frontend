@@ -23,7 +23,8 @@
                 "ready": "Spreman"
             },
             "query_stage": {
-                "initializing": "Učitavanje ({query_stage})"
+                "initializing": " ( {query_stage} )",
+                "dead": " ({query_stage})"
             }
         },
         "climate": {
@@ -37,8 +38,7 @@
     "state_badge": {
         "alarm_control_panel": {
             "arming": "Aktiviranje",
-            "disarming": "Deaktiviraj",
-            "armed_custom_bypass": "Aktiviran"
+            "disarming": "Deaktiviraj"
         },
         "person": {
             "home": "Кући",
@@ -67,6 +67,9 @@
                     "node_config": {
                         "set_config_parameter": "Подесите параметар Цонфиг"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud"
                 },
                 "users": {
                     "editor": {
@@ -117,9 +120,9 @@
                     "picture-elements": {
                         "hold": "Придржи:",
                         "tap": "Додирни",
-                        "navigate_to": "Отиђите на ",
-                        "toggle": "Укључи",
-                        "more_info": "Покажи више информација:"
+                        "navigate_to": "Отиђите на {location}",
+                        "toggle": "Укључи {name}",
+                        "more_info": "Покажи више информација: {name}"
                     }
                 }
             }

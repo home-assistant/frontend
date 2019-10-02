@@ -1,9 +1,9 @@
 import { HassEntity } from "home-assistant-js-websocket";
 
-export default function attributeClassNames(
+export const attributeClassNames = (
   stateObj: HassEntity,
   attributes: string[]
-): string {
+): string => {
   if (!stateObj) {
     return "";
   }
@@ -13,4 +13,4 @@ export default function attributeClassNames(
     )
     .filter((attr) => attr !== "")
     .join(" ");
-}
+};

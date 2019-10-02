@@ -233,7 +233,7 @@
                 "ready": "Gereed"
             },
             "query_stage": {
-                "initializing": "Voorbereiden ({query_stage})",
+                "initializing": "Initialiseren ( {query_stage} )",
                 "dead": "Onbereikbaar ({query_stage})"
             }
         },
@@ -713,7 +713,7 @@
                     "services": {
                         "reconfigure": "Herconfigureer het ZHA-apparaat (heal device). Gebruik dit als je problemen hebt met het apparaat. Als het een apparaat met batterij is, zorg dan dat het wakker is en commando's accepteert wanneer je deze service gebruikt.",
                         "updateDeviceName": "Stel een aangepaste naam in voor dit apparaat in het apparaatregister.",
-                        "remove": "Verwijder een apparaat uit het ZigBee-netwerk."
+                        "remove": "Verwijder een apparaat uit het Zigbee-netwerk."
                     },
                     "device_card": {
                         "device_name_placeholder": "Door gebruiker ingegeven naam",
@@ -721,7 +721,7 @@
                         "update_name_button": "Naam bijwerken"
                     },
                     "add_device_page": {
-                        "header": "ZigBee Home Automation - Apparaten toevoegen",
+                        "header": "Zigbee Home Automation - Apparaten toevoegen",
                         "spinner": "Zoeken naar ZHA Zigbee-apparaten ...",
                         "discovery_text": "Gevonden apparaten worden hier weergegeven. Volg de instructies voor je apparaat of apparaten en plaats het apparaat of de apparaten in de koppelingsmodus."
                     }
@@ -798,7 +798,7 @@
                         },
                         "server_management": {
                             "heading": "Serverbeheer",
-                            "introduction": "Beheer je Home Assistant-server ... vanuit Home Assistant.",
+                            "introduction": "Beheer je Home Assistant-server... vanuit Home Assistant.",
                             "restart": "Herstarten",
                             "stop": "Stop",
                             "confirm_restart": "Weet je zeker dat je Home Assistant opnieuw wilt starten?",
@@ -871,7 +871,7 @@
                     "header": "Twee-factor-authenticatie modules",
                     "disable": "Uitschakelen",
                     "enable": "Inschakelen",
-                    "confirm_disable": "Weet je zeker dat je {naam} wilt uitschakelen?"
+                    "confirm_disable": "Weet je zeker dat je {name} wilt uitschakelen?"
                 },
                 "mfa_setup": {
                     "title_aborted": "Afgebroken",
@@ -1351,7 +1351,7 @@
                 "services": {
                     "reconfigure": "Herconfigureer het ZHA-apparaat (heal device). Gebruik dit als je problemen hebt met het apparaat. Als het een apparaat met batterij is, zorg dan dat het wakker is en commando's accepteert wanneer je deze service gebruikt.",
                     "updateDeviceName": "Stel een aangepaste naam in voor dit apparaat in het apparaatregister.",
-                    "remove": "Verwijder een apparaat uit het ZigBee-netwerk."
+                    "remove": "Verwijder een apparaat uit het Zigbee-netwerk."
                 },
                 "zha_device_card": {
                     "device_name_placeholder": "Door gebruiker ingegeven naam",

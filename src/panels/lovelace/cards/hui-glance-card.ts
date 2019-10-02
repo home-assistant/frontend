@@ -10,8 +10,7 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
-import computeStateDisplay from "../../../common/entity/compute_state_display";
-import computeStateName from "../../../common/entity/compute_state_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 import relativeTime from "../../../common/datetime/relative_time";
 
@@ -20,6 +19,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../components/hui-warning-element";
 
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { longPress } from "../common/directives/long-press-directive";

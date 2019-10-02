@@ -1,5 +1,5 @@
 import { HomeAssistant } from "../types";
-import compute_state_name from "../common/entity/compute_state_name";
+import { computeStateName } from "../common/entity/compute_state_name";
 
 export interface DeviceAutomation {
   device_id: string;
@@ -69,7 +69,7 @@ export const localizeDeviceAutomationAction = (
   return hass.localize(
     `component.${action.domain}.device_automation.action_type.${action.type}`,
     "entity_name",
-    state ? compute_state_name(state) : "<unknown>",
+    state ? computeStateName(state) : "<unknown>",
     "subtype",
     hass.localize(
       `component.${action.domain}.device_automation.action_subtype.${
@@ -91,7 +91,7 @@ export const localizeDeviceAutomationCondition = (
       condition.type
     }`,
     "entity_name",
-    state ? compute_state_name(state) : "<unknown>",
+    state ? computeStateName(state) : "<unknown>",
     "subtype",
     hass.localize(
       `component.${condition.domain}.device_automation.condition_subtype.${
@@ -111,7 +111,7 @@ export const localizeDeviceAutomationTrigger = (
       trigger.type
     }`,
     "entity_name",
-    state ? compute_state_name(state) : "<unknown>",
+    state ? computeStateName(state) : "<unknown>",
     "subtype",
     hass.localize(
       `component.${trigger.domain}.device_automation.trigger_subtype.${

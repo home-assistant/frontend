@@ -11,8 +11,8 @@ import "../../state-summary/state-card-content";
 
 import "./controls/more-info-content";
 
-import computeStateName from "../../common/entity/compute_state_name";
-import computeStateDomain from "../../common/entity/compute_state_domain";
+import { computeStateName } from "../../common/entity/compute_state_name";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import isComponentLoaded from "../../common/config/is_component_loaded";
 import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const";
 import { EventsMixin } from "../../mixins/events-mixin";

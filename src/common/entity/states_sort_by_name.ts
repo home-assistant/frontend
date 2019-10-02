@@ -3,15 +3,12 @@
  *
  * Usage:
  *   const states = [state1, state2]
- *   states.sort(statesSortByName);
+ *   states.sort(statessortStatesByName);
  */
 import { HassEntity } from "home-assistant-js-websocket";
-import computeStateName from "./compute_state_name";
+import { computeStateName } from "./compute_state_name";
 
-export default function sortStatesByName(
-  entityA: HassEntity,
-  entityB: HassEntity
-) {
+export const sortStatesByName = (entityA: HassEntity, entityB: HassEntity) => {
   const nameA = computeStateName(entityA);
   const nameB = computeStateName(entityB);
   if (nameA < nameB) {
@@ -21,4 +18,4 @@ export default function sortStatesByName(
     return 1;
   }
   return 0;
-}
+};

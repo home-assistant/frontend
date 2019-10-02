@@ -32,7 +32,7 @@
             "armed_custom_bypass": "Armada Zona Específica"
         },
         "automation": {
-            "off": "Apagada",
+            "off": "Apagado",
             "on": "Encendida"
         },
         "binary_sensor": {
@@ -681,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "Integraciones",
-                    "description": "Administrar dispositivos y servicios conectados",
+                    "description": "Administrar y configurar integraciones",
                     "discovered": "Descubierto",
                     "configured": "Configurado",
                     "new": "Configurar una nueva integración.",
@@ -713,7 +713,7 @@
                     "services": {
                         "reconfigure": "Reconfigura el dispositivo ZHA (curar dispositivo). Usa esto si tienes problemas con el dispositivo. Si el dispositivo en cuestión es un dispositivo alimentado por batería, asegúrate de que está activo y aceptando comandos cuando uses este servicio.",
                         "updateDeviceName": "Establece un nombre personalizado para este dispositivo en el registro de dispositivos.",
-                        "remove": "Eliminar un dispositivo de la red ZigBee."
+                        "remove": "Eliminar un dispositivo de la red Zigbee."
                     },
                     "device_card": {
                         "device_name_placeholder": "Nombre dado por el usuario",
@@ -857,7 +857,7 @@
                     "last_used": "Último uso el {date} desde {location}",
                     "not_used": "Nunca ha sido usado"
                 },
-                "current_user": "Has iniciado sesión como {fullName} .",
+                "current_user": "Has iniciado sesión como {fullName}.",
                 "is_owner": "Eres propietario.",
                 "change_password": {
                     "header": "Cambiar contraseña",
@@ -1290,7 +1290,7 @@
                 "service": "Servicio"
             },
             "relative_time": {
-                "past": "hace {time}",
+                "past": "Hace {time}",
                 "future": "En {time}",
                 "never": "Nunca",
                 "duration": {
@@ -1310,7 +1310,7 @@
             "entity_turned_on": "Encendido {entity}.",
             "entity_turned_off": "Apagado {entity}.",
             "service_called": "Servicio {service} llamado.",
-            "service_call_failed": "Error al llamar al servicio {service} .",
+            "service_call_failed": "Error al llamar al servicio {service}.",
             "connection_lost": "Conexión perdida. Reconectando..."
         },
         "dialogs": {
@@ -1351,7 +1351,7 @@
                 "services": {
                     "reconfigure": "Reconfigura el dispositivo ZHA (curar dispositivo). Usa esto si tienes problemas con el dispositivo. Si el dispositivo en cuestión es un dispositivo alimentado por batería, asegúrate de que está activo y aceptando comandos cuando uses este servicio.",
                     "updateDeviceName": "Establece un nombre personalizado para este dispositivo en el registro de dispositivos.",
-                    "remove": "Eliminar un dispositivo de la red ZigBee."
+                    "remove": "Eliminar un dispositivo de la red Zigbee."
                 },
                 "zha_device_card": {
                     "device_name_placeholder": "Nombre dado por el usuario",

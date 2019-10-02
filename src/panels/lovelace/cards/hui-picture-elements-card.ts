@@ -58,13 +58,14 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
       <ha-card .header="${this._config.title}">
         <div id="root">
           <hui-image
-            .hass="${this._hass}"
-            .image="${this._config.image}"
-            .stateImage="${this._config.state_image}"
-            .cameraImage="${this._config.camera_image}"
-            .cameraView="${this._config.camera_view}"
-            .entity="${this._config.entity}"
-            .aspectRatio="${this._config.aspect_ratio}"
+            .hass=${this._hass}
+            .image=${this._config.image}
+            .stateImage=${this._config.state_image}
+            .stateFilter=${this._config.state_filter}
+            .cameraImage=${this._config.camera_image}
+            .cameraView=${this._config.camera_view}
+            .entity=${this._config.entity}
+            .aspectRatio=${this._config.aspect_ratio}
           ></hui-image>
           ${this._config.elements.map(
             (elementConfig: LovelaceElementConfig) => {

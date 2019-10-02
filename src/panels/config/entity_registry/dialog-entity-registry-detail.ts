@@ -8,21 +8,29 @@ import {
 } from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-toggle-button/paper-toggle-button";
 
 import "../../../components/dialog/ha-paper-dialog";
+import "../../../components/ha-switch";
 
 import { EntityRegistryDetailDialogParams } from "./show-dialog-entity-registry-detail";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import computeDomain from "../../../common/entity/compute_domain";
 import { HassEntity } from "home-assistant-js-websocket";
-import computeStateName from "../../../common/entity/compute_state_name";
+// tslint:disable-next-line: no-duplicate-imports
+import { HaSwitch } from "../../../components/ha-switch";
+
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import {
+  updateEntityRegistryEntry,
+  removeEntityRegistryEntry,
+} from "../../../data/entity_registry";
 
 class DialogEntityRegistryDetail extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() private _name!: string;
+  @property() private _platform!: string;
   @property() private _entityId!: string;
   @property() private _disabledBy!: string | null;
   @property() private _error?: string;
@@ -35,6 +43,7 @@ class DialogEntityRegistryDetail extends LitElement {
     this._params = params;
     this._error = undefined;
     this._name = this._params.entry.name || "";
+    this._platform = this._params.entry.platform;
     this._entityId = this._params.entry.entity_id;
     this._disabledBy = this._params.entry.disabled_by;
     await this.updateComplete;
@@ -95,9 +104,9 @@ class DialogEntityRegistryDetail extends LitElement {
               .disabled=${this._submitting}
             ></paper-input>
             <div class="row">
-              <paper-toggle-button
+              <ha-switch
                 .checked=${!this._disabledBy}
-                @checked-changed=${this._disabledByChanged}
+                @change=${this._disabledByChanged}
               >
                 <div>
                   <div>
@@ -121,7 +130,7 @@ class DialogEntityRegistryDetail extends LitElement {
                     <br />Note: this might not work yet with all integrations.
                   </div>
                 </div>
-              </paper-toggle-button>
+              </ha-switch>
             </div>
           </div>
         </paper-dialog-scrollable>
@@ -161,7 +170,7 @@ class DialogEntityRegistryDetail extends LitElement {
   private async _updateEntry(): Promise<void> {
     this._submitting = true;
     try {
-      await this._params!.updateEntry({
+      await updateEntityRegistryEntry(this.hass!, this._entityId, {
         name: this._name.trim() || null,
         disabled_by: this._disabledBy,
         new_entity_id: this._entityId.trim(),
@@ -175,11 +184,27 @@ class DialogEntityRegistryDetail extends LitElement {
   }
 
   private async _deleteEntry(): Promise<void> {
+    if (
+      !confirm(
+        `${this.hass.localize(
+          "ui.panel.config.entity_registry.editor.confirm_delete"
+        )}
+
+${this.hass.localize(
+  "ui.panel.config.entity_registry.editor.confirm_delete2",
+  "platform",
+  this._platform
+)}`
+      )
+    ) {
+      return;
+    }
+
     this._submitting = true;
+
     try {
-      if (await this._params!.removeEntry()) {
-        this._params = undefined;
-      }
+      await removeEntityRegistryEntry(this.hass!, this._entityId);
+      this._params = undefined;
     } finally {
       this._submitting = false;
     }
@@ -190,8 +215,8 @@ class DialogEntityRegistryDetail extends LitElement {
       this._params = undefined;
     }
   }
-  private _disabledByChanged(ev: PolymerChangedEvent<boolean>): void {
-    this._disabledBy = ev.detail.value ? null : "user";
+  private _disabledByChanged(ev: Event): void {
+    this._disabledBy = (ev.target as HaSwitch).checked ? null : "user";
   }
 
   static get styles(): CSSResult[] {

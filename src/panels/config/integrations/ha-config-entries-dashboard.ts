@@ -18,7 +18,7 @@ import "../../../components/ha-icon";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../ha-config-section";
 
-import computeStateName from "../../../common/entity/compute_state_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   loadConfigFlowDialog,
   showConfigFlowDialog,

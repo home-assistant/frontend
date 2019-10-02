@@ -1,13 +1,10 @@
 import { HassEntity } from "home-assistant-js-websocket";
-import canToggleState from "./can_toggle_state";
-import computeStateDomain from "./compute_state_domain";
+import { canToggleState } from "./can_toggle_state";
+import { computeStateDomain } from "./compute_state_domain";
 import { DOMAINS_WITH_CARD } from "../const";
 import { HomeAssistant } from "../../types";
 
-export default function stateCardType(
-  hass: HomeAssistant,
-  stateObj: HassEntity
-) {
+export const stateCardType = (hass: HomeAssistant, stateObj: HassEntity) => {
   if (stateObj.state === "unavailable") {
     return "display";
   }
@@ -24,4 +21,4 @@ export default function stateCardType(
     return "toggle";
   }
   return "display";
-}
+};

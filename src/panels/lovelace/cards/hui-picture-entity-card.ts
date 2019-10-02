@@ -14,13 +14,13 @@ import "../../../components/ha-card";
 import "../components/hui-image";
 import "../components/hui-warning";
 
-import computeDomain from "../../../common/entity/compute_domain";
-import computeStateDisplay from "../../../common/entity/compute_state_display";
-import computeStateName from "../../../common/entity/compute_state_name";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { longPress } from "../common/directives/long-press-directive";
 import { HomeAssistant } from "../../../types";
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { handleClick } from "../common/handle-click";
 import { UNAVAILABLE } from "../../../data/entity";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -28,6 +28,18 @@ import { PictureEntityCardConfig } from "./types";
 
 @customElement("hui-picture-entity-card")
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import(/* webpackChunkName: "hui-picture-entity-card-editor" */ "../editor/config-elements/hui-picture-entity-card-editor");
+    return document.createElement("hui-picture-entity-card-editor");
+  }
+  public static getStubConfig(): object {
+    return {
+      entity: "",
+      image:
+        "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
+    };
+  }
+
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: PictureEntityCardConfig;
@@ -102,21 +114,22 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card>
         <hui-image
-          .hass="${this.hass}"
-          .image="${this._config.image}"
-          .stateImage="${this._config.state_image}"
-          .cameraImage="${computeDomain(this._config.entity) === "camera"
+          .hass=${this.hass}
+          .image=${this._config.image}
+          .stateImage=${this._config.state_image}
+          .stateFilter=${this._config.state_filter}
+          .cameraImage=${computeDomain(this._config.entity) === "camera"
             ? this._config.entity
-            : this._config.camera_image}"
-          .cameraView="${this._config.camera_view}"
-          .entity="${this._config.entity}"
-          .aspectRatio="${this._config.aspect_ratio}"
-          @ha-click="${this._handleTap}"
-          @ha-hold="${this._handleHold}"
-          .longPress="${longPress()}"
-          class="${classMap({
+            : this._config.camera_image}
+          .cameraView=${this._config.camera_view}
+          .entity=${this._config.entity}
+          .aspectRatio=${this._config.aspect_ratio}
+          @ha-click=${this._handleTap}
+          @ha-hold=${this._handleHold}
+          .longPress=${longPress()}
+          class=${classMap({
             clickable: stateObj.state !== UNAVAILABLE,
-          })}"
+          })}
         ></hui-image>
         ${footer}
       </ha-card>

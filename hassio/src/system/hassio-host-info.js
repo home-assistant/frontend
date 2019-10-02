@@ -107,7 +107,7 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
               >Import from USB</ha-call-api-button
             >
           </template>
-          <template is="dom-if" if="[[_computeUpdateAvailable(_hassOs)]]">
+          <template is="dom-if" if="[[_computeUpdateAvailable(hassOsInfo)]]">
             <ha-call-api-button hass="[[hass]]" path="hassio/hassos/update"
               >Update</ha-call-api-button
             >
@@ -120,12 +120,9 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
   static get properties() {
     return {
       hass: Object,
-      data: {
-        type: Object,
-        observer: "_dataChanged",
-      },
+      data: Object,
+      hassOsInfo: Object,
       errors: String,
-      _hassOs: Object,
     };
   }
 
@@ -146,16 +143,6 @@ class HassioHostInfo extends EventsMixin(PolymerElement) {
       this.errors = response.body.message || "Unknown error";
     } else {
       this.errors = response.body;
-    }
-  }
-
-  _dataChanged(data) {
-    if (data.features && data.features.includes("hassos")) {
-      this.hass.callApi("get", "hassio/hassos/info").then((resp) => {
-        this._hassOs = resp.data;
-      });
-    } else {
-      this._hassOs = {};
     }
   }
 

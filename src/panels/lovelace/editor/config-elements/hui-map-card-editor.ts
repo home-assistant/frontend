@@ -13,7 +13,11 @@ import "../../components/hui-entity-editor";
 import "../../components/hui-input-list-editor";
 
 import { struct } from "../../common/structs/struct";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
+import {
+  EntitiesEditorEvent,
+  EditorTarget,
+  entitiesConfigStruct,
+} from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
@@ -22,15 +26,6 @@ import { processEditorEntities } from "../process-editor-entities";
 import { EntityConfig } from "../../entity-rows/types";
 import { PolymerChangedEvent } from "../../../../polymer-types";
 import { MapCardConfig } from "../../cards/types";
-
-const entitiesConfigStruct = struct.union([
-  {
-    entity: "entity-id",
-    name: "string?",
-    icon: "icon?",
-  },
-  "entity-id",
-]);
 
 const cardConfigStruct = struct({
   type: "string",
@@ -85,41 +80,61 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       ${configElementStyle}
       <div class="card-config">
         <paper-input
-          label="Title"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.title"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <div class="side-by-side">
           <paper-input
-            label="Aspect Ratio"
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.aspect_ratio"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
             .value="${this._aspect_ratio}"
             .configValue="${"aspect_ratio"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
           <paper-input
-            label="Default Zoom"
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.map.default_zoom"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
             type="number"
             .value="${this._default_zoom}"
             .configValue="${"default_zoom"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
         </div>
-        <paper-toggle-button
+        <ha-switch
           ?checked="${this._dark_mode !== false}"
           .configValue="${"dark_mode"}"
           @change="${this._valueChanged}"
-          >Dark Mode?</paper-toggle-button
+          >${this.hass.localize(
+            "ui.panel.lovelace.editor.card.map.dark_mode"
+          )}</ha-switch
         >
         <hui-entity-editor
           .hass="${this.hass}"
           .entities="${this._configEntities}"
           @entities-changed="${this._entitiesValueChanged}"
         ></hui-entity-editor>
-        <h3>Geolocation Sources</h3>
+        <h3>
+          ${this.hass.localize(
+            "ui.panel.lovelace.editor.card.map.geo_location_sources"
+          )}
+        </h3>
         <div class="geo_location_sources">
           <hui-input-list-editor
-            inputLabel="Source"
+            inputLabel=${this.hass.localize(
+              "ui.panel.lovelace.editor.card.map.source"
+            )}
             .hass="${this.hass}"
             .value="${this._geo_location_sources}"
             .configValue="${"geo_location_sources"}"
@@ -146,30 +161,21 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       return;
     }
     const target = ev.target! as EditorTarget;
-    if (
-      target.configValue &&
-      ev.detail &&
-      this[`_${target.configValue}`] === ev.detail.value
-    ) {
+    if (target.configValue && this[`_${target.configValue}`] === target.value) {
       return;
     }
-    if (target.configValue && ev.detail) {
-      if (
-        ev.detail.value === "" ||
-        (target.type === "number" && isNaN(Number(ev.detail.value)))
-      ) {
-        delete this._config[target.configValue!];
-      } else {
-        let value: any = ev.detail.value;
-        if (target.type === "number") {
-          value = Number(value);
-        }
-        this._config = {
-          ...this._config,
-          [target.configValue]:
-            target.checked !== undefined ? target.checked : value,
-        };
-      }
+    let value: any = target.value;
+    if (target.type === "number") {
+      value = Number(value);
+    }
+    if (target.value === "" || (target.type === "number" && isNaN(value))) {
+      delete this._config[target.configValue!];
+    } else if (target.configValue) {
+      this._config = {
+        ...this._config,
+        [target.configValue]:
+          target.checked !== undefined ? target.checked : value,
+      };
     }
     fireEvent(this, "config-changed", { config: this._config });
   }
