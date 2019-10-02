@@ -63,7 +63,7 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
               value="{{eventType}}"
             ></paper-input>
             <paper-textarea
-              label="Event Data (YAML or JSON, optional)"
+              label="Event Data (YAML, optional)"
               value="{{eventData}}"
             ></paper-textarea>
             <mwc-button on-click="fireEvent" raised>Fire Event</mwc-button>
@@ -111,7 +111,7 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
       eventData = this.eventData ? yaml.safeLoad(this.eventData) : {};
     } catch (err) {
       /* eslint-disable no-alert */
-      alert("Error parsing YAML or JSON: " + err);
+      alert("Error parsing YAML: " + err);
       /* eslint-enable no-alert */
       return;
     }
