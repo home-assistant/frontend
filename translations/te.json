@@ -230,8 +230,8 @@
                 "ready": "రెడీ"
             },
             "query_stage": {
-                "initializing": "మొదటి దశ ({query_stage})",
-                "dead": "మృత స్థితి ({query_stage})"
+                "initializing": "సిద్ధం అవుతోంది ( {query_stage} )",
+                "dead": "మృత పరికరం ({query_stage})"
             }
         },
         "weather": {
@@ -262,13 +262,13 @@
             "armed": "భద్రంగా ఉంది",
             "disarmed": "భద్రత లేదు",
             "armed_home": "ఇల్లు భద్రం",
-            "armed_away": "ఇంట బయట భద్రత",
-            "armed_night": "రాత్రి పూట భద్రత",
+            "armed_away": "భద్రంగా ఉంది",
+            "armed_night": "భద్రంగా ఉంది",
             "pending": "నిలుపు",
             "arming": "భద్రించుట",
             "disarming": "భద్రత లేదు",
             "triggered": "ఊపందుకుంది",
-            "armed_custom_bypass": "ఇంటి భద్రత"
+            "armed_custom_bypass": "భద్రంగా ఉంది"
         },
         "device_tracker": {
             "home": "ఇంట్లో",

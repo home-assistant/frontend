@@ -17,7 +17,7 @@ import "./state-card-vacuum";
 import "./state-card-water_heater";
 import "./state-card-weblink";
 
-import stateCardType from "../common/entity/state_card_type";
+import { stateCardType } from "../common/entity/state_card_type";
 import dynamicContentUpdater from "../common/dom/dynamic_content_updater";
 
 class StateCardContent extends PolymerElement {

@@ -37,9 +37,30 @@
                 "off": "未検出",
                 "on": "検出"
             },
+            "motion": {
+                "on": "検出"
+            },
+            "occupancy": {
+                "off": "未検出",
+                "on": "検出"
+            },
+            "smoke": {
+                "off": "未検出"
+            },
+            "sound": {
+                "on": "検出"
+            },
+            "vibration": {
+                "off": "未検出",
+                "on": "検出"
+            },
             "safety": {
                 "off": "安全",
                 "on": "危険"
+            },
+            "presence": {
+                "off": "外出",
+                "on": "在宅"
             },
             "battery": {
                 "off": "通常",
@@ -96,6 +117,7 @@
         "group": {
             "off": "オフ",
             "on": "オン",
+            "home": "在宅",
             "ok": "OK"
         },
         "input_boolean": {
@@ -143,7 +165,8 @@
                 "ready": "準備完了"
             },
             "query_stage": {
-                "initializing": "初期化中({query_stage})"
+                "initializing": "初期化中 ( {query_stage} )",
+                "dead": " ({query_stage})"
             }
         },
         "weather": {
@@ -164,6 +187,10 @@
     "state_badge": {
         "default": {
             "unknown": "不明"
+        },
+        "device_tracker": {
+            "home": "在宅",
+            "not_home": "外出"
         }
     },
     "ui": {

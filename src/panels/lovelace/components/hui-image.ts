@@ -1,5 +1,3 @@
-import "@polymer/paper-toggle-button/paper-toggle-button";
-
 import { STATES_OFF } from "../../../common/const";
 
 import parseAspectRatio from "../../../common/util/parse-aspect-ratio";

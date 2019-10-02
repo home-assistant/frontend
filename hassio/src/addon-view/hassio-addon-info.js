@@ -2,19 +2,19 @@ import "@polymer/iron-icon/iron-icon";
 import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import "@polymer/paper-tooltip/paper-tooltip";
-import "@polymer/paper-toggle-button/paper-toggle-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../src/components/ha-label-badge";
 import "../../../src/components/ha-markdown";
 import "../../../src/components/buttons/ha-call-api-button";
+import "../../../src/components/ha-switch";
 import "../../../src/resources/ha-style";
+import "../components/hassio-card-content";
+
 import { EventsMixin } from "../../../src/mixins/events-mixin";
 import { navigate } from "../../../src/common/navigate";
-
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
-import "../components/hassio-card-content";
 
 const PERMIS_DESC = {
   rating: {
@@ -122,7 +122,7 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
           width: 16px;
           color: var(--secondary-text-color);
         }
-        paper-toggle-button {
+        ha-switch {
           display: inline;
         }
         iron-icon.running {
@@ -348,26 +348,26 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
           <template is="dom-if" if="[[addon.version]]">
             <div class="state">
               <div>Start on boot</div>
-              <paper-toggle-button
+              <ha-switch
                 on-change="startOnBootToggled"
                 checked="[[computeStartOnBoot(addon.boot)]]"
-              ></paper-toggle-button>
+              ></ha-switch>
             </div>
             <div class="state">
               <div>Auto update</div>
-              <paper-toggle-button
+              <ha-switch
                 on-change="autoUpdateToggled"
                 checked="[[addon.auto_update]]"
-              ></paper-toggle-button>
+              ></ha-switch>
             </div>
             <template is="dom-if" if="[[addon.ingress]]">
               <div class="state">
                 <div>Show in sidebar</div>
-                <paper-toggle-button
+                <ha-switch
                   on-change="panelToggled"
                   checked="[[addon.ingress_panel]]"
                   disabled="[[_computeCannotIngressSidebar(hass, addon)]]"
-                ></paper-toggle-button>
+                ></ha-switch>
                 <template is="dom-if" if="[[_computeCannotIngressSidebar(hass, addon)]]">
                   <span>This option requires Home Assistant 0.92 or later.</span>
                 </template>
@@ -381,10 +381,10 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
                   <paper-tooltip>Grant the add-on elevated system access.</paper-tooltip>
                 </span>
               </div>
-              <paper-toggle-button
+              <ha-switch
                 on-change="protectionToggled"
                 checked="[[addon.protected]]"
-              ></paper-toggle-button>
+              ></ha-switch>
             </div>
           </template>
         </div>

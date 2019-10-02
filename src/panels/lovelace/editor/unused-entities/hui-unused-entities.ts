@@ -18,15 +18,15 @@ import "../../../../components/entity/state-badge";
 import "../../../../components/ha-relative-time";
 import "../../../../components/ha-icon";
 
-import "../../../../components/ha-data-table";
+import "../../../../components/data-table/ha-data-table";
 // tslint:disable-next-line
 import {
   SelectionChangedEvent,
   DataTabelColumnContainer,
-} from "../../../../components/ha-data-table";
+} from "../../../../components/data-table/ha-data-table";
 
-import computeStateName from "../../../../common/entity/compute_state_name";
-import computeDomain from "../../../../common/entity/compute_domain";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import { computeUnusedEntities } from "../../common/compute-unused-entities";

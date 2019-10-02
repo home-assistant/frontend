@@ -11,8 +11,7 @@ import "../components/hui-generic-entity-row";
 import "../../../components/entity/ha-entity-toggle";
 import "../components/hui-warning";
 
-import computeStateDisplay from "../../../common/entity/compute_state_display";
-
+import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";

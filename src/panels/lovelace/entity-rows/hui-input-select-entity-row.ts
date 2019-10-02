@@ -15,7 +15,7 @@ import "../../../components/ha-paper-dropdown-menu";
 import "../../../components/entity/state-badge";
 import "../components/hui-warning";
 
-import computeStateName from "../../../common/entity/compute_state_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import { HomeAssistant, InputSelectEntity } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";

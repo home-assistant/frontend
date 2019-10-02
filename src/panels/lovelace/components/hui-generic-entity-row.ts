@@ -1,4 +1,4 @@
-import computeStateName from "../../../common/entity/compute_state_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import {
   LitElement,
   html,
@@ -51,6 +51,7 @@ class HuiGenericEntityRow extends LitElement {
         .hass=${this.hass}
         .stateObj=${stateObj}
         .overrideIcon=${this.config.icon}
+        .overrideImage=${this.config.image}
       ></state-badge>
       <div class="flex">
         <div class="info">

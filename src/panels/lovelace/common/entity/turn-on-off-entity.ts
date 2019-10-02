@@ -1,4 +1,4 @@
-import computeDomain from "../../../../common/entity/compute_domain";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 import { HomeAssistant } from "../../../../types";
 
 export const turnOnOffEntity = (

@@ -1,6 +1,6 @@
 import { LovelaceCardConfig, ActionConfig } from "../../../data/lovelace";
 import { Condition } from "../common/validate-condition";
-import { EntityConfig } from "../entity-rows/types";
+import { EntityConfig, EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceElementConfig } from "../elements/types";
 import { HuiImage } from "../components/hui-image";
 
@@ -50,8 +50,8 @@ export interface EntityButtonCardConfig extends LovelaceCardConfig {
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
   type: "entity-filter";
-  entities: Array<EntityConfig | string>;
-  state_filter: string[];
+  entities: Array<EntityFilterEntityConfig | string>;
+  state_filter: Array<{ key: string } | string>;
   card: Partial<LovelaceCardConfig>;
   show_empty?: boolean;
 }
@@ -107,6 +107,7 @@ export interface LightCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
   theme?: string;
+  icon?: string;
 }
 
 export interface MapCardConfig extends LovelaceCardConfig {
@@ -143,6 +144,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: {};
+  state_filter: string[];
   aspect_ratio?: string;
   entity?: string;
   elements: LovelaceElementConfig[];
@@ -155,6 +157,7 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: {};
+  state_filter: string[];
   aspect_ratio?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
@@ -169,6 +172,7 @@ export interface PictureGlanceCardConfig extends LovelaceCardConfig {
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: {};
+  state_filter: string[];
   aspect_ratio?: string;
   entity?: string;
   tap_action?: ActionConfig;

@@ -72,7 +72,7 @@ documentContainer.innerHTML = `<custom-style>
         from paper-styles/color.html to here.
       */
 
-      --paper-grey-50: #fafafa; /* default for: --paper-toggle-button-unchecked-button-color */
+      --paper-grey-50: #fafafa; /* default for: --mwc-switch-unchecked-button-color */
       --paper-grey-200: #eeeeee;  /* for ha-date-picker-style */
       --paper-grey-500: #9e9e9e;  /* --label-badge-grey */
 

@@ -45,6 +45,11 @@ export interface NavigateActionConfig {
   navigation_path: string;
 }
 
+export interface UrlActionConfig {
+  action: "url";
+  url_path: string;
+}
+
 export interface MoreInfoActionConfig {
   action: "more-info";
 }
@@ -57,6 +62,7 @@ export type ActionConfig =
   | ToggleActionConfig
   | CallServiceActionConfig
   | NavigateActionConfig
+  | UrlActionConfig
   | MoreInfoActionConfig
   | NoActionConfig;
 

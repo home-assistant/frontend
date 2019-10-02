@@ -5,9 +5,9 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../components/ha-card";
 import "../components/ha-markdown";
 
-import computeStateName from "../common/entity/compute_state_name";
+import { computeStateName } from "../common/entity/compute_state_name";
 import LocalizeMixin from "../mixins/localize-mixin";
-import computeObjectId from "../common/entity/compute_object_id";
+import { computeObjectId } from "../common/entity/compute_object_id";
 
 /*
  * @appliesMixin LocalizeMixin

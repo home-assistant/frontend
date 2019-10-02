@@ -3,7 +3,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../components/entity/state-badge";
 
-import computeStateName from "../common/entity/compute_state_name";
+import { computeStateName } from "../common/entity/compute_state_name";
 
 class StateCardWeblink extends PolymerElement {
   static get template() {
