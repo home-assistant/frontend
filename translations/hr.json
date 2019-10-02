@@ -233,7 +233,7 @@
                 "ready": "Spreman"
             },
             "query_stage": {
-                "initializing": "Inicijalizacija ({query_stage})",
+                "initializing": "Inicijalizacija ( {query_stage} )",
                 "dead": "Mrtav ({query_stage})"
             }
         },
@@ -251,7 +251,8 @@
             "snowy-rainy": "Snježno, kišno",
             "sunny": "Sunčano",
             "windy": "Vjetrovito",
-            "windy-variant": "Vjetrovito"
+            "windy-variant": "Vjetrovito",
+            "exceptional": "Izuzetan"
         },
         "vacuum": {
             "cleaning": "Čišćenje",
@@ -290,7 +291,7 @@
             "arming": "Aktiviranje",
             "disarming": "Deaktiviraj",
             "triggered": "Okinut",
-            "armed_custom_bypass": "Aktiviran"
+            "armed_custom_bypass": "Aktivirano"
         },
         "device_tracker": {
             "home": "Doma",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Informacije"
+                    },
+                    "logs": {
+                        "title": "Logovi"
                     }
                 }
             },
@@ -498,6 +502,9 @@
                                     "event": "Događaj:",
                                     "enter": "Ulaz",
                                     "leave": "Izlaz"
+                                },
+                                "device": {
+                                    "label": "Uređaj"
                                 }
                             },
                             "learn_more": "Saznajte više o okidačima"
@@ -544,6 +551,9 @@
                                     "label": "Zona",
                                     "entity": "Entitet sa lokacijom",
                                     "zone": "Zona"
+                                },
+                                "device": {
+                                    "label": "Uređaj"
                                 }
                             },
                             "learn_more": "Saznajte više o uvjetima"
@@ -578,6 +588,9 @@
                                     "label": "Pokreni događaj",
                                     "event": "Event:",
                                     "service_data": "Servisni podaci"
+                                },
+                                "device_id": {
+                                    "label": "Uređaj"
                                 }
                             },
                             "learn_more": "Saznajte više o akcijama"
@@ -696,7 +709,7 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Upravljanje ZigBee Home Automation mrežom",
+                    "description": "Upravljanje Zigbee Home Automation mrežom",
                     "services": {
                         "reconfigure": "Ponovno konfiguriaj ZHA uređaj (liječenje uređaja). Upotrijebite ovo ako imate problema s uređajem. Ako je uređaj u pitanju uređaj za bateriju, provjerite je li budan i prihvaća naredbe kada koristite ovu uslugu.",
                         "updateDeviceName": "Postavite prilagođeni naziv za ovaj uređaj u registru uređaja.",
@@ -708,7 +721,7 @@
                         "update_name_button": "Ažuriraj naziv"
                     },
                     "add_device_page": {
-                        "header": "ZigBee Home Automation-Dodaj uređaje",
+                        "header": "Zigbee Home Automation-Dodaj uređaje",
                         "spinner": "Traženje ZHA ZigBee uređaja...",
                         "discovery_text": "Pronađeni uređaji će se pojaviti ovdje. Slijedite upute za uređaj (e) i postavite uređaj (e) u način uparivanja."
                     }
@@ -749,7 +762,7 @@
                         "delete": "IZBRISATI",
                         "update": "AŽURIRANJE",
                         "enabled_label": "Aktiviraj entitet",
-                        "enabled_cause": "Deaktivirano zbog {uzrok}.",
+                        "enabled_cause": "Deaktivirano zbog {cause}.",
                         "enabled_description": "Onemogućeni entiteti neće biti dodani u Home Assistant."
                     }
                 },
@@ -787,9 +800,15 @@
                             "heading": "Upravljanje poslužiteljem",
                             "introduction": "Kontrolirajte vaš Home Assistant server ... iz Home Assistant.",
                             "restart": "Ponovno pokretanje",
-                            "stop": "Stop"
+                            "stop": "Stop",
+                            "confirm_restart": "Jeste li sigurni da želite ponovo pokrenuti Home Assistant?",
+                            "confirm_stop": "Jeste li sigurni da želite zaustaviti Home Assostant?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "uređaji",
+                    "description": "Upravljanje povezanim uređajima"
                 }
             },
             "profile": {
@@ -912,7 +931,7 @@
                                     "data": {
                                         "code": "Kôd autentifikacije s dva faktora"
                                     },
-                                    "description": "Otvori **{mfa_module_name}** na svojem uređaju kao bi vidio kod dvofaktorske autentikacije i provjerio svoj identitet:"
+                                    "description": "Otvorite ** {mfa_module_name} ** na svojem uređaju da biste vidjeli kôd za autentifikaciju s dva faktora i potvrdili svoj identitet:"
                                 }
                             },
                             "error": {
@@ -1054,6 +1073,10 @@
                         "save": "Spremi",
                         "unsaved_changes": "Nespremljene promjene",
                         "saved": "Spremljeno"
+                    },
+                    "edit_lovelace": {
+                        "header": "Naslov vašeg Lovelace UI",
+                        "explanation": "Ovaj naslov prikazan je iznad svih vaših prikaza u Lovelace."
                     }
                 },
                 "menu": {
@@ -1075,7 +1098,7 @@
             "page-demo": {
                 "cards": {
                     "demo": {
-                        "demo_by": " {name}",
+                        "demo_by": "od {name}",
                         "next_demo": "Sljedeći demo",
                         "introduction": "Dobrodošli kući! Stigli ste do Home Assistant demo gdje prikazujemo najbolja korisnička sučelja koje je kreirala naša zajednica.",
                         "learn_more": "Saznajte više o Home Assistant"
@@ -1123,13 +1146,14 @@
         "common": {
             "loading": "Učitavam",
             "cancel": "Otkazati",
-            "save": "Spremi"
+            "save": "Spremi",
+            "successfully_saved": "Uspješno spremljeno"
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {dan}\n  other {dani}\n}",
             "week": "{count} {count, plural,\n  one {tjedan}\n  other {tjedni}\n}",
             "second": "{count} {count, plural,\n  one {sekunde}\n  other {sekunde}\n}",
-            "minute": "{broj} {broj, množina, jedna {minuta} druge {minute}}",
+            "minute": "{broj} {broj, množina, jedna {minuta}, druge {minute}}",
             "hour": "{broj} {broj, množina, jedan {sat} drugi {sati}}"
         },
         "login-form": {
@@ -1199,7 +1223,9 @@
             "fan": {
                 "speed": "Brzina",
                 "oscillate": "Oscilirati",
-                "direction": "Smjer"
+                "direction": "Smjer",
+                "forward": "Naprijed",
+                "reverse": "Nazad"
             },
             "light": {
                 "brightness": "Svjetlina",
@@ -1244,6 +1270,14 @@
                 "target_temperature": "Ciljana temperatura",
                 "operation": "Operacija",
                 "away_mode": "Način rada: Odsutan"
+            },
+            "timer": {
+                "actions": {
+                    "start": "početak",
+                    "pause": "pauza",
+                    "cancel": "otkaži",
+                    "finish": "Završiti"
+                }
             }
         },
         "components": {
@@ -1264,7 +1298,7 @@
                     "minute": "{count} {count, plural,\n  one {minuta}\n  other {minuta}\n}",
                     "hour": "{count} {count, plural,\n  one {sat}\n  other {sati}\n}",
                     "day": "{count} {count, plural,\n  one {dan}\n  other {dana}\n}",
-                    "week": "{count} {count, plural,\n  jedan {week}\n  ostali {weeks}\n}"
+                    "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
                 }
             },
             "history_charts": {
@@ -1310,6 +1344,20 @@
                 "title": "Mogućnosti sustava",
                 "enable_new_entities_label": "Aktiviraj novododane entitete.",
                 "enable_new_entities_description": "Ako nije aktivno, novootkriveni entiteti neće biti automatski dodani u Home Assistant."
+            },
+            "zha_device_info": {
+                "manuf": "od {manufacturer}",
+                "no_area": "Nema područja",
+                "services": {
+                    "reconfigure": "Ponovno konfiguriaj ZHA uređaj (liječenje uređaja). Upotrijebite ovo ako imate problema s uređajem. Ako je uređaj u pitanju uređaj za bateriju, provjerite je li budan i prihvaća naredbe kada koristite ovu uslugu.",
+                    "updateDeviceName": "Postavite prilagođeni naziv za ovaj uređaj u registru uređaja.",
+                    "remove": "Uklonite uređaj iz ZigBee mreže."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Korisničko ime",
+                    "area_picker_label": "Područje",
+                    "update_name_button": "Ažuriraj naziv"
+                }
             }
         },
         "auth_store": {

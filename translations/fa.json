@@ -30,7 +30,7 @@
             "armed_custom_bypass": "بایگانی سفارشی مسلح"
         },
         "automation": {
-            "off": "غیرفعال",
+            "off": "خاموش",
             "on": "فعال"
         },
         "binary_sensor": {
@@ -226,8 +226,8 @@
                 "ready": "آماده"
             },
             "query_stage": {
-                "initializing": "در حال آماده شدن ({query_stage})",
-                "dead": "قطع ({query_stage})"
+                "initializing": "در حال آماده شدن ( {query_stage} )",
+                "dead": "مرده ({query_stage})"
             }
         },
         "weather": {
@@ -272,7 +272,7 @@
             "disarmed": "غیر مسلح",
             "armed_home": "تجهیزات خانه",
             "armed_away": "تجهیزات بیرون",
-            "armed_night": "تجهیزات شب",
+            "armed_night": "مصلح شده",
             "pending": "در انتظار",
             "arming": "در حال مسلح کردن",
             "disarming": "در حال غیر مسلح کردن",
@@ -745,10 +745,7 @@
                         "legacy_api_password": {
                             "step": {
                                 "mfa": {
-                                    "data": {
-                                        "code": "تایید ۲ مرحله ای کد"
-                                    },
-                                    "description": "** {mfa_module_name} ** را بر روی دستگاه خود باز کنید تا کد تأیید اعتبار دو نفره خود را ببینید و هویت خود را تأیید کنید:"
+                                    "description": "باز کردن **{mfa_module_name}** * * * در دستگاه خود را برای مشاهده شما دو فاکتور تأیید هویت کد و هویت خود را تایید کنید:"
                                 }
                             },
                             "error": {
