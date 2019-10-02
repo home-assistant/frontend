@@ -7,6 +7,7 @@ import {
   property,
 } from "lit-element";
 import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 
 import { HomeAssistant } from "../../../types";
@@ -19,6 +20,7 @@ import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-loading-screen";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
+import "../../../components/ha-switch";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { computeDomain } from "../../../common/entity/compute_domain";
@@ -30,11 +32,14 @@ import {
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { compare } from "../../../common/string/compare";
 import { classMap } from "lit-html/directives/class-map";
+// tslint:disable-next-line
+import { HaSwitch } from "../../../components/ha-switch";
 
 class HaConfigEntityRegistry extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public isWide?: boolean;
   @property() private _entities?: EntityRegistryEntry[];
+  @property() private _showDisabled = false;
   private _unsubEntities?: UnsubscribeFunc;
 
   public disconnectedCallback() {
@@ -78,7 +83,17 @@ class HaConfigEntityRegistry extends LitElement {
             </a>
           </span>
           <ha-card>
+            <paper-item>
+              <ha-switch
+                ?checked=${this._showDisabled}
+                @change=${this._showDisabledChanged}
+                >Show disabled entities</ha-switch
+              ></paper-item
+            >
             ${this._entities.map((entry) => {
+              if (!this._showDisabled && entry.disabled_by) {
+                return "";
+              }
               const state = this.hass!.states[entry.entity_id];
               return html`
                 <paper-icon-item
@@ -135,6 +150,10 @@ class HaConfigEntityRegistry extends LitElement {
         }
       );
     }
+  }
+
+  private _showDisabledChanged(ev: Event) {
+    this._showDisabled = (ev.target as HaSwitch).checked;
   }
 
   private _openEditEntry(ev: MouseEvent): void {
