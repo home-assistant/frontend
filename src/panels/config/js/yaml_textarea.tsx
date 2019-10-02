@@ -11,7 +11,7 @@ const isEmpty = (obj) => {
   return true;
 };
 
-export default class JSONTextArea extends Component<any, any> {
+export default class YAMLTextArea extends Component<any, any> {
   constructor(props) {
     super(props);
     this.state = {
