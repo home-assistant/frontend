@@ -76,9 +76,7 @@ export class HuiEditView extends LitElement {
         this.viewIndex
       ];
       this._config = viewConfig;
-      this._badges = badges
-        ? processEditorEntities(badges.filter(Boolean))
-        : [];
+      this._badges = badges ? processEditorEntities(badges) : [];
       this._cards = cards;
     }
 
