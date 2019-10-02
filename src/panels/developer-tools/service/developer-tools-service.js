@@ -111,7 +111,7 @@ class HaPanelDevService extends PolymerElement {
           </template>
           <paper-textarea
             always-float-label
-            label="Service Data (YAML or JSON, optional)"
+            label="Service Data (YAML, optional)"
             value="{{serviceData}}"
             autocapitalize="none"
             autocomplete="off"
@@ -121,7 +121,7 @@ class HaPanelDevService extends PolymerElement {
             Call Service
           </mwc-button>
           <template is="dom-if" if="[[!validJSON]]">
-            <span class="error">Invalid YAML or JSON</span>
+            <span class="error">Invalid YAML</span>
           </template>
         </div>
 
