@@ -5,6 +5,8 @@ import "@polymer/paper-input/paper-textarea";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
+import yaml from "js-yaml";
+
 import "../../../components/entity/ha-entity-picker";
 import "../../../resources/ha-style";
 import { EventsMixin } from "../../../mixins/events-mixin";
@@ -88,7 +90,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
           class="state-input"
         ></paper-input>
         <paper-textarea
-          label="State attributes (JSON, optional)"
+          label="State attributes (YAML, optional)"
           autocapitalize="none"
           autocomplete="off"
           spellcheck="false"
@@ -211,14 +213,14 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
     var state = ev.model.entity;
     this._entityId = state.entity_id;
     this._state = state.state;
-    this._stateAttributes = JSON.stringify(state.attributes, null, "  ");
+    this._stateAttributes = yaml.safeDump(state.attributes);
     ev.preventDefault();
   }
 
   entityIdChanged() {
     var state = this.hass.states[this._entityId];
     this._state = state.state;
-    this._stateAttributes = JSON.stringify(state.attributes, null, "  ");
+    this._stateAttributes = yaml.safeDump(state.attributes);
   }
 
   entityMoreInfo(ev) {
@@ -228,12 +230,12 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
 
   handleSetState() {
     var attr;
-    var attrRaw = this._stateAttributes.replace(/^\s+|\s+$/g, "");
+
     try {
-      attr = attrRaw ? JSON.parse(attrRaw) : {};
+      attr = this._stateAttributes ? yaml.safeLoad(this._stateAttributes) : {};
     } catch (err) {
       /* eslint-disable no-alert */
-      alert("Error parsing JSON: " + err);
+      alert("Error parsing YAML: " + err);
       /* eslint-enable no-alert */
       return;
     }

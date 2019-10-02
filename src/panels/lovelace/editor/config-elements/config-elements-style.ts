@@ -2,8 +2,8 @@ import { html } from "lit-element";
 
 export const configElementStyle = html`
   <style>
-    paper-toggle-button {
-      padding-top: 16px;
+    ha-switch {
+      padding: 16px 0;
     }
     .side-by-side {
       display: flex;

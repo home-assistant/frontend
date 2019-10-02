@@ -7,23 +7,23 @@ import {
   property,
 } from "lit-element";
 import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 
 import { HomeAssistant } from "../../../types";
 import {
   EntityRegistryEntry,
   computeEntityRegistryName,
-  updateEntityRegistryEntry,
-  removeEntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../../data/entity_registry";
 import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-loading-screen";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
-import domainIcon from "../../../common/entity/domain_icon";
-import stateIcon from "../../../common/entity/state_icon";
-import computeDomain from "../../../common/entity/compute_domain";
+import "../../../components/ha-switch";
+import { domainIcon } from "../../../common/entity/domain_icon";
+import { stateIcon } from "../../../common/entity/state_icon";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import "../ha-config-section";
 import {
   showEntityRegistryDetailDialog,
@@ -32,12 +32,23 @@ import {
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { compare } from "../../../common/string/compare";
 import { classMap } from "lit-html/directives/class-map";
+// tslint:disable-next-line
+import { HaSwitch } from "../../../components/ha-switch";
+import memoize from "memoize-one";
 
 class HaConfigEntityRegistry extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public isWide?: boolean;
   @property() private _entities?: EntityRegistryEntry[];
+  @property() private _showDisabled = false;
   private _unsubEntities?: UnsubscribeFunc;
+
+  private _filteredEntities = memoize(
+    (entities: EntityRegistryEntry[], showDisabled: boolean) =>
+      showDisabled
+        ? entities
+        : entities.filter((entity) => !Boolean(entity.disabled_by))
+  );
 
   public disconnectedCallback() {
     super.disconnectedCallback();
@@ -80,40 +91,53 @@ class HaConfigEntityRegistry extends LitElement {
             </a>
           </span>
           <ha-card>
-            ${this._entities.map((entry) => {
-              const state = this.hass!.states[entry.entity_id];
-              return html`
-                <paper-icon-item
-                  @click=${this._openEditEntry}
-                  .entry=${entry}
-                  class=${classMap({ "disabled-entry": !!entry.disabled_by })}
-                >
-                  <ha-icon
-                    slot="item-icon"
-                    .icon=${state
-                      ? stateIcon(state)
-                      : domainIcon(computeDomain(entry.entity_id))}
-                  ></ha-icon>
-                  <paper-item-body two-line>
-                    <div class="name">
-                      ${computeEntityRegistryName(this.hass!, entry) ||
-                        `(${this.hass!.localize("state.default.unavailable")})`}
+            <paper-item>
+              <ha-switch
+                ?checked=${this._showDisabled}
+                @change=${this._showDisabledChanged}
+                >${this.hass.localize(
+                  "ui.panel.config.entity_registry.picker.show_disabled"
+                )}</ha-switch
+              ></paper-item
+            >
+            ${this._filteredEntities(this._entities, this._showDisabled).map(
+              (entry) => {
+                const state = this.hass!.states[entry.entity_id];
+                return html`
+                  <paper-icon-item
+                    @click=${this._openEditEntry}
+                    .entry=${entry}
+                    class=${classMap({ "disabled-entry": !!entry.disabled_by })}
+                  >
+                    <ha-icon
+                      slot="item-icon"
+                      .icon=${state
+                        ? stateIcon(state)
+                        : domainIcon(computeDomain(entry.entity_id))}
+                    ></ha-icon>
+                    <paper-item-body two-line>
+                      <div class="name">
+                        ${computeEntityRegistryName(this.hass!, entry) ||
+                          `(${this.hass!.localize(
+                            "state.default.unavailable"
+                          )})`}
+                      </div>
+                      <div class="secondary entity-id">
+                        ${entry.entity_id}
+                      </div>
+                    </paper-item-body>
+                    <div class="platform">
+                      ${entry.platform}
+                      ${entry.disabled_by
+                        ? html`
+                            <br />(disabled)
+                          `
+                        : ""}
                     </div>
-                    <div class="secondary entity-id">
-                      ${entry.entity_id}
-                    </div>
-                  </paper-item-body>
-                  <div class="platform">
-                    ${entry.platform}
-                    ${entry.disabled_by
-                      ? html`
-                          <br />(disabled)
-                        `
-                      : ""}
-                  </div>
-                </paper-icon-item>
-              `;
-            })}
+                  </paper-icon-item>
+                `;
+              }
+            )}
           </ha-card>
         </ha-config-section>
       </hass-subpage>
@@ -139,39 +163,14 @@ class HaConfigEntityRegistry extends LitElement {
     }
   }
 
+  private _showDisabledChanged(ev: Event) {
+    this._showDisabled = (ev.target as HaSwitch).checked;
+  }
+
   private _openEditEntry(ev: MouseEvent): void {
     const entry = (ev.currentTarget! as any).entry;
     showEntityRegistryDetailDialog(this, {
       entry,
-      updateEntry: async (updates) => {
-        const updated = await updateEntityRegistryEntry(
-          this.hass!,
-          entry.entity_id,
-          updates
-        );
-        this._entities = this._entities!.map((ent) =>
-          ent === entry ? updated : ent
-        );
-      },
-      removeEntry: async () => {
-        if (
-          !confirm(`Are you sure you want to delete this entry?
-
-Deleting an entry will not remove the entity from Home Assistant. To do this, you will need to remove the integration "${
-            entry.platform
-          }" from Home Assistant.`)
-        ) {
-          return false;
-        }
-
-        try {
-          await removeEntityRegistryEntry(this.hass!, entry.entity_id);
-          this._entities = this._entities!.filter((ent) => ent !== entry);
-          return true;
-        } catch (err) {
-          return false;
-        }
-      },
     });
   }
 

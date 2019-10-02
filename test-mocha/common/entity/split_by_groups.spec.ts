@@ -1,6 +1,6 @@
 import * as assert from "assert";
 
-import splitByGroups from "../../../src/common/entity/split_by_groups";
+import { splitByGroups } from "../../../src/common/entity/split_by_groups";
 
 import { createEntities, createGroup, entityMap } from "./test_util";
 

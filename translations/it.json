@@ -233,8 +233,8 @@
                 "ready": "Pronto"
             },
             "query_stage": {
-                "initializing": "Inizializzazione ({query_stage})",
-                "dead": "Terminato ({query_stage})"
+                "initializing": "Avvio ( {query_stage} )",
+                "dead": "Disattivo ({query_stage})"
             }
         },
         "weather": {
@@ -362,7 +362,7 @@
                                 "edit_requires_storage": "Editor disabilitato perché la configurazione è memorizzata in configuration.yaml.",
                                 "location_name": "Nome della tua installazione di Home Assistant",
                                 "latitude": "Latitudine",
-                                "longitude": "Logitudine",
+                                "longitude": "Longitudine",
                                 "elevation": "Altitudine",
                                 "elevation_meters": "Metri",
                                 "time_zone": "Fuso orario",
@@ -596,7 +596,7 @@
                             "learn_more": "Per saperne di più sulle azioni"
                         },
                         "load_error_not_editable": "Solo le automazioni in automations.yaml sono modificabili.",
-                        "load_error_unknown": "Errore durante il caricamento dell'automazione ( {err_no} )."
+                        "load_error_unknown": "Errore durante il caricamento dell'automazione ({err_no})."
                     }
                 },
                 "script": {
@@ -681,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "Integrazioni",
-                    "description": "Gestisci dispositivi e servizi connessi",
+                    "description": "Gestire e configurare le integrazioni",
                     "discovered": "Scoperto",
                     "configured": "Configurato",
                     "new": "Configura una nuova integrazione",
@@ -713,7 +713,7 @@
                     "services": {
                         "reconfigure": "Riconfigurare il dispositivo ZHA (dispositivo di guarigione). Utilizzare questa opzione se si verificano problemi con il dispositivo. Se il dispositivo in questione è un dispositivo alimentato a batteria, assicurarsi che sia sveglio e che accetti i comandi quando si utilizza questo servizio.",
                         "updateDeviceName": "Imposta un nome personalizzato per questo dispositivo nel registro dispositivi.",
-                        "remove": "Rimuovi un dispositivo dalla rete ZigBee."
+                        "remove": "Rimuovi un dispositivo dalla rete Zigbee."
                     },
                     "device_card": {
                         "device_name_placeholder": "Nome assegnato dall'utente",
@@ -805,6 +805,10 @@
                             "confirm_stop": "Sei sicuro di voler fermare Home Assistant?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Dispositivi",
+                    "description": "Gestisci i dispositivi collegati"
                 }
             },
             "profile": {
@@ -853,7 +857,7 @@
                     "last_used": "Utilizzato l'ultima volta il {date} da {location}",
                     "not_used": "Non è mai stato usato"
                 },
-                "current_user": "Sei attualmente connesso come {fullName} .",
+                "current_user": "Sei attualmente connesso come {fullName}.",
                 "is_owner": "Sei un proprietario.",
                 "change_password": {
                     "header": "Cambia password",
@@ -1001,7 +1005,7 @@
                     "finish": "Finire"
                 },
                 "core-config": {
-                    "intro": "Salve {name} , benvenuto su Home Assistant. Come vorresti nominare la tua casa?",
+                    "intro": "Salve {name}, benvenuto su Home Assistant. Come vorresti nominare la tua casa?",
                     "intro_location": "Vorremmo sapere dove vivete. Queste informazioni aiuteranno a visualizzare informazioni e automazioni basate sul sole. Questi dati non vengono mai condivisi al di fuori della vostra rete.",
                     "intro_location_detect": "Possiamo aiutarti a compilare queste informazioni effettuando una richiesta una volta a un servizio esterno.",
                     "location_name_default": "Casa",
@@ -1347,7 +1351,7 @@
                 "services": {
                     "reconfigure": "Riconfigurare il dispositivo ZHA (dispositivo di cura). Utilizzare questa opzione se riscontri problemi con il dispositivo. Se il dispositivo in questione è un dispositivo alimentato a batteria, assicurarsi che sia attivo e che accetti i comandi quando si utilizza questo servizio.",
                     "updateDeviceName": "Imposta un nome personalizzato per questo dispositivo nel registro dispositivi.",
-                    "remove": "Rimuovi un dispositivo dalla rete ZigBee."
+                    "remove": "Rimuovi un dispositivo dalla rete Zigbee."
                 },
                 "zha_device_card": {
                     "device_name_placeholder": "Nome assegnato dall'utente",
@@ -1432,7 +1436,7 @@
                 "boost": "Boost",
                 "comfort": "Comfort",
                 "home": "Casa",
-                "sleep": "Sleep",
+                "sleep": "Dormire",
                 "activity": "Attività"
             },
             "hvac_action": {

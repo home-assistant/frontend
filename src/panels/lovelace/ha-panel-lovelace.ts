@@ -249,7 +249,17 @@ class LovelacePanel extends LitElement {
     this._setLovelaceConfig(conf, confMode);
   }
 
+  private _checkLovelaceConfig(config: LovelaceConfig) {
+    // Somehow there can be badges with value null, we remove those
+    config.views.forEach((view) => {
+      if (view.badges) {
+        view.badges = view.badges.filter(Boolean);
+      }
+    });
+  }
+
   private _setLovelaceConfig(config: LovelaceConfig, mode: Lovelace["mode"]) {
+    this._checkLovelaceConfig(config);
     this.lovelace = {
       config,
       mode,
@@ -273,6 +283,7 @@ class LovelacePanel extends LitElement {
       },
       saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
         const { config: previousConfig, mode: previousMode } = this.lovelace!;
+        this._checkLovelaceConfig(newConfig);
         try {
           // Optimistic update
           this._updateLovelace({

@@ -29,7 +29,7 @@ class HaPickThemeRow extends LocalizeMixin(EventsMixin(PolymerElement)) {
             [[localize('ui.panel.profile.themes.error_no_theme')]]
           </template>
           <a
-            href="https://www.home-assistant.io/components/frontend/#defining-themes"
+            href="https://www.home-assistant.io/integrations/frontend/#defining-themes"
             target="_blank"
             >[[localize('ui.panel.profile.themes.link_promo')]]</a
           >

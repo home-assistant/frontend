@@ -1,6 +1,6 @@
 import * as assert from "assert";
 
-import getGroupEntities from "../../../src/common/entity/get_group_entities";
+import { getGroupEntities } from "../../../src/common/entity/get_group_entities";
 
 import { createEntities, createGroup, entityMap } from "./test_util";
 

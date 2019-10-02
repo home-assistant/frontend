@@ -1,5 +1,5 @@
 import { HomeAssistant } from "../types";
-import computeObjectId from "../common/entity/compute_object_id";
+import { computeObjectId } from "../common/entity/compute_object_id";
 
 export interface EventAction {
   event: string;

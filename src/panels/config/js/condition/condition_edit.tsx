@@ -4,6 +4,7 @@ import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
 
 import DeviceCondition from "./device";
+import LogicalCondition from "./logical";
 import NumericStateCondition from "./numeric_state";
 import StateCondition from "./state";
 import SunCondition from "./sun";
@@ -12,9 +13,11 @@ import TimeCondition from "./time";
 import ZoneCondition from "./zone";
 
 const TYPES = {
+  and: LogicalCondition,
   device: DeviceCondition,
-  state: StateCondition,
   numeric_state: NumericStateCondition,
+  or: LogicalCondition,
+  state: StateCondition,
   sun: SunCondition,
   template: TemplateCondition,
   time: TimeCondition,
@@ -23,7 +26,7 @@ const TYPES = {
 
 const OPTIONS = Object.keys(TYPES).sort();
 
-export default class ConditionRow extends Component<any> {
+export default class ConditionEdit extends Component<any> {
   constructor() {
     super();
 

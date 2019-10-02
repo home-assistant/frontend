@@ -233,7 +233,7 @@
                 "ready": "Sẵn sàng"
             },
             "query_stage": {
-                "initializing": "Đang khởi tạo ({query_stage})",
+                "initializing": "Khởi tạo ( {query_stage} )",
                 "dead": "Đã tắt ({query_stage})"
             }
         },
@@ -284,13 +284,13 @@
             "armed": "VT",
             "disarmed": "Vô hiệu hoá",
             "armed_home": "Đã kích hoạt",
-            "armed_away": "Đã kích hoạt",
-            "armed_night": "Đã kích hoạt",
+            "armed_away": "VT",
+            "armed_night": "VT",
             "pending": "Chờ",
             "arming": "Đang VT",
             "disarming": "Giải giáp",
             "triggered": "Kích hoạt",
-            "armed_custom_bypass": "Đã kích hoạt"
+            "armed_custom_bypass": "VT"
         },
         "device_tracker": {
             "home": "Ở nhà",
@@ -355,7 +355,7 @@
                             "header": "Cấu hình và kiểm soát máy chủ",
                             "introduction": "Thay đổi cấu hình của bạn có thể là một quá trình mệt mỏi. Chúng tôi biết. Phần này sẽ cố gắng làm cho việc đó dễ dàng hơn.",
                             "core_config": {
-                                "edit_requires_storage": "Trình chỉnh sửa bị vô hiệu hóa do cấu hình được lưu trữ trong configure.yaml.",
+                                "edit_requires_storage": "Trình chỉnh sửa bị vô hiệu hóa do cấu hình được lưu trữ trong configuration.yaml.",
                                 "location_name": "Tên cài đặt Home Assistant của bạn",
                                 "latitude": "Vĩ độ",
                                 "longitude": "Kinh độ",
@@ -666,7 +666,7 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Quản lý mạng ZigBee Home Automation",
+                    "description": "Quản lý mạng Zigbee Home Automation",
                     "services": {
                         "reconfigure": "Cấu hình lại thiết bị ZHA (chữa thiết bị). Sử dụng điều này nếu bạn gặp vấn đề với thiết bị. Nếu thiết bị được đề cập là thiết bị chạy bằng pin, vui lòng đảm bảo thiết bị đã hoạt động và chấp nhận lệnh khi bạn sử dụng dịch vụ này.",
                         "updateDeviceName": "Đặt tên tùy chỉnh cho thiết bị này trong sổ đăng ký thiết bị."
@@ -731,7 +731,7 @@
                             "invalid": "Cấu hình không hợp lệ"
                         },
                         "reloading": {
-                            "heading": "Nạp lại Cấu hình ",
+                            "heading": "Nạp lại Cấu hình",
                             "introduction": "Một số phần của Home Assistant có thể tải lại mà không yêu cầu khởi động lại. Nhấn nút tải lại sẽ gỡ bỏ cấu hình hiện tại của nó và tải một cấu hình mới.",
                             "core": "Tải lại lõi",
                             "group": "Tải lại nhóm",
@@ -867,7 +867,7 @@
                                     "data": {
                                         "code": "Mã xác thực hai lớp"
                                     },
-                                    "description": "Mở **{mfa_module_name}** trên thiết bị của bạn để xem mã xác thự hai lớp và xác minh danh tính của bạn:"
+                                    "description": "Mở **{mfa_module_name}** trên thiết bị của bạn để xem mã xác thực hai lớp và xác minh danh tính của bạn:"
                                 }
                             },
                             "error": {

@@ -35,13 +35,13 @@ import { navigate } from "../../common/navigate";
 import { fireEvent } from "../../common/dom/fire_event";
 import { swapView } from "./editor/config-util";
 
-import "./hui-view";
+import "./views/hui-view";
 // Not a duplicate import, this one is for type
 // tslint:disable-next-line
-import { HUIView } from "./hui-view";
-import "./hui-panel-view";
+import { HUIView } from "./views/hui-view";
+import "./views/hui-panel-view";
 // tslint:disable-next-line
-import { HUIPanelView } from "./hui-panel-view";
+import { HUIPanelView } from "./views/hui-panel-view";
 import { showEditViewDialog } from "./editor/view-editor/show-edit-view-dialog";
 import { showEditLovelaceDialog } from "./editor/lovelace-editor/show-edit-lovelace-dialog";
 import { Lovelace } from "./types";
@@ -70,6 +70,14 @@ class HUIRoot extends LitElement {
       () => this._selectView(this._curView, true),
       100,
       false
+    );
+  }
+
+  protected firstUpdated(changedProperties: PropertyValues): void {
+    super.firstUpdated(changedProperties);
+    this.classList.toggle(
+      "disable-text-select",
+      /Chrome/.test(navigator.userAgent) && /Android/.test(navigator.userAgent)
     );
   }
 
@@ -298,11 +306,14 @@ class HUIRoot extends LitElement {
       haStyle,
       css`
         :host {
+          --dark-color: #455a64;
+          --text-dark-color: #fff;
+        }
+
+        :host(.disable-text-select) {
           -ms-user-select: none;
           -webkit-user-select: none;
           -moz-user-select: none;
-          --dark-color: #455a64;
-          --text-dark-color: #fff;
         }
 
         ha-app-layout {
@@ -354,18 +365,26 @@ class HUIRoot extends LitElement {
         #view {
           min-height: calc(100vh - 112px);
           /**
-         * Since we only set min-height, if child nodes need percentage
-         * heights they must use absolute positioning so we need relative
-         * positioning here.
-         *
-         * https://www.w3.org/TR/CSS2/visudet.html#the-height-property
-         */
+          * Since we only set min-height, if child nodes need percentage
+          * heights they must use absolute positioning so we need relative
+          * positioning here.
+          *
+          * https://www.w3.org/TR/CSS2/visudet.html#the-height-property
+          */
           position: relative;
           display: flex;
         }
         #view > * {
-          flex: 1;
-          width: 100%;
+          /**
+          * The view could get larger than the window in Firefox
+          * to prevent that we set the max-width to 100%
+          * flex-grow: 1 and flex-basis: 100% should make sure the view
+          * stays full width.
+          *
+          * https://github.com/home-assistant/home-assistant-polymer/pull/3806
+          */
+          flex: 1 1 100%;
+          max-width: 100%;
         }
         #view.tabs-hidden {
           min-height: calc(100vh - 64px);

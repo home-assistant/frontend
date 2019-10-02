@@ -5,8 +5,8 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "./ha-script-editor";
 import "./ha-script-picker";
 
-import computeStateName from "../../../common/entity/compute_state_name";
-import computeStateDomain from "../../../common/entity/compute_state_domain";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 
 class HaConfigScript extends PolymerElement {
   static get template() {

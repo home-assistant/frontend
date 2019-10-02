@@ -12,7 +12,7 @@ import "../../components/ha-paper-icon-button-prev";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import { subscribeNotifications } from "../../data/persistent_notification";
-import computeDomain from "../../common/entity/compute_domain";
+import { computeDomain } from "../../common/entity/compute_domain";
 /*
  * @appliesMixin EventsMixin
  * @appliesMixin LocalizeMixin

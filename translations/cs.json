@@ -232,7 +232,7 @@
                 "ready": "Připraveno"
             },
             "query_stage": {
-                "initializing": "Inicializace ({query_stage})",
+                "initializing": "Inicializace ( {query_stage} )",
                 "dead": "Nereaguje ({query_stage})"
             }
         },
@@ -326,6 +326,9 @@
                     },
                     "info": {
                         "title": "Informace"
+                    },
+                    "logs": {
+                        "title": "Logy"
                     }
                 }
             },
@@ -497,6 +500,9 @@
                                     "event": "Událost:",
                                     "enter": "Vstup",
                                     "leave": "Opuštění"
+                                },
+                                "device": {
+                                    "label": "Zařízení"
                                 }
                             },
                             "learn_more": "Další informace o spouštěčích"
@@ -543,6 +549,9 @@
                                     "label": "Zóna",
                                     "entity": "Entita s umístěním",
                                     "zone": "Zóna"
+                                },
+                                "device": {
+                                    "label": "Zařízení"
                                 }
                             },
                             "learn_more": "Další informace o podmínkách"
@@ -577,6 +586,9 @@
                                     "label": "Spustit událost",
                                     "event": "Událost:",
                                     "service_data": "Data služby"
+                                },
+                                "device_id": {
+                                    "label": "Zařízení"
                                 }
                             },
                             "learn_more": "Další informace o akcích"
@@ -715,7 +727,9 @@
                         "unavailable": "Tato entita není momentálně k dispozici.",
                         "default_name": "Nová oblast",
                         "delete": "SMAZAT",
-                        "update": "UPRAVIT"
+                        "update": "UPRAVIT",
+                        "enabled_label": "Povolit entitu",
+                        "enabled_cause": "Zakázáno {cause}."
                     }
                 },
                 "person": {
@@ -757,6 +771,10 @@
                             "confirm_stop": "Opravdu chcete zastavit službu Home Assistant?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Zařízení",
+                    "description": "Správa připojených zařízení"
                 }
             },
             "profile": {
@@ -819,7 +837,7 @@
                     "header": "Multifaktorové autentizační moduly",
                     "disable": "Zakázat",
                     "enable": "Povolit",
-                    "confirm_disable": "Opravdu chcete zakázat {name} ?"
+                    "confirm_disable": "Opravdu chcete zakázat {name}?"
                 },
                 "mfa_setup": {
                     "title_aborted": "Zrušeno",
@@ -1021,6 +1039,10 @@
                         "save": "Uložit",
                         "unsaved_changes": "Neuložené změny",
                         "saved": "Uloženo"
+                    },
+                    "edit_lovelace": {
+                        "header": "Název vašeho uživatelského rozhraní Lovelace",
+                        "explanation": "Tento název je zobrazen nad všemi vašimi zobrazeními v Lovelace."
                     }
                 },
                 "menu": {
@@ -1076,7 +1098,7 @@
                             "air": "Vzduch"
                         },
                         "unit": {
-                            "watching": "tarkkaillaan",
+                            "watching": "sledování",
                             "minutes_abbr": "min"
                         }
                     }
@@ -1090,7 +1112,8 @@
         "common": {
             "loading": "Načítání",
             "cancel": "Zrušit",
-            "save": "Uložit"
+            "save": "Uložit",
+            "successfully_saved": "Úspěšně uloženo"
         },
         "duration": {
             "day": "{count} {count, plural,\none {den}\nfew {dny}\nother {dnů}\n}",
@@ -1166,7 +1189,9 @@
             "fan": {
                 "speed": "Rychlost",
                 "oscillate": "Oscilovat",
-                "direction": "Směr"
+                "direction": "Směr",
+                "forward": "Vpřed",
+                "reverse": "Vzad"
             },
             "light": {
                 "brightness": "Jas",
@@ -1210,6 +1235,14 @@
                 "target_temperature": "Cílová teplota",
                 "operation": "Provoz",
                 "away_mode": "Prázdninový režim"
+            },
+            "timer": {
+                "actions": {
+                    "start": "Spustit",
+                    "pause": "pauza",
+                    "cancel": "Zrušit",
+                    "finish": "Dokončit"
+                }
             }
         },
         "components": {
@@ -1230,7 +1263,7 @@
                     "minute": "{count} {count, plural,\none {minutu}\nfew {minuty}\nother {minut}\n}",
                     "hour": "{count} {count, plural,\none {hodinu}\nfew {hodiny}\nother {hodin}\n}",
                     "day": "{count} {count, plural,\none {den}\nfew {dny}\nother {dnů}\n}",
-                    "week": "{count} {count, plural,\none {týden}\nfew {týdny}\nother {týdnů}\n}"
+                    "week": "{count} {count, plural,\none {týden}\nother {týdnů}\n}"
                 }
             },
             "history_charts": {
@@ -1267,6 +1300,27 @@
             "options_flow": {
                 "form": {
                     "header": "Nastavení"
+                },
+                "success": {
+                    "description": "Volby byly úspěšně uloženy."
+                }
+            },
+            "config_entry_system_options": {
+                "title": "Volby systému",
+                "enable_new_entities_label": "Povolit nově přidané entity.",
+                "enable_new_entities_description": "Pokud je zakázáno, nově objevené entity nebudou automaticky přidány do Home Assistant."
+            },
+            "zha_device_info": {
+                "manuf": "od {manufacturer}",
+                "no_area": "Žádná oblast",
+                "services": {
+                    "updateDeviceName": "Nastavte vlastní název tohoto zařízení v registru zařízení.",
+                    "remove": "Odebrat zařízení ze sítě Zigbee."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Uživatelské jméno",
+                    "area_picker_label": "Oblast",
+                    "update_name_button": "Název aktualizace"
                 }
             }
         },
@@ -1357,7 +1411,8 @@
     "config_entry": {
         "disabled_by": {
             "user": "Uživatel",
-            "integration": "Integrace"
+            "integration": "Integrace",
+            "config_entry": "Položka konfigurace"
         }
     }
 }

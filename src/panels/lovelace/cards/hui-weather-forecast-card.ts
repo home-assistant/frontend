@@ -13,7 +13,7 @@ import "../../../components/ha-card";
 import "../components/hui-warning";
 
 import isValidEntityId from "../../../common/entity/valid_entity_id";
-import computeStateName from "../../../common/entity/compute_state_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";

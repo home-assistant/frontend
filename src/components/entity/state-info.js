@@ -3,7 +3,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../ha-relative-time";
 import "./state-badge";
-import computeStateName from "../../common/entity/compute_state_name";
+import { computeStateName } from "../../common/entity/compute_state_name";
 import { computeRTL } from "../../common/util/compute_rtl";
 
 class StateInfo extends PolymerElement {

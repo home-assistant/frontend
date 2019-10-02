@@ -231,7 +231,7 @@
                 "ready": "جاهز"
             },
             "query_stage": {
-                "initializing": "قيد الانشاء ({query_stage})",
+                "initializing": "قيد الإنشاء ( {query_stage} )",
                 "dead": "مفصول ({query_stage})"
             }
         },
@@ -267,7 +267,7 @@
             "disarmed": "غير مفعّل",
             "armed_home": "مفعّل",
             "armed_away": "مفعّل",
-            "armed_night": "مفعّل",
+            "armed_night": "مفعل",
             "pending": "إنتظار",
             "arming": "جاري التفعيل ",
             "disarming": "إيقاف الإنذار",

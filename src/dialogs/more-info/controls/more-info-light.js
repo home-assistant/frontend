@@ -10,7 +10,7 @@ import "../../../components/ha-color-picker";
 import "../../../components/ha-labeled-slider";
 import "../../../components/ha-paper-dropdown-menu";
 
-import featureClassNames from "../../../common/entity/feature_class_names";
+import { featureClassNames } from "../../../common/entity/feature_class_names";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 

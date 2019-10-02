@@ -1,9 +1,10 @@
 import { repeat } from "lit-html/directives/repeat";
+import deepClone from "deep-clone-simple";
 
 import {
   MDCDataTableAdapter,
   MDCDataTableFoundation,
-} from "../../mdc-data-table/index"; // Because mdc-data-table published ts files, temporary load them from own repo, outside src so our linters won't complain
+} from "@material/data-table";
 
 import {
   BaseElement,
@@ -19,14 +20,19 @@ import {
   PropertyValues,
 } from "@material/mwc-base/base-element";
 
-import memoizeOne from "memoize-one";
+// eslint-disable-next-line import/no-webpack-loader-syntax
+// @ts-ignore
+// tslint:disable-next-line: no-implicit-dependencies
+import sortFilterWorker from "workerize-loader!./sort_filter_worker";
 
-import "./ha-icon";
-import "../common/search/search-input";
-import "./ha-checkbox";
+import "../ha-icon";
+import "../../common/search/search-input";
+import "../ha-checkbox";
 // tslint:disable-next-line
-import { HaCheckbox } from "./ha-checkbox";
-import { fireEvent } from "../common/dom/fire_event";
+import { HaCheckbox } from "../ha-checkbox";
+import { fireEvent } from "../../common/dom/fire_event";
+import { nextRender } from "../../common/util/render-status";
+import { debounce } from "../../common/util/debounce";
 
 declare global {
   // for fire event
@@ -57,13 +63,16 @@ export interface DataTabelColumnContainer {
   [key: string]: DataTabelColumnData;
 }
 
-export interface DataTabelColumnData {
-  title: string;
-  type?: "numeric";
+export interface DataTabelSortColumnData {
   sortable?: boolean;
   filterable?: boolean;
   filterKey?: string;
   direction?: SortingDirection;
+}
+
+export interface DataTabelColumnData extends DataTabelSortColumnData {
+  title: string;
+  type?: "numeric";
   template?: (data: any) => TemplateResult;
 }
 
@@ -89,93 +98,25 @@ export class HaDataTable extends BaseElement {
   @property({ type: String }) private _filter = "";
   @property({ type: String }) private _sortColumn?: string;
   @property({ type: String }) private _sortDirection: SortingDirection = null;
+  @property({ type: Array }) private _filteredData: DataTabelRowData[] = [];
+  private _sortColumns: {
+    [key: string]: DataTabelSortColumnData;
+  } = {};
+  private curRequest = 0;
+  private _worker: any | undefined;
 
-  private _filterSortData = memoizeOne(
-    (
-      data: DataTabelRowData[],
-      columns: DataTabelColumnContainer,
-      filter: string,
-      direction: SortingDirection,
-      sortColumn?: string
-    ) =>
-      sortColumn
-        ? this._memSortData(
-            this._memFilterData(data, columns, filter),
-            columns,
-            direction,
-            sortColumn
-          )
-        : this._memFilterData(data, columns, filter)
+  private _debounceSearch = debounce(
+    (ev) => {
+      this._filter = ev.detail.value;
+    },
+    200,
+    false
   );
 
-  private _memFilterData = memoizeOne(
-    (
-      data: DataTabelRowData[],
-      columns: DataTabelColumnContainer,
-      filter: string
-    ) => {
-      if (!filter) {
-        return data;
-      }
-      const ucFilter = filter.toUpperCase();
-      return data.filter((row) => {
-        return Object.entries(columns).some((columnEntry) => {
-          const [key, column] = columnEntry;
-          if (column.filterable) {
-            if (
-              (column.filterKey ? row[key][column.filterKey] : row[key])
-                .toUpperCase()
-                .includes(ucFilter)
-            ) {
-              return true;
-            }
-          }
-          return false;
-        });
-      });
-    }
-  );
-
-  private _memSortData = memoizeOne(
-    (
-      data: DataTabelRowData[],
-      columns: DataTabelColumnContainer,
-      direction: SortingDirection,
-      sortColumn: string
-    ) => {
-      const sorted = [...data];
-      const column = columns[sortColumn];
-      return sorted.sort((a, b) => {
-        let sort = 1;
-        if (direction === "desc") {
-          sort = -1;
-        }
-
-        let valA = column.filterKey
-          ? a[sortColumn][column.filterKey]
-          : a[sortColumn];
-
-        let valB = column.filterKey
-          ? b[sortColumn][column.filterKey]
-          : b[sortColumn];
-
-        if (typeof valA === "string") {
-          valA = valA.toUpperCase();
-        }
-        if (typeof valB === "string") {
-          valB = valB.toUpperCase();
-        }
-
-        if (valA < valB) {
-          return sort * -1;
-        }
-        if (valA > valB) {
-          return sort * 1;
-        }
-        return 0;
-      });
-    }
-  );
+  protected firstUpdated() {
+    super.firstUpdated();
+    this._worker = sortFilterWorker();
+  }
 
   protected updated(properties: PropertyValues) {
     super.updated(properties);
@@ -192,6 +133,25 @@ export class HaDataTable extends BaseElement {
           break;
         }
       }
+
+      const clonedColumns: DataTabelColumnContainer = deepClone(this.columns);
+      Object.values(clonedColumns).forEach((column: DataTabelColumnData) => {
+        delete column.title;
+        delete column.type;
+        delete column.template;
+      });
+
+      this._sortColumns = clonedColumns;
+    }
+
+    if (
+      properties.has("data") ||
+      properties.has("columns") ||
+      properties.has("_filter") ||
+      properties.has("_sortColumn") ||
+      properties.has("_sortDirection")
+    ) {
+      this._filterData();
     }
   }
 
@@ -261,13 +221,7 @@ export class HaDataTable extends BaseElement {
           </thead>
           <tbody class="mdc-data-table__content">
             ${repeat(
-              this._filterSortData(
-                this.data,
-                this.columns,
-                this._filter,
-                this._sortDirection,
-                this._sortColumn
-              ),
+              this._filteredData!,
               (row: DataTabelRowData) => row[this.id],
               (row: DataTabelRowData) => html`
                 <tr
@@ -356,6 +310,33 @@ export class HaDataTable extends BaseElement {
     };
   }
 
+  private async _filterData() {
+    const startTime = new Date().getTime();
+    this.curRequest++;
+    const curRequest = this.curRequest;
+
+    const filterProm = this._worker.filterSortData(
+      this.data,
+      this._sortColumns,
+      this._filter,
+      this._sortDirection,
+      this._sortColumn
+    );
+
+    const [data] = await Promise.all([filterProm, nextRender]);
+
+    const curTime = new Date().getTime();
+    const elapsed = curTime - startTime;
+
+    if (elapsed < 100) {
+      await new Promise((resolve) => setTimeout(resolve, 100 - elapsed));
+    }
+    if (this.curRequest !== curRequest) {
+      return;
+    }
+    this._filteredData = data;
+  }
+
   private _getRowIdAtIndex(rowIndex: number): string {
     return this.rowElements[rowIndex].getAttribute("data-row-id")!;
   }
@@ -420,7 +401,7 @@ export class HaDataTable extends BaseElement {
   }
 
   private _handleSearchChange(ev: CustomEvent): void {
-    this._filter = ev.detail.value;
+    this._debounceSearch(ev);
   }
 
   static get styles(): CSSResult {
