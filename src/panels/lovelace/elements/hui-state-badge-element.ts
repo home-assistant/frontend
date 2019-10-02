@@ -10,7 +10,7 @@ import {
 import "../../../components/entity/ha-state-label-badge";
 import "../components/hui-warning-element";
 
-import computeStateName from "../../../common/entity/compute_state_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { LovelaceElement, StateBadgeElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";

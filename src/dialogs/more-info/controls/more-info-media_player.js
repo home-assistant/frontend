@@ -10,7 +10,7 @@ import "../../../components/ha-paper-slider";
 import "../../../components/ha-paper-dropdown-menu";
 import HassMediaPlayerEntity from "../../../util/hass-media-player-model";
 
-import attributeClassNames from "../../../common/entity/attribute_class_names";
+import { attributeClassNames } from "../../../common/entity/attribute_class_names";
 import isComponentLoaded from "../../../common/config/is_component_loaded";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";

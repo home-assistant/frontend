@@ -183,6 +183,11 @@ export const fetchHassioHostInfo = (hass: HomeAssistant) =>
     .callApi<HassioResponse<HassioHostInfo>>("GET", "hassio/host/info")
     .then(hassioApiResultExtractor);
 
+export const fetchHassioHassOsInfo = (hass: HomeAssistant) =>
+  hass
+    .callApi<HassioResponse<HassioHassOSInfo>>("GET", "hassio/hassos/info")
+    .then(hassioApiResultExtractor);
+
 export const fetchHassioHomeAssistantInfo = (hass: HomeAssistant) =>
   hass
     .callApi<HassioResponse<HassioHomeAssistantInfo>>(

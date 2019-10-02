@@ -233,7 +233,7 @@
                 "ready": "Valmis"
             },
             "query_stage": {
-                "initializing": "Lähtestan ({query_stage})",
+                "initializing": "Lähtestan ( {query_stage} )",
                 "dead": "Surnud ({query_stage})"
             }
         },
@@ -709,11 +709,11 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "ZigBee Home Automation võrgu haldamine",
+                    "description": "Zigbee Home Automation võrgu haldamine",
                     "services": {
                         "reconfigure": "Taasseadista (tervenda) ZHA seade. Kasuta seda, kui seadmega on probleeme. Kui seade on akutoitega, siis veendu, et see oleks ärkvel ja oleks valmis käske vastu võtma.",
                         "updateDeviceName": "Anna sellele seadmele seadmete registris kohandatud nimi.",
-                        "remove": "Eemalda seade ZigBee võrgust."
+                        "remove": "Eemalda seade Zigbee võrgust."
                     },
                     "device_card": {
                         "device_name_placeholder": "Kasutaja antud nimi",
@@ -805,6 +805,10 @@
                             "confirm_stop": "Oled kindel, et soovid seisata Home Assistant'i?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Seadmed",
+                    "description": "Halda ühendatud seadmeid"
                 }
             },
             "profile": {
@@ -925,7 +929,7 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "Kaheastmelise autentimise kood"
+                                        "code": "Kaheastmeline autentimiskood"
                                     },
                                     "description": "Ava oma seadmes **{mfa_module_name}**, et näha oma kaheastmelise autentimise koodi ja tõendada oma isikut:"
                                 }
@@ -1347,7 +1351,7 @@
                 "services": {
                     "reconfigure": "Taasseadista (tervenda) ZHA seade. Kasuta seda, kui seadmega on probleeme. Kui seade on akutoitega, siis veendu, et see oleks ärkvel ja oleks valmis käske vastu võtma.",
                     "updateDeviceName": "Anna sellele seadmele seadmete registris kohandatud nimi.",
-                    "remove": "Eemalda seade ZigBee võrgust."
+                    "remove": "Eemalda seade Zigbee võrgust."
                 },
                 "zha_device_card": {
                     "device_name_placeholder": "Kasutaja antud nimi",

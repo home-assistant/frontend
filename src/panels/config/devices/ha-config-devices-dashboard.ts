@@ -5,7 +5,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 
 import "../../../components/ha-card";
-import "../../../components/ha-data-table";
+import "../../../components/data-table/ha-data-table";
 import "../../../components/entity/ha-state-icon";
 import "../../../layouts/hass-subpage";
 import "../../../resources/ha-style";
@@ -28,7 +28,7 @@ import {
   DataTabelColumnContainer,
   RowClickedEvent,
   DataTabelRowData,
-} from "../../../components/ha-data-table";
+} from "../../../components/data-table/ha-data-table";
 // tslint:disable-next-line
 import { DeviceRegistryEntry } from "../../../data/device_registry";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
@@ -36,7 +36,7 @@ import { ConfigEntry } from "../../../data/config_entries";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
-import computeStateName from "../../../common/entity/compute_state_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 
 interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;

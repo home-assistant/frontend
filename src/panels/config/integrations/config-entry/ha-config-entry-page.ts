@@ -5,7 +5,7 @@ import "../../../../layouts/hass-error-screen";
 import "../../../../components/entity/state-badge";
 import { compare } from "../../../../common/string/compare";
 
-import "../../devices/ha-device-card";
+import "../../devices/device-detail/ha-device-card";
 import "./ha-ce-entities-card";
 import { showOptionsFlowDialog } from "../../../../dialogs/config-flow/show-dialog-options-flow";
 import { property, LitElement, CSSResult, css, html } from "lit-element";

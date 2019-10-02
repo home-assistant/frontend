@@ -30,6 +30,7 @@ const fixedIcons = {
   light: "hass:lightbulb",
   mailbox: "hass:mailbox",
   notify: "hass:comment-alert",
+  persistent_notification: "hass:bell",
   person: "hass:account",
   plant: "hass:flower",
   proximity: "hass:apple-safari",
@@ -46,9 +47,10 @@ const fixedIcons = {
   water_heater: "hass:thermometer",
   weather: "hass:weather-cloudy",
   weblink: "hass:open-in-new",
+  zone: "hass:map-marker",
 };
 
-export default function domainIcon(domain: string, state?: string): string {
+export const domainIcon = (domain: string, state?: string): string => {
   if (domain in fixedIcons) {
     return fixedIcons[domain];
   }
@@ -103,4 +105,4 @@ export default function domainIcon(domain: string, state?: string): string {
       );
       return DEFAULT_DOMAIN_ICON;
   }
-}
+};

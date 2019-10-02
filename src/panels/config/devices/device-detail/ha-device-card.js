@@ -6,23 +6,23 @@ import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../components/ha-card";
-import "../../../layouts/hass-subpage";
+import "../../../../components/ha-card";
+import "../../../../layouts/hass-subpage";
 
-import { EventsMixin } from "../../../mixins/events-mixin";
-import LocalizeMixin from "../../../mixins/localize-mixin";
-import computeStateName from "../../../common/entity/compute_state_name";
-import "../../../components/entity/state-badge";
-import { compare } from "../../../common/string/compare";
+import { EventsMixin } from "../../../../mixins/events-mixin";
+import LocalizeMixin from "../../../../mixins/localize-mixin";
+import { computeStateName } from "../../../../common/entity/compute_state_name";
+import "../../../../components/entity/state-badge";
+import { compare } from "../../../../common/string/compare";
 import {
   subscribeDeviceRegistry,
   updateDeviceRegistryEntry,
-} from "../../../data/device_registry";
-import { subscribeAreaRegistry } from "../../../data/area_registry";
+} from "../../../../data/device_registry";
+import { subscribeAreaRegistry } from "../../../../data/area_registry";
 import {
   loadDeviceRegistryDetailDialog,
   showDeviceRegistryDetailDialog,
-} from "../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
+} from "../../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
 
 function computeEntityName(hass, entity) {
   if (entity.name) return entity.name;
@@ -123,24 +123,26 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
           </template>
         </div>
 
-        <div class="device-entities">
-          <template
-            is="dom-repeat"
-            items="[[_computeDeviceEntities(hass, device, entities)]]"
-            as="entity"
-          >
-            <paper-icon-item on-click="_openMoreInfo">
-              <state-badge
-                state-obj="[[_computeStateObj(entity, hass)]]"
-                slot="item-icon"
-              ></state-badge>
-              <paper-item-body>
-                <div class="name">[[_computeEntityName(entity, hass)]]</div>
-                <div class="secondary entity-id">[[entity.entity_id]]</div>
-              </paper-item-body>
-            </paper-icon-item>
-          </template>
-        </div>
+        <template is="dom-if" if="[[!hideEntities]]">
+          <div class="device-entities">
+            <template
+              is="dom-repeat"
+              items="[[_computeDeviceEntities(hass, device, entities)]]"
+              as="entity"
+            >
+              <paper-icon-item on-click="_openMoreInfo">
+                <state-badge
+                  state-obj="[[_computeStateObj(entity, hass)]]"
+                  slot="item-icon"
+                ></state-badge>
+                <paper-item-body>
+                  <div class="name">[[_computeEntityName(entity, hass)]]</div>
+                  <div class="secondary entity-id">[[entity.entity_id]]</div>
+                </paper-item-body>
+              </paper-icon-item>
+            </template>
+          </div>
+        </template>
       </ha-card>
     `;
   }
@@ -157,6 +159,7 @@ class HaDeviceCard extends EventsMixin(LocalizeMixin(PolymerElement)) {
         reflectToAttribute: true,
       },
       hideSettings: { type: Boolean, value: false },
+      hideEntities: { type: Boolean, value: false },
       _childDevices: {
         type: Array,
         computed: "_computeChildDevices(device, devices)",

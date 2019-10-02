@@ -6,10 +6,10 @@ import "../components/entity/ha-entity-toggle";
 import "../components/ha-card";
 import "../state-summary/state-card-content";
 
-import computeStateDomain from "../common/entity/compute_state_domain";
-import computeStateName from "../common/entity/compute_state_name";
-import stateMoreInfoType from "../common/entity/state_more_info_type";
-import canToggleState from "../common/entity/can_toggle_state";
+import { computeStateDomain } from "../common/entity/compute_state_domain";
+import { computeStateName } from "../common/entity/compute_state_name";
+import { stateMoreInfoType } from "../common/entity/state_more_info_type";
+import { canToggleState } from "../common/entity/can_toggle_state";
 import { EventsMixin } from "../mixins/events-mixin";
 import LocalizeMixin from "../mixins/localize-mixin";
 

@@ -9,8 +9,8 @@ import {
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@thomasloven/round-slider";
 
-import stateIcon from "../../../common/entity/state_icon";
-import computeStateName from "../../../common/entity/compute_state_name";
+import { stateIcon } from "../../../common/entity/state_icon";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
 import "../../../components/ha-card";
@@ -107,7 +107,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           <ha-icon
             class="light-icon"
             data-state="${stateObj.state}"
-            .icon="${stateIcon(stateObj)}"
+            .icon="${this._config.icon || stateIcon(stateObj)}"
             style="${styleMap({
               filter: this._computeBrightness(stateObj),
               color: this._computeColor(stateObj),

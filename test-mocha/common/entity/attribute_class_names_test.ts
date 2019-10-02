@@ -1,6 +1,5 @@
 import { assert } from "chai";
-
-import attributeClassNames from "../../../src/common/entity/attribute_class_names";
+import { attributeClassNames } from "../../../src/common/entity/attribute_class_names";
 
 describe("attributeClassNames", () => {
   const attrs = ["mock_attr1", "mock_attr2"];

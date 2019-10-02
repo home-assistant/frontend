@@ -233,7 +233,7 @@
                 "ready": "Bereet"
             },
             "query_stage": {
-                "initializing": "Initialiséiert ({query_stage})",
+                "initializing": "Initialiséiert ( {query_stage} )",
                 "dead": "Net Ereechbar ({query_stage})"
             }
         },
@@ -291,7 +291,7 @@
             "arming": "Aktivéieren",
             "disarming": "Desaktivéieren",
             "triggered": "Ausgeléist",
-            "armed_custom_bypass": "Aktiv"
+            "armed_custom_bypass": "Aktivéiert"
         },
         "device_tracker": {
             "home": "Doheem",

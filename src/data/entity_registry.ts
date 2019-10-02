@@ -1,6 +1,6 @@
 import { createCollection, Connection } from "home-assistant-js-websocket";
 import { HomeAssistant } from "../types";
-import computeStateName from "../common/entity/compute_state_name";
+import { computeStateName } from "../common/entity/compute_state_name";
 import { debounce } from "../common/util/debounce";
 
 export interface EntityRegistryEntry {

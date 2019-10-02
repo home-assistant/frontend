@@ -1,7 +1,6 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-toggle-button/paper-toggle-button";
 import {
   LitElement,
   html,
@@ -15,6 +14,7 @@ import {
 import "../../../components/ha-climate-control";
 import "../../../components/ha-paper-slider";
 import "../../../components/ha-paper-dropdown-menu";
+import "../../../components/ha-switch";
 
 import { supportsFeature } from "../../../common/entity/supports-feature";
 
@@ -279,10 +279,10 @@ class MoreInfoClimate extends LitElement {
                   <div class="flex">
                     ${hass.localize("ui.card.climate.aux_heat")}
                   </div>
-                  <paper-toggle-button
+                  <ha-switch
                     .checked=${stateObj.attributes.aux_heat === "on"}
                     @change=${this._auxToggleChanged}
-                  ></paper-toggle-button>
+                  ></ha-switch>
                 </div>
               </div>
             `

@@ -2,25 +2,38 @@ import { createCardElement } from "../common/create-card-element";
 import { processConfigEntities } from "../common/process-config-entities";
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
-import { EntityConfig } from "../entity-rows/types";
+import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 import { EntityFilterCardConfig } from "./types";
+import { evaluateFilter } from "../common/evaluate-filter";
 
 class EntityFilterCard extends HTMLElement implements LovelaceCard {
   public isPanel?: boolean;
   private _element?: LovelaceCard;
   private _config?: EntityFilterCardConfig;
-  private _configEntities?: EntityConfig[];
+  private _configEntities?: EntityFilterEntityConfig[];
   private _baseCardConfig?: LovelaceCardConfig;
   private _hass?: HomeAssistant;
-  private _oldEntities?: EntityConfig[];
+  private _oldEntities?: EntityFilterEntityConfig[];
 
   public getCardSize(): number {
     return this._element ? this._element.getCardSize() : 1;
   }
 
   public setConfig(config: EntityFilterCardConfig): void {
-    if (!config.state_filter || !Array.isArray(config.state_filter)) {
+    if (!config.entities || !Array.isArray(config.entities)) {
+      throw new Error("entities must be specified.");
+    }
+
+    if (
+      !(config.state_filter && Array.isArray(config.state_filter)) &&
+      !config.entities.every(
+        (entity) =>
+          typeof entity === "object" &&
+          entity.state_filter &&
+          Array.isArray(entity.state_filter)
+      )
+    ) {
       throw new Error("Incorrect filter config.");
     }
 
@@ -56,7 +69,26 @@ class EntityFilterCard extends HTMLElement implements LovelaceCard {
 
     const entitiesList = this._configEntities.filter((entityConf) => {
       const stateObj = hass.states[entityConf.entity];
-      return stateObj && this._config!.state_filter.includes(stateObj.state);
+
+      if (!stateObj) {
+        return false;
+      }
+
+      if (entityConf.state_filter) {
+        for (const filter of entityConf.state_filter) {
+          if (evaluateFilter(stateObj, filter)) {
+            return true;
+          }
+        }
+      } else {
+        for (const filter of this._config!.state_filter) {
+          if (evaluateFilter(stateObj, filter)) {
+            return true;
+          }
+        }
+      }
+
+      return false;
     });
 
     if (entitiesList.length === 0 && this._config.show_empty === false) {

@@ -1,6 +1,5 @@
 import { assert } from "chai";
-
-import computeStateDisplay from "../../../src/common/entity/compute_state_display";
+import { computeStateDisplay } from "../../../src/common/entity/compute_state_display";
 
 describe("computeStateDisplay", () => {
   // Mock Localize function for testing

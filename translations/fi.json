@@ -233,7 +233,7 @@
                 "ready": "Valmis"
             },
             "query_stage": {
-                "initializing": "Alustaa ({query_stage})",
+                "initializing": "Alustaa ( {query_stage} )",
                 "dead": "Kuollut ({query_stage})"
             }
         },
@@ -657,11 +657,11 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "ZigBee kotiautomaation verkonhallinta",
+                    "description": "Zigbee kotiautomaation verkonhallinta",
                     "services": {
                         "reconfigure": "Määritä ZHA-laite uudelleen (paranna laite). Käytä tätä, jos sinulla on ongelmia laitteen kanssa. Jos kyseinen laite on akkukäyttöinen laite, varmista, että se on hereillä ja hyväksyy komentoja, kun käytät tätä palvelua.",
                         "updateDeviceName": "Määritä laitteelle mukautettu nimeä laiterekisteriin.",
-                        "remove": "Poista laite ZigBee-verkosta."
+                        "remove": "Poista laite Zigbee-verkosta."
                     },
                     "device_card": {
                         "device_name_placeholder": "Käyttäjän antama nimeä",
@@ -782,7 +782,7 @@
                     "header": "Monivaiheisen tunnistautumisen moduulit",
                     "disable": "Poista käytöstä",
                     "enable": "Ota käyttöön",
-                    "confirm_disable": "Haluatko varmasti poistaa {nimi}?"
+                    "confirm_disable": "Haluatko varmasti poistaa {name}?"
                 },
                 "mfa_setup": {
                     "title_aborted": "Keskeytetty",
@@ -839,7 +839,7 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "Kaksivaiheisen tunnistautumisen koodi"
+                                        "code": "Kaksivaiheinen tunnistuskoodi"
                                     },
                                     "description": "Avaa **{mfa_module_name}** laitteessasi nähdäksesi kaksivaiheisen tunnistautumisen koodisi ja vahvistaaksesi identiteettisi:"
                                 }

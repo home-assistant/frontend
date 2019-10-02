@@ -1,6 +1,6 @@
 import { assert } from "chai";
 
-import stateCardType from "../../../src/common/entity/state_card_type";
+import { stateCardType } from "../../../src/common/entity/state_card_type";
 
 describe("stateCardType", () => {
   const hass: any = {

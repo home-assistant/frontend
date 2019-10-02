@@ -233,7 +233,7 @@
                 "ready": "gotowy"
             },
             "query_stage": {
-                "initializing": "inicjalizacja ({query_stage})",
+                "initializing": "inicjalizacja ( {query_stage} )",
                 "dead": "martwy ({query_stage})"
             }
         },
@@ -252,7 +252,7 @@
             "sunny": "słonecznie",
             "windy": "wietrznie",
             "windy-variant": "wietrznie",
-            "exceptional": "Wyjątkowy"
+            "exceptional": "wyjątkowy"
         },
         "vacuum": {
             "cleaning": "sprzątanie",
@@ -295,7 +295,7 @@
         },
         "device_tracker": {
             "home": "dom",
-            "not_home": "poza"
+            "not_home": "poza domem"
         },
         "person": {
             "home": "dom",
@@ -1029,9 +1029,9 @@
                         "hold": "Przytrzymanie:",
                         "tap": "Dotknięcie:",
                         "navigate_to": "Przejdź do {location}",
-                        "toggle": "Przełącz {nazwa}",
-                        "call_service": "Wywołaj usługę {nazwa}",
-                        "more_info": "Pokaż więcej informacji: {nazwa}"
+                        "toggle": "Przełącz {name}",
+                        "call_service": "Wywołaj usługę {name}",
+                        "more_info": "Pokaż więcej informacji: {name}"
                     }
                 },
                 "editor": {

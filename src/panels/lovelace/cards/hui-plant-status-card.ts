@@ -13,7 +13,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 
-import computeStateName from "../../../common/entity/compute_state_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import { LovelaceCardEditor, LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
@@ -37,7 +37,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
   }
 
   public static getStubConfig(): object {
-    return {};
+    return { entity: "" };
   }
 
   @property() public hass?: HomeAssistant;
