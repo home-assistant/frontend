@@ -713,7 +713,7 @@
                     "services": {
                         "reconfigure": "Reconfigura el dispositiu ZHA (dispositiu curatiu). Utilitza-ho si tens problemes amb el dispositiu. Si el dispositiu en qüestió està alimentat per bateria, assegura't que estigui despert i accepti ordres quan utilitzis aquest servei.",
                         "updateDeviceName": "Estableix un nom personalitzat pel dispositiu al registre de dispositius.",
-                        "remove": "Treu un dispositiu de la xarxa ZigBee."
+                        "remove": "Treu un dispositiu de la xarxa Zigbee."
                     },
                     "device_card": {
                         "device_name_placeholder": "Nom donat per l'usuari",
@@ -1351,7 +1351,7 @@
                 "services": {
                     "reconfigure": "Reconfigura el dispositiu ZHA (dispositiu curatiu). Utilitza-ho si tens problemes amb el dispositiu. Si el dispositiu en qüestió està alimentat per bateria, assegura't que estigui despert i accepti ordres quan utilitzis aquest servei.",
                     "updateDeviceName": "Estableix un nom personalitzat pel dispositiu al registre de dispositius.",
-                    "remove": "Elimina un dispositiu de la xarxa ZigBee."
+                    "remove": "Elimina un dispositiu de la xarxa Zigbee."
                 },
                 "zha_device_card": {
                     "device_name_placeholder": "Nom donat per l'usuari",

@@ -206,7 +206,7 @@
             },
             "query_stage": {
                 "initializing": "Inicijalizacija ( {query_stage} )",
-                "dead": "Mrtav ( {query_stage} )"
+                "dead": "Mrtav ({query_stage})"
             }
         }
     },
@@ -219,8 +219,8 @@
             "armed": "Aktiviran",
             "disarmed": "Deaktiviran",
             "armed_home": "Aktiviran kod kuće",
-            "armed_away": "Aktiviran u odsustvu",
-            "armed_night": "Aktiviran noću",
+            "armed_away": "Aktiviran",
+            "armed_night": "Aktiviran",
             "pending": "Na čekanju",
             "arming": "Aktivacija",
             "disarming": "Deaktivacija",
@@ -277,6 +277,9 @@
                     "node_config": {
                         "set_config_parameter": "Podesite parametar Config"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud"
                 }
             }
         },

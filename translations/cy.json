@@ -76,7 +76,7 @@
             },
             "presence": {
                 "off": "Allan",
-                "on": "Cartref"
+                "on": "Gartref"
             },
             "battery": {
                 "off": "Arferol",
@@ -230,8 +230,8 @@
                 "ready": "Barod"
             },
             "query_stage": {
-                "initializing": "Ymgychwyn ({cam ymholi})",
-                "dead": "Marw"
+                "initializing": "Ymgychwyn ( {query_stage} )",
+                "dead": "Marw ({query_stage})"
             }
         },
         "weather": {
@@ -281,7 +281,7 @@
         },
         "device_tracker": {
             "home": "Adra",
-            "not_home": "Allan"
+            "not_home": "Diim gartref"
         },
         "person": {
             "home": "Gartref",
@@ -411,7 +411,7 @@
                             "duplicate": "Dyblyg",
                             "delete": "Dileu",
                             "delete_confirm": "Sicr bod chi eisiau dileu?",
-                            "unsupported_platform": "Llwyfan heb gymorth: {llwyfan}",
+                            "unsupported_platform": "Llwyfan heb gymorth: {platform}",
                             "type_select": "Math sbardun",
                             "type": {
                                 "event": {
@@ -492,7 +492,7 @@
                             "duplicate": "Dyblygu",
                             "delete": "Dileu",
                             "delete_confirm": "Siwr bod chi eisiau dileu?",
-                            "unsupported_condition": "Cyflwr heb gymorth: {cyflwr}",
+                            "unsupported_condition": "Cyflwr heb gymorth: {condition}",
                             "type_select": "Math o gyflwr",
                             "type": {
                                 "state": {
@@ -538,7 +538,7 @@
                             "duplicate": "Dyblygu",
                             "delete": "Dileu",
                             "delete_confirm": "Ydych yn siŵr bod chi eisiau dileu?",
-                            "unsupported_action": "Gweithredu heb gefnogaeth: {gweithred}",
+                            "unsupported_action": "Gweithredu heb gefnogaeth: {action}",
                             "type_select": "Math weithrediad",
                             "type": {
                                 "service": {
@@ -581,6 +581,7 @@
                     }
                 },
                 "cloud": {
+                    "caption": "Home Assistant Cloud",
                     "description_login": "Wedi mewngofnodi fel {email}",
                     "description_not_login": "Heb fewngofnodi",
                     "description_features": "Rheolaeth oddi cartref, integreiddio gyda Alexa a Google Assistant."
@@ -619,7 +620,7 @@
                     "services": {
                         "reconfigure": "Ad-drefnu ddyfais ZHA (gwella dyfais). Defnyddiwch hwn os ydych yn cael problemau gyda'r ddyfais. Os ydi'r ddyfais dan sylw wedi pweru á batri, plis gwnewch yn siwr bod o'n ddeffro a derbyn gorchmynion pan fyddwch yn defnyddio gwasanaeth hwn.",
                         "updateDeviceName": "Gosod enw personol ar gyfer y ddyfais hon yn y gofrestrfa ddyfais.",
-                        "remove": "Tynnwch ddyfais o'r rhwydwaith ZigBee."
+                        "remove": "Tynnwch ddyfais o'r rhwydwaith Zigbee."
                     },
                     "device_card": {
                         "device_name_placeholder": "Enw a roddwyd gan y defnyddiwr",
@@ -732,7 +733,7 @@
                         "hold": "Disgwyl",
                         "tap": "Tarwch:",
                         "navigate_to": "Ewch i {location}",
-                        "toggle": "Toglo {enw}",
+                        "toggle": "Toglo {name}",
                         "call_service": "Galw gwasanaeth {name}",
                         "more_info": "Dangos mwy o wybodaeth: {name}"
                     }

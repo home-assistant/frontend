@@ -233,7 +233,7 @@
                 "ready": "準備就緒"
             },
             "query_stage": {
-                "initializing": "初始化 ({query_stage})",
+                "initializing": "正在初始化 ( {query_stage} )",
                 "dead": "失去連線 ({query_stage})"
             }
         },
@@ -285,13 +285,13 @@
             "armed": "已警戒",
             "disarmed": "解除警戒",
             "armed_home": "在家警戒",
-            "armed_away": "離家警戒",
-            "armed_night": "夜間警戒",
+            "armed_away": "已警戒",
+            "armed_night": "已警戒",
             "pending": "等待中",
             "arming": "開啟警戒中",
             "disarming": "關閉警戒",
             "triggered": "觸發",
-            "armed_custom_bypass": "已開啟警戒模式"
+            "armed_custom_bypass": "已警戒"
         },
         "device_tracker": {
             "home": "在家",
@@ -504,7 +504,7 @@
                                     "leave": "離開區域"
                                 },
                                 "device": {
-                                    "label": "裝置"
+                                    "label": "設備"
                                 }
                             },
                             "learn_more": "詳細了解觸發條件"
@@ -553,7 +553,7 @@
                                     "zone": "區域"
                                 },
                                 "device": {
-                                    "label": "裝置"
+                                    "label": "設備"
                                 }
                             },
                             "learn_more": "詳細了解觸發判斷"
@@ -590,7 +590,7 @@
                                     "service_data": "資料"
                                 },
                                 "device_id": {
-                                    "label": "裝置"
+                                    "label": "設備"
                                 }
                             },
                             "learn_more": "詳細了解動作"
@@ -632,7 +632,7 @@
                     },
                     "common": {
                         "value": "數值",
-                        "instance": "實例",
+                        "instance": "物件",
                         "index": "指數",
                         "unknown": "未知",
                         "wakeup_interval": "喚醒間隔"
@@ -681,21 +681,21 @@
                 },
                 "integrations": {
                     "caption": "整合",
-                    "description": "管理已連線裝置與整合",
+                    "description": "管理已連線設備與整合",
                     "discovered": "已掃描",
                     "configured": "已設定整合",
                     "new": "設定新整合",
                     "configure": "設定",
                     "none": "尚未設定",
                     "config_entry": {
-                        "no_devices": "此整合沒有任何裝置。",
-                        "no_device": "物件沒有裝置",
+                        "no_devices": "此整合沒有任何設備。",
+                        "no_device": "物件沒有設備",
                         "delete_confirm": "確定要刪除此整合？",
                         "restart_confirm": "重啟 Home Assistant 以完成此整合移動",
                         "manuf": "廠牌：{manufacturer}",
                         "via": "連線：",
                         "firmware": "韌體：{version}",
-                        "device_unavailable": "裝置不可用",
+                        "device_unavailable": "設備不可用",
                         "entity_unavailable": "物件不可用",
                         "no_area": "無分區",
                         "hub": "連線："
@@ -711,9 +711,9 @@
                     "caption": "ZHA",
                     "description": "Zigbee 家庭自動化網路管理",
                     "services": {
-                        "reconfigure": "重新設定 ZHA Zibgee 裝置（健康裝置）。假如遇到裝置問題，請使用此選項。假如有問題的裝置為使用電池的裝置，請先確定裝置已喚醒並處於接受命令狀態。",
+                        "reconfigure": "重新設定 ZHA Zibgee 設備（健康設備）。假如遇到設備問題，請使用此選項。假如有問題的設備為使用電池的設備，請先確定設備已喚醒並處於接受命令狀態。",
                         "updateDeviceName": "於物件 ID 中自訂此設備名稱。",
-                        "remove": "自 Zigbee 網路移除裝置。"
+                        "remove": "自 Zigbee 網路移除設備。"
                     },
                     "device_card": {
                         "device_name_placeholder": "使用者自訂名稱",
@@ -721,9 +721,9 @@
                         "update_name_button": "更新名稱"
                     },
                     "add_device_page": {
-                        "header": "Zigbee 家庭自動化 - 新增裝置",
-                        "spinner": "正在搜尋 ZHA Zigbee 裝置...",
-                        "discovery_text": "所發現的裝置將會顯示於此。跟隨裝置的指示並將其設定為配對模式。"
+                        "header": "Zigbee 家庭自動化 - 新增設備",
+                        "spinner": "正在搜尋 ZHA Zigbee 設備...",
+                        "discovery_text": "所發現的設備將會顯示於此。跟隨設備的指示並將其設定為配對模式。"
                     }
                 },
                 "area_registry": {
@@ -731,8 +731,8 @@
                     "description": "家中所有分區概觀",
                     "picker": {
                         "header": "分區 ID",
-                        "introduction": "分區主要用以管理裝置所在位置。此資訊將會於 Home Assistant 中使用以協助您管理介面、權限，並與其他系統進行整合。",
-                        "introduction2": "欲於分區中放置裝置，請使用下方連結至整合頁面，並點選設定整合以設定裝置卡片。",
+                        "introduction": "分區主要用以管理設備所在位置。此資訊將會於 Home Assistant 中使用以協助您管理介面、權限，並與其他系統進行整合。",
+                        "introduction2": "欲於分區中放置設備，請使用下方連結至整合頁面，並點選設定整合以設定設備卡片。",
                         "integrations_page": "整合頁面",
                         "no_areas": "看起來你還沒有建立分區！",
                         "create_area": "建立分區"
@@ -807,14 +807,14 @@
                     }
                 },
                 "devices": {
-                    "caption": "裝置",
-                    "description": "管理已連線裝置"
+                    "caption": "設備",
+                    "description": "管理已連線設備"
                 }
             },
             "profile": {
                 "push_notifications": {
                     "header": "通知推送",
-                    "description": "傳送通知推送至此裝置。",
+                    "description": "傳送通知推送至此設備。",
                     "error_load_platform": "設定 notify.html5。",
                     "error_use_https": "需要啟用前端 SSL 加密。",
                     "push_notifications": "通知推送",
@@ -908,7 +908,7 @@
                                     "data": {
                                         "code": "兩步驟驗證碼"
                                     },
-                                    "description": "開啟裝置上的 **{mfa_module_name}** 以獲得兩步驟驗證碼，並進行驗證："
+                                    "description": "開啟設備上的 **{mfa_module_name}** 以獲得兩步驟驗證碼，並進行驗證："
                                 }
                             },
                             "error": {
@@ -931,7 +931,7 @@
                                     "data": {
                                         "code": "兩步驟驗證碼"
                                     },
-                                    "description": "開啟裝置上的 **{mfa_module_name}** 以獲得兩步驟驗證碼，並進行驗證："
+                                    "description": "開啟設備上的 **{mfa_module_name}** 以獲得兩步驟驗證碼，並進行驗證："
                                 }
                             },
                             "error": {
@@ -968,7 +968,7 @@
                                     "data": {
                                         "code": "兩步驟驗證碼"
                                     },
-                                    "description": "開啟裝置上的 **{mfa_module_name}** 以獲得兩步驟驗證碼，並進行驗證："
+                                    "description": "開啟設備上的 **{mfa_module_name}** 以獲得兩步驟驗證碼，並進行驗證："
                                 }
                             },
                             "error": {
@@ -1000,7 +1000,7 @@
                     }
                 },
                 "integration": {
-                    "intro": "將會於 Home Assistant 整合中呈現的裝置與服務。可以現在進行設定，或者稍後於設定選單中進行。",
+                    "intro": "將會於 Home Assistant 整合中呈現的設備與服務。可以現在進行設定，或者稍後於設定選單中進行。",
                     "more_integrations": "更多",
                     "finish": "完成"
                 },
@@ -1022,7 +1022,7 @@
                     },
                     "empty_state": {
                         "title": "歡迎回家",
-                        "no_devices": "此頁面允許進行控制所擁有的裝置。看起來您尚未設定任何裝置，從設定中的整合頁面開始吧。",
+                        "no_devices": "此頁面允許進行控制所擁有的設備。看起來您尚未設定任何設備，從設定中的整合頁面開始吧。",
                         "go_to_integrations_page": "轉至整合頁面。"
                     },
                     "picture-elements": {
@@ -1349,9 +1349,9 @@
                 "manuf": "由 {manufacturer}",
                 "no_area": "無分區",
                 "services": {
-                    "reconfigure": "重新設定 ZHA Zibgee 裝置（健康裝置）。假如遇到裝置問題，請使用此選項。假如有問題的裝置為使用電池的裝置，請先確定裝置已喚醒並處於接受命令狀態。",
+                    "reconfigure": "重新設定 ZHA Zibgee 設備（健康設備）。假如遇到設備問題，請使用此選項。假如有問題的設備為使用電池的設備，請先確定設備已喚醒並處於接受命令狀態。",
                     "updateDeviceName": "於物件 ID 中自訂此設備名稱。",
-                    "remove": "從 Zigbee 網路移除裝置。"
+                    "remove": "從 Zigbee 網路移除設備。"
                 },
                 "zha_device_card": {
                     "device_name_placeholder": "使用者姓氏",
@@ -1381,7 +1381,7 @@
         "configurator": "設定檔編輯器",
         "conversation": "語音互動",
         "cover": "捲簾\/門",
-        "device_tracker": "裝置追蹤器",
+        "device_tracker": "設備追蹤器",
         "fan": "風扇",
         "history_graph": "歷史圖",
         "group": "群組",

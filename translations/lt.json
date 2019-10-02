@@ -59,6 +59,7 @@
                 "on": "Aptikta"
             },
             "vibration": {
+                "off": "Neaptikta",
                 "on": "Aptikta"
             },
             "opening": {
@@ -91,10 +92,20 @@
             "streaming": "Transliuojama",
             "idle": "Laukimo režimas"
         },
+        "climate": {
+            "on": "Įjungta",
+            "manual": "Rankinis"
+        },
         "group": {
             "off": "Išjungta",
             "on": "Įjungta",
             "ok": "Ok"
+        },
+        "input_boolean": {
+            "on": "Įjungta"
+        },
+        "media_player": {
+            "on": "Įjungta"
         },
         "remote": {
             "off": "Išjungta",
@@ -114,11 +125,9 @@
         },
         "zwave": {
             "query_stage": {
-                "dead": "Miręs"
+                "initializing": " ( {query_stage} )",
+                "dead": " ({query_stage})"
             }
-        },
-        "climate": {
-            "manual": "Rankinis"
         },
         "timer": {
             "active": "aktyvus",
@@ -143,7 +152,8 @@
             "armed_away": "Užrakinta",
             "armed_night": "Užrakinta",
             "arming": "Užrakinama",
-            "disarming": "Atrakinti"
+            "disarming": "Atrakinti",
+            "armed_custom_bypass": "Užrakinta"
         },
         "device_tracker": {
             "home": "Namie",
@@ -260,11 +270,14 @@
                         "learn_more": "Sužinokite daugiau apie automatizavimą"
                     }
                 },
+                "cloud": {
+                    "caption": "Home Assistant Cloud"
+                },
                 "zha": {
                     "description": "„Zigbee Home Automation“ tinklo valdymas",
                     "services": {
                         "updateDeviceName": "Nustatyti pasirinktinį pavadinimą šiam įrenginiu, prietaisų registre.",
-                        "remove": "Pašalinkite įrenginį iš „ZigBee“ tinklo."
+                        "remove": "Pašalinkite įrenginį iš „Zigbee“ tinklo."
                     },
                     "device_card": {
                         "device_name_placeholder": "Vartotojo suteiktas vardas",
@@ -451,7 +464,7 @@
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {diena}\n  other {dienos}\n}",
-            "week": "count} {count, plural,\n  one {savaitė}\n  other {savaitės}\n}",
+            "week": "{count} {count, plural,\n  one {savaitė}\n  other {savaitės}\n}",
             "second": "{count} {count, plural,\n  one {sekundė}\n  other {sekundės}\n}"
         },
         "common": {

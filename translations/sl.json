@@ -359,7 +359,7 @@
                             "header": "Konfiguracija in nadzor strežnika",
                             "introduction": "Spreminjanje konfiguracije je lahko zapleten proces. Vemo. Ta del bo poskušal narediti vaše življenje malo lažje.",
                             "core_config": {
-                                "edit_requires_storage": "Urejevalnik je onemogočen, ker je konfiguracija shranjena v config.yaml.",
+                                "edit_requires_storage": "Urejevalnik je onemogočen, ker je konfiguracija shranjena v configuration.yaml.",
                                 "location_name": "Ime vašega instalacije vašega Home Assistant-a.",
                                 "latitude": "Zemljepisna širina",
                                 "longitude": "Zemljepisna dolžina",
@@ -645,7 +645,7 @@
                         "seconds": "Sekund",
                         "set_wakeup": "Nastavite Interval bujenja",
                         "config_parameter": "Vrednostni parameter",
-                        "config_value": "vrednost nastavite",
+                        "config_value": "Vrednost nastavite",
                         "true": "Prav",
                         "false": "Lažno",
                         "set_config_parameter": "Nastavite Config Parameter"
@@ -677,7 +677,7 @@
                     "caption": "Home Assistant Cloud",
                     "description_login": "Prijavljen kot {email}",
                     "description_not_login": "Niste prijavljeni",
-                    "description_features": "Imejte nadzor nad domom tudi, ko vas ni doma, povežite z Alexo in Google Asistentom."
+                    "description_features": "Imejte nadzor nad domom tudi, ko vas ni doma, povežite z Alexa in Google Asistentom."
                 },
                 "integrations": {
                     "caption": "Integracije",
@@ -857,7 +857,7 @@
                     "last_used": "Nazadnje uporabljen {date} iz {location}",
                     "not_used": "Nikoli ni bil uporabljen"
                 },
-                "current_user": "Trenutno ste prijavljeni kot {fullName} .",
+                "current_user": "Trenutno ste prijavljeni kot {fullName}.",
                 "is_owner": "Ste lastnik.",
                 "change_password": {
                     "header": "Spremeni geslo",
@@ -888,7 +888,7 @@
             },
             "page-authorize": {
                 "initializing": "Inicializacija",
-                "authorizing_client": "Dali boste {clientId} dostop do vašega Home assistanta.",
+                "authorizing_client": "Dali boste {clientId} dostop do vašega Home Assistanta.",
                 "logging_in_with": "Prijava z **{authProviderName}**.",
                 "pick_auth_provider": "Ali se prijavite z",
                 "abort_intro": "Prijava prekinjena",
@@ -1290,7 +1290,7 @@
                 "service": "Storitev"
             },
             "relative_time": {
-                "past": "pred {time}",
+                "past": "Pred {time}",
                 "future": "Čez {time}",
                 "never": "Nikoli",
                 "duration": {
@@ -1307,7 +1307,7 @@
             }
         },
         "notification_toast": {
-            "entity_turned_on": "Vklopljen je {entity} .",
+            "entity_turned_on": "Vklopljen je {entity}.",
             "entity_turned_off": "Izklopljen {entity}.",
             "service_called": "Storitev {service} klicana.",
             "service_call_failed": "Storitve ni bilo mogoče poklicati {service}.",
@@ -1351,7 +1351,7 @@
                 "services": {
                     "reconfigure": "Ponovno konfigurirajte napravo ZHA (\"pozdravite\" napravo). To uporabite, če imate z njo težave. Če ta naprava deluje na baterije, se prepričajte, da je budna in sprejema ukaze pri uporabi te storitve.",
                     "updateDeviceName": "Nastavite ime po meri za to napravo v registru naprav.",
-                    "remove": "Odstranite napravo iz omrežja ZigBee."
+                    "remove": "Odstranite napravo iz omrežja Zigbee."
                 },
                 "zha_device_card": {
                     "device_name_placeholder": "Ime, ki ga je dodelil uporabnik",
