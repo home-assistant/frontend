@@ -161,30 +161,21 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
       return;
     }
     const target = ev.target! as EditorTarget;
-    if (
-      target.configValue &&
-      ev.detail &&
-      this[`_${target.configValue}`] === ev.detail.value
-    ) {
+    if (target.configValue && this[`_${target.configValue}`] === target.value) {
       return;
     }
-    if (target.configValue && ev.detail) {
-      if (
-        ev.detail.value === "" ||
-        (target.type === "number" && isNaN(Number(ev.detail.value)))
-      ) {
-        delete this._config[target.configValue!];
-      } else {
-        let value: any = ev.detail.value;
-        if (target.type === "number") {
-          value = Number(value);
-        }
-        this._config = {
-          ...this._config,
-          [target.configValue]:
-            target.checked !== undefined ? target.checked : value,
-        };
-      }
+    let value: any = target.value;
+    if (target.type === "number") {
+      value = Number(value);
+    }
+    if (target.value === "" || (target.type === "number" && isNaN(value))) {
+      delete this._config[target.configValue!];
+    } else if (target.configValue) {
+      this._config = {
+        ...this._config,
+        [target.configValue]:
+          target.checked !== undefined ? target.checked : value,
+      };
     }
     fireEvent(this, "config-changed", { config: this._config });
   }
