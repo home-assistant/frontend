@@ -100,7 +100,10 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
             <ha-paper-icon-button-arrow-prev
               on-click="backTapped"
             ></ha-paper-icon-button-arrow-prev>
-            <div main-title>[[localize('ui.panel.config.script.caption')]] [[computeName(script)]]</div>
+            <div main-title>
+              [[localize('ui.panel.config.script.caption')]]
+              [[computeName(script)]]
+            </div>
             <template is="dom-if" if="[[!creatingNew]]">
               <paper-icon-button
                 icon="hass:delete"
@@ -232,7 +235,9 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
           this._updateComponent();
         },
         () => {
-          alert("[[localize('ui.panel.config.script.editor.load_error_not_editable')]]");
+          alert(
+            "[[localize('ui.panel.config.script.editor.load_error_not_editable')]]"
+          );
           history.back();
         }
       );
@@ -281,7 +286,9 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
   }
 
   async _delete() {
-    if (!confirm("[[localize('ui.panel.config.script.editor.delete_confirm')]]")) {
+    if (
+      !confirm("[[localize('ui.panel.config.script.editor.delete_confirm')]]")
+    ) {
       return;
     }
     await deleteScript(this.hass, computeObjectId(this.script.entity_id));
