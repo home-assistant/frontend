@@ -939,6 +939,67 @@
             "start_trial": "Start Trial",
             "resend_confirm_email": "Resend confirmation email",
             "account_created": "Account created! Check your email for instructions on how to activate your account."
+          },
+          "account": {
+            "thank_you_note": "Thank you for being part of Home Assistant Cloud. It's because of people like you that we are able to make a great home automation experience for everyone. Thank you!",
+            "nabu_casa_account": "Nabu Casa Account",
+            "connection_status": "Cloud connection status",
+            "manage_account": "Manage Account",
+            "sign_out": "Sign out",
+            "integrations": "Integrations",
+            "integrations_introduction": "Integrations for Home Assistant Cloud allow you to connect with services in the cloud without having to expose your Home Assistant instance publicly on the internet.",
+            "integrations_introduction2": "Check the website for ",
+            "integrations_link_all_features": " all available features",
+            "connected": "Connected",
+            "not_connected": "Not Connected",
+            "fetching_subscription": "Fetching subscription…",
+            "remote": {
+              "title": "Remote Control",
+              "access_is_being_prepared": "Remote access is being prepared. We will notify you when it's ready.",
+              "info": "Home Assistant Cloud provides a secure remote connection to your instance while away from home. Your instance {is_will-be} available at",
+              "link_learn_how_it_works": "Learn how it works",
+              "certificate_info": "Certificate Info"
+            },
+            "alexa": {
+              "title": "Alexa",
+              "info": "With the Alexa integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Alexa-enabled device.",
+              "enable_ha_skill": "Enable the Home Assistant skill for Alexa",
+              "config_documentation": "Config documentation",
+              "requirements": "This integration requires an Alexa-enabled device like the Amazon Echo.",
+              "enable_state_reporting": "Enable State Reporting",
+              "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
+              "sync_entities": "Sync Entities",
+              "manage_entities": "Manage Entities",
+              "sync_entities_error": "Failed to sync entities:",
+              "state_reporting_error": "Unable to {enable_disable} report state.",
+              "enable": "enable",
+              "disable": "disable"
+            },
+            "google": {
+              "title": "Google Assistant",
+              "info": "With the Google Assistant integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
+              "enable_ha_skill": "Activate the Home Assistant skill for Google Assistant",
+              "config_documentation": "Config documentation",
+              "requirements": "This integration requires a Google Assistant-enabled device like the Google Home or Android phone.",
+              "enter_pin_info": "Please enter a pin to interact with security devices. Security devices are doors, garage doors and locks. You will be asked to say/enter this pin when interacting with such devices via Google Assistant.",
+              "devices_pin": "Secure Devices Pin",
+              "enter_pin_hint": "Enter a PIN to use secure devices",
+              "sync_entities": "Sync Entities to Google",
+              "manage_entities": "Manage Entities",
+              "enter_pin_error": "Unable to store pin:"
+            },
+            "webhooks": {
+              "title": "Webhooks",
+              "info": "Anything that is configured to be triggered by a webhook can be given a publicly accessible URL to allow you to send data back to Home Assistant from anywhere, without exposing your instance to the internet.",
+              "no_hooks_yet": "Looks like you have no webhooks yet. Get started by configuring a ",
+              "no_hooks_yet_link_integration": "webhook-based integration",
+              "no_hooks_yet2": " or by creating a ",
+              "no_hooks_yet_link_automation": "webhook automation",
+              "link_learn_more": "Learn more about creating webhook-powered automations.",
+              "loading": "Loading ...",
+              "manage": "Manage",
+              "disable_hook_error_msg": "Failed to disable webhook:"
+            }
           }
         },
         "devices": {
