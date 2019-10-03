@@ -917,6 +917,15 @@
             "alert_password_change_required": "You need to change your password before logging in.",
             "alert_email_confirm_necessary": "You need to confirm your email before logging in."
           },
+          "forgot_password": {
+            "title": "Forgot password",
+            "subtitle": "Forgot your password",
+            "instructions": "Enter your email address and we will send you a link to reset your password.",
+            "email": "Email",
+            "email_error_msg": "Invalid email",
+            "send_reset_email": "Send reset email",
+            "check_your_email": "Check your email for instructions on how to reset your password."
+          },
           "register": {
             "title": "Register Account",
             "headline": "Start your free trial",
