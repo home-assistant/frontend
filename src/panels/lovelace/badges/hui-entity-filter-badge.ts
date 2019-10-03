@@ -122,15 +122,12 @@ class EntityFilterBadge extends HTMLElement implements LovelaceBadge {
       return true;
     }
 
-    if (!this._configEntities) {
+    if (!this._configEntities || this._hass.localize !== hass.localize) {
       return true;
     }
 
     for (const config of this._configEntities) {
-      if (
-        this._hass.states[config.entity] !== hass.states[config.entity] ||
-        this._hass.localize !== hass.localize
-      ) {
+      if (this._hass.states[config.entity] !== hass.states[config.entity]) {
         return true;
       }
     }

@@ -12,7 +12,7 @@ export interface LovelaceConfig {
 export interface LovelaceViewConfig {
   index?: number;
   title?: string;
-  badges?: LovelaceBadgeConfig[];
+  badges?: Array<string | LovelaceBadgeConfig>;
   cards?: LovelaceCardConfig[];
   path?: string;
   icon?: string;

@@ -42,7 +42,6 @@ export class HuiErrorBadge extends LitElement implements LovelaceBadge {
 
     return html`
       <ha-label-badge
-        class="warning"
         label="Error"
         icon="hass:alert"
         description=${this._config.error}
@@ -52,7 +51,7 @@ export class HuiErrorBadge extends LitElement implements LovelaceBadge {
 
   static get styles(): CSSResult {
     return css`
-      .warning {
+      :host {
         --ha-label-badge-color: var(--label-badge-yellow, #fce588);
       }
     `;

@@ -41,12 +41,14 @@ export const createBadgeElement = (
     return _createErrorElement("No config");
   }
 
-  if (!config.type) {
-    config.type = "state-label";
+  let type = config.type;
+
+  if (!type) {
+    type = "state-label";
   }
 
-  if (config.type.startsWith(CUSTOM_TYPE_PREFIX)) {
-    const tag = config.type.substr(CUSTOM_TYPE_PREFIX.length);
+  if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
+    const tag = type.substr(CUSTOM_TYPE_PREFIX.length);
 
     if (customElements.get(tag)) {
       return _createElement(tag, config);
@@ -65,9 +67,9 @@ export const createBadgeElement = (
     return element;
   }
 
-  if (!BADGE_TYPES.has(config.type)) {
-    return _createErrorElement(`Unknown type: ${config.type}`);
+  if (!BADGE_TYPES.has(type)) {
+    return _createErrorElement(`Unknown type: ${type}`);
   }
 
-  return _createElement(`hui-${config.type}-badge`, config);
+  return _createElement(`hui-${type}-badge`, config);
 };
