@@ -126,7 +126,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
           .aspectRatio=${this._config.aspect_ratio}
           @ha-click=${this._handleClick}
           @ha-hold=${this._handleHold}
-          @ha-dblclick=${this._handleDblHold}
+          @ha-dblclick=${this._handleDblClick}
           .hasDblClick=${this._config!.dbltap_action &&
             this._config!.dbltap_action!.action !== "none"}
           .longPress=${longPress()}
@@ -188,7 +188,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     handleClick(this, this.hass!, this._config!, true, false);
   }
 
-  private _handleDblHold() {
+  private _handleDblClick() {
     handleClick(this, this.hass!, this._config!, false, true);
   }
 }

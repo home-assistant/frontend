@@ -185,7 +185,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         .entityConf="${entityConf}"
         @ha-click=${this._handleClick}
         @ha-hold=${this._handleHold}
-        @ha-dblclick=${this._handleDblHold}
+        @ha-dblclick=${this._handleDblClick}
         .hasDblClick=${entityConf.dbltap_action &&
           entityConf.dbltap_action!.action !== "none"}
         .longPress=${longPress()}
@@ -239,7 +239,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     handleClick(this, this.hass!, config, true, false);
   }
 
-  private _handleDblHold(ev: MouseEvent): void {
+  private _handleDblClick(ev: MouseEvent): void {
     const config = (ev.currentTarget as any).entityConf as GlanceConfigEntity;
     handleClick(this, this.hass!, config, false, true);
   }
