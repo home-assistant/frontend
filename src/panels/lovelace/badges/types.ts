@@ -9,5 +9,4 @@ export interface EntityFilterBadgeConfig extends LovelaceBadgeConfig {
 
 export interface ErrorBadgeConfig extends LovelaceBadgeConfig {
   error: string;
-  origConfig: LovelaceBadgeConfig;
 }

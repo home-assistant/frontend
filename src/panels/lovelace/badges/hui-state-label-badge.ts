@@ -30,24 +30,14 @@ export class HuiStateLabelBadge extends LitElement implements LovelaceBadge {
 
     const stateObj = this.hass.states[this._config.entity!];
 
-    if (!stateObj) {
-      return html`
-        <hui-warning-element
-          .label=${this.hass.localize(
-            "ui.panel.lovelace.warning.entity_not_found",
-            "entity",
-            this._config.entity
-          )}
-        ></hui-warning-element>
-      `;
-    }
-
     return html`
       <ha-state-label-badge
         .hass=${this.hass}
         .state=${stateObj}
         .title=${this._config.name === undefined
-          ? computeStateName(stateObj)
+          ? stateObj
+            ? computeStateName(stateObj)
+            : ""
           : this._config.name === null
           ? ""
           : this._config.name}

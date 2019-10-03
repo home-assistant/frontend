@@ -26,22 +26,19 @@ const _createElement = (
   } catch (err) {
     // tslint:disable-next-line
     console.error(tag, err);
-    return _createErrorElement(err.message, config);
+    return _createErrorElement(err.message);
   }
   return element;
 };
 
-const _createErrorElement = (
-  error: string,
-  config: LovelaceBadgeConfig
-): HuiErrorBadge =>
-  createErrorBadgeElement(createErrorBadgeConfig(error, config));
+const _createErrorElement = (error: string): HuiErrorBadge =>
+  createErrorBadgeElement(createErrorBadgeConfig(error));
 
 export const createBadgeElement = (
   config: LovelaceBadgeConfig
 ): LovelaceBadge | HuiErrorBadge => {
   if (!config || typeof config !== "object") {
-    return _createErrorElement("No badge type configured.", config);
+    return _createErrorElement("No config");
   }
 
   if (!config.type) {
@@ -54,10 +51,7 @@ export const createBadgeElement = (
     if (customElements.get(tag)) {
       return _createElement(tag, config);
     }
-    const element = _createErrorElement(
-      `Custom element doesn't exist: ${tag}.`,
-      config
-    );
+    const element = _createErrorElement(`Type doesn't exist: ${tag}`);
     element.style.display = "None";
     const timer = window.setTimeout(() => {
       element.style.display = "";
@@ -72,10 +66,7 @@ export const createBadgeElement = (
   }
 
   if (!BADGE_TYPES.has(config.type)) {
-    return _createErrorElement(
-      `Unknown card type encountered: ${config.type}.`,
-      config
-    );
+    return _createErrorElement(`Unknown type: ${config.type}`);
   }
 
   return _createElement(`hui-${config.type}-badge`, config);

@@ -9,9 +9,10 @@ import {
 } from "lit-element";
 
 import { LovelaceBadge } from "../types";
-import { LovelaceBadgeConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { ErrorBadgeConfig } from "./types";
+
+import "../../../components/ha-label-badge";
 
 export const createErrorBadgeElement = (config) => {
   const el = document.createElement("hui-error-badge");
@@ -19,10 +20,9 @@ export const createErrorBadgeElement = (config) => {
   return el;
 };
 
-export const createErrorBadgeConfig = (error, origConfig) => ({
+export const createErrorBadgeConfig = (error) => ({
   type: "error",
   error,
-  origConfig,
 });
 
 @customElement("hui-error-badge")
@@ -41,27 +41,21 @@ export class HuiErrorBadge extends LitElement implements LovelaceBadge {
     }
 
     return html`
-      ${this._config.error}
-      <pre>${this._toStr(this._config.origConfig)}</pre>
+      <ha-label-badge
+        class="warning"
+        label="Error"
+        icon="hass:alert"
+        description=${this._config.error}
+      ></ha-label-badge>
     `;
   }
 
   static get styles(): CSSResult {
     return css`
-      :host {
-        display: block;
-        background-color: #ef5350;
-        color: white;
-        padding: 8px;
-        font-weight: 500;
-        user-select: text;
-        cursor: default;
+      .warning {
+        --ha-label-badge-color: var(--label-badge-yellow, #fce588);
       }
     `;
-  }
-
-  private _toStr(config: LovelaceBadgeConfig): string {
-    return JSON.stringify(config, null, 2);
   }
 }
 

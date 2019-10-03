@@ -1,7 +1,6 @@
 import { createBadgeElement } from "../common/create-badge-element";
 import { processConfigEntities } from "../common/process-config-entities";
 import { LovelaceBadge } from "../types";
-import { LovelaceBadgeConfig } from "../../../data/lovelace";
 import { EntityFilterEntityConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 import { EntityFilterBadgeConfig } from "./types";
@@ -9,10 +8,9 @@ import { evaluateFilter } from "../common/evaluate-filter";
 
 class EntityFilterBadge extends HTMLElement implements LovelaceBadge {
   public isPanel?: boolean;
-  private _element?: LovelaceBadge;
+  private _elements?: LovelaceBadge[];
   private _config?: EntityFilterBadgeConfig;
   private _configEntities?: EntityFilterEntityConfig[];
-  private _baseCardConfig?: LovelaceBadgeConfig;
   private _hass?: HomeAssistant;
   private _oldEntities?: EntityFilterEntityConfig[];
 
@@ -38,7 +36,7 @@ class EntityFilterBadge extends HTMLElement implements LovelaceBadge {
 
     if (this.lastChild) {
       this.removeChild(this.lastChild);
-      this._element = undefined;
+      this._elements = undefined;
     }
   }
 
@@ -87,34 +85,36 @@ class EntityFilterBadge extends HTMLElement implements LovelaceBadge {
       return;
     }
 
-    const element = this._badgeElement();
+    const isSame =
+      this._oldEntities &&
+      entitiesList.length === this._oldEntities.length &&
+      entitiesList.every((entity, idx) => entity === this._oldEntities![idx]);
 
-    if (!element) {
+    if (!isSame) {
+      this._elements = [];
+      for (const badgeConfig of entitiesList) {
+        const element = createBadgeElement(badgeConfig);
+        this._elements.push(element);
+      }
+      this._oldEntities = entitiesList;
+    }
+
+    if (!this._elements) {
       return;
     }
 
-    // TODO Create badgeElements for each entity
-
-    // if (element.tagName !== "HUI-ERROR-CARD") {
-    //   const isSame =
-    //     this._oldEntities &&
-    //     entitiesList.length === this._oldEntities.length &&
-    //     entitiesList.every((entity, idx) => entity === this._oldEntities![idx]);
-
-    //   if (!isSame) {
-    //     this._oldEntities = entitiesList;
-    //     element.setConfig({ ...this._baseCardConfig!, entities: entitiesList });
-    //   }
-
-    //   element.hass = hass;
-    // }
+    for (const element of this._elements) {
+      element.hass = hass;
+    }
 
     // Attach element if it has never been attached.
     if (!this.lastChild) {
-      this.appendChild(element);
+      for (const element of this._elements) {
+        this.appendChild(element);
+      }
     }
 
-    this.style.display = "block";
+    this.style.display = "inline";
   }
 
   private haveEntitiesChanged(hass: HomeAssistant): boolean {
@@ -136,15 +136,6 @@ class EntityFilterBadge extends HTMLElement implements LovelaceBadge {
     }
 
     return false;
-  }
-
-  private _badgeElement(): LovelaceBadge | undefined {
-    if (!this._element && this._config) {
-      const element = createBadgeElement(this._baseCardConfig!);
-      this._element = element;
-    }
-
-    return this._element;
   }
 }
 customElements.define("hui-entity-filter-badge", EntityFilterBadge);
