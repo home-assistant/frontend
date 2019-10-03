@@ -597,7 +597,8 @@
     },
     "notification_toast": {
       "service_call_failed": "Failed to call service {service}.",
-      "connection_lost": "Connection lost. Reconnecting…"
+      "connection_lost": "Connection lost. Reconnecting…",
+      "triggered": "Triggered {name}"
     },
     "sidebar": {
       "external_app_configuration": "App Configuration"
@@ -606,6 +607,11 @@
       "config": {
         "header": "Configure Home Assistant",
         "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
+        "common": {
+          "editor": {
+            "confirm_unsaved": "You have unsaved changes. Are you sure you want to leave?"
+          }
+        },
         "area_registry": {
           "caption": "Area Registry",
           "description": "Overview of all areas in your home.",
@@ -890,8 +896,21 @@
           }
         },
         "script": {
-          "caption": "Script",
-          "description": "Create and edit scripts"
+          "caption": "Script {name}",
+          "description": "Create and edit scripts",
+          "picker": {
+            "header": "Script Editor",
+            "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
+            "learn_more": "Learn more about scripts",
+            "pick_script": "Pick script to edit",
+            "no_scripts": "We couldn’t find any editable scripts",
+            "add_script": "Add script"
+          },
+          "editor": {
+            "default_name": "New Script",
+            "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
+            "delete_confirm": "Are you sure you want to delete this script?"
+          }
         },
         "cloud": {
           "caption": "Home Assistant Cloud",
