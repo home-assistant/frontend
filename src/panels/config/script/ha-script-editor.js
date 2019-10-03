@@ -236,7 +236,9 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
         },
         () => {
           alert(
-            "[[localize('ui.panel.config.script.editor.load_error_not_editable')]]"
+            this.hass.localize(
+              "ui.panel.config.script.editor.load_error_not_editable"
+            )
           );
           history.back();
         }
@@ -249,7 +251,7 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
     }
     this.dirty = false;
     this.config = {
-      alias: "[[localize('ui.panel.config.script.editor.default_name')]]",
+      alias: this.hass.localize("ui.panel.config.script.editor.default_name"),
       sequence: [{ service: "", data: {} }],
     };
     this._updateComponent();
@@ -259,7 +261,7 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
     if (
       this.dirty &&
       // eslint-disable-next-line
-      !confirm("[[localize('ui.panel.config.common.editor.confirm_unsaved')]]")
+      !confirm(this.hass.localize("ui.panel.config.common.editor.confirm_unsaved"))
     ) {
       return;
     }
@@ -287,7 +289,9 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
 
   async _delete() {
     if (
-      !confirm("[[localize('ui.panel.config.script.editor.delete_confirm')]]")
+      !confirm(
+        this.hass.localize("ui.panel.config.script.editor.delete_confirm")
+      )
     ) {
       return;
     }
