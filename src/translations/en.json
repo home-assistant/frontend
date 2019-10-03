@@ -977,7 +977,8 @@
           "caption": "Users",
           "description": "Manage users",
           "picker": {
-            "title": "Users"
+            "title": "Users",
+            "system_generated": "System generated"
           },
           "editor": {
             "caption": "View user",
@@ -985,7 +986,18 @@
             "change_password": "Change password",
             "activate_user": "Activate user",
             "deactivate_user": "Deactivate user",
-            "delete_user": "Delete user"
+            "delete_user": "Delete user",
+            "id": "ID",
+            "owner": "Owner",
+            "group": "Group",
+            "active": "Active",
+            "system_generated": "System generated",
+            "system_generated_users_not_removable": "Unable to remove system generated users.",
+            "unnamed_user": "Unnamed User",
+            "enter_new_name": "Enter new name",
+            "user_rename_failed": "User rename failed:",
+            "group_update_failed": "Group update failed:",
+            "confirm_user_deletion": "Are you sure you want to delete {name}?"
           },
           "add_user": {
             "caption": "Add user",
