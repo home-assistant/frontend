@@ -49,7 +49,7 @@ export class HUIView extends LitElement {
   public columns?: number;
   public index?: number;
   private _cards: Array<LovelaceCard | HuiErrorCard>;
-  private _badges: Array<{ element: LovelaceBadge; entityId: string }>;
+  private _badges: LovelaceBadge[];
 
   static get properties(): PropertyDeclarations {
     return {
@@ -207,8 +207,7 @@ export class HUIView extends LitElement {
       this._createBadges(lovelace.config.views[this.index!]);
     } else if (hassChanged) {
       this._badges.forEach((badge) => {
-        const { element } = badge;
-        element.hass = hass;
+        badge.hass = hass;
       });
     }
 
@@ -262,9 +261,8 @@ export class HUIView extends LitElement {
     const badges = processConfigEntities(config.badges);
     for (const badge of badges) {
       const element = createBadgeElement(badge);
-      const entityId = badge.entity;
       element.hass = this.hass;
-      elements.push({ element, entityId });
+      elements.push(element);
       root.appendChild(element);
     }
     this._badges = elements;

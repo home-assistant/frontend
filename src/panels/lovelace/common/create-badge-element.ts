@@ -1,14 +1,13 @@
 import deepClone from "deep-clone-simple";
 
-import { fireEvent } from "../../../common/dom/fire_event";
-
 import "../badges/hui-entity-filter-badge";
+import "../badges/hui-state-label-badge";
+
 import {
   createErrorBadgeElement,
   createErrorBadgeConfig,
   HuiErrorBadge,
 } from "../badges/hui-error-badge";
-import "../badges/hui-state-label-badge";
 import { LovelaceBadge } from "../types";
 import { LovelaceBadgeConfig } from "../../../data/lovelace";
 
@@ -61,7 +60,6 @@ export const createBadgeElement = (
 
     customElements.whenDefined(tag).then(() => {
       clearTimeout(timer);
-      fireEvent(element, "ll-rebuild");
     });
 
     return element;
