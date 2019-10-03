@@ -939,11 +939,24 @@
         "person": {
           "caption": "Persons",
           "description": "Manage the persons that Home Assistant tracks.",
+          "introduction": "Here you can define each person of interest in Home Assistant.",
+          "note_about_persons_configured_in_yaml": "Note: persons configured via configuration.yaml cannot be edited via the UI.",
+          "no_persons_created_yet": "Looks like you have not created any persons yet.",
+          "create_person": "Create Person",
+          "add_person": "Add Person",
+          "confirm_delete": "Are you sure you want to delete this person?",
+          "confirm_delete2": "All devices belonging to this person will become unassigned.",
           "detail": {
+            "new_person": "New Person",
             "name": "Name",
+            "name_error_msg": "Name is required",
+            "linked_user": "Linked User",
             "device_tracker_intro": "Select the devices that belong to this person.",
             "device_tracker_picked": "Track Device",
-            "device_tracker_pick": "Pick device to track"
+            "device_tracker_pick": "Pick device to track",
+            "delete": "Delete",
+            "create": "Create",
+            "update": "Update"
           }
         },
         "integrations": {
