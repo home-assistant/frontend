@@ -566,11 +566,20 @@
       "zha_device_info": {
         "manuf": "by {manufacturer}",
         "no_area": "No Area",
+        "buttons": {
+          "add": "Add Devices",
+          "remove": "Remove Device",
+          "reconfigure": "Reconfigure Device"
+        },
         "services": {
           "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
           "updateDeviceName": "Set a custom name for this device in the device registry.",
           "remove": "Remove a device from the ZigBee network."
         },
+        "quirk": "Quirk",
+        "last_seen": "Last Seen",
+        "power_source": "Power Source",
+        "unknown": "Unknown",
         "zha_device_card": {
           "device_name_placeholder": "User given name",
           "area_picker_label": "Area",
@@ -999,6 +1008,7 @@
           "caption": "ZHA",
           "description": "Zigbee Home Automation network management",
           "common": {
+            "add_devices": "Add Devices",
             "clusters": "Clusters",
             "devices": "Devices",
             "manufacturer_code_override": "Manufacturer Code Override",
@@ -1012,8 +1022,7 @@
           },
           "network_management": {
             "header": "Network Management",
-            "introduction": "Commands that affect the entire network",
-            "add_devices": "Add Devices"
+            "introduction": "Commands that affect the entire network"
           },
           "node_management": {
             "header": "Device Management",

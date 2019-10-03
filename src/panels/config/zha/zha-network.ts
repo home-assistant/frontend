@@ -61,9 +61,7 @@ export class ZHANetwork extends LitElement {
         <ha-card class="content">
           <div class="card-actions">
             <mwc-button @click=${this._onAddDevicesClick}>
-              ${this.hass!.localize(
-                "ui.panel.config.zha.network_management.add_devices"
-              )}
+              ${this.hass!.localize("ui.panel.config.zha.common.add_devices")}
             </mwc-button>
             ${this._showHelp
               ? html`

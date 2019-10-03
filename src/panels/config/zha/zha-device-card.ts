@@ -155,17 +155,29 @@ class ZHADeviceCard extends LitElement {
             <dt>Nwk:</dt>
             <dd class="zha-info">${formatAsPaddedHex(this.device!.nwk)}</dd>
             <dt>LQI:</dt>
-            <dd class="zha-info">${this.device!.lqi || "Unknown"}</dd>
+            <dd class="zha-info">${this.device!.lqi ||
+              this.hass!.localize("ui.dialogs.zha_device_info.unknown")}</dd>
             <dt>RSSI:</dt>
-            <dd class="zha-info">${this.device!.rssi || "Unknown"}</dd>
-            <dt>Last Seen:</dt>
-            <dd class="zha-info">${this.device!.last_seen || "Unknown"}</dd>
-            <dt>Power Source:</dt>
-            <dd class="zha-info">${this.device!.power_source || "Unknown"}</dd>
+            <dd class="zha-info">${this.device!.rssi ||
+              this.hass!.localize("ui.dialogs.zha_device_info.unknown")}</dd>
+            <dt>${this.hass!.localize(
+              "ui.dialogs.zha_device_info.last_seen"
+            )}:</dt>
+            <dd class="zha-info">${this.device!.last_seen ||
+              this.hass!.localize("ui.dialogs.zha_device_info.unknown")}</dd>
+            <dt>${this.hass!.localize(
+              "ui.dialogs.zha_device_info.power_source"
+            )}:</dt>
+            <dd class="zha-info">${this.device!.power_source ||
+              this.hass!.localize("ui.dialogs.zha_device_info.unknown")}</dd>
             ${
               this.device!.quirk_applied
                 ? html`
-                    <dt>Quirk:</dt>
+                    <dt>
+                      ${this.hass!.localize(
+                        "ui.dialogs.zha_device_info.quirk"
+                      )}:
+                    </dt>
                     <dd class="zha-info">${this.device!.quirk_class}</dd>
                   `
                 : ""
@@ -238,9 +250,11 @@ class ZHADeviceCard extends LitElement {
           this.showActions
             ? html`
                 <div class="card-actions">
-                  <mwc-button @click="${this._onReconfigureNodeClick}"
-                    >Reconfigure Device</mwc-button
-                  >
+                  <mwc-button @click="${this._onReconfigureNodeClick}">
+                    ${this.hass!.localize(
+                      "ui.dialogs.zha_device_info.buttons.reconfigure"
+                    )}
+                  </mwc-button>
                   ${this.showHelp
                     ? html`
                         <div class="help-text">
@@ -256,8 +270,11 @@ class ZHADeviceCard extends LitElement {
                     domain="zha"
                     service="remove"
                     .serviceData="${this._serviceData}"
-                    >Remove Device</ha-call-service-button
                   >
+                    ${this.hass!.localize(
+                      "ui.dialogs.zha_device_info.buttons.remove"
+                    )}
+                  </ha-call-service-button>
                   ${this.showHelp
                     ? html`
                         <div class="help-text">
@@ -270,7 +287,9 @@ class ZHADeviceCard extends LitElement {
                   ${this.device!.power_source === "Mains"
                     ? html`
                         <mwc-button @click=${this._onAddDevicesClick}>
-                          Add Devices
+                          ${this.hass!.localize(
+                            "ui.panel.config.zha.common.add_devices"
+                          )}
                         </mwc-button>
                         ${this.showHelp
                           ? html`
