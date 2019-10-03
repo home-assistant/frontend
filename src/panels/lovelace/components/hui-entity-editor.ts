@@ -30,6 +30,26 @@ export class HuiEntityEditor extends LitElement {
     }
 
     return html`
+      <div id="badges">
+        ${this.entities.map((entity) => {
+          const state = this.hass!.states[entity.entity];
+          const name = entity.name;
+          const icon = entity.icon;
+          const image = entity.image;
+
+          return html`
+           <ha-state-label-badge 
+            .hass=${this.hass} 
+            .state=${state} 
+            .name=${name} 
+            .icon=${icon} 
+            .image=${image}>
+           </ha-label-badge>
+         </div>
+       `;
+        })}
+      </div>
+
       <h3>
         ${this.label ||
           this.hass!.localize(
@@ -140,6 +160,11 @@ export class HuiEntityEditor extends LitElement {
       }
       .entity ha-entity-picker {
         flex-grow: 1;
+      }
+      #badges {
+        margin: 8px 16px;
+        font-size: 85%;
+        text-align: center;
       }
     `;
   }
