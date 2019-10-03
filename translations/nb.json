@@ -49,7 +49,7 @@
                 "on": "Oppdaget"
             },
             "motion": {
-                "off": "Klart",
+                "off": "Klar",
                 "on": "Oppdaget"
             },
             "occupancy": {
@@ -284,14 +284,14 @@
         "alarm_control_panel": {
             "armed": "Påslått",
             "disarmed": "Deaktiver",
-            "armed_home": "Aktivert",
-            "armed_away": "Aktivert",
-            "armed_night": "Aktivert",
+            "armed_home": "Påslått",
+            "armed_away": "Påslått",
+            "armed_night": "Påslått",
             "pending": "Venter",
             "arming": "Slår på",
             "disarming": "Slå av",
             "triggered": "Utløs",
-            "armed_custom_bypass": "Aktivert"
+            "armed_custom_bypass": "Påslått"
         },
         "device_tracker": {
             "home": "Hjemme",
@@ -570,7 +570,7 @@
                             "type": {
                                 "service": {
                                     "label": "Hent tjeneste",
-                                    "service_data": "Tjeneste data"
+                                    "service_data": "Tjenestedata"
                                 },
                                 "delay": {
                                     "label": "Forsinkelse",
@@ -587,7 +587,7 @@
                                 "event": {
                                     "label": "Kjør hendelse",
                                     "event": "Hendelse",
-                                    "service_data": "Tjeneste data"
+                                    "service_data": "Tjenestedata"
                                 },
                                 "device_id": {
                                     "label": "Enhet"
@@ -681,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "Integrasjoner",
-                    "description": "Administrer tilkoblede enheter og tjenester",
+                    "description": "Administrer og konfigurer integrasjoner",
                     "discovered": "Oppdaget",
                     "configured": "Konfigurert",
                     "new": "Sett opp en ny integrasjon",
@@ -709,11 +709,11 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "ZigBee Home Automation nettverksadministrasjon",
+                    "description": "Zigbee Home Automation nettverksadministrasjon",
                     "services": {
                         "reconfigure": "Rekonfigurer ZHA-enhet (heal enhet). Bruk dette hvis du har problemer med enheten. Hvis den aktuelle enheten er en batteridrevet enhet, sørg for at den er våken og aksepterer kommandoer når du bruker denne tjenesten.",
                         "updateDeviceName": "Angi et egendefinert navn for denne enheten i enhetsregisteret.",
-                        "remove": "Fjern en enhet fra ZigBee-nettverket."
+                        "remove": "Fjern en enhet fra Zigbee-nettverket."
                     },
                     "device_card": {
                         "device_name_placeholder": "Brukers navn",
@@ -721,7 +721,7 @@
                         "update_name_button": "Oppdatér navn"
                     },
                     "add_device_page": {
-                        "header": "ZigBee Home Automation - Legg til enheter",
+                        "header": "Zigbee Home Automation - Legg til enheter",
                         "spinner": "Søker etter ZHA Zigbee-enheter...",
                         "discovery_text": "Oppdagede enheter vises her. Følg instruksjonene for enheten(e) og sett enheten(e) i paringsmodus."
                     }
@@ -968,7 +968,7 @@
                                     "data": {
                                         "code": "To-faktor autentiseringskode"
                                     },
-                                    "description": "Åpne **{mfa_module_name}** på enheten din for å se din to-faktor autentiseringskode og bekrefte identiteten din:"
+                                    "description": "Åpne **{mfa_module_name}** på enheten din for å se din tofaktors autentiseringskode og bekrefte identiteten din:"
                                 }
                             },
                             "error": {
@@ -1005,7 +1005,7 @@
                     "finish": "Fullfør"
                 },
                 "core-config": {
-                    "intro": "Hei {Name}, velkommen til Home Assistant. Hva ønsker du å kalle hjemmet ditt?",
+                    "intro": "Hei {name}, velkommen til Home Assistant. Hva ønsker du å kalle hjemmet ditt?",
                     "intro_location": "Vi vil gjerne vite hvor du bor. Denne informasjonen vil bidra til å vise informasjon og sette opp solbaserte automatiseringer. Denne dataen deles ikke utenfor nettverket ditt.",
                     "intro_location_detect": "Vi kan hjelpe deg med å fylle ut denne informasjonen ved å gjøre en engangsforespørsel til en ekstern tjeneste.",
                     "location_name_default": "Hjem",
@@ -1030,7 +1030,7 @@
                         "tap": "Trykk:",
                         "navigate_to": "Naviger til {location}",
                         "toggle": "Veksle {name}",
-                        "call_service": "Tjenestekall {navn}",
+                        "call_service": "Tjenestekall {name}",
                         "more_info": "Vis mer info: {name}"
                     }
                 },
@@ -1276,7 +1276,7 @@
                     "start": "start",
                     "pause": "pause",
                     "cancel": "Avbryt",
-                    "finish": "Fullføre"
+                    "finish": "Ferdig"
                 }
             }
         },
@@ -1351,7 +1351,7 @@
                 "services": {
                     "reconfigure": "Rekonfigurer ZHA-enhet (heal enhet). Bruk dette hvis du har problemer med enheten. Hvis den aktuelle enheten er en batteridrevet enhet, sørg for at den er våken og aksepterer kommandoer når du bruker denne tjenesten.",
                     "updateDeviceName": "Angi et egendefinert navn for denne enheten i enhetsregisteret.",
-                    "remove": "Fjern en enhet fra ZigBee-nettverket."
+                    "remove": "Fjern en enhet fra Zigbee-nettverket."
                 },
                 "zha_device_card": {
                     "device_name_placeholder": "Brukers navn",

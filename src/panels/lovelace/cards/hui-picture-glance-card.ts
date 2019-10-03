@@ -22,14 +22,11 @@ import "../components/hui-warning-element";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { EntityConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 import { longPress } from "../common/directives/long-press-directive";
 import { processConfigEntities } from "../common/process-config-entities";
 import { handleClick } from "../common/handle-click";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { toggleEntity } from "../common/entity/toggle-entity";
-import { PictureGlanceCardConfig } from "./types";
+import { PictureGlanceCardConfig, ConfigEntity } from "./types";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 
@@ -51,9 +48,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
 
   @property() private _config?: PictureGlanceCardConfig;
 
-  private _entitiesDialog?: EntityConfig[];
+  private _entitiesDialog?: ConfigEntity[];
 
-  private _entitiesToggle?: EntityConfig[];
+  private _entitiesToggle?: ConfigEntity[];
 
   public getCardSize(): number {
     return 3;
@@ -129,16 +126,17 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card>
         <hui-image
-          class="${classMap({
+          class=${classMap({
             clickable: Boolean(
               this._config.tap_action ||
                 this._config.hold_action ||
                 this._config.camera_image
             ),
-          })}"
+          })}
           @ha-click=${this._handleTap}
           @ha-hold=${this._handleHold}
           .longPress=${longPress()}
+          .config=${this._config}
           .hass=${this.hass}
           .image=${this._config.image}
           .stateImage=${this._config.state_image}
@@ -170,10 +168,15 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
   }
 
   private renderEntity(
-    entityConf: EntityConfig,
+    entityConf: ConfigEntity,
     dialog: boolean
   ): TemplateResult {
     const stateObj = this.hass!.states[entityConf.entity];
+
+    entityConf = {
+      tap_action: { action: dialog ? "more-info" : "toggle" },
+      ...entityConf,
+    };
 
     if (!stateObj) {
       return html`
@@ -189,8 +192,10 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-icon
-        .entity="${stateObj.entity_id}"
-        @click="${dialog ? this._openDialog : this._callService}"
+        @ha-click=${this._handleTap}
+        @ha-hold=${this._handleHold}
+        .longPress=${longPress()}
+        .config=${entityConf}
         class="${classMap({
           "state-on": !STATES_OFF.has(stateObj.state),
         })}"
@@ -206,20 +211,14 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _handleTap() {
-    handleClick(this, this.hass!, this._config!, false);
+  private _handleTap(ev: MouseEvent): void {
+    const config = (ev.currentTarget as any).config as any;
+    handleClick(this, this.hass!, config, false);
   }
 
-  private _handleHold() {
-    handleClick(this, this.hass!, this._config!, true);
-  }
-
-  private _openDialog(ev: MouseEvent): void {
-    fireEvent(this, "hass-more-info", { entityId: (ev.target as any).entity });
-  }
-
-  private _callService(ev: MouseEvent): void {
-    toggleEntity(this.hass!, (ev.target as any).entity);
+  private _handleHold(ev: MouseEvent): void {
+    const config = (ev.currentTarget as any).config as any;
+    handleClick(this, this.hass!, config, true);
   }
 
   static get styles(): CSSResult {

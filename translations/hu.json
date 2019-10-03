@@ -330,7 +330,7 @@
                         "title": "Infó"
                     },
                     "logs": {
-                        "title": "Naplók"
+                        "title": "Napló"
                     }
                 }
             },
@@ -353,10 +353,10 @@
                 "introduction": "Itt a komponenseket és a Home Assistant szervert lehet beállítani. Még nem lehet mindent a felületről, de dolgozunk rajta.",
                 "core": {
                     "caption": "Általános",
-                    "description": "Konfigurációs fájl érvényesítése és a szerver vezérlése",
+                    "description": "Az általános Home Assistant konfiguráció módosítása",
                     "section": {
                         "core": {
-                            "header": "Konfiguráció és szerver vezérlés",
+                            "header": "Általános konfiguráció",
                             "introduction": "Tudjuk, hogy a konfiguráció módosítása fárasztó folyamat lehet. Ez a rész megpróbálja egy kicsit könnyebbé tenni az életed.",
                             "core_config": {
                                 "edit_requires_storage": "A szerkesztő le van tiltva, mert a konfiguráció a configuration.yaml fájlban van tárolva.",
@@ -638,6 +638,7 @@
                         "header": "Csomópont értékek"
                     },
                     "node_config": {
+                        "header": "Csomópont konfigurációs beállítások",
                         "seconds": "másodperc",
                         "set_wakeup": "Ébresztési időköz beállítása",
                         "config_parameter": "Konfigurációs paraméter",
@@ -677,7 +678,7 @@
                 },
                 "integrations": {
                     "caption": "Integrációk",
-                    "description": "Csatlakoztatott eszközök és szolgáltatások kezelése",
+                    "description": "Integrációk kezelése és beállítása",
                     "discovered": "Felfedezett",
                     "configured": "Konfigurált",
                     "new": "Új integráció beállítása",
@@ -801,6 +802,10 @@
                             "confirm_stop": "Biztosan le akarod állítani a Home Assistantet?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Eszközök",
+                    "description": "Csatlakoztatott eszközök kezelése"
                 }
             },
             "profile": {
@@ -1001,7 +1006,7 @@
                     "intro_location": "Szeretnénk tudni, hogy hol élsz. Ez segít az információk megjelenítésében és a nap alapú automatizálások beállításában. Ez az adat soha nem lesz megosztva a hálózatodon kívül.",
                     "intro_location_detect": "Segíthetünk neked kitölteni ezt az információt egy külső szolgáltatás egyszeri lekérdezésével.",
                     "location_name_default": "Otthon",
-                    "button_detect": "Érzékelés",
+                    "button_detect": "Észlelés",
                     "finish": "Tovább"
                 }
             },
@@ -1338,7 +1343,7 @@
                 "enable_new_entities_description": "Ha le van tiltva, akkor az újonnan felfedezett entitások nem lesznek automatikusan hozzáadva a Home Assistant-hoz."
             },
             "zha_device_info": {
-                "manuf": "{manufacurer} által",
+                "manuf": "{manufacturer} által",
                 "no_area": "Nincs Terület",
                 "services": {
                     "updateDeviceName": "Egyedi név beállítása ehhez az eszközhöz az eszköz nyilvántartásban.",

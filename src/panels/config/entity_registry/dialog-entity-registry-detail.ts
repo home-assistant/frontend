@@ -22,10 +22,15 @@ import { HaSwitch } from "../../../components/ha-switch";
 
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import {
+  updateEntityRegistryEntry,
+  removeEntityRegistryEntry,
+} from "../../../data/entity_registry";
 
 class DialogEntityRegistryDetail extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() private _name!: string;
+  @property() private _platform!: string;
   @property() private _entityId!: string;
   @property() private _disabledBy!: string | null;
   @property() private _error?: string;
@@ -38,6 +43,7 @@ class DialogEntityRegistryDetail extends LitElement {
     this._params = params;
     this._error = undefined;
     this._name = this._params.entry.name || "";
+    this._platform = this._params.entry.platform;
     this._entityId = this._params.entry.entity_id;
     this._disabledBy = this._params.entry.disabled_by;
     await this.updateComplete;
@@ -164,7 +170,7 @@ class DialogEntityRegistryDetail extends LitElement {
   private async _updateEntry(): Promise<void> {
     this._submitting = true;
     try {
-      await this._params!.updateEntry({
+      await updateEntityRegistryEntry(this.hass!, this._entityId, {
         name: this._name.trim() || null,
         disabled_by: this._disabledBy,
         new_entity_id: this._entityId.trim(),
@@ -178,11 +184,27 @@ class DialogEntityRegistryDetail extends LitElement {
   }
 
   private async _deleteEntry(): Promise<void> {
+    if (
+      !confirm(
+        `${this.hass.localize(
+          "ui.panel.config.entity_registry.editor.confirm_delete"
+        )}
+
+${this.hass.localize(
+  "ui.panel.config.entity_registry.editor.confirm_delete2",
+  "platform",
+  this._platform
+)}`
+      )
+    ) {
+      return;
+    }
+
     this._submitting = true;
+
     try {
-      if (await this._params!.removeEntry()) {
-        this._params = undefined;
-      }
+      await removeEntityRegistryEntry(this.hass!, this._entityId);
+      this._params = undefined;
     } finally {
       this._submitting = false;
     }

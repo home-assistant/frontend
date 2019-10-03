@@ -1,7 +1,7 @@
 import { h, Component } from "preact";
 import "@polymer/paper-input/paper-input";
 
-import JSONTextArea from "../json_textarea";
+import YAMLTextArea from "../yaml_textarea";
 import { onChangeEvent } from "../../../../common/preact/event";
 
 export default class EventTrigger extends Component<any> {
@@ -34,7 +34,7 @@ export default class EventTrigger extends Component<any> {
           value={event_type}
           onvalue-changed={this.onChange}
         />
-        <JSONTextArea
+        <YAMLTextArea
           label={localize(
             "ui.panel.config.automation.editor.triggers.type.event.event_data"
           )}

@@ -8,6 +8,33 @@
         "mailbox": "Poštansko sanduče",
         "shopping_list": "Lista za kupovinu"
     },
+    "state": {
+        "zwave": {
+            "query_stage": {
+                "initializing": " ( {query_stage} )",
+                "dead": " ({query_stage})"
+            }
+        },
+        "weather": {
+            "clear-night": "Vedra noć",
+            "cloudy": "Oblačno",
+            "fog": "Magla",
+            "hail": "Grad",
+            "lightning": "Grmljavina",
+            "lightning-rainy": "Grmljavina sa kišom",
+            "partlycloudy": "Delimično oblačno",
+            "pouring": "Pljusak",
+            "rainy": "Kiša",
+            "snowy": "Sneg",
+            "snowy-rainy": "Sneg i kiša",
+            "sunny": "Sunčano",
+            "windy": "Vetrovito",
+            "windy-variant": "Vetrovito"
+        },
+        "climate": {
+            "manual": "Упутство"
+        }
+    },
     "ui": {
         "sidebar": {
             "log_out": "Odjaviti se"
@@ -42,6 +69,9 @@
                             }
                         }
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud"
                 }
             }
         },
@@ -84,26 +114,5 @@
     },
     "domain": {
         "zwave": "Z-Wave"
-    },
-    "state": {
-        "weather": {
-            "clear-night": "Vedra noć",
-            "cloudy": "Oblačno",
-            "fog": "Magla",
-            "hail": "Grad",
-            "lightning": "Grmljavina",
-            "lightning-rainy": "Grmljavina sa kišom",
-            "partlycloudy": "Delimično oblačno",
-            "pouring": "Pljusak",
-            "rainy": "Kiša",
-            "snowy": "Sneg",
-            "snowy-rainy": "Sneg i kiša",
-            "sunny": "Sunčano",
-            "windy": "Vetrovito",
-            "windy-variant": "Vetrovito"
-        },
-        "climate": {
-            "manual": "Упутство"
-        }
     }
 }

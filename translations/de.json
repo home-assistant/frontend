@@ -279,7 +279,7 @@
             "unknown": "Unbek.",
             "unavailable": "N.v.",
             "error": "Fehler",
-            "entity_not_found": "Entität  nicht gefunden!"
+            "entity_not_found": "Entität nicht gefunden!"
         },
         "alarm_control_panel": {
             "armed": "Aktiv",
@@ -551,6 +551,9 @@
                                     "label": "Zone",
                                     "entity": "Entität mit Standort",
                                     "zone": "Zone"
+                                },
+                                "device": {
+                                    "label": "Gerät"
                                 }
                             },
                             "learn_more": "Erfahre mehr über Bedingungen"
@@ -585,6 +588,9 @@
                                     "label": "Ereignis auslösen",
                                     "event": "Ereignis:",
                                     "service_data": "Dienstdaten"
+                                },
+                                "device_id": {
+                                    "label": "Gerät"
                                 }
                             },
                             "learn_more": "Erfahre mehr über Aktionen"
@@ -606,7 +612,7 @@
                     },
                     "network_status": {
                         "network_stopped": "Z-Wave Netzwerk gestoppt",
-                        "network_starting": "Z-Wave Netzwerk wird gestartet ...",
+                        "network_starting": "Z-Wave Netzwerk wird gestartet...",
                         "network_starting_note": "Dies kann je nach Größe des Netzwerks eine Weile dauern.",
                         "network_started": "Z-Wave Netzwerk gestartet",
                         "network_started_note_some_queried": "Aktive Knoten wurden abgefragt. Schlafende Knoten werden abgefragt, sobald sie aktiv werden.",
@@ -703,11 +709,11 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "ZigBee Home Automation Netzwerkmanagement",
+                    "description": "Zigbee Home Automation Netzwerkmanagement",
                     "services": {
                         "reconfigure": "Rekonfiguriere ZHA-Gerät (Gerät heilen). Benutze dies, wenn du Probleme mit dem Gerät hast. Wenn es sich bei dem betroffenden Gerät um ein batteriebetriebenes Gerät handelt, stelle sicher dass es wach ist und Kommandos akzeptiert wenn du diesen Dienst benutzt.",
                         "updateDeviceName": "Lege einen benutzerdefinierten Namen für dieses Gerät in der Geräteregistrierung fest.",
-                        "remove": "Entfernen Sie ein Gerät aus dem ZigBee-Netzwerk."
+                        "remove": "Entfernen Sie ein Gerät aus dem Zigbee-Netzwerk."
                     },
                     "device_card": {
                         "device_name_placeholder": "Benutzername",
@@ -715,8 +721,8 @@
                         "update_name_button": "Name aktualisieren"
                     },
                     "add_device_page": {
-                        "header": "ZigBee Home Automation - Geräte hinzufügen",
-                        "spinner": "Suche nach ZHA ZigBee Geräten... ",
+                        "header": "Zigbee Home Automation - Geräte hinzufügen",
+                        "spinner": "Suche nach ZHA Zigbee Geräten...",
                         "discovery_text": "Erkannte Geräte werden hier angezeigt. Befolgen Sie die Anweisungen für Ihr Gerät und versetzen Sie das Gerät in den Pairing-Modus."
                     }
                 },
@@ -746,7 +752,7 @@
                     "picker": {
                         "header": "Entitätsregister",
                         "unavailable": "(nicht verfügbar)",
-                        "introduction": "Der Home Assistent führt eine Registrierung aller Entitäten, die er je gesehen hat und die eindeutig identifiziert werden können. Jeder dieser Entitäten wird eine Entitäts-ID zugewiesen, die nur für diese Entität reserviert ist.",
+                        "introduction": "Der Home Assistant führt eine Registrierung aller Entitäten, die er je gesehen hat und die eindeutig identifiziert werden können. Jeder dieser Entitäten wird eine Entitäts-ID zugewiesen, die nur für diese Entität reserviert ist.",
                         "introduction2": "Verwende die Entitätsregistrierung, um den Namen zu überschreiben, die Entität-ID zu ändern oder den Eintrag aus dem Home Assistant zu entfernen. Beachte, dass das Entfernen des Entitätsregistrierungseintrags die Entität nicht löscht. Folge dazu dem Link unten und entferne ihn in der Integrationsseite.",
                         "integrations_page": "Integrationsseite"
                     },
@@ -756,7 +762,7 @@
                         "delete": "LÖSCHEN",
                         "update": "UPDATE",
                         "enabled_label": "Entität aktivieren",
-                        "enabled_cause": "Deaktiviert durch {cause} .",
+                        "enabled_cause": "Deaktiviert durch {cause}.",
                         "enabled_description": "Deaktivierte Entitäten werden in Home Assistant nicht hinzugefügt."
                     }
                 },
@@ -799,6 +805,10 @@
                             "confirm_stop": "Möchten Sie Home Assistant wirklich beenden?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Geräte",
+                    "description": "Verwalte verbundene Geräte"
                 }
             },
             "profile": {
@@ -1020,7 +1030,7 @@
                         "tap": "Tippe auf:",
                         "navigate_to": "Navigiere zu {location}",
                         "toggle": "{name} umschalten",
-                        "call_service": "Dienst  {name} ausführen",
+                        "call_service": "Dienst {name} ausführen",
                         "more_info": "Zeige weitere Informationen: {name}"
                     }
                 },
@@ -1063,6 +1073,10 @@
                         "save": "Speichern",
                         "unsaved_changes": "Nicht gespeicherte Änderungen",
                         "saved": "Gespeichert"
+                    },
+                    "edit_lovelace": {
+                        "header": "Titel deiner Lovelace UI",
+                        "explanation": "Dieser Titel wird überhalb aller deiner Lovelace Ansichten gezeigt."
                     }
                 },
                 "menu": {
@@ -1256,6 +1270,14 @@
                 "target_temperature": "Solltemperatur",
                 "operation": "Betrieb",
                 "away_mode": "Abwesenheitsmodus"
+            },
+            "timer": {
+                "actions": {
+                    "start": "Start",
+                    "pause": "Pause",
+                    "cancel": "Abbrechen",
+                    "finish": "Ende"
+                }
             }
         },
         "components": {
@@ -1322,6 +1344,19 @@
                 "title": "Systemoptionen",
                 "enable_new_entities_label": "Neu hinzugefügte Entitäten aktivieren.",
                 "enable_new_entities_description": "Neu erkannte Entitäten werden nicht automatisch in Home Assistant hinzugefügt wenn sie deaktiviert sind."
+            },
+            "zha_device_info": {
+                "manuf": "von {manufacturer}",
+                "no_area": "Kein Bereich",
+                "services": {
+                    "updateDeviceName": "Lege einen benutzerdefinierten Namen für dieses Gerät in der Geräteregistrierung fest.",
+                    "remove": "Entfernen Sie ein Gerät aus dem ZigBee-Netzwerk."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Vorname des Benutzers",
+                    "area_picker_label": "Bereich",
+                    "update_name_button": "Aktualisierung Name"
+                }
             }
         },
         "auth_store": {
