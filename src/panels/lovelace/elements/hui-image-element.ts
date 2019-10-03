@@ -52,6 +52,8 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
         @ha-click=${this._handleClick}
         @ha-hold=${this._handleHold}
         @ha-dblclick=${this._handleDblHold}
+        .hasDblClick=${this._config!.dbltap_action &&
+          this._config!.dbltap_action!.action !== "none"}
         .longPress=${longPress()}
       ></hui-image>
     `;
