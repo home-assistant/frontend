@@ -133,7 +133,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
                 this._config.camera_image
             ),
           })}
-          @ha-click=${this._handleTap}
+          @ha-click=${this._handleClick}
           @ha-hold=${this._handleHold}
           @ha-dblclick=${this._handleDblHold}
           .longPress=${longPress()}
@@ -193,8 +193,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-icon
-        @ha-click=${this._handleTap}
+        @ha-click=${this._handleClick}
         @ha-hold=${this._handleHold}
+        @ha-dblclick=${this._handleDblHold}
         .longPress=${longPress()}
         .config=${entityConf}
         class="${classMap({
@@ -212,14 +213,19 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _handleTap(ev: MouseEvent): void {
+  private _handleClick(ev: MouseEvent): void {
     const config = (ev.currentTarget as any).config as any;
-    handleClick(this, this.hass!, config, false);
+    handleClick(this, this.hass!, config, false, false);
   }
 
   private _handleHold(ev: MouseEvent): void {
     const config = (ev.currentTarget as any).config as any;
-    handleClick(this, this.hass!, config, true);
+    handleClick(this, this.hass!, config, true, false);
+  }
+
+  private _handleDblHold(ev: MouseEvent): void {
+    const config = (ev.currentTarget as any).entityConf as any;
+    handleClick(this, this.hass!, config, false, true);
   }
 
   static get styles(): CSSResult {
