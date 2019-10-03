@@ -63,11 +63,19 @@ export class ZwaveNetwork extends LitElement {
             icon="hass:help-circle"
           ></paper-icon-button>
         </div>
-        <span slot="introduction">
+        <div slot="introduction">
           ${this.hass!.localize(
             "ui.panel.config.zwave.network_management.introduction"
           )}
-        </span>
+          <p>
+            <a
+              href="https://www.home-assistant.io/docs/z-wave/control-panel/"
+              target="_blank"
+            >
+              ${this.hass!.localize("ui.panel.config.zwave.learn_more")}
+            </a>
+          </p>
+        </div>
 
         ${this._networkStatus
           ? html`
