@@ -7,6 +7,7 @@ import {
 } from "lit-element";
 
 import "../../../components/entity/ha-state-label-badge";
+import "../../../components/entity/ha-badge-group";
 // This one is for types
 // tslint:disable-next-line
 import { HaStateLabelBadge } from "../../../components/entity/ha-state-label-badge";
@@ -91,7 +92,7 @@ export class HUIView extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       ${this.renderStyles()}
-      <div id="badges"></div>
+      <ha-badge-group id="badges"></ha-badge-group>
       <div id="columns"></div>
       ${this.lovelace!.editMode
         ? html`
@@ -120,12 +121,6 @@ export class HUIView extends LitElement {
           transform: translateZ(0);
           position: relative;
           background: var(--lovelace-background);
-        }
-
-        #badges {
-          margin: 8px 16px;
-          font-size: 85%;
-          text-align: center;
         }
 
         #columns {

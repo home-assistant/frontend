@@ -14,6 +14,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { EntityConfig } from "../entity-rows/types";
 
 import "../../../components/entity/ha-entity-picker";
+import "../../../components/entity/ha-badge-group";
 import { EditorTarget } from "../editor/types";
 
 @customElement("hui-entity-editor")
@@ -30,7 +31,7 @@ export class HuiEntityEditor extends LitElement {
     }
 
     return html`
-      <div id="badges">
+      <ha-badge-group>
         ${this.entities.map((entity) => {
           const state = this.hass!.states[entity.entity];
           const name = entity.name;
@@ -48,7 +49,7 @@ export class HuiEntityEditor extends LitElement {
          </div>
        `;
         })}
-      </div>
+      </ha-badge-group>
 
       <h3>
         ${this.label ||
@@ -160,11 +161,6 @@ export class HuiEntityEditor extends LitElement {
       }
       .entity ha-entity-picker {
         flex-grow: 1;
-      }
-      #badges {
-        margin: 8px 16px;
-        font-size: 85%;
-        text-align: center;
       }
     `;
   }
