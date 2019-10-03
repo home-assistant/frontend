@@ -259,7 +259,7 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
     if (
       this.dirty &&
       // eslint-disable-next-line
-      !confirm("[[localize('ui.panel.config.script.editor.unsaved_confirm')]]")
+      !confirm("[[localize('ui.panel.config.common.editor.confirm_unsaved')]]")
     ) {
       return;
     }
