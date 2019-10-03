@@ -190,7 +190,7 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   _formatSubscription(subInfo) {
     if (subInfo === null) {
-      return "[[localize('ui.panel.config.cloud.account.fetching_subscription')]]";
+      return this.hass.localize('ui.panel.config.cloud.account.fetching_subscription');
     }
 
     let description = subInfo.human_description;
