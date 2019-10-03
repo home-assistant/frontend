@@ -21,7 +21,7 @@ import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog"
 import { HuiErrorCard } from "../cards/hui-error-card";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { createBadgeElement } from "../common/create-badge-element";
-import { processEditorEntities } from "../editor/process-editor-entities";
+import { processConfigEntities } from "../common/process-config-entities";
 
 let editCodeLoaded = false;
 
@@ -259,7 +259,7 @@ export class HUIView extends LitElement {
     }
 
     const elements: HUIView["_badges"] = [];
-    const badges = processEditorEntities(config.badges);
+    const badges = processConfigEntities(config.badges);
     for (const badge of badges) {
       const element = createBadgeElement(badge);
       const entityId = badge.entity;
