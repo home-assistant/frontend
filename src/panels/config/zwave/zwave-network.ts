@@ -51,7 +51,7 @@ export class ZwaveNetwork extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <ha-config-section .isWide="${this.isWide}">
-        <div style="position: relative" slot="header">
+        <div class="sectionHeader" slot="header">
           <span>
             ${this.hass!.localize(
               "ui.panel.config.zwave.network_management.header"
@@ -232,6 +232,11 @@ export class ZwaveNetwork extends LitElement {
       css`
         .content {
           margin-top: 24px;
+        }
+
+        .sectionHeader {
+          position: relative;
+          padding-right: 40px;
         }
 
         .network-status {
