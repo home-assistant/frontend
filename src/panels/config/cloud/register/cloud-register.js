@@ -213,9 +213,8 @@ class CloudRegister extends LocalizeMixin(EventsMixin(PolymerElement)) {
       _password: "",
     });
     this.fire("cloud-done", {
-      flashMessage: [
-        [localize("ui.panel.config.cloud.register.account_created")],
-      ],
+      flashMessage:
+        "[[localize('ui.panel.config.cloud.register.account_created')]]",
     });
   }
 }

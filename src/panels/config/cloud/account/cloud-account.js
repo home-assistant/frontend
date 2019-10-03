@@ -167,8 +167,8 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   _computeRemoteConnected(connected) {
     return connected
-      ? [[localize("ui.panel.config.cloud.account.connected")]]
-      : [[localize("ui.panel.config.cloud.account.not_connected")]];
+      ? "[[localize('ui.panel.config.cloud.account.connected')]]"
+      : "[[localize('ui.panel.config.cloud.account.not_connected')]]";
   }
 
   async _fetchSubscriptionInfo() {
@@ -190,9 +190,7 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   _formatSubscription(subInfo) {
     if (subInfo === null) {
-      return [
-        [localize("ui.panel.config.cloud.account.fetching_subscription")],
-      ];
+      return "[[localize('ui.panel.config.cloud.account.fetching_subscription')]]";
     }
 
     let description = subInfo.human_description;
