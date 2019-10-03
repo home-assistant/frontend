@@ -264,10 +264,6 @@ export class HUIView extends LitElement {
       const element = createBadgeElement(badge);
       const entityId = badge.entity;
       element.hass = this.hass;
-      // element.state = this.hass!.states[entityId];
-      // element.name = badge.name;
-      // element.icon = badge.icon;
-      // element.image = badge.image;
       elements.push({ element, entityId });
       root.appendChild(element);
     }
