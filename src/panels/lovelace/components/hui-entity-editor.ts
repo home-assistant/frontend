@@ -39,7 +39,8 @@ export class HuiEntityEditor extends LitElement {
           const image = entity.image;
 
           return html`
-           <ha-state-label-badge 
+           <ha-state-label-badge
+            disabled="true"
             .hass=${this.hass} 
             .state=${state} 
             .name=${name} 

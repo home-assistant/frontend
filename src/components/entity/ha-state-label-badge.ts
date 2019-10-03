@@ -35,6 +35,8 @@ export class HaStateLabelBadge extends LitElement {
 
   @property() public image?: string;
 
+  @property() public disabled: boolean = false;
+
   @property() private _timerTimeRemaining?: number;
 
   private _connected?: boolean;
@@ -92,8 +94,12 @@ export class HaStateLabelBadge extends LitElement {
 
   protected firstUpdated(changedProperties: PropertyValues): void {
     super.firstUpdated(changedProperties);
+
     this.addEventListener("click", (ev) => {
       ev.stopPropagation();
+      if (this.disabled) {
+        return;
+      }
       if (this.state) {
         fireEvent(this, "hass-more-info", { entityId: this.state.entity_id });
       }
@@ -218,6 +224,10 @@ export class HaStateLabelBadge extends LitElement {
     return css`
       :host {
         cursor: pointer;
+      }
+
+      :host([disabled]) {
+        cursor: initial;
       }
 
       ha-label-badge {
