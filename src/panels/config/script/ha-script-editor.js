@@ -101,8 +101,8 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
               on-click="backTapped"
             ></ha-paper-icon-button-arrow-prev>
             <div main-title>
-              [[localize('ui.panel.config.script.caption')]]
-              [[computeName(script)]]
+              [[localize('ui.panel.config.script.caption'), 'name',
+              computeName(script)]]
             </div>
             <template is="dom-if" if="[[!creatingNew]]">
               <paper-icon-button

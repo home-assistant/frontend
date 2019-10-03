@@ -598,7 +598,7 @@
     "notification_toast": {
       "service_call_failed": "Failed to call service {service}.",
       "connection_lost": "Connection lost. Reconnecting…",
-      "triggered": "Triggered"
+      "triggered": "Triggered {name}"
     },
     "sidebar": {
       "external_app_configuration": "App Configuration"
@@ -896,7 +896,7 @@
           }
         },
         "script": {
-          "caption": "Script",
+          "caption": "Script {name}",
           "description": "Create and edit scripts",
           "picker": {
             "header": "Script Editor",
