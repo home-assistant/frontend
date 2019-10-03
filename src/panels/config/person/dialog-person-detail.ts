@@ -55,7 +55,11 @@ class DialogPersonDetail extends LitElement {
         opened
         @opened-changed="${this._openedChanged}"
       >
-        <h2>${this._params.entry ? this._params.entry.name : "New Person"}</h2>
+        <h2>
+          ${this._params.entry
+            ? this._params.entry.name
+            : this.hass!.localize("ui.panel.config.person.detail.new_person")}
+        </h2>
         <paper-dialog-scrollable>
           ${this._error
             ? html`
@@ -66,12 +70,18 @@ class DialogPersonDetail extends LitElement {
             <paper-input
               .value=${this._name}
               @value-changed=${this._nameChanged}
-              label="Name"
-              error-message="Name is required"
+              label="${this.hass!.localize(
+                "ui.panel.config.person.detail.name"
+              )}"
+              error-message="${this.hass!.localize(
+                "ui.panel.config.person.detail.name_error_msg"
+              )}"
               .invalid=${nameInvalid}
             ></paper-input>
             <ha-user-picker
-              label="Linked User"
+              label="${this.hass!.localize(
+                "ui.panel.config.person.detail.linked_user"
+              )}"
               .hass=${this.hass}
               .value=${this._userId}
               .users=${this._params.users}
@@ -104,7 +114,7 @@ class DialogPersonDetail extends LitElement {
                   @click="${this._deleteEntry}"
                   .disabled=${this._submitting}
                 >
-                  DELETE
+                  ${this.hass!.localize("ui.panel.config.person.detail.delete")}
                 </mwc-button>
               `
             : html``}
@@ -112,7 +122,9 @@ class DialogPersonDetail extends LitElement {
             @click="${this._updateEntry}"
             .disabled=${nameInvalid || this._submitting}
           >
-            ${this._params.entry ? "UPDATE" : "CREATE"}
+            ${this._params.entry
+              ? this.hass!.localize("ui.panel.config.person.detail.update")
+              : this.hass!.localize("ui.panel.config.person.detail.create")}
           </mwc-button>
         </div>
       </ha-paper-dialog>
