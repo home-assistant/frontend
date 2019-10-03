@@ -76,11 +76,14 @@ export class CloudRemotePref extends LitElement {
           ></ha-switch>
         </div>
         <div class="card-content">
-          ${this.hass!.localize(
-            "ui.panel.config.cloud.account.remote.info",
-            "is_will-be",
-            remote_connected ? "is" : "will_be"
-          )}
+          ${this.hass!.localize("ui.panel.config.cloud.account.remote.info")}
+          ${remote_connected
+            ? this.hass!.localize(
+                "ui.panel.config.cloud.account.remote.instance_is_available"
+              )
+            : this.hass!.localize(
+                "ui.panel.config.cloud.account.remote.instance_will_be_available"
+              )}
           <a href="https://${remote_domain}" target="_blank">
             https://${remote_domain}</a
           >.

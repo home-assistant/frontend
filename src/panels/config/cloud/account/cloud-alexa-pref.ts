@@ -117,7 +117,7 @@ export class CloudAlexaPref extends LitElement {
       alert(
         `${this.hass!.localize(
           "ui.panel.config.cloud.account.alexa.sync_entities_error"
-        )}${err.body.message}`
+        )} ${err.body.message}`
       );
     } finally {
       this._syncing = false;

@@ -965,7 +965,9 @@
             "remote": {
               "title": "Remote Control",
               "access_is_being_prepared": "Remote access is being prepared. We will notify you when it's ready.",
-              "info": "Home Assistant Cloud provides a secure remote connection to your instance while away from home. Your instance {is_will-be} available at",
+              "info": "Home Assistant Cloud provides a secure remote connection to your instance while away from home.",
+              "instance_is_available": "Your instance is available at",
+              "instance_will_be_available": "Your instance will be available at",
               "link_learn_how_it_works": "Learn how it works",
               "certificate_info": "Certificate Info"
             },
