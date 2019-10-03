@@ -59,9 +59,10 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
       <state-badge
         .stateObj="${stateObj}"
         .title="${computeTooltip(this.hass, this._config)}"
-        @ha-click="${this._handleClick}"
-        @ha-hold="${this._handleHold}"
-        .longPress="${longPress()}"
+        @ha-click=${this._handleClick}
+        @ha-hold=${this._handleHold}
+        @ha-dblclick=${this._handleDblHold}
+        .longPress=${longPress()}
         .overrideIcon=${this._config.icon}
       ></state-badge>
     `;
@@ -76,11 +77,15 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
   }
 
   private _handleClick(): void {
-    handleClick(this, this.hass!, this._config!, false);
+    handleClick(this, this.hass!, this._config!, false, false);
   }
 
   private _handleHold(): void {
-    handleClick(this, this.hass!, this._config!, true);
+    handleClick(this, this.hass!, this._config!, true, false);
+  }
+
+  private _handleDblHold() {
+    handleClick(this, this.hass!, this._config!, false, true);
   }
 }
 

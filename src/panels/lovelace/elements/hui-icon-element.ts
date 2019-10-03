@@ -38,19 +38,24 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
       <ha-icon
         .icon="${this._config.icon}"
         .title="${computeTooltip(this.hass, this._config)}"
-        @ha-click="${this._handleTap}"
-        @ha-hold="${this._handleHold}"
-        .longPress="${longPress()}"
+        @ha-click=${this._handleClick}
+        @ha-hold=${this._handleHold}
+        @ha-dblclick=${this._handleDblHold}
+        .longPress=${longPress()}
       ></ha-icon>
     `;
   }
 
-  private _handleTap(): void {
-    handleClick(this, this.hass!, this._config!, false);
+  private _handleClick(): void {
+    handleClick(this, this.hass!, this._config!, false, false);
   }
 
   private _handleHold(): void {
-    handleClick(this, this.hass!, this._config!, true);
+    handleClick(this, this.hass!, this._config!, true, false);
+  }
+
+  private _handleDblHold() {
+    handleClick(this, this.hass!, this._config!, false, true);
   }
 
   static get styles(): CSSResult {

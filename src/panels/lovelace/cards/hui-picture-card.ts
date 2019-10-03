@@ -55,9 +55,10 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
-        @ha-click="${this._handleTap}"
-        @ha-hold="${this._handleHold}"
-        .longPress="${longPress()}"
+        @ha-click=${this._handleClick}
+        @ha-hold=${this._handleHold}
+        @ha-dblclick=${this._handleDblHold}
+        .longPress=${longPress()}
         class="${classMap({
           clickable: Boolean(
             this._config.tap_action || this._config.hold_action
@@ -86,12 +87,16 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _handleTap() {
-    handleClick(this, this.hass!, this._config!, false);
+  private _handleClick() {
+    handleClick(this, this.hass!, this._config!, false, false);
   }
 
   private _handleHold() {
-    handleClick(this, this.hass!, this._config!, true);
+    handleClick(this, this.hass!, this._config!, true, false);
+  }
+
+  private _handleDblHold() {
+    handleClick(this, this.hass!, this._config!, false, true);
   }
 }
 
