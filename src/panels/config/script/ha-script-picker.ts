@@ -38,11 +38,11 @@ class HaScriptPicker extends LitElement {
         .header=${this.hass.localize("ui.panel.config.script.caption")}
       >
         <ha-config-section .isWide=${this.isWide}>
-          <div slot="header">${this.hass.localize("ui.panel.config.script.picker.header")}</div>
+          <div slot="header">
+            ${this.hass.localize("ui.panel.config.script.picker.header")}
+          </div>
           <div slot="introduction">
-            ${this.hass.localize(
-              "ui.panel.config.script.picker.introduction"
-            )}
+            ${this.hass.localize("ui.panel.config.script.picker.introduction")}
             <p>
               <a
                 href="https://home-assistant.io/docs/scripts/editor/"
@@ -56,13 +56,17 @@ class HaScriptPicker extends LitElement {
           </div>
 
           <ha-card
-            header="${this.hass.localize("ui.panel.config.script.picker.pick_script")}"
+            header="${this.hass.localize(
+              "ui.panel.config.script.picker.pick_script"
+            )}"
           >
             ${this.scripts.length === 0
               ? html`
                   <div class="card-content">
                     <p>
-                      ${this.hass.localize("ui.panel.config.script.picker.no_scripts")}
+                      ${this.hass.localize(
+                        "ui.panel.config.script.picker.no_scripts"
+                      )}
                     </p>
                   </div>
                 `
@@ -95,7 +99,9 @@ class HaScriptPicker extends LitElement {
             slot="fab"
             ?is-wide=${this.isWide}
             icon="hass:plus"
-            title="${this.hass.localize("ui.panel.config.script.picker.add_script")}"
+            title="${this.hass.localize(
+              "ui.panel.config.script.picker.add_script"
+            )}"
             ?rtl=${computeRTL(this.hass)}
           ></ha-fab>
         </a>
@@ -107,7 +113,9 @@ class HaScriptPicker extends LitElement {
     const script = ev.currentTarget.script as HassEntity;
     await triggerScript(this.hass, script.entity_id);
     showToast(this, {
-      message: `${this.hass.localize("ui.dialogs.notification_toast.triggered")} ${computeStateName(script)}`,
+      message: `${this.hass.localize(
+        "ui.dialogs.notification_toast.triggered"
+      )} ${computeStateName(script)}`,
     });
   }
 
