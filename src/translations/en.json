@@ -1016,7 +1016,7 @@
             "title": "Alexa",
             "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
             "exposed_entities": "Exposed entities",
-            "no_exposed_entities": "Not Exposed entities",
+            "not_exposed_entities": "Not Exposed entities",
             "expose": "Expose to Alexa"
           },
           "dialog_certificate": {
@@ -1032,7 +1032,7 @@
             "disable_2FA": "Disable two factor authentication",
             "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
             "exposed_entities": "Exposed entities",
-            "no_exposed_entities": "Not Exposed entities",
+            "not_exposed_entities": "Not Exposed entities",
             "sync_to_google": "Synchronizing changes to Google."
           },
           "dialog_cloudhook": {

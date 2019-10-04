@@ -197,7 +197,7 @@ class CloudAlexa extends LitElement {
               ? html`
                   <h1>
                     ${this.hass!.localize(
-                      "ui.panel.config.cloud.alexa.no_exposed_entities"
+                      "ui.panel.config.cloud.alexa.not_exposed_entities"
                     )}
                   </h1>
                   <div class="content">${notExposedCards}</div>
