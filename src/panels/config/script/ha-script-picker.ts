@@ -113,11 +113,11 @@ class HaScriptPicker extends LitElement {
     const script = ev.currentTarget.script as HassEntity;
     await triggerScript(this.hass, script.entity_id);
     showToast(this, {
-      message: `${this.hass.localize(
-        "ui.dialogs.notification_toast.triggered",
+      message: this.hass.localize(
+        "ui.notification_toast.triggered",
         "name",
         computeStateName(script)
-      )}`,
+      ),
     });
   }
 
