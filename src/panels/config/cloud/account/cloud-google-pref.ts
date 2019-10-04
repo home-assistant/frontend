@@ -42,7 +42,11 @@ export class CloudGooglePref extends LitElement {
     } = this.cloudStatus.prefs;
 
     return html`
-      <ha-card header="Google Assistant">
+      <ha-card
+        header=${this.hass!.localize(
+          "ui.panel.config.cloud.account.google.title"
+        )}
+      >
         <div class="switch">
           <ha-switch
             id="google_enabled"
@@ -51,16 +55,16 @@ export class CloudGooglePref extends LitElement {
           ></ha-switch>
         </div>
         <div class="card-content">
-          With the Google Assistant integration for Home Assistant Cloud you'll
-          be able to control all your Home Assistant devices via any Google
-          Assistant-enabled device.
+          ${this.hass!.localize("ui.panel.config.cloud.account.google.info")}
           <ul>
             <li>
               <a
                 href="https://assistant.google.com/services/a/uid/00000091fd5fb875?hl=en-US"
                 target="_blank"
               >
-                Activate the Home Assistant skill for Google Assistant
+                ${this.hass!.localize(
+                  "ui.panel.config.cloud.account.google.enable_ha_skill"
+                )}
               </a>
             </li>
             <li>
@@ -68,25 +72,31 @@ export class CloudGooglePref extends LitElement {
                 href="https://www.nabucasa.com/config/google_assistant/"
                 target="_blank"
               >
-                Config documentation
+                ${this.hass!.localize(
+                  "ui.panel.config.cloud.account.google.config_documentation"
+                )}
               </a>
             </li>
           </ul>
           <em
-            >This integration requires a Google Assistant-enabled device like
-            the Google Home or Android phone.</em
+            >${this.hass!.localize(
+              "ui.panel.config.cloud.account.google.requirements"
+            )}</em
           >
           ${google_enabled
             ? html`
                 <div class="secure_devices">
-                  Please enter a pin to interact with security devices. Security
-                  devices are doors, garage doors and locks. You will be asked
-                  to say/enter this pin when interacting with such devices via
-                  Google Assistant.
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.account.google.enter_pin_info"
+                  )}
                   <paper-input
-                    label="Secure Devices Pin"
+                    label="${this.hass!.localize(
+                      "ui.panel.config.cloud.account.google.devices_pin"
+                    )}"
                     id="google_secure_devices_pin"
-                    placeholder="Enter a PIN to use secure devices"
+                    placeholder="${this.hass!.localize(
+                      "ui.panel.config.cloud.account.google.enter_pin_hint"
+                    )}"
                     .value=${google_secure_devices_pin || ""}
                     @change="${this._pinChanged}"
                   ></paper-input>
@@ -100,11 +110,17 @@ export class CloudGooglePref extends LitElement {
             .disabled="${!google_enabled}"
             path="cloud/google_actions/sync"
           >
-            Sync entities to Google
+            ${this.hass!.localize(
+              "ui.panel.config.cloud.account.google.sync_entities"
+            )}
           </ha-call-api-button>
           <div class="spacer"></div>
           <a href="/config/cloud/google-assistant">
-            <mwc-button>Manage Entities</mwc-button>
+            <mwc-button
+              >${this.hass!.localize(
+                "ui.panel.config.cloud.account.google.manage_entities"
+              )}</mwc-button
+            >
           </a>
         </div>
       </ha-card>
@@ -130,7 +146,11 @@ export class CloudGooglePref extends LitElement {
       showSaveSuccessToast(this, this.hass!);
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err) {
-      alert(`Unable to store pin: ${err.message}`);
+      alert(
+        `${this.hass!.localize(
+          "ui.panel.config.cloud.account.google.enter_pin_error"
+        )} ${err.message}`
+      );
       input.value = this.cloudStatus!.prefs.google_secure_devices_pin;
     }
   }

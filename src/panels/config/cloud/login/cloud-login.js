@@ -16,11 +16,15 @@ import "../../ha-config-section";
 import { EventsMixin } from "../../../../mixins/events-mixin";
 import NavigateMixin from "../../../../mixins/navigate-mixin";
 import "../../../../components/ha-icon-next";
+import LocalizeMixin from "../../../../mixins/localize-mixin";
 /*
  * @appliesMixin NavigateMixin
  * @appliesMixin EventsMixin
+ * @appliesMixin LocalizeMixin
  */
-class CloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
+class CloudLogin extends LocalizeMixin(
+  NavigateMixin(EventsMixin(PolymerElement))
+) {
   static get template() {
     return html`
       <style include="iron-flex ha-style">
@@ -68,31 +72,29 @@ class CloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
           color: var(--secondary-text-color);
         }
       </style>
-      <hass-subpage header="Cloud Login">
+      <hass-subpage header="[[localize('ui.panel.config.cloud.caption')]]">
         <div class="content">
           <ha-config-section is-wide="[[isWide]]">
-            <span slot="header">Home Assistant Cloud</span>
+            <span slot="header"
+              >[[localize('ui.panel.config.cloud.caption')]]</span
+            >
             <div slot="introduction">
               <p>
-                Home Assistant Cloud provides you with a secure remote
-                connection to your instance while away from home. It also allows
-                you to connect with cloud-only services: Amazon Alexa and Google
-                Assistant.
+                [[localize('ui.panel.config.cloud.login.introduction')]]
               </p>
               <p>
-                This service is run by our partner
+                [[localize('ui.panel.config.cloud.login.introduction2')]]
                 <a href="https://www.nabucasa.com" target="_blank"
                   >Nabu&nbsp;Casa,&nbsp;Inc</a
-                >, a company founded by the founders of Home Assistant and
-                Hass.io.
+                >
+                [[localize('ui.panel.config.cloud.login.introduction2a')]]
               </p>
               <p>
-                Home Assistant Cloud is a subscription service with a free one
-                month trial. No payment information necessary.
+                [[localize('ui.panel.config.cloud.login.introduction3')]]
               </p>
               <p>
                 <a href="https://www.nabucasa.com" target="_blank"
-                  >Learn more about Home Assistant Cloud</a
+                  >[[localize('ui.panel.config.cloud.login.learn_more_link')]]</a
                 >
               </p>
             </div>
@@ -101,44 +103,46 @@ class CloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
               <div class="card-content flash-msg">
                 [[flashMessage]]
                 <paper-icon-button icon="hass:close" on-click="_dismissFlash"
-                  >Dismiss</paper-icon-button
+                  >[[localize('ui.panel.config.cloud.login.dismiss')]]</paper-icon-button
                 >
                 <paper-ripple id="flashRipple" noink=""></paper-ripple>
               </div>
             </ha-card>
 
-            <ha-card header="Sign in">
+            <ha-card
+              header="[[localize('ui.panel.config.cloud.login.sign_in')]]"
+            >
               <div class="card-content">
                 <div class="error" hidden$="[[!_error]]">[[_error]]</div>
                 <paper-input
-                  label="Email"
+                  label="[[localize('ui.panel.config.cloud.login.email')]]"
                   id="email"
                   type="email"
                   value="{{email}}"
                   on-keydown="_keyDown"
-                  error-message="Invalid email"
+                  error-message="[[localize('ui.panel.config.cloud.login.email_error_msg')]]"
                 ></paper-input>
                 <paper-input
                   id="password"
-                  label="Password"
+                  label="[[localize('ui.panel.config.cloud.login.password')]]"
                   value="{{_password}}"
                   type="password"
                   on-keydown="_keyDown"
-                  error-message="Passwords are at least 8 characters"
+                  error-message="[[localize('ui.panel.config.cloud.login.password_error_msg')]]"
                 ></paper-input>
               </div>
               <div class="card-actions">
                 <ha-progress-button
                   on-click="_handleLogin"
                   progress="[[_requestInProgress]]"
-                  >Sign in</ha-progress-button
+                  >[[localize('ui.panel.config.cloud.login.sign_in')]]</ha-progress-button
                 >
                 <button
                   class="link"
                   hidden="[[_requestInProgress]]"
                   on-click="_handleForgotPassword"
                 >
-                  forgot password?
+                  [[localize('ui.panel.config.cloud.login.forgot_password')]]
                 </button>
               </div>
             </ha-card>
@@ -146,8 +150,10 @@ class CloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
             <ha-card>
               <paper-item on-click="_handleRegister">
                 <paper-item-body two-line="">
-                  Start your free 1 month trial
-                  <div secondary="">No payment information necessary</div>
+                  [[localize('ui.panel.config.cloud.login.start_trial')]]
+                  <div secondary="">
+                    [[localize('ui.panel.config.cloud.login.trial_info')]]
+                  </div>
                 </paper-item-body>
                 <ha-icon-next></ha-icon-next>
               </paper-item>
@@ -251,7 +257,9 @@ class CloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
 
           const errCode = err && err.body && err.body.code;
           if (errCode === "PasswordChangeRequired") {
-            alert("You need to change your password before logging in.");
+            alert(
+              "[[localize('ui.panel.config.cloud.login.alert_password_change_required')]]"
+            );
             this.navigate("/config/cloud/forgot-password");
             return;
           }
@@ -265,7 +273,8 @@ class CloudLogin extends NavigateMixin(EventsMixin(PolymerElement)) {
           };
 
           if (errCode === "UserNotConfirmed") {
-            props._error = "You need to confirm your email before logging in.";
+            props._error =
+              "[[localize('ui.panel.config.cloud.login.alert_email_confirm_necessary')]]";
           }
 
           this.setProperties(props);
