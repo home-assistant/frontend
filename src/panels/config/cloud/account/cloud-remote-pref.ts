@@ -84,7 +84,7 @@ export class CloudRemotePref extends LitElement {
             : this.hass!.localize(
                 "ui.panel.config.cloud.account.remote.instance_will_be_available"
               )}
-          <a href="https://${remote_domain}" target="_blank">
+          <a href="https://${remote_domain}" target="_blank" class="break-word">
             https://${remote_domain}</a
           >.
         </div>
@@ -140,6 +140,9 @@ export class CloudRemotePref extends LitElement {
       }
       a {
         color: var(--primary-color);
+      }
+      .break-word {
+        overflow-wrap: break-word;
       }
       .switch {
         position: absolute;
