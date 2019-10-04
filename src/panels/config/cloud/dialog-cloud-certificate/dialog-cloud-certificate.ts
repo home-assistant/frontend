@@ -58,7 +58,7 @@ class DialogCloudCertificate extends LitElement {
               "ui.panel.config.cloud.dialog_certificate.will_be_auto_renewed"
             )})
           </p>
-          <p>
+          <p class="break-word">
             ${this.hass!.localize(
               "ui.panel.config.cloud.dialog_certificate.fingerprint"
             )}
@@ -91,6 +91,9 @@ class DialogCloudCertificate extends LitElement {
       css`
         ha-paper-dialog {
           width: 535px;
+        }
+        .break-word {
+          overflow-wrap: break-word;
         }
       `,
     ];
