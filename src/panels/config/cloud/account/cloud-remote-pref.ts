@@ -120,7 +120,7 @@ export class CloudRemotePref extends LitElement {
       a {
         color: var(--primary-color);
       }
-      .break-word{
+      .break-word {
         overflow-wrap: break-word;
       }
       .switch {
