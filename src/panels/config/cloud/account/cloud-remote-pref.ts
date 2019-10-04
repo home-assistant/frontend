@@ -69,7 +69,7 @@ export class CloudRemotePref extends LitElement {
           Home Assistant Cloud provides a secure remote connection to your
           instance while away from home. Your instance
           ${remote_connected ? "is" : "will be"} available at
-          <a href="https://${remote_domain}" target="_blank">
+          <a href="https://${remote_domain}" target="_blank" class="break-word">
             https://${remote_domain}</a
           >.
         </div>
@@ -119,6 +119,8 @@ export class CloudRemotePref extends LitElement {
       }
       a {
         color: var(--primary-color);
+      }
+      .break-word{
         overflow-wrap: break-word;
       }
       .switch {
