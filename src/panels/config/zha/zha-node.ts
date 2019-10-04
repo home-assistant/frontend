@@ -54,7 +54,11 @@ export class ZHANode extends LitElement {
     return html`
       <ha-config-section .isWide="${this.isWide}">
         <div class="sectionHeader" slot="header">
-          <span>Device Management</span>
+          <span
+            >${this.hass!.localize(
+              "ui.panel.config.zha.node_management.header"
+            )}</span
+          >
           <paper-icon-button
             class="toggle-help-icon"
             @click="${this._onHelpTap}"
@@ -62,18 +66,24 @@ export class ZHANode extends LitElement {
           ></paper-icon-button>
         </div>
         <span slot="introduction">
-          Run ZHA commands that affect a single device. Pick a device to see a
-          list of available commands. <br /><br />Note: Sleepy (battery powered)
-          devices need to be awake when executing commands against them. You can
-          generally wake a sleepy device by triggering it. <br /><br />Some
-          devices such as Xiaomi sensors have a wake up button that you can
-          press at ~5 second intervals that keep devices awake while you
-          interact with them.
+          ${this.hass!.localize(
+            "ui.panel.config.zha.node_management.introduction"
+          )}
+          <br /><br />
+          ${this.hass!.localize(
+            "ui.panel.config.zha.node_management.hint_battery_devices"
+          )}
+          <br /><br />
+          ${this.hass!.localize(
+            "ui.panel.config.zha.node_management.hint_wakeup"
+          )}
         </span>
         <ha-card class="content">
           <div class="node-picker">
             <paper-dropdown-menu
-              label="Devices"
+              label="${this.hass!.localize(
+                "ui.panel.config.zha.common.devices"
+              )}"
               class="flex"
               id="zha-device-selector"
             >
@@ -97,7 +107,9 @@ export class ZHANode extends LitElement {
           ${this._showHelp
             ? html`
                 <div class="help-text">
-                  Select device to view per-device options
+                  ${this.hass!.localize(
+                    "ui.panel.config.zha.node_management.help_node_dropdown"
+                  )}
                 </div>
               `
             : ""}

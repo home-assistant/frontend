@@ -566,11 +566,20 @@
       "zha_device_info": {
         "manuf": "by {manufacturer}",
         "no_area": "No Area",
+        "buttons": {
+          "add": "Add Devices",
+          "remove": "Remove Device",
+          "reconfigure": "Reconfigure Device"
+        },
         "services": {
           "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
           "updateDeviceName": "Set a custom name for this device in the device registry.",
           "remove": "Remove a device from the ZigBee network."
         },
+        "quirk": "Quirk",
+        "last_seen": "Last Seen",
+        "power_source": "Power Source",
+        "unknown": "Unknown",
         "zha_device_card": {
           "device_name_placeholder": "User given name",
           "area_picker_label": "Area",
@@ -1190,10 +1199,49 @@
         "zha": {
           "caption": "ZHA",
           "description": "Zigbee Home Automation network management",
+          "common": {
+            "add_devices": "Add Devices",
+            "clusters": "Clusters",
+            "devices": "Devices",
+            "manufacturer_code_override": "Manufacturer Code Override",
+            "value": "Value"
+          },
           "add_device_page": {
             "header": "Zigbee Home Automation - Add Devices",
             "spinner": "Searching for ZHA Zigbee devices...",
-            "discovery_text": "Discovered devices will show up here. Follow the instructions for your device(s) and place the device(s) in pairing mode."
+            "discovery_text": "Discovered devices will show up here. Follow the instructions for your device(s) and place the device(s) in pairing mode.",
+            "search_again": "Search Again"
+          },
+          "network_management": {
+            "header": "Network Management",
+            "introduction": "Commands that affect the entire network"
+          },
+          "node_management": {
+            "header": "Device Management",
+            "introduction": "Run ZHA commands that affect a single device. Pick a device to see a list of available commands.",
+            "hint_battery_devices": "Note: Sleepy (battery powered) devices need to be awake when executing commands against them. You can generally wake a sleepy device by triggering it.",
+            "hint_wakeup": "Some devices such as Xiaomi sensors have a wake up button that you can press at ~5 second intervals that keep devices awake while you interact with them.",
+            "help_node_dropdown": "Select a device to view per-device options."
+          },
+          "clusters": {
+            "help_cluster_dropdown": "Select a cluster to view attributes and commands."
+          },
+          "cluster_attributes": {
+            "header": "Cluster Attributes",
+            "introduction": "View and edit cluster attributes.",
+            "attributes_of_cluster": "Attributes of the selected cluster",
+            "get_zigbee_attribute": "Get Zigbee Attribute",
+            "set_zigbee_attribute": "Set Zigbee Attribute",
+            "help_attribute_dropdown": "Select an attribute to view or set its value.",
+            "help_get_zigbee_attribute": "Get the value for the selected attribute.",
+            "help_set_zigbee_attribute": "Set attribute value for the specified cluster on the specified entity."
+          },
+          "cluster_commands": {
+            "header": "Cluster Commands",
+            "introduction": "View and issue cluster commands.",
+            "commands_of_cluster": "Commands of the selected cluster",
+            "issue_zigbee_command": "Issue Zigbee Command",
+            "help_command_dropdown": "Select a command to interact with."
           }
         },
         "zwave": {
