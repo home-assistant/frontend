@@ -9,9 +9,9 @@ import {
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import "@material/mwc-button";
+import memoizeOne from "memoize-one";
 
 import "../../../components/dialog/ha-paper-dialog";
-
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/user/ha-user-picker";
 import { PersonDetailDialogParams } from "./show-dialog-person-detail";
@@ -87,12 +87,36 @@ class DialogPersonDetail extends LitElement {
               .users=${this._params.users}
               @value-changed=${this._userChanged}
             ></ha-user-picker>
-            <p>
-              ${this.hass.localize(
-                "ui.panel.config.person.detail.device_tracker_intro"
+            ${this._deviceTrackersAvailable()
+              ? html`
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.person.detail.device_tracker_intro"
+                    )}
+                  </p>
+                `
+              : html`
+                  <p>
+                    When you have devices, you will be able to assign them to a
+                    person here. You can add your first device from the
+                    <a @click="${this._closeDialog}" href="/config/integrations"
+                      >integrations page</a
+                    >.
+                  </p>
+                `}
+            <ha-entities-picker
+              .hass=${this.hass}
+              .value=${this._deviceTrackers}
+              domain-filter="device_tracker"
+              .pickedEntityLabel=${this.hass.localize(
+                "ui.panel.config.person.detail.device_tracker_picked"
               )}
-            </p>
-            ${this._getEntitiesPicker()}
+              .pickEntityLabel=${this.hass.localize(
+                "ui.panel.config.person.detail.device_tracker_pick"
+              )}
+              @value-changed=${this._deviceTrackersChanged}
+            >
+            </ha-entities-picker>
           </div>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
@@ -120,32 +144,12 @@ class DialogPersonDetail extends LitElement {
     `;
   }
 
-  private _getEntitiesPicker() {
-    if (this._deviceTrackers.length === 0) {
-      return html`
-        No devices have been added to Home Assistant yet. You can do this from
-        the
-        <a @click="${this._closeDialog}" href="/config/integrations"
-          >integrations page</a
-        >.
-      `;
-    } else {
-      return html`
-        <ha-entities-picker
-          .hass=${this.hass}
-          .value=${this._deviceTrackers}
-          domain-filter="device_tracker"
-          .pickedEntityLabel=${this.hass.localize(
-            "ui.panel.config.person.detail.device_tracker_picked"
-          )}
-          .pickEntityLabel=${this.hass.localize(
-            "ui.panel.config.person.detail.device_tracker_pick"
-          )}
-          @value-changed=${this._deviceTrackersChanged}
-        ></ha-entities-picker>
-      `;
-    }
-  }
+  private _deviceTrackersAvailable = memoizeOne(() => {
+    return Object.keys(this.hass.states).some(
+      (entityId) =>
+        entityId.substr(0, entityId.indexOf(".")) === "device_tracker"
+    );
+  });
 
   private _closeDialog() {
     this._params = undefined;
