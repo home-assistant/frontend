@@ -23,7 +23,6 @@ class LongPress extends HTMLElement implements LongPress {
   protected cooldownStart: boolean;
   protected cooldownEnd: boolean;
   private dblClickTimeout: number | undefined;
-  private nbClicks: number;
 
   constructor() {
     super();
@@ -33,7 +32,6 @@ class LongPress extends HTMLElement implements LongPress {
     this.held = false;
     this.cooldownStart = false;
     this.cooldownEnd = false;
-    this.nbClicks = 0;
   }
 
   public connectedCallback() {
@@ -125,16 +123,11 @@ class LongPress extends HTMLElement implements LongPress {
       if (this.held) {
         element.dispatchEvent(new Event("ha-hold"));
       } else if (element.hasDblClick) {
-        if (this.nbClicks === 0) {
-          this.nbClicks += 1;
+        if ((ev as MouseEvent).detail === 1) {
           this.dblClickTimeout = window.setTimeout(() => {
-            if (this.nbClicks === 1) {
-              this.nbClicks = 0;
-              element.dispatchEvent(new Event("ha-click"));
-            }
+            element.dispatchEvent(new Event("ha-click"));
           }, 250);
         } else {
-          this.nbClicks = 0;
           clearTimeout(this.dblClickTimeout);
           element.dispatchEvent(new Event("ha-dblclick"));
         }
