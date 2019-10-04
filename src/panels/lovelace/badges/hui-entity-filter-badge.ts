@@ -47,6 +47,13 @@ class EntityFilterBadge extends HTMLElement implements LovelaceBadge {
 
     if (!this.haveEntitiesChanged(hass)) {
       this._hass = hass;
+
+      if (this._elements) {
+        for (const element of this._elements) {
+          element.hass = hass;
+        }
+      }
+
       return;
     }
 
