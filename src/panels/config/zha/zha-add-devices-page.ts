@@ -72,7 +72,9 @@ class ZHAAddDevicesPage extends LitElement {
           : html`
               <div class="card-actions">
                 <mwc-button @click=${this._subscribe} class="search-button">
-                  Search again
+                  ${this.hass!.localize(
+                    "ui.panel.config.zha.add_device_page.search_again"
+                  )}
                 </mwc-button>
                 <paper-icon-button
                   class="toggle-help-icon"
