@@ -119,6 +119,7 @@ export class CloudRemotePref extends LitElement {
       }
       a {
         color: var(--primary-color);
+        overflow-wrap: break-word;
       }
       .switch {
         position: absolute;
