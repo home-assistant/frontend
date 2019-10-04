@@ -175,10 +175,10 @@ class HaForm extends EventsMixin(PolymerElement) {
             enable-day
             enable-second
             format="24"
-            day="[[_parseDuration(data, 'days')]]"
-            hour="[[_parseDuration(data, 'hours')]]"
-            min="[[_parseDuration(data, 'minutes')]]"
-            sec="[[_parseDuration(data, 'seconds')]]"
+            day$="[[_parseDuration(data, 'days')]]"
+            hour$="[[_parseDuration(data, 'hours')]]"
+            min$="[[_parseDuration(data, 'minutes')]]"
+            sec$="[[_parseDuration(data, 'seconds')]]"
             on-day-changed="_dayChanged"
             on-hour-changed="_hourChanged"
             on-min-changed="_minChanged"
@@ -280,21 +280,21 @@ class HaForm extends EventsMixin(PolymerElement) {
   }
 
   _durationChanged(ev, unit) {
-    const value = ev.detail.value;
+    const value = ev.detail.value.toString() | undefined;
     this.set(["data"], { ...this.get(["data"]), [unit]: value });
   }
 
   _parseDuration(duration, unit) {
-    let days = "0";
-    let hours = "00";
-    let minutes = "00";
-    let seconds = "00";
+    let days = 0;
+    let hours = 0;
+    let minutes = 0;
+    let seconds = 0;
     if (
       duration &&
       (duration.days || duration.hours || duration.minutes || duration.seconds)
     ) {
       // If the duration was defined using yaml dict syntax, extract days, hours, minutes and seconds
-      ({ days = "0", hours = "00", minutes = "00", seconds = "00" } = duration);
+      ({ days = 0, hours = 0, minutes = 0, seconds = 0 } = duration);
     }
     duration = {
       days,

@@ -91,7 +91,7 @@ export default class DeviceTrigger extends Component<any, any> {
       return;
     }
     const item = ev.detail.path.replace("data.", "");
-    const value = ev.detail.value;
+    const value = ev.detail.value || undefined;
 
     this.props.onChange(this.props.index, {
       ...this.props.trigger,

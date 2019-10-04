@@ -115,7 +115,7 @@ export class PaperTimeInput extends PolymerElement {
           class="day-input"
           id="day"
           type="number"
-          value="{{day}}"
+          value="{{dayString}}"
           label="[[dayLabel]]"
           on-change="_formatDay"
           required=""
@@ -136,7 +136,7 @@ export class PaperTimeInput extends PolymerElement {
         <paper-input
           id="hour"
           type="number"
-          value="{{hour}}"
+          value="{{hourString}}"
           label="[[hourLabel]]"
           on-change="_shouldFormatHour"
           required=""
@@ -156,7 +156,7 @@ export class PaperTimeInput extends PolymerElement {
         <paper-input
           id="min"
           type="number"
-          value="{{min}}"
+          value="{{minString}}"
           label="[[minLabel]]"
           on-change="_formatMin"
           required=""
@@ -176,7 +176,7 @@ export class PaperTimeInput extends PolymerElement {
         <paper-input
           id="sec"
           type="number"
-          value="{{sec}}"
+          value="{{secString}}"
           label="[[secLabel]]"
           on-change="_formatSec"
           required=""
@@ -211,6 +211,15 @@ export class PaperTimeInput extends PolymerElement {
         </paper-dropdown-menu>
       </div>
     `;
+  }
+
+  connectedCallback() {
+    super.connectedCallback();
+    console.log("paper-time-input created!");
+    this.secString = this._getSecString();
+    this.minString = this._getMinString();
+    this.hourString = this._getHourString();
+    this.dayString = this._getDayString();
   }
 
   static get properties() {
@@ -289,6 +298,34 @@ export class PaperTimeInput extends PolymerElement {
        * second
        */
       sec: {
+        type: String,
+        notify: true,
+      },
+      /**
+       * day
+       */
+      dayString: {
+        type: String,
+        notify: true,
+      },
+      /**
+       * hour
+       */
+      hourString: {
+        type: String,
+        notify: true,
+      },
+      /**
+       * minute
+       */
+      minString: {
+        type: String,
+        notify: true,
+      },
+      /**
+       * second
+       */
+      secString: {
         type: String,
         notify: true,
       },
@@ -405,35 +442,76 @@ export class PaperTimeInput extends PolymerElement {
   /**
    * Format sec
    */
+  _getSecString() {
+    let val = this.sec;
+    if (val === undefined || val === null) {
+      val = 0; // always display 00
+    }
+    return val.toString().padStart(2, "0");
+  }
   _formatSec() {
-    this.sec = this.sec.toString().padStart(2, "0");
-    this.sec = this.sec.substring(0, 2);
+    const val = parseInt(this.secString) || 0;
+    if (val < 0) val = 0;
+    if (val > 59) val = 59;
+    this.sec = val;
+    this.secString = this._getSecString();
   }
 
   /**
    * Format min
    */
+  _getMinString() {
+    let val = this.min;
+    if (val === undefined || val === null) {
+      val = 0; // always display 00
+    }
+    return val.toString().padStart(2, "0");
+  }
   _formatMin() {
-    this.min = this.min.toString().padStart(2, "0");
-    this.min = this.min.substring(0, 2);
+    const val = parseInt(this.minString) || 0;
+    if (val < 0) val = 0;
+    if (val > 59) val = 59;
+    this.min = val;
+    this.minString = this._getMinString();
   }
 
   /**
    * Hour needs a leading zero in 24hr format
    */
-  _shouldFormatHour() {
-    if (this.format === 24) {
-      this.hour = this.hour.toString().padStart(2, "0");
+  _getHourString() {
+    let val = this.hour;
+    if (val === undefined || val === null) {
+      val = 0; // always display 00
     }
-    this.hour = this.hour.substring(0, 2);
+    if (this.format === 24) {
+      return val.toString().padStart(2, "0");
+    }
+    return val.toString();
+  }
+  _shouldFormatHour() {
+    const val = parseInt(this.hourString) || 0;
+    if (val < 0) val = 0;
+    if (val > 23) val = 23; // Blabla fix 12 or 23
+    this.hour = val;
+    this.hourString = this._getHourString();
   }
 
   /**
    * Format day
    */
+  _getDayString() {
+    let val = this.day;
+    if (val === undefined || val === null) {
+      val = 0; // always display 00
+    }
+    return val.toString().padStart(1, "0");
+  }
   _formatDay() {
-    this.hour = this.hour.toString().padStart(1, "0");
-    this.day = this.day.substring(0, 2);
+    const val = parseInt(this.dayString) || 0;
+    if (val < 0) val = 0;
+    if (val > 99) val = 99;
+    this.day = val;
+    this.dayString = this._getDayString();
   }
 
   /**
