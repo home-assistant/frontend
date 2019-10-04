@@ -77,6 +77,9 @@ class DialogCloudCertificate extends LitElement {
         ha-paper-dialog {
           width: 535px;
         }
+        p {
+          overflow-wrap: break-word;
+        }
       `,
     ];
   }
