@@ -19,8 +19,6 @@ import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 import { setInputDateTimeValue } from "../../../data/input_datetime";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
-import { longPress } from "../common/directives/long-press-directive";
-import { handleClick } from "../common/handle-click";
 
 @customElement("hui-input-datetime-entity-row")
 class HuiInputDatetimeEntityRow extends LitElement implements EntityRow {
@@ -58,13 +56,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements EntityRow {
     }
 
     return html`
-      <hui-generic-entity-row
-        @ha-click=${this._handleTap}
-        @ha-hold=${this._handleHold}
-        .longPress=${longPress()}
-        .hass=${this.hass}
-        .config=${this._config}
-      >
+      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         ${stateObj.attributes.has_date
           ? html`
               <ha-date-input
@@ -126,14 +118,6 @@ class HuiInputDatetimeEntityRow extends LitElement implements EntityRow {
     }
 
     ev.target.blur();
-  }
-
-  private _handleTap() {
-    handleClick(this, this.hass!, this._config!, false);
-  }
-
-  private _handleHold() {
-    handleClick(this, this.hass!, this._config!, true);
   }
 }
 

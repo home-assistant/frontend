@@ -132,10 +132,6 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       #states > div > * {
         overflow: hidden;
       }
-
-      .state-card-dialog {
-        cursor: pointer;
-      }
     `;
   }
 
@@ -143,12 +139,6 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     const element = createRowElement(entityConf);
     if (this._hass) {
       element.hass = this._hass;
-    }
-    if (
-      !entityConf.tap_action ||
-      (entityConf.tap_action && entityConf.tap_action.action !== "none")
-    ) {
-      element.classList.add("state-card-dialog");
     }
 
     return html`

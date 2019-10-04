@@ -18,6 +18,9 @@ import { HomeAssistant } from "../../../types";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
+import { longPress } from "../common/directives/long-press-directive";
+import { handleClick } from "../common/handle-click";
+import { classMap } from "lit-html/directives/class-map";
 
 class HuiGenericEntityRow extends LitElement {
   @property() public hass?: HomeAssistant;
@@ -48,10 +51,19 @@ class HuiGenericEntityRow extends LitElement {
 
     return html`
       <state-badge
+        class=${classMap({
+          pointer:
+            !this.config.tap_action ||
+            (this.config.tap_action &&
+              this.config.tap_action.action !== "none"),
+        })}
         .hass=${this.hass}
         .stateObj=${stateObj}
         .overrideIcon=${this.config.icon}
         .overrideImage=${this.config.image}
+        @ha-click=${this._handleTap}
+        @ha-hold=${this._handleHold}
+        .longPress=${longPress()}
       ></state-badge>
       <div class="flex">
         <div class="info">
@@ -84,6 +96,14 @@ class HuiGenericEntityRow extends LitElement {
     if (changedProps.has("hass")) {
       toggleAttribute(this, "rtl", computeRTL(this.hass!));
     }
+  }
+
+  private _handleTap() {
+    handleClick(this, this.hass!, this.config!, false);
+  }
+
+  private _handleHold() {
+    handleClick(this, this.hass!, this.config!, true);
   }
 
   static get styles(): CSSResult {
@@ -131,6 +151,9 @@ class HuiGenericEntityRow extends LitElement {
       :host([rtl]) .flex ::slotted(*) {
         margin-left: 0;
         margin-right: 8px;
+      }
+      .pointer {
+        cursor: pointer;
       }
     `;
   }
