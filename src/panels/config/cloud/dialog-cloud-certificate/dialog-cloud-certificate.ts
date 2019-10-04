@@ -50,7 +50,7 @@ class DialogCloudCertificate extends LitElement {
             )}<br />
             (Will be automatically renewed)
           </p>
-          <p>
+          <p class="break-word">
             Certificate fingerprint: ${certificateInfo.fingerprint}
           </p>
         </div>
@@ -77,7 +77,7 @@ class DialogCloudCertificate extends LitElement {
         ha-paper-dialog {
           width: 535px;
         }
-        p {
+        .break-word {
           overflow-wrap: break-word;
         }
       `,
