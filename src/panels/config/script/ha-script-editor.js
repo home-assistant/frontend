@@ -100,10 +100,7 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
             <ha-paper-icon-button-arrow-prev
               on-click="backTapped"
             ></ha-paper-icon-button-arrow-prev>
-            <div main-title>
-              [[localize('ui.panel.config.script.caption'), 'name',
-              computeName(script)]]
-            </div>
+            <div main-title>[[computeHeader(script)]]</div>
             <template is="dom-if" if="[[!creatingNew]]">
               <paper-icon-button
                 icon="hass:delete"
@@ -261,7 +258,9 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
     if (
       this.dirty &&
       // eslint-disable-next-line
-      !confirm(this.hass.localize("ui.panel.config.common.editor.confirm_unsaved"))
+      !confirm(
+        this.hass.localize("ui.panel.config.common.editor.confirm_unsaved")
+      )
     ) {
       return;
     }
@@ -318,8 +317,14 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
     );
   }
 
-  computeName(script) {
-    return script && computeStateName(script);
+  computeHeader(script) {
+    return script
+      ? this.hass.localize(
+          "ui.panel.config.script.editor.header",
+          "name",
+          computeStateName(script)
+        )
+      : this.hass.localize("ui.panel.config.script.editor.default_name");
   }
 
   _computeRTL(hass) {
