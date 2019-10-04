@@ -92,18 +92,7 @@ class DialogPersonDetail extends LitElement {
                 "ui.panel.config.person.detail.device_tracker_intro"
               )}
             </p>
-            <ha-entities-picker
-              .hass=${this.hass}
-              .value=${this._deviceTrackers}
-              domain-filter="device_tracker"
-              .pickedEntityLabel=${this.hass.localize(
-                "ui.panel.config.person.detail.device_tracker_picked"
-              )}
-              .pickEntityLabel=${this.hass.localize(
-                "ui.panel.config.person.detail.device_tracker_pick"
-              )}
-              @value-changed=${this._deviceTrackersChanged}
-            ></ha-entities-picker>
+            ${this._getEntitiesPicker()}
           </div>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
@@ -129,6 +118,37 @@ class DialogPersonDetail extends LitElement {
         </div>
       </ha-paper-dialog>
     `;
+  }
+
+  private _getEntitiesPicker() {
+    if (this._deviceTrackers.length === 0) {
+      return html`
+        No devices have been added to Home Assistant yet. You can do this from
+        the
+        <a @click="${this._closeDialog}" href="/config/integrations"
+          >integrations page</a
+        >.
+      `;
+    } else {
+      return html`
+        <ha-entities-picker
+          .hass=${this.hass}
+          .value=${this._deviceTrackers}
+          domain-filter="device_tracker"
+          .pickedEntityLabel=${this.hass.localize(
+            "ui.panel.config.person.detail.device_tracker_picked"
+          )}
+          .pickEntityLabel=${this.hass.localize(
+            "ui.panel.config.person.detail.device_tracker_pick"
+          )}
+          @value-changed=${this._deviceTrackersChanged}
+        ></ha-entities-picker>
+      `;
+    }
+  }
+
+  private _closeDialog() {
+    this._params = undefined;
   }
 
   private _nameChanged(ev: PolymerChangedEvent<string>) {
