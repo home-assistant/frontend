@@ -450,11 +450,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         --title-position-top: 33% !important;
       }
       .large {
-        --thermostat-padding-top: 25px;
+        --thermostat-padding-top: 32px;
         --thermostat-margin-bottom: 32px;
         --title-font-size: 28px;
-        --title-position-top: 20%;
-        --climate-info-position-top: 83%;
+        --title-position-top: 25%;
+        --climate-info-position-top: 80%;
         --set-temperature-font-size: 25px;
         --current-temperature-font-size: 71px;
         --current-temperature-position-top: 10%;
@@ -463,7 +463,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         --uom-margin-left: -18px;
         --current-mode-font-size: 18px;
         --current-mod-margin-top: 6px;
-        --current-mod-margin-bottom: 6px;
+        --current-mod-margin-bottom: 12px;
         --set-temperature-margin-bottom: -5px;
       }
       .medium {
@@ -507,8 +507,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         display: flex;
         justify-content: center;
         align-items: center;
-        height: 160px;
-        width: 160px;
       }
       #thermostat round-slider {
         margin: 0 auto;
@@ -550,7 +548,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         font-size: var(--current-mode-font-size);
         color: var(--secondary-text-color);
         margin-top: var(--current-mod-margin-top);
-        margin-bottom: var(--current-mod-mbarin-bottom);
+        margin-bottom: var(--current-mod-margin-bottom);
       }
       .modes ha-icon {
         color: var(--disabled-text-color);
