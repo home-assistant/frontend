@@ -1011,6 +1011,40 @@
               "manage": "Manage",
               "disable_hook_error_msg": "Failed to disable webhook:"
             }
+          },
+          "alexa": {
+            "title": "Alexa",
+            "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
+            "exposed_entities": "Exposed entities",
+            "no_exposed_entities": "Not Exposed entities",
+            "expose": "Expose to Alexa"
+          },
+          "dialog_certificate": {
+            "certificate_information": "Certificate Information",
+            "certificate_expiration_date": "Certificate expiration date",
+            "will_be_auto_renewed": "Will be automatically renewed",
+            "fingerprint": "Certificate fingerprint:",
+            "close": "Close"
+          },
+          "google": {
+            "title": "Google Assistant",
+            "expose": "Expose to Google Assistant",
+            "disable_2FA": "Disable two factor authentication",
+            "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
+            "exposed_entities": "Exposed entities",
+            "no_exposed_entities": "Not Exposed entities",
+            "sync_to_google": "Synchronizing changes to Google."
+          },
+          "dialog_cloudhook": {
+            "webhook_for": "Webhook for {name}",
+            "available_at": "The webhook is available at the following url:",
+            "managed_by_integration": "This webhook is managed by an integration and cannot be disabled.",
+            "info_disable_webhook": "If you no longer want to use this webhook, you can",
+            "link_disable_webhook": "disable it",
+            "view_documentation": "View documentation",
+            "close": "Close",
+            "confirm_disable": "Are you sure you want to disable this webhook?",
+            "copied_to_clipboard": "Copied to clipboard"
           }
         },
         "devices": {
