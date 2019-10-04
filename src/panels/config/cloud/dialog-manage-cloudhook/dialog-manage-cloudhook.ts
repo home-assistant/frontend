@@ -50,9 +50,19 @@ export class DialogManageCloudhook extends LitElement {
         : `https://www.home-assistant.io/integrations/${webhook.domain}/`;
     return html`
       <ha-paper-dialog with-backdrop>
-        <h2>Webhook for ${webhook.name}</h2>
+        <h2>
+          ${this.hass!.localize(
+            "ui.panel.config.cloud.dialog_cloudhook.webhook_for",
+            "name",
+            webhook.name
+          )}
+        </h2>
         <div>
-          <p>The webhook is available at the following url:</p>
+          <p>
+            ${this.hass!.localize(
+              "ui.panel.config.cloud.dialog_cloudhook.available_at"
+            )}
+          </p>
           <paper-input
             label="${inputLabel}"
             value="${cloudhook.cloudhook_url}"
@@ -62,13 +72,18 @@ export class DialogManageCloudhook extends LitElement {
           <p>
             ${cloudhook.managed
               ? html`
-                  This webhook is managed by an integration and cannot be
-                  disabled.
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.dialog_cloudhook.managed_by_integration"
+                  )}
                 `
               : html`
-                  If you no longer want to use this webhook, you can
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.dialog_cloudhook.info_disable_webhook"
+                  )}
                   <button class="link" @click="${this._disableWebhook}">
-                    disable it</button
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.dialog_cloudhook.link_disable_webhook"
+                    )}</button
                   >.
                 `}
           </p>
@@ -76,9 +91,17 @@ export class DialogManageCloudhook extends LitElement {
 
         <div class="paper-dialog-buttons">
           <a href="${docsUrl}" target="_blank">
-            <mwc-button>VIEW DOCUMENTATION</mwc-button>
+            <mwc-button
+              >${this.hass!.localize(
+                "ui.panel.config.cloud.dialog_cloudhook.view_documentation"
+              )}</mwc-button
+            >
           </a>
-          <mwc-button @click="${this._closeDialog}">CLOSE</mwc-button>
+          <mwc-button @click="${this._closeDialog}"
+            >${this.hass!.localize(
+              "ui.panel.config.cloud.dialog_cloudhook.close"
+            )}</mwc-button
+          >
         </div>
       </ha-paper-dialog>
     `;
@@ -97,7 +120,13 @@ export class DialogManageCloudhook extends LitElement {
   }
 
   private async _disableWebhook() {
-    if (!confirm("Are you sure you want to disable this webhook?")) {
+    if (
+      !confirm(
+        this.hass!.localize(
+          "ui.panel.config.cloud.dialog_cloudhook.confirm_disable"
+        )
+      )
+    ) {
       return;
     }
 
@@ -113,7 +142,9 @@ export class DialogManageCloudhook extends LitElement {
     input.setSelectionRange(0, input.value.length);
     try {
       document.execCommand("copy");
-      paperInput.label = "COPIED TO CLIPBOARD";
+      paperInput.label = this.hass!.localize(
+        "ui.panel.config.cloud.dialog_cloudhook.copied_to_clipboard"
+      );
     } catch (err) {
       // Copying failed. Oh no
     }
