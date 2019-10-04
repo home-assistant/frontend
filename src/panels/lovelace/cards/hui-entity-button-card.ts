@@ -28,6 +28,7 @@ import { longPress } from "../common/directives/long-press-directive";
 import { handleClick } from "../common/handle-click";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { EntityButtonCardConfig } from "./types";
+import { hasDoubleClick } from "../common/has-double-click";
 
 @customElement("hui-entity-button-card")
 class HuiEntityButtonCard extends LitElement implements LovelaceCard {
@@ -122,8 +123,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
         @ha-click=${this._handleClick}
         @ha-hold=${this._handleHold}
         @ha-dblclick=${this._handleDblClick}
-        .hasDblClick=${this._config!.dbltap_action &&
-          this._config!.dbltap_action!.action !== "none"}
+        .hasDblClick=${hasDoubleClick(this._config!.dbltap_action)}
         .longPress=${longPress()}
       >
         ${this._config.show_icon

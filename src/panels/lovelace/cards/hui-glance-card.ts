@@ -26,6 +26,7 @@ import { longPress } from "../common/directives/long-press-directive";
 import { processConfigEntities } from "../common/process-config-entities";
 import { handleClick } from "../common/handle-click";
 import { GlanceCardConfig, GlanceConfigEntity } from "./types";
+import { hasDoubleClick } from "../common/has-double-click";
 
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {
@@ -186,8 +187,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         @ha-click=${this._handleClick}
         @ha-hold=${this._handleHold}
         @ha-dblclick=${this._handleDblClick}
-        .hasDblClick=${entityConf.dbltap_action &&
-          entityConf.dbltap_action!.action !== "none"}
+        .hasDblClick=${hasDoubleClick(entityConf.dbltap_action)}
         .longPress=${longPress()}
       >
         ${this._config!.show_name !== false

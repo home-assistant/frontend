@@ -16,6 +16,7 @@ import { classMap } from "lit-html/directives/class-map";
 import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
 import { PictureCardConfig } from "./types";
+import { hasDoubleClick } from "../common/has-double-click";
 
 @customElement("hui-picture-card")
 export class HuiPictureCard extends LitElement implements LovelaceCard {
@@ -58,8 +59,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
         @ha-click=${this._handleClick}
         @ha-hold=${this._handleHold}
         @ha-dblclick=${this._handleDblClick}
-        .hasDblClick=${this._config!.dbltap_action &&
-          this._config!.dbltap_action!.action !== "none"}
+        .hasDblClick=${hasDoubleClick(this._config!.dbltap_action)}
         .longPress=${longPress()}
         class="${classMap({
           clickable: Boolean(

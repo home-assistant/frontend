@@ -27,6 +27,7 @@ import { longPress } from "../common/directives/long-press-directive";
 import { processConfigEntities } from "../common/process-config-entities";
 import { handleClick } from "../common/handle-click";
 import { PictureGlanceCardConfig, ConfigEntity } from "./types";
+import { hasDoubleClick } from "../common/has-double-click";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 
@@ -136,8 +137,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           @ha-click=${this._handleClick}
           @ha-hold=${this._handleHold}
           @ha-dblclick=${this._handleDblClick}
-          .hasDblClick=${this._config!.dbltap_action &&
-            this._config!.dbltap_action!.action !== "none"}
+          .hasDblClick=${hasDoubleClick(this._config!.dbltap_action)}
           .longPress=${longPress()}
           .config=${this._config}
           .hass=${this.hass}
@@ -198,8 +198,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
         @ha-click=${this._handleClick}
         @ha-hold=${this._handleHold}
         @ha-dblclick=${this._handleDblClick}
-        .hasDblClick=${entityConf.dbltap_action &&
-          entityConf.dbltap_action!.action !== "none"}
+        .hasDblClick=${hasDoubleClick(entityConf.dbltap_action)}
         .longPress=${longPress()}
         .config=${entityConf}
         class="${classMap({
