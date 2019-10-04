@@ -79,7 +79,10 @@ export class ZHAClusters extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <div class="node-picker">
-        <paper-dropdown-menu label="Clusters" class="flex">
+        <paper-dropdown-menu
+          label="${this.hass!.localize("ui.panel.config.zha.common.clusters")}"
+          class="flex"
+        >
           <paper-listbox
             slot="dropdown-content"
             .selected="${this._selectedClusterIndex}"
@@ -96,7 +99,9 @@ export class ZHAClusters extends LitElement {
       ${this.showHelp
         ? html`
             <div class="help-text">
-              Select cluster to view attributes and commands
+              ${this.hass!.localize(
+                "ui.panel.config.zha.clusters.help_cluster_dropdown"
+              )}
             </div>
           `
         : ""}
