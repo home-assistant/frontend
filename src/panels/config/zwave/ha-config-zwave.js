@@ -26,9 +26,9 @@ import "./zwave-usercodes";
 import "./zwave-values";
 import "./zwave-node-protection";
 
-import sortByName from "../../../common/entity/states_sort_by_name";
-import computeStateName from "../../../common/entity/compute_state_name";
-import computeStateDomain from "../../../common/entity/compute_state_domain";
+import { sortStatesByName } from "../../../common/entity/states_sort_by_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
@@ -42,6 +42,11 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
       <style include="iron-flex ha-style ha-form-style">
         .content {
           margin-top: 24px;
+        }
+
+        .sectionHeader {
+          position: relative;
+          padding-right: 40px;
         }
 
         .node-info {
@@ -77,7 +82,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
         .toggle-help-icon {
           position: absolute;
-          top: 6px;
+          top: -6px;
           right: 0;
           color: var(--primary-color);
         }
@@ -102,7 +107,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
         <!-- Node card -->
         <ha-config-section is-wide="[[isWide]]">
-          <div style="position: relative" slot="header">
+          <div class="sectionHeader" slot="header">
             <span>Z-Wave Node Management</span>
             <paper-icon-button
               class="toggle-help-icon"
@@ -461,7 +466,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return Object.keys(hass.states)
       .map((key) => hass.states[key])
       .filter((ent) => ent.entity_id.match("zwave[.]"))
-      .sort(sortByName);
+      .sort(sortStatesByName);
   }
 
   computeEntities(selectedNode) {
@@ -481,7 +486,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
           !ent.entity_id.match("zwave[.]")
         );
       })
-      .sort(sortByName);
+      .sort(sortStatesByName);
   }
 
   selectedNodeChanged(selectedNode) {

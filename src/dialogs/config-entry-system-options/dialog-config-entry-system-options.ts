@@ -11,6 +11,8 @@ import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 
 import "../../components/dialog/ha-paper-dialog";
+import "../../components/ha-switch";
+
 import { HomeAssistant } from "../../types";
 import { ConfigEntrySystemOptionsDialogParams } from "./show-dialog-config-entry-system-options";
 import {
@@ -19,6 +21,8 @@ import {
 } from "../../data/config_entries";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
+// tslint:disable-next-line: no-duplicate-imports
+import { HaSwitch } from "../../components/ha-switch";
 
 @customElement("dialog-config-entry-system-options")
 class DialogConfigEntrySystemOptions extends LitElement {
@@ -72,9 +76,9 @@ class DialogConfigEntrySystemOptions extends LitElement {
                     `
                   : ""}
                 <div class="form">
-                  <paper-toggle-button
+                  <ha-switch
                     .checked=${!this._disableNewEntities}
-                    @checked-changed=${this._disableNewEntitiesChanged}
+                    @change=${this._disableNewEntitiesChanged}
                     .disabled=${this._submitting}
                   >
                     <div>
@@ -87,7 +91,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
                         "ui.dialogs.config_entry_system_options.enable_new_entities_description"
                       )}
                     </div>
-                  </paper-toggle-button>
+                  </ha-switch>
                 </div>
               `}
         </paper-dialog-scrollable>
@@ -109,9 +113,9 @@ class DialogConfigEntrySystemOptions extends LitElement {
     `;
   }
 
-  private _disableNewEntitiesChanged(ev: PolymerChangedEvent<boolean>): void {
+  private _disableNewEntitiesChanged(ev: Event): void {
     this._error = undefined;
-    this._disableNewEntities = !ev.detail.value;
+    this._disableNewEntities = !(ev.target as HaSwitch).checked;
   }
 
   private async _updateEntry(): Promise<void> {
@@ -152,6 +156,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
         }
 
         .form {
+          padding-top: 6px;
           padding-bottom: 24px;
           color: var(--primary-text-color);
         }

@@ -1,7 +1,7 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import durationToSeconds from "../datetime/duration_to_seconds";
 
-export default function timerTimeRemaining(stateObj: HassEntity) {
+export const timerTimeRemaining = (stateObj: HassEntity) => {
   let timeRemaining = durationToSeconds(stateObj.attributes.remaining);
 
   if (stateObj.state === "active") {
@@ -11,4 +11,4 @@ export default function timerTimeRemaining(stateObj: HassEntity) {
   }
 
   return timeRemaining;
-}
+};

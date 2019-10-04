@@ -74,6 +74,10 @@
                 "off": "Sicher",
                 "on": "Unsicher"
             },
+            "presence": {
+                "off": "Nid Dahei",
+                "on": "Dahei"
+            },
             "battery": {
                 "off": "Normau",
                 "on": "Nidrig"
@@ -204,7 +208,7 @@
                 "ready": "Parat"
             },
             "query_stage": {
-                "initializing": "Inizialisiärä ({query_stage})",
+                "initializing": "Inizialisiärä ( {query_stage} )",
                 "dead": "Tod ({query_stage})"
             }
         },
@@ -241,16 +245,17 @@
             "armed": "Scharf",
             "disarmed": "Entschärft",
             "armed_home": "Scharf Dahei",
-            "armed_away": "Scharf usswerts",
-            "armed_night": "Scharf nachts",
+            "armed_away": "Scharf",
+            "armed_night": "Scharf",
             "pending": "Usstehend",
             "arming": "Scharf steue",
             "disarming": "Deaktiviärt",
-            "triggered": "Usglöst"
+            "triggered": "Usglöst",
+            "armed_custom_bypass": "Scharf"
         },
         "device_tracker": {
             "home": "Dahei",
-            "not_home": "Wäg"
+            "not_home": "Nid Dahei"
         }
     },
     "ui": {
@@ -381,6 +386,9 @@
                         "rename_user": "Benutzer umbenenne",
                         "delete_user": "Benutzer lösche"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud"
                 },
                 "integrations": {
                     "caption": "Integratione",

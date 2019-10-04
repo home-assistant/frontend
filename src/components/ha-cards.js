@@ -8,9 +8,9 @@ import "../cards/ha-badges-card";
 import "../cards/ha-card-chooser";
 import "./ha-demo-badge";
 
-import computeStateDomain from "../common/entity/compute_state_domain";
-import splitByGroups from "../common/entity/split_by_groups";
-import getGroupEntities from "../common/entity/get_group_entities";
+import { computeStateDomain } from "../common/entity/compute_state_domain";
+import { splitByGroups } from "../common/entity/split_by_groups";
+import { getGroupEntities } from "../common/entity/get_group_entities";
 
 // mapping domain to size of the card.
 const DOMAINS_WITH_CARD = {

@@ -32,7 +32,7 @@
             "armed_custom_bypass": "Zakódované prispôsobené vylúčenie"
         },
         "automation": {
-            "off": "Neaktívna",
+            "off": "Neaktívny",
             "on": "Aktívna"
         },
         "binary_sensor": {
@@ -141,7 +141,8 @@
             "high_demand": "Vysoký výkon",
             "heat_pump": "Tepelné čerpadlo",
             "gas": "Plyn",
-            "manual": "Ručne"
+            "manual": "Ručne",
+            "heat_cool": "Vykurovanie \/ Chladenie"
         },
         "configurator": {
             "configure": "Konfigurovať",
@@ -232,7 +233,7 @@
                 "ready": "Pripravené"
             },
             "query_stage": {
-                "initializing": "Inicializácia ({query_stage})",
+                "initializing": "Inicializácia ( {query_stage} )",
                 "dead": "Nereaguje ({query_stage})"
             }
         },
@@ -250,7 +251,8 @@
             "snowy-rainy": "Zasneženo, daždivo",
             "sunny": "slnečno",
             "windy": "Veterno",
-            "windy-variant": "Veterno"
+            "windy-variant": "Veterno",
+            "exceptional": "Výnimočné"
         },
         "vacuum": {
             "cleaning": "Čistí",
@@ -289,7 +291,7 @@
             "arming": "Aktivácia",
             "disarming": "Deakt",
             "triggered": "Alarm",
-            "armed_custom_bypass": "Zakódovaný"
+            "armed_custom_bypass": "Zakód"
         },
         "device_tracker": {
             "home": "Doma",
@@ -323,6 +325,12 @@
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "Info"
+                    },
+                    "logs": {
+                        "title": "Logy"
                     }
                 }
             },
@@ -348,7 +356,7 @@
                     "description": "Skontrolujte Váš konfiguračný súbor a ovládajte server",
                     "section": {
                         "core": {
-                            "header": "Konfigurácia a ovládanie servera",
+                            "header": "Všeobecná konfigurácia",
                             "introduction": "Zmena konfigurácie môže byť ťažkým procesom. My vieme. Táto sekcia sa Vám pokúsi zjednodušiť život.",
                             "core_config": {
                                 "edit_requires_storage": "Editor je zablokovaný, pretože konfigurácia je uložená v configuration.yaml",
@@ -360,7 +368,7 @@
                                 "time_zone": "Časové pásmo",
                                 "unit_system": "Jednotková sústava",
                                 "unit_system_imperial": "Imperiálny",
-                                "unit_system_metric": "metrický",
+                                "unit_system_metric": "Metrický",
                                 "imperial_example": "Fahrenheita, libry",
                                 "metric_example": "Celsia, kilogramy",
                                 "save_button": "Uložiť"
@@ -494,6 +502,9 @@
                                     "event": "Udalosť:",
                                     "enter": "Potvrdiť",
                                     "leave": "Opustiť"
+                                },
+                                "device": {
+                                    "label": "Zariadenie"
                                 }
                             },
                             "learn_more": "Získajte viac informácií o spúšťačoch"
@@ -540,6 +551,9 @@
                                     "label": "Zóna",
                                     "entity": "Entita s umiestnením",
                                     "zone": "Zóna"
+                                },
+                                "device": {
+                                    "label": "Zariadenie"
                                 }
                             },
                             "learn_more": "Získajte viac informácií o podmienkach"
@@ -574,6 +588,9 @@
                                     "label": "Odpáliť udalosť",
                                     "event": "Udalosť:",
                                     "service_data": "Dáta služby"
+                                },
+                                "device_id": {
+                                    "label": "Zariadenie"
                                 }
                             },
                             "learn_more": "Získajte viac informácií o akciách"
@@ -589,7 +606,42 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Spravujte svoju Z-Wave sieť",
+                    "network_management": {
+                        "header": "Správa siete Z-Wave",
+                        "introduction": "Spúšťajte príkazy, ktoré ovplyvňujú sieť Z-Wave. Nebudete mať spätnú väzbu o tom, či väčšina príkazov bola úspešná, ale môžete skontrolovať protokol OZW a pokúsiť sa to zistiť."
+                    },
+                    "network_status": {
+                        "network_stopped": "Sieť Z-Wave bola zastavená",
+                        "network_starting": "Spúšťa sa sieť Z-Wave ...",
+                        "network_starting_note": "Môže to chvíľu trvať v závislosti od veľkosti siete.",
+                        "network_started": "Sieť Z-Wave bola spustena"
+                    },
+                    "services": {
+                        "start_network": "Spustiť sieť",
+                        "stop_network": "Zastaviť sieť",
+                        "test_network": "Otestovať sieť",
+                        "soft_reset": "Softvérový reset",
+                        "save_config": "Uložiť konfiguráciu",
+                        "add_node_secure": "Bezpečne pridať zariadenie",
+                        "add_node": "Pridať zariadenie",
+                        "remove_node": "Odstrániť zariadenie",
+                        "cancel_command": "Zrušiť príkaz"
+                    },
+                    "common": {
+                        "value": "Hodnota",
+                        "instance": "Inštancie",
+                        "index": "Index",
+                        "unknown": "Neznámy",
+                        "wakeup_interval": "Interval prebudenia"
+                    },
+                    "values": {
+                        "header": "Hodnoty zariadenia"
+                    },
                     "node_config": {
+                        "header": "Upraviť konfiguráciu zariadenia",
+                        "seconds": "Sekúnd",
+                        "set_wakeup": "Nastaviť interval prebudenia",
+                        "config_parameter": "Konfigurovať parameter",
                         "set_config_parameter": "Nastavte konfiguračný parameter"
                     }
                 },
@@ -651,11 +703,11 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Správa siete ZigBee Home Automation",
+                    "description": "Správa siete Zigbee Home Automation",
                     "services": {
                         "reconfigure": "Znovu nakonfigurujte zariadenie ZHA (oprava zariadenia). Použite, len ak máte problémy so zariadením. Ak sa jedná o zariadenie s batériovým napájaním, uistite sa, že pri používaní tejto služby, nebolo zariadenie v režime spánku a prijímalo príkazy.",
                         "updateDeviceName": "Nastavte vlastný názov pre toto zariadenie v registri zariadenia.",
-                        "remove": "Odstráňte zariadenie zo siete ZigBee."
+                        "remove": "Odstráňte zariadenie zo siete Zigbee."
                     },
                     "device_card": {
                         "device_name_placeholder": "Meno používateľa",
@@ -695,14 +747,17 @@
                         "header": "Register entít",
                         "unavailable": "(nedostupné)",
                         "introduction": "Home Assistant vedie register všetkých subjektov, ktoré kedy videl a ktoré môžu byť jednoznačne identifikované. Každá z týchto entít bude mať pridelené ID, ktoré bude vyhradené len pre tento subjekt.",
-                        "introduction2": "Použite register entít na prepísanie mena, zmenu ID entity alebo odstránenie položky z Home Assistanta. Poznámka: Odstránenie položky databázy entít neodstráni entitu. Postupujte podľa nižšie uvedeného odkazu a odstráňte ho z integračnej stránky.",
+                        "introduction2": "Použite register entít na prepísanie mena, zmenu ID entity alebo odstránenie položky z Home Assistant. Poznámka: Odstránenie položky databázy entít neodstráni entitu. Postupujte podľa nižšie uvedeného odkazu a odstráňte ho z integračnej stránky.",
                         "integrations_page": "Stránka Integrácie"
                     },
                     "editor": {
                         "unavailable": "Táto entita nie je momentálne k dispozícii.",
                         "default_name": "Nová oblasť",
                         "delete": "VYMAZAŤ",
-                        "update": "AKTUALIZOVAŤ"
+                        "update": "AKTUALIZOVAŤ",
+                        "enabled_label": "Povoliť entitu",
+                        "enabled_cause": "Zakázané {cause}",
+                        "enabled_description": "Zakázané entity nebudú pridané do Home Assistanta"
                     }
                 },
                 "person": {
@@ -739,9 +794,15 @@
                             "heading": "Správa servera",
                             "introduction": "Ovládajte Váš Home Assistant server... z aplikácie Home Assistant.",
                             "restart": "Reštartovať",
-                            "stop": "Zastaviť"
+                            "stop": "Zastaviť",
+                            "confirm_restart": "Naozaj chcete reštartovať Home Assistanta?",
+                            "confirm_stop": "Naozaj chcete zastaviť Home Assistanta?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Zariadenia",
+                    "description": "Spravovať pripojené zariadenia"
                 }
             },
             "profile": {
@@ -813,7 +874,7 @@
                     "close": "Zavrieť",
                     "submit": "Odoslať"
                 },
-                "logout": "Logga ut",
+                "logout": "Odhlásiť sa",
                 "force_narrow": {
                     "header": "Vždy skryť bočný panel",
                     "description": "Predvolene sa skryje bočný panel, podobne ako v prípade mobilných zariadení."
@@ -864,7 +925,7 @@
                                     "data": {
                                         "code": "Kód dvojfaktorovej autentifikácie"
                                     },
-                                    "description": "Otvorte **{mfa_module_name}** na vašom zariadení a pozrite si kód dvojfaktorovej autentifikácie a overte svoju totožnosť."
+                                    "description": "Otvorte **{mfa_module_name}** v zariadení, aby ste si pozreli svoj dvojfaktorový autentifikačný kód a overili svoju totožnosť:"
                                 }
                             },
                             "error": {
@@ -938,7 +999,7 @@
                     "finish": "Dokončiť"
                 },
                 "core-config": {
-                    "intro": "Dobrý deň, {name} , vitajte v Home Assistantovi. Ako by ste chceli pomenovať svoj domov?",
+                    "intro": "Dobrý deň, {name}, vitajte v Home Assistant. Ako by ste chceli pomenovať svoj domov?",
                     "intro_location": "Radi by sme vedeli, kde žijete. Tieto informácie vám pomôžu pri zobrazovaní informácií a nastavovaní automatizácie na základe slnka. Tieto údaje sa nikdy nezdieľajú mimo vašej siete.",
                     "intro_location_detect": "Môžeme vám pomôcť vyplniť tieto informácie jednorazovou žiadosťou o externú službu.",
                     "location_name_default": "Domov",
@@ -1006,6 +1067,10 @@
                         "save": "Uložiť",
                         "unsaved_changes": "Neuložené zmeny",
                         "saved": "Uložené"
+                    },
+                    "edit_lovelace": {
+                        "header": "Názov vášho Lovelace UI",
+                        "explanation": "Tento názov sa zobrazuje nad všetkými vašimi zobrazeniami v Lovelace."
                     }
                 },
                 "menu": {
@@ -1015,7 +1080,7 @@
                     "refresh": "Obnoviť"
                 },
                 "warning": {
-                    "entity_not_found": "Entita nie je k dispozícií",
+                    "entity_not_found": "Entita nie je k dispozícií {entity}",
                     "entity_non_numeric": "Entita je nečíselná: {entity}"
                 },
                 "changed_toast": {
@@ -1027,10 +1092,10 @@
             "page-demo": {
                 "cards": {
                     "demo": {
-                        "demo_by": "podľa {name}",
+                        "demo_by": "od {name}",
                         "next_demo": "Ďalšie demo",
-                        "introduction": "Vitaj ! Dostali ste sa na demo Home Assistanta, kde prezentujeme najlepšie používateľské rozhrania vytvorené našou komunitou.",
-                        "learn_more": "Získajte viac informácií o Home asistentovi"
+                        "introduction": "Vitaj ! Dostali ste sa na demo Home Assistant, kde prezentujeme najlepšie používateľské rozhrania vytvorené našou komunitou.",
+                        "learn_more": "Získajte viac informácií o Home Assistant"
                     }
                 },
                 "config": {
@@ -1075,7 +1140,8 @@
         "common": {
             "loading": "Načítava sa",
             "cancel": "Zrušiť",
-            "save": "Uložiť"
+            "save": "Uložiť",
+            "successfully_saved": "Úspešne uložené"
         },
         "duration": {
             "day": "{count} {count, plural,\none {deň}\nfew {dni}\nother {dní}\n}",
@@ -1151,7 +1217,9 @@
             "fan": {
                 "speed": "Rýchlosť",
                 "oscillate": "Pohyblivý smer",
-                "direction": "Smer"
+                "direction": "Smer",
+                "forward": "Dopredu",
+                "reverse": "Reverzný"
             },
             "light": {
                 "brightness": "Jas",
@@ -1196,6 +1264,14 @@
                 "target_temperature": "Cieľová teplota",
                 "operation": "V prevádzke",
                 "away_mode": "Režim neprítomnosti"
+            },
+            "timer": {
+                "actions": {
+                    "start": "Štart",
+                    "pause": "Pozastaviť",
+                    "cancel": "Zrušiť",
+                    "finish": "Dokončiť"
+                }
             }
         },
         "components": {
@@ -1248,6 +1324,32 @@
                 },
                 "updater": {
                     "title": "Pokyny pre aktualizáciu"
+                }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Možnosti"
+                },
+                "success": {
+                    "description": "Možnosti boli úspešne uložené."
+                }
+            },
+            "config_entry_system_options": {
+                "title": "Možnosti systému",
+                "enable_new_entities_label": "Povoliť novo pridané entity.",
+                "enable_new_entities_description": "Ak je zakázané, novo objavené entity sa automaticky nepridajú do Home Assistanta."
+            },
+            "zha_device_info": {
+                "manuf": "od {manufacturer}",
+                "no_area": "Žiadna oblasť",
+                "services": {
+                    "updateDeviceName": "Nastaviť vlastný názov pre toto zariadenie v registri zariadení.",
+                    "remove": "Odstráňte zariadenie zo siete Zigbee."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Používateľom zadaný názov",
+                    "area_picker_label": "Oblasť",
+                    "update_name_button": "Aktualizovať názov"
                 }
             }
         },
@@ -1321,7 +1423,7 @@
                 "auto": "Auto"
             },
             "preset_mode": {
-                "none": "None",
+                "none": "Žiadny",
                 "eco": "Eko",
                 "away": "Preč",
                 "boost": "Turbo",
@@ -1329,6 +1431,14 @@
                 "home": "Doma",
                 "sleep": "Pohotovostný režim",
                 "activity": "Aktívny"
+            },
+            "hvac_action": {
+                "off": "Vypnutý",
+                "heating": "Kúrenie",
+                "cooling": "Chladenie",
+                "drying": "Sušenie",
+                "idle": "Nečinný",
+                "fan": "Ventilátor"
             }
         }
     },
@@ -1336,5 +1446,12 @@
         "system-admin": "Správcovia",
         "system-users": "Používatelia",
         "system-read-only": "Používatelia len na čítanie"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Používateľ",
+            "integration": "integrácia",
+            "config_entry": "Zadanie konfigurácie"
+        }
     }
 }

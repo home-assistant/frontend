@@ -251,7 +251,8 @@
             "snowy-rainy": "Lapoviță și ninsoare",
             "sunny": "însorit",
             "windy": "Vant",
-            "windy-variant": "Vant"
+            "windy-variant": "Vant",
+            "exceptional": "Excepţional"
         },
         "vacuum": {
             "cleaning": "Curățare",
@@ -327,6 +328,9 @@
                     },
                     "info": {
                         "title": "Info"
+                    },
+                    "logs": {
+                        "title": "Jurnale"
                     }
                 }
             },
@@ -498,6 +502,9 @@
                                     "event": "Eveniment:",
                                     "enter": "Intră",
                                     "leave": "Ieși"
+                                },
+                                "device": {
+                                    "label": "Dispozitiv"
                                 }
                             },
                             "learn_more": "Aflați mai multe despre triggeri"
@@ -544,13 +551,16 @@
                                     "label": "Zone",
                                     "entity": "Entitate cu localizare",
                                     "zone": "Zone"
+                                },
+                                "device": {
+                                    "label": "Dispozitiv"
                                 }
                             },
                             "learn_more": "Aflați mai multe despre condiții"
                         },
                         "actions": {
                             "header": "Acţiuni",
-                            "introduction": "Acțiunile sunt cele pe care Home Assistant le va face când se declanșează automatizarea. \n\n [Aflați mai multe despre acțiuni.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Acțiunile sunt cele pe care Home Assistant le va face când se declanșează automatizarea. \n\n [Aflați mai multe despre acțiuni.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
                             "add": "Adăugați o acțiune",
                             "duplicate": "Duplicat",
                             "delete": "Șterge",
@@ -578,6 +588,9 @@
                                     "label": "Eveniment declansare",
                                     "event": "Eveniment",
                                     "service_data": "Date serviciu"
+                                },
+                                "device_id": {
+                                    "label": "Dispozitiv"
                                 }
                             },
                             "learn_more": "Aflați mai multe despre acțiuni"
@@ -620,12 +633,21 @@
                     "common": {
                         "value": "Valoare",
                         "instance": "Instanţă",
-                        "index": "Index"
+                        "index": "Index",
+                        "unknown": "Necunoscut",
+                        "wakeup_interval": "Interval de trezire"
                     },
                     "values": {
                         "header": "Valoare nod"
                     },
                     "node_config": {
+                        "header": "Opțiuni de configurare a nodurilor",
+                        "seconds": "Secunde",
+                        "set_wakeup": "Setați interval de trezire",
+                        "config_parameter": "Setați parametrul de configurare",
+                        "config_value": "Configurează valoarea",
+                        "true": "Adevărat",
+                        "false": "Fals",
                         "set_config_parameter": "Setați parametrul de configurare"
                     }
                 },
@@ -687,11 +709,11 @@
                 },
                 "zha": {
                     "caption": "ZHA",
-                    "description": "Managementul rețelei ZigBee Home Automation",
+                    "description": "Managementul rețelei Zigbee Home Automation",
                     "services": {
                         "reconfigure": "Reconfigurați dispozitivul ZHA (dispozitiv de vindecare). Utilizați acest lucru dacă aveți probleme cu dispozitivul. Dacă dispozitivul în cauză este un dispozitiv alimentat cu baterii, asigurați-vă că este treaz și accepta comenzi atunci când utilizați acest serviciu.",
                         "updateDeviceName": "Setați un nume personalizat pentru acest dispozitiv în registrul de dispozitive.",
-                        "remove": "Eliminați un dispozitiv din rețeaua ZigBee."
+                        "remove": "Eliminați un dispozitiv din rețeaua Zigbee."
                     },
                     "device_card": {
                         "device_name_placeholder": "Nume dat de utilizator",
@@ -738,7 +760,10 @@
                         "unavailable": "Această entitate nu este disponibilă momentan.",
                         "default_name": "Zonă nouă",
                         "delete": "ȘTERGE",
-                        "update": "ACTUALIZAȚI"
+                        "update": "ACTUALIZAȚI",
+                        "enabled_label": "Activează entitatea",
+                        "enabled_cause": "Dezactivat de {cause}.",
+                        "enabled_description": "Entitățile dezactivate nu vof fi adăugate in Home Assistant"
                     }
                 },
                 "person": {
@@ -750,6 +775,40 @@
                         "device_tracker_picked": "Urmăriți dispozitivul",
                         "device_tracker_pick": "Alegeți dispozitivul pentru a urmări"
                     }
+                },
+                "server_control": {
+                    "caption": "Control server",
+                    "description": "Repornește si oprește serverul Home Assistant",
+                    "section": {
+                        "validation": {
+                            "heading": "Validare configurație",
+                            "introduction": "Validați configurația dvs. dacă ați făcut recent unele modificări și doriți să vă asigurați că aceasta este validă",
+                            "check_config": "Verificați configurația",
+                            "valid": "Configurația este validă!",
+                            "invalid": "Configurația este invalidă"
+                        },
+                        "reloading": {
+                            "heading": "Reîncărcarea configurației",
+                            "introduction": "Unele părți din Home Assistant se pot reîncărca fără a necesita o repornire. Apăsarea reîncărcării va dezactiva configurația actuală și va încărca noua configurație.",
+                            "core": "Reîncărcați nucleul",
+                            "group": "Reîncărcați grupurile",
+                            "automation": "Reîncarcă automatizările",
+                            "script": "Reîncărcați script-uri",
+                            "scene": "Reîncărca scenarii"
+                        },
+                        "server_management": {
+                            "heading": "Managementul serverului",
+                            "introduction": "Controlează-ți serverul Home Assistant ... din Home Assistant.",
+                            "restart": "Repornire",
+                            "stop": "Oprire",
+                            "confirm_restart": "Sigur doriți să reporniți Home Assistant?",
+                            "confirm_stop": "Sigur doriți să opriți Home Assistant?"
+                        }
+                    }
+                },
+                "devices": {
+                    "caption": "Dispozitive",
+                    "description": "Gestionați dispozitivele conectate"
                 }
             },
             "profile": {
@@ -779,7 +838,7 @@
                     "created_at": "Creat in {date}",
                     "confirm_delete": "Sigur doriti sa stergeti tokenul de acces pentru {name}?",
                     "delete_failed": "Ştergerea tokenului de acces eşuată",
-                    "last_used": "Ultima utilizate la {data} din {locaţie}",
+                    "last_used": "Ultima utilizate la {date} din {location}",
                     "not_used": "Nu a fost utilizat niciodata",
                     "current_token_tooltip": "Nu se poate șterge tokenul actual de actualizare"
                 },
@@ -795,10 +854,10 @@
                     "prompt_name": "Nume?",
                     "prompt_copy_token": "Copia token-ul de acces. Acesta nu va fi afișat din nou.",
                     "empty_state": "Nu aveți tokenuri de acces de lungă durată deocamdata",
-                    "last_used": "Ultima utilizare la {data} din {locaţie}",
+                    "last_used": "Ultima utilizare la {date} din {location}",
                     "not_used": "Nu a fost utilizat niciodata"
                 },
-                "current_user": "În prezent sunteți conectat ca {fullName} .",
+                "current_user": "În prezent sunteți conectat ca {fullName}.",
                 "is_owner": "Sunteți proprietar.",
                 "change_password": {
                     "header": "Schimbaţi parola",
@@ -1014,6 +1073,10 @@
                         "save": "Salvați",
                         "unsaved_changes": "Modificări nesalvate",
                         "saved": "Salvat"
+                    },
+                    "edit_lovelace": {
+                        "header": "Titlul interfeței dvs. Lovelace",
+                        "explanation": "Acest titlu este arătat mai sus toate punctele de vedere în Lovelace."
                     }
                 },
                 "menu": {
@@ -1056,7 +1119,7 @@
                         },
                         "labels": {
                             "lights": "Lumini",
-                            "information": "informație",
+                            "information": "Informație",
                             "morning_commute": "Naveta De Dimineață",
                             "commute_home": "Naveta la domiciliu",
                             "entertainment": "Divertisment",
@@ -1083,14 +1146,15 @@
         "common": {
             "loading": "Se încarcă",
             "cancel": "Revocare",
-            "save": "Salvați"
+            "save": "Salvați",
+            "successfully_saved": "Opțiunile salvate cu succes."
         },
         "duration": {
             "day": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}",
             "week": "{count}{count, plural,\n  one { săptămână }\n  other { săptămâni }\n}",
             "second": "{count} {count, plural,\none {secunda}\nother {secunde}\n}",
             "minute": "{count} {count, plural,\n  one { minut }\n  other { minute }\n}",
-            "hour": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}"
+            "hour": "{count}{count, plural,\n  one { ora }\n  other { ore }\n}"
         },
         "login-form": {
             "password": "Parola",
@@ -1159,7 +1223,9 @@
             "fan": {
                 "speed": "Viteză",
                 "oscillate": "Oscilare",
-                "direction": "Direcţie"
+                "direction": "Direcţie",
+                "forward": "Înainte",
+                "reverse": "Invers"
             },
             "light": {
                 "brightness": "Luminozitate",
@@ -1204,6 +1270,14 @@
                 "target_temperature": "Temperatura țintă",
                 "operation": "Operație",
                 "away_mode": "Plecat"
+            },
+            "timer": {
+                "actions": {
+                    "start": "Începe",
+                    "pause": "Pauză",
+                    "cancel": "Revocare",
+                    "finish": "Termina"
+                }
             }
         },
         "components": {
@@ -1222,7 +1296,7 @@
                 "duration": {
                     "second": "{count} {count, plural,\none {secunda}\nother {secunde}\n}",
                     "minute": "{count} {count, plural,\n  one { minut }\n  other { minute }\n}",
-                    "hour": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}",
+                    "hour": "{count}{count, plural,\n  one { ora }\n  other { ore }\n}",
                     "day": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}",
                     "week": "{count}{count, plural,\n  one { săptămână }\n  other { săptămâni }\n}"
                 }
@@ -1236,7 +1310,7 @@
             "entity_turned_on": "Pornit {entity}",
             "entity_turned_off": "Oprit {entity}.",
             "service_called": "Serviciu {service} apelat.",
-            "service_call_failed": "Nu s-a putut apela serviciul {service} .",
+            "service_call_failed": "Nu s-a putut apela serviciul {service}.",
             "connection_lost": "Conexiunea a fost pierdută. Se reconectează ..."
         },
         "dialogs": {
@@ -1256,6 +1330,33 @@
                 },
                 "updater": {
                     "title": "Actualizați instrucțiunile"
+                }
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Opțiuni"
+                },
+                "success": {
+                    "description": "Opțiunile salvate cu succes."
+                }
+            },
+            "config_entry_system_options": {
+                "title": "Setări de sistem",
+                "enable_new_entities_label": "Activează entitățile nou adăugate",
+                "enable_new_entities_description": "Dacă sunt dezactivate, entitățile recent descoperite nu vor fi adăugate automat la Home Assistant."
+            },
+            "zha_device_info": {
+                "manuf": "de {manufacturer}",
+                "no_area": "Nici o zonă",
+                "services": {
+                    "reconfigure": "Reconfigurați dispozitivul ZHA (dispozitiv de vindecare). Utilizați acest lucru dacă aveți probleme cu dispozitivul. Dacă dispozitivul în cauză este un dispozitiv alimentat cu baterii, asigurați-vă că este treaz și accepta comenzi atunci când utilizați acest serviciu.",
+                    "updateDeviceName": "Setați un nume personalizat pentru acest dispozitiv în registrul de dispozitive.",
+                    "remove": "Eliminați un dispozitiv din rețeaua Zigbee."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Nume dat de utilizator",
+                    "area_picker_label": "Zonă",
+                    "update_name_button": "Actualizați numele"
                 }
             }
         },
@@ -1352,5 +1453,12 @@
         "system-admin": "Administratori",
         "system-users": "Utilizatori",
         "system-read-only": "Utilizatori cu drepturi de citire"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Utilizator",
+            "integration": "Integrare",
+            "config_entry": "Intrare config"
+        }
     }
 }

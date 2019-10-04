@@ -9,8 +9,8 @@ import {
   query,
 } from "lit-element";
 import "../ha-icon";
-import computeStateDomain from "../../common/entity/compute_state_domain";
-import stateIcon from "../../common/entity/state_icon";
+import { computeStateDomain } from "../../common/entity/compute_state_domain";
+import { stateIcon } from "../../common/entity/state_icon";
 import { HassEntity } from "home-assistant-js-websocket";
 // Not duplicate, this is for typing.
 // tslint:disable-next-line
@@ -104,6 +104,7 @@ class StateBadge extends LitElement {
         text-align: center;
         background-size: cover;
         line-height: 40px;
+        vertical-align: middle;
       }
 
       ha-icon {

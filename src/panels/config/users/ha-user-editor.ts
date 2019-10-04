@@ -52,15 +52,15 @@ class HaUserEditor extends LitElement {
         <ha-card .header=${this._name}>
           <table class="card-content">
             <tr>
-              <td>ID</td>
+              <td>${hass.localize("ui.panel.config.users.editor.id")}</td>
               <td>${user.id}</td>
             </tr>
             <tr>
-              <td>Owner</td>
+              <td>${hass.localize("ui.panel.config.users.editor.owner")}</td>
               <td>${user.is_owner}</td>
             </tr>
             <tr>
-              <td>Group</td>
+              <td>${hass.localize("ui.panel.config.users.editor.group")}</td>
               <td>
                 <select
                   @change=${this._handleGroupChange}
@@ -92,11 +92,15 @@ class HaUserEditor extends LitElement {
               : ""}
 
             <tr>
-              <td>Active</td>
+              <td>${hass.localize("ui.panel.config.users.editor.active")}</td>
               <td>${user.is_active}</td>
             </tr>
             <tr>
-              <td>System generated</td>
+              <td>
+                ${hass.localize(
+                  "ui.panel.config.users.editor.system_generated"
+                )}
+              </td>
               <td>${user.system_generated}</td>
             </tr>
           </table>
@@ -114,7 +118,9 @@ class HaUserEditor extends LitElement {
             </mwc-button>
             ${user.system_generated
               ? html`
-                  Unable to remove system generated users.
+                  ${hass.localize(
+                    "ui.panel.config.users.editor.system_generated_users_not_removable"
+                  )}
                 `
               : ""}
           </div>
@@ -124,12 +130,19 @@ class HaUserEditor extends LitElement {
   }
 
   private get _name() {
-    return this.user && (this.user.name || "Unnamed user");
+    return (
+      this.user &&
+      (this.user.name ||
+        this.hass!.localize("ui.panel.config.users.editor.unnamed_user"))
+    );
   }
 
   private async _handleRenameUser(ev): Promise<void> {
     ev.currentTarget.blur();
-    const newName = prompt("New name?", this.user!.name);
+    const newName = prompt(
+      this.hass!.localize("ui.panel.config.users.editor.enter_new_name"),
+      this.user!.name
+    );
     if (newName === null || newName === this.user!.name) {
       return;
     }
@@ -140,7 +153,11 @@ class HaUserEditor extends LitElement {
       });
       fireEvent(this, "reload-users");
     } catch (err) {
-      alert(`User rename failed: ${err.message}`);
+      alert(
+        `${this.hass!.localize(
+          "ui.panel.config.users.editor.user_rename_failed"
+        )} ${err.message}`
+      );
     }
   }
 
@@ -154,13 +171,25 @@ class HaUserEditor extends LitElement {
       showSaveSuccessToast(this, this.hass!);
       fireEvent(this, "reload-users");
     } catch (err) {
-      alert(`Group update failed: ${err.message}`);
+      alert(
+        `${this.hass!.localize(
+          "ui.panel.config.users.editor.group_update_failed"
+        )} ${err.message}`
+      );
       selectEl.value = this.user!.group_ids[0];
     }
   }
 
   private async _deleteUser(ev): Promise<void> {
-    if (!confirm(`Are you sure you want to delete ${this._name}`)) {
+    if (
+      !confirm(
+        this.hass!.localize(
+          "ui.panel.config.users.editor.confirm_user_deletion",
+          "name",
+          this._name
+        )
+      )
+    ) {
       ev.target.blur();
       return;
     }

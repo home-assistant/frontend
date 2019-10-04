@@ -6,24 +6,24 @@ import {
   TemplateResult,
 } from "lit-element";
 
-import "../../components/entity/ha-state-label-badge";
+import "../../../components/entity/ha-state-label-badge";
 // This one is for types
 // tslint:disable-next-line
-import { HaStateLabelBadge } from "../../components/entity/ha-state-label-badge";
+import { HaStateLabelBadge } from "../../../components/entity/ha-state-label-badge";
 
-import applyThemesOnElement from "../../common/dom/apply_themes_on_element";
+import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
-import { LovelaceViewConfig, LovelaceCardConfig } from "../../data/lovelace";
-import { HomeAssistant } from "../../types";
+import { LovelaceViewConfig, LovelaceCardConfig } from "../../../data/lovelace";
+import { HomeAssistant } from "../../../types";
 import { classMap } from "lit-html/directives/class-map";
-import { Lovelace, LovelaceCard } from "./types";
-import { createCardElement } from "./common/create-card-element";
-import { computeCardSize } from "./common/compute-card-size";
-import { showEditCardDialog } from "./editor/card-editor/show-edit-card-dialog";
-import { HuiErrorCard } from "./cards/hui-error-card";
+import { Lovelace, LovelaceCard } from "../types";
+import { createCardElement } from "../common/create-card-element";
+import { computeCardSize } from "../common/compute-card-size";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
+import { HuiErrorCard } from "../cards/hui-error-card";
 
-import { computeRTL } from "../../common/util/compute_rtl";
-import { processConfigEntities } from "./common/process-config-entities";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import { processConfigEntities } from "../common/process-config-entities";
 
 let editCodeLoaded = false;
 
@@ -262,8 +262,7 @@ export class HUIView extends LitElement {
     }
 
     const elements: HUIView["_badges"] = [];
-    // It's possible that a null value was stored as a badge entry
-    const badges = processConfigEntities(config.badges.filter(Boolean));
+    const badges = processConfigEntities(config.badges);
     for (const badge of badges) {
       const element = document.createElement("ha-state-label-badge");
       const entityId = badge.entity;

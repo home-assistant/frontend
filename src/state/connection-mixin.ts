@@ -45,6 +45,7 @@ export const connectionMixin = (
 
         translationMetadata,
         dockedSidebar: "docked",
+        vibrate: true,
         moreInfoEntityId: null,
         hassUrl: (path = "") => new URL(path, auth.data.hassUrl).toString(),
         callService: async (domain, service, serviceData = {}) => {

@@ -231,8 +231,8 @@
                 "ready": "Siap"
             },
             "query_stage": {
-                "initializing": "Menginisialisasi ({query_stage})",
-                "dead": "Padam ({query_stage})"
+                "initializing": "Inisialisasi ( {query_stage} )",
+                "dead": "Mati ({query_stage})"
             }
         },
         "weather": {
@@ -788,7 +788,7 @@
                     "finish": "Selesai"
                 },
                 "core-config": {
-                    "intro": "Halo {name} , selamat datang di Asisten Rumah. Bagaimana Anda ingin memberi nama rumah Anda?",
+                    "intro": "Halo {name}, selamat datang di Asisten Rumah. Bagaimana Anda ingin memberi nama rumah Anda?",
                     "intro_location_detect": "Kami dapat membantu Anda mengisi informasi ini dengan membuat permintaan satu kali ke layanan eksternal.",
                     "location_name_default": "Beranda",
                     "button_detect": "Deteksi",

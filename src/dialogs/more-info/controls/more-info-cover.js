@@ -5,12 +5,12 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../../components/ha-cover-tilt-controls";
 import "../../../components/ha-labeled-slider";
+
 import CoverEntity from "../../../util/cover-model";
-
-import attributeClassNames from "../../../common/entity/attribute_class_names";
-import featureClassNames from "../../../common/entity/feature_class_names";
-
+import { featureClassNames } from "../../../common/entity/feature_class_names";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+
+import { attributeClassNames } from "../../../common/entity/attribute_class_names";
 
 const FEATURE_CLASS_NAMES = {
   128: "has-set_tilt_position",

@@ -233,7 +233,7 @@
                 "ready": "gotowy"
             },
             "query_stage": {
-                "initializing": "inicjalizacja ({query_stage})",
+                "initializing": "inicjalizacja ( {query_stage} )",
                 "dead": "martwy ({query_stage})"
             }
         },
@@ -252,7 +252,7 @@
             "sunny": "słonecznie",
             "windy": "wietrznie",
             "windy-variant": "wietrznie",
-            "exceptional": "Wyjątkowy"
+            "exceptional": "wyjątkowy"
         },
         "vacuum": {
             "cleaning": "sprzątanie",
@@ -295,7 +295,7 @@
         },
         "device_tracker": {
             "home": "dom",
-            "not_home": "poza"
+            "not_home": "poza domem"
         },
         "person": {
             "home": "dom",
@@ -516,7 +516,7 @@
                             "duplicate": "Duplikuj",
                             "delete": "Usuń",
                             "delete_confirm": "Czy chcesz usunąć?",
-                            "unsupported_condition": "Stan nieobsługiwany: {condition}",
+                            "unsupported_condition": "Nieobsługiwany warunek: {condition}",
                             "type_select": "Typ warunku",
                             "type": {
                                 "state": {
@@ -681,7 +681,7 @@
                 },
                 "integrations": {
                     "caption": "Integracje",
-                    "description": "Zarządzaj podłączonymi urządzeniami i usługami",
+                    "description": "Zarządzaj integracjami",
                     "discovered": "Wykryte",
                     "configured": "Skonfigurowane",
                     "new": "Konfiguruj nową integrację",
@@ -805,6 +805,10 @@
                             "confirm_stop": "Czy chcesz zatrzymać Home Assistant?"
                         }
                     }
+                },
+                "devices": {
+                    "caption": "Urządzenia",
+                    "description": "Zarządzaj podłączonymi urządzeniami"
                 }
             },
             "profile": {
@@ -1025,9 +1029,9 @@
                         "hold": "Przytrzymanie:",
                         "tap": "Dotknięcie:",
                         "navigate_to": "Przejdź do {location}",
-                        "toggle": "Przełącz {nazwa}",
-                        "call_service": "Wywołaj usługę {nazwa}",
-                        "more_info": "Pokaż więcej informacji: {nazwa}"
+                        "toggle": "Przełącz {name}",
+                        "call_service": "Wywołaj usługę {name}",
+                        "more_info": "Pokaż więcej informacji: {name}"
                     }
                 },
                 "editor": {
