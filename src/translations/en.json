@@ -905,7 +905,7 @@
           }
         },
         "script": {
-          "caption": "Script {name}",
+          "caption": "Script",
           "description": "Create and edit scripts",
           "picker": {
             "header": "Script Editor",
@@ -916,6 +916,7 @@
             "add_script": "Add script"
           },
           "editor": {
+            "header": "Script: {name}",
             "default_name": "New Script",
             "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
             "delete_confirm": "Are you sure you want to delete this script?"
