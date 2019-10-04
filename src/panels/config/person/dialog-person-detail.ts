@@ -29,6 +29,13 @@ class DialogPersonDetail extends LitElement {
   @property() private _params?: PersonDetailDialogParams;
   @property() private _submitting: boolean = false;
 
+  private _deviceTrackersAvailable = memoizeOne(() => {
+    return Object.keys(this.hass.states).some(
+      (entityId) =>
+        entityId.substr(0, entityId.indexOf(".")) === "device_tracker"
+    );
+  });
+
   public async showDialog(params: PersonDetailDialogParams): Promise<void> {
     this._params = params;
     this._error = undefined;
@@ -143,13 +150,6 @@ class DialogPersonDetail extends LitElement {
       </ha-paper-dialog>
     `;
   }
-
-  private _deviceTrackersAvailable = memoizeOne(() => {
-    return Object.keys(this.hass.states).some(
-      (entityId) =>
-        entityId.substr(0, entityId.indexOf(".")) === "device_tracker"
-    );
-  });
 
   private _closeDialog() {
     this._params = undefined;
