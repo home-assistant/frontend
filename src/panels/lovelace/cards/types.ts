@@ -82,6 +82,10 @@ export interface ConfigEntity extends EntityConfig {
   hold_action?: ActionConfig;
 }
 
+export interface PictureGlanceEntityConfig extends ConfigEntity {
+  show_state?: string;
+}
+
 export interface GlanceConfigEntity extends ConfigEntity {
   show_last_changed?: boolean;
   image?: string;
@@ -166,7 +170,7 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
 }
 
 export interface PictureGlanceCardConfig extends LovelaceCardConfig {
-  entities: EntityConfig[];
+  entities: PictureGlanceEntityConfig[];
   title?: string;
   image?: string;
   camera_image?: string;
