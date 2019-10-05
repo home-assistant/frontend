@@ -49,6 +49,11 @@ export interface CardPickTarget extends EventTarget {
   type: string;
 }
 
+export interface CardOption {
+  type: string;
+  name: string;
+}
+
 export const actionConfigStruct = struct({
   action: "string",
   navigation_path: "string?",

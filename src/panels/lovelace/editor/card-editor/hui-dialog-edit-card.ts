@@ -62,10 +62,19 @@ export class HuiDialogEditCard extends LitElement {
       return html``;
     }
 
+    let heading: string = this.hass!.localize(
+      "ui.panel.lovelace.editor.edit_card.header"
+    );
+    if (this._cardConfig && this._cardConfig.type) {
+      heading = `${this.hass!.localize(
+        `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
+      )} ${heading}`;
+    }
+
     return html`
       <ha-paper-dialog with-backdrop opened modal>
         <h2>
-          ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.header")}
+          ${heading}
         </h2>
         <paper-dialog-scrollable>
           ${this._cardConfig === undefined
