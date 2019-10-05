@@ -10,3 +10,10 @@ export interface EntityFilterBadgeConfig extends LovelaceBadgeConfig {
 export interface ErrorBadgeConfig extends LovelaceBadgeConfig {
   error: string;
 }
+
+export interface StateLabelBadgeConfig extends LovelaceBadgeConfig {
+  entity: string;
+  name?: string;
+  icon?: string;
+  image?: string;
+}

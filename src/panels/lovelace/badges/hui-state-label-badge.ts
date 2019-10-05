@@ -12,14 +12,14 @@ import "../components/hui-warning-element";
 import { LovelaceBadge } from "../types";
 import { HomeAssistant } from "../../../types";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { LovelaceBadgeConfig } from "../../../data/lovelace";
+import { StateLabelBadgeConfig } from "./types";
 
 @customElement("hui-state-label-badge")
 export class HuiStateLabelBadge extends LitElement implements LovelaceBadge {
   @property() public hass?: HomeAssistant;
-  @property() protected _config?: LovelaceBadgeConfig;
+  @property() protected _config?: StateLabelBadgeConfig;
 
-  public setConfig(config: LovelaceBadgeConfig): void {
+  public setConfig(config: StateLabelBadgeConfig): void {
     this._config = config;
   }
 
@@ -34,13 +34,11 @@ export class HuiStateLabelBadge extends LitElement implements LovelaceBadge {
       <ha-state-label-badge
         .hass=${this.hass}
         .state=${stateObj}
-        .title=${this._config.name === undefined
-          ? stateObj
-            ? computeStateName(stateObj)
-            : ""
-          : this._config.name === null
-          ? ""
-          : this._config.name}
+        .title=${this._config.name
+          ? this._config.name
+          : stateObj
+          ? computeStateName(stateObj)
+          : ""}
         .icon=${this._config.icon}
         .image=${this._config.image}
       ></ha-state-label-badge>

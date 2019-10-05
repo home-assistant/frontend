@@ -21,7 +21,7 @@ const _createElement = (
 ): LovelaceBadge | HuiErrorBadge => {
   const element = document.createElement(tag) as LovelaceBadge;
   try {
-    element.setConfig(deepClone(config));
+    element.setConfig(config);
   } catch (err) {
     // tslint:disable-next-line
     console.error(tag, err);
@@ -35,7 +35,7 @@ const _createErrorElement = (error: string): HuiErrorBadge =>
 
 export const createBadgeElement = (
   config: LovelaceBadgeConfig
-): LovelaceBadge | HuiErrorBadge => {
+): LovelaceBadge => {
   if (!config || typeof config !== "object") {
     return _createErrorElement("No config");
   }

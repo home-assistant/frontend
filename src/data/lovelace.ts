@@ -22,7 +22,9 @@ export interface LovelaceViewConfig {
 }
 
 // tslint:disable-next-line: no-empty-interface
-export interface LovelaceBadgeConfig extends EntityConfig {}
+export interface LovelaceBadgeConfig {
+  type?: string;
+}
 
 export interface LovelaceCardConfig {
   index?: number;
