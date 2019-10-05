@@ -899,6 +899,9 @@
                 },
                 "device_id": {
                   "label": "Device"
+                },
+                "scene": {
+                  "label": "Activate scene"
                 }
               }
             }
