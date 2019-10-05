@@ -1,5 +1,3 @@
-import deepClone from "deep-clone-simple";
-
 import "../badges/hui-entity-filter-badge";
 import "../badges/hui-state-label-badge";
 

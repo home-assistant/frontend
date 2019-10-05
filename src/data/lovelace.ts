@@ -1,6 +1,5 @@
 import { HomeAssistant } from "../types";
 import { Connection, getCollection } from "home-assistant-js-websocket";
-import { EntityConfig } from "../panels/lovelace/entity-rows/types";
 
 export interface LovelaceConfig {
   title?: string;

@@ -258,7 +258,7 @@ export class HUIView extends LitElement {
     }
 
     const elements: HUIView["_badges"] = [];
-    const badges = processConfigEntities(config.badges);
+    const badges = processConfigEntities(config.badges as any);
     for (const badge of badges) {
       const element = createBadgeElement(badge);
       element.hass = this.hass;
