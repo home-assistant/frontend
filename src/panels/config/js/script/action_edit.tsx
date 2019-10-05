@@ -8,6 +8,7 @@ import ConditionAction from "./condition";
 import DelayAction from "./delay";
 import DeviceAction from "./device";
 import EventAction from "./event";
+import SceneAction from "./scene";
 import WaitAction from "./wait";
 
 const TYPES = {
@@ -17,6 +18,7 @@ const TYPES = {
   condition: ConditionAction,
   event: EventAction,
   device_id: DeviceAction,
+  scene: SceneAction,
 };
 
 const OPTIONS = Object.keys(TYPES).sort();
