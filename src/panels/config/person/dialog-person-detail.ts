@@ -29,8 +29,8 @@ class DialogPersonDetail extends LitElement {
   @property() private _params?: PersonDetailDialogParams;
   @property() private _submitting: boolean = false;
 
-  private _deviceTrackersAvailable = memoizeOne(() => {
-    return Object.keys(this.hass.states).some(
+  private _deviceTrackersAvailable = memoizeOne((hass) => {
+    return Object.keys(hass.states).some(
       (entityId) =>
         entityId.substr(0, entityId.indexOf(".")) === "device_tracker"
     );
@@ -94,36 +94,46 @@ class DialogPersonDetail extends LitElement {
               .users=${this._params.users}
               @value-changed=${this._userChanged}
             ></ha-user-picker>
-            ${this._deviceTrackersAvailable()
+            ${this._deviceTrackersAvailable(this.hass)
               ? html`
                   <p>
                     ${this.hass.localize(
                       "ui.panel.config.person.detail.device_tracker_intro"
                     )}
                   </p>
+                  <ha-entities-picker
+                    .hass=${this.hass}
+                    .value=${this._deviceTrackers}
+                    domain-filter="device_tracker"
+                    .pickedEntityLabel=${this.hass.localize(
+                      "ui.panel.config.person.detail.device_tracker_picked"
+                    )}
+                    .pickEntityLabel=${this.hass.localize(
+                      "ui.panel.config.person.detail.device_tracker_pick"
+                    )}
+                    @value-changed=${this._deviceTrackersChanged}
+                  >
+                  </ha-entities-picker>
                 `
               : html`
                   <p>
-                    When you have devices, you will be able to assign them to a
-                    person here. You can add your first device from the
-                    <a @click="${this._closeDialog}" href="/config/integrations"
-                      >integrations page</a
-                    >.
+                  ${this.hass!.localize(
+                    "ui.panel.config.person.detail.no_device_tracker_available_intro"
+                  )}</br>${this.hass!.localize(
+                  "ui.panel.config.person.detail.no_device_tracker_available_intro2"
+                )} <a href="https://www.home-assistant.io/integrations/#presence-detection" target="_blank">${this.hass!.localize(
+                  "ui.panel.config.person.detail.link_presence_detection_integration"
+                )}</a> ${this.hass!.localize(
+                  "ui.panel.config.person.detail.no_device_tracker_available_intro2a"
+                )} <a @click="${
+                  this._closeDialog
+                }" href="/config/integrations"> ${this.hass!.localize(
+                  "ui.panel.config.person.detail.link_integrations_page"
+                )}</a>.
                   </p>
+
+
                 `}
-            <ha-entities-picker
-              .hass=${this.hass}
-              .value=${this._deviceTrackers}
-              domain-filter="device_tracker"
-              .pickedEntityLabel=${this.hass.localize(
-                "ui.panel.config.person.detail.device_tracker_picked"
-              )}
-              .pickEntityLabel=${this.hass.localize(
-                "ui.panel.config.person.detail.device_tracker_pick"
-              )}
-              @value-changed=${this._deviceTrackersChanged}
-            >
-            </ha-entities-picker>
           </div>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
