@@ -31,6 +31,7 @@ class HaCallApiButton extends LitElement {
       method: String,
       data: {},
       disabled: Boolean,
+      confirmation: String,
     };
   }
 
@@ -39,6 +40,9 @@ class HaCallApiButton extends LitElement {
   }
 
   async _buttonTapped() {
+    if (this.confirmation && !window.confirm(this.confirmation)) {
+      return;
+    }
     this.progress = true;
     const eventData = {
       method: this.method,
