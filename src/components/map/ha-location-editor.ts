@@ -77,8 +77,11 @@ class LocationEditor extends LitElement {
   }
 
   private _updateLocation(latlng: LatLng) {
-    // Normalize longitude if map provides values beyond -180 to +180 degrees.
-    const longitude = (((latlng.lng % 360.0) + 540.0) % 360.0) - 180.0;
+    let longitude = latlng.lng;
+    if (Math.abs(longitude) > 180.0) {
+      // Normalize longitude if map provides values beyond -180 to +180 degrees.
+      longitude = (((longitude % 360.0) + 540.0) % 360.0) - 180.0;
+    }
     this.location = this._ignoreFitToMap = [latlng.lat, longitude];
     fireEvent(this, "change", undefined, { bubbles: false });
   }
