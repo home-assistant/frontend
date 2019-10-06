@@ -48,6 +48,7 @@ class HassioAddonConfig extends PolymerElement {
             hass="[[hass]]"
             path="hassio/addons/[[addonSlug]]/options"
             data="[[resetData]]"
+            confirmation="Are you sure you want to reset the configuration?"
             >Reset to defaults</ha-call-api-button
           >
           <mwc-button on-click="saveTapped" disabled="[[!configParsed]]"
