@@ -189,23 +189,23 @@ export class HaConfigDevicePage extends LitElement {
     showDeviceRegistryDetailDialog(this, {
       device,
       updateEntry: async (updates) => {
-        const deviceName = device.name_by_user || device.name;
+        const oldDeviceName = device.name_by_user || device.name;
         await updateDeviceRegistryEntry(this.hass, this.deviceId, updates);
 
-        if (deviceName && updates.name_by_user) {
+        if (oldDeviceName && updates.name_by_user) {
           const entities = this._entities(this.deviceId, this.entities);
           entities.forEach(async (entity) => {
             const name = entity.name || entity.stateName!;
-            if (name && name.includes(deviceName)) {
+            if (name && name.includes(oldDeviceName)) {
               let newEntityId;
               if (
-                entity.entity_id.includes(deviceName.toLowerCase()) &&
+                entity.entity_id.includes(oldDeviceName.toLowerCase()) &&
                 confirm(
                   "Do you also want to rename the entity id's of your entities?"
                 )
               ) {
                 newEntityId = entity.entity_id.replace(
-                  deviceName.toLowerCase(),
+                  oldDeviceName.toLowerCase(),
                   updates.name_by_user!.toLowerCase().replace(" ", "_")
                 );
                 if (!isValidEntityId(newEntityId)) {
@@ -215,7 +215,7 @@ export class HaConfigDevicePage extends LitElement {
                 newEntityId = entity.entity_id;
               }
               await updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-                name: name.replace(deviceName, updates.name_by_user!),
+                name: name.replace(oldDeviceName, updates.name_by_user!),
                 disabled_by: entity.disabled_by,
                 new_entity_id: newEntityId,
               });
