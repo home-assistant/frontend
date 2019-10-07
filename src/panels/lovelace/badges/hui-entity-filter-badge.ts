@@ -7,7 +7,6 @@ import { EntityFilterBadgeConfig } from "./types";
 import { evaluateFilter } from "../common/evaluate-filter";
 
 class EntityFilterBadge extends HTMLElement implements LovelaceBadge {
-  public isPanel?: boolean;
   private _elements?: LovelaceBadge[];
   private _config?: EntityFilterBadgeConfig;
   private _configEntities?: EntityFilterEntityConfig[];

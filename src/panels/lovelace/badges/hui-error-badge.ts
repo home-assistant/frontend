@@ -52,7 +52,7 @@ export class HuiErrorBadge extends LitElement implements LovelaceBadge {
   static get styles(): CSSResult {
     return css`
       :host {
-        --ha-label-badge-color: var(--label-badge-yellow, #fce588);
+        --ha-label-badge-color: var(--label-badge-red, #fce588);
       }
     `;
   }
