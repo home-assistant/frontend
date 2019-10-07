@@ -43,6 +43,7 @@ import {
 } from "../../../data/device_automation";
 import { compare } from "../../../common/string/compare";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string;
@@ -207,6 +208,9 @@ export class HaConfigDevicePage extends LitElement {
                   deviceName.toLowerCase(),
                   updates.name_by_user!.toLowerCase().replace(" ", "_")
                 );
+                if (!isValidEntityId(newEntityId)) {
+                  newEntityId = entity.entity_id;
+                }
               } else {
                 newEntityId = entity.entity_id;
               }
