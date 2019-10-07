@@ -1376,9 +1376,7 @@
           },
           "card": {
             "alarm-panel": {
-              "name": "Alarm panel"
-            },
-            "alarm_panel": {
+              "name": "Alarm panel",
               "available_states": "Available States"
             },
             "conditional": {
