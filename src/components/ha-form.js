@@ -168,24 +168,20 @@ class HaForm extends EventsMixin(PolymerElement) {
         >
           <paper-time-input
             label="[[computeLabel(schema)]]"
-            type="number"
             required="[[schema.required]]"
             auto-validate="[[schema.required]]"
             error-message="Required"
-            enable-day
             enable-second
             format="24"
-            day$="[[_parseDuration(data, 'days')]]"
             hour$="[[_parseDuration(data, 'hours')]]"
             min$="[[_parseDuration(data, 'minutes')]]"
             sec$="[[_parseDuration(data, 'seconds')]]"
-            on-day-changed="_dayChanged"
             on-hour-changed="_hourChanged"
             on-min-changed="_minChanged"
             on-sec-changed="_secChanged"
             float-input-labels
+            no-hours-limit
             always-float-input-labels
-            day-label="days"
             hour-label="hh"
             min-label="mm"
             sec-label="ss"
@@ -263,10 +259,6 @@ class HaForm extends EventsMixin(PolymerElement) {
     this.set(["data", ev.model.item.name], value);
   }
 
-  _dayChanged(ev) {
-    this._durationChanged(ev, "days");
-  }
-
   _hourChanged(ev) {
     this._durationChanged(ev, "hours");
   }
@@ -280,29 +272,42 @@ class HaForm extends EventsMixin(PolymerElement) {
   }
 
   _durationChanged(ev, unit) {
-    const value = ev.detail.value.toString() | undefined;
-    this.set(["data"], { ...this.get(["data"]), [unit]: value });
+    let value = parseInt(ev.detail.value);
+
+    if (value === this.data[unit]) {
+      return;
+    }
+
+    if (unit === "seconds" && value > 59) {
+      this.set(
+        "data.minutes",
+        (this.data.minutes || 0) + Math.floor(value / 60)
+      );
+      value %= 60;
+    }
+
+    if (unit === "minutes" && value > 59) {
+      this.set("data.hours", (this.data.hours || 0) + Math.floor(value / 60));
+      value %= 60;
+    }
+
+    if (!value) {
+      delete this.data[unit];
+      this.notifyPath(["data", unit]);
+    } else {
+      this.set(["data", unit], value);
+    }
   }
 
   _parseDuration(duration, unit) {
-    let days = 0;
-    let hours = 0;
-    let minutes = 0;
-    let seconds = 0;
-    if (
-      duration &&
-      (duration.days || duration.hours || duration.minutes || duration.seconds)
-    ) {
-      // If the duration was defined using yaml dict syntax, extract days, hours, minutes and seconds
-      ({ days = 0, hours = 0, minutes = 0, seconds = 0 } = duration);
+    let value;
+    if (unit === "hours" && duration.days) {
+      value = (duration.hours || 0) + 24 * duration.days;
+      delete duration.days;
+    } else {
+      value = duration[unit] || 0;
     }
-    duration = {
-      days,
-      hours,
-      minutes,
-      seconds,
-    };
-    return duration[unit];
+    return value.toString().padStart(2, "0");
   }
 
   _passwordFieldType(unmaskedPassword) {

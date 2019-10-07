@@ -51,11 +51,6 @@ export class PaperTimeInput extends PolymerElement {
           --paper-input-container-shared-input-style_-_-webkit-appearance: textfield;
         }
 
-        .day-input {
-          width: 40px;
-          text-align: left;
-        }
-
         paper-dropdown-menu {
           width: 55px;
           padding: 0;
@@ -110,38 +105,16 @@ export class PaperTimeInput extends PolymerElement {
 
       <label hidden$="[[hideLabel]]">[[label]]</label>
       <div class="time-input-wrap">
-        <!-- Day Input -->
-        <paper-input
-          class="day-input"
-          id="day"
-          type="number"
-          value="{{dayString}}"
-          label="[[dayLabel]]"
-          on-change="_formatDay"
-          required=""
-          auto-validate="[[autoValidate]]"
-          prevent-invalid-input=""
-          maxlength="2"
-          max="99"
-          min="0"
-          no-label-float="[[!floatInputLabels]]"
-          always-float-label="[[alwaysFloatInputLabels]]"
-          disabled="[[disabled]]"
-          hidden$="[[!enableDay]]"
-        >
-          <span hidden$="[[!enableDay]]" suffix slot="suffix"></span>
-        </paper-input>
-
         <!-- Hour Input -->
         <paper-input
           id="hour"
           type="number"
-          value="{{hourString}}"
+          value="{{hour}}"
           label="[[hourLabel]]"
           on-change="_shouldFormatHour"
-          required=""
+          required
+          prevent-invalid-input
           auto-validate="[[autoValidate]]"
-          prevent-invalid-input=""
           maxlength="2"
           max="[[_computeHourMax(format)]]"
           min="0"
@@ -156,12 +129,12 @@ export class PaperTimeInput extends PolymerElement {
         <paper-input
           id="min"
           type="number"
-          value="{{minString}}"
+          value="{{min}}"
           label="[[minLabel]]"
           on-change="_formatMin"
-          required=""
+          required
           auto-validate="[[autoValidate]]"
-          prevent-invalid-input=""
+          prevent-invalid-input
           maxlength="2"
           max="59"
           min="0"
@@ -176,10 +149,10 @@ export class PaperTimeInput extends PolymerElement {
         <paper-input
           id="sec"
           type="number"
-          value="{{secString}}"
+          value="{{sec}}"
           label="[[secLabel]]"
           on-change="_formatSec"
-          required=""
+          required
           auto-validate="[[autoValidate]]"
           prevent-invalid-input
           maxlength="2"
@@ -211,15 +184,6 @@ export class PaperTimeInput extends PolymerElement {
         </paper-dropdown-menu>
       </div>
     `;
-  }
-
-  connectedCallback() {
-    super.connectedCallback();
-    console.log("paper-time-input created!");
-    this.secString = this._getSecString();
-    this.minString = this._getMinString();
-    this.hourString = this._getHourString();
-    this.dayString = this._getDayString();
   }
 
   static get properties() {
@@ -274,13 +238,6 @@ export class PaperTimeInput extends PolymerElement {
         value: false,
       },
       /**
-       * day
-       */
-      day: {
-        type: String,
-        notify: true,
-      },
-      /**
        * hour
        */
       hour: {
@@ -300,41 +257,6 @@ export class PaperTimeInput extends PolymerElement {
       sec: {
         type: String,
         notify: true,
-      },
-      /**
-       * day
-       */
-      dayString: {
-        type: String,
-        notify: true,
-      },
-      /**
-       * hour
-       */
-      hourString: {
-        type: String,
-        notify: true,
-      },
-      /**
-       * minute
-       */
-      minString: {
-        type: String,
-        notify: true,
-      },
-      /**
-       * second
-       */
-      secString: {
-        type: String,
-        notify: true,
-      },
-      /**
-       * Label for the day input
-       */
-      dayLabel: {
-        type: String,
-        value: "days",
       },
       /**
        * Suffix for the hour input
@@ -358,16 +280,16 @@ export class PaperTimeInput extends PolymerElement {
         value: "",
       },
       /**
-       * show the day field
+       * show the sec field
        */
-      enableDay: {
+      enableSecond: {
         type: Boolean,
         value: false,
       },
       /**
-       * show the sec field
+       * limit hours input
        */
-      enableSecond: {
+      noHoursLimit: {
         type: Boolean,
         value: false,
       },
@@ -397,10 +319,6 @@ export class PaperTimeInput extends PolymerElement {
    */
   validate() {
     var valid = true;
-    // Validate day field
-    if (this.enableDay && !this.$.day.validate()) {
-      valid = false;
-    }
     // Validate hour & min fields
     if (!this.$.hour.validate() | !this.$.min.validate()) {
       valid = false;
@@ -442,82 +360,37 @@ export class PaperTimeInput extends PolymerElement {
   /**
    * Format sec
    */
-  _getSecString() {
-    let val = this.sec;
-    if (val === undefined || val === null) {
-      val = 0; // always display 00
-    }
-    return val.toString().padStart(2, "0");
-  }
   _formatSec() {
-    const val = parseInt(this.secString) || 0;
-    if (val < 0) val = 0;
-    if (val > 59) val = 59;
-    this.sec = val;
-    this.secString = this._getSecString();
+    if (this.sec.toString().length === 1) {
+      this.sec = this.sec.toString().padStart(2, "0");
+    }
   }
 
   /**
    * Format min
    */
-  _getMinString() {
-    let val = this.min;
-    if (val === undefined || val === null) {
-      val = 0; // always display 00
-    }
-    return val.toString().padStart(2, "0");
-  }
   _formatMin() {
-    const val = parseInt(this.minString) || 0;
-    if (val < 0) val = 0;
-    if (val > 59) val = 59;
-    this.min = val;
-    this.minString = this._getMinString();
+    if (this.min.toString().length === 1) {
+      this.min = this.min.toString().padStart(2, "0");
+    }
   }
 
   /**
-   * Hour needs a leading zero in 24hr format
+   * Format hour
    */
-  _getHourString() {
-    let val = this.hour;
-    if (val === undefined || val === null) {
-      val = 0; // always display 00
-    }
-    if (this.format === 24) {
-      return val.toString().padStart(2, "0");
-    }
-    return val.toString();
-  }
   _shouldFormatHour() {
-    const val = parseInt(this.hourString) || 0;
-    if (val < 0) val = 0;
-    if (val > 23) val = 23; // Blabla fix 12 or 23
-    this.hour = val;
-    this.hourString = this._getHourString();
-  }
-
-  /**
-   * Format day
-   */
-  _getDayString() {
-    let val = this.day;
-    if (val === undefined || val === null) {
-      val = 0; // always display 00
+    if (this.format === 24 && this.hour.toString().length === 1) {
+      this.hour = this.hour.toString().padStart(2, "0");
     }
-    return val.toString().padStart(1, "0");
-  }
-  _formatDay() {
-    const val = parseInt(this.dayString) || 0;
-    if (val < 0) val = 0;
-    if (val > 99) val = 99;
-    this.day = val;
-    this.dayString = this._getDayString();
   }
 
   /**
    * 24 hour format has a max hr of 23
    */
   _computeHourMax(format) {
+    if (this.noHoursLimit) {
+      return null;
+    }
     if (format === 12) {
       return format;
     }
