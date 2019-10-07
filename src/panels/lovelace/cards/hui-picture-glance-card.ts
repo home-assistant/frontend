@@ -27,6 +27,7 @@ import { longPress } from "../common/directives/long-press-directive";
 import { processConfigEntities } from "../common/process-config-entities";
 import { handleClick } from "../common/handle-click";
 import { PictureGlanceCardConfig, ConfigEntity } from "./types";
+import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 
@@ -86,28 +87,16 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_config")) {
+    if (hasConfigOrEntityChanged(this, changedProps)) {
       return true;
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass) {
-      return true;
-    }
-
-    if (
-      this._config &&
-      this._config.entity &&
-      oldHass.states[this._config.entity] !==
-        this.hass!.states[this._config.entity]
-    ) {
-      return true;
-    }
 
     if (this._entitiesDialog) {
       for (const entity of this._entitiesDialog) {
         if (
-          oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
+          oldHass!.states[entity.entity] !== this.hass!.states[entity.entity]
         ) {
           return true;
         }
@@ -117,7 +106,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     if (this._entitiesToggle) {
       for (const entity of this._entitiesToggle) {
         if (
-          oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
+          oldHass!.states[entity.entity] !== this.hass!.states[entity.entity]
         ) {
           return true;
         }
