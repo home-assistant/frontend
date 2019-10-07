@@ -19,7 +19,10 @@ import "./device-detail/ha-device-actions-card";
 import "./device-detail/ha-device-entities-card";
 import { HomeAssistant } from "../../../types";
 import { ConfigEntry } from "../../../data/config_entries";
-import { EntityRegistryEntry } from "../../../data/entity_registry";
+import {
+  EntityRegistryEntry,
+  updateEntityRegistryEntry,
+} from "../../../data/entity_registry";
 import {
   DeviceRegistryEntry,
   updateDeviceRegistryEntry,
@@ -40,6 +43,10 @@ import {
 } from "../../../data/device_automation";
 import { compare } from "../../../common/string/compare";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+
+export interface EntityRegistryStateEntry extends EntityRegistryEntry {
+  stateName?: string;
+}
 
 @customElement("ha-config-device-page")
 export class HaConfigDevicePage extends LitElement {
@@ -66,13 +73,16 @@ export class HaConfigDevicePage extends LitElement {
     (
       deviceId: string,
       entities: EntityRegistryEntry[]
-    ): EntityRegistryEntry[] =>
+    ): EntityRegistryStateEntry[] =>
       entities
         .filter((entity) => entity.device_id === deviceId)
+        .map((entity) => {
+          return { ...entity, stateName: this._computeEntityName(entity) };
+        })
         .sort((ent1, ent2) =>
           compare(
-            this._computeEntityName(ent1) || `zzz${ent1.entity_id}`,
-            this._computeEntityName(ent2) || `zzz${ent2.entity_id}`
+            ent1.stateName || `zzz${ent1.entity_id}`,
+            ent2.stateName || `zzz${ent2.entity_id}`
           )
         )
   );
@@ -174,10 +184,40 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private _showSettings() {
+    const device = this._device(this.deviceId, this.devices)!;
     showDeviceRegistryDetailDialog(this, {
-      device: this._device(this.deviceId, this.devices)!,
+      device,
       updateEntry: async (updates) => {
+        const deviceName = device.name_by_user || device.name;
         await updateDeviceRegistryEntry(this.hass, this.deviceId, updates);
+
+        if (deviceName && updates.name_by_user) {
+          const entities = this._entities(this.deviceId, this.entities);
+          entities.forEach(async (entity) => {
+            const name = entity.name || entity.stateName!;
+            if (name && name.includes(deviceName)) {
+              let newEntityId;
+              if (
+                entity.entity_id.includes(deviceName.toLowerCase()) &&
+                confirm(
+                  "Do you also want to rename the entity id's of your entities?"
+                )
+              ) {
+                newEntityId = entity.entity_id.replace(
+                  deviceName.toLowerCase(),
+                  updates.name_by_user!.toLowerCase().replace(" ", "_")
+                );
+              } else {
+                newEntityId = entity.entity_id;
+              }
+              await updateEntityRegistryEntry(this.hass!, entity.entity_id, {
+                name: name.replace(deviceName, updates.name_by_user!),
+                disabled_by: entity.disabled_by,
+                new_entity_id: newEntityId,
+              });
+            }
+          });
+        }
       },
     });
   }

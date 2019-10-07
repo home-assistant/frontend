@@ -20,20 +20,19 @@ import "@polymer/paper-item/paper-item-body";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
-import { computeStateName } from "../../../../common/entity/compute_state_name";
-import { EntityRegistryEntry } from "../../../../data/entity_registry";
 import { showEntityRegistryDetailDialog } from "../../entity_registry/show-dialog-entity-registry-detail";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
 // tslint:disable-next-line
 import { HaSwitch } from "../../../../components/ha-switch";
+import { EntityRegistryStateEntry } from "../ha-config-device-page";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public deviceId!: string;
-  @property() public entities!: EntityRegistryEntry[];
+  @property() public entities!: EntityRegistryStateEntry[];
   @property() public narrow!: boolean;
   @property() private _showDisabled = false;
 
@@ -50,7 +49,7 @@ export class HaDeviceEntitiesCard extends LitElement {
           </ha-switch>
         </paper-item>
         ${this.entities.length
-          ? this.entities.map((entry: EntityRegistryEntry) => {
+          ? this.entities.map((entry: EntityRegistryStateEntry) => {
               if (!this._showDisabled && entry.disabled_by) {
                 return "";
               }
@@ -74,7 +73,7 @@ export class HaDeviceEntitiesCard extends LitElement {
                         ></ha-icon>
                       `}
                   <paper-item-body two-line>
-                    <div class="name">${this._computeEntityName(entry)}</div>
+                    <div class="name">${entry.stateName}</div>
                     <div class="secondary entity-id">${entry.entity_id}</div>
                   </paper-item-body>
                   <div class="buttons">
@@ -123,14 +122,6 @@ export class HaDeviceEntitiesCard extends LitElement {
   private _openMoreInfo(ev: MouseEvent) {
     const entry = (ev.currentTarget! as any).closest("paper-icon-item").entry;
     fireEvent(this, "hass-more-info", { entityId: entry.entity_id });
-  }
-
-  private _computeEntityName(entity) {
-    if (entity.name) {
-      return entity.name;
-    }
-    const state = this.hass.states[entity.entity_id];
-    return state ? computeStateName(state) : null;
   }
 
   static get styles(): CSSResult {
