@@ -10,9 +10,7 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 
 import { HomeAssistant } from "../../../../types";
-import memoizeOne from "memoize-one";
 
-import { compare } from "../../../../common/string/compare";
 import "../../../../components/entity/state-badge";
 
 import "@polymer/paper-item/paper-item";
@@ -39,23 +37,7 @@ export class HaDeviceEntitiesCard extends LitElement {
   @property() public narrow!: boolean;
   @property() private _showDisabled = false;
 
-  private _entities = memoizeOne(
-    (
-      deviceId: string,
-      entities: EntityRegistryEntry[]
-    ): EntityRegistryEntry[] =>
-      entities
-        .filter((entity) => entity.device_id === deviceId)
-        .sort((ent1, ent2) =>
-          compare(
-            this._computeEntityName(ent1) || `zzz${ent1.entity_id}`,
-            this._computeEntityName(ent2) || `zzz${ent2.entity_id}`
-          )
-        )
-  );
-
   protected render(): TemplateResult {
-    const entities = this._entities(this.deviceId, this.entities);
     return html`
       <ha-card>
         <paper-item>
@@ -67,8 +49,8 @@ export class HaDeviceEntitiesCard extends LitElement {
             )}
           </ha-switch>
         </paper-item>
-        ${entities.length
-          ? entities.map((entry: EntityRegistryEntry) => {
+        ${this.entities.length
+          ? this.entities.map((entry: EntityRegistryEntry) => {
               if (!this._showDisabled && entry.disabled_by) {
                 return "";
               }

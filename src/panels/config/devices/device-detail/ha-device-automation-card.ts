@@ -15,30 +15,24 @@ export abstract class HaDeviceAutomationCard<
   protected headerKey = "";
   protected type = "";
 
-  @property() private _automations: T[] = [];
+  @property() public automations: T[] = [];
 
   private _localizeDeviceAutomation: (
     hass: HomeAssistant,
     automation: T
   ) => string;
-  private _fetchDeviceAutomations: (
-    hass: HomeAssistant,
-    deviceId: string
-  ) => Promise<T[]>;
 
   constructor(
     localizeDeviceAutomation: HaDeviceAutomationCard<
       T
-    >["_localizeDeviceAutomation"],
-    fetchDeviceAutomations: HaDeviceAutomationCard<T>["_fetchDeviceAutomations"]
+    >["_localizeDeviceAutomation"]
   ) {
     super();
     this._localizeDeviceAutomation = localizeDeviceAutomation;
-    this._fetchDeviceAutomations = fetchDeviceAutomations;
   }
 
   protected shouldUpdate(changedProps): boolean {
-    if (changedProps.has("deviceId") || changedProps.has("_automations")) {
+    if (changedProps.has("deviceId") || changedProps.has("automations")) {
       return true;
     }
     const oldHass = changedProps.get("hass");
@@ -48,18 +42,8 @@ export abstract class HaDeviceAutomationCard<
     return false;
   }
 
-  protected async updated(changedProps): Promise<void> {
-    super.updated(changedProps);
-
-    if (changedProps.has("deviceId")) {
-      this._automations = this.deviceId
-        ? await this._fetchDeviceAutomations(this.hass, this.deviceId)
-        : [];
-    }
-  }
-
   protected render(): TemplateResult {
-    if (this._automations.length === 0) {
+    if (this.automations.length === 0) {
       return html``;
     }
     return html`
@@ -70,7 +54,7 @@ export abstract class HaDeviceAutomationCard<
         <div class="card-content">
           <ha-chips
             @chip-clicked=${this._handleAutomationClicked}
-            .items=${this._automations.map((automation) =>
+            .items=${this.automations.map((automation) =>
               this._localizeDeviceAutomation(this.hass, automation)
             )}
           >
@@ -81,7 +65,7 @@ export abstract class HaDeviceAutomationCard<
   }
 
   private _handleAutomationClicked(ev: CustomEvent) {
-    const automation = this._automations[ev.detail.index];
+    const automation = this.automations[ev.detail.index];
     if (!automation) {
       return;
     }

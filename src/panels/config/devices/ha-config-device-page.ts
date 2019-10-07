@@ -30,6 +30,17 @@ import {
   showDeviceRegistryDetailDialog,
 } from "../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
 
+import {
+  DeviceTrigger,
+  DeviceAction,
+  DeviceCondition,
+  fetchDeviceTriggers,
+  fetchDeviceConditions,
+  fetchDeviceActions,
+} from "../../../data/device_automation";
+import { compare } from "../../../common/string/compare";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+
 @customElement("ha-config-device-page")
 export class HaConfigDevicePage extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -39,6 +50,9 @@ export class HaConfigDevicePage extends LitElement {
   @property() public areas!: AreaRegistryEntry[];
   @property() public deviceId!: string;
   @property() public narrow!: boolean;
+  @property() private _triggers: DeviceTrigger[] = [];
+  @property() private _conditions: DeviceCondition[] = [];
+  @property() private _actions: DeviceAction[] = [];
 
   private _device = memoizeOne(
     (
@@ -48,9 +62,40 @@ export class HaConfigDevicePage extends LitElement {
       devices ? devices.find((device) => device.id === deviceId) : undefined
   );
 
+  private _entities = memoizeOne(
+    (
+      deviceId: string,
+      entities: EntityRegistryEntry[]
+    ): EntityRegistryEntry[] =>
+      entities
+        .filter((entity) => entity.device_id === deviceId)
+        .sort((ent1, ent2) =>
+          compare(
+            this._computeEntityName(ent1) || `zzz${ent1.entity_id}`,
+            this._computeEntityName(ent2) || `zzz${ent2.entity_id}`
+          )
+        )
+  );
+
   protected firstUpdated(changedProps) {
     super.firstUpdated(changedProps);
     loadDeviceRegistryDetailDialog();
+  }
+
+  protected async updated(changedProps): Promise<void> {
+    super.updated(changedProps);
+
+    if (changedProps.has("deviceId")) {
+      this._triggers = this.deviceId
+        ? await fetchDeviceTriggers(this.hass, this.deviceId)
+        : [];
+      this._conditions = this.deviceId
+        ? await fetchDeviceConditions(this.hass, this.deviceId)
+        : [];
+      this._actions = this.deviceId
+        ? await fetchDeviceActions(this.hass, this.deviceId)
+        : [];
+    }
   }
 
   protected render() {
@@ -61,6 +106,8 @@ export class HaConfigDevicePage extends LitElement {
         <hass-error-screen error="Device not found."></hass-error-screen>
       `;
     }
+
+    const entities = this._entities(this.deviceId, this.entities);
 
     return html`
       <hass-subpage .header=${device.name_by_user || device.name}>
@@ -84,30 +131,46 @@ export class HaConfigDevicePage extends LitElement {
             hide-entities
           ></ha-device-card>
 
-          <div class="header">Entities</div>
-          <ha-device-entities-card
-            .hass=${this.hass}
-            .deviceId=${this.deviceId}
-            .entities=${this.entities}
-          >
-          </ha-device-entities-card>
-
-          <div class="header">Automations</div>
-          <ha-device-triggers-card
-            .hass=${this.hass}
-            .deviceId=${this.deviceId}
-          ></ha-device-triggers-card>
-          <ha-device-conditions-card
-            .hass=${this.hass}
-            .deviceId=${this.deviceId}
-          ></ha-device-conditions-card>
-          <ha-device-actions-card
-            .hass=${this.hass}
-            .deviceId=${this.deviceId}
-          ></ha-device-actions-card>
+          ${entities.length
+            ? html`
+                <div class="header">Entities</div>
+                <ha-device-entities-card
+                  .hass=${this.hass}
+                  .entities=${entities}
+                >
+                </ha-device-entities-card>
+              `
+            : html``}
+          ${this._triggers.length ||
+          this._conditions.length ||
+          this._actions.length
+            ? html`
+                <div class="header">Automations</div>
+                <ha-device-triggers-card
+                  .hass=${this.hass}
+                  .automations=${this._triggers}
+                ></ha-device-triggers-card>
+                <ha-device-conditions-card
+                  .hass=${this.hass}
+                  .automations=${this._conditions}
+                ></ha-device-conditions-card>
+                <ha-device-actions-card
+                  .hass=${this.hass}
+                  .automations=${this._actions}
+                ></ha-device-actions-card>
+              `
+            : html``}
         </ha-config-section>
       </hass-subpage>
     `;
+  }
+
+  private _computeEntityName(entity) {
+    if (entity.name) {
+      return entity.name;
+    }
+    const state = this.hass.states[entity.entity_id];
+    return state ? computeStateName(state) : null;
   }
 
   private _showSettings() {
