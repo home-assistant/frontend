@@ -117,22 +117,31 @@ class DialogPersonDetail extends LitElement {
                 `
               : html`
                   <p>
-                  ${this.hass!.localize(
-                    "ui.panel.config.person.detail.no_device_tracker_available_intro"
-                  )}</br>${this.hass!.localize(
-                  "ui.panel.config.person.detail.no_device_tracker_available_intro2"
-                )} <a href="https://www.home-assistant.io/integrations/#presence-detection" target="_blank">${this.hass!.localize(
-                  "ui.panel.config.person.detail.link_presence_detection_integration"
-                )}</a> ${this.hass!.localize(
-                  "ui.panel.config.person.detail.no_device_tracker_available_intro2a"
-                )} <a @click="${
-                  this._closeDialog
-                }" href="/config/integrations"> ${this.hass!.localize(
-                  "ui.panel.config.person.detail.link_integrations_page"
-                )}</a>.
+                    ${this.hass!.localize(
+                      "ui.panel.config.person.detail.no_device_tracker_available_intro"
+                    )}
                   </p>
-
-
+                  <ul>
+                    <li>
+                      <a
+                        href="https://www.home-assistant.io/integrations/#presence-detection"
+                        target="_blank"
+                        >${this.hass!.localize(
+                          "ui.panel.config.person.detail.link_presence_detection_integrations"
+                        )}</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        @click="${this._closeDialog}"
+                        href="/config/integrations"
+                      >
+                        ${this.hass!.localize(
+                          "ui.panel.config.person.detail.link_integrations_page"
+                        )}</a
+                      >
+                    </li>
+                  </ul>
                 `}
           </div>
         </paper-dialog-scrollable>
