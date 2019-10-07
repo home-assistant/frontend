@@ -95,6 +95,15 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       return true;
     }
 
+    if (
+      this._config &&
+      this._config.entity &&
+      oldHass.states[this._config.entity] !==
+        this.hass!.states[this._config.entity]
+    ) {
+      return true;
+    }
+
     if (this._entitiesDialog) {
       for (const entity of this._entitiesDialog) {
         if (
