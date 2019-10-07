@@ -274,28 +274,30 @@ class HaForm extends EventsMixin(PolymerElement) {
   _durationChanged(ev, unit) {
     let value = parseInt(ev.detail.value);
 
-    if (value === this.data[unit]) {
+    if (this.data && value === this.data[unit]) {
       return;
     }
 
     if (unit === "seconds" && value > 59) {
-      this.set(
-        "data.minutes",
-        (this.data.minutes || 0) + Math.floor(value / 60)
-      );
-      value %= 60;
+      // this.set(
+      //  "data.minutes",
+      //  (this.data.minutes || 0) + Math.floor(value / 60)
+      // );
+      // value %= 60;
+      value = 59;
     }
 
     if (unit === "minutes" && value > 59) {
-      this.set("data.hours", (this.data.hours || 0) + Math.floor(value / 60));
-      value %= 60;
+      // this.set("data.hours", (this.data.hours || 0) + Math.floor(value / 60));
+      // value %= 60;
+      value = 59;
     }
 
-    if (!value) {
+    if (this.data && !value) {
       delete this.data[unit];
-      this.notifyPath(["data", unit]);
+      this.notifyPath(["data"]);
     } else {
-      this.set(["data", unit], value);
+      this.set(["data"], { ...this.data, [unit]: value });
     }
   }
 
