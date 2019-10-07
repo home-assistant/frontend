@@ -3,6 +3,7 @@ import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import isPwa from "../../../common/config/is_pwa";
 
@@ -11,7 +12,7 @@ import "../../../components/ha-card";
 
 let registeredDialog = false;
 
-class OzwLog extends EventsMixin(PolymerElement) {
+class OzwLog extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="iron-flex ha-style">
@@ -32,8 +33,13 @@ class OzwLog extends EventsMixin(PolymerElement) {
 
     </style>
     <ha-config-section is-wide="[[isWide]]">
-      <span slot="header">OZW Log</span>
-      <ha-card>
+      <span slot="header">
+        [[localize('ui.panel.config.zwave.ozw_log.header')]]
+      </span>
+      <span slot="introduction">
+        [[localize('ui.panel.config.zwave.ozw_log.introduction')]]
+      </span>
+      <ha-card class="content">
         <div class="device-picker">
           <paper-input label="Number of last log lines." type="number" min="0" max="1000" step="10" value="{{numLogLines}}">
           </paper-input>

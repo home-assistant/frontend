@@ -1263,6 +1263,10 @@
             "header": "Z-Wave Network Management",
             "introduction": "Run commands that affect the Z-Wave network. You won't get feedback on whether most commands succeeded, but you can check the OZW Log to try to find out."
           },
+          "ozw_log": {
+            "header": "OZW Log",
+            "introduction": "View the log. 0 is the minimum (loads entire log) and 1000 is the maximum. Load will show a static log and tail will auto update with the last specified number of lines of the log."
+          },
           "network_status": {
             "network_stopped": "Z-Wave Network Stopped",
             "network_starting": "Starting Z-Wave Network...",
