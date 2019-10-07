@@ -1382,17 +1382,29 @@
             "migrate": "Migrate config"
           },
           "card": {
-            "alarm_panel": {
+            "alarm-panel": {
+              "name": "Alarm Panel",
               "available_states": "Available States"
+            },
+            "conditional": {
+              "name": "Conditional"
             },
             "config": {
               "required": "Required",
               "optional": "Optional"
             },
             "entities": {
+              "name": "Entities",
               "show_header_toggle": "Show Header Toggle?"
             },
+            "entity-button": {
+              "name": "Entity Button"
+            },
+            "entity-filter": {
+              "name": "Entity Filter"
+            },
             "gauge": {
+              "name": "Gauge",
               "severity": {
                 "define": "Define Severity?",
                 "green": "Green",
@@ -1401,7 +1413,20 @@
               }
             },
             "glance": {
+              "name": "Glance",
               "columns": "Columns"
+            },
+            "history-graph": {
+              "name": "History Graph"
+            },
+            "horizontal-stack": {
+              "name": "Horizontal Stack"
+            },
+            "iframe": {
+              "name": "iFrame"
+            },
+            "light": {
+              "name": "Light"
             },
             "generic": {
               "aspect_ratio": "Aspect Ratio",
@@ -1428,17 +1453,50 @@
               "url": "Url"
             },
             "map": {
+              "name": "Map",
               "geo_location_sources": "Geolocation Sources",
               "dark_mode": "Dark Mode?",
               "default_zoom": "Default Zoom",
               "source": "Source"
             },
             "markdown": {
+              "name": "Markdown",
               "content": "Content"
             },
+            "media-control": {
+              "name": "Media Control"
+            },
+            "picture": {
+              "name": "Picture"
+            },
+            "picture-elements": {
+              "name": "Picture Elements"
+            },
+            "picture-entity": {
+              "name": "Picture Entity"
+            },
+            "picture-glance": {
+              "name": "Picture Glance"
+            },
+            "plant-status": {
+              "name": "Plant Status"
+            },
             "sensor": {
+              "name": "Sensor",
               "graph_detail": "Graph Detail",
               "graph_type": "Graph Type"
+            },
+            "shopping-list": {
+              "name": "Shopping List"
+            },
+            "thermostat": {
+              "name": "Thermostat"
+            },
+            "vertical-stack": {
+              "name": "Vertical Stack"
+            },
+            "weather-forecast": {
+              "name": "Weather Forecast"
             }
           }
         },
