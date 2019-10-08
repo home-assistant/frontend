@@ -80,9 +80,6 @@ export class HaConfigDevicePage extends LitElement {
             .areas=${this.areas}
             .devices=${this.devices}
             .device=${device}
-            .entities=${this.entities}
-            hide-settings
-            hide-entities
           ></ha-device-card>
 
           <div class="header">Entities</div>
