@@ -72,7 +72,7 @@ export interface DataTabelSortColumnData {
 
 export interface DataTabelColumnData extends DataTabelSortColumnData {
   title: string;
-  type?: "numeric";
+  type?: "numeric" | "icon";
   template?: (data: any, row: DataTabelRowData) => TemplateResult;
 }
 
@@ -190,8 +190,11 @@ export class HaDataTable extends BaseElement {
                 const [key, column] = columnEntry;
                 const sorted = key === this._sortColumn;
                 const classes = {
-                  "mdc-data-table__cell--numeric": Boolean(
+                  "mdc-data-table__header-cell--numeric": Boolean(
                     column.type && column.type === "numeric"
+                  ),
+                  "mdc-data-table__header-cell--icon": Boolean(
+                    column.type && column.type === "icon"
                   ),
                   sortable: Boolean(column.sortable),
                   "not-sorted": Boolean(column.sortable && !sorted),
@@ -250,6 +253,9 @@ export class HaDataTable extends BaseElement {
                         class="mdc-data-table__cell ${classMap({
                           "mdc-data-table__cell--numeric": Boolean(
                             column.type && column.type === "numeric"
+                          ),
+                          "mdc-data-table__cell--icon": Boolean(
+                            column.type && column.type === "icon"
                           ),
                         })}"
                       >
@@ -516,6 +522,10 @@ export class HaDataTable extends BaseElement {
         text-align: left;
       }
 
+      .mdc-data-table__cell--icon {
+        text-align: center;
+      }
+
       .mdc-data-table__header-cell {
         font-family: Roboto, sans-serif;
         -moz-osx-font-smoothing: grayscale;
@@ -543,6 +553,10 @@ export class HaDataTable extends BaseElement {
         text-align: left;
       }
 
+      .mdc-data-table__header-cell--icon {
+        text-align: center;
+      }
+
       /* custom from here */
 
       .mdc-data-table {
@@ -554,7 +568,8 @@ export class HaDataTable extends BaseElement {
       .mdc-data-table__header-cell.sortable {
         cursor: pointer;
       }
-      .mdc-data-table__header-cell.not-sorted:not(.mdc-data-table__cell--numeric)
+      .mdc-data-table__header-cell.not-sorted:not(.mdc-data-table__header-cell--numeric
+          .mdc-data-table__header-cell--icon)
         span {
         position: relative;
         left: -24px;
@@ -565,7 +580,8 @@ export class HaDataTable extends BaseElement {
       .mdc-data-table__header-cell.not-sorted ha-icon {
         left: -36px;
       }
-      .mdc-data-table__header-cell.not-sorted:not(.mdc-data-table__cell--numeric):hover
+      .mdc-data-table__header-cell.not-sorted:not(.mdc-data-table__header-cell--numeric
+          .mdc-data-table__header-cell--icon):hover
         span {
         left: 0px;
       }

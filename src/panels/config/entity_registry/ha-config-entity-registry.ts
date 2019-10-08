@@ -58,8 +58,6 @@ class HaConfigEntityRegistry extends LitElement {
           name:
             computeEntityRegistryName(this.hass!, entry) ||
             this.hass!.localize("state.default.unavailable"),
-          enabled: !entry.disabled_by,
-          id: entry.entity_id,
         };
       })
   );
@@ -69,6 +67,7 @@ class HaConfigEntityRegistry extends LitElement {
       return {
         icon: {
           title: "",
+          type: "icon",
           template: (icon) => html`
             <ha-icon slot="item-icon" .icon=${icon}></ha-icon>
           `,
@@ -89,13 +88,13 @@ class HaConfigEntityRegistry extends LitElement {
           sortable: true,
           filterable: true,
         },
-        enabled: {
+        disabled_by: {
           title: "Enabled",
-          sortable: true,
-          template: (enabled) => html`
+          type: "icon",
+          template: (disabledBy) => html`
             <ha-icon
               slot="item-icon"
-              icon=${enabled ? "hass:check-circle" : "hass:cancel"}
+              icon=${disabledBy ? "hass:cancel" : "hass:check-circle"}
             ></ha-icon>
           `,
         },
@@ -142,18 +141,19 @@ class HaConfigEntityRegistry extends LitElement {
                 "ui.panel.config.entity_registry.picker.integrations_page"
               )}
             </a>
+            <ha-switch
+              ?checked=${this._showDisabled}
+              @change=${this._showDisabledChanged}
+              >${this.hass.localize(
+                "ui.panel.config.entity_registry.picker.show_disabled"
+              )}</ha-switch
+            >
           </span>
-          <ha-switch
-            ?checked=${this._showDisabled}
-            @change=${this._showDisabledChanged}
-            >${this.hass.localize(
-              "ui.panel.config.entity_registry.picker.show_disabled"
-            )}</ha-switch
-          >
           <ha-data-table
             .columns=${this._columns()}
             .data=${this._filteredEntities(this._entities, this._showDisabled)}
             @row-click=${this._openEditEntry}
+            id="entity_id"
           >
           </ha-data-table>
         </ha-config-section>
@@ -202,11 +202,10 @@ class HaConfigEntityRegistry extends LitElement {
       }
       ha-data-table {
         margin-bottom: 24px;
-        margin-top: 0px;
-        direction: ltr;
+        margin-top: -16px;
       }
       ha-switch {
-        margin-top: 0;
+        margin-top: 16px;
       }
     `;
   }
