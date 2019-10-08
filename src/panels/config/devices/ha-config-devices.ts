@@ -28,6 +28,7 @@ import { UnsubscribeFunc } from "home-assistant-js-websocket";
 class HaConfigDevices extends HassRouterPage {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
+  @property() public showAdvanced!: boolean;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
@@ -96,6 +97,7 @@ class HaConfigDevices extends HassRouterPage {
     pageEl.devices = this._deviceRegistryEntries;
     pageEl.areas = this._areas;
     pageEl.narrow = this.narrow;
+    pageEl.showAdvanced = this.showAdvanced;
   }
 
   private _loadData() {

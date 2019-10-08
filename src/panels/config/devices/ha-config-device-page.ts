@@ -58,6 +58,7 @@ export class HaConfigDevicePage extends LitElement {
   @property() public areas!: AreaRegistryEntry[];
   @property() public deviceId!: string;
   @property() public narrow!: boolean;
+  @property() public showAdvanced!: boolean;
   @property() private _triggers: DeviceTrigger[] = [];
   @property() private _conditions: DeviceCondition[] = [];
   @property() private _actions: DeviceAction[] = [];
@@ -93,19 +94,25 @@ export class HaConfigDevicePage extends LitElement {
     loadDeviceRegistryDetailDialog();
   }
 
-  protected async updated(changedProps): Promise<void> {
+  protected updated(changedProps): void {
     super.updated(changedProps);
 
     if (changedProps.has("deviceId")) {
-      this._triggers = this.deviceId
-        ? await fetchDeviceTriggers(this.hass, this.deviceId)
-        : [];
-      this._conditions = this.deviceId
-        ? await fetchDeviceConditions(this.hass, this.deviceId)
-        : [];
-      this._actions = this.deviceId
-        ? await fetchDeviceActions(this.hass, this.deviceId)
-        : [];
+      if (this.deviceId) {
+        fetchDeviceTriggers(this.hass, this.deviceId).then(
+          (triggers) => (this._triggers = triggers)
+        );
+        fetchDeviceConditions(this.hass, this.deviceId).then(
+          (conditions) => (this._conditions = conditions)
+        );
+        fetchDeviceActions(this.hass, this.deviceId).then(
+          (actions) => (this._actions = actions)
+        );
+      } else {
+        this._triggers = [];
+        this._conditions = [];
+        this._actions = [];
+      }
     }
   }
 
@@ -157,18 +164,30 @@ export class HaConfigDevicePage extends LitElement {
           this._actions.length
             ? html`
                 <div class="header">Automations</div>
-                <ha-device-triggers-card
-                  .hass=${this.hass}
-                  .automations=${this._triggers}
-                ></ha-device-triggers-card>
-                <ha-device-conditions-card
-                  .hass=${this.hass}
-                  .automations=${this._conditions}
-                ></ha-device-conditions-card>
-                <ha-device-actions-card
-                  .hass=${this.hass}
-                  .automations=${this._actions}
-                ></ha-device-actions-card>
+                ${this._triggers.length
+                  ? html`
+                      <ha-device-triggers-card
+                        .hass=${this.hass}
+                        .automations=${this._triggers}
+                      ></ha-device-triggers-card>
+                    `
+                  : ""}
+                ${this._conditions.length
+                  ? html`
+                      <ha-device-conditions-card
+                        .hass=${this.hass}
+                        .automations=${this._conditions}
+                      ></ha-device-conditions-card>
+                    `
+                  : ""}
+                ${this._actions.length
+                  ? html`
+                      <ha-device-actions-card
+                        .hass=${this.hass}
+                        .automations=${this._actions}
+                      ></ha-device-actions-card>
+                    `
+                  : ""}
               `
             : html``}
         </ha-config-section>
@@ -184,44 +203,65 @@ export class HaConfigDevicePage extends LitElement {
     return state ? computeStateName(state) : null;
   }
 
-  private _showSettings() {
+  private async _showSettings() {
     const device = this._device(this.deviceId, this.devices)!;
     showDeviceRegistryDetailDialog(this, {
       device,
       updateEntry: async (updates) => {
         const oldDeviceName = device.name_by_user || device.name;
+        const newDeviceName = updates.name_by_user;
         await updateDeviceRegistryEntry(this.hass, this.deviceId, updates);
 
-        if (oldDeviceName && updates.name_by_user) {
-          const entities = this._entities(this.deviceId, this.entities);
-          entities.forEach(async (entity) => {
-            const name = entity.name || entity.stateName!;
-            if (name && name.includes(oldDeviceName)) {
-              let newEntityId;
-              if (
-                entity.entity_id.includes(oldDeviceName.toLowerCase()) &&
-                confirm(
-                  "Do you also want to rename the entity id's of your entities?"
-                )
-              ) {
-                newEntityId = entity.entity_id.replace(
-                  oldDeviceName.toLowerCase(),
-                  updates.name_by_user!.toLowerCase().replace(" ", "_")
-                );
-                if (!isValidEntityId(newEntityId)) {
-                  newEntityId = entity.entity_id;
-                }
-              } else {
-                newEntityId = entity.entity_id;
-              }
-              await updateEntityRegistryEntry(this.hass!, entity.entity_id, {
-                name: name.replace(oldDeviceName, updates.name_by_user!),
-                disabled_by: entity.disabled_by,
-                new_entity_id: newEntityId,
-              });
-            }
-          });
+        if (
+          !oldDeviceName ||
+          !newDeviceName ||
+          oldDeviceName === newDeviceName
+        ) {
+          return;
         }
+        const entities = this._entities(this.deviceId, this.entities);
+
+        const renameEntityid =
+          this.showAdvanced &&
+          confirm(
+            "Do you also want to rename the entity id's of your entities?"
+          );
+
+        const updateProms = entities.map((entity) => {
+          const name = entity.name || entity.stateName;
+          let newEntityId: string | null = null;
+          let newName: string | null = null;
+
+          if (name && name.includes(oldDeviceName)) {
+            newName = name.replace(oldDeviceName, newDeviceName);
+          }
+
+          if (
+            renameEntityid &&
+            entity.entity_id.includes(
+              oldDeviceName.toLowerCase().replace(" ", "_")
+            )
+          ) {
+            newEntityId = entity.entity_id.replace(
+              oldDeviceName.toLowerCase().replace(" ", "_"),
+              newDeviceName.toLowerCase().replace(" ", "_")
+            );
+            if (!isValidEntityId(newEntityId)) {
+              newEntityId = null;
+            }
+          }
+
+          if (!newName && !newEntityId) {
+            return new Promise((resolve) => resolve());
+          }
+
+          return updateEntityRegistryEntry(this.hass!, entity.entity_id, {
+            name: newName || name,
+            disabled_by: entity.disabled_by,
+            new_entity_id: newEntityId || entity.entity_id,
+          });
+        });
+        await Promise.all(updateProms);
       },
     });
   }
