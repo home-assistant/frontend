@@ -419,7 +419,7 @@
                         "learn_more": "Per saperne di più sulle automazioni"
                     },
                     "editor": {
-                        "introduction": "Usa le automazioni per rendere viva la tua casa",
+                        "introduction": "Usa le automazioni per dare vita alla tua casa.",
                         "default_name": "Nuova automazione",
                         "save": "Salva",
                         "unsaved_confirm": "Hai delle modifiche non salvate. Sei sicuro di voler uscire?",
@@ -554,6 +554,12 @@
                                 },
                                 "device": {
                                     "label": "Dispositivo"
+                                },
+                                "and": {
+                                    "label": "E"
+                                },
+                                "or": {
+                                    "label": "Oppure"
                                 }
                             },
                             "learn_more": "Per saperne di più sulle condizioni"
@@ -596,7 +602,11 @@
                             "learn_more": "Per saperne di più sulle azioni"
                         },
                         "load_error_not_editable": "Solo le automazioni in automations.yaml sono modificabili.",
-                        "load_error_unknown": "Errore durante il caricamento dell'automazione ({err_no})."
+                        "load_error_unknown": "Errore durante il caricamento dell'automazione ({err_no}).",
+                        "description": {
+                            "label": "Descrizione",
+                            "placeholder": "Descrizione facoltativa"
+                        }
                     }
                 },
                 "script": {
@@ -754,7 +764,8 @@
                         "unavailable": "(non disponibile)",
                         "introduction": "Home Assistant mantiene un registro di tutte le entità che ha mai localizzato e possono essere identificate in modo univoco. A ciascuna di queste entità sarà assegnato un ID che sarà riservato solo a questa entità.",
                         "introduction2": "Utilizzare il registro delle entità per sovrascrivere il nome, modificare l'entity ID o rimuovere la voce da Home Assistant. Nota, la rimozione della voce del registro entità non rimuoverà l'entità. Per farlo, segui il link sottostante e rimuovilo dalla pagina delle integrazioni.",
-                        "integrations_page": "Integrazioni"
+                        "integrations_page": "Integrazioni",
+                        "show_disabled": "Mostra entità disabilitate"
                     },
                     "editor": {
                         "unavailable": "Questa entità non è attualmente disponibile.",
@@ -763,7 +774,9 @@
                         "update": "AGGIORNA",
                         "enabled_label": "Abilita entità",
                         "enabled_cause": "Disabilitato da {cause}.",
-                        "enabled_description": "Le entità disabilitate non verranno aggiunte a Home Assistant."
+                        "enabled_description": "Le entità disabilitate non verranno aggiunte a Home Assistant.",
+                        "confirm_delete": "Sei sicuro di voler eliminare questa voce?",
+                        "confirm_delete2": "L'eliminazione di una voce non comporta la rimozione dell'entità da Home Assistant. A tale scopo, è necessario rimuovere l'integrazione '{platform}' da Home Assistant."
                     }
                 },
                 "person": {
@@ -808,7 +821,18 @@
                 },
                 "devices": {
                     "caption": "Dispositivi",
-                    "description": "Gestisci i dispositivi collegati"
+                    "description": "Gestisci i dispositivi collegati",
+                    "automation": {
+                        "triggers": {
+                            "caption": "Fai qualcosa quando..."
+                        },
+                        "conditions": {
+                            "caption": "Fai qualcosa solo se..."
+                        },
+                        "actions": {
+                            "caption": "Quando qualcosa si attiva..."
+                        }
+                    }
                 }
             },
             "profile": {
@@ -884,6 +908,10 @@
                 "force_narrow": {
                     "header": "Nascondi sempre la barra laterale",
                     "description": "Questo nasconderà la barra laterale per impostazione predefinita, in modo simile all'esperienza mobile"
+                },
+                "vibrate": {
+                    "header": "Vibrare",
+                    "description": "Abilitare o disabilitare la vibrazione su questo dispositivo durante il controllo dei dispositivi."
                 }
             },
             "page-authorize": {
@@ -968,11 +996,11 @@
                                     "data": {
                                         "code": "Codice di autenticazione a due fattori"
                                     },
-                                    "description": "Apri **{mfa_module_name}** sul tuo dispositivo per vedere il tuo codice di autenticazione a due fattori e verificare la tua identità:"
+                                    "description": "Apri il **{mfa_module_name}** sul tuo dispositivo per visualizzare il codice di autenticazione a due fattori e verificare la tua identità:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Username o password non validi",
+                                "invalid_auth": "Nome utente o password errati",
                                 "invalid_code": "Codice di autenticazione non valido"
                             },
                             "abort": {
@@ -1031,7 +1059,8 @@
                         "navigate_to": "Vai a {location}",
                         "toggle": "Commuta {name}",
                         "call_service": "Chiama il servizio {name}",
-                        "more_info": "Mostra più informazioni: {name}"
+                        "more_info": "Mostra più informazioni: {name}",
+                        "url": "Aprire la finestra per {url_path}"
                     }
                 },
                 "editor": {
@@ -1077,6 +1106,66 @@
                     "edit_lovelace": {
                         "header": "Titolo della tua interfaccia utente di Lovelace",
                         "explanation": "Questo titolo è mostrato sopra tutte le tue viste in Lovelace."
+                    },
+                    "card": {
+                        "alarm_panel": {
+                            "available_states": "Stati disponibili"
+                        },
+                        "config": {
+                            "required": "Richiesto",
+                            "optional": "Facoltativo"
+                        },
+                        "entities": {
+                            "show_header_toggle": "Mostrare l'interruttore dell'intestazione?"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "define": "Definire la gravità?",
+                                "green": "Verde",
+                                "red": "Rosso",
+                                "yellow": "Giallo"
+                            }
+                        },
+                        "glance": {
+                            "columns": "Colonne"
+                        },
+                        "generic": {
+                            "aspect_ratio": "Proporzioni",
+                            "camera_image": "Entità Fotocamera",
+                            "camera_view": "Vista fotocamera",
+                            "entities": "Entità",
+                            "entity": "Entità",
+                            "hold_action": "Azione di attesa",
+                            "hours_to_show": "Ore da mostrare",
+                            "icon": "Icona",
+                            "icon_height": "Altezza icona",
+                            "image": "Percorso immagine",
+                            "maximum": "Massimo",
+                            "minimum": "Minimo",
+                            "name": "Nome",
+                            "refresh_interval": "Intervallo di aggiornamento",
+                            "show_icon": "Mostrare l'icona?",
+                            "show_name": "Mostrare il nome?",
+                            "show_state": "Mostrare lo stato?",
+                            "tap_action": "Tocca Azione",
+                            "title": "Titolo",
+                            "theme": "Tema",
+                            "unit": "Unità",
+                            "url": "Url"
+                        },
+                        "map": {
+                            "geo_location_sources": "Fonti di geolocalizzazione",
+                            "dark_mode": "Modalità scura?",
+                            "default_zoom": "Ingrandimento predefinito",
+                            "source": "Fonte"
+                        },
+                        "markdown": {
+                            "content": "Contenuto"
+                        },
+                        "sensor": {
+                            "graph_detail": "Dettaglio grafico",
+                            "graph_type": "Tipo di grafico"
+                        }
                     }
                 },
                 "menu": {

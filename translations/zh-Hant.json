@@ -419,7 +419,7 @@
                         "learn_more": "詳細了解自動化"
                     },
                     "editor": {
-                        "introduction": "使用自動化來讓你的智能家居更有魅力吧!",
+                        "introduction": "使用自動化來讓你的智能家居更有魅力吧。",
                         "default_name": "建立新的自動化",
                         "save": "儲存",
                         "unsaved_confirm": "設定尚未儲存，確定要放棄嗎？",
@@ -554,6 +554,12 @@
                                 },
                                 "device": {
                                     "label": "設備"
+                                },
+                                "and": {
+                                    "label": "及"
+                                },
+                                "or": {
+                                    "label": "或"
                                 }
                             },
                             "learn_more": "詳細了解觸發判斷"
@@ -596,7 +602,11 @@
                             "learn_more": "詳細了解動作"
                         },
                         "load_error_not_editable": "僅有 automations.yaml 內的自動化方能編輯。",
-                        "load_error_unknown": "載入自動化錯誤（{err_no}）。"
+                        "load_error_unknown": "載入自動化錯誤（{err_no}）。",
+                        "description": {
+                            "label": "說明",
+                            "placeholder": "選項說明"
+                        }
                     }
                 },
                 "script": {
@@ -754,7 +764,8 @@
                         "unavailable": "（不可用）",
                         "introduction": "Home Assistant 保持每個物件 ID 的獨特辨識性，此些物件將會指定一組專用的 物件 ID。",
                         "introduction2": "使用物件 ID 以覆寫名稱、變更物件 ID 或由 Home Assistant 移除物件。請注意：移除物件 ID 項目並不會移除物件。欲移除，請跟隨下方連結，並於整合頁面中進行移除。",
-                        "integrations_page": "整合頁面"
+                        "integrations_page": "整合頁面",
+                        "show_disabled": "顯示關閉物件"
                     },
                     "editor": {
                         "unavailable": "該物件目前不可用。",
@@ -763,7 +774,9 @@
                         "update": "更新",
                         "enabled_label": "啟用物件",
                         "enabled_cause": "由 {cause} 關閉。",
-                        "enabled_description": "關閉的物件將不會新增至 Home Assistant。"
+                        "enabled_description": "關閉的物件將不會新增至 Home Assistant。",
+                        "confirm_delete": "確定要刪除此物件？",
+                        "confirm_delete2": "刪除物件將不會由 Home Assistant 移除物件。欲移除、你必須由 Home Assistant 移除整合  '{platform}'。"
                     }
                 },
                 "person": {
@@ -808,7 +821,18 @@
                 },
                 "devices": {
                     "caption": "設備",
-                    "description": "管理已連線設備"
+                    "description": "管理已連線設備",
+                    "automation": {
+                        "triggers": {
+                            "caption": "執行動作、當..."
+                        },
+                        "conditions": {
+                            "caption": "執行動作、假如..."
+                        },
+                        "actions": {
+                            "caption": "當某物件被觸發時..."
+                        }
+                    }
                 }
             },
             "profile": {
@@ -884,6 +908,10 @@
                 "force_narrow": {
                     "header": "總是隱藏側邊列",
                     "description": "將預設隱藏側邊列，類似於手機 App 使用方式。"
+                },
+                "vibrate": {
+                    "header": "震動",
+                    "description": "當控制裝置時、開啟或關閉此裝置震動。"
                 }
             },
             "page-authorize": {
@@ -1031,7 +1059,8 @@
                         "navigate_to": "導航至 {location}",
                         "toggle": "切換 {name}",
                         "call_service": "執行服務 {name}",
-                        "more_info": "顯示更多資訊：{name}"
+                        "more_info": "顯示更多資訊：{name}",
+                        "url": "開啟視窗至 {url_path}"
                     }
                 },
                 "editor": {
@@ -1077,6 +1106,66 @@
                     "edit_lovelace": {
                         "header": "Lovelace UI 的標題",
                         "explanation": "此為 Lovelace 所有分視圖上方之標題。"
+                    },
+                    "card": {
+                        "alarm_panel": {
+                            "available_states": "可用狀態"
+                        },
+                        "config": {
+                            "required": "必填",
+                            "optional": "選項"
+                        },
+                        "entities": {
+                            "show_header_toggle": "顯示名稱切換？"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "define": "定義嚴重度？",
+                                "green": "綠色",
+                                "red": "紅色",
+                                "yellow": "黃色"
+                            }
+                        },
+                        "glance": {
+                            "columns": "列"
+                        },
+                        "generic": {
+                            "aspect_ratio": "長寬比",
+                            "camera_image": "攝影機物件",
+                            "camera_view": "攝影機視角",
+                            "entities": "物件",
+                            "entity": "物件",
+                            "hold_action": "保持觸發",
+                            "hours_to_show": "顯示小時",
+                            "icon": "圖示",
+                            "icon_height": "圖示高度",
+                            "image": "圖像路徑",
+                            "maximum": "最大值",
+                            "minimum": "最小值",
+                            "name": "名稱",
+                            "refresh_interval": "更新間隔",
+                            "show_icon": "顯示圖示？",
+                            "show_name": "顯示名稱？",
+                            "show_state": "顯示狀態？",
+                            "tap_action": "點選觸發",
+                            "title": "標題",
+                            "theme": "主題",
+                            "unit": "單位",
+                            "url": "網址"
+                        },
+                        "map": {
+                            "geo_location_sources": "地理位置來源",
+                            "dark_mode": "深色模式？",
+                            "default_zoom": "預設大小",
+                            "source": "來源"
+                        },
+                        "markdown": {
+                            "content": "內容"
+                        },
+                        "sensor": {
+                            "graph_detail": "圖像精細度",
+                            "graph_type": "圖像類型"
+                        }
                     }
                 },
                 "menu": {

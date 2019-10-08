@@ -497,6 +497,15 @@
                                     "label": "Öryggissvæði",
                                     "entity": "Eining með staðsetningu",
                                     "zone": "Öryggissvæði"
+                                },
+                                "device": {
+                                    "label": "Tæki"
+                                },
+                                "and": {
+                                    "label": "Og"
+                                },
+                                "or": {
+                                    "label": "Eða"
                                 }
                             },
                             "learn_more": "Læra meira um skilyrði"
@@ -539,7 +548,11 @@
                             "learn_more": "Læra meira um aðgerðir"
                         },
                         "load_error_not_editable": "Eingöngu er hægt að breyta sjálfvirkni í automations.yaml",
-                        "load_error_unknown": "Villa kom upp við að hlaða inn sjálfvirkni  ({err_no})."
+                        "load_error_unknown": "Villa kom upp við að hlaða inn sjálfvirkni  ({err_no}).",
+                        "description": {
+                            "label": "Lýsing",
+                            "placeholder": "Valfrjáls lýsing"
+                        }
                     }
                 },
                 "script": {
@@ -568,6 +581,7 @@
                         "cancel_command": "Hætta við skipun"
                     },
                     "common": {
+                        "value": "Gildi",
                         "unknown": "óþekkt"
                     },
                     "node_config": {
@@ -677,13 +691,15 @@
                         "header": "Einingarskrá",
                         "unavailable": "(ekki tiltækt)",
                         "introduction": "Home Assistant heldur bókhald utanum allar einingar sem verið greindar. Hver þessara eininga hafa einingar-auðkenni (ID) sem er frátekið bara fyrir þessa tilteknu einingu.",
-                        "integrations_page": "Samþættingar síða"
+                        "integrations_page": "Samþættingar síða",
+                        "show_disabled": "Sýna afvirkjaðar einingar"
                     },
                     "editor": {
                         "unavailable": "Þessi eining er ekki tiltæk eins og er.",
                         "default_name": "Nýtt svæði",
                         "delete": "EYÐA",
-                        "update": "UPPFÆRA"
+                        "update": "UPPFÆRA",
+                        "enabled_label": "Virkja einingu"
                     }
                 },
                 "person": {
@@ -720,7 +736,24 @@
                             "heading": "Stjórnun miðlara",
                             "introduction": "Stjórna Home Assistant miðlara... frá Home Assistant.",
                             "restart": "Endurræsa",
-                            "stop": "Stöðva"
+                            "stop": "Stöðva",
+                            "confirm_restart": "Ertu viss um að þú viljir endurræsa Home Assistant?",
+                            "confirm_stop": "Ertu viss um að þú viljir stöðva Home Assistant?"
+                        }
+                    }
+                },
+                "devices": {
+                    "caption": "Tæki",
+                    "description": "Stjórna tengdum tækjum",
+                    "automation": {
+                        "triggers": {
+                            "caption": "Framkvæma eitthvað þegar..."
+                        },
+                        "conditions": {
+                            "caption": "Bara framkvæma eitthvað ef..."
+                        },
+                        "actions": {
+                            "caption": "Þegar eitthvað er ræst af kveikju..."
                         }
                     }
                 }
@@ -793,10 +826,15 @@
                 "force_narrow": {
                     "header": "Alltaf fela hliðarstikuna",
                     "description": "Þetta mun fela hliðarstikuna með sambærilegum hætti og á snjalltækum."
+                },
+                "vibrate": {
+                    "header": "Titra",
+                    "description": "Kveikja eða slökkva á titringi í þessu tæki þegar þú stjórnar tækjum."
                 }
             },
             "page-authorize": {
                 "initializing": "Frumstilli",
+                "authorizing_client": "Þú ert að fara að veita {clientId} aðgang að Home Assistant uppsetningunni.",
                 "logging_in_with": "Skrái inn með ** {authProviderName} **.",
                 "pick_auth_provider": "Eða skráðu þig inn með",
                 "abort_intro": "Hætt var við innskráningu",
@@ -974,6 +1012,52 @@
                         "save": "Vista",
                         "unsaved_changes": "Óvistaðar breytingar",
                         "saved": "Vistað"
+                    },
+                    "card": {
+                        "alarm_panel": {
+                            "available_states": "Tiltækar stöður"
+                        },
+                        "config": {
+                            "required": "Skilyrt",
+                            "optional": "Valfrjálst"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "define": "Skilgreina alvarleika?",
+                                "green": "Grænt",
+                                "red": "Rautt",
+                                "yellow": "Gult"
+                            }
+                        },
+                        "glance": {
+                            "columns": "Dálkar"
+                        },
+                        "generic": {
+                            "aspect_ratio": "Hlutfall",
+                            "camera_view": "Sjónarhorn myndavélar",
+                            "entities": "Einingar",
+                            "entity": "Eining",
+                            "hours_to_show": "Klukkutímar sem á að birta",
+                            "icon": "Táknmynd",
+                            "icon_height": "Hæð tákmyndar",
+                            "image": "Myndaslóð",
+                            "maximum": "Hámark",
+                            "minimum": "Lágmark",
+                            "name": "Nafn",
+                            "show_icon": "Birta táknmynd?",
+                            "show_name": "Birta nafn?",
+                            "show_state": "Birta stöðu?",
+                            "title": "Titill",
+                            "theme": "Þema",
+                            "unit": "Eining"
+                        },
+                        "map": {
+                            "dark_mode": "Dökkur hamur?",
+                            "default_zoom": "Sjálfgefinn aðdráttur"
+                        },
+                        "markdown": {
+                            "content": "Innihald"
+                        }
                     }
                 },
                 "menu": {
@@ -1218,6 +1302,21 @@
                 "form": {
                     "header": "Valkostir"
                 }
+            },
+            "config_entry_system_options": {
+                "title": "Kerfisvalkostir",
+                "enable_new_entities_label": "Virkja einingar sem nýlega var bætt við"
+            },
+            "zha_device_info": {
+                "manuf": "eftir {manufacturer}",
+                "no_area": "Ekkert svæði",
+                "services": {
+                    "remove": "Fjarlægja tæki af ZigBee neti."
+                },
+                "zha_device_card": {
+                    "area_picker_label": "Svæði",
+                    "update_name_button": "Uppfæra nafn"
+                }
             }
         },
         "auth_store": {
@@ -1292,7 +1391,16 @@
                 "away": "Fjarverandi",
                 "comfort": "Þægindi",
                 "home": "Heima",
-                "sleep": "Svefn"
+                "sleep": "Svefn",
+                "activity": "Virkni"
+            },
+            "hvac_action": {
+                "off": "Slökkt",
+                "heating": "Kynding",
+                "cooling": "Kæling",
+                "drying": "Þurrkun",
+                "idle": "Aðgerðalaus",
+                "fan": "Vifta"
             }
         }
     },
@@ -1303,7 +1411,8 @@
     },
     "config_entry": {
         "disabled_by": {
-            "user": "Notandi"
+            "user": "Notandi",
+            "integration": "Samþætting"
         }
     }
 }

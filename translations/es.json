@@ -554,6 +554,12 @@
                                 },
                                 "device": {
                                     "label": "Dispositivo"
+                                },
+                                "and": {
+                                    "label": "Y"
+                                },
+                                "or": {
+                                    "label": "O"
                                 }
                             },
                             "learn_more": "Aprende más sobre las condiciones"
@@ -596,7 +602,11 @@
                             "learn_more": "Aprende más sobre las acciones."
                         },
                         "load_error_not_editable": "Solo las automatizaciones en automations.yaml son editables.",
-                        "load_error_unknown": "Error al cargar la automatización ({err_no})."
+                        "load_error_unknown": "Error al cargar la automatización ({err_no}).",
+                        "description": {
+                            "label": "Descripción",
+                            "placeholder": "Descripción opcional"
+                        }
                     }
                 },
                 "script": {
@@ -754,7 +764,8 @@
                         "unavailable": "(no disponible)",
                         "introduction": "Home Assistant mantiene un registro de cada entidad que ha visto. Cada una de estas entidades tendrá una identificación asignada que se reservará sólo para esta entidad.",
                         "introduction2": "Utiliza el registro de entidades para anular el nombre, cambiar el ID de la entidad o eliminar la entrada de Home Assistant. Nota: la eliminación de la entrada del registro de entidades no eliminará la entidad. Para ello, sigue el siguiente enlace y elimínalo de la página de integraciones.",
-                        "integrations_page": "Integraciones"
+                        "integrations_page": "Integraciones",
+                        "show_disabled": "Mostrar entidades deshabilitadas"
                     },
                     "editor": {
                         "unavailable": "Esta entidad no está disponible actualmente.",
@@ -763,7 +774,9 @@
                         "update": "ACTUALIZAR",
                         "enabled_label": "Activar entidad",
                         "enabled_cause": "Desactivado por {cause}.",
-                        "enabled_description": "Las entidades desactivadas no se añadirán a Home Assistant."
+                        "enabled_description": "Las entidades desactivadas no se añadirán a Home Assistant.",
+                        "confirm_delete": "¿Estás seguro de que deseas eliminar esta entrada?",
+                        "confirm_delete2": "Eliminar una entrada no eliminará la entidad de Home Assistant. Para hacer esto, deberás eliminar la integración \"{platform}\" de Home Assistant."
                     }
                 },
                 "person": {
@@ -808,7 +821,18 @@
                 },
                 "devices": {
                     "caption": "Dispositivos",
-                    "description": "Administrar dispositivos conectados"
+                    "description": "Administrar dispositivos conectados",
+                    "automation": {
+                        "triggers": {
+                            "caption": "Hacer algo cuando..."
+                        },
+                        "conditions": {
+                            "caption": "Sólo hacer algo si..."
+                        },
+                        "actions": {
+                            "caption": "Cuando algo se activa...."
+                        }
+                    }
                 }
             },
             "profile": {
@@ -884,6 +908,10 @@
                 "force_narrow": {
                     "header": "Ocultar siempre la barra lateral",
                     "description": "Esto ocultará la barra lateral de forma predeterminada, similar a la experiencia móvil."
+                },
+                "vibrate": {
+                    "header": "Vibrar",
+                    "description": "Habilitar o deshabilitar la vibración en este dispositivo al controlar dispositivos."
                 }
             },
             "page-authorize": {
@@ -1031,7 +1059,8 @@
                         "navigate_to": "Navegar a {location}",
                         "toggle": "Alternar {name}",
                         "call_service": "Ejecutar servicio {name}",
-                        "more_info": "Mostrar más información: {name}"
+                        "more_info": "Mostrar más información: {name}",
+                        "url": "Abrir ventana a {url_path}"
                     }
                 },
                 "editor": {
@@ -1077,6 +1106,66 @@
                     "edit_lovelace": {
                         "header": "Título de tu interfaz de usuario de Lovelace",
                         "explanation": "Este título se muestra sobre todas tus vistas en Lovelace."
+                    },
+                    "card": {
+                        "alarm_panel": {
+                            "available_states": "Estados disponibles"
+                        },
+                        "config": {
+                            "required": "Necesario",
+                            "optional": "Opcional"
+                        },
+                        "entities": {
+                            "show_header_toggle": "¿Mostrar interruptor en encabezado?"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "define": "¿Definir gravedad?",
+                                "green": "Verde",
+                                "red": "Rojo",
+                                "yellow": "Amarillo"
+                            }
+                        },
+                        "glance": {
+                            "columns": "Columnas"
+                        },
+                        "generic": {
+                            "aspect_ratio": "Relación de aspecto",
+                            "camera_image": "Entidad de cámara",
+                            "camera_view": "Vista de cámara",
+                            "entities": "Entidades",
+                            "entity": "Entidad",
+                            "hold_action": "Acción de mantener",
+                            "hours_to_show": "Horas para mostrar",
+                            "icon": "Icono",
+                            "icon_height": "Altura del icono",
+                            "image": "Ruta de la imagen",
+                            "maximum": "Máximo",
+                            "minimum": "Mínimo",
+                            "name": "Nombre",
+                            "refresh_interval": "Intervalo de actualización",
+                            "show_icon": "¿Mostrar icono?",
+                            "show_name": "¿Mostrar nombre?",
+                            "show_state": "¿Mostrar estado?",
+                            "tap_action": "Acción de toque",
+                            "title": "Título",
+                            "theme": "Tema",
+                            "unit": "Unidad",
+                            "url": "Url"
+                        },
+                        "map": {
+                            "geo_location_sources": "Fuentes de geolocalización",
+                            "dark_mode": "¿Modo oscuro?",
+                            "default_zoom": "Zoom predeterminado",
+                            "source": "Fuente"
+                        },
+                        "markdown": {
+                            "content": "Contenido"
+                        },
+                        "sensor": {
+                            "graph_detail": "Detalle del gráfico",
+                            "graph_type": "Tipo de gráfico"
+                        }
                     }
                 },
                 "menu": {
@@ -1316,7 +1405,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Guardar",
-                "name": "Anulación de nombre",
+                "name": "Cambio de nombre",
                 "entity_id": "Identificación de la entidad"
             },
             "more_info_control": {
