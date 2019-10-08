@@ -500,7 +500,7 @@
                                     "source": "Zdroj",
                                     "zone": "Zóna",
                                     "event": "Udalosť:",
-                                    "enter": "Potvrdiť",
+                                    "enter": "Vstup",
                                     "leave": "Opustiť"
                                 },
                                 "device": {
@@ -554,6 +554,12 @@
                                 },
                                 "device": {
                                     "label": "Zariadenie"
+                                },
+                                "and": {
+                                    "label": "a"
+                                },
+                                "or": {
+                                    "label": "alebo"
                                 }
                             },
                             "learn_more": "Získajte viac informácií o podmienkach"
@@ -962,7 +968,7 @@
                                     "data": {
                                         "code": "2-faktorový autentifikačný kód"
                                     },
-                                    "description": "Otvorte **{mfa_module_name}** na vašom zariadení a pozrite si váš dvoj-faktorový autentifikačný kód, aby ste overili svoju identitu."
+                                    "description": "Otvorte **{mfa_module_name}** v zariadení, aby ste si pozreli svoj dvojfaktorový autentifikačný kód a overili svoju totožnosť:"
                                 }
                             },
                             "error": {

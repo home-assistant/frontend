@@ -968,11 +968,11 @@
                                     "data": {
                                         "code": "Código de autenticações por dois fatores"
                                     },
-                                    "description": "Abrir o **{mfa_module_name}** no seu dispositivo para ver o código de autenticação por dois factores e validar a sua identidade:"
+                                    "description": "Abra o **{mfa_module_name}** no seu dispositivo para ver o código de autenticação por dois factores e verificar a sua identidade."
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Nome de utilizador ou palavra-passe inválidos",
+                                "invalid_auth": "Nome de utilizador ou palavra-passe inválida",
                                 "invalid_code": "Código de autenticação inválido"
                             },
                             "abort": {

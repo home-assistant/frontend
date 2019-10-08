@@ -554,6 +554,12 @@
                                 },
                                 "device": {
                                     "label": "Eszköz"
+                                },
+                                "and": {
+                                    "label": "És"
+                                },
+                                "or": {
+                                    "label": "Vagy"
                                 }
                             },
                             "learn_more": "Tudj meg többet a feltételekről"
@@ -596,7 +602,11 @@
                             "learn_more": "Tudj meg többet a műveletekről"
                         },
                         "load_error_not_editable": "Csak az automations.yaml fájlban lévő automatizálások szerkeszthetőek.",
-                        "load_error_unknown": "Hiba történt az automatizálás betöltésekor ({err_no})."
+                        "load_error_unknown": "Hiba történt az automatizálás betöltésekor ({err_no}).",
+                        "description": {
+                            "label": "Leírás",
+                            "placeholder": "Opcionális leírás"
+                        }
                     }
                 },
                 "script": {
@@ -607,7 +617,8 @@
                     "caption": "Z-Wave",
                     "description": "Z-Wave hálózat kezelése",
                     "network_management": {
-                        "header": "Z-Wave hálózat menedzsment"
+                        "header": "Z-Wave hálózat menedzsment",
+                        "introduction": "Olyan parancsok futtatása, amelyek befolyásolják a Z-Wave hálózatot. Nem fogsz visszajelzést kapni arról, hogy a legtöbb parancs sikeres volt-e, de az OZW logok alapján megpróbálhatod kideríteni."
                     },
                     "network_status": {
                         "network_stopped": "Z-Wave hálózat leállt",
@@ -620,7 +631,9 @@
                     "services": {
                         "start_network": "Hálózat indítása",
                         "stop_network": "Hálózat leállítása",
+                        "heal_network": "Hálózati struktúra feltérképezése",
                         "test_network": "Hálózat tesztelése",
+                        "soft_reset": "Soft Reset",
                         "save_config": "Konfiguráció mentése",
                         "add_node_secure": "Biztonságos csomópont hozzáadása",
                         "add_node": "Csomópont hozzáadása",
@@ -751,7 +764,8 @@
                         "unavailable": "(nem elérhető)",
                         "introduction": "A Home Assistant nyilvántartást vezet minden olyan entitásról, melyet valaha látott, és egyedileg azonosítható. Ezen entitások mindegyikéhez létrejön egy entitás ID, amely csak az adott entitáshoz van rendelve.",
                         "introduction2": "Az entitás nyilvántartás használatával felülbírálhatod a nevet, módosíthatod az entitás ID-t vagy eltávolíthatod a bejegyzést a Home Assistant-ból. Megjegyzendő, hogy az entitás nyilvántartásból történő bejegyzés eltávolítás nem fogja eltávolítani magát az entitást. Ehhez kövesd az alábbi linket, és távolítsd el azt az integrációk oldalról.",
-                        "integrations_page": "Integrációk oldal"
+                        "integrations_page": "Integrációk oldal",
+                        "show_disabled": "Letiltott entitások megjelenítése"
                     },
                     "editor": {
                         "unavailable": "Ez az entitás jelenleg nem elérhető.",
@@ -760,7 +774,9 @@
                         "update": "FRISSÍTÉS",
                         "enabled_label": "Entitás engedélyezése",
                         "enabled_cause": "Letiltva. ({cause})",
-                        "enabled_description": "A letiltott entitások nem lesznek hozzáadva a Home Assistant-hoz."
+                        "enabled_description": "A letiltott entitások nem lesznek hozzáadva a Home Assistant-hoz.",
+                        "confirm_delete": "Biztosan törölni szeretnéd ezt a bejegyzést?",
+                        "confirm_delete2": "A bejegyzés törlésével az entitás nem kerül eltávolításra a Home Assistant-ból. Ehhez el kell távolítani a '{platform}' integrációt a Home Assistant-ból."
                     }
                 },
                 "person": {
@@ -805,7 +821,18 @@
                 },
                 "devices": {
                     "caption": "Eszközök",
-                    "description": "Csatlakoztatott eszközök kezelése"
+                    "description": "Csatlakoztatott eszközök kezelése",
+                    "automation": {
+                        "triggers": {
+                            "caption": "Csinálj valamit, amikor..."
+                        },
+                        "conditions": {
+                            "caption": "Csak akkor csinálj valamit, ha"
+                        },
+                        "actions": {
+                            "caption": "Amikor valami indításra kerül..."
+                        }
+                    }
                 }
             },
             "profile": {
@@ -881,6 +908,10 @@
                 "force_narrow": {
                     "header": "Mindig rejtse el az oldalsávot",
                     "description": "Ez alapértelmezés szerint elrejti az oldalsávot, hasonlóan a mobil verzióhoz."
+                },
+                "vibrate": {
+                    "header": "Rezgés",
+                    "description": "Rezgés engedélyezése vagy tiltása ezen az eszközön az eszközök vezérlésekor."
                 }
             },
             "page-authorize": {
@@ -1028,7 +1059,8 @@
                         "navigate_to": "Ugrás {location}",
                         "toggle": "Váltás {name}",
                         "call_service": "Szolgáltatás meghívása {name}",
-                        "more_info": "További információ megjelenítése: {name}"
+                        "more_info": "További információ megjelenítése: {name}",
+                        "url": "Ablak megnyitása: {url_path}"
                     }
                 },
                 "editor": {
@@ -1074,6 +1106,66 @@
                     "edit_lovelace": {
                         "header": "Lovelace UI címe",
                         "explanation": "Ez a cím jelenik meg minden nézet felett a Lovelace-ben."
+                    },
+                    "card": {
+                        "alarm_panel": {
+                            "available_states": "Rendelkezésre álló állapotok"
+                        },
+                        "config": {
+                            "required": "Szükséges",
+                            "optional": "Opcionális"
+                        },
+                        "entities": {
+                            "show_header_toggle": "Fejléc kapcsoló megjelenítése?"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "define": "Súlyosság meghatározása?",
+                                "green": "Zöld",
+                                "red": "Piros",
+                                "yellow": "Sárga"
+                            }
+                        },
+                        "glance": {
+                            "columns": "Oszlopok"
+                        },
+                        "generic": {
+                            "aspect_ratio": "Oldalarány",
+                            "camera_image": "Kamera entitás",
+                            "camera_view": "Kamera nézet",
+                            "entities": "Entitások",
+                            "entity": "Entitás",
+                            "hold_action": "Tartási művelet",
+                            "hours_to_show": "Órák megjelenítése",
+                            "icon": "Ikon",
+                            "icon_height": "Ikon magassága",
+                            "image": "Kép elérési útja",
+                            "maximum": "Maximum",
+                            "minimum": "Minimum",
+                            "name": "Név",
+                            "refresh_interval": "Frissítési intervallum",
+                            "show_icon": "Ikon megjelenítése?",
+                            "show_name": "Név megjelenítése?",
+                            "show_state": "Állapot megjelenítése?",
+                            "tap_action": "Koppintási művelet",
+                            "title": "Cím",
+                            "theme": "Téma",
+                            "unit": "Egység",
+                            "url": "Url"
+                        },
+                        "map": {
+                            "geo_location_sources": "Helylokáció forrásai",
+                            "dark_mode": "Sötét mód?",
+                            "default_zoom": "Alapértelmezett nagyítás",
+                            "source": "Forrás"
+                        },
+                        "markdown": {
+                            "content": "Tartalom"
+                        },
+                        "sensor": {
+                            "graph_detail": "Grafikon részletei",
+                            "graph_type": "Grafikon típusa"
+                        }
                     }
                 },
                 "menu": {
@@ -1346,6 +1438,7 @@
                 "manuf": "{manufacturer} által",
                 "no_area": "Nincs Terület",
                 "services": {
+                    "reconfigure": "A ZHA készülék újratelepítése (eszköz rendbehozatala). Akkor használd ezt a funkciót, ha problémáid vannak a készülékkel. Ha a kérdéses eszköz akkumulátoros, győződj meg róla, hogy nincs alvó állapotban és fogadja a parancsokat, amikor ezt a szolgáltatást használod.",
                     "updateDeviceName": "Egyedi név beállítása ehhez az eszközhöz az eszköz nyilvántartásban.",
                     "remove": "Törölj egy eszközt a Zigbee hálózatból"
                 },

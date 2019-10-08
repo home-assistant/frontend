@@ -38,6 +38,7 @@ export class CloudGooglePref extends LitElement {
 
     const {
       google_enabled,
+      google_report_state,
       google_secure_devices_pin,
     } = this.cloudStatus.prefs;
 
@@ -47,7 +48,7 @@ export class CloudGooglePref extends LitElement {
           <ha-switch
             id="google_enabled"
             .checked="${google_enabled}"
-            @change="${this._toggleChanged}"
+            @change="${this._enableToggleChanged}"
           ></ha-switch>
         </div>
         <div class="card-content">
@@ -78,6 +79,17 @@ export class CloudGooglePref extends LitElement {
           >
           ${google_enabled
             ? html`
+                <h3>Enable State Reporting</h3>
+                <p>
+                  If you enable state reporting, Home Assistant will send
+                  <b>all</b> state changes of exposed entities to Google. This
+                  allows you to always see the latest states in the Google app.
+                </p>
+                <ha-switch
+                  .checked=${google_report_state}
+                  @change=${this._reportToggleChanged}
+                ></ha-switch>
+
                 <div class="secure_devices">
                   Please enter a pin to interact with security devices. Security
                   devices are doors, garage doors and locks. You will be asked
@@ -111,12 +123,29 @@ export class CloudGooglePref extends LitElement {
     `;
   }
 
-  private async _toggleChanged(ev) {
+  private async _enableToggleChanged(ev) {
     const toggle = ev.target as HaSwitch;
     try {
       await updateCloudPref(this.hass!, { [toggle.id]: toggle.checked! });
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err) {
+      toggle.checked = !toggle.checked;
+    }
+  }
+
+  private async _reportToggleChanged(ev) {
+    const toggle = ev.target as HaSwitch;
+    try {
+      await updateCloudPref(this.hass!, {
+        google_report_state: toggle.checked!,
+      });
+      fireEvent(this, "ha-refresh-cloud-status");
+    } catch (err) {
+      alert(
+        `Unable to ${toggle.checked ? "enable" : "disable"} report state. ${
+          err.message
+        }`
+      );
       toggle.checked = !toggle.checked;
     }
   }

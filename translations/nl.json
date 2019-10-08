@@ -554,6 +554,12 @@
                                 },
                                 "device": {
                                     "label": "Apparaat"
+                                },
+                                "and": {
+                                    "label": "En"
+                                },
+                                "or": {
+                                    "label": "Of"
                                 }
                             },
                             "learn_more": "Meer informatie over condities"
@@ -596,7 +602,11 @@
                             "learn_more": "Meer informatie over acties"
                         },
                         "load_error_not_editable": "Alleen automatiseringen in automations.yaml kunnen worden bewerkt.",
-                        "load_error_unknown": "Fout bij laden van automatisering ({err_no})."
+                        "load_error_unknown": "Fout bij laden van automatisering ({err_no}).",
+                        "description": {
+                            "label": "Beschrijving",
+                            "placeholder": "Optionele beschrijving"
+                        }
                     }
                 },
                 "script": {
@@ -754,7 +764,8 @@
                         "unavailable": "(niet beschikbaar)",
                         "introduction": "Home Assistant houdt een register bij van elke entiteit die het ooit heeft gezien en die uniek kan worden geïdentificeerd. Elk van deze entiteiten krijgt een entiteit-ID toegewezen die alleen voor deze entiteit wordt gereserveerd.",
                         "introduction2": "Gebruik het entiteitenregister om de naam te overschrijven, de entiteits-ID te wijzigen of het item te verwijderen uit de Home Assistant. Opmerking: als u de entiteitsregistervermelding verwijdert, wordt de entiteit niet verwijderd. Hiertoe volgt u de onderstaande koppeling en verwijdert u deze van de integratiespagina.",
-                        "integrations_page": "Integratiespagina"
+                        "integrations_page": "Integratiespagina",
+                        "show_disabled": "Uitgeschakelde entiteiten weergeven"
                     },
                     "editor": {
                         "unavailable": "Deze entiteit is momenteel niet beschikbaar.",
@@ -763,7 +774,9 @@
                         "update": "BIJWERKEN",
                         "enabled_label": "Schakel entiteit in",
                         "enabled_cause": "Uitgeschakeld vanwege {cause}",
-                        "enabled_description": "Uitgeschakelde entiteiten zullen niet aan Home Assistant worden toegevoegd"
+                        "enabled_description": "Uitgeschakelde entiteiten zullen niet aan Home Assistant worden toegevoegd",
+                        "confirm_delete": "Weet u zeker dat u dit item wilt verwijderen?",
+                        "confirm_delete2": "Als u een item verwijdert, wordt de entiteit niet uit Home Assistant verwijderd. Om dit te doen, moet u de integratie '{platform}' uit Home Assistant verwijderen."
                     }
                 },
                 "person": {
@@ -808,7 +821,18 @@
                 },
                 "devices": {
                     "caption": "Apparaten",
-                    "description": "Beheer verbonden apparaten"
+                    "description": "Beheer verbonden apparaten",
+                    "automation": {
+                        "triggers": {
+                            "caption": "Doe iets wanneer..."
+                        },
+                        "conditions": {
+                            "caption": "Doe alleen iets als..."
+                        },
+                        "actions": {
+                            "caption": "Wanneer iets wordt getriggerd..."
+                        }
+                    }
                 }
             },
             "profile": {
@@ -884,6 +908,10 @@
                 "force_narrow": {
                     "header": "Zijbalk altijd verbergen",
                     "description": "De zijbalk standaard verbergen, vergelijkbaar met de mobiele ervaring."
+                },
+                "vibrate": {
+                    "header": "Trillen",
+                    "description": "Schakel trillingen op dit apparaat in of uit wanneer u apparaten bestuurt."
                 }
             },
             "page-authorize": {
@@ -968,7 +996,7 @@
                                     "data": {
                                         "code": "Twee-factor authenticatie code"
                                     },
-                                    "description": "Open de **{mfa_module_name}** op je apparaat voor de twee-factor authenticatiecode en verifieer je identiteit:"
+                                    "description": "Open de **{mfa_module_name}** op je apparaat om je twee-factor-authenticatiecode te bekijken en verifieer je identiteit:"
                                 }
                             },
                             "error": {
@@ -1031,7 +1059,8 @@
                         "navigate_to": "Navigeer naar {location}",
                         "toggle": "Omschakelen {name}",
                         "call_service": "Roep service {name} aan",
-                        "more_info": "Meer informatie weergeven: {name}"
+                        "more_info": "Meer informatie weergeven: {name}",
+                        "url": "Open venster naar {url_path}"
                     }
                 },
                 "editor": {
@@ -1077,6 +1106,66 @@
                     "edit_lovelace": {
                         "header": "Titel van je Lovelace UI",
                         "explanation": "Deze titel wordt vooral weergegeven in al je weergaven in Lovelace."
+                    },
+                    "card": {
+                        "alarm_panel": {
+                            "available_states": "Beschikbare statussen"
+                        },
+                        "config": {
+                            "required": "Verplicht",
+                            "optional": "Optioneel"
+                        },
+                        "entities": {
+                            "show_header_toggle": "Koptekst weergeven wisselen?"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "define": "Ernst definiëren?",
+                                "green": "Groen",
+                                "red": "Rood",
+                                "yellow": "Geel"
+                            }
+                        },
+                        "glance": {
+                            "columns": "Kolommen"
+                        },
+                        "generic": {
+                            "aspect_ratio": "Beeldverhouding",
+                            "camera_image": "Camera-entiteit",
+                            "camera_view": "Cameraweergave",
+                            "entities": "Entiteiten",
+                            "entity": "Entiteit",
+                            "hold_action": "Actie vasthouden",
+                            "hours_to_show": "Uren om weer te geven",
+                            "icon": "Pictogram",
+                            "icon_height": "Pictogram hoogte",
+                            "image": "Afbeeldingspad",
+                            "maximum": "Maximaal",
+                            "minimum": "Minimum",
+                            "name": "Naam",
+                            "refresh_interval": "Vernieuwingsinterval",
+                            "show_icon": "Pictogram Weergeven?",
+                            "show_name": "Naam weergeven?",
+                            "show_state": "Staat tonen?",
+                            "tap_action": "Tik Actie",
+                            "title": "Titel",
+                            "theme": "Thema",
+                            "unit": "Maat",
+                            "url": "Url"
+                        },
+                        "map": {
+                            "geo_location_sources": "Geolocatiebronnen",
+                            "dark_mode": "Donkere modus?",
+                            "default_zoom": "Standaard zoom",
+                            "source": "Bron"
+                        },
+                        "markdown": {
+                            "content": "Inhoud"
+                        },
+                        "sensor": {
+                            "graph_detail": "Grafiek Detail",
+                            "graph_type": "Grafiektype"
+                        }
                     }
                 },
                 "menu": {
