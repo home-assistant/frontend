@@ -173,6 +173,9 @@ class HaConfigEntryPage extends LitElement {
       .content {
         padding: 4px;
       }
+      p {
+        text-align: center;
+      }
       ha-devices-data-table {
         width: 100%;
       }
