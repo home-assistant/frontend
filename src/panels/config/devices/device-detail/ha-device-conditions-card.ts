@@ -1,7 +1,6 @@
 import { customElement } from "lit-element";
 import {
   DeviceCondition,
-  fetchDeviceConditions,
   localizeDeviceAutomationCondition,
 } from "../../../../data/device_automation";
 
@@ -17,7 +16,7 @@ export class HaDeviceConditionsCard extends HaDeviceAutomationCard<
   protected headerKey = "ui.panel.config.devices.automation.conditions.caption";
 
   constructor() {
-    super(localizeDeviceAutomationCondition, fetchDeviceConditions);
+    super(localizeDeviceAutomationCondition);
   }
 }
 
