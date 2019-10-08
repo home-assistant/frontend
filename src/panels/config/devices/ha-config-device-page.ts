@@ -13,6 +13,7 @@ import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-error-screen";
 import "../ha-config-section";
 
+import "./device-detail/ha-device-card";
 import "./device-detail/ha-device-triggers-card";
 import "./device-detail/ha-device-conditions-card";
 import "./device-detail/ha-device-actions-card";
