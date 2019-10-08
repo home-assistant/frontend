@@ -130,19 +130,19 @@ export class HaDevicesDataTable extends LitElement {
     (narrow: boolean): DataTabelColumnContainer =>
       narrow
         ? {
-            device: {
+            name: {
               title: "Device",
               sortable: true,
               filterKey: "name",
               filterable: true,
               direction: "asc",
-              template: (device: DeviceRowData) => {
+              template: (name, device: DataTabelRowData) => {
                 const battery = device.battery_entity
                   ? this.hass.states[device.battery_entity]
                   : undefined;
                 // Have to work on a nice layout for mobile
                 return html`
-                  ${device.name_by_user || device.name}<br />
+                  ${name}<br />
                   ${device.area} | ${device.integration}<br />
                   ${battery
                     ? html`
@@ -158,7 +158,7 @@ export class HaDevicesDataTable extends LitElement {
             },
           }
         : {
-            device_name: {
+            name: {
               title: "Device",
               sortable: true,
               filterable: true,
@@ -184,7 +184,7 @@ export class HaDevicesDataTable extends LitElement {
               sortable: true,
               filterable: true,
             },
-            battery: {
+            battery_entity: {
               title: "Battery",
               sortable: true,
               type: "numeric",
@@ -219,23 +219,7 @@ export class HaDevicesDataTable extends LitElement {
           this.areas,
           this.domain,
           this.hass.localize
-        ).map((device: DeviceRowData) => {
-          // We don't need a lot of this data for mobile view, but kept it for filtering...
-          const data: DataTabelRowData = {
-            device_name: device.name,
-            id: device.id,
-            manufacturer: device.manufacturer,
-            model: device.model,
-            area: device.area,
-            integration: device.integration,
-          };
-          if (this.narrow) {
-            data.device = device;
-            return data;
-          }
-          data.battery = device.battery_entity;
-          return data;
-        })}
+        )}
         @row-click=${this._handleRowClicked}
       ></ha-data-table>
     `;
