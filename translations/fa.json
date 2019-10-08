@@ -8,6 +8,7 @@
         "mailbox": "صندوق پستی",
         "shopping_list": "لیست خرید",
         "dev-info": "اطلاعات",
+        "developer_tools": "ابزارهای توسعه",
         "calendar": "تقویم"
     },
     "state": {
@@ -299,16 +300,22 @@
                         "title": "خدمات"
                     },
                     "states": {
-                        "title": "ایالت ها"
+                        "title": "وضعیت"
                     },
                     "events": {
                         "title": "رویدادها"
                     },
                     "templates": {
-                        "title": "قالب ها"
+                        "title": "قالب"
                     },
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "info": {
+                        "title": "اطلاعات"
+                    },
+                    "logs": {
+                        "title": "وقایع"
                     }
                 }
             },
@@ -713,6 +720,10 @@
                 },
                 "mfa_setup": {
                     "title_aborted": "لغو شد"
+                },
+                "vibrate": {
+                    "header": "ویبره",
+                    "description": "هنگام کنترل دستگاه، حالت ویبره فعال یا غیرفعال می‌شود."
                 }
             },
             "page-authorize": {
@@ -767,7 +778,7 @@
                                     "data": {
                                         "code": "تایید دو مرحله ای"
                                     },
-                                    "description": "** {mfa_module_name} ** را بر روی دستگاه خود باز کنید تا کد تأیید اعتبار دو نفره خود را ببینید و هویت خود را تأیید کنید:"
+                                    "description": "باز کردن **{mfa_module_name}** * * * در دستگاه خود را برای مشاهده شما دو فاکتور تأیید هویت کد و هویت خود را تایید کنید:"
                                 }
                             },
                             "error": {
@@ -863,6 +874,34 @@
                         "save": "ذخیره",
                         "unsaved_changes": "تغییرات ذخیره نشده",
                         "saved": "ذخیره"
+                    },
+                    "card": {
+                        "generic": {
+                            "maximum": "بیشترین",
+                            "minimum": "کمترین",
+                            "name": "نام",
+                            "refresh_interval": "فاصله رفرش",
+                            "show_icon": "نمایش آیکون؟",
+                            "show_name": "نمایش نام؟",
+                            "show_state": "نمایش وضعیت؟",
+                            "title": "عنوان",
+                            "theme": "زمینه",
+                            "unit": "واحد",
+                            "url": "آدرس"
+                        },
+                        "map": {
+                            "geo_location_sources": "منابع موقعیت یابی",
+                            "dark_mode": "حالت تاریک",
+                            "default_zoom": "بزرگنمایی پیش فرض",
+                            "source": "منبع"
+                        },
+                        "markdown": {
+                            "content": "محتوا"
+                        },
+                        "sensor": {
+                            "graph_detail": "نمودار جزئیات",
+                            "graph_type": "نوع نمودار"
+                        }
                     }
                 },
                 "menu": {

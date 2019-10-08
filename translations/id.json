@@ -765,6 +765,18 @@
                             "abort": {
                                 "not_whitelisted": "Komputer Anda tidak masuk daftar putih."
                             }
+                        },
+                        "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Nama pengguna"
+                                    }
+                                },
+                                "mfa": {
+                                    "description": "Buka ** {mfa_module_name} ** pada perangkat Anda untuk melihat kode otentikasi dua-faktor Anda dan verifikasi identitas Anda:"
+                                }
+                            }
                         }
                     }
                 }

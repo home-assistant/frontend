@@ -554,6 +554,12 @@
                                 },
                                 "device": {
                                     "label": "Apparat"
+                                },
+                                "and": {
+                                    "label": "An"
+                                },
+                                "or": {
+                                    "label": "Oder"
                                 }
                             },
                             "learn_more": "Méi iwwert Konditioune liesen"
@@ -596,7 +602,11 @@
                             "learn_more": "Méi iwwert Aktioune liesen"
                         },
                         "load_error_not_editable": "Nëmmen Automatiounen am automations.yaml kënnen editéiert ginn.",
-                        "load_error_unknown": "Feeler beim luede vun der Automatioun ({err_no})."
+                        "load_error_unknown": "Feeler beim luede vun der Automatioun ({err_no}).",
+                        "description": {
+                            "label": "Beschreiwung",
+                            "placeholder": "Optional Beschreiwung"
+                        }
                     }
                 },
                 "script": {
@@ -754,7 +764,8 @@
                         "unavailable": "(net verfügbar)",
                         "introduction": "Home Assistant hält eng Lëscht vun all Entitéit's ID déi eenzel erkennbar ass a bis elo vum System erkannt gouf. All eenzel vun dësen Entitéite kritt eng ID zougewise welch nëmme fir dës Entitéit reservéiert ass.",
                         "introduction2": "Benotzt d'Lëscht vun den Entitéite fir d'Nimm z'änneren, d'Entitéits ID z'änneren oder d'Entrée aus dem Home Assistant ze läschen. Remarque: Läsche vun der Entitéit aus der Lëscht läscht d'Entitéit selwer net. Fir dës ze läsche follegt dem Link ënnen a läscht et op der Integratiouns Säit.",
-                        "integrations_page": "Integratiouns Säit"
+                        "integrations_page": "Integratiouns Säit",
+                        "show_disabled": "Desaktivéiert Entitéiten uweisen"
                     },
                     "editor": {
                         "unavailable": "Dës Entitéit ass net erreechbar fir de Moment.",
@@ -763,7 +774,9 @@
                         "update": "Aktualiséieren",
                         "enabled_label": "Entitéit aktivéieren",
                         "enabled_cause": "Desaktivéiert duerch {cause}.",
-                        "enabled_description": "Desaktivéiert Entitéiten ginn net am Home Assistant bäigesat."
+                        "enabled_description": "Desaktivéiert Entitéiten ginn net am Home Assistant bäigesat.",
+                        "confirm_delete": "Sécher fir dës Entrée ze läsche?",
+                        "confirm_delete2": "Beim Läsche vun enger Entrée gëtt dës Entitéit net aus dem Home Assistant erausgeholl. Fir dëst ze maache muss dir d'Integratioun '{platform}' aus dem Home Assistant ewech huelen."
                     }
                 },
                 "person": {
@@ -808,7 +821,18 @@
                 },
                 "devices": {
                     "caption": "Apparater",
-                    "description": "Verwalt verbonnen Apparater"
+                    "description": "Verwalt verbonnen Apparater",
+                    "automation": {
+                        "triggers": {
+                            "caption": "Maach eppes wann..."
+                        },
+                        "conditions": {
+                            "caption": "Nëmmen eppes maachen wann..."
+                        },
+                        "actions": {
+                            "caption": "Wann eppes ausgeléist gëtt"
+                        }
+                    }
                 }
             },
             "profile": {
@@ -884,6 +908,10 @@
                 "force_narrow": {
                     "header": "Säiteleescht ëmmer verstoppen",
                     "description": "Dës Optioun verstoppt d'Säiteleescht, esou wéi op engem mobillen Apparat."
+                },
+                "vibrate": {
+                    "header": "Vibréieren",
+                    "description": "Vibratioun op dësem Apparat un oder ausschalte wann aner Apparater gesteiert ginn."
                 }
             },
             "page-authorize": {
@@ -968,11 +996,11 @@
                                     "data": {
                                         "code": "Zwee-Faktor Authentifikatiouns Code"
                                     },
-                                    "description": "Kuckt ären Zwee-Faktor Authentifikatiouns Code am **{mfa_module_name}** op ärem Apparat an iwwerpréift är Identitéit:"
+                                    "description": "Maacht **{mfa_module_name}** op Ärem Apparat op, fir ären 2-Faktor-Authentifikatiouns Code ze kucken an Är Identitéit z'iwwerpréiwen:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Ongëlte Benotzernumm oder Passwuert",
+                                "invalid_auth": "Ongëltege Benotzernumm oder Passwuert",
                                 "invalid_code": "Ongëlten Authentifizéierungs Code"
                             },
                             "abort": {
@@ -1031,7 +1059,8 @@
                         "navigate_to": "Navigéieren zu {location}",
                         "toggle": "{name} ëmschalten",
                         "call_service": "Service {name} opruffen",
-                        "more_info": "méi Informatiounen: {name}"
+                        "more_info": "méi Informatiounen: {name}",
+                        "url": "Fënster opmaachen mat {url_path}"
                     }
                 },
                 "editor": {
@@ -1077,6 +1106,66 @@
                     "edit_lovelace": {
                         "header": "Titel vun ärem Lovelace Benotzer Interface",
                         "explanation": "Dësen Titel gëtt iwwert den Usiichte vu Lovelace ugewisen."
+                    },
+                    "card": {
+                        "alarm_panel": {
+                            "available_states": "Verfügbar Zoustänn"
+                        },
+                        "config": {
+                            "required": "Obligatoresch",
+                            "optional": "Optional"
+                        },
+                        "entities": {
+                            "show_header_toggle": "Titel Schalter uweisen?"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "define": "Schwieregkeetsgrad definéieren?",
+                                "green": "Gréng",
+                                "red": "Roud",
+                                "yellow": "Giel"
+                            }
+                        },
+                        "glance": {
+                            "columns": "Kolonnen"
+                        },
+                        "generic": {
+                            "aspect_ratio": "Säiteverhältnis",
+                            "camera_image": "Kamera Entitéit",
+                            "camera_view": "Kamera Usiicht",
+                            "entities": "Entitéiten",
+                            "entity": "Entitéit",
+                            "hold_action": "Aktioun beim unhalen",
+                            "hours_to_show": "Stonnen uweisen",
+                            "icon": "Ikone",
+                            "icon_height": "Héicht vun der Ikone",
+                            "image": "Wee zum Bild",
+                            "maximum": "Maximum",
+                            "minimum": "Minimum",
+                            "name": "Numm",
+                            "refresh_interval": "Aktualiséierungs Intervall",
+                            "show_icon": "Ikone uweisen?",
+                            "show_name": "Numm uweisen?",
+                            "show_state": "Zoustand uweisen?",
+                            "tap_action": "Aktioun beim tippen",
+                            "title": "Titel",
+                            "theme": "Thema",
+                            "unit": "Eenheet",
+                            "url": "Url"
+                        },
+                        "map": {
+                            "geo_location_sources": "Quell vun der Geolokalisatioun",
+                            "dark_mode": "Däischteren Modus",
+                            "default_zoom": "Standard Zoom",
+                            "source": "Quell"
+                        },
+                        "markdown": {
+                            "content": "Contenu"
+                        },
+                        "sensor": {
+                            "graph_detail": "Detail Diagramm",
+                            "graph_type": "Typ vun Graph."
+                        }
                     }
                 },
                 "menu": {

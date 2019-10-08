@@ -968,11 +968,11 @@
                                     "data": {
                                         "code": "Cod Autentificare in doi pasi"
                                     },
-                                    "description": "Deschide **{mfa_module_name}** pe dispozitivul tau pentru a vedea codul autentificare in doi pasi si a confirma identitatea:"
+                                    "description": "Deschideti **{mfa_module_name}** pe dispozitivul d-voastra pentru a vedea codul de 'two-factor authentication' si a va verifica indentitatea:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Utilizator sau parola invalida",
+                                "invalid_auth": "nume de utilizator sau parola incorecte",
                                 "invalid_code": "Cod invalid pentru autentificare"
                             },
                             "abort": {
