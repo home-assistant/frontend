@@ -43,7 +43,7 @@ import {
 } from "../../../data/device_automation";
 import { compare } from "../../../common/string/compare";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { isValidEntityId } from "../../../common/entity/valid_entity_id";
+import { createValidEntityId } from "../../../common/entity/valid_entity_id";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string;
@@ -236,18 +236,13 @@ export class HaConfigDevicePage extends LitElement {
             newName = name.replace(oldDeviceName, newDeviceName);
           }
 
-          if (
-            renameEntityid &&
-            entity.entity_id.includes(
-              oldDeviceName.toLowerCase().replace(" ", "_")
-            )
-          ) {
-            newEntityId = entity.entity_id.replace(
-              oldDeviceName.toLowerCase().replace(" ", "_"),
-              newDeviceName.toLowerCase().replace(" ", "_")
-            );
-            if (!isValidEntityId(newEntityId)) {
-              newEntityId = null;
+          if (renameEntityid) {
+            const oldSearch = createValidEntityId(oldDeviceName);
+            if (entity.entity_id.includes(oldSearch)) {
+              newEntityId = entity.entity_id.replace(
+                oldSearch,
+                createValidEntityId(newDeviceName)
+              );
             }
           }
 
