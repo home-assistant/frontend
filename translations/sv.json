@@ -968,11 +968,11 @@
                                     "data": {
                                         "code": "Tvåfaktors autentiseringskod"
                                     },
-                                    "description": "Öppna **{mfa_module_name}** på din enhet för att se din tvåfaktors autentiseringskod och verifiera din identitet:"
+                                    "description": "Öppna **{mfa_module_name}** på din enhet för att visa din tvåfaktors autentiseringskod och verifiera din identitet:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Ogiltigt användarnamn eller lösenord",
+                                "invalid_auth": "Felaktigt användarnamn eller lösenord",
                                 "invalid_code": "Ogiltig autentiseringskod"
                             },
                             "abort": {

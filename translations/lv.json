@@ -968,11 +968,11 @@
                                     "data": {
                                         "code": "Divpakāpju Autorizācijas Kods"
                                     },
-                                    "description": "Atveriet **{mfa_module_name}** Jūsu ierīcē, lai apskatītu savu divpakāpju autorizācijas kodu un aptiprinātu savu identitāti:"
+                                    "description": "Savā ierīcē atveriet ** {mfa_module_name} **, lai skatītu divu faktoru autentifikācijas kodu un verificētu savu identitāti:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Nepareizs lietotājvārds un parole",
+                                "invalid_auth": "Nederīgs lietotājvārds vai parole",
                                 "invalid_code": "Nepareizs autorizācijas kods"
                             },
                             "abort": {
