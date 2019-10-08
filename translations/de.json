@@ -884,6 +884,9 @@
                 "force_narrow": {
                     "header": "Verstecke die Seitenleiste immer",
                     "description": "Dies blendet die Seitenleiste standardmäßig aus, ähnlich der Nutzung auf Mobilgeräten."
+                },
+                "vibrate": {
+                    "header": "Vibrieren"
                 }
             },
             "page-authorize": {
