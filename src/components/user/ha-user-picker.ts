@@ -18,7 +18,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { User, fetchUsers } from "../../data/user";
 import { compare } from "../../common/string/compare";
 
-class HaEntityPicker extends LitElement {
+class HaUserPicker extends LitElement {
   public hass?: HomeAssistant;
   @property() public label?: string;
   @property() public value?: string;
@@ -45,7 +45,9 @@ class HaEntityPicker extends LitElement {
           <paper-icon-item data-user-id="">
             No user
           </paper-icon-item>
-          ${this._sortedUsers(this.users).map(
+          ${this._sortedUsers(
+            this.users!.filter((user) => !user.system_generated)
+          ).map(
             (user) => html`
               <paper-icon-item data-user-id=${user.id}>
                 <ha-user-badge .user=${user} slot="item-icon"></ha-user-badge>
@@ -101,4 +103,4 @@ class HaEntityPicker extends LitElement {
   }
 }
 
-customElements.define("ha-user-picker", HaEntityPicker);
+customElements.define("ha-user-picker", HaUserPicker);
