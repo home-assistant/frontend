@@ -899,7 +899,7 @@
                                 }
                             },
                             "error": {
-                                "invalid_auth": "ชื่อผู้ใช้หรือรหัสผ่าน ไม่ถูกต้อง",
+                                "invalid_auth": "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง",
                                 "invalid_code": "Authentication code ไม่ถูกต้อง"
                             },
                             "abort": {

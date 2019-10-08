@@ -809,8 +809,7 @@
                                 "mfa": {
                                     "data": {
                                         "code": "Cod dilysu dwy-ffactor"
-                                    },
-                                    "description": "Agorwch y **{mfa_module_name}** ar eich dyfeis i weld eich cod dilysu dwy-ffactor a chadarnhau eich hunaniaeth"
+                                    }
                                 }
                             },
                             "error": {
