@@ -251,7 +251,8 @@
             "snowy-rainy": "Nevado, lluvioso",
             "sunny": "Soleado",
             "windy": "Ventoso",
-            "windy-variant": "Ventoso"
+            "windy-variant": "Ventoso",
+            "exceptional": "Excepcional"
         },
         "vacuum": {
             "cleaning": "Limpiando",
@@ -501,6 +502,9 @@
                                     "event": "Evento:",
                                     "enter": "Entrar",
                                     "leave": "Salir"
+                                },
+                                "device": {
+                                    "label": "Dispositivo"
                                 }
                             },
                             "learn_more": "Más información sobre los desencadenadores"
@@ -547,6 +551,15 @@
                                     "label": "Zona",
                                     "entity": "Entidad con ubicación",
                                     "zone": "Zona"
+                                },
+                                "device": {
+                                    "label": "Dispositivo"
+                                },
+                                "and": {
+                                    "label": "Y"
+                                },
+                                "or": {
+                                    "label": "O"
                                 }
                             },
                             "learn_more": "Más información sobre las condiciones"
@@ -581,12 +594,19 @@
                                     "label": "Disparar evento",
                                     "event": "Evento",
                                     "service_data": "Datos"
+                                },
+                                "device_id": {
+                                    "label": "Dispositivo"
                                 }
                             },
                             "learn_more": "Más información sobre las acciones"
                         },
                         "load_error_not_editable": "Solo las automatizaciones en automations.yaml son editables.",
-                        "load_error_unknown": "Error al cargar la automatización ({err_no})."
+                        "load_error_unknown": "Error al cargar la automatización ({err_no}).",
+                        "description": {
+                            "label": "Descripción",
+                            "placeholder": "Descripción opcional"
+                        }
                     }
                 },
                 "script": {
@@ -612,6 +632,7 @@
                         "start_network": "Iniciar red",
                         "stop_network": "Detener red",
                         "test_network": "Red de prueba",
+                        "soft_reset": "Reinicio suave",
                         "save_config": "Guardar configuración",
                         "add_node_secure": "Agregar nodo seguro",
                         "add_node": "Agregar nodo",
@@ -742,7 +763,8 @@
                         "unavailable": "(no disponible)",
                         "introduction": "Home Assistant mantiene un registro de todas las entidades que ha visto y que pueden identificarse de manera única. Cada una de estas entidades tendrá un ID de entidad asignado que se reservará solo para esta entidad.",
                         "introduction2": "Utilice el registro de la entidad para reemplazar el nombre, cambiar el ID de la entidad o eliminar la entrada de Home Assistant. Tenga en cuenta que eliminar la entrada del registro de la entidad no eliminará la entidad. Para hacerlo, siga el enlace a continuación y elimínelo de la página de integraciones.",
-                        "integrations_page": "Página de integraciones"
+                        "integrations_page": "Página de integraciones",
+                        "show_disabled": "Mostrar entidades deshabilitadas"
                     },
                     "editor": {
                         "unavailable": "Esta entidad no está disponible actualmente.",
@@ -751,7 +773,9 @@
                         "update": "ACTUALIZAR",
                         "enabled_label": "Habilitar entidad",
                         "enabled_cause": "Deshabilitado por {cause}.",
-                        "enabled_description": "Las entidades deshabilitadas no serán agregadas a Home Assistant."
+                        "enabled_description": "Las entidades deshabilitadas no serán agregadas a Home Assistant.",
+                        "confirm_delete": "¿Estás seguro de que deseas eliminar esta entrada?",
+                        "confirm_delete2": "Eliminar una entrada no eliminará la entidad de Home Assistant. Para hacer esto, deberá eliminar la integración '{plataforma}' de Home Assistant."
                     }
                 },
                 "person": {
@@ -788,7 +812,21 @@
                             "heading": "Administración del servidor",
                             "introduction": "Controle su servidor Home Assistant ... desde Home Assistant.",
                             "restart": "Reiniciar",
-                            "stop": "Detener"
+                            "stop": "Detener",
+                            "confirm_restart": "¿Estás seguro de que quieres reiniciar el Home Assistant?",
+                            "confirm_stop": "¿Estás seguro de que quieres detener Home Assistant?"
+                        }
+                    }
+                },
+                "devices": {
+                    "caption": "Dispositivos",
+                    "description": "Administrar dispositivos conectados",
+                    "automation": {
+                        "triggers": {
+                            "caption": "Haz algo cuando ..."
+                        },
+                        "conditions": {
+                            "caption": "Sólo hacer algo si..."
                         }
                     }
                 }
@@ -866,6 +904,10 @@
                 "force_narrow": {
                     "header": "Ocultar siempre la barra lateral",
                     "description": "Esto ocultará la barra lateral de forma predeterminada, similar a la experiencia móvil."
+                },
+                "vibrate": {
+                    "header": "Vibrar",
+                    "description": "Habilitar o deshabilitar la vibración en este dispositivo al controlar dispositivos."
                 }
             },
             "page-authorize": {
@@ -950,7 +992,7 @@
                                     "data": {
                                         "code": "Código de autenticación de dos factores"
                                     },
-                                    "description": "Abra el **{mfa_module_name}** en su dispositivo para ver su código de autenticación de dos factores y verificar su identidad:"
+                                    "description": "Abra el **{mfa_module_name}** en su dispositivo para ver su código de autenticar de dos factores y verificar su identidad:"
                                 }
                             },
                             "error": {
@@ -1013,7 +1055,8 @@
                         "navigate_to": "Navegue a {location}",
                         "toggle": "Alternar {name}",
                         "call_service": "Servicio de llamadas {name}",
-                        "more_info": "Mostrar más información: {name}"
+                        "more_info": "Mostrar más información: {name}",
+                        "url": "Abrir ventana a {url_path}"
                     }
                 },
                 "editor": {
@@ -1055,6 +1098,63 @@
                         "save": "Guardar",
                         "unsaved_changes": "Cambios no guardados",
                         "saved": "Guardado"
+                    },
+                    "edit_lovelace": {
+                        "header": "Título de tu interfaz de usuario de Lovelace",
+                        "explanation": "Este título se muestra sobre todas tus vistas en Lovelace."
+                    },
+                    "card": {
+                        "alarm_panel": {
+                            "available_states": "Estados disponibles"
+                        },
+                        "config": {
+                            "required": "Requerido",
+                            "optional": "Opcional"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "define": "¿Definir gravedad?",
+                                "green": "Verde",
+                                "red": "Rojo",
+                                "yellow": "Amarillo"
+                            }
+                        },
+                        "glance": {
+                            "columns": "Columnas"
+                        },
+                        "generic": {
+                            "aspect_ratio": "Relación de aspecto",
+                            "camera_image": "Entidad de la cámara",
+                            "entities": "Entidades",
+                            "entity": "Entidad",
+                            "icon": "Icono",
+                            "icon_height": "Altura del icono",
+                            "image": "Ruta de la imagen",
+                            "maximum": "Máximo",
+                            "minimum": "Mínimo",
+                            "name": "Nombre",
+                            "refresh_interval": "Intervalo de actualización",
+                            "show_icon": "¿Mostrar icono?",
+                            "show_name": "¿Mostrar nombre?",
+                            "show_state": "¿Mostrar estado?",
+                            "title": "Título",
+                            "theme": "Tema",
+                            "unit": "Unidad",
+                            "url": "Url"
+                        },
+                        "map": {
+                            "geo_location_sources": "Fuentes de geolocalización",
+                            "dark_mode": "¿Modo oscuro?",
+                            "default_zoom": "Zoom predeterminado",
+                            "source": "Fuente"
+                        },
+                        "markdown": {
+                            "content": "Contenido"
+                        },
+                        "sensor": {
+                            "graph_detail": "Detalle del gráfico",
+                            "graph_type": "Tipo de gráfico"
+                        }
                     }
                 },
                 "menu": {
@@ -1200,7 +1300,9 @@
             "fan": {
                 "speed": "Velocidad",
                 "oscillate": "Oscilar",
-                "direction": "Dirección"
+                "direction": "Dirección",
+                "forward": "Adelante",
+                "reverse": "Invertir"
             },
             "light": {
                 "brightness": "Brillo",
@@ -1313,7 +1415,17 @@
                 "enable_new_entities_description": "Si está deshabilitado, las entidades recién descubiertas no se agregarán automáticamente a Home Assistant."
             },
             "zha_device_info": {
-                "manuf": "por {manufacturer}"
+                "manuf": "por {manufacturer}",
+                "no_area": "Sin área",
+                "services": {
+                    "updateDeviceName": "Establecer un nombre personalizado para este dispositivo en el registro de dispositivos.",
+                    "remove": "Eliminar un dispositivo de la red ZigBee."
+                },
+                "zha_device_card": {
+                    "device_name_placeholder": "Nombre de usuario",
+                    "area_picker_label": "Área",
+                    "update_name_button": "Actualizar Nombre"
+                }
             }
         },
         "auth_store": {

@@ -10,7 +10,7 @@ import "@polymer/paper-icon-button/paper-icon-button-light";
 import { HomeAssistant } from "../../types";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { fireEvent } from "../../common/dom/fire_event";
-import isValidEntityId from "../../common/entity/valid_entity_id";
+import { isValidEntityId } from "../../common/entity/valid_entity_id";
 
 import "./ha-entity-picker";
 // Not a duplicate, type import

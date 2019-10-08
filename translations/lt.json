@@ -93,6 +93,7 @@
             "idle": "Laukimo režimas"
         },
         "climate": {
+            "off": "Išjungta",
             "on": "Įjungta",
             "manual": "Rankinis"
         },
