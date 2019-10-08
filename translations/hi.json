@@ -20,6 +20,9 @@
             "off": "बंद"
         },
         "binary_sensor": {
+            "default": {
+                "off": "बंद"
+            },
             "motion": {
                 "off": "विशद",
                 "on": "अनुसन्धानित"
@@ -58,10 +61,14 @@
                 "on": "खुली"
             }
         },
+        "calendar": {
+            "off": "बंद"
+        },
         "camera": {
             "recording": "रिकॉर्डिंग"
         },
         "climate": {
+            "off": "बंद",
             "heat": "गर्मी",
             "cool": "ठंडा",
             "dry": "सूखा",
