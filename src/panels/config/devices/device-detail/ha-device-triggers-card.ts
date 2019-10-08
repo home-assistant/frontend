@@ -1,7 +1,6 @@
 import { customElement } from "lit-element";
 import {
   DeviceTrigger,
-  fetchDeviceTriggers,
   localizeDeviceAutomationTrigger,
 } from "../../../../data/device_automation";
 
@@ -15,7 +14,7 @@ export class HaDeviceTriggersCard extends HaDeviceAutomationCard<
   protected headerKey = "ui.panel.config.devices.automation.triggers.caption";
 
   constructor() {
-    super(localizeDeviceAutomationTrigger, fetchDeviceTriggers);
+    super(localizeDeviceAutomationTrigger);
   }
 }
 

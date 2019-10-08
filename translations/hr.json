@@ -968,11 +968,11 @@
                                     "data": {
                                         "code": "2-faktor autentifikacijski kod"
                                     },
-                                    "description": "Otvoritw **{mfa_module_name}** na vašem uređaju da vidite vaš kod za 2-faktor autentifikaciju i potvrdite vaš identitet:"
+                                    "description": "Otvorite ** {mfa_module_name} ** na svojem uređaju da biste vidjeli kôd za autentifikaciju s dva faktora i potvrdili svoj identitet:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Pogrešno korisničko ime ili lozinka",
+                                "invalid_auth": "Neispravno korisničko ime ili lozinka",
                                 "invalid_code": "Pogrešan autentifikacijski kod."
                             },
                             "abort": {
@@ -1351,7 +1351,7 @@
                 "services": {
                     "reconfigure": "Ponovno konfiguriaj ZHA uređaj (liječenje uređaja). Upotrijebite ovo ako imate problema s uređajem. Ako je uređaj u pitanju uređaj za bateriju, provjerite je li budan i prihvaća naredbe kada koristite ovu uslugu.",
                     "updateDeviceName": "Postavite prilagođeni naziv za ovaj uređaj u registru uređaja.",
-                    "remove": "Uklonite uređaj iz ZigBee mreže."
+                    "remove": "Uklonite uređaj iz Zigbee mreže."
                 },
                 "zha_device_card": {
                     "device_name_placeholder": "Korisničko ime",

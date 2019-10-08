@@ -554,6 +554,12 @@
                                 },
                                 "device": {
                                     "label": "Naprava"
+                                },
+                                "and": {
+                                    "label": "In"
+                                },
+                                "or": {
+                                    "label": "Ali"
                                 }
                             },
                             "learn_more": "Več o pogojih"
@@ -596,7 +602,11 @@
                             "learn_more": "Več o akcijah"
                         },
                         "load_error_not_editable": "Urejati je mogoče le avtomatizacije v automations.yaml.",
-                        "load_error_unknown": "Napaka pri nalaganju avtomatizacije ( {err_no})."
+                        "load_error_unknown": "Napaka pri nalaganju avtomatizacije ( {err_no}).",
+                        "description": {
+                            "label": "Opis",
+                            "placeholder": "Izbirni opis"
+                        }
                     }
                 },
                 "script": {
@@ -754,7 +764,8 @@
                         "unavailable": "(ni na voljo)",
                         "introduction": "Home Assistant vodi register vseh entitet, ki jih je kdajkoli videl in jih je mogoče enolično identificirati. Vsak od teh entitet ima dodeljen ID entitete, ki bo rezerviran samo za to entiteto.",
                         "introduction2": "Z registrom entitet preglasite ime, spremenite ID entitete ali odstranite vnos iz Home Assistent-a. Opomba, odstranitev vnosa registra entitet ne bo odstranila entitete. Če želite to narediti, sledite spodnji povezavi in jo odstranite s strani za integracijo.",
-                        "integrations_page": "Stran za integracije"
+                        "integrations_page": "Stran za integracije",
+                        "show_disabled": "Pokaži onemogočene subjekte"
                     },
                     "editor": {
                         "unavailable": "Ta entiteta trenutno ni na voljo.",
@@ -763,7 +774,9 @@
                         "update": "POSODOBITEV",
                         "enabled_label": "Omogoči entiteto",
                         "enabled_cause": "Onemogočeno zaradi {cause}.",
-                        "enabled_description": "Onemogočeni subjekti ne bodo dodani v Home Assistant-a."
+                        "enabled_description": "Onemogočeni subjekti ne bodo dodani v Home Assistant-a.",
+                        "confirm_delete": "Ali ste prepričani, da želite izbrisati ta vnos?",
+                        "confirm_delete2": "Če izbrišete vnos, entiteta ne bo odstranjena iz programa Home Assistant. Če želite to narediti, boste morali odstraniti integracijo '{platform}' iz programa Home Assistant."
                     }
                 },
                 "person": {
@@ -808,7 +821,18 @@
                 },
                 "devices": {
                     "caption": "Naprave",
-                    "description": "Upravljajte povezane naprave"
+                    "description": "Upravljajte povezane naprave",
+                    "automation": {
+                        "triggers": {
+                            "caption": "Naredi nekaj, ko ..."
+                        },
+                        "conditions": {
+                            "caption": "Naredite nekaj, samo če ..."
+                        },
+                        "actions": {
+                            "caption": "Ko se nekaj sproži ..."
+                        }
+                    }
                 }
             },
             "profile": {
@@ -884,6 +908,10 @@
                 "force_narrow": {
                     "header": "Vedno skrij stransko vrstico",
                     "description": "To bo privzeto skrilo stransko vrstico, podobno kot pri mobilnih napravah."
+                },
+                "vibrate": {
+                    "header": "Vibriraj",
+                    "description": "V tej napravi omogočite ali onemogočite vibracije pri krmiljenju naprav."
                 }
             },
             "page-authorize": {
@@ -1031,7 +1059,8 @@
                         "navigate_to": "Pojdite na {location}",
                         "toggle": "Preklopi {name}",
                         "call_service": "Kličite storitev {name}",
-                        "more_info": "Pokaži več informacij: {name}"
+                        "more_info": "Pokaži več informacij: {name}",
+                        "url": "Odprite okno za {url_path}"
                     }
                 },
                 "editor": {
@@ -1077,6 +1106,66 @@
                     "edit_lovelace": {
                         "header": "Naslov vašega uporabniškega vmesnika Lovelace",
                         "explanation": "Ta naslov je prikazan nad vsemi vašimi pogledi v Lovelace-u."
+                    },
+                    "card": {
+                        "alarm_panel": {
+                            "available_states": "Stanja na voljo"
+                        },
+                        "config": {
+                            "required": "Obvezno",
+                            "optional": "Neobvezno"
+                        },
+                        "entities": {
+                            "show_header_toggle": "Pokaži preklop glave?"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "define": "Določi resnost?",
+                                "green": "Zelena",
+                                "red": "Rdeča",
+                                "yellow": "Rumena"
+                            }
+                        },
+                        "glance": {
+                            "columns": "Stolpci"
+                        },
+                        "generic": {
+                            "aspect_ratio": "Razmerje Med Širino In Višino",
+                            "camera_image": "Subjekt kamere",
+                            "camera_view": "Pogled kamere",
+                            "entities": "Subjekti",
+                            "entity": "Subjekt",
+                            "hold_action": "dejanje pridržanja",
+                            "hours_to_show": "število ur za prikaz",
+                            "icon": "Ikona",
+                            "icon_height": "Višina ikone",
+                            "image": "Pot slike",
+                            "maximum": "Največ",
+                            "minimum": "Najmanj",
+                            "name": "Ime",
+                            "refresh_interval": "Interval osveževanja",
+                            "show_icon": "Prikaži ikono?",
+                            "show_name": "Prikaži ime?",
+                            "show_state": "Prikaži stanje?",
+                            "tap_action": "Dejanje dotika",
+                            "title": "Naslov",
+                            "theme": "Tema",
+                            "unit": "Enota",
+                            "url": "URL"
+                        },
+                        "map": {
+                            "geo_location_sources": "Geolokacijski viri",
+                            "dark_mode": "Temni način?",
+                            "default_zoom": "Privzeta povečava",
+                            "source": "Vir"
+                        },
+                        "markdown": {
+                            "content": "Vsebina"
+                        },
+                        "sensor": {
+                            "graph_detail": "Podrobnosti grafa",
+                            "graph_type": "Vrsta grafikona"
+                        }
                     }
                 },
                 "menu": {
