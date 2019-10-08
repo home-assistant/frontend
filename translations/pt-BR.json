@@ -554,6 +554,12 @@
                                 },
                                 "device": {
                                     "label": "Dispositivo"
+                                },
+                                "and": {
+                                    "label": "E"
+                                },
+                                "or": {
+                                    "label": "Ou"
                                 }
                             },
                             "learn_more": "Saiba mais sobre condições"
@@ -596,7 +602,11 @@
                             "learn_more": "Saiba mais sobre ações"
                         },
                         "load_error_not_editable": "Somente automações em automations.yaml são editáveis.",
-                        "load_error_unknown": "Erro ao carregar a automação ({err_no})."
+                        "load_error_unknown": "Erro ao carregar a automação ({err_no}).",
+                        "description": {
+                            "label": "Descrição",
+                            "placeholder": "Descrição opcional"
+                        }
                     }
                 },
                 "script": {
@@ -884,6 +894,9 @@
                 "force_narrow": {
                     "header": "Sempre ocultar a barra lateral",
                     "description": "Isto irá ocultar a barra lateral por padrão, semelhante à experiência móvel."
+                },
+                "vibrate": {
+                    "header": "Vibrar"
                 }
             },
             "page-authorize": {
@@ -968,11 +981,11 @@
                                     "data": {
                                         "code": "Duplo fator de Autenticação"
                                     },
-                                    "description": "Abra o **{mfa_module_name}** no seu dispositivo para ver o seu código do duplo fator de autenticação e verifique sua identidade:"
+                                    "description": "Abra o ** {mfa_module_name} ** no seu dispositivo para ver seu código de autenticação de dois fatores e confirmar sua identidade:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Usuário inválido ou senha",
+                                "invalid_auth": "Usuário ou senha inválidos",
                                 "invalid_code": "Código de autenticação inválido"
                             },
                             "abort": {
@@ -1077,6 +1090,55 @@
                     "edit_lovelace": {
                         "header": "Título da sua interface do Lovelace",
                         "explanation": "Este título é mostrado acima de todas as suas visualizações no Lovelace."
+                    },
+                    "card": {
+                        "config": {
+                            "required": "Obrigatório",
+                            "optional": "Opcional"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "green": "Verde",
+                                "red": "Vermelho",
+                                "yellow": "Amarelo"
+                            }
+                        },
+                        "glance": {
+                            "columns": "Colunas"
+                        },
+                        "generic": {
+                            "camera_image": "Entidade da câmera",
+                            "camera_view": "Vista da câmera",
+                            "entities": "Entidades",
+                            "entity": "Entidade",
+                            "hold_action": "Manter Ação",
+                            "hours_to_show": "Horas a Mostrar",
+                            "icon": "Ícone",
+                            "maximum": "Máximo",
+                            "minimum": "Mínimo",
+                            "name": "Nome",
+                            "refresh_interval": "Intervalo de atualização",
+                            "show_icon": "Mostrar Icone?",
+                            "show_name": "Mostrar nome?",
+                            "show_state": "Mostrar Estado?",
+                            "title": "Título",
+                            "theme": "Tema",
+                            "unit": "Unidade",
+                            "url": "URL"
+                        },
+                        "map": {
+                            "geo_location_sources": "Fontes de geolocalização",
+                            "dark_mode": "Modo escuro?",
+                            "default_zoom": "Zoom padrão",
+                            "source": "Origem"
+                        },
+                        "markdown": {
+                            "content": "Conteúdo"
+                        },
+                        "sensor": {
+                            "graph_detail": "Detalhe do gráfico",
+                            "graph_type": "Tipo de gráfico"
+                        }
                     }
                 },
                 "menu": {
