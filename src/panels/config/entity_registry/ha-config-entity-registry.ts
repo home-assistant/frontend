@@ -95,7 +95,7 @@ class HaConfigEntityRegistry extends LitElement {
           template: (enabled) => html`
             <ha-icon
               slot="item-icon"
-              icon=${enabled ? "hass:check-circle-outline" : "hass:cancel"}
+              icon=${enabled ? "hass:check-circle" : "hass:cancel"}
             ></ha-icon>
           `,
         },
@@ -204,6 +204,9 @@ class HaConfigEntityRegistry extends LitElement {
         margin-bottom: 24px;
         margin-top: 0px;
         direction: ltr;
+      }
+      ha-switch {
+        margin-top: 0;
       }
     `;
   }
