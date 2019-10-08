@@ -1,5 +1,5 @@
 // Parse array of entity objects from config
-import isValidEntityId from "../../../common/entity/valid_entity_id";
+import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { EntityConfig } from "../entity-rows/types";
 
 export const processConfigEntities = <T extends EntityConfig>(
