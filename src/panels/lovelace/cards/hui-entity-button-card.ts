@@ -202,13 +202,17 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
   }
 
   private _computeColor(stateObj: HassEntity | LightEntity): string {
-    if (!stateObj.attributes.hs_color) {
+    if (!this._config!.icon_color && !stateObj.attributes.hs_color) {
+      console.log("no color");
       return "";
     }
-    const [hue, sat] = stateObj.attributes.hs_color;
+    const [hue, sat] = this._config!.icon_color || stateObj.attributes.hs_color;
     if (sat <= 10) {
+      console.log("no sat");
       return "";
     }
+    console.log("Hue: " + hue);
+    console.log("Sat: " + sat);
     return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
   }
 

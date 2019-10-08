@@ -42,6 +42,7 @@ export interface EntityButtonCardConfig extends LovelaceCardConfig {
   name?: string;
   show_name?: boolean;
   icon?: string;
+  icon_color?: string;
   show_icon?: boolean;
   theme?: string;
   tap_action?: ActionConfig;
