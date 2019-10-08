@@ -36,6 +36,7 @@ class DialogEntityRegistryDetail extends LitElement {
   @property() private _error?: string;
   @property() private _params?: EntityRegistryDetailDialogParams;
   @property() private _submitting?: boolean;
+  private _origEntityId!: string;
 
   public async showDialog(
     params: EntityRegistryDetailDialogParams
@@ -44,6 +45,7 @@ class DialogEntityRegistryDetail extends LitElement {
     this._error = undefined;
     this._name = this._params.entry.name || "";
     this._platform = this._params.entry.platform;
+    this._origEntityId = this._params.entry.entity_id;
     this._entityId = this._params.entry.entity_id;
     this._disabledBy = this._params.entry.disabled_by;
     await this.updateComplete;
@@ -170,7 +172,7 @@ class DialogEntityRegistryDetail extends LitElement {
   private async _updateEntry(): Promise<void> {
     this._submitting = true;
     try {
-      await updateEntityRegistryEntry(this.hass!, this._entityId, {
+      await updateEntityRegistryEntry(this.hass!, this._origEntityId, {
         name: this._name.trim() || null,
         disabled_by: this._disabledBy,
         new_entity_id: this._entityId.trim(),
