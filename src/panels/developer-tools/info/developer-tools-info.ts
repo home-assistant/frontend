@@ -110,9 +110,8 @@ class HaPanelDevInfo extends LitElement {
         </p>
         <p>
           <a href="${nonDefaultLink}">${nonDefaultLinkText}</a><br />
-          <mwc-button @click="${this._toggleDefaultPage}" raised>
-            ${defaultPageText}
-          </mwc-button>
+          <a href="#" @click="${this._toggleDefaultPage}">${defaultPageText}</a
+          ><br />
         </p>
       </div>
       <div class="content">
