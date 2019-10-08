@@ -645,6 +645,16 @@
                             }
                         },
                         "command_line": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Kullanıcı Adı"
+                                    }
+                                }
+                            },
+                            "error": {
+                                "invalid_auth": "Geçersiz kullanıcı adı ya da parola"
+                            },
                             "abort": {
                                 "login_expired": "Oturum süresi doldu, lütfen tekrar giriş yapın."
                             }

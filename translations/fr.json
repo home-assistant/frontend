@@ -554,6 +554,12 @@
                                 },
                                 "device": {
                                     "label": "Appareil"
+                                },
+                                "and": {
+                                    "label": "Et"
+                                },
+                                "or": {
+                                    "label": "Ou"
                                 }
                             },
                             "learn_more": "En savoir plus sur les conditions"
@@ -596,7 +602,11 @@
                             "learn_more": "En savoir plus sur les actions"
                         },
                         "load_error_not_editable": "Seules les automatisations dans automations.yaml sont modifiables.",
-                        "load_error_unknown": "Erreur lors du chargement de l'automatisation ( {err_no} )."
+                        "load_error_unknown": "Erreur lors du chargement de l'automatisation ( {err_no} ).",
+                        "description": {
+                            "label": "Description",
+                            "placeholder": "Description optionnelle"
+                        }
                     }
                 },
                 "script": {
@@ -754,7 +764,8 @@
                         "unavailable": "(indisponible)",
                         "introduction": "Home Assistant tient un registre de chaque entité qu'il a déjà vu au moins une fois et qui peut être identifié de manière unique. Chacune de ces entités se verra attribuer un identifiant qui sera réservé à cette seule entité.",
                         "introduction2": "Utilisez le registre d'entités pour remplacer le nom, modifier l'ID d'entité ou supprimer l'entrée d'Home Assistant. Remarque: la suppression de l'entrée de registre d'entité ne supprime pas l'entité. Pour ce faire, suivez le lien ci-dessous et supprimez-le de la page des intégrations.",
-                        "integrations_page": "Page des intégrations"
+                        "integrations_page": "Page des intégrations",
+                        "show_disabled": "Afficher les entités désactivées"
                     },
                     "editor": {
                         "unavailable": "Cette entité n'est pas disponible actuellement.",
@@ -763,7 +774,9 @@
                         "update": "METTRE À JOUR",
                         "enabled_label": "Activer l'entité",
                         "enabled_cause": "Désactivé par {cause}.",
-                        "enabled_description": "Les entités désactivées ne seront pas ajoutées à Home Assistant."
+                        "enabled_description": "Les entités désactivées ne seront pas ajoutées à Home Assistant.",
+                        "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette entrée?",
+                        "confirm_delete2": "La suppression d'une entrée ne supprimera pas l'entité de Home Assistant. Pour ce faire, vous devez supprimer l'intégration '{plate-forme}' de Home Assistant."
                     }
                 },
                 "person": {
@@ -808,7 +821,18 @@
                 },
                 "devices": {
                     "caption": "Appareils",
-                    "description": "Gérer les appareils connectés"
+                    "description": "Gérer les appareils connectés",
+                    "automation": {
+                        "triggers": {
+                            "caption": "Faire quelque chose quand ..."
+                        },
+                        "conditions": {
+                            "caption": "Ne faire quelque chose si ..."
+                        },
+                        "actions": {
+                            "caption": "Quand quelque chose est déclenché ..."
+                        }
+                    }
                 }
             },
             "profile": {
@@ -884,6 +908,10 @@
                 "force_narrow": {
                     "header": "Toujours cacher la barre latérale",
                     "description": "Cela masquera la barre latérale par défaut, semblable à l'expérience mobile."
+                },
+                "vibrate": {
+                    "header": "Vibrer",
+                    "description": "Activez ou désactivez les vibrations sur cet appareil lorsque vous contrôlez des appareils."
                 }
             },
             "page-authorize": {
@@ -1031,7 +1059,8 @@
                         "navigate_to": "Accédez à {location}",
                         "toggle": "Activer\/désactiver {name}",
                         "call_service": "Appeler le service {name}",
-                        "more_info": "Afficher plus d'informations: {name}"
+                        "more_info": "Afficher plus d'informations: {name}",
+                        "url": "Ouvrir la fenêtre vers {url_path}."
                     }
                 },
                 "editor": {
@@ -1077,6 +1106,66 @@
                     "edit_lovelace": {
                         "header": "Titre de votre UI Lovelace",
                         "explanation": "Ce titre est affiché au-dessus de toutes vos vues dans Lovelace."
+                    },
+                    "card": {
+                        "alarm_panel": {
+                            "available_states": "États disponibles"
+                        },
+                        "config": {
+                            "required": "Requis",
+                            "optional": "Optionnel"
+                        },
+                        "entities": {
+                            "show_header_toggle": "Afficher le bouton d'en-tête ?"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "define": "Définir la gravité ?",
+                                "green": "Vert",
+                                "red": "Rouge",
+                                "yellow": "Jaune"
+                            }
+                        },
+                        "glance": {
+                            "columns": "Colonnes"
+                        },
+                        "generic": {
+                            "aspect_ratio": "Ratio d'aspect",
+                            "camera_image": "Caméra entité",
+                            "camera_view": "Vue de la caméra",
+                            "entities": "Entités",
+                            "entity": "Entité",
+                            "hold_action": "Appui long",
+                            "hours_to_show": "Heures à montrer",
+                            "icon": "Icône",
+                            "icon_height": "Hauteur de l'icône",
+                            "image": "Chemin de l'image",
+                            "maximum": "Maximum",
+                            "minimum": "Minimum",
+                            "name": "Nom",
+                            "refresh_interval": "Intervalle de rafraîchissement",
+                            "show_icon": "Afficher l'icône ?",
+                            "show_name": "Afficher le nom ?",
+                            "show_state": "Afficher l'état ?",
+                            "tap_action": "Appui court",
+                            "title": "Titre",
+                            "theme": "Thème",
+                            "unit": "Unité",
+                            "url": "Url"
+                        },
+                        "map": {
+                            "geo_location_sources": "Sources de géolocalisation",
+                            "dark_mode": "Mode sombre ?",
+                            "default_zoom": "Zoom par défaut",
+                            "source": "Source"
+                        },
+                        "markdown": {
+                            "content": "Contenu"
+                        },
+                        "sensor": {
+                            "graph_detail": "Détail du graphique",
+                            "graph_type": "Type de graphique"
+                        }
                     }
                 },
                 "menu": {
