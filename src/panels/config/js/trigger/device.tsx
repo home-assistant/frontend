@@ -4,9 +4,14 @@ import "../../../../components/device/ha-device-picker";
 import "../../../../components/device/ha-device-trigger-picker";
 import "../../../../components/ha-form";
 
-import { fetchDeviceTriggerCapabilities } from "../../../../data/device_automation";
+import {
+  fetchDeviceTriggerCapabilities,
+  deviceAutomationsEqual,
+} from "../../../../data/device_automation";
 
 export default class DeviceTrigger extends Component<any, any> {
+  private _origTrigger;
+
   constructor() {
     super();
     this.devicePicked = this.devicePicked.bind(this);
@@ -19,30 +24,28 @@ export default class DeviceTrigger extends Component<any, any> {
     this.setState({ ...this.state, device_id: ev.target.value });
   }
 
-  public async deviceTriggerPicked(ev) {
-    const deviceTrigger = ev.target.value;
-    const capabilities = deviceTrigger.domain
-      ? await fetchDeviceTriggerCapabilities(this.props.hass, deviceTrigger)
-      : null;
-    this.setState({ ...this.state, capabilities });
-    this.props.onChange(this.props.index, deviceTrigger);
+  public deviceTriggerPicked(ev) {
+    let trigger = ev.target.value;
+    if (
+      this._origTrigger &&
+      deviceAutomationsEqual(this._origTrigger, trigger)
+    ) {
+      trigger = this._origTrigger;
+    }
+    this.props.onChange(this.props.index, trigger);
   }
 
   /* eslint-disable camelcase */
-  public render({ trigger, hass }, { device_id }) {
+  public render({ trigger, hass }, { device_id, capabilities }) {
     if (device_id === undefined) {
       device_id = trigger.device_id;
     }
-    let extraFieldsData = {};
-    if (this.state.capabilities && this.state.capabilities.extra_fields) {
-      this.state.capabilities.extra_fields.forEach(
-        (item) =>
-          (extraFieldsData = {
-            ...extraFieldsData,
-            [item.name]: this.props.trigger[item.name],
+    const extraFieldsData =
+      capabilities && capabilities.extra_fields
+        ? capabilities.extra_fields.map((item) => {
+            return { [item.name]: this.props.trigger[item.name] };
           })
-      );
-    }
+        : undefined;
 
     return (
       <div>
@@ -59,15 +62,12 @@ export default class DeviceTrigger extends Component<any, any> {
           hass={hass}
           label="Trigger"
         />
-        {this.state.capabilities && this.state.capabilities.extra_fields && (
+        {extraFieldsData && (
           <ha-form
-            data={extraFieldsData}
+            data={Object.assign({}, ...extraFieldsData)}
             onData-changed={this._extraFieldsChanged}
             schema={this.state.capabilities.extra_fields}
-            // error={step.errors} // TODO
             computeLabel={this._extraFieldsComputeLabelCallback(hass.localize)}
-            computeSuffix={this._extraFieldsComputeSuffixCallback()}
-            // computeError={this._extraFieldsComputeErrorCallback} // TODO
           />
         )}
       </div>
@@ -75,14 +75,27 @@ export default class DeviceTrigger extends Component<any, any> {
   }
 
   public componentDidMount() {
-    const hass = this.props.hass;
+    if (!this.state.capabilities) {
+      this._getCapabilities();
+    }
+    if (this.props.trigger) {
+      this._origTrigger = this.props.trigger;
+    }
+  }
+
+  public componentDidUpdate(prevProps) {
+    if (prevProps.trigger !== this.props.trigger) {
+      this._getCapabilities();
+    }
+  }
+
+  private async _getCapabilities() {
     const trigger = this.props.trigger;
 
-    if (!this.state.capabilities && trigger.domain) {
-      fetchDeviceTriggerCapabilities(hass, trigger).then((capabilities) => {
-        this.setState({ ...this.state, capabilities });
-      });
-    }
+    const capabilities = trigger.domain
+      ? await fetchDeviceTriggerCapabilities(this.props.hass, trigger)
+      : null;
+    this.setState({ ...this.state, capabilities });
   }
 
   private _extraFieldsChanged(ev) {
@@ -106,17 +119,6 @@ export default class DeviceTrigger extends Component<any, any> {
           schema.name
         }`
       ) || schema.name;
-  }
-
-  private _extraFieldsComputeSuffixCallback() {
-    // Returns a callback for ha-form to calculate suffixes per schema object
-    return (schema) => {
-      let description = "";
-      if (schema.description) {
-        description = schema.description.unit_of_measurement || "";
-      }
-      return description;
-    };
   }
 }
 
