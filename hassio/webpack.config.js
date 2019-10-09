@@ -11,39 +11,6 @@ const isCI = process.env.CI === "true";
 const chunkFilename = isProdBuild ? "chunk.[chunkhash].js" : "[name].chunk.js";
 const latestBuild = false;
 
-const rules = [
-  {
-    exclude: [config.nodeDir],
-    test: /\.ts$/,
-    use: [
-      {
-        loader: "ts-loader",
-        options: {
-          compilerOptions: latestBuild
-            ? { noEmit: false }
-            : {
-                target: "es5",
-                noEmit: false,
-              },
-        },
-      },
-    ],
-  },
-  {
-    test: /\.(html)$/,
-    use: {
-      loader: "html-loader",
-      options: {
-        exportAsEs6Default: true,
-      },
-    },
-  },
-];
-
-if (!latestBuild) {
-  rules.push(babelLoaderConfig({ latestBuild }));
-}
-
 module.exports = {
   mode: isProdBuild ? "production" : "development",
   devtool: isProdBuild ? "source-map" : "inline-source-map",
@@ -51,7 +18,18 @@ module.exports = {
     entrypoint: "./src/entrypoint.js",
   },
   module: {
-    rules,
+    rules: [
+      babelLoaderConfig({ latestBuild }),
+      {
+        test: /\.(html)$/,
+        use: {
+          loader: "html-loader",
+          options: {
+            exportAsEs6Default: true,
+          },
+        },
+      },
+    ],
   },
   optimization: webpackBase.optimization(latestBuild),
   plugins: [
