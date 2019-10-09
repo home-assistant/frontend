@@ -5,6 +5,7 @@ export interface EntityConfig {
   type?: string;
   name?: string;
   icon?: string;
+  icon_color?: string;
   image?: string;
 }
 export interface EntityFilterEntityConfig extends EntityConfig {

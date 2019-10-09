@@ -28,6 +28,7 @@ import { longPress } from "../common/directives/long-press-directive";
 import { handleClick } from "../common/handle-click";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { EntityButtonCardConfig } from "./types";
+import { computeColor } from "../../../common/entity/compute_color";
 
 @customElement("hui-entity-button-card")
 class HuiEntityButtonCard extends LitElement implements LovelaceCard {
@@ -130,7 +131,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
                 .icon="${this._config.icon || stateIcon(stateObj)}"
                 style="${styleMap({
                   filter: this._computeBrightness(stateObj),
-                  color: this._computeColor(stateObj),
+                  color: computeColor(stateObj, this._config.icon_color),
                   height: this._config.icon_height
                     ? this._config.icon_height
                     : "auto",
@@ -199,17 +200,6 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     }
     const brightness = stateObj.attributes.brightness;
     return `brightness(${(brightness + 245) / 5}%)`;
-  }
-
-  private _computeColor(stateObj: HassEntity | LightEntity): string {
-    if (!this._config!.icon_color && !stateObj.attributes.hs_color) {
-      return "";
-    }
-    const [hue, sat] = this._config!.icon_color || stateObj.attributes.hs_color;
-    if (sat <= 10) {
-      return "";
-    }
-    return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
   }
 
   private _handleTap() {

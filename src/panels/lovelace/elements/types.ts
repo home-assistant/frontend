@@ -23,6 +23,7 @@ export interface IconElementConfig extends LovelaceElementConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   icon: string;
+  icon_color?: string;
 }
 
 export interface ImageElementConfig extends LovelaceElementConfig {
@@ -53,6 +54,7 @@ export interface StateIconElementConfig extends LovelaceElementConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   icon?: string;
+  icon_color?: string;
 }
 
 export interface StateLabelElementConfig extends LovelaceElementConfig {

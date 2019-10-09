@@ -21,6 +21,7 @@ class StateBadge extends LitElement {
   public hass?: HomeAssistant;
   @property() public stateObj?: HassEntity;
   @property() public overrideIcon?: string;
+  @property() public overrideIconColor?: string;
   @property() public overrideImage?: string;
   @query("ha-icon") private _icon!: HaIcon;
 
@@ -67,7 +68,9 @@ class StateBadge extends LitElement {
         hostStyle.backgroundImage = `url(${imageUrl})`;
         iconStyle.display = "none";
       } else {
-        if (stateObj.attributes.hs_color) {
+        if (this.overrideIconColor) {
+          iconStyle.color = this.overrideIconColor;
+        } else if (stateObj.attributes.hs_color) {
           const hue = stateObj.attributes.hs_color[0];
           const sat = stateObj.attributes.hs_color[1];
           if (sat > 10) {

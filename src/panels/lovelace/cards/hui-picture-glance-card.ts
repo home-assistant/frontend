@@ -27,6 +27,8 @@ import { longPress } from "../common/directives/long-press-directive";
 import { processConfigEntities } from "../common/process-config-entities";
 import { handleClick } from "../common/handle-click";
 import { PictureGlanceCardConfig, ConfigEntity } from "./types";
+import { styleMap } from "lit-html/directives/style-map";
+import { computeColor } from "../../../common/entity/compute_color";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 
@@ -207,6 +209,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           this.hass!.language
         )}
           `}"
+        style=${styleMap({
+          color: computeColor(stateObj, entityConf.icon_color),
+        })}
       ></ha-icon>
     `;
   }

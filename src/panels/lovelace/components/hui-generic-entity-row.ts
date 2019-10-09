@@ -52,6 +52,7 @@ class HuiGenericEntityRow extends LitElement {
         .stateObj=${stateObj}
         .overrideIcon=${this.config.icon}
         .overrideImage=${this.config.image}
+        .overrideIconColor=${this.config.icon_color}
       ></state-badge>
       <div class="flex">
         <div class="info">

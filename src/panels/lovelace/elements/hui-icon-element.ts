@@ -15,6 +15,8 @@ import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
 import { LovelaceElement, IconElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
+import { styleMap } from "lit-html/directives/style-map";
+import { computeColor } from "../../../common/entity/compute_color";
 
 @customElement("hui-icon-element")
 export class HuiIconElement extends LitElement implements LovelaceElement {
@@ -41,6 +43,9 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
         @ha-click="${this._handleTap}"
         @ha-hold="${this._handleHold}"
         .longPress="${longPress()}"
+        style=${styleMap({
+          color: computeColor(undefined, this._config.icon_color),
+        })}
       ></ha-icon>
     `;
   }
