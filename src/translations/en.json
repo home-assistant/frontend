@@ -737,7 +737,12 @@
               "type_select": "Trigger type",
               "type": {
                 "device": {
-                  "label": "Device"
+                  "label": "Device",
+                  "extra_fields": {
+                    "above": "Above",
+                    "below": "Below",
+                    "for": "Duration"
+                  }
                 },
                 "event": {
                   "label": "Event",
