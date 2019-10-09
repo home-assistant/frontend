@@ -36,8 +36,9 @@ class HaForm extends EventsMixin(PolymerElement) {
             schema="[[item]]"
             error="[[_getValue(error, item)]]"
             on-data-changed="_valueChanged"
-            compute-label="[[computeLabel]]"
             compute-error="[[computeError]]"
+            compute-label="[[computeLabel]]"
+            compute-suffix="[[computeSuffix]]"
           ></ha-form>
         </template>
       </template>
@@ -126,7 +127,9 @@ class HaForm extends EventsMixin(PolymerElement) {
             required="[[schema.required]]"
             auto-validate="[[schema.required]]"
             error-message="Required"
-          ></paper-input>
+          >
+            <span suffix="" slot="suffix">[[computeSuffix(schema)]]</span>
+          </paper-input>
         </template>
 
         <template
@@ -173,14 +176,24 @@ class HaForm extends EventsMixin(PolymerElement) {
       schema: Object,
       error: Object,
 
-      // A function that will computes the label to be displayed for a given
+      // A function that computes the label to be displayed for a given
       // schema object.
       computeLabel: {
         type: Function,
         value: () => (schema) => schema && schema.name,
       },
 
-      // A function that will computes an error message to be displayed for a
+      // A function that computes the suffix to be displayed for a given
+      // schema object.
+      computeSuffix: {
+        type: Function,
+        value: () => (schema) =>
+          schema &&
+          schema.description &&
+          schema.description.unit_of_measurement,
+      },
+
+      // A function that computes an error message to be displayed for a
       // given error ID, and relevant schema object
       computeError: {
         type: Function,
