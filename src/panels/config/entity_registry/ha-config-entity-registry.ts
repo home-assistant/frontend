@@ -32,9 +32,45 @@ import { HaSwitch } from "../../../components/ha-switch";
 import memoize from "memoize-one";
 // tslint:disable-next-line
 import {
-  DataTabelColumnContainer,
+  DataTableColumnContainer,
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
+
+const COLUMNS: DataTableColumnContainer = {
+  icon: {
+    title: "",
+    type: "icon",
+    template: (icon) => html`
+      <ha-icon slot="item-icon" .icon=${icon}></ha-icon>
+    `,
+  },
+  name: {
+    title: "Name",
+    sortable: true,
+    filterable: true,
+    direction: "asc",
+  },
+  entity_id: {
+    title: "Entity id",
+    sortable: true,
+    filterable: true,
+  },
+  platform: {
+    title: "Platform",
+    sortable: true,
+    filterable: true,
+  },
+  disabled_by: {
+    title: "Enabled",
+    type: "icon",
+    template: (disabledBy) => html`
+      <ha-icon
+        slot="item-icon"
+        icon=${disabledBy ? "hass:cancel" : "hass:check-circle"}
+      ></ha-icon>
+    `,
+  },
+};
 
 class HaConfigEntityRegistry extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -60,46 +96,6 @@ class HaConfigEntityRegistry extends LitElement {
             this.hass!.localize("state.default.unavailable"),
         };
       })
-  );
-
-  private _columns = memoize(
-    (): DataTabelColumnContainer => {
-      return {
-        icon: {
-          title: "",
-          type: "icon",
-          template: (icon) => html`
-            <ha-icon slot="item-icon" .icon=${icon}></ha-icon>
-          `,
-        },
-        name: {
-          title: "Name",
-          sortable: true,
-          filterable: true,
-          direction: "asc",
-        },
-        entity_id: {
-          title: "Entity id",
-          sortable: true,
-          filterable: true,
-        },
-        platform: {
-          title: "Platform",
-          sortable: true,
-          filterable: true,
-        },
-        disabled_by: {
-          title: "Enabled",
-          type: "icon",
-          template: (disabledBy) => html`
-            <ha-icon
-              slot="item-icon"
-              icon=${disabledBy ? "hass:cancel" : "hass:check-circle"}
-            ></ha-icon>
-          `,
-        },
-      };
-    }
   );
 
   public disconnectedCallback() {
@@ -150,7 +146,7 @@ class HaConfigEntityRegistry extends LitElement {
             >
           </span>
           <ha-data-table
-            .columns=${this._columns()}
+            .columns=${COLUMNS}
             .data=${this._filteredEntities(this._entities, this._showDisabled)}
             @row-click=${this._openEditEntry}
             id="entity_id"
@@ -202,7 +198,7 @@ class HaConfigEntityRegistry extends LitElement {
       }
       ha-data-table {
         margin-bottom: 24px;
-        margin-top: -16px;
+        margin-top: 0px;
       }
       ha-switch {
         margin-top: 16px;
