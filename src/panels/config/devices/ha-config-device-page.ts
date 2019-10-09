@@ -13,6 +13,7 @@ import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-error-screen";
 import "../ha-config-section";
 
+import "./device-detail/ha-device-card";
 import "./device-detail/ha-device-triggers-card";
 import "./device-detail/ha-device-conditions-card";
 import "./device-detail/ha-device-actions-card";
@@ -144,9 +145,6 @@ export class HaConfigDevicePage extends LitElement {
             .areas=${this.areas}
             .devices=${this.devices}
             .device=${device}
-            .entities=${this.entities}
-            hide-settings
-            hide-entities
           ></ha-device-card>
 
           ${entities.length
