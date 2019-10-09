@@ -1368,6 +1368,8 @@
             "header": "Card Configuration",
             "pick_card": "Pick the card you want to add.",
             "toggle_editor": "Toggle Editor",
+            "show_visual_editor": "Show Visual Editor",
+            "show_code_editor": "Show Code Editor",
             "add": "Add Card",
             "edit": "Edit",
             "delete": "Delete",
