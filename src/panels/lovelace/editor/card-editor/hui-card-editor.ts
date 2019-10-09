@@ -145,9 +145,12 @@ export class HuiCardEditor extends LitElement {
           <mwc-button
             @click=${this.toggleMode}
             ?disabled=${this._warning || this._error}
-            ?unelevated=${this._GUImode === false}
           >
-            <ha-icon icon="mdi:code-braces"></ha-icon>
+            ${this.hass!.localize(
+              this._GUImode
+                ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+            )}
           </mwc-button>
         </div>
       </div>
