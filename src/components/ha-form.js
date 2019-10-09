@@ -187,7 +187,10 @@ class HaForm extends EventsMixin(PolymerElement) {
       // schema object.
       computeSuffix: {
         type: Function,
-        value: () => () => "abc",
+        value: () => (schema) =>
+          schema &&
+          schema.description &&
+          schema.description.unit_of_measurement,
       },
 
       // A function that computes an error message to be displayed for a
