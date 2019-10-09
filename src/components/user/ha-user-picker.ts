@@ -25,10 +25,16 @@ class HaUserPicker extends LitElement {
   @property() public users?: User[];
 
   private _sortedUsers = memoizeOne((users?: User[]) => {
-    if (!users || users.length === 1) {
-      return users || [];
+    if (!users) {
+      return [];
     }
-    const sorted = [...users];
+
+    const filteredUsers = users!.filter((user) => !user.system_generated);
+
+    if (filteredUsers.length === 1) {
+      return filteredUsers;
+    }
+    const sorted = [...filteredUsers];
     sorted.sort((a, b) => compare(a.name, b.name));
     return sorted;
   });
@@ -45,9 +51,7 @@ class HaUserPicker extends LitElement {
           <paper-icon-item data-user-id="">
             No user
           </paper-icon-item>
-          ${this._sortedUsers(
-            this.users!.filter((user) => !user.system_generated)
-          ).map(
+          ${this._sortedUsers(this.users).map(
             (user) => html`
               <paper-icon-item data-user-id=${user.id}>
                 <ha-user-badge .user=${user} slot="item-icon"></ha-user-badge>
