@@ -85,8 +85,8 @@ class LovelaceFullConfigEditor extends LitElement {
             .autofocus=${true}
             .rtl=${computeRTL(this.hass)}
             .hass="${this.hass}"
-            @yaml-changed="${this._yamlChanged}"
-            @yaml-save="${this._handleSave}"
+            @value-changed="${this._yamlChanged}"
+            @editor-save="${this._handleSave}"
           >
           </ha-yaml-editor>
         </div>

@@ -95,7 +95,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
         <ha-yaml-editor
           value="[[_stateAttributes]]"
           error="[[!validJSON]]"
-          on-yaml-changed="_yamlChanged"
+          on-value-changed="_yamlChanged"
         ></ha-yaml-editor>
         <mwc-button on-click="handleSetState" disabled="[[!validJSON]]" raised
           >Set State</mwc-button

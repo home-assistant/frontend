@@ -72,7 +72,7 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
             <ha-yaml-editor
               value="[[eventData]]"
               error="[[!validJSON]]"
-              on-yaml-changed="_yamlChanged"
+              on-value-changed="_yamlChanged"
             ></ha-yaml-editor>
             <mwc-button on-click="fireEvent" raised disabled="[[!validJSON]]"
               >Fire Event</mwc-button

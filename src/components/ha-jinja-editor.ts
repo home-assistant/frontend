@@ -1,16 +1,16 @@
 import { HaCodeEditor } from "./ha-code-editor";
-import "codemirror/mode/yaml/yaml";
+import "codemirror/mode/jinja2/jinja2";
 import { customElement } from "lit-element";
 
-@customElement("ha-yaml-editor")
-export class HaYamlEditor extends HaCodeEditor {
+@customElement("ha-jinja-editor")
+export class HaJinjaEditor extends HaCodeEditor {
   public constructor() {
-    super("yaml");
+    super("jinja2");
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-yaml-editor": HaYamlEditor;
+    "ha-jinja-editor": HaJinjaEditor;
   }
 }

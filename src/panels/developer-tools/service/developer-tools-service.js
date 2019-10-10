@@ -117,7 +117,7 @@ class HaPanelDevService extends PolymerElement {
           <ha-yaml-editor
             value="[[serviceData]]"
             error="[[!validJSON]]"
-            on-yaml-changed="_yamlChanged"
+            on-value-changed="_yamlChanged"
           ></ha-yaml-editor>
           <mwc-button on-click="_callService" raised disabled="[[!validJSON]]">
             Call Service

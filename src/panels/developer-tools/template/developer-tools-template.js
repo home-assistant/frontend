@@ -1,9 +1,9 @@
-import "@polymer/paper-input/paper-textarea";
 import "@polymer/paper-spinner/paper-spinner";
 import { timeOut } from "@polymer/polymer/lib/utils/async";
 import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import "../../../components/ha-jinja-editor";
 
 import "../../../resources/ha-style";
 
@@ -85,11 +85,13 @@ class HaPanelDevTemplate extends PolymerElement {
               >
             </li>
           </ul>
-          <paper-textarea
-            label="Template editor"
-            value="{{template}}"
-            autofocus
-          ></paper-textarea>
+          <p>Template editor</p>
+          <ha-jinja-editor
+            value="[[template]]"
+            error="[[error]]"
+            autofocus="[[true]]"
+            on-value-changed="templateChanged"
+          ></ha-jinja-editor>
         </div>
 
         <div class="render-pane">
@@ -144,7 +146,6 @@ For loop example:
   {{ state.name | lower }} is {{state.state_with_unit}}
 {%- endfor %}.`,
         /* eslint-enable max-len */
-        observer: "templateChanged",
       },
 
       processed: {
@@ -162,7 +163,8 @@ For loop example:
     return error ? "error rendered" : "rendered";
   }
 
-  templateChanged() {
+  templateChanged(ev) {
+    this.template = ev.detail.value;
     if (this.error) {
       this.error = false;
     }

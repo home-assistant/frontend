@@ -82,7 +82,7 @@ export default class YAMLTextArea extends Component<any, any> {
           style={style}
           value={value}
           error={isValid === false}
-          onyaml-changed={this.onChange}
+          onvalue-changed={this.onChange}
         />
       </div>
     );
