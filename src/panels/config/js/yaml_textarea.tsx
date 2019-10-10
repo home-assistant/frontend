@@ -14,7 +14,8 @@ const isEmpty = (obj: object) => {
 };
 
 export default class YAMLTextArea extends Component<any, any> {
-  public yamlEditor!: HaYamlEditor;
+  private _yamlEditor!: HaYamlEditor;
+
   constructor(props) {
     super(props);
 
@@ -58,25 +59,17 @@ export default class YAMLTextArea extends Component<any, any> {
       isValid,
     });
     if (isValid) {
-      this.yamlEditor.style.removeProperty(
-        "--paper-input-container-focus-color"
-      );
       this.props.onChange(parsed);
-    } else {
-      this.yamlEditor.style.setProperty(
-        "--paper-input-container-focus-color",
-        "red"
-      );
     }
   }
 
   public componentDidMount() {
     setTimeout(() => {
-      this.yamlEditor.codemirror.refresh();
+      this._yamlEditor.codemirror.refresh();
     }, 1);
   }
 
-  public render({ label }, { value }) {
+  public render({ label }, { value, isValid }) {
     const style: any = {
       minWidth: 300,
       width: "100%",
@@ -85,12 +78,15 @@ export default class YAMLTextArea extends Component<any, any> {
       <div>
         <p>{label}</p>
         <ha-yaml-editor
-          ref={(yamlEditor) => (this.yamlEditor = yamlEditor)}
+          ref={this._storeYamlEditorRef}
           style={style}
           value={value}
+          error={isValid === false}
           onyaml-changed={this.onChange}
         />
       </div>
     );
   }
+
+  private _storeYamlEditorRef = (yamlEditor) => (this._yamlEditor = yamlEditor);
 }

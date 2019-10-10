@@ -3,9 +3,7 @@ import CodeMirror from "codemirror";
 import "codemirror/mode/yaml/yaml";
 // @ts-ignore
 import codeMirrorCSS from "codemirror/lib/codemirror.css";
-import { HomeAssistant } from "../types";
 import { fireEvent } from "../common/dom/fire_event";
-import { computeRTL } from "../common/util/compute_rtl";
 import { customElement } from "lit-element";
 
 declare global {
@@ -19,9 +17,9 @@ declare global {
 
 @customElement("ha-yaml-editor")
 export class HaYamlEditor extends HTMLElement {
-  public codemirror!: any;
+  public codemirror?: any;
   public autofocus = false;
-  private _hass?: HomeAssistant;
+  public rtl = false;
   private _value: string;
 
   public constructor() {
@@ -46,6 +44,9 @@ export class HaYamlEditor extends HTMLElement {
                 background-color: var(--paper-dialog-background-color, var(--primary-background-color));
                 transition: 0.2s ease border-right;
               }
+              :host(.error-state) .CodeMirror-gutters {
+                border-color: var(--error-state-color, red);
+              }
               .CodeMirror-focused .CodeMirror-gutters {
                 border-right: 2px solid var(--paper-input-container-focus-color, var(--primary-color));
               }
@@ -62,13 +63,6 @@ export class HaYamlEditor extends HTMLElement {
             </style>`;
   }
 
-  set hass(hass: HomeAssistant) {
-    this._hass = hass;
-    if (this._hass) {
-      this.setScrollBarDirection();
-    }
-  }
-
   set value(value: string) {
     if (this.codemirror) {
       if (value !== this.codemirror.getValue()) {
@@ -82,12 +76,18 @@ export class HaYamlEditor extends HTMLElement {
     return this.codemirror.getValue();
   }
 
+  set error(error: boolean) {
+    this.classList.toggle("error-state", error);
+  }
+
   get hasComments(): boolean {
     return this.shadowRoot!.querySelector("span.cm-comment") ? true : false;
   }
 
   public connectedCallback(): void {
     if (!this.codemirror) {
+      console.log(this.rtl);
+      console.log(this.autofocus);
       this.codemirror = CodeMirror(
         (this.shadowRoot as unknown) as HTMLElement,
         {
@@ -101,10 +101,7 @@ export class HaYamlEditor extends HTMLElement {
             Tab: "indentMore",
             "Shift-Tab": "indentLess",
           },
-          gutters:
-            this._hass && computeRTL(this._hass!)
-              ? ["rtl-gutter", "CodeMirror-linenumbers"]
-              : [],
+          gutters: this.rtl ? ["rtl-gutter", "CodeMirror-linenumbers"] : [],
         }
       );
       this.setScrollBarDirection();
@@ -119,13 +116,7 @@ export class HaYamlEditor extends HTMLElement {
   }
 
   private setScrollBarDirection(): void {
-    if (!this.codemirror || !this._hass) {
-      return;
-    }
-
-    this.codemirror
-      .getWrapperElement()
-      .classList.toggle("rtl", computeRTL(this._hass!));
+    this.codemirror.getWrapperElement().classList.toggle("rtl", this.rtl);
   }
 }
 

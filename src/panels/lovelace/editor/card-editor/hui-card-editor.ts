@@ -15,6 +15,7 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { LovelaceCardEditor } from "../../types";
 import { getCardElementTag } from "../../common/get-card-element-tag";
+import { computeRTL } from "../../../../common/util/compute_rtl";
 
 import "../../../../components/ha-yaml-editor";
 // This is not a duplicate import, one is for types, one is for element.
@@ -43,7 +44,7 @@ export interface UIConfigChangedEvent extends Event {
 
 @customElement("hui-card-editor")
 export class HuiCardEditor extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property() public hass!: HomeAssistant;
 
   @property() private _yaml?: string;
   @property() private _config?: LovelaceCardConfig;
@@ -122,7 +123,7 @@ export class HuiCardEditor extends LitElement {
               <div class="yaml-editor">
                 <ha-yaml-editor
                   autofocus
-                  .hass=${this.hass}
+                  .rtl=${computeRTL(this.hass)}
                   .value=${this.yaml}
                   @yaml-changed=${this._handleYAMLChanged}
                 ></ha-yaml-editor>

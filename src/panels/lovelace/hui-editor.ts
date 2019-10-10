@@ -19,6 +19,7 @@ import "../../components/ha-yaml-editor";
 // tslint:disable-next-line
 import { HaYamlEditor } from "../../components/ha-yaml-editor";
 import { HomeAssistant } from "../../types";
+import { computeRTL } from "../../common/util/compute_rtl";
 
 const lovelaceStruct = struct.interface({
   title: "string?",
@@ -27,7 +28,7 @@ const lovelaceStruct = struct.interface({
 });
 
 class LovelaceFullConfigEditor extends LitElement {
-  public hass?: HomeAssistant;
+  public hass!: HomeAssistant;
   public lovelace?: Lovelace;
   public closeEditor?: () => void;
   private _saving?: boolean;
@@ -82,6 +83,7 @@ class LovelaceFullConfigEditor extends LitElement {
         <div class="content">
           <ha-yaml-editor
             autofocus
+            .rtl=${computeRTL(this.hass)}
             .hass="${this.hass}"
             @yaml-changed="${this._yamlChanged}"
             @yaml-save="${this._handleSave}"
