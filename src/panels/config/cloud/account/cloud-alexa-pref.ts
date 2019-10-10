@@ -73,20 +73,24 @@ export class CloudAlexaPref extends LitElement {
           >
           ${alexa_enabled
             ? html`
-                <h3>
-                  ${this.hass!.localize(
-                    "ui.panel.config.cloud.account.alexa.enable_state_reporting"
-                  )}
-                </h3>
+                <div class="state-reporting">
+                  <h3>
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.account.alexa.enable_state_reporting"
+                    )}
+                  </h3>
+                  <div class="state-reporting-switch">
+                    <ha-switch
+                      .checked=${alexa_report_state}
+                      @change=${this._reportToggleChanged}
+                    ></ha-switch>
+                  </div>
+                </div>
                 <p>
                   ${this.hass!.localize(
                     "ui.panel.config.cloud.account.alexa.info_state_reporting"
                   )}
                 </p>
-                <ha-switch
-                  .checked=${alexa_report_state}
-                  @change=${this._reportToggleChanged}
-                ></ha-switch>
               `
             : ""}
         </div>
@@ -176,11 +180,21 @@ export class CloudAlexaPref extends LitElement {
       .spacer {
         flex-grow: 1;
       }
-      h3 {
-        margin-bottom: 0;
+      .state-reporting {
+        display: flex;
+        margin-top: 1.5em;
       }
-      h3 + p {
+      .state-reporting + p {
         margin-top: 0.5em;
+      }
+      .state-reporting h3 {
+        flex-grow: 1;
+        margin: 0;
+      }
+      .state-reporting-switch {
+        margin-top: 0.25em;
+        margin-right: 7px;
+        margin-left: 0.5em;
       }
     `;
   }
