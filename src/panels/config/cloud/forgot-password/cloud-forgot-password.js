@@ -7,11 +7,12 @@ import "../../../../components/buttons/ha-progress-button";
 import "../../../../layouts/hass-subpage";
 import "../../../../resources/ha-style";
 import { EventsMixin } from "../../../../mixins/events-mixin";
-
+import LocalizeMixin from "../../../../mixins/localize-mixin";
 /*
  * @appliesMixin EventsMixin
+ * @appliesMixin LocalizeMixin
  */
-class CloudForgotPassword extends EventsMixin(PolymerElement) {
+class CloudForgotPassword extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
       <style include="iron-flex ha-style">
@@ -44,30 +45,29 @@ class CloudForgotPassword extends EventsMixin(PolymerElement) {
           display: none;
         }
       </style>
-      <hass-subpage header="Forgot Password">
+      <hass-subpage header=[[localize('ui.panel.config.cloud.forgot_password.title')]]>
         <div class="content">
-          <ha-card header="Forgot your password">
+          <ha-card header=[[localize('ui.panel.config.cloud.forgot_password.subtitle')]]>
             <div class="card-content">
               <p>
-                Enter your email address and we will send you a link to reset
-                your password.
+                [[localize('ui.panel.config.cloud.forgot_password.instructions')]]
               </p>
               <div class="error" hidden$="[[!_error]]">[[_error]]</div>
               <paper-input
                 autofocus=""
                 id="email"
-                label="E-mail"
+                label="[[localize('ui.panel.config.cloud.forgot_password.email')]]"
                 value="{{email}}"
                 type="email"
                 on-keydown="_keyDown"
-                error-message="Invalid email"
+                error-message="[[localize('ui.panel.config.cloud.forgot_password.email_error_msg')]]"
               ></paper-input>
             </div>
             <div class="card-actions">
               <ha-progress-button
                 on-click="_handleEmailPasswordReset"
                 progress="[[_requestInProgress]]"
-                >Send reset email</ha-progress-button
+                >[[localize('ui.panel.config.cloud.forgot_password.send_reset_email')]]</ha-progress-button
               >
             </div>
           </ha-card>
@@ -126,7 +126,7 @@ class CloudForgotPassword extends EventsMixin(PolymerElement) {
           this._requestInProgress = false;
           this.fire("cloud-done", {
             flashMessage:
-              "Check your email for instructions on how to reset your password.",
+              "[[localize('ui.panel.config.cloud.forgot_password.check_your_email')]]",
           });
         },
         (err) =>

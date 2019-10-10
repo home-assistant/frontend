@@ -51,16 +51,20 @@ export class CloudWebhooks extends LitElement {
   protected render() {
     return html`
       ${this.renderStyle()}
-      <ha-card header="Webhooks">
+      <ha-card
+        header=${this.hass!.localize(
+          "ui.panel.config.cloud.account.webhooks.title"
+        )}
+      >
         <div class="card-content">
-          Anything that is configured to be triggered by a webhook can be given
-          a publicly accessible URL to allow you to send data back to Home
-          Assistant from anywhere, without exposing your instance to the
-          internet. ${this._renderBody()}
+          ${this.hass!.localize("ui.panel.config.cloud.account.webhooks.info")}
+          ${this._renderBody()}
 
           <div class="footer">
             <a href="https://www.nabucasa.com/config/webhooks" target="_blank">
-              Learn more about creating webhook-powered automations.
+              ${this.hass!.localize(
+                "ui.panel.config.cloud.account.webhooks.link_learn_more"
+              )}
             </a>
           </div>
         </div>
@@ -78,16 +82,33 @@ export class CloudWebhooks extends LitElement {
   private _renderBody() {
     if (!this.cloudStatus || !this._localHooks || !this._cloudHooks) {
       return html`
-        <div class="body-text">Loading…</div>
+        <div class="body-text">
+          ${this.hass!.localize(
+            "ui.panel.config.cloud.account.webhooks.loading"
+          )}
+        </div>
       `;
     }
 
     if (this._localHooks.length === 0) {
       return html`
         <div class="body-text">
-          Looks like you have no webhooks yet. Get started by configuring a
-          <a href="/config/integrations">webhook-based integration</a> or by
-          creating a <a href="/config/automation/new">webhook automation</a>.
+          ${this.hass!.localize(
+            "ui.panel.config.cloud.account.webhooks.no_hooks_yet"
+          )}
+          <a href="/config/integrations"
+            >${this.hass!.localize(
+              "ui.panel.config.cloud.account.webhooks.no_hooks_yet_link_integration"
+            )}</a
+          >
+          ${this.hass!.localize(
+            "ui.panel.config.cloud.account.webhooks.no_hooks_yet2"
+          )}
+          <a href="/config/automation/new"
+            >${this.hass!.localize(
+              "ui.panel.config.cloud.account.webhooks.no_hooks_yet_link_automation"
+            )}</a
+          >.
         </div>
       `;
     }
@@ -113,7 +134,9 @@ export class CloudWebhooks extends LitElement {
             : this._cloudHooks![entry.webhook_id]
             ? html`
                 <mwc-button @click="${this._handleManageButton}">
-                  Manage
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.account.webhooks.manage"
+                  )}
                 </mwc-button>
               `
             : html`
@@ -171,7 +194,11 @@ export class CloudWebhooks extends LitElement {
     try {
       await deleteCloudhook(this.hass!, webhookId!);
     } catch (err) {
-      alert(`Failed to disable webhook: ${(err as WebhookError).message}`);
+      alert(
+        `${this.hass!.localize(
+          "ui.panel.config.cloud.account.webhooks.disable_hook_error_msg"
+        )} ${(err as WebhookError).message}`
+      );
       return;
     } finally {
       this._progress = this._progress.filter((wid) => wid !== webhookId);

@@ -20,7 +20,7 @@ class HaCeEntitiesCard extends LocalizeMixIn(EventsMixin(PolymerElement)) {
     return html`
       <style>
         ha-card {
-          flex: 1 0 100%;
+          margin-top: 8px;
           padding-bottom: 8px;
         }
         paper-icon-item {

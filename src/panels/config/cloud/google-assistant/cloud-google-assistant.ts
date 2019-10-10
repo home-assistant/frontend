@@ -132,7 +132,7 @@ class CloudGoogleAssistant extends LitElement {
               .checked=${isExposed}
               @change=${this._exposeChanged}
             >
-              Expose to Google Assistant
+              ${this.hass!.localize("ui.panel.config.cloud.google.expose")}
             </ha-switch>
             ${entity.might_2fa
               ? html`
@@ -141,7 +141,9 @@ class CloudGoogleAssistant extends LitElement {
                     .checked=${Boolean(config.disable_2fa)}
                     @change=${this._disable2FAChanged}
                   >
-                    Disable two factor authentication
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.google.disable_2FA"
+                    )}
                   </ha-switch>
                 `
               : ""}
@@ -155,7 +157,9 @@ class CloudGoogleAssistant extends LitElement {
     }
 
     return html`
-      <hass-subpage header="Google Assistant">
+      <hass-subpage header="${this.hass!.localize(
+        "ui.panel.config.cloud.google.title"
+      )}">
         <span slot="toolbar-icon">
           ${selected}${
       !this.narrow
@@ -180,9 +184,7 @@ class CloudGoogleAssistant extends LitElement {
           !emptyFilter
             ? html`
                 <div class="banner">
-                  Editing which entities are exposed via this UI is disabled
-                  because you have configured entity filters in
-                  configuration.yaml.
+                  ${this.hass!.localize("ui.panel.config.cloud.google.banner")}
                 </div>
               `
             : ""
@@ -190,7 +192,11 @@ class CloudGoogleAssistant extends LitElement {
           ${
             exposedCards.length > 0
               ? html`
-                  <h1>Exposed entities</h1>
+                  <h1>
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.google.exposed_entities"
+                    )}
+                  </h1>
                   <div class="content">${exposedCards}</div>
                 `
               : ""
@@ -198,7 +204,11 @@ class CloudGoogleAssistant extends LitElement {
           ${
             notExposedCards.length > 0
               ? html`
-                  <h1>Not Exposed entities</h1>
+                  <h1>
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.google.not_exposed_entities"
+                    )}
+                  </h1>
                   <div class="content">${notExposedCards}</div>
                 `
               : ""
@@ -323,7 +333,11 @@ class CloudGoogleAssistant extends LitElement {
     window.addEventListener(
       "popstate",
       () => {
-        showToast(parent, { message: "Synchronizing changes to Google." });
+        showToast(parent, {
+          message: this.hass!.localize(
+            "ui.panel.config.cloud.googe.sync_to_google"
+          ),
+        });
         cloudSyncGoogleAssistant(this.hass);
       },
       { once: true }

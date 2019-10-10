@@ -251,7 +251,8 @@
             "snowy-rainy": "Räntäsadetta",
             "sunny": "Aurinkoista",
             "windy": "Tuulista",
-            "windy-variant": "Tuulista"
+            "windy-variant": "Tuulista",
+            "exceptional": "Poikkeuksellinen"
         },
         "vacuum": {
             "cleaning": "Imuroi",
@@ -495,6 +496,9 @@
                                     "event": "Tapahtuma:",
                                     "enter": "Saapuminen alueelle",
                                     "leave": "Poistu"
+                                },
+                                "device": {
+                                    "label": "Laite"
                                 }
                             },
                             "learn_more": "Lisätietoja triggereistä"
@@ -541,6 +545,15 @@
                                     "label": "Alue",
                                     "entity": "Kokonaisuus, jolla on sijainti",
                                     "zone": "Alue"
+                                },
+                                "device": {
+                                    "label": "Laite"
+                                },
+                                "and": {
+                                    "label": "Ja"
+                                },
+                                "or": {
+                                    "label": "Tai"
                                 }
                             },
                             "learn_more": "Lisätietoja ehdoista"
@@ -580,7 +593,11 @@
                             "learn_more": "Lisätietoja toiminnoista"
                         },
                         "load_error_not_editable": "Vain automaatiot tiedostossa automations.yaml ovat muokattavissa.",
-                        "load_error_unknown": "Virhe ladatessa automaatiota ( {err_no} )"
+                        "load_error_unknown": "Virhe ladatessa automaatiota ( {err_no} )",
+                        "description": {
+                            "label": "Kuvaus",
+                            "placeholder": "Valinnainen kuvaus"
+                        }
                     }
                 },
                 "script": {
@@ -590,12 +607,48 @@
                 "zwave": {
                     "caption": "Z-Wave",
                     "description": "Z-Wave -verkon asetukset",
+                    "network_management": {
+                        "header": "Z-Wave-verkon hallinta",
+                        "introduction": "Suorita Z-Wave-verkkoon vaikuttavia komentoja. Et saa palautetta siitä, onnistuiko useimmat komennot, mutta voit tarkistaa OZW-lokin ja yrittää selvittää sen."
+                    },
+                    "network_status": {
+                        "network_stopped": "Z-Wave-verkko pysäytetty",
+                        "network_starting": "Käynnistetään Z-Wave-verkkoa...",
+                        "network_starting_note": "Tämä voi viedä hetken verkon koosta riippuen.",
+                        "network_started": "Z-Wave-verkko käynnistetty",
+                        "network_started_note_some_queried": "Hereillä olevat solmut on kysytty. Nukkuvat solmut kysytään kun ne heräävät.",
+                        "network_started_note_all_queried": "Kaikista solmuista on kyselty."
+                    },
                     "services": {
+                        "start_network": "Käynnistä verkko",
+                        "stop_network": "Pysäytä verkko",
+                        "heal_network": "Paranna verkko",
                         "test_network": "Testaa verkkoyhteys",
+                        "soft_reset": "Pehmeä nollaus",
                         "save_config": "Tallenna asetukset",
+                        "add_node_secure": "Lisää suojattu solmu",
+                        "add_node": "Lisää solmu",
+                        "remove_node": "Poista solmu",
                         "cancel_command": "Peruuta komento"
                     },
+                    "common": {
+                        "value": "Arvo",
+                        "instance": "Esiintymä",
+                        "index": "Indeksi",
+                        "unknown": "tuntematon",
+                        "wakeup_interval": "Herätysväli"
+                    },
+                    "values": {
+                        "header": "Solmujen arvot"
+                    },
                     "node_config": {
+                        "header": "Solmun määritysasetukset",
+                        "seconds": "sekuntia",
+                        "set_wakeup": "Aseta herätysväli",
+                        "config_parameter": "Asetusparametri",
+                        "config_value": "Asetusarvo",
+                        "true": "Tosi",
+                        "false": "Eätosi",
                         "set_config_parameter": "Aseta asetusparametri"
                     }
                 },
@@ -720,6 +773,38 @@
                         "device_tracker_picked": "Seuraa laitetta",
                         "device_tracker_pick": "Valitse seurattava laite"
                     }
+                },
+                "server_control": {
+                    "caption": "Palvelimen hallinta",
+                    "description": "Uudelleenkäynnistä ja sammuta Home Assistant -palvelin",
+                    "section": {
+                        "validation": {
+                            "heading": "Asetusten tarkistus",
+                            "check_config": "Tarkista asetukset",
+                            "valid": "Asetukset kunnossa!",
+                            "invalid": "Asetukset ei kelpaa"
+                        },
+                        "reloading": {
+                            "heading": "Asetusten uudelleenlataus",
+                            "core": "Lataa ydin uudelleen",
+                            "group": "Lataa ryhmät uudelleen",
+                            "automation": "Lataa automaatiot uudelleen",
+                            "script": "Lataa skriptit uudelleen",
+                            "scene": "Lataa tilanteet uudelleen"
+                        },
+                        "server_management": {
+                            "heading": "Palvelimen hallinta",
+                            "introduction": "Hallitse Home Assistantia... suoraan Home Assistantista",
+                            "restart": "Käynnistä uudelleen",
+                            "stop": "Pysäytä",
+                            "confirm_restart": "Haluatko varmasti käynnistää Home Assistantin uudelleen?",
+                            "confirm_stop": "Haluatko varmasti pysäyttää Home Assistantin?"
+                        }
+                    }
+                },
+                "devices": {
+                    "caption": "Laitteet",
+                    "description": "Hallitse yhdistettyjä laitteita"
                 }
             },
             "profile": {
@@ -878,11 +963,11 @@
                                     "data": {
                                         "code": "Kaksivaiheinen tunnistuskoodi"
                                     },
-                                    "description": "Avaa **{mfa_module_name}** laitteessasi, jotta näet kaksivaiheisen tunnistuskoodin henkilöllisyyden vahvistamiseen:"
+                                    "description": "Avaa **{mfa_module_name}** laitteessasi nähdäksesi kaksivaiheisen tunnistautumisen koodisi ja vahvistaaksesi identiteettisi:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Väärä käyttäjänimi tai salasana",
+                                "invalid_auth": "Virheellinen käyttäjätunnus tai salasana",
                                 "invalid_code": "Virheellinen tunnistuskoodi"
                             },
                             "abort": {
@@ -1318,5 +1403,11 @@
         "system-admin": "Järjestelmänvalvojat",
         "system-users": "Käyttäjät",
         "system-read-only": "Pelkästään luku -käyttäjät"
+    },
+    "config_entry": {
+        "disabled_by": {
+            "user": "Käyttäjä",
+            "integration": "Integraatio"
+        }
     }
 }

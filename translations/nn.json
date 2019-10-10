@@ -411,7 +411,7 @@
                     "caption": "Automasjon",
                     "description": "Lag og rediger automasjonar",
                     "picker": {
-                        "header": "Automasjonsredigar",
+                        "header": "Automasjonsredigerar",
                         "introduction": "Automasjonsredigeringa tillet deg å lage og redigere automasjonar. Ver vennleg og les [instruksjonane](https:\/\/home-assistant.io\/docs\/automation\/editor\/) for å vere sikker på om du har konfigurert Home Assistant rett.",
                         "pick_automation": "Vel ein automasjon for å redigere",
                         "no_automations": "Vi klarte ikkje å finne nokon automasjonar som kunne redigerast",
@@ -968,7 +968,7 @@
                                     "data": {
                                         "code": "To-faktorautentiseringskode"
                                     },
-                                    "description": "Opne **{mfa_module_name}** på eininga di for å sjå to-faktorautentiseringskoda og verifiser identiteten din:"
+                                    "description": "Opne **{mfa_module_name}** på eininga di for å sjå to-faktor-autentiseringskoda og verifiser identiteten din:"
                                 }
                             },
                             "error": {
@@ -1351,7 +1351,7 @@
                 "services": {
                     "reconfigure": "Konfigurer ZHA-eininga (heal device) på nytt. Bruk dette om du har problem med eininga. Dersom eininga går på batteri, ver sikker på at den er vaken og tek i mot kommandar når du brukar denne tenesta.",
                     "updateDeviceName": "Gje oppføringa eit eige namn i oppføringsregisteret. ",
-                    "remove": "Fjern eining frå ZigBee-nettverket"
+                    "remove": "Fjern eining frå Zigbee-nettverket"
                 },
                 "zha_device_card": {
                     "device_name_placeholder": "Gitt brukarnamn",
