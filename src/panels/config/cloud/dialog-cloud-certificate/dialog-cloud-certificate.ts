@@ -40,23 +40,38 @@ class DialogCloudCertificate extends LitElement {
 
     return html`
       <ha-paper-dialog with-backdrop>
-        <h2>Certificate Information</h2>
+        <h2>
+          ${this.hass!.localize(
+            "ui.panel.config.cloud.dialog_certificate.certificate_information"
+          )}
+        </h2>
         <div>
           <p>
-            Certificate expiration date:
+            ${this.hass!.localize(
+              "ui.panel.config.cloud.dialog_certificate.certificate_expiration_date"
+            )}
             ${format_date_time(
               new Date(certificateInfo.expire_date),
               this.hass!.language
             )}<br />
-            (Will be automatically renewed)
+            (${this.hass!.localize(
+              "ui.panel.config.cloud.dialog_certificate.will_be_auto_renewed"
+            )})
           </p>
-          <p>
-            Certificate fingerprint: ${certificateInfo.fingerprint}
+          <p class="break-word">
+            ${this.hass!.localize(
+              "ui.panel.config.cloud.dialog_certificate.fingerprint"
+            )}
+            ${certificateInfo.fingerprint}
           </p>
         </div>
 
         <div class="paper-dialog-buttons">
-          <mwc-button @click="${this._closeDialog}">CLOSE</mwc-button>
+          <mwc-button @click="${this._closeDialog}"
+            >${this.hass!.localize(
+              "ui.panel.config.cloud.dialog_certificate.close"
+            )}</mwc-button
+          >
         </div>
       </ha-paper-dialog>
     `;
@@ -76,6 +91,9 @@ class DialogCloudCertificate extends LitElement {
       css`
         ha-paper-dialog {
           width: 535px;
+        }
+        .break-word {
+          overflow-wrap: break-word;
         }
       `,
     ];

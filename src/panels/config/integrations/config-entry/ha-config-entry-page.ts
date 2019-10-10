@@ -2,10 +2,7 @@ import memoizeOne from "memoize-one";
 import "../../../../layouts/hass-subpage";
 import "../../../../layouts/hass-error-screen";
 
-import "../../../../components/entity/state-badge";
-import { compare } from "../../../../common/string/compare";
-
-import "../../devices/device-detail/ha-device-card";
+import "../../devices/ha-devices-data-table";
 import "./ha-ce-entities-card";
 import { showOptionsFlowDialog } from "../../../../dialogs/config-flow/show-dialog-options-flow";
 import { property, LitElement, CSSResult, css, html } from "lit-element";
@@ -43,15 +40,9 @@ class HaConfigEntryPage extends LitElement {
       if (!devices) {
         return [];
       }
-      return devices
-        .filter((device) =>
-          device.config_entries.includes(configEntry.entry_id)
-        )
-        .sort(
-          (dev1, dev2) =>
-            Number(!!dev1.via_device_id) - Number(!!dev2.via_device_id) ||
-            compare(dev1.name || "", dev2.name || "")
-        );
+      return devices.filter((device) =>
+        device.config_entries.includes(configEntry.entry_id)
+      );
     }
   );
 
@@ -116,24 +107,19 @@ class HaConfigEntryPage extends LitElement {
                   )}
                 </p>
               `
-            : ""}
-          ${configEntryDevices.map(
-            (device) => html`
-              <ha-device-card
-                class="card"
-                .hass=${this.hass}
-                .areas=${this.areas}
-                .devices=${this.deviceRegistryEntries}
-                .device=${device}
-                .entities=${this.entityRegistryEntries}
-                .narrow=${this.narrow}
-              ></ha-device-card>
-            `
-          )}
+            : html`
+                <ha-devices-data-table
+                  .hass=${this.hass}
+                  .narrow=${this.narrow}
+                  .devices=${configEntryDevices}
+                  .entries=${this.configEntries}
+                  .entities=${this.entityRegistryEntries}
+                  .areas=${this.areas}
+                ></ha-devices-data-table>
+              `}
           ${noDeviceEntities.length > 0
             ? html`
                 <ha-ce-entities-card
-                  class="card"
                   .heading=${this.hass.localize(
                     "ui.panel.config.integrations.config_entry.no_device"
                   )}
@@ -185,18 +171,13 @@ class HaConfigEntryPage extends LitElement {
   static get styles(): CSSResult {
     return css`
       .content {
-        display: flex;
-        flex-wrap: wrap;
         padding: 4px;
-        justify-content: center;
       }
-      .card {
-        box-sizing: border-box;
-        display: flex;
-        flex: 1 0 300px;
-        min-width: 0;
-        max-width: 500px;
-        padding: 8px;
+      p {
+        text-align: center;
+      }
+      ha-devices-data-table {
+        width: 100%;
       }
     `;
   }

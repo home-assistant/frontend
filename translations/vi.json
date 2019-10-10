@@ -904,11 +904,11 @@
                                     "data": {
                                         "code": "Mã xác nhận 2 bước"
                                     },
-                                    "description": "Mở **{mfa_module_name}** trên thiết bị của bạn để tìm mã xác nhận 2 bước và xác nhận danh tính:"
+                                    "description": "Mở **{mfa_module_name}** trên thiết bị của bạn để xem mã xác thực hai lớp và xác minh danh tính của bạn:"
                                 }
                             },
                             "error": {
-                                "invalid_auth": "Tên đăng nhập hoặc mật khẩu không hợp lệ",
+                                "invalid_auth": "Tên đăng nhập hoặc mật khẩu không chính xác",
                                 "invalid_code": "Mã xác nhận không hợp lệ"
                             },
                             "abort": {

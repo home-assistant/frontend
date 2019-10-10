@@ -251,7 +251,7 @@ class HaPanelDevService extends PolymerElement {
 
   _computeParsedServiceData(serviceData) {
     try {
-      return serviceData ? yaml.safeLoad(serviceData) : {};
+      return serviceData.trim() ? yaml.safeLoad(serviceData) : {};
     } catch (err) {
       return ERROR_SENTINEL;
     }
@@ -276,7 +276,8 @@ class HaPanelDevService extends PolymerElement {
   _callService() {
     if (this.parsedJSON === ERROR_SENTINEL) {
       // eslint-disable-next-line
-      alert(`Error parsing JSON: ${this.serviceData}`);
+      alert(`Error parsing YAML: ${this.serviceData}`);
+      return;
     }
 
     this.hass.callService(this._domain, this._service, this.parsedJSON);

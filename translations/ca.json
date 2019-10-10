@@ -554,6 +554,12 @@
                                 },
                                 "device": {
                                     "label": "Dispositiu"
+                                },
+                                "and": {
+                                    "label": "I"
+                                },
+                                "or": {
+                                    "label": "O"
                                 }
                             },
                             "learn_more": "Més informació sobre les condicions"
@@ -596,7 +602,11 @@
                             "learn_more": "Més informació sobre les accions"
                         },
                         "load_error_not_editable": "Només es poden editar les automatitzacions de l'arxiu automations.yaml.",
-                        "load_error_unknown": "Error en carregar l’automatització ({err_no})."
+                        "load_error_unknown": "Error en carregar l’automatització ({err_no}).",
+                        "description": {
+                            "label": "Descripció",
+                            "placeholder": "Descripció opcional"
+                        }
                     }
                 },
                 "script": {
@@ -754,7 +764,8 @@
                         "unavailable": "(no disponible)",
                         "introduction": "Home Assistant manté un registre de totes les entitats que ha detectat alguna vegada les quals tenen una identificació única. Cadascuna d'aquestes entitats té un identificador (ID) assignat que està reservat només per a ella.",
                         "introduction2": "Utilitza el registre d'entitats per canviar el nom, canviar l'ID o eliminar l'entrada de Home Assistant de les entitats. Tingues en compte que eliminar-les del registre d'entitats no eliminarà l'entitat. Per fer-ho, segueix l'enllaç següent i elimineu-la dins la pàgina d'integracions.",
-                        "integrations_page": "Pàgina d'integracions"
+                        "integrations_page": "Pàgina d'integracions",
+                        "show_disabled": "Mostra entitats desactivades"
                     },
                     "editor": {
                         "unavailable": "Aquesta entitat no està disponible actualment.",
@@ -763,7 +774,9 @@
                         "update": "ACTUALITZAR",
                         "enabled_label": "Activa l’entitat",
                         "enabled_cause": "Desactivat per {cause}.",
-                        "enabled_description": "Les entitats desactivades no s’afegiran a Home Assistant."
+                        "enabled_description": "Les entitats desactivades no s’afegiran a Home Assistant.",
+                        "confirm_delete": "Estas segur que vols eliminar aquesta entitat?",
+                        "confirm_delete2": "Si suprimeixes una entrada, no suprimiras l'entitat de Home Assistant. Per fer-ho, has de suprimir la integració '{plataform}' de Home Assistant."
                     }
                 },
                 "person": {
@@ -808,7 +821,18 @@
                 },
                 "devices": {
                     "caption": "Dispositius",
-                    "description": "Gestiona els dispositius connectats"
+                    "description": "Gestiona els dispositius connectats",
+                    "automation": {
+                        "triggers": {
+                            "caption": "Feu alguna cosa quan..."
+                        },
+                        "conditions": {
+                            "caption": "Només fer alguna cosa si..."
+                        },
+                        "actions": {
+                            "caption": "Quan es dispara alguna cosa..."
+                        }
+                    }
                 }
             },
             "profile": {
@@ -884,6 +908,10 @@
                 "force_narrow": {
                     "header": "Amaga sempre la barra lateral",
                     "description": "Això ocultarà la barra lateral per defecte, de manera similar als mòbils i tablets."
+                },
+                "vibrate": {
+                    "header": "Vibra",
+                    "description": "Activa o desactiva la vibració d’aquest dispositiu mentre controlis dispositius."
                 }
             },
             "page-authorize": {
@@ -1031,7 +1059,8 @@
                         "navigate_to": "Navega a {location}",
                         "toggle": "Commuta {name}",
                         "call_service": "Cridar servei {name}",
-                        "more_info": "Mostra més informació: {name}"
+                        "more_info": "Mostra més informació: {name}",
+                        "url": "Obre un finestra a {url_path}"
                     }
                 },
                 "editor": {
@@ -1077,6 +1106,66 @@
                     "edit_lovelace": {
                         "header": "Títol de la interfície d'usuari Lovelace",
                         "explanation": "Aquest títol es mostra a sobre de cada visualització a Lovelace."
+                    },
+                    "card": {
+                        "alarm_panel": {
+                            "available_states": "Estats disponibles"
+                        },
+                        "config": {
+                            "required": "Obligatori",
+                            "optional": "Opcional"
+                        },
+                        "entities": {
+                            "show_header_toggle": "Mostrar commutació a la capçalera?"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "define": "Definir gravetat?",
+                                "green": "Verd",
+                                "red": "Vermell",
+                                "yellow": "Groc"
+                            }
+                        },
+                        "glance": {
+                            "columns": "Columnes"
+                        },
+                        "generic": {
+                            "aspect_ratio": "Relació d'aspecte",
+                            "camera_image": "Entitat de càmera",
+                            "camera_view": "Visualització de càmera",
+                            "entities": "Entitats",
+                            "entity": "Entitat",
+                            "hold_action": "Acció en mantenir",
+                            "hours_to_show": "Hores a mostrar",
+                            "icon": "Icona",
+                            "icon_height": "Alçada de la icona",
+                            "image": "Ruta de la imatge",
+                            "maximum": "Màxim",
+                            "minimum": "Mínim",
+                            "name": "Nom",
+                            "refresh_interval": "Interval d'actualització",
+                            "show_icon": "Mostrar icona?",
+                            "show_name": "Mostrar nom?",
+                            "show_state": "Mostrar estat?",
+                            "tap_action": "Acció en tocar",
+                            "title": "Títol",
+                            "theme": "Tema",
+                            "unit": "Unitat",
+                            "url": "Enllaç"
+                        },
+                        "map": {
+                            "geo_location_sources": "Fonts de geolocalització",
+                            "dark_mode": "Mode fosc?",
+                            "default_zoom": "Zoom predeterminat",
+                            "source": "Font"
+                        },
+                        "markdown": {
+                            "content": "Contingut"
+                        },
+                        "sensor": {
+                            "graph_detail": "Detall del gràfic",
+                            "graph_type": "Tipus de gràfic"
+                        }
                     }
                 },
                 "menu": {

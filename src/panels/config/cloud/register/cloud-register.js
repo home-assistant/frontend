@@ -8,11 +8,13 @@ import "../../../../layouts/hass-subpage";
 import "../../../../resources/ha-style";
 import "../../ha-config-section";
 import { EventsMixin } from "../../../../mixins/events-mixin";
+import LocalizeMixin from "../../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin EventsMixin
+ * @appliesMixin LocalizeMixin
  */
-class CloudRegister extends EventsMixin(PolymerElement) {
+class CloudRegister extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
     <style include="iron-flex ha-style">
@@ -48,47 +50,47 @@ class CloudRegister extends EventsMixin(PolymerElement) {
         display: none;
       }
     </style>
-    <hass-subpage header="Register Account">
+    <hass-subpage header="[[localize('ui.panel.config.cloud.register.title')]]">
       <div class="content">
         <ha-config-section is-wide="[[isWide]]">
-          <span slot="header">Start your free trial</span>
+          <span slot="header">[[localize('ui.panel.config.cloud.register.headline')]]</span>
           <div slot="introduction">
             <p>
-              Create an account to start your free one month trial with Home Assistant Cloud. No payment information necessary.
+              [[localize('ui.panel.config.cloud.register.information')]]
             </p>
             <p>
-              The trial will give you access to all the benefits of Home Assistant Cloud, including:
+            [[localize('ui.panel.config.cloud.register.information2')]]
             </p>
             <ul>
-              <li>Control of Home Assistant away from home</li>
-              <li>Integration with Google Assistant</li>
-              <li>Integration with Amazon Alexa</li>
-              <li>Easy integration with webhook-based apps like OwnTracks</li>
+              <li>[[localize('ui.panel.config.cloud.register.feature_remote_control')]]</li>
+              <li>[[localize('ui.panel.config.cloud.register.feature_google_home')]]</li>
+              <li>[[localize('ui.panel.config.cloud.register.feature_amazon_alexa')]]</li>
+              <li>[[localize('ui.panel.config.cloud.register.feature_webhook_apps')]]</li>
             </ul>
             <p>
-              This service is run by our partner <a href='https://www.nabucasa.com' target='_blank'>Nabu&nbsp;Casa,&nbsp;Inc</a>, a company founded by the founders of Home Assistant and Hass.io.
+              [[localize('ui.panel.config.cloud.register.information3')]] <a href='https://www.nabucasa.com' target='_blank'>Nabu&nbsp;Casa,&nbsp;Inc</a>[[localize('ui.panel.config.cloud.register.information3a')]]
             </p>
 
             <p>
-              By registering an account you agree to the following terms and conditions.
+              [[localize('ui.panel.config.cloud.register.information4')]]
               </p><ul>
-                <li><a href="https://home-assistant.io/tos/" target="_blank">Terms and Conditions</a></li>
-                <li><a href="https://home-assistant.io/privacy/" target="_blank">Privacy Policy</a></li>
+                <li><a href="https://home-assistant.io/tos/" target="_blank">[[localize('ui.panel.config.cloud.register.link_terms_conditions')]]</a></li>
+                <li><a href="https://home-assistant.io/privacy/" target="_blank">[[localize('ui.panel.config.cloud.register.link_privacy_policy')]]</a></li>
               </ul>
             </p>
           </div>
 
-          <ha-card header="Create Account">
+          <ha-card header="[[localize('ui.panel.config.cloud.register.create_account')]]">
             <div class="card-content">
               <div class="header">
                 <div class="error" hidden$="[[!_error]]">[[_error]]</div>
               </div>
-              <paper-input autofocus="" id="email" label="Email address" type="email" value="{{email}}" on-keydown="_keyDown" error-message="Invalid email"></paper-input>
-              <paper-input id="password" label="Password" value="{{_password}}" type="password" on-keydown="_keyDown" error-message="Your password needs to be at least 8 characters"></paper-input>
+              <paper-input autofocus="" id="email" label="[[localize('ui.panel.config.cloud.register.email_address')]]" type="email" value="{{email}}" on-keydown="_keyDown" error-message="[[localize('ui.panel.config.cloud.register.email_error_msg')]]"></paper-input>
+              <paper-input id="password" label="Password" value="{{_password}}" type="password" on-keydown="_keyDown" error-message="[[localize('ui.panel.config.cloud.register.password_error_msg')]]"></paper-input>
             </div>
             <div class="card-actions">
-              <ha-progress-button on-click="_handleRegister" progress="[[_requestInProgress]]">Start trial</ha-progress-button>
-              <button class="link" hidden="[[_requestInProgress]]" on-click="_handleResendVerifyEmail">Resend confirmation email</button>
+              <ha-progress-button on-click="_handleRegister" progress="[[_requestInProgress]]">[[localize('ui.panel.config.cloud.register.start_trial')]]</ha-progress-button>
+              <button class="link" hidden="[[_requestInProgress]]" on-click="_handleResendVerifyEmail">[[localize('ui.panel.config.cloud.register.resend_confirmation_email')]]</button>
             </div>
           </ha-card>
         </ha-config-section>
@@ -211,8 +213,9 @@ class CloudRegister extends EventsMixin(PolymerElement) {
       _password: "",
     });
     this.fire("cloud-done", {
-      flashMessage:
-        "Account created! Check your email for instructions on how to activate your account.",
+      flashMessage: this.hass.localize(
+        "ui.panel.config.cloud.register.account_created"
+      ),
     });
   }
 }

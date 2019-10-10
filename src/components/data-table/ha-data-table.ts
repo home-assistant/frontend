@@ -73,7 +73,7 @@ export interface DataTabelSortColumnData {
 export interface DataTabelColumnData extends DataTabelSortColumnData {
   title: string;
   type?: "numeric";
-  template?: (data: any) => TemplateResult;
+  template?: (data: any, row: DataTabelRowData) => TemplateResult;
 }
 
 export interface DataTabelRowData {
@@ -254,7 +254,7 @@ export class HaDataTable extends BaseElement {
                         })}"
                       >
                         ${column.template
-                          ? column.template(row[key])
+                          ? column.template(row[key], row)
                           : row[key]}
                       </td>
                     `;
