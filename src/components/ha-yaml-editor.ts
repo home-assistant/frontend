@@ -73,7 +73,7 @@ export class HaYamlEditor extends HTMLElement {
   }
 
   get value(): string {
-    return this.codemirror.getValue();
+    return this.codemirror ? this.codemirror.getValue() : "";
   }
 
   set rtl(rtl: boolean) {

@@ -1,17 +1,18 @@
 import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-input/paper-textarea";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import yaml from "js-yaml";
 
+import "../../../components/ha-yaml-editor";
 import "../../../resources/ha-style";
 import "./events-list";
 import "./event-subscribe-card";
 import { EventsMixin } from "../../../mixins/events-mixin";
 
+const ERROR_SENTINEL = {};
 /*
  * @appliesMixin EventsMixin
  */
@@ -32,6 +33,11 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
 
         .ha-form {
           margin-right: 16px;
+          max-width: 400px;
+        }
+
+        mwc-button {
+          margin-top: 8px;
         }
 
         .header {
@@ -62,11 +68,15 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
               required
               value="{{eventType}}"
             ></paper-input>
-            <paper-textarea
-              label="Event Data (YAML, optional)"
-              value="{{eventData}}"
-            ></paper-textarea>
-            <mwc-button on-click="fireEvent" raised>Fire Event</mwc-button>
+            <p>Event Data (YAML, optional)</p>
+            <ha-yaml-editor
+              value="[[eventData]]"
+              error="[[!validJSON]]"
+              on-yaml-changed="_yamlChanged"
+            ></ha-yaml-editor>
+            <mwc-button on-click="fireEvent" raised disabled="[[!validJSON]]"
+              >Fire Event</mwc-button
+            >
           </div>
         </div>
 
@@ -97,6 +107,16 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
         type: String,
         value: "",
       },
+
+      parsedJSON: {
+        type: Object,
+        computed: "_computeParsedEventData(eventData)",
+      },
+
+      validJSON: {
+        type: Boolean,
+        computed: "_computeValidJSON(parsedJSON)",
+      },
     };
   }
 
@@ -104,19 +124,28 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
     this.eventType = ev.detail.eventType;
   }
 
-  fireEvent() {
-    var eventData;
-
+  _computeParsedEventData(eventData) {
     try {
-      eventData = this.eventData ? yaml.safeLoad(this.eventData) : {};
+      return eventData.trim() ? yaml.safeLoad(eventData) : {};
     } catch (err) {
-      /* eslint-disable no-alert */
-      alert("Error parsing YAML: " + err);
-      /* eslint-enable no-alert */
+      return ERROR_SENTINEL;
+    }
+  }
+
+  _computeValidJSON(parsedJSON) {
+    return parsedJSON !== ERROR_SENTINEL;
+  }
+
+  _yamlChanged(ev) {
+    this.eventData = ev.detail.value;
+  }
+
+  fireEvent() {
+    if (!this.eventType) {
+      alert("Event type is a mandatory field");
       return;
     }
-
-    this.hass.callApi("POST", "events/" + this.eventType, eventData).then(
+    this.hass.callApi("POST", "events/" + this.eventType, this.parsedJSON).then(
       function() {
         this.fire("hass-notification", {
           message: "Event " + this.eventType + " successful fired!",
