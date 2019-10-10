@@ -238,8 +238,7 @@ class HUIRoot extends LitElement {
                                   !view.show.some(
                                     (e) => e.user === this.hass!.user!.id
                                   )) ||
-                                  (typeof view.show === "boolean" &&
-                                    view.show === false))
+                                  view.show === false)
                             ),
                           })}"
                         >
