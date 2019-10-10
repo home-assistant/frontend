@@ -36,48 +36,64 @@ import {
   RowClickedEvent,
 } from "../../../components/data-table/ha-data-table";
 
-const COLUMNS: DataTableColumnContainer = {
-  icon: {
-    title: "",
-    type: "icon",
-    template: (icon) => html`
-      <ha-icon slot="item-icon" .icon=${icon}></ha-icon>
-    `,
-  },
-  name: {
-    title: "Name",
-    sortable: true,
-    filterable: true,
-    direction: "asc",
-  },
-  entity_id: {
-    title: "Entity id",
-    sortable: true,
-    filterable: true,
-  },
-  platform: {
-    title: "Platform",
-    sortable: true,
-    filterable: true,
-  },
-  disabled_by: {
-    title: "Enabled",
-    type: "icon",
-    template: (disabledBy) => html`
-      <ha-icon
-        slot="item-icon"
-        icon=${disabledBy ? "hass:cancel" : "hass:check-circle"}
-      ></ha-icon>
-    `,
-  },
-};
-
 class HaConfigEntityRegistry extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public isWide?: boolean;
   @property() private _entities?: EntityRegistryEntry[];
   @property() private _showDisabled = false;
   private _unsubEntities?: UnsubscribeFunc;
+
+  private _columns = memoize(
+    (_language): DataTableColumnContainer => {
+      return {
+        icon: {
+          title: "",
+          type: "icon",
+          template: (icon) => html`
+            <ha-icon slot="item-icon" .icon=${icon}></ha-icon>
+          `,
+        },
+        name: {
+          title: this.hass.localize(
+            "ui.panel.config.entity_registry.picker.headers.name"
+          ),
+          sortable: true,
+          filterable: true,
+          direction: "asc",
+        },
+        entity_id: {
+          title: this.hass.localize(
+            "ui.panel.config.entity_registry.picker.headers.entity_id"
+          ),
+          sortable: true,
+          filterable: true,
+        },
+        platform: {
+          title: this.hass.localize(
+            "ui.panel.config.entity_registry.picker.headers.integration"
+          ),
+          sortable: true,
+          filterable: true,
+          template: (platform) =>
+            html`
+              ${this.hass.localize(`component.${platform}.config.title`)}
+            `,
+        },
+        disabled_by: {
+          title: this.hass.localize(
+            "ui.panel.config.entity_registry.picker.headers.enabled"
+          ),
+          type: "icon",
+          template: (disabledBy) => html`
+            <ha-icon
+              slot="item-icon"
+              .icon=${disabledBy ? "hass:cancel" : "hass:check-circle"}
+            ></ha-icon>
+          `,
+        },
+      };
+    }
+  );
 
   private _filteredEntities = memoize(
     (entities: EntityRegistryEntry[], showDisabled: boolean) =>
@@ -146,7 +162,7 @@ class HaConfigEntityRegistry extends LitElement {
             >
           </span>
           <ha-data-table
-            .columns=${COLUMNS}
+            .columns=${this._columns(this.hass.language)}
             .data=${this._filteredEntities(this._entities, this._showDisabled)}
             @row-click=${this._openEditEntry}
             id="entity_id"

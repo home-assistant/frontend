@@ -523,6 +523,7 @@ export class HaDataTable extends BaseElement {
       }
 
       .mdc-data-table__cell--icon {
+        color: var(--secondary-text-color);
         text-align: center;
       }
 
