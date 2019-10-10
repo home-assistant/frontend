@@ -76,7 +76,8 @@ class HaConfigEntityRegistry extends LitElement {
           filterable: true,
           template: (platform) =>
             html`
-              ${this.hass.localize(`component.${platform}.config.title`)}
+              ${this.hass.localize(`component.${platform}.config.title`) ||
+                platform}
             `,
         },
         disabled_by: {
