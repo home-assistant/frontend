@@ -3,9 +3,9 @@ import CodeMirror from "codemirror";
 import "codemirror/mode/yaml/yaml";
 // @ts-ignore
 import codeMirrorCSS from "codemirror/lib/codemirror.css";
-import { HomeAssistant } from "../../../types";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { computeRTL } from "../../../common/util/compute_rtl";
+import { HomeAssistant } from "../types";
+import { fireEvent } from "../common/dom/fire_event";
+import { computeRTL } from "../common/util/compute_rtl";
 import { customElement } from "lit-element";
 
 declare global {
@@ -17,12 +17,11 @@ declare global {
   }
 }
 
-@customElement("hui-yaml-editor")
-export class HuiYamlEditor extends HTMLElement {
-  public _hass?: HomeAssistant;
-
+@customElement("ha-yaml-editor")
+export class HaYamlEditor extends HTMLElement {
   public codemirror!: any;
-
+  public autofocus = false;
+  private _hass?: HomeAssistant;
   private _value: string;
 
   public constructor() {
@@ -48,7 +47,7 @@ export class HuiYamlEditor extends HTMLElement {
                 transition: 0.2s ease border-right;
               }
               .CodeMirror-focused .CodeMirror-gutters {
-                border-right: 2px solid var(--paper-input-container-focus-color, var(--primary-color));;
+                border-right: 2px solid var(--paper-input-container-focus-color, var(--primary-color));
               }
               .CodeMirror-linenumber {
                 color: var(--paper-dialog-color, var(--primary-text-color));
@@ -96,7 +95,7 @@ export class HuiYamlEditor extends HTMLElement {
           lineNumbers: true,
           mode: "yaml",
           tabSize: 2,
-          autofocus: true,
+          autofocus: this.autofocus,
           viewportMargin: Infinity,
           extraKeys: {
             Tab: "indentMore",
@@ -120,7 +119,7 @@ export class HuiYamlEditor extends HTMLElement {
   }
 
   private setScrollBarDirection(): void {
-    if (!this.codemirror) {
+    if (!this.codemirror || !this._hass) {
       return;
     }
 
@@ -132,6 +131,6 @@ export class HuiYamlEditor extends HTMLElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-yaml-editor": HuiYamlEditor;
+    "ha-yaml-editor": HaYamlEditor;
   }
 }

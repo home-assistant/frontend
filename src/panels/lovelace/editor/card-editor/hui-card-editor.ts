@@ -16,10 +16,10 @@ import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { LovelaceCardEditor } from "../../types";
 import { getCardElementTag } from "../../common/get-card-element-tag";
 
-import "../../components/hui-yaml-editor";
+import "../../../../components/ha-yaml-editor";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
-import { HuiYamlEditor } from "../../components/hui-yaml-editor";
+import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { EntityConfig } from "../../entity-rows/types";
 
@@ -93,8 +93,8 @@ export class HuiCardEditor extends LitElement {
     return this._error !== undefined;
   }
 
-  private get _yamlEditor(): HuiYamlEditor {
-    return this.shadowRoot!.querySelector("hui-yaml-editor")!;
+  private get _yamlEditor(): HaYamlEditor {
+    return this.shadowRoot!.querySelector("ha-yaml-editor")!;
   }
 
   public toggleMode() {
@@ -120,11 +120,12 @@ export class HuiCardEditor extends LitElement {
             `
           : html`
               <div class="yaml-editor">
-                <hui-yaml-editor
+                <ha-yaml-editor
+                  autofocus
                   .hass=${this.hass}
                   .value=${this.yaml}
                   @yaml-changed=${this._handleYAMLChanged}
-                ></hui-yaml-editor>
+                ></ha-yaml-editor>
               </div>
             `}
         ${this._error

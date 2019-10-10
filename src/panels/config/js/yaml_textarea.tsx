@@ -1,6 +1,8 @@
 import { h, Component } from "preact";
 import yaml from "js-yaml";
-import "../../../components/ha-textarea";
+import "../../../components/ha-yaml-editor";
+// tslint:disable-next-line
+import { HaYamlEditor } from "../../../components/ha-yaml-editor";
 
 const isEmpty = (obj: object) => {
   for (const key in obj) {
@@ -12,6 +14,7 @@ const isEmpty = (obj: object) => {
 };
 
 export default class YAMLTextArea extends Component<any, any> {
+  public yamlEditor!: HaYamlEditor;
   constructor(props) {
     super(props);
 
@@ -34,7 +37,7 @@ export default class YAMLTextArea extends Component<any, any> {
   }
 
   public onChange(ev) {
-    const value = ev.target.value;
+    const value = ev.detail.value;
     let parsed;
     let isValid = true;
 
@@ -55,26 +58,39 @@ export default class YAMLTextArea extends Component<any, any> {
       isValid,
     });
     if (isValid) {
+      this.yamlEditor.style.removeProperty(
+        "--paper-input-container-focus-color"
+      );
       this.props.onChange(parsed);
+    } else {
+      this.yamlEditor.style.setProperty(
+        "--paper-input-container-focus-color",
+        "red"
+      );
     }
   }
 
-  public render({ label }, { value, isValid }) {
+  public componentDidMount() {
+    setTimeout(() => {
+      this.yamlEditor.codemirror.refresh();
+    }, 1);
+  }
+
+  public render({ label }, { value }) {
     const style: any = {
       minWidth: 300,
       width: "100%",
     };
-    if (!isValid) {
-      style.border = "1px solid red";
-    }
     return (
-      <ha-textarea
-        label={label}
-        value={value}
-        style={style}
-        onvalue-changed={this.onChange}
-        dir="ltr"
-      />
+      <div>
+        <p>{label}</p>
+        <ha-yaml-editor
+          ref={(yamlEditor) => (this.yamlEditor = yamlEditor)}
+          style={style}
+          value={value}
+          onyaml-changed={this.onChange}
+        />
+      </div>
     );
   }
 }

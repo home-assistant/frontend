@@ -14,10 +14,10 @@ import { Lovelace } from "./types";
 
 import "../../components/ha-icon";
 import { haStyle } from "../../resources/styles";
-import "./components/hui-yaml-editor";
+import "../../components/ha-yaml-editor";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
-import { HuiYamlEditor } from "./components/hui-yaml-editor";
+import { HaYamlEditor } from "../../components/ha-yaml-editor";
 import { HomeAssistant } from "../../types";
 
 const lovelaceStruct = struct.interface({
@@ -80,12 +80,13 @@ class LovelaceFullConfigEditor extends LitElement {
           </app-toolbar>
         </app-header>
         <div class="content">
-          <hui-yaml-editor
+          <ha-yaml-editor
+            autofocus
             .hass="${this.hass}"
             @yaml-changed="${this._yamlChanged}"
             @yaml-save="${this._handleSave}"
           >
-          </hui-yaml-editor>
+          </ha-yaml-editor>
         </div>
       </app-header-layout>
     `;
@@ -205,8 +206,8 @@ class LovelaceFullConfigEditor extends LitElement {
     this._changed = false;
   }
 
-  private get yamlEditor(): HuiYamlEditor {
-    return this.shadowRoot!.querySelector("hui-yaml-editor")!;
+  private get yamlEditor(): HaYamlEditor {
+    return this.shadowRoot!.querySelector("ha-yaml-editor")!;
   }
 }
 
