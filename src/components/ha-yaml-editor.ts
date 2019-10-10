@@ -18,8 +18,8 @@ declare global {
 @customElement("ha-yaml-editor")
 export class HaYamlEditor extends HTMLElement {
   public codemirror?: any;
-  public autofocus = false;
-  public rtl = false;
+  private _autofocus = false;
+  private _rtl = false;
   private _value: string;
 
   public constructor() {
@@ -76,6 +76,18 @@ export class HaYamlEditor extends HTMLElement {
     return this.codemirror.getValue();
   }
 
+  set rtl(rtl: boolean) {
+    this._rtl = rtl;
+    this.setScrollBarDirection();
+  }
+
+  set autofocus(autofocus: boolean) {
+    this._autofocus = autofocus;
+    if (this.codemirror) {
+      this.codemirror.focus();
+    }
+  }
+
   set error(error: boolean) {
     this.classList.toggle("error-state", error);
   }
@@ -86,8 +98,6 @@ export class HaYamlEditor extends HTMLElement {
 
   public connectedCallback(): void {
     if (!this.codemirror) {
-      console.log(this.rtl);
-      console.log(this.autofocus);
       this.codemirror = CodeMirror(
         (this.shadowRoot as unknown) as HTMLElement,
         {
@@ -95,13 +105,13 @@ export class HaYamlEditor extends HTMLElement {
           lineNumbers: true,
           mode: "yaml",
           tabSize: 2,
-          autofocus: this.autofocus,
+          autofocus: this._autofocus,
           viewportMargin: Infinity,
           extraKeys: {
             Tab: "indentMore",
             "Shift-Tab": "indentLess",
           },
-          gutters: this.rtl ? ["rtl-gutter", "CodeMirror-linenumbers"] : [],
+          gutters: this._rtl ? ["rtl-gutter", "CodeMirror-linenumbers"] : [],
         }
       );
       this.setScrollBarDirection();
@@ -116,7 +126,9 @@ export class HaYamlEditor extends HTMLElement {
   }
 
   private setScrollBarDirection(): void {
-    this.codemirror.getWrapperElement().classList.toggle("rtl", this.rtl);
+    if (this.codemirror) {
+      this.codemirror.getWrapperElement().classList.toggle("rtl", this._rtl);
+    }
   }
 }
 

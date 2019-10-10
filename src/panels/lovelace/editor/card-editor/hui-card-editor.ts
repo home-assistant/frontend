@@ -122,7 +122,7 @@ export class HuiCardEditor extends LitElement {
           : html`
               <div class="yaml-editor">
                 <ha-yaml-editor
-                  autofocus
+                  .autofocus=${true}
                   .rtl=${computeRTL(this.hass)}
                   .value=${this.yaml}
                   @yaml-changed=${this._handleYAMLChanged}
