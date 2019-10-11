@@ -33,6 +33,8 @@ documentContainer.innerHTML = `<custom-style>
 
       --scrollbar-thumb-color: rgb(194, 194, 194);
 
+      --error-state-color: #db4437;
+
       /* states and badges */
       --state-icon-color: #44739e;
       --state-icon-active-color: #FDD835;

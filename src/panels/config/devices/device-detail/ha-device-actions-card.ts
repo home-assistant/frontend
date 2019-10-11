@@ -1,7 +1,6 @@
 import { customElement } from "lit-element";
 import {
   DeviceAction,
-  fetchDeviceActions,
   localizeDeviceAutomationAction,
 } from "../../../../data/device_automation";
 
@@ -15,7 +14,7 @@ export class HaDeviceActionsCard extends HaDeviceAutomationCard<DeviceAction> {
   protected headerKey = "ui.panel.config.devices.automation.actions.caption";
 
   constructor() {
-    super(localizeDeviceAutomationAction, fetchDeviceActions);
+    super(localizeDeviceAutomationAction);
   }
 }
 

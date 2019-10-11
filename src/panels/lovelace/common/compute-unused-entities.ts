@@ -1,7 +1,7 @@
 import { LovelaceConfig, ActionConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 
-const EXCLUDED_DOMAINS = ["zone"];
+const EXCLUDED_DOMAINS = ["zone", "persistent_notification"];
 
 const addFromAction = (entities: Set<string>, actionConfig: ActionConfig) => {
   if (

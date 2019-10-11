@@ -20,10 +20,12 @@ declare global {
       "ha-device-picker": any;
       "ha-device-condition-picker": any;
       "ha-textarea": any;
+      "ha-yaml-editor": any;
       "ha-service-picker": any;
       "mwc-button": any;
       "ha-device-trigger-picker": any;
       "ha-device-action-picker": any;
+      "ha-form": any;
     }
   }
 }

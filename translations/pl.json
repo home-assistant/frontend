@@ -554,6 +554,12 @@
                                 },
                                 "device": {
                                     "label": "Urządzenie"
+                                },
+                                "and": {
+                                    "label": "I"
+                                },
+                                "or": {
+                                    "label": "Lub"
                                 }
                             },
                             "learn_more": "Dowiedz się więcej o warunkach"
@@ -596,7 +602,11 @@
                             "learn_more": "Dowiedz się więcej o akcjach"
                         },
                         "load_error_not_editable": "Edytowalne są tylko automatyzacje w pliku automations.yaml.",
-                        "load_error_unknown": "Wystąpił błąd podczas ładowania automatyzacji ({err_no})."
+                        "load_error_unknown": "Wystąpił błąd podczas ładowania automatyzacji ({err_no}).",
+                        "description": {
+                            "label": "Opis",
+                            "placeholder": "Opcjonalny opis"
+                        }
                     }
                 },
                 "script": {
@@ -635,7 +645,7 @@
                         "instance": "Instancja",
                         "index": "Indeks",
                         "unknown": "nieznany",
-                        "wakeup_interval": "Interwał wybudzenia"
+                        "wakeup_interval": "Częstotliwość wybudzenia"
                     },
                     "values": {
                         "header": "Wartości węzła"
@@ -643,7 +653,7 @@
                     "node_config": {
                         "header": "Opcje konfiguracji węzła",
                         "seconds": "sekundy",
-                        "set_wakeup": "Ustaw interwał wybudzenia",
+                        "set_wakeup": "Ustaw częstotliwość wybudzenia",
                         "config_parameter": "Parametr",
                         "config_value": "Wartość",
                         "true": "Prawda",
@@ -754,7 +764,8 @@
                         "unavailable": "(niedostępne)",
                         "introduction": "Home Assistant prowadzi rejestr każdej encji, jaką kiedykolwiek widział i którą można jednoznacznie zidentyfikować. Każda z tych encji będzie miała przypisany unikalny identyfikator, który będzie zarezerwowany tylko dla niej.",
                         "introduction2": "Użyj rejestru encji, aby nadpisać jej nazwę, zmienić jej identyfikator lub usunąć ją z Home Assistant'a. Uwaga: usunięcie wpisu rejestru encji nie spowoduje usunięcia encji. Aby to zrobić, kliknij poniższy link i usuń integracje encji.",
-                        "integrations_page": "Strona integracji"
+                        "integrations_page": "Strona integracji",
+                        "show_disabled": "Wyświetl nieużywane encje"
                     },
                     "editor": {
                         "unavailable": "Ta encja nie jest obecnie dostępna.",
@@ -763,7 +774,9 @@
                         "update": "UAKTUALNIJ",
                         "enabled_label": "Włącz encję",
                         "enabled_cause": "Wyłączone przez {cause}.",
-                        "enabled_description": "Wyłączone encje nie będą dodawane do Home Assistant'a."
+                        "enabled_description": "Wyłączone encje nie będą dodawane do Home Assistant'a.",
+                        "confirm_delete": "Czy na pewno chcesz usunąć ten wpis?",
+                        "confirm_delete2": "Usunięcie wpisu nie spowoduje usunięcia encji z Home Assistant'a. Aby to zrobić, musisz usunąć integrację '{platform}'."
                     }
                 },
                 "person": {
@@ -808,7 +821,18 @@
                 },
                 "devices": {
                     "caption": "Urządzenia",
-                    "description": "Zarządzaj podłączonymi urządzeniami"
+                    "description": "Zarządzaj podłączonymi urządzeniami",
+                    "automation": {
+                        "triggers": {
+                            "caption": "Zrób coś, gdy..."
+                        },
+                        "conditions": {
+                            "caption": "Zrób coś tylko, jeśli..."
+                        },
+                        "actions": {
+                            "caption": "Kiedy coś zostanie uruchomione..."
+                        }
+                    }
                 }
             },
             "profile": {
@@ -884,6 +908,10 @@
                 "force_narrow": {
                     "header": "Zawsze ukrywaj pasek boczny",
                     "description": "Spowoduje to domyślne ukrycie paska bocznego, podobnie jak w przypadku urządzeń przenośnych."
+                },
+                "vibrate": {
+                    "header": "Wibracja",
+                    "description": "Włącz lub wyłącz wibracje na tym urządzeniu podczas sterowania urządzeniami."
                 }
             },
             "page-authorize": {
@@ -968,7 +996,7 @@
                                     "data": {
                                         "code": "Kod uwierzytelniania dwuskładnikowego"
                                     },
-                                    "description": "Otwórz **{mfa_module_name}** na swoim urządzeniu by zobaczyć kod dwuskładnikowego uwierzytelniania i zweryfikować swoją tożsamość:"
+                                    "description": "Otwórz **{mfa_module_name}** na urządzeniu, aby wyświetlić dwuskładnikowy kod uwierzytelniający i zweryfikować swoją tożsamość:"
                                 }
                             },
                             "error": {
@@ -1031,7 +1059,8 @@
                         "navigate_to": "Przejdź do {location}",
                         "toggle": "Przełącz {name}",
                         "call_service": "Wywołaj usługę {name}",
-                        "more_info": "Pokaż więcej informacji: {name}"
+                        "more_info": "Pokaż więcej informacji: {name}",
+                        "url": "Otwórz okno do {url_path}"
                     }
                 },
                 "editor": {
@@ -1077,6 +1106,66 @@
                     "edit_lovelace": {
                         "header": "Tytuł interfejsu użytkownika",
                         "explanation": "Tytuł jest wyświetlany ponad wszystkimi widokami interfejsu użytkownika"
+                    },
+                    "card": {
+                        "alarm_panel": {
+                            "available_states": "Dostępne stany"
+                        },
+                        "config": {
+                            "required": "Wymagane",
+                            "optional": "Opcjonalne"
+                        },
+                        "entities": {
+                            "show_header_toggle": "Wyświetlać przełącznik nagłówka?"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "define": "Zdefiniować progi kolorów?",
+                                "green": "Zielony",
+                                "red": "Czerwony",
+                                "yellow": "Żółty"
+                            }
+                        },
+                        "glance": {
+                            "columns": "Kolumny"
+                        },
+                        "generic": {
+                            "aspect_ratio": "Proporcje obrazu",
+                            "camera_image": "Encja kamery",
+                            "camera_view": "Widok kamery",
+                            "entities": "Encje",
+                            "entity": "Encja",
+                            "hold_action": "Akcja przytrzymania",
+                            "hours_to_show": "Godziny do pokazania",
+                            "icon": "Ikona",
+                            "icon_height": "Wysokość ikony",
+                            "image": "Ścieżka obrazu",
+                            "maximum": "Maksimum",
+                            "minimum": "Minimum",
+                            "name": "Nazwa",
+                            "refresh_interval": "Częstotliwość odświeżania",
+                            "show_icon": "Pokaż ikonę?",
+                            "show_name": "Pokaż nazwę?",
+                            "show_state": "Pokaż stan?",
+                            "tap_action": "Akcja dotknięcia",
+                            "title": "Tytuł",
+                            "theme": "Motyw",
+                            "unit": "Jednostka",
+                            "url": "URL"
+                        },
+                        "map": {
+                            "geo_location_sources": "Źródła geolokalizacji",
+                            "dark_mode": "Tryb ciemny?",
+                            "default_zoom": "Domyślne powiększenie",
+                            "source": "Źródło"
+                        },
+                        "markdown": {
+                            "content": "Zawartość"
+                        },
+                        "sensor": {
+                            "graph_detail": "Szczegół wykresu",
+                            "graph_type": "Rodzaj wykresu"
+                        }
                     }
                 },
                 "menu": {

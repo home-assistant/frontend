@@ -136,7 +136,7 @@ class CloudAlexa extends LitElement {
               .checked=${isExposed}
               @change=${this._exposeChanged}
             >
-              Expose to Alexa
+              ${this.hass!.localize("ui.panel.config.cloud.alexa.expose")}
             </ha-switch>
           </div>
         </ha-card>
@@ -148,7 +148,9 @@ class CloudAlexa extends LitElement {
     }
 
     return html`
-      <hass-subpage header="Alexa">
+      <hass-subpage header="${this.hass!.localize(
+        "ui.panel.config.cloud.alexa.title"
+      )}">
         <span slot="toolbar-icon">
           ${selected}${
       !this.narrow
@@ -173,9 +175,7 @@ class CloudAlexa extends LitElement {
           !emptyFilter
             ? html`
                 <div class="banner">
-                  Editing which entities are exposed via this UI is disabled
-                  because you have configured entity filters in
-                  configuration.yaml.
+                  ${this.hass!.localize("ui.panel.config.cloud.alexa.banner")}
                 </div>
               `
             : ""
@@ -183,7 +183,11 @@ class CloudAlexa extends LitElement {
           ${
             exposedCards.length > 0
               ? html`
-                  <h1>Exposed entities</h1>
+                  <h1>
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.alexa.exposed_entities"
+                    )}
+                  </h1>
                   <div class="content">${exposedCards}</div>
                 `
               : ""
@@ -191,7 +195,11 @@ class CloudAlexa extends LitElement {
           ${
             notExposedCards.length > 0
               ? html`
-                  <h1>Not Exposed entities</h1>
+                  <h1>
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.alexa.not_exposed_entities"
+                    )}
+                  </h1>
                   <div class="content">${notExposedCards}</div>
                 `
               : ""

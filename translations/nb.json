@@ -62,11 +62,11 @@
             },
             "sound": {
                 "off": "Klar",
-                "on": "Aktivert"
+                "on": "Oppdaget"
             },
             "vibration": {
                 "off": "Klar",
-                "on": "Aktivert"
+                "on": "Oppdaget"
             },
             "opening": {
                 "off": "Lukket",
@@ -554,6 +554,12 @@
                                 },
                                 "device": {
                                     "label": "Enhet"
+                                },
+                                "and": {
+                                    "label": "Og"
+                                },
+                                "or": {
+                                    "label": "Eller"
                                 }
                             },
                             "learn_more": "Lær mer om betingelser"
@@ -596,7 +602,11 @@
                             "learn_more": "Lær mer om handlinger"
                         },
                         "load_error_not_editable": "Kun automatiseringer i automations.yaml kan redigeres.",
-                        "load_error_unknown": "Feil ved lasting av automatisering ( {err_no} )."
+                        "load_error_unknown": "Feil ved lasting av automatisering ( {err_no} ).",
+                        "description": {
+                            "label": "Beskrivelse",
+                            "placeholder": "Valgfri beskrivelse"
+                        }
                     }
                 },
                 "script": {
@@ -754,7 +764,8 @@
                         "unavailable": "(utilgjengelig)",
                         "introduction": "Home Assistant bygger opp et register over hver enhet den har sett som kan identifiseres unikt. Hver av disse enhetene vil ha en enhets-ID tilknyttet som vil bli reservert for bare denne enheten.",
                         "introduction2": "Bruk entitetsregisteret for å overskrive navnet, endre enhets ID eller fjern oppføringen fra Home Assistant. Merk at fjerning av enhetsregisteroppføringer ikke fjerner enheten. For å gjøre det, følg linken under og fjern den fra integrasjonssiden.",
-                        "integrations_page": "Integrasjonsside"
+                        "integrations_page": "Integrasjonsside",
+                        "show_disabled": "Vis deaktiverte enheter"
                     },
                     "editor": {
                         "unavailable": "Denne enheten er ikke tilgjengelig for øyeblikket.",
@@ -763,7 +774,9 @@
                         "update": "OPPDATER",
                         "enabled_label": "Aktiver enhet",
                         "enabled_cause": "Deaktivert av {cause}.",
-                        "enabled_description": "Deaktiverte enheter vil ikke bli lagt til i Home Assistant."
+                        "enabled_description": "Deaktiverte enheter vil ikke bli lagt til i Home Assistant.",
+                        "confirm_delete": "Er du sikker på at du vil slette denne oppføringen?",
+                        "confirm_delete2": "Hvis du sletter en oppføring, fjernes ikke enheten fra Home Assistant. Hvis du vil gjøre dette, må du fjerne integreringen ' {Platform} ' fra Home Assistant."
                     }
                 },
                 "person": {
@@ -808,7 +821,18 @@
                 },
                 "devices": {
                     "caption": "Enheter",
-                    "description": "Administrer tilkoblede enheter"
+                    "description": "Administrer tilkoblede enheter",
+                    "automation": {
+                        "triggers": {
+                            "caption": "Gjør noe når ..."
+                        },
+                        "conditions": {
+                            "caption": "Bare gjør noe hvis..."
+                        },
+                        "actions": {
+                            "caption": "Når noe er utløst..."
+                        }
+                    }
                 }
             },
             "profile": {
@@ -884,6 +908,10 @@
                 "force_narrow": {
                     "header": "Skjul alltid sidepanelet",
                     "description": "Dette vil skjule sidepanelet som standard, tilsvarende opplevelsen på en mobil."
+                },
+                "vibrate": {
+                    "header": "Vibrere",
+                    "description": "Aktiver eller deaktiver vibrasjoner på denne enheten når du kontrollerer enheter."
                 }
             },
             "page-authorize": {
@@ -1031,7 +1059,8 @@
                         "navigate_to": "Naviger til {location}",
                         "toggle": "Veksle {name}",
                         "call_service": "Tjenestekall {name}",
-                        "more_info": "Vis mer info: {name}"
+                        "more_info": "Vis mer info: {name}",
+                        "url": "Åpne vindu til {url_path}"
                     }
                 },
                 "editor": {
@@ -1077,6 +1106,66 @@
                     "edit_lovelace": {
                         "header": "Tittel på Lovelace UI",
                         "explanation": "Denne tittelen vises over alle visningene dine i Lovelace."
+                    },
+                    "card": {
+                        "alarm_panel": {
+                            "available_states": "Tilgjengelige tilstander"
+                        },
+                        "config": {
+                            "required": "Nødvendig",
+                            "optional": "Valgfritt"
+                        },
+                        "entities": {
+                            "show_header_toggle": "Vise topptekst veksling?"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "define": "Definer alvorlighetsgrad?",
+                                "green": "Grønn",
+                                "red": "Rød",
+                                "yellow": "Gul"
+                            }
+                        },
+                        "glance": {
+                            "columns": "kolonner"
+                        },
+                        "generic": {
+                            "aspect_ratio": "Størrelsesforholdet",
+                            "camera_image": "Kameraenhet",
+                            "camera_view": "Kameravisning",
+                            "entities": "Enheter",
+                            "entity": "Enhet",
+                            "hold_action": "Hold nede for handling",
+                            "hours_to_show": "Timer som skal vises",
+                            "icon": "Ikon",
+                            "icon_height": "Ikon høyde",
+                            "image": "Bane til bilde",
+                            "maximum": "Maksimalt",
+                            "minimum": "Minimum",
+                            "name": "Navn",
+                            "refresh_interval": "Oppdateringsintervall",
+                            "show_icon": "Vis ikon?",
+                            "show_name": "Vis navn?",
+                            "show_state": "Vis tilstand?",
+                            "tap_action": "Trykk for handling",
+                            "title": "Tittel",
+                            "theme": "Tema",
+                            "unit": "Enhet",
+                            "url": "Url"
+                        },
+                        "map": {
+                            "geo_location_sources": "Kilder for geolokasjon",
+                            "dark_mode": "Mørk modus?",
+                            "default_zoom": "Standard zoom",
+                            "source": "Kilde"
+                        },
+                        "markdown": {
+                            "content": "Innhold"
+                        },
+                        "sensor": {
+                            "graph_detail": "Detaljer for graf",
+                            "graph_type": "Grafstype"
+                        }
                     }
                 },
                 "menu": {

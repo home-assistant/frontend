@@ -39,6 +39,26 @@ export const fetchDeviceTriggers = (hass: HomeAssistant, deviceId: string) =>
     device_id: deviceId,
   });
 
+export const fetchDeviceConditionCapabilities = (
+  hass: HomeAssistant,
+  condition: DeviceCondition
+) =>
+  hass.callWS<DeviceCondition[]>({
+    type: "device_automation/condition/capabilities",
+    condition,
+  });
+
+export const fetchDeviceTriggerCapabilities = (
+  hass: HomeAssistant,
+  trigger: DeviceTrigger
+) =>
+  hass.callWS<DeviceTrigger[]>({
+    type: "device_automation/trigger/capabilities",
+    trigger,
+  });
+
+const whitelist = ["above", "below", "for"];
+
 export const deviceAutomationsEqual = (
   a: DeviceAutomation,
   b: DeviceAutomation
@@ -48,11 +68,17 @@ export const deviceAutomationsEqual = (
   }
 
   for (const property in a) {
+    if (whitelist.includes(property)) {
+      continue;
+    }
     if (!Object.is(a[property], b[property])) {
       return false;
     }
   }
   for (const property in b) {
+    if (whitelist.includes(property)) {
+      continue;
+    }
     if (!Object.is(a[property], b[property])) {
       return false;
     }
