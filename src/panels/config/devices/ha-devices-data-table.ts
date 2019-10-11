@@ -13,9 +13,9 @@ import {
 import { HomeAssistant } from "../../../types";
 // tslint:disable-next-line
 import {
-  DataTabelColumnContainer,
+  DataTableColumnContainer,
   RowClickedEvent,
-  DataTabelRowData,
+  DataTableRowData,
 } from "../../../components/data-table/ha-data-table";
 // tslint:disable-next-line
 import { DeviceRegistryEntry } from "../../../data/device_registry";
@@ -127,7 +127,7 @@ export class HaDevicesDataTable extends LitElement {
   );
 
   private _columns = memoizeOne(
-    (narrow: boolean): DataTabelColumnContainer =>
+    (narrow: boolean): DataTableColumnContainer =>
       narrow
         ? {
             name: {
@@ -136,7 +136,7 @@ export class HaDevicesDataTable extends LitElement {
               filterKey: "name",
               filterable: true,
               direction: "asc",
-              template: (name, device: DataTabelRowData) => {
+              template: (name, device: DataTableRowData) => {
                 const battery = device.battery_entity
                   ? this.hass.states[device.battery_entity]
                   : undefined;
