@@ -66,11 +66,6 @@ export class CloudAlexaPref extends LitElement {
               </a>
             </li>
           </ul>
-          <em
-            >${this.hass!.localize(
-              "ui.panel.config.cloud.account.alexa.requirements"
-            )}</em
-          >
           ${alexa_enabled
             ? html`
                 <div class="state-reporting">
