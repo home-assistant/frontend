@@ -46,12 +46,6 @@ class HaPanelDevTemplate extends PolymerElement {
           right: 8px;
         }
 
-        paper-textarea {
-          --paper-input-container-input: {
-            @apply --paper-font-code1;
-          }
-        }
-
         .rendered {
           @apply --paper-font-code1;
           clear: both;

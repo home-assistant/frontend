@@ -9,12 +9,12 @@ import {
 } from "lit-element";
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-input/paper-textarea";
 
 import { HomeAssistant } from "../../../types";
 
 import { haStyle } from "../../../resources/styles";
 import "../../../components/ha-card";
+import "../../../components/ha-code-editor";
 import "./mqtt-subscribe-card";
 
 @customElement("developer-tools-mqtt")
@@ -48,12 +48,12 @@ class HaPanelDevMqtt extends LitElement {
               @value-changed=${this._handleTopic}
             ></paper-input>
 
-            <paper-textarea
-              always-float-label
-              label="Payload (template allowed)"
+            <p>Payload (template allowed)</p>
+            <ha-code-editor
+              mode="jinja2"
               .value="${this.payload}"
               @value-changed=${this._handlePayload}
-            ></paper-textarea>
+            ></ha-code-editor>
           </div>
           <div class="card-actions">
             <mwc-button @click=${this._publish}>Publish</mwc-button>
