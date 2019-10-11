@@ -79,11 +79,6 @@ export class CloudGooglePref extends LitElement {
               </a>
             </li>
           </ul>
-          <em
-            >${this.hass!.localize(
-              "ui.panel.config.cloud.account.google.requirements"
-            )}</em
-          >
           ${google_enabled
             ? html`
                 <h3>Enable State Reporting</h3>
