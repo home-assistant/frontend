@@ -18,7 +18,7 @@ export interface LovelaceViewConfig {
   theme?: string;
   panel?: boolean;
   background?: string;
-  show?: boolean | ShowViewConfig[];
+  visible?: boolean | ShowViewConfig[];
 }
 
 export interface ShowViewConfig {

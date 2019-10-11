@@ -233,12 +233,12 @@ class HUIRoot extends LitElement {
                           class="${classMap({
                             "hide-tab": Boolean(
                               !this._editMode &&
-                                view.show !== undefined &&
-                                ((Array.isArray(view.show) &&
-                                  !view.show.some(
+                                view.visible !== undefined &&
+                                ((Array.isArray(view.visible) &&
+                                  !view.visible.some(
                                     (e) => e.user === this.hass!.user!.id
                                   )) ||
-                                  view.show === false)
+                                  view.visible === false)
                             ),
                           })}"
                         >
