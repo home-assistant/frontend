@@ -830,7 +830,12 @@
                   "label": "And"
                 },
                 "device": {
-                  "label": "Device"
+                  "label": "Device",
+                  "extra_fields": {
+                    "above": "Above",
+                    "below": "Below",
+                    "for": "Duration"
+                  }
                 },
                 "numeric_state": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::label%]",
