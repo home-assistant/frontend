@@ -22,7 +22,7 @@ import "../../../../components/data-table/ha-data-table";
 // tslint:disable-next-line
 import {
   SelectionChangedEvent,
-  DataTabelColumnContainer,
+  DataTableColumnContainer,
 } from "../../../../components/data-table/ha-data-table";
 
 import { computeStateName } from "../../../../common/entity/compute_state_name";
@@ -55,7 +55,7 @@ export class HuiUnusedEntities extends LitElement {
   }
 
   private _columns = memoizeOne((narrow: boolean) => {
-    const columns: DataTabelColumnContainer = {
+    const columns: DataTableColumnContainer = {
       entity: {
         title: "Entity",
         sortable: true,
