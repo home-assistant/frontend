@@ -1,8 +1,6 @@
 import { h, Component } from "preact";
 import yaml from "js-yaml";
-import "../../../components/ha-yaml-editor";
-// tslint:disable-next-line
-import { HaYamlEditor } from "../../../components/ha-yaml-editor";
+import "../../../components/ha-code-editor";
 
 const isEmpty = (obj: object) => {
   for (const key in obj) {
@@ -14,8 +12,6 @@ const isEmpty = (obj: object) => {
 };
 
 export default class YAMLTextArea extends Component<any, any> {
-  private _yamlEditor!: HaYamlEditor;
-
   constructor(props) {
     super(props);
 
@@ -63,12 +59,6 @@ export default class YAMLTextArea extends Component<any, any> {
     }
   }
 
-  public componentDidMount() {
-    setTimeout(() => {
-      this._yamlEditor.codemirror.refresh();
-    }, 1);
-  }
-
   public render({ label }, { value, isValid }) {
     const style: any = {
       minWidth: 300,
@@ -77,8 +67,8 @@ export default class YAMLTextArea extends Component<any, any> {
     return (
       <div>
         <p>{label}</p>
-        <ha-yaml-editor
-          ref={this._storeYamlEditorRef}
+        <ha-code-editor
+          mode="yaml"
           style={style}
           value={value}
           error={isValid === false}
@@ -87,6 +77,4 @@ export default class YAMLTextArea extends Component<any, any> {
       </div>
     );
   }
-
-  private _storeYamlEditorRef = (yamlEditor) => (this._yamlEditor = yamlEditor);
 }

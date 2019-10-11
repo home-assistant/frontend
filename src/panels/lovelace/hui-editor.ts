@@ -14,10 +14,10 @@ import { Lovelace } from "./types";
 
 import "../../components/ha-icon";
 import { haStyle } from "../../resources/styles";
-import "../../components/ha-yaml-editor";
+import "../../components/ha-code-editor";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
-import { HaYamlEditor } from "../../components/ha-yaml-editor";
+import { HaCodeEditor } from "../../components/ha-code-editor";
 import { HomeAssistant } from "../../types";
 import { computeRTL } from "../../common/util/compute_rtl";
 
@@ -81,14 +81,15 @@ class LovelaceFullConfigEditor extends LitElement {
           </app-toolbar>
         </app-header>
         <div class="content">
-          <ha-yaml-editor
-            .autofocus=${true}
+          <ha-code-editor
+            mode="yaml"
+            autofocus
             .rtl=${computeRTL(this.hass)}
             .hass="${this.hass}"
             @value-changed="${this._yamlChanged}"
             @editor-save="${this._handleSave}"
           >
-          </ha-yaml-editor>
+          </ha-code-editor>
         </div>
       </app-header-layout>
     `;
@@ -96,8 +97,11 @@ class LovelaceFullConfigEditor extends LitElement {
 
   protected firstUpdated() {
     this.yamlEditor.value = yaml.safeDump(this.lovelace!.config);
-    this.yamlEditor.codemirror.clearHistory();
-    this._generation = this.yamlEditor.codemirror.changeGeneration(true);
+    // wait on render
+    setTimeout(() => {
+      this.yamlEditor.codemirror.clearHistory();
+      this._generation = this.yamlEditor.codemirror.changeGeneration(true);
+    }, 1);
   }
 
   static get styles(): CSSResult[] {
@@ -208,8 +212,8 @@ class LovelaceFullConfigEditor extends LitElement {
     this._changed = false;
   }
 
-  private get yamlEditor(): HaYamlEditor {
-    return this.shadowRoot!.querySelector("ha-yaml-editor")!;
+  private get yamlEditor(): HaCodeEditor {
+    return this.shadowRoot!.querySelector("ha-code-editor")! as HaCodeEditor;
   }
 }
 

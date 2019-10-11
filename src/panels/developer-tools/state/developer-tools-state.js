@@ -7,7 +7,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import yaml from "js-yaml";
 
 import "../../../components/entity/ha-entity-picker";
-import "../../../components/ha-yaml-editor";
+import "../../../components/ha-code-editor";
 import "../../../resources/ha-style";
 import { EventsMixin } from "../../../mixins/events-mixin";
 
@@ -92,11 +92,12 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
           class="state-input"
         ></paper-input>
         <p>State attributes (YAML, optional)</p>
-        <ha-yaml-editor
+        <ha-code-editor
+          mode="yaml"
           value="[[_stateAttributes]]"
           error="[[!validJSON]]"
           on-value-changed="_yamlChanged"
-        ></ha-yaml-editor>
+        ></ha-code-editor>
         <mwc-button on-click="handleSetState" disabled="[[!validJSON]]" raised
           >Set State</mwc-button
         >

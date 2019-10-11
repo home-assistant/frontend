@@ -1,8 +1,6 @@
-// @ts-ignore
-import CodeMirror from "codemirror";
-// @ts-ignore
-import codeMirrorCSS from "codemirror/lib/codemirror.css";
+import { loadCodeMirror } from "../resources/codemirror.ondemand";
 import { fireEvent } from "../common/dom/fire_event";
+import { UpdatingElement, property, customElement } from "lit-element";
 
 declare global {
   interface HASSDomEvents {
@@ -10,120 +8,151 @@ declare global {
   }
 }
 
-export class HaCodeEditor extends HTMLElement {
+@customElement("ha-code-editor")
+export class HaCodeEditor extends UpdatingElement {
   public codemirror?: any;
-  private mode: string;
-  private _autofocus = false;
-  private _rtl = false;
-  private _value: string;
+  @property() public mode?: string;
+  @property() public autofocus = false;
+  @property() public rtl = false;
+  @property() public error = false;
+  @property() private _value = "";
 
-  public constructor(mode: string) {
-    super();
-    CodeMirror.commands.save = (cm: CodeMirror) => {
-      fireEvent(cm.getWrapperElement(), "editor-save");
-    };
-    this.mode = mode;
-    this._value = "";
-    const shadowRoot = this.attachShadow({ mode: "open" });
-    shadowRoot.innerHTML = `
-            <style>
-              ${codeMirrorCSS}
-              .CodeMirror {
-                height: var(--code-mirror-height, auto);
-                direction: var(--code-mirror-direction, ltr);
-              }
-              .CodeMirror-scroll {
-                max-height: var(--code-mirror-max-height, --code-mirror-height);
-              }
-              .CodeMirror-gutters {
-                border-right: 1px solid var(--paper-input-container-color, var(--secondary-text-color));
-                background-color: var(--paper-dialog-background-color, var(--primary-background-color));
-                transition: 0.2s ease border-right;
-              }
-              :host(.error-state) .CodeMirror-gutters {
-                border-color: var(--error-state-color, red);
-              }
-              .CodeMirror-focused .CodeMirror-gutters {
-                border-right: 2px solid var(--paper-input-container-focus-color, var(--primary-color));
-              }
-              .CodeMirror-linenumber {
-                color: var(--paper-dialog-color, var(--primary-text-color));
-              }
-              .rtl .CodeMirror-vscrollbar {
-                right: auto;
-                left: 0px;
-              }
-              .rtl-gutter {
-                width: 20px;
-              }
-            </style>`;
-  }
-
-  set value(value: string) {
-    if (this.codemirror) {
-      if (value !== this.codemirror.getValue()) {
-        this.codemirror.setValue(value);
-      }
-    }
+  public set value(value: string) {
     this._value = value;
   }
 
-  get value(): string {
-    return this.codemirror ? this.codemirror.getValue() : "";
+  public get value() {
+    return this.codemirror ? this.codemirror.getValue() : this._value;
   }
 
-  set rtl(rtl: boolean) {
-    this._rtl = rtl;
-    this.setScrollBarDirection();
+  public get hasComments(): boolean {
+    return this.shadowRoot!.querySelector("span.cm-comment") ? true : false;
   }
 
-  set autofocus(autofocus: boolean) {
-    this._autofocus = autofocus;
-    if (this.codemirror) {
+  public connectedCallback() {
+    super.connectedCallback();
+    if (!this.codemirror) {
+      return;
+    }
+    this.codemirror.refresh();
+    if (this.autofocus !== false) {
       this.codemirror.focus();
     }
   }
 
-  set error(error: boolean) {
-    this.classList.toggle("error-state", error);
-  }
+  protected update(changedProps) {
+    super.update(changedProps);
 
-  get hasComments(): boolean {
-    return this.shadowRoot!.querySelector("span.cm-comment") ? true : false;
-  }
-
-  public connectedCallback(): void {
     if (!this.codemirror) {
-      this.codemirror = CodeMirror(
-        (this.shadowRoot as unknown) as HTMLElement,
-        {
-          value: this._value,
-          lineNumbers: true,
-          tabSize: 2,
-          mode: this.mode,
-          autofocus: this._autofocus,
-          viewportMargin: Infinity,
-          extraKeys: {
-            Tab: "indentMore",
-            "Shift-Tab": "indentLess",
-          },
-          gutters: this._rtl ? ["rtl-gutter", "CodeMirror-linenumbers"] : [],
-        }
-      );
-      this.setScrollBarDirection();
-      this.codemirror.on("changes", () => this._onChange());
-    } else {
-      this.codemirror.refresh();
+      return;
     }
+
+    if (changedProps.has("mode")) {
+      this.codemirror.setOption("mode", this.mode);
+    }
+    if (changedProps.has("autofocus")) {
+      this.codemirror.setOption("autofocus", this.autofocus !== false);
+    }
+    if (changedProps.has("_value") && this._value !== this.value) {
+      this.codemirror.setValue(this._value);
+    }
+    if (changedProps.has("rtl")) {
+      this.codemirror.setOption("gutters", this._calcGutters());
+      this._setScrollBarDirection();
+    }
+    if (changedProps.has("error")) {
+      this.classList.toggle("error-state", this.error);
+    }
+  }
+
+  protected firstUpdated(changedProps) {
+    super.firstUpdated(changedProps);
+    this._load();
+  }
+
+  private async _load() {
+    const loaded = await loadCodeMirror();
+
+    const codeMirror = loaded.codeMirror;
+
+    codeMirror.commands.save = (cm) => {
+      fireEvent(cm.getWrapperElement(), "editor-save");
+    };
+
+    this.attachShadow({ mode: "open" });
+
+    this.shadowRoot!.innerHTML = `
+    <style>
+      ${loaded.codeMirrorCss}
+      .CodeMirror {
+        height: var(--code-mirror-height, auto);
+        direction: var(--code-mirror-direction, ltr);
+      }
+      .CodeMirror-scroll {
+        max-height: var(--code-mirror-max-height, --code-mirror-height);
+      }
+      .CodeMirror-gutters {
+        border-right: 1px solid var(--paper-input-container-color, var(--secondary-text-color));
+        background-color: var(--paper-dialog-background-color, var(--primary-background-color));
+        transition: 0.2s ease border-right;
+      }
+      :host(.error-state) .CodeMirror-gutters {
+        border-color: var(--error-state-color, red);
+      }
+      .CodeMirror-focused .CodeMirror-gutters {
+        border-right: 2px solid var(--paper-input-container-focus-color, var(--primary-color));
+      }
+      .CodeMirror-linenumber {
+        color: var(--paper-dialog-color, var(--primary-text-color));
+      }
+      .rtl .CodeMirror-vscrollbar {
+        right: auto;
+        left: 0px;
+      }
+      .rtl-gutter {
+        width: 20px;
+      }
+    </style>`;
+
+    this.codemirror = codeMirror((this.shadowRoot as unknown) as HTMLElement, {
+      value: this._value,
+      lineNumbers: true,
+      tabSize: 2,
+      mode: this.mode,
+      autofocus: this.autofocus !== false,
+      viewportMargin: Infinity,
+      extraKeys: {
+        Tab: "indentMore",
+        "Shift-Tab": "indentLess",
+      },
+      gutters: this._calcGutters(),
+    });
+    this._setScrollBarDirection();
+    this.codemirror.on("changes", () => this._onChange());
   }
 
   private _onChange(): void {
-    fireEvent(this, "value-changed", { value: this.codemirror.getValue() });
+    const newValue = this.value;
+    if (newValue === this._value) {
+      return;
+    }
+    this._value = newValue;
+    fireEvent(this, "value-changed", { value: this._value });
   }
 
-  private setScrollBarDirection(): void {
+  private _calcGutters() {
+    return this.rtl ? ["rtl-gutter", "CodeMirror-linenumbers"] : [];
+  }
+
+  private _setScrollBarDirection(): void {
     if (this.codemirror) {
-      this.codemirror.getWrapperElement().classList.toggle("rtl", this._rtl);
+      this.codemirror.getWrapperElement().classList.toggle("rtl", this.rtl);
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-code-editor": HaCodeEditor;
   }
 }

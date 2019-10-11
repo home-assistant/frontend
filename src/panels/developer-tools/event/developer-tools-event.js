@@ -6,7 +6,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import yaml from "js-yaml";
 
-import "../../../components/ha-yaml-editor";
+import "../../../components/ha-code-editor";
 import "../../../resources/ha-style";
 import "./events-list";
 import "./event-subscribe-card";
@@ -69,11 +69,12 @@ class HaPanelDevEvent extends EventsMixin(PolymerElement) {
               value="{{eventType}}"
             ></paper-input>
             <p>Event Data (YAML, optional)</p>
-            <ha-yaml-editor
+            <ha-code-editor
+              mode="yaml"
               value="[[eventData]]"
               error="[[!validJSON]]"
               on-value-changed="_yamlChanged"
-            ></ha-yaml-editor>
+            ></ha-code-editor>
             <mwc-button on-click="fireEvent" raised disabled="[[!validJSON]]"
               >Fire Event</mwc-button
             >

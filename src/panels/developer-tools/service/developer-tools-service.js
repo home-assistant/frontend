@@ -6,7 +6,7 @@ import yaml from "js-yaml";
 
 import { ENTITY_COMPONENT_DOMAINS } from "../../../data/entity";
 import "../../../components/entity/ha-entity-picker";
-import "../../../components/ha-yaml-editor";
+import "../../../components/ha-code-editor";
 import "../../../components/ha-service-picker";
 import "../../../resources/ha-style";
 import "../../../util/app-localstorage-document";
@@ -114,11 +114,12 @@ class HaPanelDevService extends PolymerElement {
             ></ha-entity-picker>
           </template>
           <p>Service Data (YAML, optional)</p>
-          <ha-yaml-editor
+          <ha-code-editor
+            mode="yaml"
             value="[[serviceData]]"
             error="[[!validJSON]]"
             on-value-changed="_yamlChanged"
-          ></ha-yaml-editor>
+          ></ha-code-editor>
           <mwc-button on-click="_callService" raised disabled="[[!validJSON]]">
             Call Service
           </mwc-button>

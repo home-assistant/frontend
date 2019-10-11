@@ -3,7 +3,7 @@ import { timeOut } from "@polymer/polymer/lib/utils/async";
 import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "../../../components/ha-jinja-editor";
+import "../../../components/ha-code-editor";
 
 import "../../../resources/ha-style";
 
@@ -86,12 +86,13 @@ class HaPanelDevTemplate extends PolymerElement {
             </li>
           </ul>
           <p>Template editor</p>
-          <ha-jinja-editor
+          <ha-code-editor
+            mode="jinja2"
             value="[[template]]"
             error="[[error]]"
-            autofocus="[[true]]"
+            autofocus
             on-value-changed="templateChanged"
-          ></ha-jinja-editor>
+          ></ha-code-editor>
         </div>
 
         <div class="render-pane">
@@ -153,6 +154,11 @@ For loop example:
         value: "",
       },
     };
+  }
+
+  ready() {
+    super.ready();
+    this.renderTemplate();
   }
 
   computeFormClasses(narrow) {
