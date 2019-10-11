@@ -81,18 +81,31 @@ export class CloudGooglePref extends LitElement {
           </ul>
           ${google_enabled
             ? html`
-                <h3>Enable State Reporting</h3>
+                <div class="state-reporting">
+                  <h3>
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.account.google.enable_state_reporting"
+                    )}
+                  </h3>
+                  <div class="state-reporting-switch">
+                    <ha-switch
+                      .checked=${google_report_state}
+                      @change=${this._reportToggleChanged}
+                    ></ha-switch>
+                  </div>
+                </div>
                 <p>
-                  If you enable state reporting, Home Assistant will send
-                  <b>all</b> state changes of exposed entities to Google. This
-                  allows you to always see the latest states in the Google app.
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.account.google.info_state_reporting"
+                  )}
                 </p>
-                <ha-switch
-                  .checked=${google_report_state}
-                  @change=${this._reportToggleChanged}
-                ></ha-switch>
 
                 <div class="secure_devices">
+                  <h3>
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.account.google.security_devices"
+                    )}
+                  </h3>
                   ${this.hass!.localize(
                     "ui.panel.config.cloud.account.google.enter_pin_info"
                   )}
@@ -194,7 +207,7 @@ export class CloudGooglePref extends LitElement {
         font-weight: 500;
       }
       .secure_devices {
-        padding-top: 16px;
+        padding-top: 8px;
       }
       paper-input {
         width: 250px;
@@ -207,6 +220,25 @@ export class CloudGooglePref extends LitElement {
       }
       .spacer {
         flex-grow: 1;
+      }
+      .state-reporting {
+        display: flex;
+        margin-top: 1.5em;
+      }
+      .state-reporting + p {
+        margin-top: 0.5em;
+      }
+      h3 {
+        margin: 0 0 8px 0;
+      }
+      .state-reporting h3 {
+        flex-grow: 1;
+        margin: 0;
+      }
+      .state-reporting-switch {
+        margin-top: 0.25em;
+        margin-right: 7px;
+        margin-left: 0.5em;
       }
     `;
   }
