@@ -298,7 +298,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         margin-right: 1%;
         width: 30%;
         padding: calc(var(--base-unit));
-        font-size: calc(var(--base-unit) * 1.1);
+        font-size: calc(var(--base-unit) * 20);
         box-sizing: border-box;
         border-style: solid;
         border-color: #03a9f4;
