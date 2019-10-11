@@ -830,7 +830,12 @@
                   "label": "And"
                 },
                 "device": {
-                  "label": "Device"
+                  "label": "Device",
+                  "extra_fields": {
+                    "above": "Above",
+                    "below": "Below",
+                    "for": "Duration"
+                  }
                 },
                 "numeric_state": {
                   "label": "[%key:ui::panel::config::automation::editor::triggers::type::numeric_state::label%]",
@@ -1013,7 +1018,6 @@
               "info": "With the Alexa integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Alexa-enabled device.",
               "enable_ha_skill": "Enable the Home Assistant skill for Alexa",
               "config_documentation": "Config documentation",
-              "requirements": "This integration requires an Alexa-enabled device like the Amazon Echo.",
               "enable_state_reporting": "Enable State Reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
               "sync_entities": "Sync Entities",
@@ -1110,7 +1114,13 @@
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant. Note, removing the entity registry entry won't remove the entity. To do that, follow the link below and remove it from the integrations page.",
             "integrations_page": "Integrations page",
-            "show_disabled": "Show disabled entities"
+            "show_disabled": "Show disabled entities",
+            "headers": {
+              "name": "Name",
+              "entity_id": "Entity ID",
+              "integration": "Integration",
+              "enabled": "Enabled"
+            }
           },
           "editor": {
             "unavailable": "This entity is not currently available.",
