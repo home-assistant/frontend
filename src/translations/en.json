@@ -1110,7 +1110,13 @@
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant. Note, removing the entity registry entry won't remove the entity. To do that, follow the link below and remove it from the integrations page.",
             "integrations_page": "Integrations page",
-            "show_disabled": "Show disabled entities"
+            "show_disabled": "Show disabled entities",
+            "headers": {
+              "name": "Name",
+              "entity_id": "Entity ID",
+              "integration": "Integration",
+              "enabled": "Enabled"
+            }
           },
           "editor": {
             "unavailable": "This entity is not currently available.",
