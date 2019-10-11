@@ -1,6 +1,7 @@
 import { loadCodeMirror } from "../resources/codemirror.ondemand";
 import { fireEvent } from "../common/dom/fire_event";
 import { UpdatingElement, property, customElement } from "lit-element";
+import { Editor } from "codemirror";
 
 declare global {
   interface HASSDomEvents {
@@ -10,7 +11,7 @@ declare global {
 
 @customElement("ha-code-editor")
 export class HaCodeEditor extends UpdatingElement {
-  public codemirror?: any;
+  public codemirror?: Editor;
   @property() public mode?: string;
   @property() public autofocus = false;
   @property() public rtl = false;
@@ -75,10 +76,6 @@ export class HaCodeEditor extends UpdatingElement {
 
     const codeMirror = loaded.codeMirror;
 
-    codeMirror.commands.save = (cm) => {
-      fireEvent(cm.getWrapperElement(), "editor-save");
-    };
-
     this.attachShadow({ mode: "open" });
 
     this.shadowRoot!.innerHTML = `
@@ -114,7 +111,7 @@ export class HaCodeEditor extends UpdatingElement {
       }
     </style>`;
 
-    this.codemirror = codeMirror((this.shadowRoot as unknown) as HTMLElement, {
+    this.codemirror = codeMirror(this.shadowRoot, {
       value: this._value,
       lineNumbers: true,
       tabSize: 2,
@@ -128,7 +125,7 @@ export class HaCodeEditor extends UpdatingElement {
       gutters: this._calcGutters(),
     });
     this._setScrollBarDirection();
-    this.codemirror.on("changes", () => this._onChange());
+    this.codemirror!.on("changes", () => this._onChange());
   }
 
   private _onChange(): void {

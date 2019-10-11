@@ -33,7 +33,7 @@ class LovelaceFullConfigEditor extends LitElement {
   public closeEditor?: () => void;
   private _saving?: boolean;
   private _changed?: boolean;
-  private _generation?: number;
+  private _generation = 1;
 
   static get properties() {
     return {
@@ -97,11 +97,6 @@ class LovelaceFullConfigEditor extends LitElement {
 
   protected firstUpdated() {
     this.yamlEditor.value = yaml.safeDump(this.lovelace!.config);
-    // wait on render
-    setTimeout(() => {
-      this.yamlEditor.codemirror.clearHistory();
-      this._generation = this.yamlEditor.codemirror.changeGeneration(true);
-    }, 1);
   }
 
   static get styles(): CSSResult[] {
@@ -147,10 +142,9 @@ class LovelaceFullConfigEditor extends LitElement {
   }
 
   private _yamlChanged() {
-    if (!this._generation) {
-      return;
-    }
-    this._changed = !this.yamlEditor.codemirror.isClean(this._generation);
+    this._changed = !this.yamlEditor
+      .codemirror!.getDoc()
+      .isClean(this._generation);
     if (this._changed && !window.onbeforeunload) {
       window.onbeforeunload = () => {
         return true;
@@ -206,7 +200,9 @@ class LovelaceFullConfigEditor extends LitElement {
     } catch (err) {
       alert(`Unable to save YAML: ${err}`);
     }
-    this._generation = this.yamlEditor.codemirror.changeGeneration(true);
+    this._generation = this.yamlEditor
+      .codemirror!.getDoc()
+      .changeGeneration(true);
     window.onbeforeunload = null;
     this._saving = false;
     this._changed = false;
