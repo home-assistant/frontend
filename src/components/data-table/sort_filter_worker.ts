@@ -1,7 +1,7 @@
 import {
-  DataTabelColumnContainer,
-  DataTabelColumnData,
-  DataTabelRowData,
+  DataTableColumnContainer,
+  DataTableColumnData,
+  DataTableRowData,
   SortingDirection,
 } from "./ha-data-table";
 
@@ -9,8 +9,8 @@ import memoizeOne from "memoize-one";
 
 export const filterSortData = memoizeOne(
   async (
-    data: DataTabelRowData[],
-    columns: DataTabelColumnContainer,
+    data: DataTableRowData[],
+    columns: DataTableColumnContainer,
     filter: string,
     direction: SortingDirection,
     sortColumn?: string
@@ -27,8 +27,8 @@ export const filterSortData = memoizeOne(
 
 const _memFilterData = memoizeOne(
   async (
-    data: DataTabelRowData[],
-    columns: DataTabelColumnContainer,
+    data: DataTableRowData[],
+    columns: DataTableColumnContainer,
     filter: string
   ) => {
     if (!filter) {
@@ -40,8 +40,8 @@ const _memFilterData = memoizeOne(
 
 const _memSortData = memoizeOne(
   (
-    data: DataTabelRowData[],
-    columns: DataTabelColumnContainer,
+    data: DataTableRowData[],
+    columns: DataTableColumnContainer,
     direction: SortingDirection,
     sortColumn: string
   ) => {
@@ -50,8 +50,8 @@ const _memSortData = memoizeOne(
 );
 
 export const filterData = (
-  data: DataTabelRowData[],
-  columns: DataTabelColumnContainer,
+  data: DataTableRowData[],
+  columns: DataTableColumnContainer,
   filter: string
 ) =>
   data.filter((row) => {
@@ -71,8 +71,8 @@ export const filterData = (
   });
 
 export const sortData = (
-  data: DataTabelRowData[],
-  column: DataTabelColumnData,
+  data: DataTableRowData[],
+  column: DataTableColumnData,
   direction: SortingDirection,
   sortColumn: string
 ) =>
