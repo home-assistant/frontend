@@ -1,6 +1,11 @@
 import { loadCodeMirror } from "../resources/codemirror.ondemand";
 import { fireEvent } from "../common/dom/fire_event";
-import { UpdatingElement, property, customElement } from "lit-element";
+import {
+  UpdatingElement,
+  property,
+  customElement,
+  PropertyValues,
+} from "lit-element";
 import { Editor } from "codemirror";
 
 declare global {
@@ -22,7 +27,7 @@ export class HaCodeEditor extends UpdatingElement {
     this._value = value;
   }
 
-  public get value() {
+  public get value(): string {
     return this.codemirror ? this.codemirror.getValue() : this._value;
   }
 
@@ -41,7 +46,7 @@ export class HaCodeEditor extends UpdatingElement {
     }
   }
 
-  protected update(changedProps) {
+  protected update(changedProps: PropertyValues): void {
     super.update(changedProps);
 
     if (!this.codemirror) {
@@ -66,19 +71,19 @@ export class HaCodeEditor extends UpdatingElement {
     }
   }
 
-  protected firstUpdated(changedProps) {
+  protected firstUpdated(changedProps: PropertyValues): void {
     super.firstUpdated(changedProps);
     this._load();
   }
 
-  private async _load() {
+  private async _load(): Promise<void> {
     const loaded = await loadCodeMirror();
 
     const codeMirror = loaded.codeMirror;
 
-    this.attachShadow({ mode: "open" });
+    const shadowRoot = this.attachShadow({ mode: "open" });
 
-    this.shadowRoot!.innerHTML = `
+    shadowRoot!.innerHTML = `
     <style>
       ${loaded.codeMirrorCss}
       .CodeMirror {
@@ -111,7 +116,7 @@ export class HaCodeEditor extends UpdatingElement {
       }
     </style>`;
 
-    this.codemirror = codeMirror(this.shadowRoot, {
+    this.codemirror = codeMirror(shadowRoot, {
       value: this._value,
       lineNumbers: true,
       tabSize: 2,
@@ -137,7 +142,7 @@ export class HaCodeEditor extends UpdatingElement {
     fireEvent(this, "value-changed", { value: this._value });
   }
 
-  private _calcGutters() {
+  private _calcGutters(): string[] {
     return this.rtl ? ["rtl-gutter", "CodeMirror-linenumbers"] : [];
   }
 
