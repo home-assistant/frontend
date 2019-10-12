@@ -17,10 +17,10 @@ import { LovelaceCardEditor } from "../../types";
 import { getCardElementTag } from "../../common/get-card-element-tag";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 
-import "../../../../components/ha-yaml-editor";
+import "../../../../components/ha-code-editor";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
-import { HaYamlEditor } from "../../../../components/ha-yaml-editor";
+import { HaCodeEditor } from "../../../../components/ha-code-editor";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { EntityConfig } from "../../entity-rows/types";
 
@@ -65,12 +65,6 @@ export class HuiCardEditor extends LitElement {
     try {
       this._config = yaml.safeLoad(this.yaml);
       this._updateConfigElement();
-      setTimeout(() => {
-        if (this._yamlEditor) {
-          this._yamlEditor.codemirror.refresh();
-        }
-        fireEvent(this as HTMLElement, "iron-resize");
-      }, 1);
       this._error = undefined;
     } catch (err) {
       this._error = err.message;
@@ -94,12 +88,17 @@ export class HuiCardEditor extends LitElement {
     return this._error !== undefined;
   }
 
-  private get _yamlEditor(): HaYamlEditor {
-    return this.shadowRoot!.querySelector("ha-yaml-editor")!;
+  private get _yamlEditor(): HaCodeEditor {
+    return this.shadowRoot!.querySelector("ha-code-editor")! as HaCodeEditor;
   }
 
   public toggleMode() {
     this._GUImode = !this._GUImode;
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
+    this._refreshYamlEditor();
   }
 
   protected render(): TemplateResult {
@@ -121,12 +120,14 @@ export class HuiCardEditor extends LitElement {
             `
           : html`
               <div class="yaml-editor">
-                <ha-yaml-editor
-                  .autofocus=${true}
-                  .rtl=${computeRTL(this.hass)}
+                <ha-code-editor
+                  mode="yaml"
+                  autofocus
                   .value=${this.yaml}
-                  @yaml-changed=${this._handleYAMLChanged}
-                ></ha-yaml-editor>
+                  .error=${this._error}
+                  .rtl=${computeRTL(this.hass)}
+                  @value-changed=${this._handleYAMLChanged}
+                ></ha-code-editor>
               </div>
             `}
         ${this._error
@@ -165,11 +166,23 @@ export class HuiCardEditor extends LitElement {
     if (changedProperties.has("_GUImode")) {
       if (this._GUImode === false) {
         // Refresh code editor when switching to yaml mode
-        this._yamlEditor.codemirror.refresh();
-        this._yamlEditor.codemirror.focus();
+        this._refreshYamlEditor(true);
       }
       fireEvent(this as HTMLElement, "iron-resize");
     }
+  }
+
+  private _refreshYamlEditor(focus = false) {
+    // wait on render
+    setTimeout(() => {
+      if (this._yamlEditor && this._yamlEditor.codemirror) {
+        this._yamlEditor.codemirror.refresh();
+        if (focus) {
+          this._yamlEditor.codemirror.focus();
+        }
+      }
+      fireEvent(this as HTMLElement, "iron-resize");
+    }, 1);
   }
 
   private _handleUIConfigChanged(ev: UIConfigChangedEvent) {
