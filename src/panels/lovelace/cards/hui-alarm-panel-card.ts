@@ -164,7 +164,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                         <mwc-button
                           .value="${value}"
                           @click="${this._handlePadClick}"
-                          dense
+                          outlined
                         >
                           ${value === "clear"
                             ? this._label("clear_code")
@@ -289,13 +289,14 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         justify-content: center;
         flex-wrap: wrap;
         margin: auto;
-        width: 300px;
+        width: 100%;
+        max-width: 300px;
       }
 
       #keypad mwc-button {
         margin-bottom: 5%;
         width: 30%;
-        padding: calc(var(--base-unit));
+        padding: calc(var(--base-unit) / 3);
         font-size: calc(var(--base-unit) * 1.1);
         box-sizing: border-box;
       }
