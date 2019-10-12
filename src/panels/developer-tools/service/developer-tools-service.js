@@ -1,5 +1,4 @@
 import "@material/mwc-button";
-import "@polymer/paper-input/paper-textarea";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
@@ -7,6 +6,7 @@ import yaml from "js-yaml";
 
 import { ENTITY_COMPONENT_DOMAINS } from "../../../data/entity";
 import "../../../components/entity/ha-entity-picker";
+import "../../../components/ha-code-editor";
 import "../../../components/ha-service-picker";
 import "../../../resources/ha-style";
 import "../../../util/app-localstorage-document";
@@ -28,6 +28,10 @@ class HaPanelDevService extends PolymerElement {
         .ha-form {
           margin-right: 16px;
           max-width: 400px;
+        }
+
+        mwc-button {
+          margin-top: 8px;
         }
 
         .description {
@@ -109,20 +113,16 @@ class HaPanelDevService extends PolymerElement {
               allow-custom-entity
             ></ha-entity-picker>
           </template>
-          <paper-textarea
-            always-float-label
-            label="Service Data (YAML, optional)"
-            value="{{serviceData}}"
-            autocapitalize="none"
-            autocomplete="off"
-            spellcheck="false"
-          ></paper-textarea>
+          <p>Service Data (YAML, optional)</p>
+          <ha-code-editor
+            mode="yaml"
+            value="[[serviceData]]"
+            error="[[!validJSON]]"
+            on-value-changed="_yamlChanged"
+          ></ha-code-editor>
           <mwc-button on-click="_callService" raised disabled="[[!validJSON]]">
             Call Service
           </mwc-button>
-          <template is="dom-if" if="[[!validJSON]]">
-            <span class="error">Invalid YAML</span>
-          </template>
         </div>
 
         <template is="dom-if" if="[[!domainService]]">
@@ -304,6 +304,10 @@ class HaPanelDevService extends PolymerElement {
       ...this.parsedJSON,
       entity_id: ev.target.value,
     });
+  }
+
+  _yamlChanged(ev) {
+    this.serviceData = ev.detail.value;
   }
 }
 
