@@ -217,3 +217,31 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
 }
+
+export interface RestrictionCardConfig extends LovelaceCardConfig {
+  restrictions?: RestrictionsConfig;
+  exceptions?: RestrictionTypeConfig[];
+}
+
+export interface RestrictionsConfig {
+  confirm?: ConfirmRestrictionTypeConfig;
+  pin?: PinRestrictionConfig;
+  block?: BlockTypeConfig;
+}
+
+export interface ConfirmRestrictionTypeConfig {
+  exceptions?: RestrictionTypeConfig[];
+}
+
+export interface BlockTypeConfig {
+  exceptions?: RestrictionTypeConfig[];
+}
+
+export interface PinRestrictionConfig {
+  code: string;
+  exceptions?: RestrictionTypeConfig[];
+}
+
+export interface RestrictionTypeConfig {
+  user: string;
+}

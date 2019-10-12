@@ -25,6 +25,7 @@ import "../cards/hui-picture-elements-card";
 import "../cards/hui-picture-entity-card";
 import "../cards/hui-picture-glance-card";
 import "../cards/hui-plant-status-card";
+import "../cards/hui-restriction-card";
 import "../cards/hui-sensor-card";
 import "../cards/hui-vertical-stack-card";
 import "../cards/hui-shopping-list-card";
@@ -55,6 +56,7 @@ const CARD_TYPES = new Set([
   "picture-entity",
   "picture-glance",
   "plant-status",
+  "restriction",
   "sensor",
   "shopping-list",
   "thermostat",

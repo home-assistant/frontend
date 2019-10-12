@@ -1391,7 +1391,8 @@
             },
             "config": {
               "required": "Required",
-              "optional": "Optional"
+              "optional": "Optional",
+              "invalid": "Error in card configuration."
             },
             "entities": {
               "name": "Entities",
@@ -1480,6 +1481,9 @@
             },
             "plant-status": {
               "name": "Plant Status"
+            },
+            "restriction": {
+              "name": "Restriction"
             },
             "sensor": {
               "name": "Sensor",

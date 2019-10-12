@@ -34,6 +34,7 @@ const cards: string[] = [
   "picture-entity",
   "picture-glance",
   "plant-status",
+  "restriction",
   "sensor",
   "shopping-list",
   "thermostat",
