@@ -55,8 +55,8 @@ class HuiRestrictionCard extends LitElement implements LovelaceCard {
 
     return html`
       <div>
-        ${this._config.exceptions &&
-        this._config.exceptions.some((e) => e.user === this._hass!.user!.id)
+        ${this._config.exemptions &&
+        this._config.exemptions.some((e) => e.user === this._hass!.user!.id)
           ? ""
           : html`
               <div @click=${this._handleClick} id="overlay">
@@ -85,8 +85,8 @@ class HuiRestrictionCard extends LitElement implements LovelaceCard {
     if (this._config!.restrictions) {
       if (
         this._config!.restrictions.block &&
-        (!this._config!.restrictions.block.exceptions ||
-          !this._config!.restrictions.block.exceptions.some(
+        (!this._config!.restrictions.block.exemptions ||
+          !this._config!.restrictions.block.exemptions.some(
             (e) => e.user === this._hass!.user!.id
           ))
       ) {
@@ -97,8 +97,8 @@ class HuiRestrictionCard extends LitElement implements LovelaceCard {
       if (
         this._config!.restrictions.pin &&
         this._config!.restrictions.pin.code &&
-        (!this._config!.restrictions.pin.exceptions ||
-          !this._config!.restrictions.pin.exceptions.some(
+        (!this._config!.restrictions.pin.exemptions ||
+          !this._config!.restrictions.pin.exemptions.some(
             (e) => e.user === this._hass!.user!.id
           ))
       ) {
@@ -113,8 +113,8 @@ class HuiRestrictionCard extends LitElement implements LovelaceCard {
 
       if (
         this._config!.restrictions.confirm &&
-        (!this._config!.restrictions.confirm.exceptions ||
-          !this._config!.restrictions.confirm.exceptions.some(
+        (!this._config!.restrictions.confirm.exemptions ||
+          !this._config!.restrictions.confirm.exemptions.some(
             (e) => e.user === this._hass!.user!.id
           ))
       ) {

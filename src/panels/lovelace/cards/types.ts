@@ -220,7 +220,7 @@ export interface WeatherForecastCardConfig extends LovelaceCardConfig {
 
 export interface RestrictionCardConfig extends LovelaceCardConfig {
   restrictions?: RestrictionsConfig;
-  exceptions?: RestrictionTypeConfig[];
+  exemptions?: RestrictionTypeConfig[];
 }
 
 export interface RestrictionsConfig {
@@ -230,16 +230,16 @@ export interface RestrictionsConfig {
 }
 
 export interface ConfirmRestrictionTypeConfig {
-  exceptions?: RestrictionTypeConfig[];
+  exemptions?: RestrictionTypeConfig[];
 }
 
 export interface BlockTypeConfig {
-  exceptions?: RestrictionTypeConfig[];
+  exemptions?: RestrictionTypeConfig[];
 }
 
 export interface PinRestrictionConfig {
   code: string;
-  exceptions?: RestrictionTypeConfig[];
+  exemptions?: RestrictionTypeConfig[];
 }
 
 export interface RestrictionTypeConfig {
