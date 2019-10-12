@@ -8,10 +8,10 @@
   X-XSS-Protection: 1; mode=block
 
 /images/*
-  Cache-Control: public, max-age: 3600
+  Cache-Control: public, max-age: 3600, s-maxage=3600
 
 /manifest.json
-  Cache-Control: public, max-age: 3600
+  Cache-Control: public, max-age: 3600, s-maxage=3600
 
 /frontend_es5/*
   Cache-Control: public, max-age: 604800, s-maxage=604800
