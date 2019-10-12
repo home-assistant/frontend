@@ -33,11 +33,15 @@ class HuiRestrictionCard extends LitElement implements LovelaceCard {
   }
 
   public setConfig(config: RestrictionCardConfig): void {
-    if (!config.card || !config.restrictions) {
+    if (!config.card) {
       throw new Error("Error in card configuration.");
     }
 
-    if (config.restrictions.pin && !config.restrictions.pin.code) {
+    if (
+      config.restrictions &&
+      config.restrictions.pin &&
+      !config.restrictions.pin.code
+    ) {
       throw new Error("A pin code is required for pin restrictions");
     }
 
