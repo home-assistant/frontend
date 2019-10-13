@@ -4,7 +4,15 @@
   Referrer-Policy: no-referrer-when-downgrade
   X-Content-Type-Options: nosniff
   X-XSS-Protection: 1; mode=block
-/*.css
+
+/api/*
+  Cache-Control: public, max-age: 86400, s-maxage=86400
+
+/assets/*
+  Cache-Control: public, max-age: 86400, s-maxage=86400
+
+/frontend_es5/*
   Cache-Control: public, max-age: 604800, s-maxage=604800
-/*.js
+
+/frontend_latest/*
   Cache-Control: public, max-age: 604800, s-maxage=604800
