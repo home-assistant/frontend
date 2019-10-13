@@ -1164,6 +1164,9 @@
           "discovered": "Discovered",
           "configured": "Configured",
           "new": "Set up a new integration",
+          "note_about_integrations": "Not all integrations can be configured via the UI yet.",
+          "note_about_website_reference": "More are available on the ",
+          "home_assistant_website": "Home Assistant website",
           "configure": "Configure",
           "none": "Nothing configured yet",
           "config_entry": {
