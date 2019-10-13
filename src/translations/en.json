@@ -1592,6 +1592,10 @@
           "close": "Close",
           "submit": "Submit"
         },
+        "advanced_mode": {
+          "title": "Advanced Mode",
+          "description": "Home Assistant hides advanced features and options by default. You can make these features accessible by checking this toggle. This is a user-specific setting and does not impact other users using Home Assistant."
+        },
         "refresh_tokens": {
           "header": "Refresh Tokens",
           "description": "Each refresh token represents a login session. Refresh tokens will be automatically removed when you click log out. The following refresh tokens are currently active for your account.",
