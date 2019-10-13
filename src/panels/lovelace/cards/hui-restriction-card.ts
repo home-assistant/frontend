@@ -82,6 +82,8 @@ class HuiRestrictionCard extends LitElement implements LovelaceCard {
   }
 
   private _handleClick(): void {
+    const lock = this.shadowRoot!.getElementById("lock") as LitElement;
+
     if (this._config!.restrictions) {
       if (
         this._config!.restrictions.block &&
@@ -90,7 +92,12 @@ class HuiRestrictionCard extends LitElement implements LovelaceCard {
             (e) => e.user === this._hass!.user!.id
           ))
       ) {
-        alert("This card is blocked");
+        lock.classList.add("invalid");
+        window.setTimeout(() => {
+          if (lock) {
+            lock.classList.remove("invalid");
+          }
+        }, 3000);
         return;
       }
 
@@ -106,7 +113,12 @@ class HuiRestrictionCard extends LitElement implements LovelaceCard {
 
         // tslint:disable-next-line: triple-equals
         if (pin != this._config!.restrictions.pin.code) {
-          alert("Invalid pin entered");
+          lock.classList.add("invalid");
+          window.setTimeout(() => {
+            if (lock) {
+              lock.classList.remove("invalid");
+            }
+          }, 3000);
           return;
         }
       }
@@ -126,10 +138,7 @@ class HuiRestrictionCard extends LitElement implements LovelaceCard {
 
     const overlay = this.shadowRoot!.getElementById("overlay") as LitElement;
     overlay.style.setProperty("pointer-events", "none");
-    const lock = this.shadowRoot!.getElementById("lock") as LitElement;
-
     lock.classList.add("fadeOut");
-
     window.setTimeout(() => {
       overlay.style.setProperty("pointer-events", "");
       if (lock) {
@@ -158,31 +167,32 @@ class HuiRestrictionCard extends LitElement implements LovelaceCard {
       }
 
       #lock {
-        -webkit-animation-duration: 5s;
-        animation-duration: 5s;
-        -webkit-animation-fill-mode: both;
-        animation-fill-mode: both;
         margin: unset;
       }
 
       @keyframes fadeOut {
-        0% {
-          opacity: 0.5;
-        }
         20% {
           opacity: 0;
         }
         80% {
           opacity: 0;
         }
-        100% {
-          opacity: 0.5;
-        }
       }
 
       .fadeOut {
-        -webkit-animation-name: fadeOut;
-        animation-name: fadeOut;
+        animation: fadeOut 5s linear;
+        color: green;
+      }
+
+      @keyframes blinker {
+        50% {
+          opacity: 0;
+        }
+      }
+
+      .invalid {
+        animation: blinker 1s linear infinite;
+        color: red;
       }
     `;
   }
