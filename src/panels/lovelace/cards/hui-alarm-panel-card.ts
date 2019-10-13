@@ -136,7 +136,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                 @click="${this._handleActionClick}"
                 outlined
               >
-                <h1 style="font-size:16px;">${this._label(state)}</h1>
+                ${this._label(state)}
               </mwc-button>
             `;
           })}
@@ -167,11 +167,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                           outlined
                           raised
                         >
-                          <h1 style="font-size:16px;">
-                            ${value === "clear"
-                              ? this._label("clear_code")
-                              : value}
-                          </h1>
+                          ${value === "clear"
+                            ? this._label("clear_code")
+                            : value}
                         </mwc-button>
                       `;
                 })}
