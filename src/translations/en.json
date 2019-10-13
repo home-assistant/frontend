@@ -924,7 +924,6 @@
             "header": "Script Editor",
             "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
             "learn_more": "Learn more about scripts",
-            "pick_script": "Pick script to edit",
             "no_scripts": "We couldn’t find any editable scripts",
             "add_script": "Add script"
           },
