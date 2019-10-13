@@ -59,7 +59,6 @@ class StepFlowPickHandler extends LitElement {
 
   protected render(): TemplateResult | void {
     const handlers = this._getHandlers(this.handlers, this.filter);
-    const websiteLink = "https://www.home-assistant.io/integrations/";
 
     return html`
       <h2>${this.hass.localize("ui.panel.config.integrations.new")}</h2>
@@ -80,21 +79,17 @@ class StepFlowPickHandler extends LitElement {
             `
         )}
       </div>
-      <p style=${styleMap({ textAlign: `center` })}>
-        <span style=${styleMap({ display: `block` })}>
-          ${this.hass.localize(
-            "ui.panel.config.integrations.note_about_integrations"
-          )}
-        </span>
-        <span>
-          ${this.hass.localize(
-            "ui.panel.config.integrations.note_about_website_reference"
-          )}<a href=${websiteLink}
-            >${this.hass.localize(
-              "ui.panel.config.integrations.home_assistant_website"
-            )}.</a
-          >
-        </span>
+      <p>
+        ${this.hass.localize(
+          "ui.panel.config.integrations.note_about_integrations"
+        )}<br />
+        ${this.hass.localize(
+          "ui.panel.config.integrations.note_about_website_reference"
+        )}<a href="https://www.home-assistant.io/integrations/"
+          >${this.hass.localize(
+            "ui.panel.config.integrations.home_assistant_website"
+          )}.</a
+        >
       </p>
     `;
   }
@@ -135,6 +130,9 @@ class StepFlowPickHandler extends LitElement {
       }
       paper-item {
         cursor: pointer;
+      }
+      p {
+        text-align: center;
       }
     `;
   }
