@@ -28,7 +28,7 @@ class HaPushNotificationsRow extends LocalizeMixin(PolymerElement) {
         <span slot="description">
           [[_description(_platformLoaded, _pushSupported)]]
           <a
-            href="https://www.home-assistant.io/integrations/notify.html5/"
+            href="https://www.home-assistant.io/integrations/html5"
             target="_blank"
             >[[localize('ui.panel.profile.push_notifications.link_promo')]]</a
           >
