@@ -164,7 +164,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                         <mwc-button
                           .value="${value}"
                           @click="${this._handlePadClick}"
-                          dense
+                          outlined
                         >
                           ${value === "clear"
                             ? this._label("clear_code")
@@ -226,8 +226,6 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         --alarm-color-armed: var(--label-badge-red);
         --alarm-color-autoarm: rgba(0, 153, 255, 0.1);
         --alarm-state-color: var(--alarm-color-armed);
-        --base-unit: 15px;
-        font-size: calc(var(--base-unit));
       }
 
       ha-label-badge {
@@ -271,13 +269,11 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       paper-input {
         margin: 0 auto 8px;
         max-width: 150px;
-        font-size: calc(var(--base-unit));
         text-align: center;
       }
 
       .state {
         margin-left: 16px;
-        font-size: calc(var(--base-unit) * 0.9);
         position: relative;
         bottom: 16px;
         color: var(--alarm-state-color);
@@ -289,14 +285,14 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         justify-content: center;
         flex-wrap: wrap;
         margin: auto;
-        width: 300px;
+        width: 100%;
+        max-width: 300px;
       }
 
       #keypad mwc-button {
-        margin-bottom: 5%;
+        text-size: 20px;
+        padding: 8px;
         width: 30%;
-        padding: calc(var(--base-unit));
-        font-size: calc(var(--base-unit) * 1.1);
         box-sizing: border-box;
       }
 
@@ -306,11 +302,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        font-size: calc(var(--base-unit) * 1);
       }
 
       .actions mwc-button {
-        min-width: calc(var(--base-unit) * 9);
         margin: 0 4px 4px;
       }
 
