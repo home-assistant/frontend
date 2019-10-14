@@ -9,7 +9,7 @@ import {
 import { HaFormElement, HaFormSchema } from "./ha-form";
 import { fireEvent } from "../../common/dom/fire_event";
 
-import "../../ha-paper-slider";
+import "../ha-paper-slider";
 import "@polymer/paper-input/paper-input";
 // Not duplicate, is for typing
 // tslint:disable-next-line
