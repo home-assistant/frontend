@@ -504,7 +504,12 @@
                                     "leave": "wyjście"
                                 },
                                 "device": {
-                                    "label": "Urządzenie"
+                                    "label": "Urządzenie",
+                                    "extra_fields": {
+                                        "above": "Powyżej",
+                                        "below": "Poniżej",
+                                        "for": "Czas trwania"
+                                    }
                                 }
                             },
                             "learn_more": "Dowiedz się więcej o wyzwalaczach"
@@ -824,13 +829,13 @@
                     "description": "Zarządzaj podłączonymi urządzeniami",
                     "automation": {
                         "triggers": {
-                            "caption": "Zrób coś, gdy..."
+                            "caption": "Gdy..."
                         },
                         "conditions": {
-                            "caption": "Zrób coś tylko, jeśli..."
+                            "caption": "Jeśli..."
                         },
                         "actions": {
-                            "caption": "Kiedy coś zostanie uruchomione..."
+                            "caption": "Wykonaj akcje..."
                         }
                     }
                 }
@@ -1435,7 +1440,7 @@
                 "enable_new_entities_description": "Jeśli wyłączone, nowo wykryte encje nie będą automatycznie dodawane do Home Assistant'a."
             },
             "zha_device_info": {
-                "manuf": "przez: {manufacturer}",
+                "manuf": "Producent: {manufacturer}",
                 "no_area": "brak",
                 "services": {
                     "reconfigure": "Ponowna konfiguracja urządzenia ZHA (uzdrawianie urządzenia). Użyj tego polecenia, jeśli masz problemy z urządzeniem. Jeśli urządzenie jest zasilane bateryjnie, upewnij się, że nie jest uśpione i przyjmie polecenie rekonfiguracji.",

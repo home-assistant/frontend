@@ -215,7 +215,7 @@
         },
         "sensor": {
             "off": "Av",
-            "on": "På "
+            "on": "På"
         },
         "sun": {
             "above_horizon": "Over horisonten",
@@ -1077,6 +1077,11 @@
                     "edit_lovelace": {
                         "header": "Tittelen til Lovelace-brukargrensesnittet",
                         "explanation": "Denne tittelen vert vist over alle visningane dine i Lovelace"
+                    },
+                    "card": {
+                        "generic": {
+                            "name": "Namn"
+                        }
                     }
                 },
                 "menu": {

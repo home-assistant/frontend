@@ -504,7 +504,12 @@
                                     "leave": "Forlater"
                                 },
                                 "device": {
-                                    "label": "Enhet"
+                                    "label": "Enhet",
+                                    "extra_fields": {
+                                        "above": "Over",
+                                        "below": "Under",
+                                        "for": "Varighet"
+                                    }
                                 }
                             },
                             "learn_more": "Lær mer om utløsere"

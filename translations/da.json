@@ -160,7 +160,7 @@
             "not_home": "Ude"
         },
         "fan": {
-            "off": "Slukket",
+            "off": "Fra",
             "on": "Tændt"
         },
         "group": {
@@ -504,7 +504,12 @@
                                     "leave": "Forlad"
                                 },
                                 "device": {
-                                    "label": "Enhed"
+                                    "label": "Enhed",
+                                    "extra_fields": {
+                                        "above": "Over",
+                                        "below": "Under",
+                                        "for": "Varighed"
+                                    }
                                 }
                             },
                             "learn_more": "Lær om udløsere"
@@ -775,7 +780,8 @@
                         "enabled_label": "Aktivér enhed",
                         "enabled_cause": "Deaktiveret af {cause}.",
                         "enabled_description": "Deaktiverede enheder tilføjes ikke til Home Assistant.",
-                        "confirm_delete": "Er du sikker på, at du vil slette denne enhed?"
+                        "confirm_delete": "Er du sikker på, at du vil slette denne indtastning?",
+                        "confirm_delete2": "Hvis du sletter en post, fjernes enheden ikke fra hjemme assistenten. Hvis du vil gøre dette, skal du fjerne integrationen ' {platform} ' fra Home Assistant."
                     }
                 },
                 "person": {
@@ -829,7 +835,7 @@
                             "caption": "Gør kun noget, hvis ..."
                         },
                         "actions": {
-                            "caption": "Når noget udløses ..."
+                            "caption": "Når noget påvirkes ..."
                         }
                     }
                 }
@@ -909,7 +915,7 @@
                     "description": "Dette vil skjule sidepanelet som standard, svarende til den mobile oplevelse."
                 },
                 "vibrate": {
-                    "header": "Vibrere",
+                    "header": "Vibrer",
                     "description": "Aktivér eller deaktiver vibrationer på denne enhed, når du styrer enheder."
                 }
             },
@@ -1058,7 +1064,8 @@
                         "navigate_to": "Naviger til {location}",
                         "toggle": "Skift {name}",
                         "call_service": "Kald service {name}",
-                        "more_info": "Vis mere-info: {name}"
+                        "more_info": "Vis mere-info: {name}",
+                        "url": "Åbn vindue til {url_path}"
                     }
                 },
                 "editor": {
@@ -1113,6 +1120,9 @@
                             "required": "Påkrævet",
                             "optional": "Valgfri"
                         },
+                        "entities": {
+                            "show_header_toggle": "Vis omskifter ved overskrift?"
+                        },
                         "gauge": {
                             "severity": {
                                 "define": "Definer alvorlighed?",
@@ -1131,6 +1141,7 @@
                             "entities": "Enheder",
                             "entity": "Enhed",
                             "hold_action": "Hold handling",
+                            "hours_to_show": "Vis i antal timer",
                             "icon": "Ikon",
                             "icon_height": "Ikonhøjde",
                             "image": "Sti til billede",
@@ -1432,12 +1443,12 @@
                 "manuf": "af {manufacturer}",
                 "no_area": "Intet område",
                 "services": {
-                    "reconfigure": "Genkonfigurer ZHA-enhed (helbred enhed). Brug dette hvis du har problemer med enheden. Hvis den pågældende enhed er en batteridrevet enhed skal du sørge for at den er vågen og accepterer kommandoer når du bruger denne service.",
+                    "reconfigure": "Rekonfigurer ZHA-enhed (helbred enhed). Brug dette hvis du har problemer med enheden. Hvis den pågældende enhed er en batteridrevet enhed skal du sørge for at den er vågen og accepterer kommandoer når du bruger denne service.",
                     "updateDeviceName": "Angiv et brugerdefineret navn til denne enhed i enhedsopsætningen",
                     "remove": "Fjern en enhed fra Zigbee-netværket."
                 },
                 "zha_device_card": {
-                    "device_name_placeholder": "Navn",
+                    "device_name_placeholder": "Bruger tildelt navn",
                     "area_picker_label": "Område",
                     "update_name_button": "Opdater navn"
                 }

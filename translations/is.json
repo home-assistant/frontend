@@ -454,7 +454,11 @@
                                     "leave": "Brottför"
                                 },
                                 "device": {
-                                    "label": "Tæki"
+                                    "label": "Tæki",
+                                    "extra_fields": {
+                                        "above": "Yfir",
+                                        "below": "Undir"
+                                    }
                                 }
                             },
                             "learn_more": "Læra meira um kveikjur"
