@@ -9,12 +9,10 @@ import {
   deviceAutomationsEqual,
 } from "../../../../data/device_automation";
 import { DeviceAction } from "../../../../data/script";
-//import { HomeAssistant } from "../../../../types";
+import { HomeAssistant } from "../../../../types";
 
 export default class DeviceActionEditor extends Component<
-  any,
-  any
-  /*{
+  {
     index: number;
     action: DeviceAction;
     hass: HomeAssistant;
@@ -23,15 +21,15 @@ export default class DeviceActionEditor extends Component<
   {
     device_id: string | undefined;
     capabilities: any | undefined;
-  }*/
+  }
 > {
-  private _origAction;
-
   public static defaultConfig: DeviceAction = {
     device_id: "",
     domain: "",
     entity_id: "",
   };
+
+  private _origAction;
 
   constructor() {
     super();
@@ -41,26 +39,10 @@ export default class DeviceActionEditor extends Component<
     this.state = { device_id: undefined, capabilities: undefined };
   }
 
-  public devicePicked(ev) {
-    this.setState({ ...this.state, device_id: ev.target.value });
-  }
-
-  private deviceActionPicked(ev) {
-    let deviceAction = ev.target.value;
-    if (
-      this._origAction &&
-      deviceAutomationsEqual(this._origAction, deviceAction)
-    ) {
-      deviceAction = this._origAction;
-    }
-    this.props.onChange(this.props.index, deviceAction);
-  }
-
-  /* eslint-disable camelcase */
-  public render({ action, hass }, { device_id, capabilities }) {
-    if (device_id === undefined) {
-      device_id = action.device_id;
-    }
+  public render() {
+    const { action, hass } = this.props;
+    const deviceId = this.state.device_id || action.device_id;
+    const capabilities = this.state.capabilities;
     const extraFieldsData =
       capabilities && capabilities.extra_fields
         ? capabilities.extra_fields.map((item) => {
@@ -71,14 +53,14 @@ export default class DeviceActionEditor extends Component<
     return (
       <div>
         <ha-device-picker
-          value={device_id}
+          value={deviceId}
           onChange={this.devicePicked}
           hass={hass}
           label="Device"
         />
         <ha-device-action-picker
           value={action}
-          deviceId={device_id}
+          deviceId={deviceId}
           onChange={this.deviceActionPicked}
           hass={hass}
           label="Action"
@@ -108,6 +90,21 @@ export default class DeviceActionEditor extends Component<
     if (prevProps.action !== this.props.action) {
       this._getCapabilities();
     }
+  }
+
+  private devicePicked(ev) {
+    this.setState({ ...this.state, device_id: ev.target.value });
+  }
+
+  private deviceActionPicked(ev) {
+    let deviceAction = ev.target.value;
+    if (
+      this._origAction &&
+      deviceAutomationsEqual(this._origAction, deviceAction)
+    ) {
+      deviceAction = this._origAction;
+    }
+    this.props.onChange(this.props.index, deviceAction);
   }
 
   private async _getCapabilities() {
