@@ -504,7 +504,12 @@
                                     "leave": "Távozás"
                                 },
                                 "device": {
-                                    "label": "Eszköz"
+                                    "label": "Eszköz",
+                                    "extra_fields": {
+                                        "above": "Felett",
+                                        "below": "Alatt",
+                                        "for": "Időtartam"
+                                    }
                                 }
                             },
                             "learn_more": "Tudj meg többet a triggerekről"

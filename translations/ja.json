@@ -118,6 +118,7 @@
             "off": "オフ",
             "on": "オン",
             "home": "在宅",
+            "not_home": "外出",
             "ok": "OK"
         },
         "input_boolean": {
