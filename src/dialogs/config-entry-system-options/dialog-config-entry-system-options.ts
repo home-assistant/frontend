@@ -60,7 +60,13 @@ class DialogConfigEntrySystemOptions extends LitElement {
         @opened-changed="${this._openedChanged}"
       >
         <h2>
-          ${this.hass.localize("ui.dialogs.config_entry_system_options.title")}
+          ${this.hass.localize(
+            "ui.dialogs.config_entry_system_options.title",
+            "integration",
+            this.hass.localize(
+              `component.${this._params.entry.domain}.config.title`
+            ) || this._params.entry.domain
+          )}
         </h2>
         <paper-dialog-scrollable>
           ${this._loading
@@ -89,7 +95,13 @@ class DialogConfigEntrySystemOptions extends LitElement {
                       </p>
                       <p class="secondary">
                         ${this.hass.localize(
-                          "ui.dialogs.config_entry_system_options.enable_new_entities_description"
+                          "ui.dialogs.config_entry_system_options.enable_new_entities_description",
+                          "integration",
+                          this.hass.localize(
+                            `component.${
+                              this._params.entry.domain
+                            }.config.title`
+                          ) || this._params.entry.domain
                         )}
                       </p>
                     </div>
