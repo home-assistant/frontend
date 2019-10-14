@@ -87,7 +87,7 @@ export default class DeviceActionEditor extends Component<
   }
 
   public componentDidUpdate(prevProps) {
-    if (prevProps.action !== this.props.action) {
+    if (!deviceAutomationsEqual(prevProps.action, this.props.action)) {
       this._getCapabilities();
     }
   }
