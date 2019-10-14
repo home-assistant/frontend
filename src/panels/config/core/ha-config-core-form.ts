@@ -215,7 +215,7 @@ class ConfigCoreForm extends LitElement {
         time_zone: this._timeZoneValue,
       });
     } catch (err) {
-      alert("FAIL");
+      alert(err.message);
     } finally {
       this._working = false;
     }
