@@ -504,7 +504,12 @@
                                     "leave": "Sortir"
                                 },
                                 "device": {
-                                    "label": "Dispositiu"
+                                    "label": "Dispositiu",
+                                    "extra_fields": {
+                                        "above": "A sobre",
+                                        "below": "A sota",
+                                        "for": "Durada"
+                                    }
                                 }
                             },
                             "learn_more": "Més informació sobre els activadors"
@@ -1065,10 +1070,10 @@
                 },
                 "editor": {
                     "edit_card": {
-                        "header": "Targeta de Configuració",
+                        "header": "Configuració de la targeta",
                         "save": "Desa",
                         "toggle_editor": "Commutar l'editor",
-                        "pick_card": "Tria la targeta que vols afegir.",
+                        "pick_card": "Tria una targeta que vulguis afegir.",
                         "add": "Afegir targeta",
                         "edit": "Editar",
                         "delete": "Elimina",
