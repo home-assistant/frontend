@@ -83,7 +83,7 @@ export default class DeviceCondition extends Component<any, any> {
   }
 
   public componentDidUpdate(prevProps) {
-    if (prevProps.condition !== this.props.condition) {
+    if (!deviceAutomationsEqual(prevProps.condition, this.props.condition)) {
       this._getCapabilities();
     }
   }
