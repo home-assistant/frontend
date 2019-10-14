@@ -38,22 +38,32 @@ class HaScriptPicker extends LitElement {
         .header=${this.hass.localize("ui.panel.config.script.caption")}
       >
         <ha-config-section .isWide=${this.isWide}>
-          <div slot="header">Script Editor</div>
+          <div slot="header">
+            ${this.hass.localize("ui.panel.config.script.picker.header")}
+          </div>
           <div slot="introduction">
-            The script editor allows you to create and edit scripts. Please read
-            <a
-              href="https://home-assistant.io/docs/scripts/editor/"
-              target="_blank"
-              >the instructions</a
-            >
-            to make sure that you have configured Home Assistant correctly.
+            ${this.hass.localize("ui.panel.config.script.picker.introduction")}
+            <p>
+              <a
+                href="https://home-assistant.io/docs/scripts/editor/"
+                target="_blank"
+              >
+                ${this.hass.localize(
+                  "ui.panel.config.script.picker.learn_more"
+                )}
+              </a>
+            </p>
           </div>
 
-          <ha-card header="Pick script to edit">
+          <ha-card>
             ${this.scripts.length === 0
               ? html`
                   <div class="card-content">
-                    <p>We couldn't find any scripts.</p>
+                    <p>
+                      ${this.hass.localize(
+                        "ui.panel.config.script.picker.no_scripts"
+                      )}
+                    </p>
                   </div>
                 `
               : this.scripts.map(
@@ -85,7 +95,9 @@ class HaScriptPicker extends LitElement {
             slot="fab"
             ?is-wide=${this.isWide}
             icon="hass:plus"
-            title="Add Script"
+            title="${this.hass.localize(
+              "ui.panel.config.script.picker.add_script"
+            )}"
             ?rtl=${computeRTL(this.hass)}
           ></ha-fab>
         </a>
@@ -97,7 +109,11 @@ class HaScriptPicker extends LitElement {
     const script = ev.currentTarget.script as HassEntity;
     await triggerScript(this.hass, script.entity_id);
     showToast(this, {
-      message: `Triggered ${computeStateName(script)}`,
+      message: this.hass.localize(
+        "ui.notification_toast.triggered",
+        "name",
+        computeStateName(script)
+      ),
     });
   }
 

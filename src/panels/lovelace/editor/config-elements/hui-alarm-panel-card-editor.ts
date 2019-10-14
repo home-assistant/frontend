@@ -101,7 +101,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
         })}
         <paper-dropdown-menu
           .label="${this.hass.localize(
-            "ui.panel.lovelace.editor.card.alarm_panel.available_states"
+            "ui.panel.lovelace.editor.card.alarm-panel.available_states"
           )}"
           @value-changed="${this._stateAdded}"
         >

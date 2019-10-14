@@ -31,7 +31,11 @@ export class CloudAlexaPref extends LitElement {
     const { alexa_enabled, alexa_report_state } = this.cloudStatus!.prefs;
 
     return html`
-      <ha-card header="Alexa">
+      <ha-card
+        header=${this.hass!.localize(
+          "ui.panel.config.cloud.account.alexa.title"
+        )}
+      >
         <div class="switch">
           <ha-switch
             .checked=${alexa_enabled}
@@ -39,15 +43,16 @@ export class CloudAlexaPref extends LitElement {
           ></ha-switch>
         </div>
         <div class="card-content">
-          With the Alexa integration for Home Assistant Cloud you'll be able to
-          control all your Home Assistant devices via any Alexa-enabled device.
+          ${this.hass!.localize("ui.panel.config.cloud.account.alexa.info")}
           <ul>
             <li>
               <a
                 href="https://skills-store.amazon.com/deeplink/dp/B0772J1QKB?deviceType=app"
                 target="_blank"
               >
-                Enable the Home Assistant skill for Alexa
+                ${this.hass!.localize(
+                  "ui.panel.config.cloud.account.alexa.enable_ha_skill"
+                )}
               </a>
             </li>
             <li>
@@ -55,37 +60,48 @@ export class CloudAlexaPref extends LitElement {
                 href="https://www.nabucasa.com/config/amazon_alexa/"
                 target="_blank"
               >
-                Config documentation
+                ${this.hass!.localize(
+                  "ui.panel.config.cloud.account.alexa.config_documentation"
+                )}
               </a>
             </li>
           </ul>
-          <em
-            >This integration requires an Alexa-enabled device like the Amazon
-            Echo.</em
-          >
           ${alexa_enabled
             ? html`
-                <h3>Enable State Reporting</h3>
+                <div class="state-reporting">
+                  <h3>
+                    ${this.hass!.localize(
+                      "ui.panel.config.cloud.account.alexa.enable_state_reporting"
+                    )}
+                  </h3>
+                  <div class="state-reporting-switch">
+                    <ha-switch
+                      .checked=${alexa_report_state}
+                      @change=${this._reportToggleChanged}
+                    ></ha-switch>
+                  </div>
+                </div>
                 <p>
-                  If you enable state reporting, Home Assistant will send
-                  <b>all</b> state changes of exposed entities to Amazon. This
-                  allows you to always see the latest states in the Alexa app
-                  and use the state changes to create routines.
+                  ${this.hass!.localize(
+                    "ui.panel.config.cloud.account.alexa.info_state_reporting"
+                  )}
                 </p>
-                <ha-switch
-                  .checked=${alexa_report_state}
-                  @change=${this._reportToggleChanged}
-                ></ha-switch>
               `
             : ""}
         </div>
         <div class="card-actions">
           <mwc-button @click=${this._handleSync} .disabled=${this._syncing}>
-            Sync Entities
+            ${this.hass!.localize(
+              "ui.panel.config.cloud.account.alexa.sync_entities"
+            )}
           </mwc-button>
           <div class="spacer"></div>
           <a href="/config/cloud/alexa">
-            <mwc-button>Manage Entities</mwc-button>
+            <mwc-button
+              >${this.hass!.localize(
+                "ui.panel.config.cloud.account.alexa.manage_entities"
+              )}</mwc-button
+            >
           </a>
         </div>
       </ha-card>
@@ -97,7 +113,11 @@ export class CloudAlexaPref extends LitElement {
     try {
       await syncCloudAlexaEntities(this.hass!);
     } catch (err) {
-      alert(`Failed to sync entities: ${err.body.message}`);
+      alert(
+        `${this.hass!.localize(
+          "ui.panel.config.cloud.account.alexa.sync_entities_error"
+        )} ${err.body.message}`
+      );
     } finally {
       this._syncing = false;
     }
@@ -122,9 +142,15 @@ export class CloudAlexaPref extends LitElement {
       fireEvent(this, "ha-refresh-cloud-status");
     } catch (err) {
       alert(
-        `Unable to ${toggle.checked ? "enable" : "disable"} report state. ${
-          err.message
-        }`
+        `${this.hass!.localize(
+          "ui.panel.config.cloud.account.alexa.state_reporting_error",
+          "enable_disable",
+          this.hass!.localize(
+            toggle.checked
+              ? "ui.panel.config.cloud.account.alexa.enable"
+              : "ui.panel.config.cloud.account.alexa.disable"
+          )
+        )} ${err.message}`
       );
       toggle.checked = !toggle.checked;
     }
@@ -149,11 +175,21 @@ export class CloudAlexaPref extends LitElement {
       .spacer {
         flex-grow: 1;
       }
-      h3 {
-        margin-bottom: 0;
+      .state-reporting {
+        display: flex;
+        margin-top: 1.5em;
       }
-      h3 + p {
+      .state-reporting + p {
         margin-top: 0.5em;
+      }
+      .state-reporting h3 {
+        flex-grow: 1;
+        margin: 0;
+      }
+      .state-reporting-switch {
+        margin-top: 0.25em;
+        margin-right: 7px;
+        margin-left: 0.5em;
       }
     `;
   }

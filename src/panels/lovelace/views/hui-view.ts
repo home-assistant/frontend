@@ -138,7 +138,6 @@ export class HUIView extends LitElement {
           flex-basis: 0;
           flex-grow: 1;
           max-width: 500px;
-          overflow-x: hidden;
         }
 
         .column > * {

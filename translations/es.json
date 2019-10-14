@@ -504,7 +504,12 @@
                                     "leave": "Salir"
                                 },
                                 "device": {
-                                    "label": "Dispositivo"
+                                    "label": "Dispositivo",
+                                    "extra_fields": {
+                                        "above": "Por encima de",
+                                        "below": "Por debajo de",
+                                        "for": "Duración"
+                                    }
                                 }
                             },
                             "learn_more": "Aprende más sobre los desencadenantes"
