@@ -908,7 +908,10 @@
                   "service_data": "[%key:ui::panel::config::automation::editor::actions::type::service::service_data%]"
                 },
                 "device_id": {
-                  "label": "Device"
+                  "label": "Device",
+                  "extra_fields": {
+                    "code": "Code"
+                  }
                 },
                 "scene": {
                   "label": "Activate scene"
