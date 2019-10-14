@@ -26,9 +26,14 @@ class HaFormCustomize extends PolymerElement {
         if="[[computeShowWarning(localConfig, globalConfig)]]"
       >
         <div class="warning">
-          It seems that your configuration.yaml doesn't properly include
-          customize.yaml<br />
-          Changes made here won't affect your configuration.
+          It seems that your configuration.yaml doesn't properly
+          <a
+            href="https://www.home-assistant.io/docs/configuration/customizing-devices/#customization-using-the-ui"
+            target="_blank"
+            >include customize.yaml</a
+          >.<br />
+          Changes made here are written in it, but will not be applied after a
+          configuration reload unless the include is in place.
         </div>
       </template>
       <template is="dom-if" if="[[hasLocalAttributes]]">
