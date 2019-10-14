@@ -78,7 +78,11 @@ export class ZHAClusterCommands extends LitElement {
     return html`
       <ha-config-section .isWide="${this.isWide}">
         <div class="sectionHeader" slot="header">
-          <span>Cluster Commands</span>
+          <span>
+            ${this.hass!.localize(
+              "ui.panel.config.zha.cluster_commands.header"
+            )}
+          </span>
           <paper-icon-button
             class="toggle-help-icon"
             @click="${this._onHelpTap}"
@@ -86,12 +90,18 @@ export class ZHAClusterCommands extends LitElement {
           >
           </paper-icon-button>
         </div>
-        <span slot="introduction">View and issue cluster commands.</span>
+        <span slot="introduction">
+          ${this.hass!.localize(
+            "ui.panel.config.zha.cluster_commands.introduction"
+          )}
+        </span>
 
         <ha-card class="content">
           <div class="command-picker">
             <paper-dropdown-menu
-              label="Commands of the selected cluster"
+              label="${this.hass!.localize(
+                "ui.panel.config.zha.cluster_commands.commands_of_cluster"
+              )}"
               class="flex"
             >
               <paper-listbox
@@ -114,18 +124,26 @@ export class ZHAClusterCommands extends LitElement {
           </div>
           ${this._showHelp
             ? html`
-                <div class="help-text">Select a command to interact with</div>
+                <div class="help-text">
+                  ${this.hass!.localize(
+                    "ui.panel.config.zha.cluster_commands.help_command_dropdown"
+                  )}
+                </div>
               `
             : ""}
           ${this._selectedCommandIndex !== -1
             ? html`
                 <div class="input-text">
                   <paper-input
-                    label="Manufacturer code override"
+                    label="${this.hass!.localize(
+                      "ui.panel.config.zha.common.manufacturer_code_override"
+                    )}"
                     type="number"
                     .value="${this._manufacturerCodeOverride}"
                     @value-changed="${this._onManufacturerCodeOverrideChanged}"
-                    placeholder="Value"
+                    placeholder="${this.hass!.localize(
+                      "ui.panel.config.zha.common.value"
+                    )}"
                   ></paper-input>
                 </div>
                 <div class="card-actions">
@@ -134,8 +152,11 @@ export class ZHAClusterCommands extends LitElement {
                     domain="zha"
                     service="issue_zigbee_cluster_command"
                     .serviceData="${this._issueClusterCommandServiceData}"
-                    >Issue Zigbee Command</ha-call-service-button
                   >
+                    ${this.hass!.localize(
+                      "ui.panel.config.zha.cluster_commands.issue_zigbee_command"
+                    )}
+                  </ha-call-service-button>
                   ${this._showHelp
                     ? html`
                         <ha-service-description

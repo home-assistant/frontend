@@ -39,6 +39,15 @@ export const fetchDeviceTriggers = (hass: HomeAssistant, deviceId: string) =>
     device_id: deviceId,
   });
 
+export const fetchDeviceConditionCapabilities = (
+  hass: HomeAssistant,
+  condition: DeviceCondition
+) =>
+  hass.callWS<DeviceCondition[]>({
+    type: "device_automation/condition/capabilities",
+    condition,
+  });
+
 export const fetchDeviceTriggerCapabilities = (
   hass: HomeAssistant,
   trigger: DeviceTrigger

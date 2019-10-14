@@ -9,9 +9,9 @@ import {
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
 import "@material/mwc-button";
+import memoizeOne from "memoize-one";
 
 import "../../../components/dialog/ha-paper-dialog";
-
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/user/ha-user-picker";
 import { PersonDetailDialogParams } from "./show-dialog-person-detail";
@@ -28,6 +28,13 @@ class DialogPersonDetail extends LitElement {
   @property() private _error?: string;
   @property() private _params?: PersonDetailDialogParams;
   @property() private _submitting: boolean = false;
+
+  private _deviceTrackersAvailable = memoizeOne((hass) => {
+    return Object.keys(hass.states).some(
+      (entityId) =>
+        entityId.substr(0, entityId.indexOf(".")) === "device_tracker"
+    );
+  });
 
   public async showDialog(params: PersonDetailDialogParams): Promise<void> {
     this._params = params;
@@ -55,7 +62,11 @@ class DialogPersonDetail extends LitElement {
         opened
         @opened-changed="${this._openedChanged}"
       >
-        <h2>${this._params.entry ? this._params.entry.name : "New Person"}</h2>
+        <h2>
+          ${this._params.entry
+            ? this._params.entry.name
+            : this.hass!.localize("ui.panel.config.person.detail.new_person")}
+        </h2>
         <paper-dialog-scrollable>
           ${this._error
             ? html`
@@ -66,34 +77,72 @@ class DialogPersonDetail extends LitElement {
             <paper-input
               .value=${this._name}
               @value-changed=${this._nameChanged}
-              label="Name"
-              error-message="Name is required"
+              label="${this.hass!.localize(
+                "ui.panel.config.person.detail.name"
+              )}"
+              error-message="${this.hass!.localize(
+                "ui.panel.config.person.detail.name_error_msg"
+              )}"
               .invalid=${nameInvalid}
             ></paper-input>
             <ha-user-picker
-              label="Linked User"
+              label="${this.hass!.localize(
+                "ui.panel.config.person.detail.linked_user"
+              )}"
               .hass=${this.hass}
               .value=${this._userId}
               .users=${this._params.users}
               @value-changed=${this._userChanged}
             ></ha-user-picker>
-            <p>
-              ${this.hass.localize(
-                "ui.panel.config.person.detail.device_tracker_intro"
-              )}
-            </p>
-            <ha-entities-picker
-              .hass=${this.hass}
-              .value=${this._deviceTrackers}
-              domain-filter="device_tracker"
-              .pickedEntityLabel=${this.hass.localize(
-                "ui.panel.config.person.detail.device_tracker_picked"
-              )}
-              .pickEntityLabel=${this.hass.localize(
-                "ui.panel.config.person.detail.device_tracker_pick"
-              )}
-              @value-changed=${this._deviceTrackersChanged}
-            ></ha-entities-picker>
+            ${this._deviceTrackersAvailable(this.hass)
+              ? html`
+                  <p>
+                    ${this.hass.localize(
+                      "ui.panel.config.person.detail.device_tracker_intro"
+                    )}
+                  </p>
+                  <ha-entities-picker
+                    .hass=${this.hass}
+                    .value=${this._deviceTrackers}
+                    domain-filter="device_tracker"
+                    .pickedEntityLabel=${this.hass.localize(
+                      "ui.panel.config.person.detail.device_tracker_picked"
+                    )}
+                    .pickEntityLabel=${this.hass.localize(
+                      "ui.panel.config.person.detail.device_tracker_pick"
+                    )}
+                    @value-changed=${this._deviceTrackersChanged}
+                  >
+                  </ha-entities-picker>
+                `
+              : html`
+                  <p>
+                    ${this.hass!.localize(
+                      "ui.panel.config.person.detail.no_device_tracker_available_intro"
+                    )}
+                  </p>
+                  <ul>
+                    <li>
+                      <a
+                        href="https://www.home-assistant.io/integrations/#presence-detection"
+                        target="_blank"
+                        >${this.hass!.localize(
+                          "ui.panel.config.person.detail.link_presence_detection_integrations"
+                        )}</a
+                      >
+                    </li>
+                    <li>
+                      <a
+                        @click="${this._closeDialog}"
+                        href="/config/integrations"
+                      >
+                        ${this.hass!.localize(
+                          "ui.panel.config.person.detail.link_integrations_page"
+                        )}</a
+                      >
+                    </li>
+                  </ul>
+                `}
           </div>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
@@ -104,7 +153,7 @@ class DialogPersonDetail extends LitElement {
                   @click="${this._deleteEntry}"
                   .disabled=${this._submitting}
                 >
-                  DELETE
+                  ${this.hass!.localize("ui.panel.config.person.detail.delete")}
                 </mwc-button>
               `
             : html``}
@@ -112,11 +161,17 @@ class DialogPersonDetail extends LitElement {
             @click="${this._updateEntry}"
             .disabled=${nameInvalid || this._submitting}
           >
-            ${this._params.entry ? "UPDATE" : "CREATE"}
+            ${this._params.entry
+              ? this.hass!.localize("ui.panel.config.person.detail.update")
+              : this.hass!.localize("ui.panel.config.person.detail.create")}
           </mwc-button>
         </div>
       </ha-paper-dialog>
     `;
+  }
+
+  private _closeDialog() {
+    this._params = undefined;
   }
 
   private _nameChanged(ev: PolymerChangedEvent<string>) {

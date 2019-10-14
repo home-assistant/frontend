@@ -504,7 +504,12 @@
                                     "leave": "Verlassen"
                                 },
                                 "device": {
-                                    "label": "Gerät"
+                                    "label": "Gerät",
+                                    "extra_fields": {
+                                        "above": "Über",
+                                        "below": "Unter",
+                                        "for": "Dauer"
+                                    }
                                 }
                             },
                             "learn_more": "Erfahre mehr über Auslöser"
@@ -554,6 +559,12 @@
                                 },
                                 "device": {
                                     "label": "Gerät"
+                                },
+                                "and": {
+                                    "label": "Und"
+                                },
+                                "or": {
+                                    "label": "Oder"
                                 }
                             },
                             "learn_more": "Erfahre mehr über Bedingungen"
@@ -596,7 +607,11 @@
                             "learn_more": "Erfahre mehr über Aktionen"
                         },
                         "load_error_not_editable": "Nur Automatisierungen in automations.yaml sind editierbar.",
-                        "load_error_unknown": "Fehler beim Laden der Automatisierung ({err_no})."
+                        "load_error_unknown": "Fehler beim Laden der Automatisierung ({err_no}).",
+                        "description": {
+                            "label": "Beschreibung",
+                            "placeholder": "Optionale Beschreibung"
+                        }
                     }
                 },
                 "script": {
@@ -754,7 +769,8 @@
                         "unavailable": "(nicht verfügbar)",
                         "introduction": "Der Home Assistant führt eine Registrierung aller Entitäten, die er je gesehen hat und die eindeutig identifiziert werden können. Jeder dieser Entitäten wird eine Entitäts-ID zugewiesen, die nur für diese Entität reserviert ist.",
                         "introduction2": "Verwende die Entitätsregistrierung, um den Namen zu überschreiben, die Entität-ID zu ändern oder den Eintrag aus dem Home Assistant zu entfernen. Beachte, dass das Entfernen des Entitätsregistrierungseintrags die Entität nicht löscht. Folge dazu dem Link unten und entferne ihn in der Integrationsseite.",
-                        "integrations_page": "Integrationsseite"
+                        "integrations_page": "Integrationsseite",
+                        "show_disabled": "Anzeigen deaktivierter Entitäten"
                     },
                     "editor": {
                         "unavailable": "Diese Entität ist derzeit nicht verfügbar.",
@@ -763,7 +779,9 @@
                         "update": "UPDATE",
                         "enabled_label": "Entität aktivieren",
                         "enabled_cause": "Deaktiviert durch {cause}.",
-                        "enabled_description": "Deaktivierte Entitäten werden in Home Assistant nicht hinzugefügt."
+                        "enabled_description": "Deaktivierte Entitäten werden in Home Assistant nicht hinzugefügt.",
+                        "confirm_delete": "Möchten Sie diesen Eintrag wirklich löschen?",
+                        "confirm_delete2": "Durch das Löschen eines Eintrags wird die Entität nicht aus Home Assistant entfernt. Dazu müssen Sie die Integration '{platform}' von Home Assistant entfernen."
                     }
                 },
                 "person": {
@@ -808,7 +826,18 @@
                 },
                 "devices": {
                     "caption": "Geräte",
-                    "description": "Verwalte verbundene Geräte"
+                    "description": "Verwalte verbundene Geräte",
+                    "automation": {
+                        "triggers": {
+                            "caption": "Tu nur etwas, wenn..."
+                        },
+                        "conditions": {
+                            "caption": "Tu nur etwas, wenn..."
+                        },
+                        "actions": {
+                            "caption": "Wenn etwas ausgelöst wird ..."
+                        }
+                    }
                 }
             },
             "profile": {
@@ -886,7 +915,8 @@
                     "description": "Dies blendet die Seitenleiste standardmäßig aus, ähnlich der Nutzung auf Mobilgeräten."
                 },
                 "vibrate": {
-                    "header": "Vibrieren"
+                    "header": "Vibrieren",
+                    "description": "Aktivieren oder deaktivieren Sie die Vibration an diesem Gerät, wenn Sie Geräte steuern."
                 }
             },
             "page-authorize": {
@@ -1034,7 +1064,8 @@
                         "navigate_to": "Navigiere zu {location}",
                         "toggle": "{name} umschalten",
                         "call_service": "Dienst {name} ausführen",
-                        "more_info": "Zeige weitere Informationen: {name}"
+                        "more_info": "Zeige weitere Informationen: {name}",
+                        "url": "Fenster zu {url_path} öffnen"
                     }
                 },
                 "editor": {
@@ -1080,6 +1111,66 @@
                     "edit_lovelace": {
                         "header": "Titel deiner Lovelace UI",
                         "explanation": "Dieser Titel wird überhalb aller deiner Lovelace Ansichten gezeigt."
+                    },
+                    "card": {
+                        "alarm_panel": {
+                            "available_states": "Verfügbare Zustände"
+                        },
+                        "config": {
+                            "required": "Benötigt",
+                            "optional": "Optional"
+                        },
+                        "entities": {
+                            "show_header_toggle": "Namen anzeigen?"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "define": "Schweregrad definieren?",
+                                "green": "Grün",
+                                "red": "Rot",
+                                "yellow": "Gelb"
+                            }
+                        },
+                        "glance": {
+                            "columns": "Spalten"
+                        },
+                        "generic": {
+                            "aspect_ratio": "Seitenverhältnis",
+                            "camera_image": "Kamera-Entität",
+                            "camera_view": "Kameraansicht",
+                            "entities": "Ungenutzte Elemente",
+                            "entity": "Entität",
+                            "hold_action": "Halte-Aktion",
+                            "hours_to_show": "Stunden",
+                            "icon": "Symbol",
+                            "icon_height": "Symbol Höhe",
+                            "image": "Bildpfad",
+                            "maximum": "Maximum",
+                            "minimum": "Minimum",
+                            "name": "Name",
+                            "refresh_interval": "Aktualisierungsintervall",
+                            "show_icon": "Symbol anzeigen?",
+                            "show_name": "Namen anzeigen?",
+                            "show_state": "Status anzeigen?",
+                            "tap_action": "Tipp-Aktion",
+                            "title": "Titel",
+                            "theme": "Aussehen",
+                            "unit": "Einheit",
+                            "url": "Url"
+                        },
+                        "map": {
+                            "geo_location_sources": "Geolocation-Quellen",
+                            "dark_mode": "Dunkler Modus?",
+                            "default_zoom": "Standard-Zoom",
+                            "source": "Quelle"
+                        },
+                        "markdown": {
+                            "content": "Inhalt"
+                        },
+                        "sensor": {
+                            "graph_detail": "Diagrammdetail",
+                            "graph_type": "Typ"
+                        }
                     }
                 },
                 "menu": {
@@ -1352,6 +1443,7 @@
                 "manuf": "von {manufacturer}",
                 "no_area": "Kein Bereich",
                 "services": {
+                    "reconfigure": "Konfigurieren Sie das ZHA-Gerät neu (Gerät heilen). Verwenden Sie diese Option, wenn Sie Probleme mit dem Gerät haben. Wenn es sich bei dem fraglichen Gerät um ein batteriebetriebenes Gerät handelt, vergewissern Sie sich, dass es wach ist und Befehle akzeptiert, wenn Sie diesen Dienst nutzen.",
                     "updateDeviceName": "Lege einen benutzerdefinierten Namen für dieses Gerät in der Geräteregistrierung fest.",
                     "remove": "Entfernen Sie ein Gerät aus dem ZigBee-Netzwerk."
                 },
@@ -1437,7 +1529,7 @@
                 "away": "Abwesend",
                 "boost": "Maximal",
                 "comfort": "Komfort",
-                "home": "Zu Hause",
+                "home": "Zuhause",
                 "sleep": "Schlafen",
                 "activity": "Aktivität"
             },
