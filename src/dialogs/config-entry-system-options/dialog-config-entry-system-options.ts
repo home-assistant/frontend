@@ -82,14 +82,16 @@ class DialogConfigEntrySystemOptions extends LitElement {
                     .disabled=${this._submitting}
                   >
                     <div>
-                      ${this.hass.localize(
-                        "ui.dialogs.config_entry_system_options.enable_new_entities_label"
-                      )}
-                    </div>
-                    <div class="secondary">
-                      ${this.hass.localize(
-                        "ui.dialogs.config_entry_system_options.enable_new_entities_description"
-                      )}
+                      <p>
+                        ${this.hass.localize(
+                          "ui.dialogs.config_entry_system_options.enable_new_entities_label"
+                        )}
+                      </p>
+                      <p class="secondary">
+                        ${this.hass.localize(
+                          "ui.dialogs.config_entry_system_options.enable_new_entities_description"
+                        )}
+                      </p>
                     </div>
                   </ha-switch>
                 </div>
@@ -160,7 +162,9 @@ class DialogConfigEntrySystemOptions extends LitElement {
           padding-bottom: 24px;
           color: var(--primary-text-color);
         }
-
+        p {
+          margin: 0;
+        }
         .secondary {
           color: var(--secondary-text-color);
         }

@@ -44,6 +44,11 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
           margin-top: 24px;
         }
 
+        .sectionHeader {
+          position: relative;
+          padding-right: 40px;
+        }
+
         .node-info {
           margin-left: 16px;
         }
@@ -77,7 +82,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
         .toggle-help-icon {
           position: absolute;
-          top: 6px;
+          top: -6px;
           right: 0;
           color: var(--primary-color);
         }
@@ -102,7 +107,7 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
         <!-- Node card -->
         <ha-config-section is-wide="[[isWide]]">
-          <div style="position: relative" slot="header">
+          <div class="sectionHeader" slot="header">
             <span>Z-Wave Node Management</span>
             <paper-icon-button
               class="toggle-help-icon"

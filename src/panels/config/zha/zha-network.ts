@@ -41,19 +41,27 @@ export class ZHANetwork extends LitElement {
     return html`
       <ha-config-section .isWide="${this.isWide}">
         <div style="position: relative" slot="header">
-          <span>Network Management</span>
+          <span>
+            ${this.hass!.localize(
+              "ui.panel.config.zha.network_management.header"
+            )}
+          </span>
           <paper-icon-button
             class="toggle-help-icon"
             @click="${this._onHelpTap}"
             icon="hass:help-circle"
           ></paper-icon-button>
         </div>
-        <span slot="introduction">Commands that affect entire network</span>
+        <span slot="introduction">
+          ${this.hass!.localize(
+            "ui.panel.config.zha.network_management.introduction"
+          )}
+        </span>
 
         <ha-card class="content">
           <div class="card-actions">
             <mwc-button @click=${this._onAddDevicesClick}>
-              Add Devices
+              ${this.hass!.localize("ui.panel.config.zha.common.add_devices")}
             </mwc-button>
             ${this._showHelp
               ? html`

@@ -14,31 +14,31 @@ import { getCardElementTag } from "../../common/get-card-element-tag";
 import { CardPickTarget } from "../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 
-const cards = [
-  { name: "Alarm panel", type: "alarm-panel" },
-  { name: "Conditional", type: "conditional" },
-  { name: "Entities", type: "entities" },
-  { name: "Entity Button", type: "entity-button" },
-  { name: "Entity Filter", type: "entity-filter" },
-  { name: "Gauge", type: "gauge" },
-  { name: "Glance", type: "glance" },
-  { name: "History Graph", type: "history-graph" },
-  { name: "Horizontal Stack", type: "horizontal-stack" },
-  { name: "iFrame", type: "iframe" },
-  { name: "Light", type: "light" },
-  { name: "Map", type: "map" },
-  { name: "Markdown", type: "markdown" },
-  { name: "Media Control", type: "media-control" },
-  { name: "Picture", type: "picture" },
-  { name: "Picture Elements", type: "picture-elements" },
-  { name: "Picture Entity", type: "picture-entity" },
-  { name: "Picture Glance", type: "picture-glance" },
-  { name: "Plant Status", type: "plant-status" },
-  { name: "Sensor", type: "sensor" },
-  { name: "Shopping List", type: "shopping-list" },
-  { name: "Thermostat", type: "thermostat" },
-  { name: "Vertical Stack", type: "vertical-stack" },
-  { name: "Weather Forecast", type: "weather-forecast" },
+const cards: string[] = [
+  "alarm-panel",
+  "conditional",
+  "entities",
+  "entity-button",
+  "entity-filter",
+  "gauge",
+  "glance",
+  "history-graph",
+  "horizontal-stack",
+  "iframe",
+  "light",
+  "map",
+  "markdown",
+  "media-control",
+  "picture",
+  "picture-elements",
+  "picture-entity",
+  "picture-glance",
+  "plant-status",
+  "sensor",
+  "shopping-list",
+  "thermostat",
+  "vertical-stack",
+  "weather-forecast",
 ];
 
 @customElement("hui-card-picker")
@@ -53,10 +53,12 @@ export class HuiCardPicker extends LitElement {
         ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card")}
       </h3>
       <div class="cards-container">
-        ${cards.map((card) => {
+        ${cards.map((card: string) => {
           return html`
-            <mwc-button @click="${this._cardPicked}" .type="${card.type}">
-              ${card.name}
+            <mwc-button @click="${this._cardPicked}" .type="${card}">
+              ${this.hass!.localize(
+                `ui.panel.lovelace.editor.card.${card}.name`
+              )}
             </mwc-button>
           `;
         })}
