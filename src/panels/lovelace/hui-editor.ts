@@ -14,11 +14,12 @@ import { Lovelace } from "./types";
 
 import "../../components/ha-icon";
 import { haStyle } from "../../resources/styles";
-import "./components/hui-yaml-editor";
+import "../../components/ha-code-editor";
 // This is not a duplicate import, one is for types, one is for element.
 // tslint:disable-next-line
-import { HuiYamlEditor } from "./components/hui-yaml-editor";
+import { HaCodeEditor } from "../../components/ha-code-editor";
 import { HomeAssistant } from "../../types";
+import { computeRTL } from "../../common/util/compute_rtl";
 
 const lovelaceStruct = struct.interface({
   title: "string?",
@@ -27,12 +28,12 @@ const lovelaceStruct = struct.interface({
 });
 
 class LovelaceFullConfigEditor extends LitElement {
-  public hass?: HomeAssistant;
+  public hass!: HomeAssistant;
   public lovelace?: Lovelace;
   public closeEditor?: () => void;
   private _saving?: boolean;
   private _changed?: boolean;
-  private _generation?: number;
+  private _generation = 1;
 
   static get properties() {
     return {
@@ -80,12 +81,15 @@ class LovelaceFullConfigEditor extends LitElement {
           </app-toolbar>
         </app-header>
         <div class="content">
-          <hui-yaml-editor
+          <ha-code-editor
+            mode="yaml"
+            autofocus
+            .rtl=${computeRTL(this.hass)}
             .hass="${this.hass}"
-            @yaml-changed="${this._yamlChanged}"
-            @yaml-save="${this._handleSave}"
+            @value-changed="${this._yamlChanged}"
+            @editor-save="${this._handleSave}"
           >
-          </hui-yaml-editor>
+          </ha-code-editor>
         </div>
       </app-header-layout>
     `;
@@ -93,8 +97,6 @@ class LovelaceFullConfigEditor extends LitElement {
 
   protected firstUpdated() {
     this.yamlEditor.value = yaml.safeDump(this.lovelace!.config);
-    this.yamlEditor.codemirror.clearHistory();
-    this._generation = this.yamlEditor.codemirror.changeGeneration(true);
   }
 
   static get styles(): CSSResult[] {
@@ -140,10 +142,9 @@ class LovelaceFullConfigEditor extends LitElement {
   }
 
   private _yamlChanged() {
-    if (!this._generation) {
-      return;
-    }
-    this._changed = !this.yamlEditor.codemirror.isClean(this._generation);
+    this._changed = !this.yamlEditor
+      .codemirror!.getDoc()
+      .isClean(this._generation);
     if (this._changed && !window.onbeforeunload) {
       window.onbeforeunload = () => {
         return true;
@@ -199,14 +200,16 @@ class LovelaceFullConfigEditor extends LitElement {
     } catch (err) {
       alert(`Unable to save YAML: ${err}`);
     }
-    this._generation = this.yamlEditor.codemirror.changeGeneration(true);
+    this._generation = this.yamlEditor
+      .codemirror!.getDoc()
+      .changeGeneration(true);
     window.onbeforeunload = null;
     this._saving = false;
     this._changed = false;
   }
 
-  private get yamlEditor(): HuiYamlEditor {
-    return this.shadowRoot!.querySelector("hui-yaml-editor")!;
+  private get yamlEditor(): HaCodeEditor {
+    return this.shadowRoot!.querySelector("ha-code-editor")! as HaCodeEditor;
   }
 }
 

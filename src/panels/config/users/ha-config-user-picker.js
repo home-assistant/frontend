@@ -68,7 +68,8 @@ class HaUserPicker extends EventsMixin(
                   <div secondary="">
                     [[_computeGroup(localize, user)]]
                     <template is="dom-if" if="[[user.system_generated]]">
-                      - System Generated
+                      -
+                      [[localize('ui.panel.config.users.picker.system_generated')]]
                     </template>
                   </div>
                 </paper-item-body>

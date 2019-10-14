@@ -236,7 +236,20 @@ class HUIRoot extends LitElement {
                   >
                     ${this.lovelace!.config.views.map(
                       (view) => html`
-                        <paper-tab aria-label="${view.title}">
+                        <paper-tab
+                          aria-label="${view.title}"
+                          class="${classMap({
+                            "hide-tab": Boolean(
+                              !this._editMode &&
+                                view.visible !== undefined &&
+                                ((Array.isArray(view.visible) &&
+                                  !view.visible.some(
+                                    (e) => e.user === this.hass!.user!.id
+                                  )) ||
+                                  view.visible === false)
+                            ),
+                          })}"
+                        >
                           ${this._editMode
                             ? html`
                                 <ha-paper-icon-button-arrow-prev
@@ -391,6 +404,9 @@ class HUIRoot extends LitElement {
         }
         paper-item {
           cursor: pointer;
+        }
+        .hide-tab {
+          display: none;
         }
       `,
     ];

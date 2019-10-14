@@ -20,6 +20,7 @@ declare global {
       "ha-device-picker": any;
       "ha-device-condition-picker": any;
       "ha-textarea": any;
+      "ha-code-editor": any;
       "ha-service-picker": any;
       "mwc-button": any;
       "ha-device-trigger-picker": any;

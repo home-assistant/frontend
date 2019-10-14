@@ -1,16 +1,17 @@
 import "@material/mwc-button";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-input/paper-textarea";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import yaml from "js-yaml";
 
 import "../../../components/entity/ha-entity-picker";
+import "../../../components/ha-code-editor";
 import "../../../resources/ha-style";
 import { EventsMixin } from "../../../mixins/events-mixin";
 
+const ERROR_SENTINEL = {};
 /*
  * @appliesMixin EventsMixin
  */
@@ -27,11 +28,12 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
           direction: ltr;
         }
 
-        ha-entity-picker,
-        .state-input,
-        paper-textarea {
-          display: block;
+        .inputs {
           max-width: 400px;
+        }
+
+        mwc-button {
+          margin-top: 8px;
         }
 
         .entities th {
@@ -66,7 +68,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
         }
       </style>
 
-      <div>
+      <div class="inputs">
         <p>
           Set the representation of a device within Home Assistant.<br />
           This will not communicate with the actual device.
@@ -89,14 +91,16 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
           value="{{_state}}"
           class="state-input"
         ></paper-input>
-        <paper-textarea
-          label="State attributes (YAML, optional)"
-          autocapitalize="none"
-          autocomplete="off"
-          spellcheck="false"
-          value="{{_stateAttributes}}"
-        ></paper-textarea>
-        <mwc-button on-click="handleSetState" raised>Set State</mwc-button>
+        <p>State attributes (YAML, optional)</p>
+        <ha-code-editor
+          mode="yaml"
+          value="[[_stateAttributes]]"
+          error="[[!validJSON]]"
+          on-value-changed="_yamlChanged"
+        ></ha-code-editor>
+        <mwc-button on-click="handleSetState" disabled="[[!validJSON]]" raised
+          >Set State</mwc-button
+        >
       </div>
 
       <h1>Current entities</h1>
@@ -166,6 +170,16 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
         type: Object,
       },
 
+      parsedJSON: {
+        type: Object,
+        computed: "_computeParsedStateAttributes(_stateAttributes)",
+      },
+
+      validJSON: {
+        type: Boolean,
+        computed: "_computeValidJSON(parsedJSON)",
+      },
+
       _entityId: {
         type: String,
         value: "",
@@ -229,20 +243,13 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
   }
 
   handleSetState() {
-    var attr;
-
-    try {
-      attr = this._stateAttributes ? yaml.safeLoad(this._stateAttributes) : {};
-    } catch (err) {
-      /* eslint-disable no-alert */
-      alert("Error parsing YAML: " + err);
-      /* eslint-enable no-alert */
+    if (!this._entityId) {
+      alert("Entity is a mandatory field");
       return;
     }
-
     this.hass.callApi("POST", "states/" + this._entityId, {
       state: this._state,
-      attributes: attr,
+      attributes: this.parsedJSON,
     });
   }
 
@@ -340,6 +347,22 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
     }
 
     return output;
+  }
+
+  _computeParsedStateAttributes(stateAttributes) {
+    try {
+      return stateAttributes.trim() ? yaml.safeLoad(stateAttributes) : {};
+    } catch (err) {
+      return ERROR_SENTINEL;
+    }
+  }
+
+  _computeValidJSON(parsedJSON) {
+    return parsedJSON !== ERROR_SENTINEL;
+  }
+
+  _yamlChanged(ev) {
+    this._stateAttributes = ev.detail.value;
   }
 }
 

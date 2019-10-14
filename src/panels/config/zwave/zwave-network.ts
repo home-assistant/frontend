@@ -51,7 +51,7 @@ export class ZwaveNetwork extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <ha-config-section .isWide="${this.isWide}">
-        <div style="position: relative" slot="header">
+        <div class="sectionHeader" slot="header">
           <span>
             ${this.hass!.localize(
               "ui.panel.config.zwave.network_management.header"
@@ -63,11 +63,19 @@ export class ZwaveNetwork extends LitElement {
             icon="hass:help-circle"
           ></paper-icon-button>
         </div>
-        <span slot="introduction">
+        <div slot="introduction">
           ${this.hass!.localize(
             "ui.panel.config.zwave.network_management.introduction"
           )}
-        </span>
+          <p>
+            <a
+              href="https://www.home-assistant.io/docs/z-wave/control-panel/"
+              target="_blank"
+            >
+              ${this.hass!.localize("ui.panel.config.zwave.learn_more")}
+            </a>
+          </p>
+        </div>
 
         ${this._networkStatus
           ? html`
@@ -232,6 +240,11 @@ export class ZwaveNetwork extends LitElement {
       css`
         .content {
           margin-top: 24px;
+        }
+
+        .sectionHeader {
+          position: relative;
+          padding-right: 40px;
         }
 
         .network-status {

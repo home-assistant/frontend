@@ -104,7 +104,10 @@ gulp.task("compress-static", () => compressStatic(paths.static));
 
 gulp.task("copy-static-demo", (done) => {
   // Copy app static files
-  fs.copySync(polyPath("public"), paths.demo_root);
+  fs.copySync(
+    polyPath("public/static"),
+    path.resolve(paths.demo_root, "static")
+  );
   // Copy demo static files
   fs.copySync(path.resolve(paths.demo_dir, "public"), paths.demo_root);
 
