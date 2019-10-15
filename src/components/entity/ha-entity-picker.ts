@@ -7,7 +7,7 @@ import memoizeOne from "memoize-one";
 
 import "./state-badge";
 
-import computeStateName from "../../common/entity/compute_state_name";
+import { computeStateName } from "../../common/entity/compute_state_name";
 import {
   LitElement,
   TemplateResult,

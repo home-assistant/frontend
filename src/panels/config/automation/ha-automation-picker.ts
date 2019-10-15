@@ -19,7 +19,7 @@ import "../../../components/entity/ha-entity-toggle";
 
 import "../ha-config-section";
 
-import computeStateName from "../../../common/entity/compute_state_name";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";

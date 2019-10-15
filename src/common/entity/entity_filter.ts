@@ -1,4 +1,4 @@
-import computeDomain from "./compute_domain";
+import { computeDomain } from "./compute_domain";
 
 export type FilterFunc = (entityId: string) => boolean;
 

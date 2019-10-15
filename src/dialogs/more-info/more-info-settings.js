@@ -8,9 +8,10 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 
-import computeStateName from "../../common/entity/compute_state_name";
-import computeDomain from "../../common/entity/compute_domain";
+import { computeStateName } from "../../common/entity/compute_state_name";
+import { computeDomain } from "../../common/entity/compute_domain";
 import { updateEntityRegistryEntry } from "../../data/entity_registry";
+import { showSaveSuccessToast } from "../../util/toast-saved-success";
 
 import "../../components/ha-paper-icon-button-arrow-prev";
 /*
@@ -36,6 +37,7 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
         app-toolbar mwc-button {
           font-size: 0.8em;
           margin: 0;
+          --mdc-theme-primary: var(--more-info-header-color);
         }
 
         .form {
@@ -121,6 +123,8 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
           new_entity_id: this._entityId,
         }
       );
+
+      showSaveSuccessToast(this, this.hass);
 
       this.registryInfo = info;
 

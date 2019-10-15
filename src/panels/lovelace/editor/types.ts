@@ -52,6 +52,16 @@ export interface CardPickTarget extends EventTarget {
 export const actionConfigStruct = struct({
   action: "string",
   navigation_path: "string?",
+  url_path: "string?",
   service: "string?",
   service_data: "object?",
 });
+
+export const entitiesConfigStruct = struct.union([
+  {
+    entity: "entity-id",
+    name: "string?",
+    icon: "icon?",
+  },
+  "entity-id",
+]);

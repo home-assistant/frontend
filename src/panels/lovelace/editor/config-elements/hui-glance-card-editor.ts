@@ -8,31 +8,26 @@ import {
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-toggle-button/paper-toggle-button";
 
 import "../../../../components/entity/state-badge";
 import "../../components/hui-theme-select-editor";
 import "../../components/hui-entity-editor";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
+import "../../../../components/ha-switch";
 
 import { struct } from "../../common/structs/struct";
 import { processEditorEntities } from "../process-editor-entities";
-import { EntitiesEditorEvent, EditorTarget } from "../types";
+import {
+  EntitiesEditorEvent,
+  EditorTarget,
+  entitiesConfigStruct,
+} from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { configElementStyle } from "./config-elements-style";
 import { GlanceCardConfig, ConfigEntity } from "../../cards/types";
-
-const entitiesConfigStruct = struct.union([
-  {
-    entity: "entity-id",
-    name: "string?",
-    icon: "icon?",
-  },
-  "entity-id",
-]);
 
 const cardConfigStruct = struct({
   type: "string",
@@ -93,7 +88,11 @@ export class HuiGlanceCardEditor extends LitElement
       ${configElementStyle}
       <div class="card-config">
         <paper-input
-          label="Title"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.title"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value="${this._title}"
           .configValue="${"title"}"
           @value-changed="${this._valueChanged}"
@@ -106,7 +105,11 @@ export class HuiGlanceCardEditor extends LitElement
             @theme-changed="${this._valueChanged}"
           ></hui-theme-select-editor>
           <paper-input
-            label="Columns"
+            .label="${this.hass.localize(
+              "ui.panel.lovelace.editor.card.glance.columns"
+            )} (${this.hass.localize(
+              "ui.panel.lovelace.editor.card.config.optional"
+            )})"
             type="number"
             .value="${this._columns}"
             .configValue="${"columns"}"
@@ -114,23 +117,29 @@ export class HuiGlanceCardEditor extends LitElement
           ></paper-input>
         </div>
         <div class="side-by-side">
-          <paper-toggle-button
+          <ha-switch
             ?checked="${this._show_name !== false}"
             .configValue="${"show_name"}"
             @change="${this._valueChanged}"
-            >Show Name?</paper-toggle-button
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.show_name"
+            )}</ha-switch
           >
-          <paper-toggle-button
+          <ha-switch
             ?checked="${this._show_icon !== false}"
             .configValue="${"show_icon"}"
             @change="${this._valueChanged}"
-            >Show Icon?</paper-toggle-button
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.show_icon"
+            )}</ha-switch
           >
-          <paper-toggle-button
+          <ha-switch
             ?checked="${this._show_state !== false}"
             .configValue="${"show_state"}"
             @change="${this._valueChanged}"
-            >Show State?</paper-toggle-button
+            >${this.hass.localize(
+              "ui.panel.lovelace.editor.card.generic.show_state"
+            )}</ha-switch
           >
         </div>
       </div>
