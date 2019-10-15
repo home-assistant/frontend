@@ -206,7 +206,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
               ></state-badge>
             `
           : ""}
-        ${this._config!.show_state !== false
+        ${this._config!.show_state !== false && entityConf.show_state !== false
           ? html`
               <div>
                 ${entityConf.show_last_changed
