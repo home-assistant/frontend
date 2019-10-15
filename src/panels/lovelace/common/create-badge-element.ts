@@ -8,6 +8,7 @@ import {
 } from "../badges/hui-error-badge";
 import { LovelaceBadge } from "../types";
 import { LovelaceBadgeConfig } from "../../../data/lovelace";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 const BADGE_TYPES = new Set(["entity-filter", "error", "state-label"]);
 const CUSTOM_TYPE_PREFIX = "custom:";
@@ -16,7 +17,7 @@ const TIMEOUT = 2000;
 const _createElement = (
   tag: string,
   config: LovelaceBadgeConfig
-): LovelaceBadge | HuiErrorBadge => {
+): LovelaceBadge => {
   const element = document.createElement(tag) as LovelaceBadge;
   try {
     element.setConfig(config);
@@ -58,6 +59,7 @@ export const createBadgeElement = (
 
     customElements.whenDefined(tag).then(() => {
       clearTimeout(timer);
+      fireEvent(element, "ll-badge-rebuild");
     });
 
     return element;

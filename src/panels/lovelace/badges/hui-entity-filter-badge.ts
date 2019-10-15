@@ -44,19 +44,17 @@ class EntityFilterBadge extends HTMLElement implements LovelaceBadge {
       return;
     }
 
-    if (!this.haveEntitiesChanged(hass)) {
-      this._hass = hass;
+    this._hass = hass;
 
-      if (this._elements) {
-        for (const element of this._elements) {
-          element.hass = hass;
-        }
+    if (this._elements) {
+      for (const element of this._elements) {
+        element.hass = hass;
       }
-
-      return;
     }
 
-    this._hass = hass;
+    if (!this.haveEntitiesChanged(hass)) {
+      return;
+    }
 
     if (!this._configEntities) {
       this._configEntities = processConfigEntities(this._config.entities);
@@ -100,6 +98,7 @@ class EntityFilterBadge extends HTMLElement implements LovelaceBadge {
       this._elements = [];
       for (const badgeConfig of entitiesList) {
         const element = createBadgeElement(badgeConfig);
+        element.hass = hass;
         this._elements.push(element);
       }
       this._oldEntities = entitiesList;
@@ -107,10 +106,6 @@ class EntityFilterBadge extends HTMLElement implements LovelaceBadge {
 
     if (!this._elements) {
       return;
-    }
-
-    for (const element of this._elements) {
-      element.hass = hass;
     }
 
     // Attach element if it has never been attached.

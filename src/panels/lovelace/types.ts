@@ -9,6 +9,7 @@ declare global {
   // tslint:disable-next-line
   interface HASSDomEvents {
     "ll-rebuild": {};
+    "ll-badge-rebuild": {};
   }
 }
 

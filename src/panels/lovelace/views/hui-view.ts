@@ -11,7 +11,11 @@ import "../../../components/entity/ha-state-label-badge";
 
 import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
 
-import { LovelaceViewConfig, LovelaceCardConfig } from "../../../data/lovelace";
+import {
+  LovelaceViewConfig,
+  LovelaceCardConfig,
+  LovelaceBadgeConfig,
+} from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { classMap } from "lit-html/directives/class-map";
 import { Lovelace, LovelaceCard, LovelaceBadge } from "../types";
@@ -79,6 +83,23 @@ export class HUIView extends LitElement {
         if (!this.lovelace!.editMode) {
           ev.stopPropagation();
           this._rebuildCard(element, cardConfig);
+        }
+      },
+      { once: true }
+    );
+    return element;
+  }
+
+  public createBadgeElement(badgeConfig: LovelaceBadgeConfig) {
+    const element = createBadgeElement(badgeConfig) as LovelaceBadge;
+    element.hass = this.hass;
+    element.addEventListener(
+      "ll-badge-rebuild",
+      (ev) => {
+        // In edit mode let it go to hui-root and rebuild whole view.
+        if (!this.lovelace!.editMode) {
+          ev.stopPropagation();
+          this._rebuildBadge(element, badgeConfig);
         }
       },
       { once: true }
@@ -336,6 +357,17 @@ export class HUIView extends LitElement {
     cardElToReplace.parentElement!.replaceChild(newCardEl, cardElToReplace);
     this._cards = this._cards!.map((curCardEl) =>
       curCardEl === cardElToReplace ? newCardEl : curCardEl
+    );
+  }
+
+  private _rebuildBadge(
+    badgeElToReplace: LovelaceBadge,
+    config: LovelaceBadgeConfig
+  ): void {
+    const newBadgeEl = this.createBadgeElement(config);
+    badgeElToReplace.parentElement!.replaceChild(newBadgeEl, badgeElToReplace);
+    this._badges = this._cards!.map((curBadgeEl) =>
+      curBadgeEl === badgeElToReplace ? newBadgeEl : curBadgeEl
     );
   }
 }
