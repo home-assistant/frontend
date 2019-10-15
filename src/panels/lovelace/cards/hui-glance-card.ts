@@ -187,8 +187,9 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         @ha-click=${this._handleClick}
         @ha-hold=${this._handleHold}
         @ha-dblclick=${this._handleDblClick}
-        .hasDblClick=${hasDoubleClick(entityConf.dbltap_action)}
-        .longPress=${longPress()}
+        .longPress=${longPress({
+          hasDoubleClick: hasDoubleClick(entityConf.dbltap_action),
+        })}
       >
         ${this._config!.show_name !== false
           ? html`

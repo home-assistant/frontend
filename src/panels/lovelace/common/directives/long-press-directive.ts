@@ -8,11 +8,10 @@ const isTouch =
 
 interface LongPress extends HTMLElement {
   holdTime: number;
-  bind(element: Element): void;
+  bind(element: Element, options): void;
 }
 interface LongPressElement extends Element {
   longPress?: boolean;
-  hasDblClick?: boolean | undefined;
 }
 
 class LongPress extends HTMLElement implements LongPress {
@@ -67,7 +66,7 @@ class LongPress extends HTMLElement implements LongPress {
     });
   }
 
-  public bind(element: LongPressElement) {
+  public bind(element: LongPressElement, options) {
     if (element.longPress) {
       return;
     }
@@ -122,7 +121,7 @@ class LongPress extends HTMLElement implements LongPress {
       this.timer = undefined;
       if (this.held) {
         element.dispatchEvent(new Event("ha-hold"));
-      } else if (element.hasDblClick) {
+      } else if (options.hasDoubleClick) {
         if ((ev as MouseEvent).detail === 1) {
           this.dblClickTimeout = window.setTimeout(() => {
             element.dispatchEvent(new Event("ha-click"));
@@ -185,14 +184,14 @@ const getLongPress = (): LongPress => {
   return longpress as LongPress;
 };
 
-export const longPressBind = (element: LongPressElement) => {
+export const longPressBind = (element: LongPressElement, options) => {
   const longpress: LongPress = getLongPress();
   if (!longpress) {
     return;
   }
-  longpress.bind(element);
+  longpress.bind(element, options);
 };
 
-export const longPress = directive(() => (part: PropertyPart) => {
-  longPressBind(part.committer.element);
+export const longPress = directive((options) => (part: PropertyPart) => {
+  longPressBind(part.committer.element, options);
 });

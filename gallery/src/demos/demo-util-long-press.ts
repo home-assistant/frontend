@@ -14,7 +14,7 @@ export class DemoUtilLongPress extends LitElement {
             <mwc-button
               @ha-click="${this._handleClick}"
               @ha-hold="${this._handleHold}"
-              .longPress="${longPress()}"
+              .longPress="${longPress({})}"
             >
               (long) press me!
             </mwc-button>

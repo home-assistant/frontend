@@ -128,8 +128,9 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
           @ha-click=${this._handleClick}
           @ha-hold=${this._handleHold}
           @ha-dblclick=${this._handleDblClick}
-          .hasDblClick=${hasDoubleClick(this._config!.dbltap_action)}
-          .longPress=${longPress()}
+          .longPress=${longPress({
+            hasDoubleClick: hasDoubleClick(this._config!.dbltap_action),
+          })}
           class=${classMap({
             clickable: stateObj.state !== UNAVAILABLE,
           })}
