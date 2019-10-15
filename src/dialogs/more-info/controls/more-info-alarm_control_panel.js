@@ -29,8 +29,9 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
           width: 80px;
         }
         .actions mwc-button {
-          min-width: 160px;
-          margin-bottom: 16px;
+          flex: 1 0 50%;
+          margin: 0 4px 16px;
+          max-width: 200px;
         }
         mwc-button.disarm {
           color: var(--google-red-500);
@@ -137,7 +138,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
       <div class="layout horizontal center-justified actions">
         <template is="dom-if" if="[[_disarmVisible]]">
           <mwc-button
-            raised
+            outlined
             class="disarm"
             on-click="_callService"
             data-service="alarm_disarm"
@@ -148,7 +149,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
         </template>
         <template is="dom-if" if="[[_armVisible]]">
           <mwc-button
-            raised
+            outlined
             on-click="_callService"
             data-service="alarm_arm_home"
             disabled="[[!_codeValid]]"
@@ -156,7 +157,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
             [[localize('ui.card.alarm_control_panel.arm_home')]]
           </mwc-button>
           <mwc-button
-            raised
+            outlined
             on-click="_callService"
             data-service="alarm_arm_away"
             disabled="[[!_codeValid]]"
