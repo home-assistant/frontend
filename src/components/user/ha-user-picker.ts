@@ -29,14 +29,9 @@ class HaUserPicker extends LitElement {
       return [];
     }
 
-    let sorted = users!.filter((user) => !user.system_generated);
-
-    if (sorted.length === 1) {
-      return sorted;
-    }
-    sorted = [...sorted];
-    sorted.sort((a, b) => compare(a.name, b.name));
-    return sorted;
+    return users
+      .filter((user) => !user.system_generated)
+      .sort((a, b) => compare(a.name, b.name));
   });
 
   protected render(): TemplateResult | void {
