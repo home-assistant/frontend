@@ -29,12 +29,12 @@ class HaUserPicker extends LitElement {
       return [];
     }
 
-    const filteredUsers = users!.filter((user) => !user.system_generated);
+    let sorted = users!.filter((user) => !user.system_generated);
 
-    if (filteredUsers.length === 1) {
-      return filteredUsers;
+    if (sorted.length === 1) {
+      return sorted;
     }
-    const sorted = [...filteredUsers];
+    sorted = [...sorted];
     sorted.sort((a, b) => compare(a.name, b.name));
     return sorted;
   });
