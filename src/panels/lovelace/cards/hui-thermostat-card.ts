@@ -280,20 +280,28 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   }
 
   private _getSetTemp(stateObj: HassEntity) {
-    return stateObj.state === "unavailable"
-      ? this.hass!.localize("state.default.unavailable")
-      : stateObj.attributes.target_temp_low &&
-        stateObj.attributes.target_temp_high
-      ? this.formatTemp(
-          [
-            stateObj.attributes.target_temp_low,
-            stateObj.attributes.target_temp_high,
-          ],
-          false
-        )
-      : Number.isFinite(Number(stateObj.attributes.temperature))
-      ? stateObj.attributes.temperature
-      : "";
+    if (stateObj.state === "unavailable") {
+      return this.hass!.localize("state.default.unavailable");
+    }
+
+    if (
+      stateObj.attributes.target_temp_low &&
+      stateObj.attributes.target_temp_high
+    ) {
+      return this.formatTemp(
+        [
+          stateObj.attributes.target_temp_low,
+          stateObj.attributes.target_temp_high,
+        ],
+        false
+      );
+    }
+
+    if (Number.isFinite(Number(stateObj.attributes.temperature))) {
+      return stateObj.attributes.temperature;
+    }
+
+    return "";
   }
 
   private _updateSetTemp(value: string): void {
@@ -324,23 +332,19 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   private _setTemperature(e): void {
     const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
-    if (
-      stateObj.attributes.target_temp_low &&
-      stateObj.attributes.target_temp_high
-    ) {
-      if (e.detail.low) {
-        this.hass!.callService("climate", "set_temperature", {
-          entity_id: this._config!.entity,
-          target_temp_low: e.detail.low,
-          target_temp_high: stateObj.attributes.target_temp_high,
-        });
-      } else {
-        this.hass!.callService("climate", "set_temperature", {
-          entity_id: this._config!.entity,
-          target_temp_low: stateObj.attributes.target_temp_low,
-          target_temp_high: e.detail.high,
-        });
-      }
+
+    if (e.detail.low) {
+      this.hass!.callService("climate", "set_temperature", {
+        entity_id: this._config!.entity,
+        target_temp_low: e.detail.low,
+        target_temp_high: stateObj.attributes.target_temp_high,
+      });
+    } else if (e.detail.high) {
+      this.hass!.callService("climate", "set_temperature", {
+        entity_id: this._config!.entity,
+        target_temp_low: stateObj.attributes.target_temp_low,
+        target_temp_high: e.detail.high,
+      });
     } else {
       this.hass!.callService("climate", "set_temperature", {
         entity_id: this._config!.entity,
