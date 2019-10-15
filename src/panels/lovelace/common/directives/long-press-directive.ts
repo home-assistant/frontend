@@ -1,5 +1,6 @@
 import { directive, PropertyPart } from "lit-html";
 import "@material/mwc-ripple";
+import { LongPressOptions } from "../../../../data/lovelace";
 
 const isTouch =
   "ontouchstart" in window ||
@@ -184,7 +185,10 @@ const getLongPress = (): LongPress => {
   return longpress as LongPress;
 };
 
-export const longPressBind = (element: LongPressElement, options) => {
+export const longPressBind = (
+  element: LongPressElement,
+  options: LongPressOptions
+) => {
   const longpress: LongPress = getLongPress();
   if (!longpress) {
     return;
@@ -192,6 +196,8 @@ export const longPressBind = (element: LongPressElement, options) => {
   longpress.bind(element, options);
 };
 
-export const longPress = directive((options) => (part: PropertyPart) => {
-  longPressBind(part.committer.element, options);
-});
+export const longPress = directive(
+  (options: LongPressOptions = {}) => (part: PropertyPart) => {
+    longPressBind(part.committer.element, options);
+  }
+);

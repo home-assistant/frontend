@@ -194,8 +194,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     return html`
       <div class="wrapper">
         <ha-icon
-          @ha-click=${this._handleTap}
+          @ha-click=${this._handleClick}
           @ha-hold=${this._handleHold}
+          @ha-dblclick=${this._handleDblClick}
           .longPress=${longPress({
             hasDoubleClick: hasDoubleClick(entityConf.dbltap_action),
           })}
