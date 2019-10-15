@@ -29,7 +29,7 @@ class MoreInfoAlarmControlPanel extends LocalizeMixin(PolymerElement) {
           width: 80px;
         }
         .actions mwc-button {
-          min-width: 135px;
+          flex: 1 0 50%;
           margin: 0 4px 16px;
         }
         mwc-button.disarm {
