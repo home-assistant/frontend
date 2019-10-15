@@ -66,7 +66,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements EntityRow {
       <hui-generic-entity-row
         .hass="${this.hass}"
         .config="${this._config}"
-        .showSecondary="false"
+        .showSecondary=${false}
       >
         ${OFF_STATES.includes(stateObj.state)
           ? html`

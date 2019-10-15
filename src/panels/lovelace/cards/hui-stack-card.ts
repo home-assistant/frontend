@@ -1,4 +1,4 @@
-import { html, LitElement, TemplateResult } from "lit-element";
+import { html, LitElement, TemplateResult, CSSResult, css } from "lit-element";
 
 import { createCardElement } from "../common/create-card-element";
 import { LovelaceCard } from "../types";
@@ -48,11 +48,30 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
 
     return html`
       ${this.renderStyle()}
+      ${this._config.title
+        ? html`
+            <div class="card-header">${this._config.title}</div>
+          `
+        : ""}
       <div id="root">${this._cards}</div>
     `;
   }
 
   protected abstract renderStyle(): TemplateResult;
+
+  static get styles(): CSSResult {
+    return css`
+      .card-header {
+        color: var(--ha-card-header-color, --primary-text-color);
+        font-family: var(--ha-card-header-font-family, inherit);
+        font-size: var(--ha-card-header-font-size, 24px);
+        letter-spacing: -0.012em;
+        line-height: 32px;
+        display: block;
+        padding: 24px 16px 16px;
+      }
+    `;
+  }
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
     const element = createCardElement(cardConfig) as LovelaceCard;

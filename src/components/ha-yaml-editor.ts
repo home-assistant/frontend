@@ -3,9 +3,7 @@ import CodeMirror from "codemirror";
 import "codemirror/mode/yaml/yaml";
 // @ts-ignore
 import codeMirrorCSS from "codemirror/lib/codemirror.css";
-import { HomeAssistant } from "../../../types";
-import { fireEvent } from "../../../common/dom/fire_event";
-import { computeRTL } from "../../../common/util/compute_rtl";
+import { fireEvent } from "../common/dom/fire_event";
 import { customElement } from "lit-element";
 
 declare global {
@@ -17,12 +15,11 @@ declare global {
   }
 }
 
-@customElement("hui-yaml-editor")
-export class HuiYamlEditor extends HTMLElement {
-  public _hass?: HomeAssistant;
-
-  public codemirror!: any;
-
+@customElement("ha-yaml-editor")
+export class HaYamlEditor extends HTMLElement {
+  public codemirror?: any;
+  private _autofocus = false;
+  private _rtl = false;
   private _value: string;
 
   public constructor() {
@@ -47,8 +44,11 @@ export class HuiYamlEditor extends HTMLElement {
                 background-color: var(--paper-dialog-background-color, var(--primary-background-color));
                 transition: 0.2s ease border-right;
               }
+              :host(.error-state) .CodeMirror-gutters {
+                border-color: var(--error-state-color, red);
+              }
               .CodeMirror-focused .CodeMirror-gutters {
-                border-right: 2px solid var(--paper-input-container-focus-color, var(--primary-color));;
+                border-right: 2px solid var(--paper-input-container-focus-color, var(--primary-color));
               }
               .CodeMirror-linenumber {
                 color: var(--paper-dialog-color, var(--primary-text-color));
@@ -61,13 +61,6 @@ export class HuiYamlEditor extends HTMLElement {
                 width: 20px;
               }
             </style>`;
-  }
-
-  set hass(hass: HomeAssistant) {
-    this._hass = hass;
-    if (this._hass) {
-      this.setScrollBarDirection();
-    }
   }
 
   set value(value: string) {
@@ -83,6 +76,22 @@ export class HuiYamlEditor extends HTMLElement {
     return this.codemirror.getValue();
   }
 
+  set rtl(rtl: boolean) {
+    this._rtl = rtl;
+    this.setScrollBarDirection();
+  }
+
+  set autofocus(autofocus: boolean) {
+    this._autofocus = autofocus;
+    if (this.codemirror) {
+      this.codemirror.focus();
+    }
+  }
+
+  set error(error: boolean) {
+    this.classList.toggle("error-state", error);
+  }
+
   get hasComments(): boolean {
     return this.shadowRoot!.querySelector("span.cm-comment") ? true : false;
   }
@@ -96,16 +105,13 @@ export class HuiYamlEditor extends HTMLElement {
           lineNumbers: true,
           mode: "yaml",
           tabSize: 2,
-          autofocus: true,
+          autofocus: this._autofocus,
           viewportMargin: Infinity,
           extraKeys: {
             Tab: "indentMore",
             "Shift-Tab": "indentLess",
           },
-          gutters:
-            this._hass && computeRTL(this._hass!)
-              ? ["rtl-gutter", "CodeMirror-linenumbers"]
-              : [],
+          gutters: this._rtl ? ["rtl-gutter", "CodeMirror-linenumbers"] : [],
         }
       );
       this.setScrollBarDirection();
@@ -120,18 +126,14 @@ export class HuiYamlEditor extends HTMLElement {
   }
 
   private setScrollBarDirection(): void {
-    if (!this.codemirror) {
-      return;
+    if (this.codemirror) {
+      this.codemirror.getWrapperElement().classList.toggle("rtl", this._rtl);
     }
-
-    this.codemirror
-      .getWrapperElement()
-      .classList.toggle("rtl", computeRTL(this._hass!));
   }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-yaml-editor": HuiYamlEditor;
+    "ha-yaml-editor": HaYamlEditor;
   }
 }

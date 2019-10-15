@@ -59,31 +59,31 @@ export interface SortingChangedEvent {
 
 export type SortingDirection = "desc" | "asc" | null;
 
-export interface DataTabelColumnContainer {
-  [key: string]: DataTabelColumnData;
+export interface DataTableColumnContainer {
+  [key: string]: DataTableColumnData;
 }
 
-export interface DataTabelSortColumnData {
+export interface DataTableSortColumnData {
   sortable?: boolean;
   filterable?: boolean;
   filterKey?: string;
   direction?: SortingDirection;
 }
 
-export interface DataTabelColumnData extends DataTabelSortColumnData {
+export interface DataTableColumnData extends DataTableSortColumnData {
   title: string;
-  type?: "numeric";
-  template?: (data: any) => TemplateResult;
+  type?: "numeric" | "icon";
+  template?: <T>(data: any, row: T) => TemplateResult;
 }
 
-export interface DataTabelRowData {
+export interface DataTableRowData {
   [key: string]: any;
 }
 
 @customElement("ha-data-table")
 export class HaDataTable extends BaseElement {
-  @property({ type: Object }) public columns: DataTabelColumnContainer = {};
-  @property({ type: Array }) public data: DataTabelRowData[] = [];
+  @property({ type: Object }) public columns: DataTableColumnContainer = {};
+  @property({ type: Array }) public data: DataTableRowData[] = [];
   @property({ type: Boolean }) public selectable = false;
   @property({ type: String }) public id = "id";
   protected mdcFoundation!: MDCDataTableFoundation;
@@ -98,9 +98,9 @@ export class HaDataTable extends BaseElement {
   @property({ type: String }) private _filter = "";
   @property({ type: String }) private _sortColumn?: string;
   @property({ type: String }) private _sortDirection: SortingDirection = null;
-  @property({ type: Array }) private _filteredData: DataTabelRowData[] = [];
+  @property({ type: Array }) private _filteredData: DataTableRowData[] = [];
   private _sortColumns: {
-    [key: string]: DataTabelSortColumnData;
+    [key: string]: DataTableSortColumnData;
   } = {};
   private curRequest = 0;
   private _worker: any | undefined;
@@ -134,8 +134,8 @@ export class HaDataTable extends BaseElement {
         }
       }
 
-      const clonedColumns: DataTabelColumnContainer = deepClone(this.columns);
-      Object.values(clonedColumns).forEach((column: DataTabelColumnData) => {
+      const clonedColumns: DataTableColumnContainer = deepClone(this.columns);
+      Object.values(clonedColumns).forEach((column: DataTableColumnData) => {
         delete column.title;
         delete column.type;
         delete column.template;
@@ -190,8 +190,11 @@ export class HaDataTable extends BaseElement {
                 const [key, column] = columnEntry;
                 const sorted = key === this._sortColumn;
                 const classes = {
-                  "mdc-data-table__cell--numeric": Boolean(
+                  "mdc-data-table__header-cell--numeric": Boolean(
                     column.type && column.type === "numeric"
+                  ),
+                  "mdc-data-table__header-cell--icon": Boolean(
+                    column.type && column.type === "icon"
                   ),
                   sortable: Boolean(column.sortable),
                   "not-sorted": Boolean(column.sortable && !sorted),
@@ -222,8 +225,8 @@ export class HaDataTable extends BaseElement {
           <tbody class="mdc-data-table__content">
             ${repeat(
               this._filteredData!,
-              (row: DataTabelRowData) => row[this.id],
-              (row: DataTabelRowData) => html`
+              (row: DataTableRowData) => row[this.id],
+              (row: DataTableRowData) => html`
                 <tr
                   data-row-id="${row[this.id]}"
                   @click=${this._handleRowClick}
@@ -251,10 +254,13 @@ export class HaDataTable extends BaseElement {
                           "mdc-data-table__cell--numeric": Boolean(
                             column.type && column.type === "numeric"
                           ),
+                          "mdc-data-table__cell--icon": Boolean(
+                            column.type && column.type === "icon"
+                          ),
                         })}"
                       >
                         ${column.template
-                          ? column.template(row[key])
+                          ? column.template(row[key], row)
                           : row[key]}
                       </td>
                     `;
@@ -516,6 +522,11 @@ export class HaDataTable extends BaseElement {
         text-align: left;
       }
 
+      .mdc-data-table__cell--icon {
+        color: var(--secondary-text-color);
+        text-align: center;
+      }
+
       .mdc-data-table__header-cell {
         font-family: Roboto, sans-serif;
         -moz-osx-font-smoothing: grayscale;
@@ -543,6 +554,10 @@ export class HaDataTable extends BaseElement {
         text-align: left;
       }
 
+      .mdc-data-table__header-cell--icon {
+        text-align: center;
+      }
+
       /* custom from here */
 
       .mdc-data-table {
@@ -554,7 +569,7 @@ export class HaDataTable extends BaseElement {
       .mdc-data-table__header-cell.sortable {
         cursor: pointer;
       }
-      .mdc-data-table__header-cell.not-sorted:not(.mdc-data-table__cell--numeric)
+      .mdc-data-table__header-cell.not-sorted:not(.mdc-data-table__header-cell--numeric):not(.mdc-data-table__header-cell--icon)
         span {
         position: relative;
         left: -24px;
@@ -565,7 +580,7 @@ export class HaDataTable extends BaseElement {
       .mdc-data-table__header-cell.not-sorted ha-icon {
         left: -36px;
       }
-      .mdc-data-table__header-cell.not-sorted:not(.mdc-data-table__cell--numeric):hover
+      .mdc-data-table__header-cell.not-sorted:not(.mdc-data-table__header-cell--numeric):not(.mdc-data-table__header-cell--icon):hover
         span {
         left: 0px;
       }

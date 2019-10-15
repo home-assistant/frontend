@@ -18,6 +18,11 @@ export interface LovelaceViewConfig {
   theme?: string;
   panel?: boolean;
   background?: string;
+  visible?: boolean | ShowViewConfig[];
+}
+
+export interface ShowViewConfig {
+  user?: string;
 }
 
 export interface LovelaceCardConfig {
