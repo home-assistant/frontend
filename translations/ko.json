@@ -504,7 +504,12 @@
                                     "leave": "퇴장"
                                 },
                                 "device": {
-                                    "label": "기기"
+                                    "label": "기기",
+                                    "extra_fields": {
+                                        "above": "이상",
+                                        "below": "이하",
+                                        "for": "동안"
+                                    }
                                 }
                             },
                             "learn_more": "트리거에 대해 더 알아보기"
@@ -554,6 +559,12 @@
                                 },
                                 "device": {
                                     "label": "기기"
+                                },
+                                "and": {
+                                    "label": "다중조건 (그리고)"
+                                },
+                                "or": {
+                                    "label": "다중조건 (또는)"
                                 }
                             },
                             "learn_more": "조건에 대해 더 알아보기"
@@ -596,7 +607,11 @@
                             "learn_more": "동작에 대해 더 알아보기"
                         },
                         "load_error_not_editable": "automations.yaml 의 자동화만 편집할 수 있습니다.",
-                        "load_error_unknown": "자동화를 읽어오는 도중 오류가 발생했습니다 ({err_no})."
+                        "load_error_unknown": "자동화를 읽어오는 도중 오류가 발생했습니다 ({err_no}).",
+                        "description": {
+                            "label": "설명",
+                            "placeholder": "부가설명"
+                        }
                     }
                 },
                 "script": {
@@ -711,7 +726,7 @@
                     "caption": "ZHA",
                     "description": "Zigbee 홈 자동화 네트워크 관리",
                     "services": {
-                        "reconfigure": "ZHA 기기를 다시 구성 합니다. (장치 복구). 기기에 문제가 있는 경우 사용해주세요. 기기가 배터리로 작동하는 경우, 이 서비스를 사용할 때 기기가 켜져있고 통신이 가능한 상태인지 확인해주세요.",
+                        "reconfigure": "ZHA 기기를 다시 구성 합니다. (기기 복구). 기기에 문제가 있는 경우 사용해주세요. 기기가 배터리로 작동하는 경우, 이 서비스를 사용할 때 기기가 켜져있고 통신이 가능한 상태인지 확인해주세요.",
                         "updateDeviceName": "이 기기의 사용자 정의 이름을 기기 레지스트리에 설정합니다.",
                         "remove": "Zigbee 네트워크에서 기기 제거"
                     },
@@ -754,7 +769,8 @@
                         "unavailable": "(사용불가)",
                         "introduction": "Home Assistant 는 구성요소의 식별을 위해 모든 구성요소에 고유한 레지스트리를 부여합니다. 각각의 구성요소들은 자신만의 고유한 구성요소 ID 를 가집니다.",
                         "introduction2": "구성요소를 편집하여 이름을 대체하거나 구성요소 ID를 변경하고 Home Assistant 에서 항목을 제거할 수 있습니다. 단, 구성요소 편집창에서 구성요소를 삭제해도 구성요소가 완전히 제거되는 것은 아닙니다. 완전히 제거하려면, 아래 링크를 따라 통합 구성요소 페이지에서 제거해주세요.",
-                        "integrations_page": "통합 구성요소 페이지"
+                        "integrations_page": "통합 구성요소 페이지",
+                        "show_disabled": "비활성화 된 구성요소 표시"
                     },
                     "editor": {
                         "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
@@ -763,7 +779,9 @@
                         "update": "업데이트",
                         "enabled_label": "구성요소 활성화",
                         "enabled_cause": "{cause} 에 의해 비활성화 되었습니다.",
-                        "enabled_description": "비활성화 된 구성요소는 Home Assistant 에 추가되지 않습니다."
+                        "enabled_description": "비활성화 된 구성요소는 Home Assistant 에 추가되지 않습니다.",
+                        "confirm_delete": "이 구성요소를 제거 하시겠습니까?",
+                        "confirm_delete2": "구성요소 항목을 제거해도 Home Assistant 에서 실제로 구성요소가 제거되는것은 아닙니다. 완전히 제거하려면, Home Assistant 에서 '{platform}' 통합 구성요소를 제거해주세요."
                     }
                 },
                 "person": {
@@ -771,9 +789,9 @@
                     "description": "Home Assistant 가 추적하는 구성원을 관리합니다",
                     "detail": {
                         "name": "이름",
-                        "device_tracker_intro": "이 구성원에게 속한 장치를 선택해주세요.",
-                        "device_tracker_picked": "장치 추적 대상",
-                        "device_tracker_pick": "추적 할 장치 선택"
+                        "device_tracker_intro": "이 구성원에게 속한 기기를 선택해주세요.",
+                        "device_tracker_picked": "추적 대상 기기",
+                        "device_tracker_pick": "추적 할 기기 선택"
                     }
                 },
                 "server_control": {
@@ -808,7 +826,18 @@
                 },
                 "devices": {
                     "caption": "기기",
-                    "description": "연결된 기기 관리"
+                    "description": "연결된 기기 관리",
+                    "automation": {
+                        "triggers": {
+                            "caption": "...일 때 뭔가를 실행"
+                        },
+                        "conditions": {
+                            "caption": "...인 경우 뭔가를 실행"
+                        },
+                        "actions": {
+                            "caption": "뭔가 트리거 되었을 때...."
+                        }
+                    }
                 }
             },
             "profile": {
@@ -884,6 +913,10 @@
                 "force_narrow": {
                     "header": "항상 사이드바 숨기기",
                     "description": "모바일 환경과 마찬가지로 기본적으로 사이드 바가 숨겨집니다."
+                },
+                "vibrate": {
+                    "header": "진동효과",
+                    "description": "기기를 제어 할 때 이 기기에서 진동을 활성화 또는 비활성화합니다."
                 }
             },
             "page-authorize": {
@@ -1031,7 +1064,8 @@
                         "navigate_to": "{location} 로(으로) 이동",
                         "toggle": "{name} 토글",
                         "call_service": "{name} 서비스 호출",
-                        "more_info": "추가 정보 표시: {name}"
+                        "more_info": "추가 정보 표시: {name}",
+                        "url": "{url_path} 창 열기"
                     }
                 },
                 "editor": {
@@ -1077,6 +1111,66 @@
                     "edit_lovelace": {
                         "header": "Lovelace UI 의 제목",
                         "explanation": "이 제목은 Lovelace 의 모든 화면의 상단에 표시됩니다."
+                    },
+                    "card": {
+                        "alarm_panel": {
+                            "available_states": "사용 가능한 상태요소"
+                        },
+                        "config": {
+                            "required": "필수 요소",
+                            "optional": "선택사항"
+                        },
+                        "entities": {
+                            "show_header_toggle": "헤더 토글 표시"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "define": "게이지 구간 정의하기",
+                                "green": "초록",
+                                "red": "빨강",
+                                "yellow": "노랑"
+                            }
+                        },
+                        "glance": {
+                            "columns": "열"
+                        },
+                        "generic": {
+                            "aspect_ratio": "종횡비",
+                            "camera_image": "카메라 구성요소",
+                            "camera_view": "카메라 뷰",
+                            "entities": "구성요소",
+                            "entity": "구성요소",
+                            "hold_action": "길게 누르기 동작",
+                            "hours_to_show": "표시 시간",
+                            "icon": "아이콘",
+                            "icon_height": "아이콘 높이",
+                            "image": "이미지 경로",
+                            "maximum": "최대",
+                            "minimum": "최소",
+                            "name": "이름",
+                            "refresh_interval": "새로 고침 간격",
+                            "show_icon": "아이콘 표시",
+                            "show_name": "이름 표시",
+                            "show_state": "상태 표시",
+                            "tap_action": "탭 동작",
+                            "title": "제목",
+                            "theme": "테마",
+                            "unit": "단위",
+                            "url": "Url"
+                        },
+                        "map": {
+                            "geo_location_sources": "위치정보 소스",
+                            "dark_mode": "어둡게 표시",
+                            "default_zoom": "기본 확대",
+                            "source": "소스"
+                        },
+                        "markdown": {
+                            "content": "내용"
+                        },
+                        "sensor": {
+                            "graph_detail": "그래프 세부묘사 정도",
+                            "graph_type": "그래프 유형"
+                        }
                     }
                 },
                 "menu": {
@@ -1349,7 +1443,7 @@
                 "manuf": "{manufacturer} 제조",
                 "no_area": "영역 없음",
                 "services": {
-                    "reconfigure": "ZHA 장치를 다시 구성 합니다. (장치 복구). 장치에 문제가 있는 경우 사용해주세요. 장치가 배터리로 작동하는 경우, 이 서비스를 사용할 때 장치가 켜져있고 통신이 가능한 상태여야 합니다.",
+                    "reconfigure": "ZHA 기기를 다시 구성 합니다. (기기 복구). 기기에 문제가 있는 경우 사용해주세요. 기기가 배터리로 작동하는 경우, 이 서비스를 사용할 때 기기가 켜져있고 통신이 가능한 상태인지 확인해주세요.",
                     "updateDeviceName": "이 기기의 사용자 정의 이름을 기기 레지스트리에 설정합니다.",
                     "remove": "Zigbee 네트워크에서 기기를 제거해주세요."
                 },
@@ -1367,7 +1461,7 @@
         },
         "notification_drawer": {
             "click_to_configure": "버튼을 클릭하여 {entity} 을(를) 구성",
-            "empty": "알림 없음",
+            "empty": "알림 내용이 없습니다.",
             "title": "알림"
         }
     },
@@ -1381,7 +1475,7 @@
         "configurator": "구성",
         "conversation": "대화",
         "cover": "여닫이",
-        "device_tracker": "추적 장치",
+        "device_tracker": "추적 기기",
         "fan": "송풍기",
         "history_graph": "기록그래프",
         "group": "그룹",

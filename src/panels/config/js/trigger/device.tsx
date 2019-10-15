@@ -84,7 +84,7 @@ export default class DeviceTrigger extends Component<any, any> {
   }
 
   public componentDidUpdate(prevProps) {
-    if (prevProps.trigger !== this.props.trigger) {
+    if (!deviceAutomationsEqual(prevProps.trigger, this.props.trigger)) {
       this._getCapabilities();
     }
   }

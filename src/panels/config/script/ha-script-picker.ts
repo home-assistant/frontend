@@ -55,11 +55,7 @@ class HaScriptPicker extends LitElement {
             </p>
           </div>
 
-          <ha-card
-            header="${this.hass.localize(
-              "ui.panel.config.script.picker.pick_script"
-            )}"
-          >
+          <ha-card>
             ${this.scripts.length === 0
               ? html`
                   <div class="card-content">
