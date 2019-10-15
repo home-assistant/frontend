@@ -145,6 +145,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   private renderEntity(entityConf: EntitiesCardEntityConfig): TemplateResult {
     const element = createRowElement(entityConf);
+    element.classList.add("row");
     if (this._hass) {
       element.hass = this._hass;
     }
