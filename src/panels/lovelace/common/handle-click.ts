@@ -40,7 +40,7 @@ export const handleClick = (
     if (
       !confirm(
         actionConfig.confirmation.text ||
-          "Are you sure you want to " + actionConfig.action + "?"
+          `Are you sure you want to ${actionConfig.action}?`
       )
     ) {
       return;

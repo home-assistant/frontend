@@ -64,15 +64,15 @@ export interface NoActionConfig extends BaseActionConfig {
 }
 
 export interface BaseActionConfig {
-  confirmation?: ConfirmationRestrictionTypeConfig;
+  confirmation?: ConfirmationRestrictionConfig;
 }
 
-export interface ConfirmationRestrictionTypeConfig {
+export interface ConfirmationRestrictionConfig {
   text?: string;
-  exemptions?: RestrictionTypeConfig[];
+  exemptions?: RestrictionConfig[];
 }
 
-export interface RestrictionTypeConfig {
+export interface RestrictionConfig {
   user: string;
 }
 
