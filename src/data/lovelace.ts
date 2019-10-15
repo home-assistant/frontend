@@ -32,11 +32,11 @@ export interface LovelaceCardConfig {
   [key: string]: any;
 }
 
-export interface ToggleActionConfig {
+export interface ToggleActionConfig extends BaseActionConfig {
   action: "toggle";
 }
 
-export interface CallServiceActionConfig {
+export interface CallServiceActionConfig extends BaseActionConfig {
   action: "call-service";
   service: string;
   service_data?: {
@@ -45,22 +45,35 @@ export interface CallServiceActionConfig {
   };
 }
 
-export interface NavigateActionConfig {
+export interface NavigateActionConfig extends BaseActionConfig {
   action: "navigate";
   navigation_path: string;
 }
 
-export interface UrlActionConfig {
+export interface UrlActionConfig extends BaseActionConfig {
   action: "url";
   url_path: string;
 }
 
-export interface MoreInfoActionConfig {
+export interface MoreInfoActionConfig extends BaseActionConfig {
   action: "more-info";
 }
 
-export interface NoActionConfig {
+export interface NoActionConfig extends BaseActionConfig {
   action: "none";
+}
+
+export interface BaseActionConfig {
+  confirmation?: ConfirmationRestrictionTypeConfig;
+}
+
+export interface ConfirmationRestrictionTypeConfig {
+  text?: string;
+  exemptions?: RestrictionTypeConfig[];
+}
+
+export interface RestrictionTypeConfig {
+  user: string;
 }
 
 export type ActionConfig =
