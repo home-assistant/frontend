@@ -135,7 +135,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           @ha-hold=${this._handleHold}
           @ha-dblclick=${this._handleDblClick}
           .longPress=${longPress({
-            hasDoubleClick: hasDoubleClick(this._config!.dbltap_action),
+            hasDoubleClick: hasDoubleClick(this._config!.double_tap_action),
           })}
           .config=${this._config}
           .hass=${this.hass}
@@ -198,7 +198,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
           @ha-hold=${this._handleHold}
           @ha-dblclick=${this._handleDblClick}
           .longPress=${longPress({
-            hasDoubleClick: hasDoubleClick(entityConf.dbltap_action),
+            hasDoubleClick: hasDoubleClick(entityConf.double_tap_action),
           })}
           .config=${entityConf}
           class="${classMap({

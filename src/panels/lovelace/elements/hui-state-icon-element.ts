@@ -64,7 +64,7 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
         @ha-hold=${this._handleHold}
         @ha-dblclick=${this._handleDblClick}
         .longPress=${longPress({
-          hasDoubleClick: hasDoubleClick(this._config!.dbltap_action),
+          hasDoubleClick: hasDoubleClick(this._config!.double_tap_action),
         })}
         .overrideIcon=${this._config.icon}
       ></state-badge>

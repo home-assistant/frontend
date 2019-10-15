@@ -62,7 +62,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     this._config = {
       theme: "default",
       hold_action: { action: "more-info" },
-      dbltap_action: { action: "none" },
+      double_tap_action: { action: "none" },
       show_icon: true,
       show_name: true,
       ...config,
@@ -124,7 +124,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
         @ha-hold=${this._handleHold}
         @ha-dblclick=${this._handleDblClick}
         .longPress=${longPress({
-          hasDoubleClick: hasDoubleClick(this._config!.dbltap_action),
+          hasDoubleClick: hasDoubleClick(this._config!.double_tap_action),
         })}
       >
         ${this._config.show_icon

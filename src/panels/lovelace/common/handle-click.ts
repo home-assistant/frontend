@@ -13,15 +13,15 @@ export const handleClick = (
     camera_image?: string;
     hold_action?: ActionConfig;
     tap_action?: ActionConfig;
-    dbltap_action?: ActionConfig;
+    double_tap_action?: ActionConfig;
   },
   hold: boolean,
   dblClick: boolean
 ): void => {
   let actionConfig: ActionConfig | undefined;
 
-  if (dblClick && config.dbltap_action) {
-    actionConfig = config.dbltap_action;
+  if (dblClick && config.double_tap_action) {
+    actionConfig = config.double_tap_action;
   } else if (hold && config.hold_action) {
     actionConfig = config.hold_action;
   } else if (!hold && config.tap_action) {

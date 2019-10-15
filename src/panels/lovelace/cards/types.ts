@@ -46,7 +46,7 @@ export interface EntityButtonCardConfig extends LovelaceCardConfig {
   theme?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
-  dbltap_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
@@ -81,7 +81,7 @@ export interface GaugeCardConfig extends LovelaceCardConfig {
 export interface ConfigEntity extends EntityConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
-  dbltap_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 
 export interface PictureGlanceEntityConfig extends ConfigEntity {
@@ -143,7 +143,7 @@ export interface PictureCardConfig extends LovelaceCardConfig {
   image?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
-  dbltap_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 
 export interface PictureElementsCardConfig extends LovelaceCardConfig {
@@ -169,7 +169,7 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
   aspect_ratio?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
-  dbltap_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
   show_name?: boolean;
   show_state?: boolean;
 }
@@ -186,7 +186,7 @@ export interface PictureGlanceCardConfig extends LovelaceCardConfig {
   entity?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
-  dbltap_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
   show_state?: boolean;
 }
 
