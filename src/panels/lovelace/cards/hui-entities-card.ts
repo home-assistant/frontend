@@ -85,7 +85,9 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card>
-        ${!this._config.title && !this._config.show_header_toggle
+        ${!this._config.title &&
+        !this._config.show_header_toggle &&
+        !this._config.icon
           ? html``
           : html`
               <div class="card-header">
