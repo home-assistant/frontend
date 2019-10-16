@@ -9,7 +9,6 @@ import {
   PropertyValues,
 } from "lit-element";
 
-import "../../../components/entity/ha-state-label-badge";
 import "../components/hui-warning-element";
 
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
