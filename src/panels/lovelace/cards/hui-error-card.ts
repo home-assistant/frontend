@@ -7,9 +7,9 @@ import {
   css,
   CSSResult,
 } from "lit-element";
+import yaml from "js-yaml";
 
 import { LovelaceCard } from "../types";
-import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { ErrorCardConfig } from "./types";
 
@@ -46,7 +46,7 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
 
     return html`
       ${this._config.error}
-      <pre>${this._toStr(this._config.origConfig)}</pre>
+      <pre>${yaml.safeDump(this._config.origConfig)}</pre>
     `;
   }
 
@@ -62,10 +62,6 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
         cursor: default;
       }
     `;
-  }
-
-  private _toStr(config: LovelaceCardConfig): string {
-    return JSON.stringify(config, null, 2);
   }
 }
 
