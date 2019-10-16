@@ -81,7 +81,7 @@ export class HaDeviceEntitiesCard extends LitElement {
                       ? html`
                           <paper-icon-button
                             @click=${this._openMoreInfo}
-                            icon="hass:open-in-new"
+                            icon="hass:information-outline"
                           ></paper-icon-button>
                         `
                       : ""}
