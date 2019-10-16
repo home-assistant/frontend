@@ -55,10 +55,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   }
 
   @property() public hass?: HomeAssistant;
-
   @property() private _config?: ThermostatCardConfig;
-
   @property() private _loaded?: boolean;
+  @property() private _setTemp?: number | number[];
 
   private _updated?: boolean;
   private _large?: boolean;
@@ -180,7 +179,18 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
               </span>
             </div>
             <div class="climate-info">
-              <div id="set-temperature"></div>
+              <div id="set-temperature">
+                ${!this._setTemp
+                  ? ""
+                  : Array.isArray(this._setTemp)
+                  ? html`
+                      ${this._setTemp[0].toFixed(1)} -
+                      ${this._setTemp[1].toFixed(1)}
+                    `
+                  : html`
+                      ${this._setTemp.toFixed(1)}
+                    `}
+              </div>
               <div class="current-mode">
                 ${stateObj.attributes.hvac_action
                   ? this.hass!.localize(
@@ -230,10 +240,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
 
-    const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
-    const uiValue = this._getSetTemp(stateObj);
-
-    this._updateSetTemp(uiValue);
+    this._setTemp = this._getSetTemp(this.hass!.states[this._config!.entity]);
   }
 
   protected firstUpdated(): void {
@@ -264,10 +271,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     await this.updateComplete;
     this._loaded = true;
-
-    const uiValue = this._getSetTemp(stateObj);
-
-    this._updateSetTemp(uiValue);
+    this._setTemp = this._getSetTemp(stateObj);
   }
 
   private get _stepSize(): number {
@@ -288,45 +292,24 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       stateObj.attributes.target_temp_low &&
       stateObj.attributes.target_temp_high
     ) {
-      return this.formatTemp(
-        [
-          stateObj.attributes.target_temp_low,
-          stateObj.attributes.target_temp_high,
-        ],
-        false
-      );
+      return [
+        stateObj.attributes.target_temp_low,
+        stateObj.attributes.target_temp_high,
+      ];
     }
 
-    if (Number.isFinite(Number(stateObj.attributes.temperature))) {
-      return stateObj.attributes.temperature;
-    }
-
-    return "";
-  }
-
-  private _updateSetTemp(value: string): void {
-    this.shadowRoot!.querySelector("#set-temperature")!.innerHTML = value;
+    return stateObj.attributes.temperature;
   }
 
   private _dragEvent(e): void {
     const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
 
     if (e.detail.low) {
-      this._updateSetTemp(
-        this.formatTemp(
-          [e.detail.low, stateObj.attributes.target_temp_high],
-          true
-        )
-      );
+      this._setTemp = [e.detail.low, stateObj.attributes.target_temp_high];
     } else if (e.detail.high) {
-      this._updateSetTemp(
-        this.formatTemp(
-          [stateObj.attributes.target_temp_low, e.detail.high],
-          true
-        )
-      );
+      this._setTemp = [stateObj.attributes.target_temp_low, e.detail.high];
     } else {
-      this._updateSetTemp(this.formatTemp([e.detail.value], true));
+      this._setTemp = e.detail.value;
     }
   }
 
@@ -378,22 +361,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       entity_id: this._config!.entity,
       hvac_mode: (e.currentTarget as any).mode,
     });
-  }
-
-  private formatTemp(temps: number[], spaceStepSize: boolean): string {
-    temps = temps.filter(Boolean);
-    let stringTemps = temps.map(String);
-
-    // If we are sliding the slider, append 0 to the temperatures if we're
-    // having a 0.5 step size, so that the text doesn't jump while sliding
-    if (spaceStepSize) {
-      const stepSize = this._stepSize;
-      stringTemps = stringTemps.map((val) =>
-        val.includes(".") || stepSize === 1 ? val : `${val}.0`
-      );
-    }
-
-    return temps.join("-");
   }
 
   static get styles(): CSSResult {
