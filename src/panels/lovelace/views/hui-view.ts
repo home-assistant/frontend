@@ -95,7 +95,7 @@ export class HUIView extends LitElement {
     element.hass = this.hass;
     element.addEventListener(
       "ll-badge-rebuild",
-      (ev) => {
+      () => {
         this._rebuildBadge(element, badgeConfig);
       },
       { once: true }

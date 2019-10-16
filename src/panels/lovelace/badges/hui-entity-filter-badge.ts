@@ -44,8 +44,6 @@ class EntityFilterBadge extends HTMLElement implements LovelaceBadge {
       return;
     }
 
-    this._hass = hass;
-
     if (this._elements) {
       for (const element of this._elements) {
         element.hass = hass;
@@ -53,8 +51,11 @@ class EntityFilterBadge extends HTMLElement implements LovelaceBadge {
     }
 
     if (!this.haveEntitiesChanged(hass)) {
+      this._hass = hass;
       return;
     }
+
+    this._hass = hass;
 
     if (!this._configEntities) {
       this._configEntities = processConfigEntities(this._config.entities);
