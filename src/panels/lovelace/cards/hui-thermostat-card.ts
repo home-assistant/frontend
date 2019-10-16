@@ -63,7 +63,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   private _large?: boolean;
   private _medium?: boolean;
   private _small?: boolean;
-  private _longName?: boolean;
   private _radius?: number;
 
   public getCardSize(): number {
@@ -116,7 +115,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           large: this._large!,
           medium: this._medium!,
           small: this._small!,
-          longName: this._longName!,
+          longName:
+            (this._config!.name || computeStateName(stateObj)).length > 10,
         })}"
       >
         <div id="root">
@@ -271,11 +271,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       this._medium = true;
     }
 
-    await this.updateComplete;
     this._loaded = true;
     this._setTemp = this._getSetTemp(stateObj);
-    this._longName =
-      (this._config!.name || computeStateName(stateObj)).length > 10;
   }
 
   private get _stepSize(): number {
