@@ -64,6 +64,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   private _medium?: boolean;
   private _small?: boolean;
   private _radius?: number;
+  private _longName?: boolean;
 
   public getCardSize(): number {
     return 4;
@@ -115,8 +116,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           large: this._large!,
           medium: this._medium!,
           small: this._small!,
-          longName:
-            (this._config!.name || computeStateName(stateObj)).length > 10,
+          longName: this._longName || false,
         })}"
       >
         <div id="root">
@@ -241,6 +241,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
 
     this._setTemp = this._getSetTemp(this.hass!.states[this._config!.entity]);
+    this._longName =
+      (
+        this._config!.name ||
+        computeStateName(this.hass!.states[this._config!.entity])
+      ).length > 10;
   }
 
   protected firstUpdated(): void {
@@ -251,13 +256,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   }
 
   private async _initialLoad(): Promise<void> {
-    const stateObj = this.hass!.states[this._config!.entity] as ClimateEntity;
-
-    if (!stateObj) {
-      // Card will require refresh to work again
-      return;
-    }
-
     this._large = this._medium = this._small = false;
     this._radius = this.clientWidth / 3.9;
 
@@ -270,7 +268,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
 
     this._loaded = true;
-    this._setTemp = this._getSetTemp(stateObj);
   }
 
   private get _stepSize(): number {
