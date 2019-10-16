@@ -61,8 +61,6 @@ documentContainer.innerHTML = `<custom-style>
       --slider-secondary-color: var(--light-primary-color);
       --slider-bar-color: var(--disabled-text-color);
 
-      /* 
-
       /* for label-badge */
       --label-badge-background-color: white;
       --label-badge-text-color: rgb(76, 76, 76);
