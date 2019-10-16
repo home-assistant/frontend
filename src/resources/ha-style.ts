@@ -112,7 +112,6 @@ documentContainer.innerHTML = `<custom-style>
       --table-row-background-color: var(--primary-background-color);
       --table-row-alternative-background-color: var(--secondary-background-color);
 
-      /* set our toggle style */
       /* set our slider style */
       --paper-slider-knob-color: var(--slider-color);
       --paper-slider-knob-start-color: var(--slider-color);
