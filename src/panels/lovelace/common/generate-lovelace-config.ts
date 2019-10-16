@@ -243,7 +243,7 @@ export const generateDefaultViewConfig = (
   return config;
 };
 
-const generateViewConfig = (
+export const generateViewConfig = (
   localize: LocalizeFunc,
   path: string,
   title: string | undefined,

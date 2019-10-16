@@ -26,8 +26,15 @@ import { HuiErrorCard } from "../cards/hui-error-card";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { createBadgeElement } from "../common/create-badge-element";
 import { processConfigEntities } from "../common/process-config-entities";
+import { generateViewConfig } from "../common/generate-lovelace-config";
+import { getEntitiesByArea } from "../common/get-entities-by-area";
+import { getEntitiesByDomain } from "../common/get-entities-by-domain";
+import { subscribeDeviceRegistry } from "../../../data/device_registry";
+import { subscribeEntityRegistry } from "../../../data/entity_registry";
+import { subscribeOne } from "../../../common/util/subscribe-one";
 
 let editCodeLoaded = false;
+let subscribedRegistries = false;
 
 // Find column with < 5 entities, else column with lowest count
 const getColumnIndex = (columnEntityCount: number[], size: number) => {
@@ -219,8 +226,39 @@ export class HUIView extends LitElement {
       configChanged = !oldLovelace || lovelace.config !== oldLovelace.config;
     }
 
+    let config = lovelace.config.views[this.index!];
+
+    if (!config.badges && !config.cards && (config.area || config.domain)) {
+      if (!subscribedRegistries) {
+        subscribedRegistries = true;
+        subscribeDeviceRegistry(hass.connection, () => undefined);
+        subscribeEntityRegistry(hass.connection, () => undefined);
+      }
+
+      const [deviceEntries, entityEntries] = await Promise.all([
+        subscribeOne(hass.connection, subscribeDeviceRegistry),
+        subscribeOne(hass.connection, subscribeEntityRegistry),
+      ]);
+
+      config = generateViewConfig(
+        this.hass!.localize,
+        config.path || config.area! || config.domain!,
+        config.title || config.area || config.domain,
+        config.icon,
+        config.area
+          ? getEntitiesByArea(
+              deviceEntries,
+              entityEntries,
+              hass.states,
+              config.area
+            )
+          : getEntitiesByDomain(hass.states, config.domain!),
+        {}
+      );
+    }
+
     if (configChanged) {
-      this._createBadges(lovelace.config.views[this.index!]);
+      this._createBadges(config);
     } else if (hassChanged) {
       this._badges.forEach((badge) => {
         badge.hass = hass;
@@ -228,7 +266,7 @@ export class HUIView extends LitElement {
     }
 
     if (configChanged || editModeChanged || changedProperties.has("columns")) {
-      this._createCards(lovelace.config.views[this.index!]);
+      this._createCards(config);
     } else if (hassChanged) {
       this._cards.forEach((element) => {
         element.hass = this.hass;

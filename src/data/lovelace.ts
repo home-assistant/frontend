@@ -19,6 +19,8 @@ export interface LovelaceViewConfig {
   panel?: boolean;
   background?: string;
   visible?: boolean | ShowViewConfig[];
+  area?: string;
+  domain?: string;
 }
 
 export interface ShowViewConfig {
