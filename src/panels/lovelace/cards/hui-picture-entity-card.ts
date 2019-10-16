@@ -25,6 +25,7 @@ import { handleClick } from "../common/handle-click";
 import { UNAVAILABLE } from "../../../data/entity";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { PictureEntityCardConfig } from "./types";
+import { hasDoubleClick } from "../common/has-double-click";
 
 @customElement("hui-picture-entity-card")
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {
@@ -124,9 +125,12 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
           .cameraView=${this._config.camera_view}
           .entity=${this._config.entity}
           .aspectRatio=${this._config.aspect_ratio}
-          @ha-click=${this._handleTap}
+          @ha-click=${this._handleClick}
           @ha-hold=${this._handleHold}
-          .longPress=${longPress()}
+          @ha-dblclick=${this._handleDblClick}
+          .longPress=${longPress({
+            hasDoubleClick: hasDoubleClick(this._config!.double_tap_action),
+          })}
           class=${classMap({
             clickable: stateObj.state !== UNAVAILABLE,
           })}
@@ -177,12 +181,16 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _handleTap() {
-    handleClick(this, this.hass!, this._config!, false);
+  private _handleClick() {
+    handleClick(this, this.hass!, this._config!, false, false);
   }
 
   private _handleHold() {
-    handleClick(this, this.hass!, this._config!, true);
+    handleClick(this, this.hass!, this._config!, true, false);
+  }
+
+  private _handleDblClick() {
+    handleClick(this, this.hass!, this._config!, false, true);
   }
 }
 
