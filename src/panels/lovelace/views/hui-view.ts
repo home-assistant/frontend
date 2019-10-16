@@ -96,11 +96,7 @@ export class HUIView extends LitElement {
     element.addEventListener(
       "ll-badge-rebuild",
       (ev) => {
-        // In edit mode let it go to hui-root and rebuild whole view.
-        if (!this.lovelace!.editMode) {
-          ev.stopPropagation();
-          this._rebuildBadge(element, badgeConfig);
-        }
+        this._rebuildBadge(element, badgeConfig);
       },
       { once: true }
     );
