@@ -12,7 +12,6 @@ import {
 import "../../../components/ha-card";
 import "../components/hui-entities-toggle";
 
-import { fireEvent } from "../../../common/dom/fire_event";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { HomeAssistant } from "../../../types";
 import { EntityRow } from "../entity-rows/types";
@@ -20,9 +19,11 @@ import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createRowElement } from "../common/create-row-element";
 import { EntitiesCardConfig, EntitiesCardEntityConfig } from "./types";
-
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { longPress } from "../common/directives/long-press-directive";
+import { hasDoubleClick } from "../common/has-double-click";
+import { handleClick } from "../common/handle-click";
 
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
@@ -181,17 +182,36 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityConf.entity))
     ) {
       element.classList.add("state-card-dialog");
-      element.addEventListener("click", () => this._handleClick(entityConf));
     }
 
     return html`
-      <div>${element}</div>
+      <div
+        @ha-click=${this._handleClick}
+        @ha-hold=${this._handleHold}
+        @ha-dblclick=${this._handleDblClick}
+        .longPress=${longPress({
+          hasDoubleClick: hasDoubleClick(entityConf.double_tap_action),
+        })}
+        .config=${entityConf}
+      >
+        ${element}
+      </div>
     `;
   }
 
-  private _handleClick(entityConf: EntitiesCardEntityConfig): void {
-    const entityId = entityConf.entity;
-    fireEvent(this, "hass-more-info", { entityId });
+  private _handleClick(ev: MouseEvent): void {
+    const config = (ev.currentTarget as any).config as any;
+    handleClick(this, this.hass!, config, false, false);
+  }
+
+  private _handleHold(ev: MouseEvent): void {
+    const config = (ev.currentTarget as any).config as any;
+    handleClick(this, this.hass!, config, true, false);
+  }
+
+  private _handleDblClick(ev: MouseEvent): void {
+    const config = (ev.currentTarget as any).entityConf as any;
+    handleClick(this, this.hass!, config, false, true);
   }
 }
 
