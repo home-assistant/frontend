@@ -34,6 +34,23 @@ export const handleClick = (
     };
   }
 
+  if (
+    actionConfig.confirmation &&
+    (!actionConfig.confirmation.exemptions ||
+      !actionConfig.confirmation.exemptions.some(
+        (e) => e.user === hass!.user!.id
+      ))
+  ) {
+    if (
+      !confirm(
+        actionConfig.confirmation.text ||
+          `Are you sure you want to ${actionConfig.action}?`
+      )
+    ) {
+      return;
+    }
+  }
+
   switch (actionConfig.action) {
     case "more-info":
       if (config.entity || config.camera_image) {
