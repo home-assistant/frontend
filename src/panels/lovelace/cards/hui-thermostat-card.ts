@@ -145,7 +145,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                     .step=${this._stepSize}
                     @value-changing=${this._dragEvent}
                     @value-changed=${this._setTemperature}
-                    handleSize="10"
                   ></round-slider>
                 `
               : html`
@@ -160,7 +159,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                     .max=${stateObj.attributes.max_temp}
                     @value-changing=${this._dragEvent}
                     @value-changed=${this._setTemperature}
-                    handleSize="10"
                   ></round-slider>
                 `}
           </div>
