@@ -15,6 +15,7 @@ import { handleClick } from "../common/handle-click";
 import { longPress } from "../common/directives/long-press-directive";
 import { LovelaceElement, IconElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
+import { hasDoubleClick } from "../common/has-double-click";
 
 @customElement("hui-icon-element")
 export class HuiIconElement extends LitElement implements LovelaceElement {
@@ -38,19 +39,26 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
       <ha-icon
         .icon="${this._config.icon}"
         .title="${computeTooltip(this.hass, this._config)}"
-        @ha-click="${this._handleTap}"
-        @ha-hold="${this._handleHold}"
-        .longPress="${longPress()}"
+        @ha-click=${this._handleClick}
+        @ha-hold=${this._handleHold}
+        @ha-dblclick=${this._handleDblClick}
+        .longPress=${longPress({
+          hasDoubleClick: hasDoubleClick(this._config!.double_tap_action),
+        })}
       ></ha-icon>
     `;
   }
 
-  private _handleTap(): void {
-    handleClick(this, this.hass!, this._config!, false);
+  private _handleClick(): void {
+    handleClick(this, this.hass!, this._config!, false, false);
   }
 
   private _handleHold(): void {
-    handleClick(this, this.hass!, this._config!, true);
+    handleClick(this, this.hass!, this._config!, true, false);
+  }
+
+  private _handleDblClick() {
+    handleClick(this, this.hass!, this._config!, false, true);
   }
 
   static get styles(): CSSResult {

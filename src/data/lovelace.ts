@@ -108,3 +108,7 @@ export const getLovelaceCollection = (conn: Connection) =>
 export interface WindowWithLovelaceProm extends Window {
   llConfProm?: Promise<LovelaceConfig>;
 }
+
+export interface LongPressOptions {
+  hasDoubleClick?: boolean;
+}
