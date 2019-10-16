@@ -28,6 +28,7 @@ import { longPress } from "../common/directives/long-press-directive";
 import { handleClick } from "../common/handle-click";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { EntityButtonCardConfig } from "./types";
+import { hasDoubleClick } from "../common/has-double-click";
 
 @customElement("hui-entity-button-card")
 class HuiEntityButtonCard extends LitElement implements LovelaceCard {
@@ -61,6 +62,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     this._config = {
       theme: "default",
       hold_action: { action: "more-info" },
+      double_tap_action: { action: "none" },
       show_icon: true,
       show_name: true,
       ...config,
@@ -118,9 +120,12 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
-        @ha-click="${this._handleTap}"
-        @ha-hold="${this._handleHold}"
-        .longPress="${longPress()}"
+        @ha-click=${this._handleClick}
+        @ha-hold=${this._handleHold}
+        @ha-dblclick=${this._handleDblClick}
+        .longPress=${longPress({
+          hasDoubleClick: hasDoubleClick(this._config!.double_tap_action),
+        })}
       >
         ${this._config.show_icon
           ? html`
@@ -212,12 +217,16 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
   }
 
-  private _handleTap() {
-    handleClick(this, this.hass!, this._config!, false);
+  private _handleClick() {
+    handleClick(this, this.hass!, this._config!, false, false);
   }
 
   private _handleHold() {
-    handleClick(this, this.hass!, this._config!, true);
+    handleClick(this, this.hass!, this._config!, true, false);
+  }
+
+  private _handleDblClick() {
+    handleClick(this, this.hass!, this._config!, false, true);
   }
 }
 

@@ -25,6 +25,7 @@ import { HomeAssistant } from "../../../types";
 import { longPress } from "../common/directives/long-press-directive";
 import { processConfigEntities } from "../common/process-config-entities";
 import { handleClick } from "../common/handle-click";
+import { hasDoubleClick } from "../common/has-double-click";
 import { PictureGlanceCardConfig, PictureGlanceEntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 
@@ -130,9 +131,12 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
                 this._config.camera_image
             ),
           })}
-          @ha-click=${this._handleTap}
+          @ha-click=${this._handleClick}
           @ha-hold=${this._handleHold}
-          .longPress=${longPress()}
+          @ha-dblclick=${this._handleDblClick}
+          .longPress=${longPress({
+            hasDoubleClick: hasDoubleClick(this._config!.double_tap_action),
+          })}
           .config=${this._config}
           .hass=${this.hass}
           .image=${this._config.image}
@@ -190,9 +194,12 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     return html`
       <div class="wrapper">
         <ha-icon
-          @ha-click=${this._handleTap}
+          @ha-click=${this._handleClick}
           @ha-hold=${this._handleHold}
-          .longPress=${longPress()}
+          @ha-dblclick=${this._handleDblClick}
+          .longPress=${longPress({
+            hasDoubleClick: hasDoubleClick(entityConf.double_tap_action),
+          })}
           .config=${entityConf}
           class="${classMap({
             "state-on": !STATES_OFF.has(stateObj.state),
@@ -223,14 +230,19 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _handleTap(ev: MouseEvent): void {
+  private _handleClick(ev: MouseEvent): void {
     const config = (ev.currentTarget as any).config as any;
-    handleClick(this, this.hass!, config, false);
+    handleClick(this, this.hass!, config, false, false);
   }
 
   private _handleHold(ev: MouseEvent): void {
     const config = (ev.currentTarget as any).config as any;
-    handleClick(this, this.hass!, config, true);
+    handleClick(this, this.hass!, config, true, false);
+  }
+
+  private _handleDblClick(ev: MouseEvent): void {
+    const config = (ev.currentTarget as any).entityConf as any;
+    handleClick(this, this.hass!, config, false, true);
   }
 
   static get styles(): CSSResult {

@@ -22,6 +22,7 @@ export interface IconElementConfig extends LovelaceElementConfig {
   name?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
   icon: string;
 }
 
@@ -29,6 +30,7 @@ export interface ImageElementConfig extends LovelaceElementConfig {
   entity?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
   image?: string;
   state_image?: string;
   camera_image?: string;
@@ -52,6 +54,7 @@ export interface StateIconElementConfig extends LovelaceElementConfig {
   entity: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
   icon?: string;
 }
 
@@ -61,4 +64,5 @@ export interface StateLabelElementConfig extends LovelaceElementConfig {
   suffix?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
