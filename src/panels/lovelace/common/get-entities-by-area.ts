@@ -11,6 +11,7 @@ export const getEntitiesByArea = (
 ): HassEntities => {
   const allEntities = { ...entities };
   const areaEntities: HassEntities = {};
+  // TODO Actually need to bring in the area registry as well to get the area_id after matching on area name
   const areaDevices = new Set(
     deviceEntries
       .filter((device) => device.area_id === area)
