@@ -152,7 +152,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
             <td>
               <paper-icon-button
                 on-click="entityMoreInfo"
-                icon="hass:open-in-new"
+                icon="hass:information-outline"
                 alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
                 title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
               >
