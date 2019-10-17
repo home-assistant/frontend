@@ -88,7 +88,7 @@ export class HuiEditView extends LitElement {
   }
 
   private get _viewConfigTitle(): string {
-    let title = this.hass!.localize(
+    const title = this.hass!.localize(
       "ui.panel.lovelace.editor.edit_view.header"
     );
     if (!this._config || !this._config.title || this._config.title === "") {
