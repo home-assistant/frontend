@@ -35,6 +35,7 @@ export const DOMAINS_WITH_MORE_INFO = [
   "camera",
   "climate",
   "configurator",
+  "counter",
   "cover",
   "fan",
   "group",

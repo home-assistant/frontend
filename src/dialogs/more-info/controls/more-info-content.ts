@@ -10,6 +10,7 @@ import "./more-info-automation";
 import "./more-info-camera";
 import "./more-info-climate";
 import "./more-info-configurator";
+import "./more-info-counter";
 import "./more-info-cover";
 import "./more-info-default";
 import "./more-info-fan";
