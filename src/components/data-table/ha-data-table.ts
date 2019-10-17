@@ -435,6 +435,7 @@ export class HaDataTable extends BaseElement {
         display: inline-flex;
         flex-direction: column;
         box-sizing: border-box;
+        margin: 8px;
         overflow-x: auto;
       }
 
