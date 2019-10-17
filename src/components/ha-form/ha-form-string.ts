@@ -7,7 +7,7 @@ import {
   query,
 } from "lit-element";
 
-import { HaFormElement, HaFormSchema, HaFormData } from "./ha-form";
+import { HaFormElement, HaFormStringData, HaFormStringSchema } from "./ha-form";
 import { fireEvent } from "../../common/dom/fire_event";
 
 import "@polymer/paper-input/paper-input";
@@ -18,8 +18,8 @@ import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
 @customElement("ha-form-string")
 export class HaFormString extends LitElement implements HaFormElement {
-  @property() public schema!: HaFormSchema;
-  @property() public data!: HaFormData;
+  @property() public schema!: HaFormStringSchema;
+  @property() public data!: HaFormStringData;
   @property() public label!: string;
   @property() public suffix!: string;
   @property() private _unmaskedPassword = false;
@@ -39,8 +39,8 @@ export class HaFormString extends LitElement implements HaFormElement {
             .label=${this.label}
             .value=${this.data}
             .required=${this.schema.required}
-            .auto-validate=${this.schema.required}
-            @change=${this._valueChanged}
+            .autoValidate=${this.schema.required}
+            @value-changed=${this._valueChanged}
           >
             <paper-icon-button
               toggles
@@ -59,9 +59,9 @@ export class HaFormString extends LitElement implements HaFormElement {
             .label=${this.label}
             .value=${this.data}
             .required=${this.schema.required}
-            .auto-validate=${this.schema.required}
+            .autoValidate=${this.schema.required}
             error-message="Required"
-            @change=${this._valueChanged}
+            @value-changed=${this._valueChanged}
           ></paper-input>
         `;
   }
@@ -71,13 +71,23 @@ export class HaFormString extends LitElement implements HaFormElement {
   }
 
   private _valueChanged(ev: Event) {
+    const value = (ev.target as PaperInputElement).value;
+    if (this.data === value) {
+      return;
+    }
     fireEvent(
       this,
       "value-changed",
       {
-        value: (ev.target as PaperInputElement).value,
+        value,
       },
       { bubbles: false }
     );
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-form-string": HaFormString;
   }
 }

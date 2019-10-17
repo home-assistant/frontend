@@ -8,7 +8,11 @@ import {
   css,
   query,
 } from "lit-element";
-import { HaFormElement, HaFormSchema } from "./ha-form";
+import {
+  HaFormElement,
+  HaFormBooleanData,
+  HaFormBooleanSchema,
+} from "./ha-form";
 import { fireEvent } from "../../common/dom/fire_event";
 
 import "@polymer/paper-checkbox/paper-checkbox";
@@ -18,8 +22,8 @@ import { PaperCheckboxElement } from "@polymer/paper-checkbox/paper-checkbox";
 
 @customElement("ha-form-boolean")
 export class HaFormBoolean extends LitElement implements HaFormElement {
-  @property() public schema!: HaFormSchema;
-  @property() public data!: { [key: string]: any };
+  @property() public schema!: HaFormBooleanSchema;
+  @property() public data!: HaFormBooleanData;
   @property() public label!: string;
   @property() public suffix!: string;
   @query("paper-checkbox") private _input?: HTMLElement;
@@ -32,9 +36,9 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
 
   protected render(): TemplateResult {
     return html`
-      <paper-checkbox checked=${this.data} @change=${this._valueChanged}
-        >${this.label}</paper-checkbox
-      >
+      <paper-checkbox .checked=${this.data} @change=${this._valueChanged}>
+        ${this.label}
+      </paper-checkbox>
     `;
   }
 
@@ -43,7 +47,7 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
       this,
       "value-changed",
       {
-        value: (ev.target as PaperCheckboxElement).value,
+        value: (ev.target as PaperCheckboxElement).checked,
       },
       { bubbles: false }
     );
@@ -56,5 +60,11 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
         padding: 22px 0;
       }
     `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-form-boolean": HaFormBoolean;
   }
 }

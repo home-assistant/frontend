@@ -12,7 +12,7 @@ import "@material/mwc-button";
 import "@polymer/paper-tooltip/paper-tooltip";
 import "@polymer/paper-spinner/paper-spinner";
 
-import "../../components/form/ha-form";
+import "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
 import "../../resources/ha-style";
 import { HomeAssistant } from "../../types";

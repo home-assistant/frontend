@@ -6,7 +6,11 @@ import {
   TemplateResult,
   query,
 } from "lit-element";
-import { HaFormElement, HaFormSchema } from "./ha-form";
+import {
+  HaFormElement,
+  HaFormIntegerData,
+  HaFormIntegerSchema,
+} from "./ha-form";
 import { fireEvent } from "../../common/dom/fire_event";
 
 import "../ha-paper-slider";
@@ -18,8 +22,8 @@ import { PaperSliderElement } from "@polymer/paper-slider/paper-slider";
 
 @customElement("ha-form-integer")
 export class HaFormInteger extends LitElement implements HaFormElement {
-  @property() public schema!: HaFormSchema;
-  @property() public data!: { [key: string]: any };
+  @property() public schema!: HaFormIntegerSchema;
+  @property() public data!: HaFormIntegerData;
   @property() public label!: string;
   @property() public suffix!: string;
   @query("paper-input ha-paper-slider") private _input?: HTMLElement;
@@ -40,7 +44,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
               .value=${this.data}
               .min=${this.schema.valueMin}
               .max=${this.schema.valueMax}
-              @change=${this._valueChanged}
+              @value-changed=${this._valueChanged}
             ></ha-paper-slider>
           </div>
         `
@@ -50,22 +54,32 @@ export class HaFormInteger extends LitElement implements HaFormElement {
             .label=${this.label}
             .value=${this.data}
             .required=${this.schema.required}
-            .auto-validate=${this.schema.required}
-            @change=${this._valueChanged}
+            .autoValidate=${this.schema.required}
+            @value-changed=${this._valueChanged}
           ></paper-input>
         `;
   }
 
   private _valueChanged(ev: Event) {
+    const value = Number(
+      (ev.target as PaperInputElement | PaperSliderElement).value
+    );
+    if (this.data === value) {
+      return;
+    }
     fireEvent(
       this,
       "value-changed",
       {
-        value: Number(
-          (ev.target as PaperInputElement | PaperSliderElement).value
-        ),
+        value,
       },
       { bubbles: false }
     );
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-form-integer": HaFormInteger;
   }
 }

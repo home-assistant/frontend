@@ -16,30 +16,70 @@ import "./ha-form-boolean";
 import "./ha-form-select";
 import { fireEvent } from "../../common/dom/fire_event";
 
-export interface HaFormSchema {
+export type HaFormSchema =
+  | HaFormStringSchema
+  | HaFormIntegerSchema
+  | HaFormFloatSchema
+  | HaFormBooleanSchema
+  | HaFormSelectSchema;
+
+export interface HaFormBaseSchema {
   type: "string" | "integer" | "float" | "boolean" | "select";
   required: boolean;
   name: string;
-  valueMin?: number;
-  valueMax?: number;
-  options?: string[];
   description?: { unit_of_measurement?: string };
 }
 
-export interface HaFormData {
-  [key: string]: any;
+export interface HaFormIntegerSchema extends HaFormBaseSchema {
+  type: "integer";
+  valueMin?: number;
+  valueMax?: number;
 }
+
+export interface HaFormSelectSchema extends HaFormBaseSchema {
+  type: "select";
+  options?: string[];
+}
+
+export interface HaFormFloatSchema extends HaFormBaseSchema {
+  type: "float";
+}
+
+export interface HaFormStringSchema extends HaFormBaseSchema {
+  type: "string";
+}
+
+export interface HaFormBooleanSchema extends HaFormBaseSchema {
+  type: "boolean";
+}
+
+export interface HaFormDataContainer {
+  [key: string]: HaFormData;
+}
+
+export type HaFormData =
+  | HaFormStringData
+  | HaFormIntegerData
+  | HaFormFloatData
+  | HaFormBooleanData
+  | HaFormSelectData;
+
+export type HaFormStringData = string;
+export type HaFormIntegerData = number;
+export type HaFormFloatData = number;
+export type HaFormBooleanData = boolean;
+export type HaFormSelectData = string;
 
 export interface HaFormElement extends LitElement {
   schema: HaFormSchema;
-  data: HaFormData;
+  data: HaFormDataContainer | HaFormData;
   label?: string;
   suffix?: string;
 }
 
 @customElement("ha-form")
 export class HaForm extends LitElement implements HaFormElement {
-  @property() public data!: HaFormData;
+  @property() public data!: HaFormDataContainer | HaFormData;
   @property() public schema!: HaFormSchema;
   @property() public error;
   @property() public computeError?: (schema: HaFormSchema, error) => string;
@@ -101,12 +141,14 @@ export class HaForm extends LitElement implements HaFormElement {
   }
 
   protected updated(changedProperties: PropertyValues) {
-    const oldSchema: HaFormSchema = changedProperties.get(
-      "schema"
-    ) as HaFormSchema;
+    const schemaChanged = changedProperties.has("schema");
+    const oldSchema = schemaChanged
+      ? changedProperties.get("schema")
+      : undefined;
     if (
       !Array.isArray(this.schema) &&
-      (!oldSchema || oldSchema.type !== this.schema.type)
+      schemaChanged &&
+      (!oldSchema || (oldSchema as HaFormSchema).type !== this.schema.type)
     ) {
       const element = document.createElement(
         `ha-form-${this.schema.type}`
@@ -158,22 +200,24 @@ export class HaForm extends LitElement implements HaFormElement {
   private _valueChanged(ev: CustomEvent) {
     ev.stopPropagation();
     const schema = (ev.target as HaFormElement).schema;
-    this.data[schema.name] = ev.detail.value;
-    fireEvent(
-      this,
-      "value-changed",
-      {
-        value: this.data,
-      },
-      { bubbles: false }
-    );
+    const data = this.data as HaFormDataContainer;
+    data[schema.name] = ev.detail.value;
+    fireEvent(this, "value-changed", {
+      value: { ...data },
+    });
   }
 
   static get styles(): CSSResult {
     return css`
       .error {
-        color: red;
+        color: var(--error-color);
       }
     `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-form": HaForm;
   }
 }

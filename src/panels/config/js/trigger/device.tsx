@@ -2,7 +2,7 @@ import { h, Component } from "preact";
 
 import "../../../../components/device/ha-device-picker";
 import "../../../../components/device/ha-device-trigger-picker";
-import "../../../../components/form/ha-form";
+import "../../../../components/ha-form/ha-form";
 
 import {
   fetchDeviceTriggerCapabilities,
@@ -67,7 +67,7 @@ export default class DeviceTrigger extends Component<any, any> {
             data={Object.assign({}, ...extraFieldsData)}
             schema={this.state.capabilities.extra_fields}
             computeLabel={this._extraFieldsComputeLabelCallback(hass.localize)}
-            onValue-changed={this._extraFieldsChanged}
+            onvalue-changed={this._extraFieldsChanged}
           />
         )}
       </div>

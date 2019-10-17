@@ -2,7 +2,7 @@ import { h, Component } from "preact";
 
 import "../../../../components/device/ha-device-picker";
 import "../../../../components/device/ha-device-condition-picker";
-import "../../../../components/form/ha-form";
+import "../../../../components/ha-form/ha-form";
 
 import {
   fetchDeviceConditionCapabilities,
@@ -66,7 +66,7 @@ export default class DeviceCondition extends Component<any, any> {
             data={Object.assign({}, ...extraFieldsData)}
             schema={this.state.capabilities.extra_fields}
             computeLabel={this._extraFieldsComputeLabelCallback(hass.localize)}
-            onValue-changed={this._extraFieldsChanged}
+            onvalue-changed={this._extraFieldsChanged}
           />
         )}
       </div>
@@ -99,7 +99,7 @@ export default class DeviceCondition extends Component<any, any> {
 
   private _extraFieldsChanged(ev) {
     this.props.onChange(this.props.index, {
-      ...this.props.trigger,
+      ...this.props.condition,
       ...ev.detail.value,
     });
   }
