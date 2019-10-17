@@ -165,9 +165,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                 `}
           </div>
           <div id="tooltip">
-            <div class="title">
-              ${this._config.name || computeStateName(stateObj)}
-            </div>
+            <div class="title">${name}</div>
             <div class="current-temperature">
               <span class="current-temperature-text">
                 ${stateObj.attributes.current_temperature}
