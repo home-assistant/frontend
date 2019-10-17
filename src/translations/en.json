@@ -405,7 +405,7 @@
         "target_temperature_entity": "{name} target temperature",
         "target_temperature_mode": "{name} target temperature {mode}",
         "current_temperature": "{name} current temperature",
-        "heating": " {name} heating",
+        "heating": "{name} heating",
         "cooling": "{name} cooling",
         "high": "high",
         "low": "low",
