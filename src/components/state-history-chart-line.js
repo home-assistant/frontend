@@ -182,14 +182,16 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
         );
 
         addColumn(
-          `${name} ${this.hass
-            .localize("ui.card.climate.current_temperature")
-            .toLowerCase()}`,
+          `${this.hass.localize(
+            "ui.card.climate.current_temperature",
+            "name",
+            name
+          )}`,
           true
         );
         if (hasHeat) {
           addColumn(
-            `${name} ${this.hass.localize("ui.card.climate.heating")}`,
+            `${this.hass.localize("ui.card.climate.heating", "name", name)}`,
             true,
             true
           );
@@ -198,7 +200,7 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
         }
         if (hasCool) {
           addColumn(
-            `${name} ${this.hass.localize("ui.card.climate.cooling")}`,
+            `${this.hass.localize("ui.card.climate.cooling", "name", name)}`,
             true,
             true
           );
@@ -208,22 +210,32 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
 
         if (hasTargetRange) {
           addColumn(
-            `${name} ${this.hass
-              .localize("ui.card.climate.target_temperature")
-              .toLowerCase()} ${this.hass.localize("ui.card.climate.high")}`,
+            `${this.hass.localize(
+              "ui.card.climate.target_temperature_mode",
+              "name",
+              name,
+              "mode",
+              this.hass.localize("ui.card.climate.high")
+            )}`,
             true
           );
           addColumn(
-            `${name} ${this.hass
-              .localize("ui.card.climate.target_temperature")
-              .toLowerCase()} ${this.hass.localize("ui.card.climate.low")}`,
+            `${this.hass.localize(
+              "ui.card.climate.target_temperature_mode",
+              "name",
+              name,
+              "mode",
+              this.hass.localize("ui.card.climate.low")
+            )}`,
             true
           );
         } else {
           addColumn(
-            `${name} ${this.hass
-              .localize("ui.card.climate.target_temperature")
-              .toLowerCase()}`,
+            `${this.hass.localize(
+              "ui.card.climate.target_temperature_entity",
+              "name",
+              name
+            )}`,
             true
           );
         }
