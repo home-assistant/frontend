@@ -2,11 +2,13 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import { EventsMixin } from "../../../mixins/events-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
  * @appliesMixin EventsMixin
+ * @appliesMixin LocalizeMixin
  */
-class EventsList extends EventsMixin(PolymerElement) {
+class EventsList extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
       <style>
@@ -29,8 +31,11 @@ class EventsList extends EventsMixin(PolymerElement) {
         <template is="dom-repeat" items="[[events]]" as="event">
           <li>
             <a href="#" on-click="eventSelected">{{event.event}}</a>
-            <span> (</span><span>{{event.listener_count}}</span
-            ><span> listeners)</span>
+            <span>
+              [[localize(
+              "ui.panel.developer-tools.tabs.events.count_listeners", "count",
+              event.listener_count )]]</span
+            >
           </li>
         </template>
       </ul>
