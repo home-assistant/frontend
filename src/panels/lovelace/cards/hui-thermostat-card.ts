@@ -64,7 +64,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
   private _medium?: boolean;
   private _small?: boolean;
   private _radius?: number;
-  private _longName?: boolean;
 
   public getCardSize(): number {
     return 4;
@@ -104,6 +103,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
 
     const mode = stateObj.state in modeIcons ? stateObj.state : "unknown-mode";
+    const longName =
+      (
+        this._config!.name ||
+        computeStateName(this.hass!.states[this._config!.entity])
+      ).length > 10;
 
     if (!this._radius || this._radius === 0) {
       this._radius = 100;
@@ -111,19 +115,19 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
-        class="${classMap({
+        class=${classMap({
           [mode]: true,
           large: this._large!,
           medium: this._medium!,
           small: this._small!,
-          longName: this._longName || false,
-        })}"
+          longName,
+        })}
       >
         <div id="root">
           <paper-icon-button
             icon="hass:dots-vertical"
             class="more-info"
-            @click="${this._handleMoreInfo}"
+            @click=${this._handleMoreInfo}
           ></paper-icon-button>
           <div id="thermostat">
             ${stateObj.state === "unavailable"
@@ -241,11 +245,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
 
     this._setTemp = this._getSetTemp(this.hass!.states[this._config!.entity]);
-    this._longName =
-      (
-        this._config!.name ||
-        computeStateName(this.hass!.states[this._config!.entity])
-      ).length > 10;
   }
 
   protected firstUpdated(): void {
