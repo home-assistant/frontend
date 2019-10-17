@@ -24,14 +24,15 @@ export type HaFormSchema =
   | HaFormSelectSchema;
 
 export interface HaFormBaseSchema {
-  type: "string" | "integer" | "float" | "boolean" | "select";
-  required: boolean;
   name: string;
-  description?: { unit_of_measurement?: string };
+  default?: HaFormData;
+  required?: boolean;
+  description?: { suffix?: string };
 }
 
 export interface HaFormIntegerSchema extends HaFormBaseSchema {
   type: "integer";
+  default?: HaFormIntegerData;
   valueMin?: number;
   valueMax?: number;
 }
@@ -170,7 +171,7 @@ export class HaForm extends LitElement implements HaFormElement {
     }
   }
 
-  private _computeLabel(schema) {
+  private _computeLabel(schema: HaFormSchema) {
     return this.computeLabel
       ? this.computeLabel(schema)
       : schema
@@ -178,15 +179,15 @@ export class HaForm extends LitElement implements HaFormElement {
       : "";
   }
 
-  private _computeSuffix(schema) {
+  private _computeSuffix(schema: HaFormSchema) {
     return this.computeSuffix
       ? this.computeSuffix(schema)
       : schema && schema.description
-      ? schema.description.unit_of_measurement
+      ? schema.description.suffix
       : "";
   }
 
-  private _computeError(error, schema) {
+  private _computeError(error, schema: HaFormSchema) {
     return this.computeError ? this.computeError(error, schema) : error;
   }
 
