@@ -154,13 +154,21 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   fireEvent() {
     if (!this.eventType) {
-      alert("Event type is a mandatory field");
+      alert(
+        this.hass.localize(
+          "ui.panel.developer-tools.tabs.events.alert_event_type"
+        )
+      );
       return;
     }
     this.hass.callApi("POST", "events/" + this.eventType, this.parsedJSON).then(
       function() {
         this.fire("hass-notification", {
-          message: "Event " + this.eventType + " successful fired!",
+          message: this.hass.localize(
+            "ui.panel.developer-tools.tabs.events.notification_event_fired",
+            "type",
+            this.eventType
+          ),
         });
       }.bind(this)
     );
