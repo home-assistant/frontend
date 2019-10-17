@@ -115,7 +115,7 @@ export class HassioUpdate extends LitElement {
                 </div>
               `
             : ""}
-          <div class="update-heading">${name} ${lastVersion} is available</div>
+          <div class="update-heading">${name} ${lastVersion}</div>
           <div class="warning">
             You are currently running version ${curVersion}
           </div>
@@ -172,7 +172,7 @@ export class HassioUpdate extends LitElement {
           margin-bottom: 0.5em;
         }
         .warning {
-          color: var(--google-yellow-700);
+          color: var(--secondary-text-color);
         }
         .card-actions {
           text-align: right;
