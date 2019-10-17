@@ -87,6 +87,17 @@ export class HuiEditView extends LitElement {
     return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
 
+  private get _viewConfigTitle(): string {
+    let title = this.hass!.localize(
+      "ui.panel.lovelace.editor.edit_view.header"
+    );
+    if (!this._config || !this._config.title || this._config.title === "") {
+      return title;
+    }
+
+    return `${this._config.title} ${title}`;
+  }
+
   protected render(): TemplateResult | void {
     let content;
     switch (this._curTab) {
@@ -118,7 +129,7 @@ export class HuiEditView extends LitElement {
     return html`
       <ha-paper-dialog with-backdrop>
         <h2>
-          ${this.hass!.localize("ui.panel.lovelace.editor.edit_view.header")}
+          ${this._viewConfigTitle}
         </h2>
         <paper-tabs
           scrollable
