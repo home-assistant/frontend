@@ -103,11 +103,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
 
     const mode = stateObj.state in modeIcons ? stateObj.state : "unknown-mode";
-    const longName =
-      (
-        this._config!.name ||
-        computeStateName(this.hass!.states[this._config!.entity])
-      ).length > 10;
+    const name =
+      this._config!.name ||
+      computeStateName(this.hass!.states[this._config!.entity]);
 
     if (!this._radius || this._radius === 0) {
       this._radius = 100;
@@ -120,7 +118,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           large: this._large!,
           medium: this._medium!,
           small: this._small!,
-          longName,
+          longName: name.length > 10,
         })}
       >
         <div id="root">
