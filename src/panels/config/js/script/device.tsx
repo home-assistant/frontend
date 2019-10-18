@@ -2,7 +2,7 @@ import { h, Component } from "preact";
 
 import "../../../../components/device/ha-device-picker";
 import "../../../../components/device/ha-device-action-picker";
-import "../../../../components/ha-form";
+import "../../../../components/ha-form/ha-form";
 
 import {
   fetchDeviceActionCapabilities,
@@ -117,15 +117,9 @@ export default class DeviceActionEditor extends Component<
   }
 
   private _extraFieldsChanged(ev) {
-    if (!ev.detail.path) {
-      return;
-    }
-    const item = ev.detail.path.replace("data.", "");
-    const value = ev.detail.value || undefined;
-
     this.props.onChange(this.props.index, {
       ...this.props.action,
-      [item]: value,
+      ...ev.detail.value,
     });
   }
 

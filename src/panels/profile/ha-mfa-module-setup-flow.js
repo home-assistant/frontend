@@ -5,7 +5,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../components/dialog/ha-paper-dialog";
-import "../../components/ha-form";
+import "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
 import "../../resources/ha-style";
 
