@@ -212,7 +212,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
         .name {
           position: absolute;
-          top: 160px;
           font-size: var(--name-font-size);
           bottom: 16px;
           box-sizing: border-box;
