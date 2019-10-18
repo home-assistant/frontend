@@ -178,8 +178,9 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       element.hass = this._hass;
     }
     if (
-      entityConf.entity &&
-      !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityConf.entity))
+      (entityConf.tap_action && entityConf.tap_action.action !== "none") ||
+      (entityConf.entity &&
+        !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityConf.entity)))
     ) {
       element.classList.add("state-card-dialog");
     }
