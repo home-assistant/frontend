@@ -5,7 +5,6 @@ import {
   CSSResult,
   css,
   property,
-  PropertyValues,
   customElement,
 } from "lit-element";
 import "@material/mwc-button";
@@ -42,13 +41,6 @@ class MoreInfoCounter extends LitElement {
         </mwc-button>
       </div>
     `;
-  }
-
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (!changedProps.has("stateObj") || !this.stateObj) {
-      return;
-    }
   }
 
   private _handleActionClick(e: MouseEvent): void {
