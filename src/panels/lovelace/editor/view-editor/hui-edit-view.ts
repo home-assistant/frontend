@@ -34,6 +34,7 @@ import { processEditorEntities } from "../process-editor-entities";
 import { navigate } from "../../../../common/navigate";
 import { Lovelace } from "../../types";
 import { deleteView, addView, replaceView } from "../config-util";
+import { showConfirmationDialog } from "../../../../dialogs/confirmation/show-dialog-confirmation";
 
 @customElement("hui-edit-view")
 export class HuiEditView extends LitElement {
@@ -137,7 +138,7 @@ export class HuiEditView extends LitElement {
                   class="delete"
                   title="Delete"
                   icon="hass:delete"
-                  @click="${this._delete}"
+                  @click="${this._deleteConfirm}"
                 ></paper-icon-button>
               `
             : ""}
@@ -160,17 +161,6 @@ export class HuiEditView extends LitElement {
   }
 
   private async _delete(): Promise<void> {
-    if (this._cards && this._cards.length > 0) {
-      alert(
-        "You can't delete a view that has cards in it. Remove the cards first."
-      );
-      return;
-    }
-
-    if (!confirm("Are you sure you want to delete this view?")) {
-      return;
-    }
-
     try {
       await this.lovelace!.saveConfig(
         deleteView(this.lovelace!.config, this.viewIndex!)
@@ -180,6 +170,18 @@ export class HuiEditView extends LitElement {
     } catch (err) {
       alert(`Deleting failed: ${err.message}`);
     }
+  }
+
+  private async _deleteConfirm(): Promise<void> {
+    if (this._cards && this._cards.length > 0) {
+      alert(this.hass!.localize("ui.panel.lovelace.views.existing_cards"));
+      return;
+    }
+
+    showConfirmationDialog(this, {
+      text: this.hass!.localize("ui.panel.lovelace.views.confirm_delete"),
+      confirm: () => this._delete(),
+    });
   }
 
   private async _resizeDialog(): Promise<void> {
