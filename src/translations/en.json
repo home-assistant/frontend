@@ -1818,7 +1818,17 @@
             "notification_event_fired": "Event {type} successful fired!"
           },
           "mqtt": {
-            "title": "MQTT"
+            "title": "MQTT",
+            "description_publish": "Publish a packet",
+            "topic": "topic",
+            "payload": "Payload (template allowed)",
+            "publish": "Publish",
+            "description_listen": "Listen to a topic",
+            "listening_to": "Listening to",
+            "subscribe_to": "Topic to subscribe to",
+            "start_listening": "Start listening",
+            "stop_listening": "Stop listening",
+            "message_received": "Message {id} received on {topic} at {time}:"
           },
           "services": {
             "title": "Services"
