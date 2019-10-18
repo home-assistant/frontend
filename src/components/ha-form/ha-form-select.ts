@@ -12,9 +12,6 @@ import { fireEvent } from "../../common/dom/fire_event";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
-// Not duplicate, is for typing
-// tslint:disable-next-line
-import { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 
 @customElement("ha-form-select")
 export class HaFormSelect extends LitElement implements HaFormElement {
@@ -35,13 +32,13 @@ export class HaFormSelect extends LitElement implements HaFormElement {
       <paper-dropdown-menu .label=${this.label}>
         <paper-listbox
           slot="dropdown-content"
-          .attrForSelected="item-name"
+          attr-for-selected="item-value"
           .selected=${this.data}
-          @change=${this._valueChanged}
+          @selected-item-changed=${this._valueChanged}
         >
           ${this.schema.options!.map(
             (item) => html`
-              <paper-item .itemName=${this._optionValue(item)}>
+              <paper-item .itemValue=${this._optionValue(item)}>
                 ${this._optionLabel(item)}
               </paper-item>
             `
@@ -59,12 +56,15 @@ export class HaFormSelect extends LitElement implements HaFormElement {
     return Array.isArray(item) ? item[1] : item;
   }
 
-  private _valueChanged(ev: Event) {
+  private _valueChanged(ev: CustomEvent) {
+    if (!ev.detail.value) {
+      return;
+    }
     fireEvent(
       this,
       "value-changed",
       {
-        value: (ev.target as PaperListboxElement).selected,
+        value: ev.detail.value.itemValue,
       },
       { bubbles: false }
     );

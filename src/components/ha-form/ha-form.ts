@@ -27,6 +27,7 @@ export interface HaFormBaseSchema {
   name: string;
   default?: HaFormData;
   required?: boolean;
+  optional?: boolean;
   description?: { suffix?: string };
 }
 
