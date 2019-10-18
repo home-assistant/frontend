@@ -210,7 +210,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   }
 
   private _handleDblClick(ev: MouseEvent): void {
-    const config = (ev.currentTarget as any).entityConf as any;
+    const config = (ev.currentTarget as any).config as any;
     handleClick(this, this.hass!, config, false, true);
   }
 }
