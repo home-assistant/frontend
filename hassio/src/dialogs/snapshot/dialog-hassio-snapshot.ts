@@ -3,6 +3,7 @@ import "@material/mwc-button";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -94,12 +95,22 @@ class HassioSnapshotDialog extends PolymerElement {
         .details {
           color: var(--secondary-text-color);
         }
-        .download {
-          color: var(--primary-color);
-        }
         .warning,
         .error {
           color: var(--google-red-500);
+        }
+        .buttons {
+          display: flex;
+          flex-direction: column;
+        }
+        .buttons li {
+          list-style-type: none;
+        }
+        .buttons .icon {
+          margin-right: 16px;
+        }
+        .no-margin-top {
+          margin-top: 0;
         }
       </style>
       <ha-paper-dialog
@@ -132,7 +143,7 @@ class HassioSnapshotDialog extends PolymerElement {
         </template>
         <template is="dom-if" if="[[_addons.length]]">
           <div>Add-ons:</div>
-          <paper-dialog-scrollable>
+          <paper-dialog-scrollable class="no-margin-top">
             <template is="dom-repeat" items="[[_addons]]" sort="_sortAddons">
               <paper-checkbox checked="{{item.checked}}">
                 [[item.name]] <span class="details">([[item.version]])</span>
@@ -151,28 +162,35 @@ class HassioSnapshotDialog extends PolymerElement {
         <template is="dom-if" if="[[error]]">
           <p class="error">Error: [[error]]</p>
         </template>
-        <div class="buttons">
-          <paper-icon-button
-            icon="hassio:delete"
-            on-click="_deleteClicked"
-            class="warning"
-            title="Delete snapshot"
-          ></paper-icon-button>
-          <paper-icon-button
-            on-click="_downloadClicked"
-            icon="hassio:download"
-            class="download"
-            title="Download snapshot"
-          ></paper-icon-button>
-          <mwc-button on-click="_partialRestoreClicked"
-            >Restore selected</mwc-button
-          >
+        <div>Actions:</div>
+        <ul class="buttons">
+          <li>
+            <mwc-button on-click="_downloadClicked">
+              <iron-icon icon="hassio:download" class="icon"></iron-icon>
+              Download Snapshot
+            </mwc-button>
+          </li>
+          <li>
+            <mwc-button on-click="_partialRestoreClicked">
+              <iron-icon icon="hassio:history" class="icon"> </iron-icon>
+              Restore Selected
+            </mwc-button>
+          </li>
           <template is="dom-if" if="[[_isFullSnapshot(snapshot.type)]]">
-            <mwc-button on-click="_fullRestoreClicked"
-              >Wipe &amp; restore</mwc-button
-            >
+            <li>
+              <mwc-button on-click="_fullRestoreClicked">
+                <iron-icon icon="hassio:history" class="icon"> </iron-icon>
+                Wipe &amp; restore
+              </mwc-button>
+            </li>
           </template>
-        </div>
+          <li>
+            <mwc-button on-click="_deleteClicked">
+              <iron-icon icon="hassio:delete" class="warning icon"> </iron-icon>
+              Delete Snapshot
+            </mwc-button>
+          </li>
+        </ul>
       </ha-paper-dialog>
     `;
   }
