@@ -172,7 +172,7 @@ export class HuiEditView extends LitElement {
     }
   }
 
-  private async _deleteConfirm(): Promise<void> {
+  private _deleteConfirm(): void {
     if (this._cards && this._cards.length > 0) {
       alert(this.hass!.localize("ui.panel.lovelace.views.existing_cards"));
       return;
