@@ -294,7 +294,7 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
       alert(
         this.hass.localize(
           "ui.panel.developer-tools.tabs.services.alert_parsing_yaml",
-          "error",
+          "data",
           this.serviceData
         )
       );
