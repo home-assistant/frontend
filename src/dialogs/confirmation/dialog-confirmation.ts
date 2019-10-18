@@ -81,6 +81,11 @@ class DialogConfirmation extends LitElement {
           min-width: 400px;
           max-width: 500px;
         }
+        @media (max-width: 400px) {
+          ha-paper-dialog {
+            min-width: initial;
+          }
+        }
         p {
           margin: 0;
           padding-top: 6px;
