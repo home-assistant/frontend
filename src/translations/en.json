@@ -1807,7 +1807,18 @@
             "title": "MQTT"
           },
           "services": {
-            "title": "Services"
+            "title": "Services",
+            "description": "The service dev tool allows you to call any available service in Home Assistant.",
+            "data": "Service Data (YAML, optional)",
+            "call_service": "Call Service",
+            "select_service": "Select a service to see the description",
+            "no_description": "No description is available",
+            "no_parameters": "This service takes no parameters.",
+            "column_parameter": "Parameter",
+            "column_description": "Description",
+            "column_example": "Example",
+            "fill_example_data": "Fill Example Data",
+            "alert_parsing_yaml": "Error parsing YAML: {error}"
           },
           "states": {
             "title": "States"
