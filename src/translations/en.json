@@ -417,6 +417,13 @@
         "away_mode": "Away mode",
         "aux_heat": "Aux heat"
       },
+      "counter": {
+        "actions": {
+          "increment": "increment",
+          "decrement": "decrement",
+          "reset": "reset"
+        }
+      },
       "cover": {
         "position": "Position",
         "tilt_position": "Tilt position"
