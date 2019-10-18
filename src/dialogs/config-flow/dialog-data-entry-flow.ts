@@ -14,7 +14,7 @@ import "@polymer/paper-tooltip/paper-tooltip";
 import "@polymer/paper-spinner/paper-spinner";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 
-import "../../components/ha-form";
+import "../../components/ha-form/ha-form";
 import "../../components/ha-markdown";
 import "../../resources/ha-style";
 import "../../components/dialog/ha-paper-dialog";
