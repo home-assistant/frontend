@@ -504,7 +504,12 @@
                                     "leave": "Leave"
                                 },
                                 "device": {
-                                    "label": "Device"
+                                    "label": "Device",
+                                    "extra_fields": {
+                                        "above": "Above",
+                                        "below": "Below",
+                                        "for": "Duration"
+                                    }
                                 }
                             },
                             "learn_more": "Learn more about triggers"

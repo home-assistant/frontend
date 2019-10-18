@@ -33,12 +33,12 @@
         },
         "automation": {
             "off": "Off",
-            "on": "On"
+            "on": "[%key_id:state::default::on%]"
         },
         "binary_sensor": {
             "default": {
                 "off": "Off",
-                "on": "On"
+                "on": "[%key_id:state::default::on%]"
             },
             "moisture": {
                 "off": "Sec",
@@ -118,8 +118,8 @@
             }
         },
         "calendar": {
-            "off": "Off",
-            "on": "On"
+            "off": "[%key_id:state::default::off%]",
+            "on": "[%key_id:state::default::on%]"
         },
         "camera": {
             "recording": "Enregistrement",
@@ -165,7 +165,7 @@
         },
         "group": {
             "off": "Off",
-            "on": "On",
+            "on": "[%key_id:state::default::on%]",
             "home": "Présent",
             "not_home": "Absent",
             "open": "Ouvert",
@@ -210,19 +210,19 @@
             "scening": "Scénario"
         },
         "script": {
-            "off": "Off",
-            "on": "On"
+            "off": "[%key_id:state::default::off%]",
+            "on": "[%key_id:state::default::on%]"
         },
         "sensor": {
-            "off": "Off",
-            "on": "On"
+            "off": "[%key_id:state::default::off%]",
+            "on": "[%key_id:state::default::on%]"
         },
         "sun": {
             "above_horizon": "Au-dessus de l'horizon",
             "below_horizon": "Sous l’horizon"
         },
         "switch": {
-            "off": "Off",
+            "off": "[%key_id:state::default::off%]",
             "on": "On"
         },
         "zwave": {
@@ -284,7 +284,7 @@
         "alarm_control_panel": {
             "armed": "Activé",
             "disarmed": "Désactivé",
-            "armed_home": "Armé",
+            "armed_home": "Activé",
             "armed_away": "Activé",
             "armed_night": "Activé",
             "pending": "En cours",
@@ -294,7 +294,7 @@
             "armed_custom_bypass": "Activé"
         },
         "device_tracker": {
-            "home": "Maison",
+            "home": "Présent",
             "not_home": "Absent"
         },
         "person": {
@@ -504,7 +504,12 @@
                                     "leave": "Quitte"
                                 },
                                 "device": {
-                                    "label": "Équipements"
+                                    "label": "Équipements",
+                                    "extra_fields": {
+                                        "above": "Au-dessus de",
+                                        "below": "Au-dessous de",
+                                        "for": "Durée"
+                                    }
                                 }
                             },
                             "learn_more": "En savoir plus sur les déclencheurs"
@@ -1524,7 +1529,7 @@
                 "away": "Absent",
                 "boost": "Renforcer",
                 "comfort": "Confort",
-                "home": "Accueil",
+                "home": "Présent",
                 "sleep": "Veille",
                 "activity": "Activité"
             },

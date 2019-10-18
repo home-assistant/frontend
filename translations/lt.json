@@ -97,6 +97,10 @@
             "on": "Įjungta",
             "manual": "Rankinis"
         },
+        "fan": {
+            "off": "Išjungta",
+            "on": "Įjungta"
+        },
         "group": {
             "off": "Išjungta",
             "on": "Įjungta",

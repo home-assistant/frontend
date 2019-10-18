@@ -504,7 +504,12 @@
                                     "leave": "Odidi"
                                 },
                                 "device": {
-                                    "label": "Naprava"
+                                    "label": "Naprava",
+                                    "extra_fields": {
+                                        "above": "Nad",
+                                        "below": "Pod",
+                                        "for": "Trajanje"
+                                    }
                                 }
                             },
                             "learn_more": "Več o sprožilcih"

@@ -753,7 +753,7 @@
                         "header": "Vienību Reģistrs",
                         "unavailable": "(nav pieejams)",
                         "introduction": "Home Assistant uztur katras vienības reģistru, kuru var unikāli identificēt. Katrai no šīm vienībām tiks piešķirts vienības ID, kas tiks rezervēts tikai šai vienībai.",
-                        "introduction2": "Izmantojiet vienību reģistru, lai ignorētu vārdu, mainītu vienību ID vai noņemtu ierakstu no Home Assistant. Ņemiet vērā: noņemot vienības reģistra ierakstu, vienība netiks noņemta. Lai to izdarītu, sekojiet zemāk esošajai saitei un noņemiet to no integrācijas lapas.",
+                        "introduction2": "Izmantojiet vienību reģistru, lai piešķirtu vārdu, mainītu vienību ID vai noņemtu ierakstu no Home Assistant. Ņemiet vērā: noņemot vienības reģistra ierakstu, vienība netiks noņemta. Lai to izdarītu, sekojiet zemāk esošajai saitei un noņemiet to no integrācijas lapas.",
                         "integrations_page": "Integrāciju lapa"
                     },
                     "editor": {
@@ -1098,7 +1098,7 @@
             "page-demo": {
                 "cards": {
                     "demo": {
-                        "demo_by": "{name} ",
+                        "demo_by": "{name}",
                         "next_demo": "Nākamā demonstrācija",
                         "introduction": "Laipni lūgts mājās! Jūs esat sasniedzis Home Assistant demonstrāciju, kurā mēs parādām labākos lietotāja kopienas izveidotos lietotāja interfeisus.",
                         "learn_more": "Uzziniet vairāk par Home Assistant"
@@ -1316,7 +1316,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Saglabāt",
-                "name": "Nosaukuma ignorēšana",
+                "name": "Piesķirt nosaukumu",
                 "entity_id": "Vienības ID"
             },
             "more_info_control": {

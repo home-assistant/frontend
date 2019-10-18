@@ -504,7 +504,12 @@
                                     "leave": "Verloossen"
                                 },
                                 "device": {
-                                    "label": "Apparat"
+                                    "label": "Apparat",
+                                    "extra_fields": {
+                                        "above": "Iwwert",
+                                        "below": "Ënnert",
+                                        "for": "Dauer"
+                                    }
                                 }
                             },
                             "learn_more": "Méi iwwert Ausléiser liesen"

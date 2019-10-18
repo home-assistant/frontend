@@ -112,12 +112,12 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
               filter: this._computeBrightness(stateObj),
               color: this._computeColor(stateObj),
             })}"
-            @click="${this._handleTap}"
+            @click="${this._handleClick}"
           ></ha-icon>
         </div>
 
         <div id="tooltip">
-          <div class="brightness" @ha-click="${this._handleTap}">
+          <div class="brightness" @ha-click="${this._handleClick}">
             ${brightness} %
           </div>
           <div class="name">
@@ -297,7 +297,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
   }
 
-  private _handleTap() {
+  private _handleClick() {
     toggleEntity(this.hass!, this._config!.entity!);
   }
 

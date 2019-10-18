@@ -160,7 +160,7 @@
             "not_home": "Preč"
         },
         "fan": {
-            "off": "Vypnutý",
+            "off": "Neaktívny",
             "on": "Zapnutý"
         },
         "group": {
@@ -602,7 +602,11 @@
                             "learn_more": "Získajte viac informácií o akciách"
                         },
                         "load_error_not_editable": "Len automatizácie v automations.yaml je možné upravovať.",
-                        "load_error_unknown": "Chyba pri načítaní automatizácie ( {err_no} )."
+                        "load_error_unknown": "Chyba pri načítaní automatizácie ( {err_no} ).",
+                        "description": {
+                            "label": "Popis",
+                            "placeholder": "Voliteľný popis"
+                        }
                     }
                 },
                 "script": {
@@ -754,7 +758,8 @@
                         "unavailable": "(nedostupné)",
                         "introduction": "Home Assistant vedie register všetkých subjektov, ktoré kedy videl a ktoré môžu byť jednoznačne identifikované. Každá z týchto entít bude mať pridelené ID, ktoré bude vyhradené len pre tento subjekt.",
                         "introduction2": "Použite register entít na prepísanie mena, zmenu ID entity alebo odstránenie položky z Home Assistant. Poznámka: Odstránenie položky databázy entít neodstráni entitu. Postupujte podľa nižšie uvedeného odkazu a odstráňte ho z integračnej stránky.",
-                        "integrations_page": "Stránka Integrácie"
+                        "integrations_page": "Stránka Integrácie",
+                        "show_disabled": "Zobraziť zakázané entity"
                     },
                     "editor": {
                         "unavailable": "Táto entita nie je momentálne k dispozícii.",
@@ -763,7 +768,9 @@
                         "update": "AKTUALIZOVAŤ",
                         "enabled_label": "Povoliť entitu",
                         "enabled_cause": "Zakázané {cause}",
-                        "enabled_description": "Zakázané entity nebudú pridané do Home Assistanta"
+                        "enabled_description": "Zakázané entity nebudú pridané do Home Assistanta",
+                        "confirm_delete": "Naozaj chcete odstrániť túto entitu?",
+                        "confirm_delete2": "Odstránením entity sa entita neodstráni z Home Assistant. Ak to chcete urobiť, budete musieť odstrániť integráciu '{platform}' z Home Assistant."
                     }
                 },
                 "person": {
@@ -808,7 +815,12 @@
                 },
                 "devices": {
                     "caption": "Zariadenia",
-                    "description": "Spravovať pripojené zariadenia"
+                    "description": "Spravovať pripojené zariadenia",
+                    "automation": {
+                        "triggers": {
+                            "caption": "Urob niečo, keď ..."
+                        }
+                    }
                 }
             },
             "profile": {
@@ -884,6 +896,10 @@
                 "force_narrow": {
                     "header": "Vždy skryť bočný panel",
                     "description": "Predvolene sa skryje bočný panel, podobne ako v prípade mobilných zariadení."
+                },
+                "vibrate": {
+                    "header": "Vibrácie",
+                    "description": "Pri ovládaní zariadení povoľte alebo zakážte vibrácie tohto zariadenia."
                 }
             },
             "page-authorize": {
@@ -1077,6 +1093,45 @@
                     "edit_lovelace": {
                         "header": "Názov vášho Lovelace UI",
                         "explanation": "Tento názov sa zobrazuje nad všetkými vašimi zobrazeniami v Lovelace."
+                    },
+                    "card": {
+                        "config": {
+                            "required": "Požadované",
+                            "optional": "Voliteľné"
+                        },
+                        "entities": {
+                            "show_header_toggle": "Zobraziť prepínač hlavičky?"
+                        },
+                        "generic": {
+                            "entities": "Entity",
+                            "entity": "Entita",
+                            "hold_action": "Akcia podržania",
+                            "hours_to_show": "Hodín ukázať",
+                            "icon": "ikona",
+                            "icon_height": "Výška ikony",
+                            "image": "Cesta k obrázku",
+                            "name": "Názov",
+                            "refresh_interval": "Interval obnovenia",
+                            "show_icon": "Zobraziť ikonu?",
+                            "show_name": "Zobraziť názov?",
+                            "show_state": "Zobraziť stav?",
+                            "theme": "Téma",
+                            "unit": "Jednotka",
+                            "url": "Url"
+                        },
+                        "map": {
+                            "geo_location_sources": "Zdroje geolokácie",
+                            "dark_mode": "Tmavý režim?",
+                            "default_zoom": "Predvolený zoom",
+                            "source": "Zdroj"
+                        },
+                        "markdown": {
+                            "content": "Obsah"
+                        },
+                        "sensor": {
+                            "graph_detail": "Detail grafu",
+                            "graph_type": "Typ grafu"
+                        }
                     }
                 },
                 "menu": {

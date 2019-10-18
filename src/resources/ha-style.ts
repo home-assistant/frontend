@@ -33,7 +33,9 @@ documentContainer.innerHTML = `<custom-style>
 
       --scrollbar-thumb-color: rgb(194, 194, 194);
 
-      --error-state-color: #db4437;
+
+      --error-color: #db4437;
+      --error-state-color: var(--error-color);
 
       /* states and badges */
       --state-icon-color: #44739e;
@@ -53,8 +55,10 @@ documentContainer.innerHTML = `<custom-style>
       --sidebar-selected-icon-color: var(--primary-color);
 
       /* controls */
-      --toggle-button-color: var(--primary-color);
-      /* --toggle-button-unchecked-color: var(--accent-color); */
+      --switch-checked-color: var(--primary-color);
+      /* --switch-unchecked-color: var(--accent-color); */
+      --switch-unchecked-button-color: var(--switch-unchecked-color, var(--paper-grey-50));
+      --switch-unchecked-track-color: var(--switch-unchecked-color, #000000);
       --slider-color: var(--primary-color);
       --slider-secondary-color: var(--light-primary-color);
       --slider-bar-color: var(--disabled-text-color);
@@ -69,7 +73,7 @@ documentContainer.innerHTML = `<custom-style>
       --label-badge-grey: var(--paper-grey-500);
 
       /*
-        Paper-styles color.html depency is stripped on build.
+        Paper-styles color.html dependency is stripped on build.
         When a default paper-style color is used, it needs to be copied
         from paper-styles/color.html to here.
       */
@@ -110,12 +114,6 @@ documentContainer.innerHTML = `<custom-style>
       --table-row-background-color: var(--primary-background-color);
       --table-row-alternative-background-color: var(--secondary-background-color);
 
-      /* set our toggle style */
-      --paper-toggle-button-checked-ink-color: var(--toggle-button-color);
-      --paper-toggle-button-checked-button-color: var(--toggle-button-color);
-      --paper-toggle-button-checked-bar-color: var(--toggle-button-color);
-      --paper-toggle-button-unchecked-button-color: var(--toggle-button-unchecked-color, var(--paper-grey-50));
-      --paper-toggle-button-unchecked-bar-color: var(--toggle-button-unchecked-color, #000000);
       /* set our slider style */
       --paper-slider-knob-color: var(--slider-color);
       --paper-slider-knob-start-color: var(--slider-color);

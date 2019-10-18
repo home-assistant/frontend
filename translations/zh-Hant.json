@@ -504,7 +504,12 @@
                                     "leave": "離開區域"
                                 },
                                 "device": {
-                                    "label": "設備"
+                                    "label": "設備",
+                                    "extra_fields": {
+                                        "above": "在...之上",
+                                        "below": "在...之下",
+                                        "for": "持續時間"
+                                    }
                                 }
                             },
                             "learn_more": "詳細了解觸發條件"

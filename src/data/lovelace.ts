@@ -11,7 +11,7 @@ export interface LovelaceConfig {
 export interface LovelaceViewConfig {
   index?: number;
   title?: string;
-  badges?: string[];
+  badges?: Array<string | LovelaceBadgeConfig>;
   cards?: LovelaceCardConfig[];
   path?: string;
   icon?: string;
@@ -25,6 +25,11 @@ export interface ShowViewConfig {
   user?: string;
 }
 
+export interface LovelaceBadgeConfig {
+  type?: string;
+  [key: string]: any;
+}
+
 export interface LovelaceCardConfig {
   index?: number;
   view_index?: number;
@@ -32,11 +37,11 @@ export interface LovelaceCardConfig {
   [key: string]: any;
 }
 
-export interface ToggleActionConfig {
+export interface ToggleActionConfig extends BaseActionConfig {
   action: "toggle";
 }
 
-export interface CallServiceActionConfig {
+export interface CallServiceActionConfig extends BaseActionConfig {
   action: "call-service";
   service: string;
   service_data?: {
@@ -45,22 +50,35 @@ export interface CallServiceActionConfig {
   };
 }
 
-export interface NavigateActionConfig {
+export interface NavigateActionConfig extends BaseActionConfig {
   action: "navigate";
   navigation_path: string;
 }
 
-export interface UrlActionConfig {
+export interface UrlActionConfig extends BaseActionConfig {
   action: "url";
   url_path: string;
 }
 
-export interface MoreInfoActionConfig {
+export interface MoreInfoActionConfig extends BaseActionConfig {
   action: "more-info";
 }
 
-export interface NoActionConfig {
+export interface NoActionConfig extends BaseActionConfig {
   action: "none";
+}
+
+export interface BaseActionConfig {
+  confirmation?: ConfirmationRestrictionConfig;
+}
+
+export interface ConfirmationRestrictionConfig {
+  text?: string;
+  exemptions?: RestrictionConfig[];
+}
+
+export interface RestrictionConfig {
+  user: string;
 }
 
 export type ActionConfig =
@@ -107,4 +125,8 @@ export const getLovelaceCollection = (conn: Connection) =>
 
 export interface WindowWithLovelaceProm extends Window {
   llConfProm?: Promise<LovelaceConfig>;
+}
+
+export interface LongPressOptions {
+  hasDoubleClick?: boolean;
 }

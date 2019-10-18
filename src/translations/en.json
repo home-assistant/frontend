@@ -402,6 +402,13 @@
         "currently": "Currently",
         "on_off": "On / off",
         "target_temperature": "Target temperature",
+        "target_temperature_entity": "{name} target temperature",
+        "target_temperature_mode": "{name} target temperature {mode}",
+        "current_temperature": "{name} current temperature",
+        "heating": "{name} heating",
+        "cooling": "{name} cooling",
+        "high": "high",
+        "low": "low",
         "target_humidity": "Target humidity",
         "operation": "Operation",
         "fan_mode": "Fan mode",
@@ -559,9 +566,9 @@
         }
       },
       "config_entry_system_options": {
-        "title": "System Options",
+        "title": "System Options for {integration}",
         "enable_new_entities_label": "Enable newly added entities.",
-        "enable_new_entities_description": "If disabled, newly discovered entities will not be automatically added to Home Assistant."
+        "enable_new_entities_description": "If disabled, newly discovered entities for {integration} will not be automatically added to Home Assistant."
       },
       "zha_device_info": {
         "manuf": "by {manufacturer}",
@@ -908,7 +915,10 @@
                   "service_data": "[%key:ui::panel::config::automation::editor::actions::type::service::service_data%]"
                 },
                 "device_id": {
-                  "label": "Device"
+                  "label": "Device",
+                  "extra_fields": {
+                    "code": "Code"
+                  }
                 },
                 "scene": {
                   "label": "Activate scene"
@@ -1522,6 +1532,12 @@
             "weather-forecast": {
               "name": "Weather Forecast"
             }
+          },
+          "view": {
+            "panel_mode": {
+              "title": "Panel Mode?",
+              "description": "This renders the first card at full width; other cards in this view will not be rendered."
+            }
           }
         },
         "warning": {
@@ -1591,6 +1607,10 @@
           "step_done": "Setup done for {step}",
           "close": "Close",
           "submit": "Submit"
+        },
+        "advanced_mode": {
+          "title": "Advanced Mode",
+          "description": "Home Assistant hides advanced features and options by default. You can make these features accessible by checking this toggle. This is a user-specific setting and does not impact other users using Home Assistant."
         },
         "refresh_tokens": {
           "header": "Refresh Tokens",
@@ -1772,7 +1792,22 @@
             "title": "Logs"
           },
           "events": {
-            "title": "Events"
+            "title": "Events",
+            "description": "Fire an event on the event bus.",
+            "documentation": "Events Documentation.",
+            "type": "Event Type",
+            "data": "Event Data (YAML, optional)",
+            "fire_event": "Fire Event",
+            "event_fired": "Event {name} fired",
+            "available_events": "Available Events",
+            "count_listeners": " ({count}  listeners)",
+            "listen_to_events": "Listen to events",
+            "listening_to": "Listening to",
+            "subscribe_to": "Event to subscribe to",
+            "start_listening": "Start listening",
+            "stop_listening": "Stop listening",
+            "alert_event_type": "Event type is a mandatory field",
+            "notification_event_fired": "Event {type} successful fired!"
           },
           "mqtt": {
             "title": "MQTT"

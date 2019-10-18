@@ -99,7 +99,6 @@ export class CloudGooglePref extends LitElement {
                     "ui.panel.config.cloud.account.google.info_state_reporting"
                   )}
                 </p>
-
                 <div class="secure_devices">
                   <h3>
                     ${this.hass!.localize(

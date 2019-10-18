@@ -763,7 +763,8 @@
                         "update": "ΕΝΗΜΕΡΩΣΗ",
                         "enabled_label": "Ενεργοποίηση οντότητας",
                         "enabled_cause": "Απενεργοποιήθηκε από τo {cause}.",
-                        "enabled_description": "Απενεργοποιημένες οντότητες δεν θα προστεθούν στον Home Assistant"
+                        "enabled_description": "Απενεργοποιημένες οντότητες δεν θα προστεθούν στον Home Assistant",
+                        "confirm_delete2": "Η διαγραφή μιας καταχώρησης δεν θα καταργήσει την οντότητα από το Home Assistant. Για να γίνει αυτό, θα πρέπει να καταργήσετε την ενσωμάτωση '{platform}' από το Home Assistant."
                     }
                 },
                 "person": {

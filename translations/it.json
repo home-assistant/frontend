@@ -504,7 +504,12 @@
                                     "leave": "Uscita"
                                 },
                                 "device": {
-                                    "label": "Dispositivo"
+                                    "label": "Dispositivo",
+                                    "extra_fields": {
+                                        "above": "Sopra",
+                                        "below": "Sotto",
+                                        "for": "Durata"
+                                    }
                                 }
                             },
                             "learn_more": "Per saperne di più sui trigger"

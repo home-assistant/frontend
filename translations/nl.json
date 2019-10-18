@@ -504,7 +504,12 @@
                                     "leave": "Verlaten"
                                 },
                                 "device": {
-                                    "label": "Apparaat"
+                                    "label": "Apparaat",
+                                    "extra_fields": {
+                                        "above": "Boven",
+                                        "below": "Onder",
+                                        "for": "Duur"
+                                    }
                                 }
                             },
                             "learn_more": "Meer informatie over triggers"

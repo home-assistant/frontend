@@ -12,7 +12,7 @@ export class DemoUtilLongPress extends LitElement {
         () => html`
           <ha-card>
             <mwc-button
-              @ha-click="${this._handleTap}"
+              @ha-click="${this._handleClick}"
               @ha-hold="${this._handleHold}"
               .longPress="${longPress()}"
             >
@@ -28,7 +28,7 @@ export class DemoUtilLongPress extends LitElement {
     `;
   }
 
-  private _handleTap(ev: Event) {
+  private _handleClick(ev: Event) {
     this._addValue(ev, "tap");
   }
 
