@@ -200,17 +200,17 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   }
 
   private _handleClick(ev: MouseEvent): void {
-    const config = (ev.currentTarget as any).config as any;
+    const config = (ev.currentTarget as any).config as EntitiesCardEntityConfig;
     handleClick(this, this.hass!, config, false, false);
   }
 
   private _handleHold(ev: MouseEvent): void {
-    const config = (ev.currentTarget as any).config as any;
+    const config = (ev.currentTarget as any).config as EntitiesCardEntityConfig;
     handleClick(this, this.hass!, config, true, false);
   }
 
   private _handleDblClick(ev: MouseEvent): void {
-    const config = (ev.currentTarget as any).config as any;
+    const config = (ev.currentTarget as any).config as EntitiesCardEntityConfig;
     handleClick(this, this.hass!, config, false, true);
   }
 }
