@@ -1785,7 +1785,7 @@
           "logs": {
             "title": "Logs",
             "details": "Log Details ({level})",
-            "load_log": "Load Full Home Assistant Log",
+            "load_full_log": "Load Full Home Assistant Log",
             "loading_log": "Loading error log…",
             "no_errors": "No errors have been reported.",
             "no_issues": "There are no new issues!",

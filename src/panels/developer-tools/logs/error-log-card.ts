@@ -36,7 +36,7 @@ class ErrorLogCard extends LitElement {
           : html`
               <mwc-button raised @click=${this._refreshErrorLog}>
                 ${this.hass.localize(
-                  "ui.panel.developer-tools.tabs.logs.load_log"
+                  "ui.panel.developer-tools.tabs.logs.load_full_log"
                 )}
               </mwc-button>
             `}
