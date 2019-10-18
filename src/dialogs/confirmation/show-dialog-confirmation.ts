@@ -3,7 +3,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 export interface ConfirmationDialogParams {
   title?: string;
   text: string;
-  confirm: () => Promise<boolean>;
+  confirm: () => void;
 }
 
 export const loadConfirmationDialog = () =>
