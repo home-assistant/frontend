@@ -1786,7 +1786,24 @@
       "developer-tools": {
         "tabs": {
           "info": {
-            "title": "Info"
+            "title": "Info",
+            "remove": "Remove",
+            "set": "Set",
+            "default_ui": "{name} as default page on this device",
+            "lovelace_ui": "Go to the Lovelace UI",
+            "states_ui": "Go to the states UI",
+            "home_assistant_logo": "Home Assistant logo",
+            "path_configuration": "Path to configuration.yaml: {path}",
+            "developed_by": "Developed by a bunch of awesome people.",
+            "license": "Published under the Apache 2.0 license",
+            "source": "Source:",
+            "server": "server",
+            "frontend": "frontend-ui",
+            "built_using": "Built using",
+            "icons_by": "Icons by",
+            "frontend_version": "Frontend version: {version} - {type}",
+            "custom_uis": "Custom UIs:",
+            "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml"
           },
           "logs": {
             "title": "Logs",
