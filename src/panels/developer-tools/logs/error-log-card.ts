@@ -13,7 +13,7 @@ import { HomeAssistant } from "../../../types";
 import { fetchErrorLog } from "../../../data/error_log";
 
 class ErrorLogCard extends LitElement {
-  public hass?: HomeAssistant;
+  public hass!: HomeAssistant;
   private _errorLog?: string;
 
   static get properties(): PropertyDeclarations {
@@ -35,7 +35,9 @@ class ErrorLogCard extends LitElement {
             `
           : html`
               <mwc-button raised @click=${this._refreshErrorLog}>
-                Load Full Home Assistant Log
+                ${this.hass.localize(
+                  "ui.panel.developer-tools.tabs.logs.load_log"
+                )}
               </mwc-button>
             `}
       </p>
@@ -64,9 +66,12 @@ class ErrorLogCard extends LitElement {
   }
 
   private async _refreshErrorLog(): Promise<void> {
-    this._errorLog = "Loading error log…";
+    this._errorLog = this.hass.localize(
+      "ui.panel.developer-tools.tabs.logs.loading_log"
+    );
     const log = await fetchErrorLog(this.hass!);
-    this._errorLog = log || "No errors have been reported.";
+    this._errorLog =
+      log || this.hass.localize("ui.panel.developer-tools.tabs.logs.no_errors");
   }
 }
 

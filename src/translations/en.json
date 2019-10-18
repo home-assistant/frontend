@@ -1783,7 +1783,15 @@
             "title": "Info"
           },
           "logs": {
-            "title": "Logs"
+            "title": "Logs",
+            "details": "Log Details ({level})",
+            "load_log": "Load Full Home Assistant Log",
+            "loading_log": "Loading error log…",
+            "no_errors": "No errors have been reported.",
+            "no_issues": "There are no new issues!",
+            "clear": "Clear",
+            "refresh": "Refresh",
+            "multiple_messages": "message first occurred at {time} and shows up {counter} times"
           },
           "events": {
             "title": "Events",
