@@ -1349,6 +1349,7 @@
       },
       "lovelace": {
         "cards": {
+          "confirm_delete": "Are you sure you want to delete this card?",
           "empty_state": {
             "title": "Welcome Home",
             "no_devices": "This page allows you to control your devices, however it looks like you have no devices set up yet. Head to the integrations page to get started.",
