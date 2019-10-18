@@ -539,6 +539,11 @@
       }
     },
     "dialogs": {
+      "confirmation": {
+        "cancel": "Cancel",
+        "ok": "OK",
+        "title": "Are you sure?"
+      },
       "more_info_control": {
         "script": {
           "last_action": "Last Action"
