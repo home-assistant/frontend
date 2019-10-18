@@ -17,6 +17,7 @@ import { DeviceRegistryEntry } from "../../../../data/device_registry";
 import { AreaRegistryEntry } from "../../../../data/area_registry";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { showConfigEntrySystemOptionsDialog } from "../../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
+import { showConfirmationDialog } from "../../../../dialogs/confirmation/show-dialog-confirmation";
 
 class HaConfigEntryPage extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -145,26 +146,22 @@ class HaConfigEntryPage extends LitElement {
   }
 
   private _removeEntry() {
-    if (
-      !confirm(
-        this.hass.localize(
-          "ui.panel.config.integrations.config_entry.delete_confirm"
-        )
-      )
-    ) {
-      return;
-    }
-
-    deleteConfigEntry(this.hass, this.configEntryId).then((result) => {
-      fireEvent(this, "hass-reload-entries");
-      if (result.require_restart) {
-        alert(
-          this.hass.localize(
-            "ui.panel.config.integrations.config_entry.restart_confirm"
-          )
-        );
-      }
-      navigate(this, "/config/integrations/dashboard", true);
+    showConfirmationDialog(this, {
+      text: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.delete_confirm"
+      ),
+      confirm: () =>
+        deleteConfigEntry(this.hass, this.configEntryId).then((result) => {
+          fireEvent(this, "hass-reload-entries");
+          if (result.require_restart) {
+            alert(
+              this.hass.localize(
+                "ui.panel.config.integrations.config_entry.restart_confirm"
+              )
+            );
+          }
+          navigate(this, "/config/integrations/dashboard", true);
+        }),
     });
   }
 
