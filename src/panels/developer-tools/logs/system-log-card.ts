@@ -32,7 +32,7 @@ const formatLogTime = (date, language: string) => {
 
 @customElement("system-log-card")
 export class SystemLogCard extends LitElement {
-  public hass?: HomeAssistant;
+  public hass!: HomeAssistant;
   public loaded = false;
   private _items?: LoggedError[];
 
@@ -61,7 +61,11 @@ export class SystemLogCard extends LitElement {
             : html`
                 ${this._items.length === 0
                   ? html`
-                      <div class="card-content">There are no new issues!</div>
+                      <div class="card-content">
+                        ${this.hass.localize(
+                          "ui.panel.developer-tools.tabs.logs.no_issues"
+                        )}
+                      </div>
                     `
                   : this._items.map(
                       (item) => html`
@@ -78,12 +82,17 @@ export class SystemLogCard extends LitElement {
                               ${item.source} (${item.level})
                               ${item.count > 1
                                 ? html`
-                                    - message first occured at
-                                    ${formatLogTime(
-                                      item.first_occured,
-                                      this.hass!.language
+                                    -
+                                    ${this.hass.localize(
+                                      "ui.panel.developer-tools.tabs.logs.multiple_messages",
+                                      "time",
+                                      formatLogTime(
+                                        item.first_occured,
+                                        this.hass!.language
+                                      ),
+                                      "counter",
+                                      item.count
                                     )}
-                                    and shows up ${item.count} times
                                   `
                                 : html``}
                             </div>
@@ -97,10 +106,14 @@ export class SystemLogCard extends LitElement {
                     .hass=${this.hass}
                     domain="system_log"
                     service="clear"
-                    >Clear</ha-call-service-button
+                    >${this.hass.localize(
+                      "ui.panel.developer-tools.tabs.logs.clear"
+                    )}</ha-call-service-button
                   >
                   <ha-progress-button @click=${this.fetchData}
-                    >Refresh</ha-progress-button
+                    >${this.hass.localize(
+                      "ui.panel.developer-tools.tabs.logs.refresh"
+                    )}</ha-progress-button
                   >
                 </div>
               `}

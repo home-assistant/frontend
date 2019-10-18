@@ -13,8 +13,10 @@ import "../../../components/dialog/ha-paper-dialog";
 import { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
 
 class DialogSystemLogDetail extends LitElement {
+  public hass!: HomeAssistant;
   private _params?: SystemLogDetailDialogParams;
 
   static get properties(): PropertyDeclarations {
@@ -40,7 +42,13 @@ class DialogSystemLogDetail extends LitElement {
         opened
         @opened-changed="${this._openedChanged}"
       >
-        <h2>Log Details (${item.level})</h2>
+        <h2>
+          ${this.hass.localize(
+            "ui.panel.developer-tools.tabs.logs.details",
+            "level",
+            item.level
+          )}
+        </h2>
         <paper-dialog-scrollable>
           <p>${new Date(item.timestamp * 1000)}</p>
           ${item.message
