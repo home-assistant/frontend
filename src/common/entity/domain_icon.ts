@@ -14,6 +14,7 @@ const fixedIcons = {
   climate: "hass:thermostat",
   configurator: "hass:settings",
   conversation: "hass:text-to-speech",
+  counter: "hass:counter",
   device_tracker: "hass:account",
   fan: "hass:fan",
   google_assistant: "hass:google-assistant",
