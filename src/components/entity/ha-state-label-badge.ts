@@ -11,7 +11,6 @@ import {
 
 import { HassEntity } from "home-assistant-js-websocket";
 import { classMap } from "lit-html/directives/class-map";
-import { fireEvent } from "../../common/dom/fire_event";
 import { HomeAssistant } from "../../types";
 
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
@@ -34,8 +33,6 @@ export class HaStateLabelBadge extends LitElement {
   @property() public icon?: string;
 
   @property() public image?: string;
-
-  @property() public handleClick?: boolean;
 
   @property() private _timerTimeRemaining?: number;
 
@@ -90,19 +87,6 @@ export class HaStateLabelBadge extends LitElement {
         .description="${this.name ? this.name : computeStateName(state)}"
       ></ha-label-badge>
     `;
-  }
-
-  protected firstUpdated(changedProperties: PropertyValues): void {
-    super.firstUpdated(changedProperties);
-
-    if (this.handleClick !== false) {
-      this.addEventListener("click", (ev) => {
-        ev.stopPropagation();
-        if (this.state) {
-          fireEvent(this, "hass-more-info", { entityId: this.state.entity_id });
-        }
-      });
-    }
   }
 
   protected updated(changedProperties: PropertyValues): void {

@@ -70,7 +70,6 @@ export class HuiStateBadgeElement extends LitElement
         .longPress=${longPress({
           hasDoubleClick: hasDoubleClick(this._config!.double_tap_action),
         })}
-        .handleClick=${false}
       ></ha-state-label-badge>
     `;
   }
