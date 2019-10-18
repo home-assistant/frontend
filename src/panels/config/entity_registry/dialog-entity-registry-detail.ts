@@ -197,7 +197,7 @@ class DialogEntityRegistryDetail extends LitElement {
     }
   }
 
-  private async _confirmDeleteEntry(): Promise<void> {
+  private _confirmDeleteEntry(): void {
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.entity_registry.editor.confirm_delete"
