@@ -17,7 +17,7 @@ import { subscribeMQTTTopic, MQTTMessage } from "../../../data/mqtt";
 
 @customElement("mqtt-subscribe-card")
 class MqttSubscribeCard extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property() public hass!: HomeAssistant;
 
   @property() private _topic = "";
 
@@ -42,12 +42,20 @@ class MqttSubscribeCard extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-card header="Listen to a topic">
+      <ha-card
+        header="${this.hass.localize(
+          "ui.panel.developer-tools.tabs.mqtt.description_listen"
+        )}"
+      >
         <form>
           <paper-input
             .label=${this._subscribed
-              ? "Listening to"
-              : "Topic to subscribe to"}
+              ? this.hass.localize(
+                  "ui.panel.developer-tools.tabs.mqtt.listening_to"
+                )
+              : this.hass.localize(
+                  "ui.panel.developer-tools.tabs.mqtt.subscribe_to"
+                )}
             .disabled=${this._subscribed !== undefined}
             .value=${this._topic}
             @value-changed=${this._valueChanged}
@@ -57,15 +65,28 @@ class MqttSubscribeCard extends LitElement {
             @click=${this._handleSubmit}
             type="submit"
           >
-            ${this._subscribed ? "Stop listening" : "Start listening"}
+            ${this._subscribed
+              ? this.hass.localize(
+                  "ui.panel.developer-tools.tabs.mqtt.stop_listening"
+                )
+              : this.hass.localize(
+                  "ui.panel.developer-tools.tabs.mqtt.start_listening"
+                )}
           </mwc-button>
         </form>
         <div class="events">
           ${this._messages.map(
             (msg) => html`
               <div class="event">
-                Message ${msg.id} received on <b>${msg.message.topic}</b> at
-                ${format_time(msg.time, this.hass!.language)}:
+                ${this.hass.localize(
+                  "ui.panel.developer-tools.tabs.mqtt.message_received",
+                  "id",
+                  msg.id,
+                  "topic",
+                  msg.message.topic,
+                  "time",
+                  format_time(msg.time, this.hass!.language)
+                )}
                 <pre>${msg.payload}</pre>
                 <div class="bottom">
                   QoS: ${msg.message.qos} - Retain:
