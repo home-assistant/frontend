@@ -186,8 +186,8 @@ class HassioSnapshotDialog extends PolymerElement {
           </template>
           <li>
             <mwc-button on-click="_deleteClicked">
-              <iron-icon icon="hassio:delete" class="warning icon"> </iron-icon>
-              Delete Snapshot
+              <iron-icon icon="hassio:delete" class="icon warning"> </iron-icon>
+              <span class="warning">Delete Snapshot</span>
             </mwc-button>
           </li>
         </ul>
