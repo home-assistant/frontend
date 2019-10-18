@@ -49,11 +49,7 @@ class HaMenuButton extends LitElement {
         Object.keys(this.hass.states).some(
           (entityId) => computeDomain(entityId) === "configurator"
         ));
-    if (
-      this.narrow ||
-      this.hass.dockedSidebar === "always_hidden" ||
-      !this._alwaysVisible
-    ) {
+    if (this.narrow || this.hass.dockedSidebar !== "always_hidden") {
       return;
     }
     return html`
