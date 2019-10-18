@@ -1532,6 +1532,12 @@
             "weather-forecast": {
               "name": "Weather Forecast"
             }
+          },
+          "view": {
+            "panel_mode": {
+              "title": "Panel Mode?",
+              "description": "This renders the first card at full width; other cards in this view will not be rendered."
+            }
           }
         },
         "warning": {
