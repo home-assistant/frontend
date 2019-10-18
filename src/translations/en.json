@@ -1816,7 +1816,21 @@
             "title": "Services"
           },
           "states": {
-            "title": "States"
+            "title": "States",
+            "description1": "Set the representation of a device within Home Assistant.",
+            "description2": "This will not communicate with the actual device.",
+            "entity": "Entity",
+            "state": "State",
+            "attributes": "Attributes",
+            "state_attributes": "State attributes (YAML, optional)",
+            "set_state": "Set State",
+            "current_entities": "Current entities",
+            "filter_entities": "Filter entities",
+            "filter_states": "Filter states",
+            "filter_attributes": "Filter attributes",
+            "no_entities": "No entities",
+            "more_info": "More Info",
+            "alert_entity_field": "Entity is a mandatory field"
           },
           "templates": {
             "title": "Template"
