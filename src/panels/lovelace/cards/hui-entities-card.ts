@@ -153,7 +153,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       }
 
       .icon {
-        padding: 0px 16px 0px 8px;
+        padding: 0px 18px 0px 8px;
       }
     `;
   }
