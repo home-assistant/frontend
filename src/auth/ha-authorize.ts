@@ -2,7 +2,6 @@ import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import {
   LitElement,
   html,
-  PropertyDeclarations,
   PropertyValues,
   CSSResult,
   css,

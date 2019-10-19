@@ -13,7 +13,6 @@ import {
   CSSResult,
   html,
   LitElement,
-  PropertyDeclarations,
   PropertyValues,
   TemplateResult,
   property,
