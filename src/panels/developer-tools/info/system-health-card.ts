@@ -32,7 +32,7 @@ const sortKeys = (a: string, b: string) => {
 };
 
 class SystemHealthCard extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property() public hass!: HomeAssistant;
   @property() private _info?: SystemHealthInfo;
 
   protected render(): TemplateResult | void {
@@ -78,7 +78,7 @@ class SystemHealthCard extends LitElement {
     }
 
     return html`
-      <ha-card header="System Health">
+      <ha-card header="${this.hass.localize("domain.system_health")}">
         <div class="card-content">${sections}</div>
       </ha-card>
     `;
@@ -98,8 +98,9 @@ class SystemHealthCard extends LitElement {
     } catch (err) {
       this._info = {
         system_health: {
-          error:
-            "System Health component is not loaded. Add 'system_health:' to configuration.yaml",
+          error: this.hass.localize(
+            "ui.panel.developer-tools.tabs.info.system_health_error"
+          ),
         },
       };
     }
