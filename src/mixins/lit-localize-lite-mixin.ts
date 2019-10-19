@@ -22,8 +22,8 @@ export const litLocalizeLiteMixin = <T extends LitElement>(
 ): Constructor<T & LitLocalizeLiteMixin> =>
   // @ts-ignore
   class extends localizeLiteBaseMixin(superClass) {
-    public localize: LocalizeFunc;
-
+    // Decorators not possible in anonymous classes
+    // And also, we cannot declare the variable without overriding the Lit setter.
     static get properties(): PropertyDeclarations {
       return {
         localize: {},

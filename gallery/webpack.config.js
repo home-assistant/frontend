@@ -9,43 +9,6 @@ const buildPath = path.resolve(__dirname, "dist");
 const publicPath = isProd ? "./" : "http://localhost:8080/";
 const latestBuild = true;
 
-const rules = [
-  {
-    exclude: [path.resolve(__dirname, "../node_modules")],
-    test: /\.ts$/,
-    use: [
-      {
-        loader: "ts-loader",
-        options: {
-          compilerOptions: latestBuild
-            ? { noEmit: false }
-            : {
-                target: "es5",
-                noEmit: false,
-              },
-        },
-      },
-    ],
-  },
-  {
-    test: /\.css$/,
-    use: "raw-loader",
-  },
-  {
-    test: /\.(html)$/,
-    use: {
-      loader: "html-loader",
-      options: {
-        exportAsEs6Default: true,
-      },
-    },
-  },
-];
-
-if (!latestBuild) {
-  rules.push(babelLoaderConfig({ latestBuild }));
-}
-
 module.exports = {
   mode: isProd ? "production" : "development",
   // Disabled in prod while we make Home Assistant able to serve the right files.
@@ -53,7 +16,22 @@ module.exports = {
   devtool: isProd ? "none" : "inline-source-map",
   entry: "./src/entrypoint.js",
   module: {
-    rules,
+    rules: [
+      babelLoaderConfig({ latestBuild }),
+      {
+        test: /\.css$/,
+        use: "raw-loader",
+      },
+      {
+        test: /\.(html)$/,
+        use: {
+          loader: "html-loader",
+          options: {
+            exportAsEs6Default: true,
+          },
+        },
+      },
+    ],
   },
   optimization: webpackBase.optimization(latestBuild),
   plugins: [
