@@ -6,6 +6,7 @@ import {
   customElement,
   css,
   CSSResult,
+  PropertyValues,
 } from "lit-element";
 
 import { createStyledHuiElement } from "./picture-elements/create-styled-hui-element";
@@ -13,6 +14,7 @@ import { LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
 import { LovelaceElementConfig, LovelaceElement } from "../elements/types";
 import { PictureElementsCardConfig } from "./types";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 @customElement("hui-picture-elements-card")
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
@@ -47,6 +49,17 @@ class HuiPictureElementsCard extends LitElement implements LovelaceCard {
     }
 
     this._config = config;
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (!this._config || !this._hass) {
+      return;
+    }
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass || oldHass.themes !== this._hass.themes) {
+      applyThemesOnElement(this, this._hass.themes, this._config.theme);
+    }
   }
 
   protected render(): TemplateResult | void {

@@ -147,6 +147,7 @@ export interface PictureCardConfig extends LovelaceCardConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+  theme?: string;
 }
 
 export interface PictureElementsCardConfig extends LovelaceCardConfig {
@@ -159,6 +160,7 @@ export interface PictureElementsCardConfig extends LovelaceCardConfig {
   aspect_ratio?: string;
   entity?: string;
   elements: LovelaceElementConfig[];
+  theme?: string;
 }
 
 export interface PictureEntityCardConfig extends LovelaceCardConfig {
@@ -175,6 +177,7 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
   double_tap_action?: ActionConfig;
   show_name?: boolean;
   show_state?: boolean;
+  theme?: string;
 }
 
 export interface PictureGlanceCardConfig extends LovelaceCardConfig {
@@ -191,6 +194,7 @@ export interface PictureGlanceCardConfig extends LovelaceCardConfig {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
   show_state?: boolean;
+  theme?: string;
 }
 
 export interface PlantAttributeTarget extends EventTarget {

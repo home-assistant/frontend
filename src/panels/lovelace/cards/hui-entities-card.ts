@@ -71,9 +71,13 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     this._configEntities = entities;
   }
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
-    if (this._hass && this._config) {
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (!this._config || !this._hass) {
+      return;
+    }
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass || oldHass.themes !== this._hass.themes) {
       applyThemesOnElement(this, this._hass.themes, this._config.theme);
     }
   }
