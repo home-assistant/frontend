@@ -66,6 +66,22 @@ class HaConfigEntryPage extends LitElement {
       `;
     }
 
+    const settingsButtonLabel = this.hass.localize(
+      "ui.panel.config.integrations.config_entry.settings_button",
+      "integrationTitle",
+      configEntry.title
+    );
+    const systemOptionsButtonLabel = this.hass.localize(
+      "ui.panel.config.integrations.config_entry.system_options_button",
+      "integrationTitle",
+      configEntry.title
+    );
+    const deleteButtonLabel = this.hass.localize(
+      "ui.panel.config.integrations.config_entry.delete_button",
+      "integrationTitle",
+      configEntry.title
+    );
+
     const configEntryDevices = this._computeConfigEntryDevices(
       configEntry,
       this.deviceRegistryEntries
@@ -84,17 +100,20 @@ class HaConfigEntryPage extends LitElement {
                 slot="toolbar-icon"
                 icon="hass:settings"
                 @click=${this._showSettings}
+                title=${settingsButtonLabel}
               ></paper-icon-button>
             `
           : ""}
         <paper-icon-button
           slot="toolbar-icon"
           icon="hass:message-settings-variant"
+          title=${systemOptionsButtonLabel}
           @click=${this._showSystemOptions}
         ></paper-icon-button>
         <paper-icon-button
           slot="toolbar-icon"
           icon="hass:delete"
+          title=${deleteButtonLabel}
           @click=${this._removeEntry}
         ></paper-icon-button>
 
