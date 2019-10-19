@@ -48,8 +48,7 @@ class HaPanelDevInfo extends LitElement {
               alt="Home Assistant logo"
           /></a>
           <br />
-          Home Assistant<br />
-          ${hass.config.version}
+          <h2>Home Assistant ${hass.config.version}</h2>
         </p>
         <p>
           Path to configuration.yaml: ${hass.config.config_dir}
@@ -92,21 +91,23 @@ class HaPanelDevInfo extends LitElement {
         </p>
         <p>
           Frontend version: ${JS_VERSION} - ${JS_TYPE}
-          ${customUiList.length > 0
-            ? html`
-                <div>
-                  Custom UIs:
-                  ${customUiList.map(
-                    (item) => html`
-                      <div>
-                        <a href="${item.url}" target="_blank"> ${item.name}</a>:
-                        ${item.version}
-                      </div>
-                    `
-                  )}
-                </div>
-              `
-            : ""}
+          ${
+            customUiList.length > 0
+              ? html`
+                  <div>
+                    Custom UIs:
+                    ${customUiList.map(
+                      (item) => html`
+                        <div>
+                          <a href="${item.url}" target="_blank"> ${item.name}</a
+                          >: ${item.version}
+                        </div>
+                      `
+                    )}
+                  </div>
+                `
+              : ""
+          }
         </p>
         <p>
           <a href="${nonDefaultLink}">${nonDefaultLinkText}</a><br />
