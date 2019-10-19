@@ -65,7 +65,7 @@ export default <T>(superClass: Constructor<T>): Constructor<T & HassBaseEl> =>
       el.hass = this.hass;
     }
 
-    protected async _updateHass(obj: Partial<HomeAssistant>) {
+    protected _updateHass(obj: Partial<HomeAssistant>) {
       // @ts-ignore
       if (!this.hass) {
         this._pendingHass = { ...this._pendingHass, ...obj };
