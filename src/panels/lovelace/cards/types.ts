@@ -35,6 +35,7 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   title?: string;
   entities: EntitiesCardEntityConfig[];
   theme?: string;
+  icon?: string;
 }
 
 export interface EntityButtonCardConfig extends LovelaceCardConfig {

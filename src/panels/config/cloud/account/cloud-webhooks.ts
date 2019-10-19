@@ -1,9 +1,4 @@
-import {
-  html,
-  LitElement,
-  PropertyDeclarations,
-  PropertyValues,
-} from "lit-element";
+import { html, LitElement, PropertyValues, property } from "lit-element";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-spinner/paper-spinner";
@@ -22,21 +17,11 @@ import {
 import { showManageCloudhookDialog } from "../dialog-manage-cloudhook/show-dialog-manage-cloudhook";
 
 export class CloudWebhooks extends LitElement {
-  public hass?: HomeAssistant;
-  public cloudStatus?: CloudStatusLoggedIn;
-  private _cloudHooks?: { [webhookId: string]: CloudWebhook };
-  private _localHooks?: Webhook[];
-  private _progress: string[];
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      cloudStatus: {},
-      _cloudHooks: {},
-      _localHooks: {},
-      _progress: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
+  @property() public cloudStatus?: CloudStatusLoggedIn;
+  @property() private _cloudHooks?: { [webhookId: string]: CloudWebhook };
+  @property() private _localHooks?: Webhook[];
+  @property() private _progress: string[];
 
   constructor() {
     super();

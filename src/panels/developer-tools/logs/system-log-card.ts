@@ -3,9 +3,9 @@ import {
   html,
   CSSResult,
   css,
-  PropertyDeclarations,
   TemplateResult,
   customElement,
+  property,
 } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item-body";
@@ -32,16 +32,9 @@ const formatLogTime = (date, language: string) => {
 
 @customElement("system-log-card")
 export class SystemLogCard extends LitElement {
-  public hass!: HomeAssistant;
+  @property() public hass!: HomeAssistant;
   public loaded = false;
-  private _items?: LoggedError[];
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _items: {},
-    };
-  }
+  @property() private _items?: LoggedError[];
 
   public async fetchData(): Promise<void> {
     this._items = undefined;

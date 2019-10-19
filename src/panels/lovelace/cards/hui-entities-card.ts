@@ -82,16 +82,27 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     if (!this._config || !this._hass) {
       return html``;
     }
-    const { show_header_toggle, title } = this._config;
 
     return html`
       <ha-card>
-        ${!title && !show_header_toggle
+        ${!this._config.title &&
+        !this._config.show_header_toggle &&
+        !this._config.icon
           ? html``
           : html`
               <div class="card-header">
-                <div class="name">${title}</div>
-                ${show_header_toggle === false
+                <div class="name">
+                  ${this._config.icon
+                    ? html`
+                        <ha-icon
+                          class="icon"
+                          .icon="${this._config.icon}"
+                        ></ha-icon>
+                      `
+                    : ""}
+                  ${this._config.title}
+                </div>
+                ${this._config.show_header_toggle === false
                   ? html``
                   : html`
                       <hui-entities-toggle
@@ -139,6 +150,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
       .state-card-dialog {
         cursor: pointer;
+      }
+
+      .icon {
+        padding: 0px 18px 0px 8px;
       }
     `;
   }
