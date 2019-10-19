@@ -14,9 +14,9 @@ import {
   CSSResult,
   html,
   LitElement,
-  PropertyDeclarations,
   PropertyValues,
   TemplateResult,
+  property,
 } from "lit-element";
 
 import {
@@ -37,39 +37,16 @@ import {
 } from "./types";
 
 export class ZHAClusterAttributes extends LitElement {
-  public hass?: HomeAssistant;
-  public isWide?: boolean;
-  public showHelp: boolean;
-  public selectedNode?: ZHADevice;
-  public selectedCluster?: Cluster;
-  private _attributes: Attribute[];
-  private _selectedAttributeIndex: number;
-  private _attributeValue?: any;
-  private _manufacturerCodeOverride?: string | number;
-  private _setAttributeServiceData?: SetAttributeServiceData;
-
-  constructor() {
-    super();
-    this.showHelp = false;
-    this._selectedAttributeIndex = -1;
-    this._attributes = [];
-    this._attributeValue = "";
-  }
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      isWide: {},
-      showHelp: {},
-      selectedNode: {},
-      selectedCluster: {},
-      _attributes: {},
-      _selectedAttributeIndex: {},
-      _attributeValue: {},
-      _manufacturerCodeOverride: {},
-      _setAttributeServiceData: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
+  @property() public isWide?: boolean;
+  @property() public showHelp = false;
+  @property() public selectedNode?: ZHADevice;
+  @property() public selectedCluster?: Cluster;
+  @property() private _attributes: Attribute[] = [];
+  @property() private _selectedAttributeIndex = -1;
+  @property() private _attributeValue?: any = "";
+  @property() private _manufacturerCodeOverride?: string | number;
+  @property() private _setAttributeServiceData?: SetAttributeServiceData;
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedCluster")) {

@@ -2,9 +2,9 @@ import {
   LitElement,
   html,
   css,
-  PropertyDeclarations,
   CSSResult,
   TemplateResult,
+  property,
 } from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
@@ -16,14 +16,8 @@ import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 
 class DialogSystemLogDetail extends LitElement {
-  public hass!: HomeAssistant;
-  private _params?: SystemLogDetailDialogParams;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      _params: {},
-    };
-  }
+  @property() public hass!: HomeAssistant;
+  @property() private _params?: SystemLogDetailDialogParams;
 
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;

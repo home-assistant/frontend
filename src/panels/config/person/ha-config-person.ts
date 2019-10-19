@@ -4,7 +4,7 @@ import {
   html,
   css,
   CSSResult,
-  PropertyDeclarations,
+  property,
 } from "lit-element";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -30,20 +30,11 @@ import {
 import { User, fetchUsers } from "../../../data/user";
 
 class HaConfigPerson extends LitElement {
-  public hass?: HomeAssistant;
-  public isWide?: boolean;
-  private _storageItems?: Person[];
-  private _configItems?: Person[];
+  @property() public hass?: HomeAssistant;
+  @property() public isWide?: boolean;
+  @property() private _storageItems?: Person[];
+  @property() private _configItems?: Person[];
   private _usersLoad?: Promise<User[]>;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      isWide: {},
-      _storageItems: {},
-      _configItems: {},
-    };
-  }
 
   protected render(): TemplateResult | void {
     if (

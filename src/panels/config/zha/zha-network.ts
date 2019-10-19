@@ -10,8 +10,8 @@ import {
   CSSResult,
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
+  property,
 } from "lit-element";
 
 import { navigate } from "../../../common/navigate";
@@ -19,23 +19,9 @@ import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 
 export class ZHANetwork extends LitElement {
-  public hass?: HomeAssistant;
-  public isWide?: boolean;
-  private _showHelp: boolean;
-
-  constructor() {
-    super();
-    this._showHelp = false;
-  }
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      isWide: {},
-      _showHelp: {},
-      _joinParams: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
+  @property() public isWide?: boolean;
+  @property() private _showHelp = false;
 
   protected render(): TemplateResult | void {
     return html`
