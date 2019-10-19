@@ -1789,7 +1789,7 @@
             "title": "Info",
             "remove": "Remove",
             "set": "Set",
-            "default_ui": "{name} as default page on this device",
+            "default_ui": "{action} {name} as default page on this device",
             "lovelace_ui": "Go to the Lovelace UI",
             "states_ui": "Go to the states UI",
             "home_assistant_logo": "Home Assistant logo",

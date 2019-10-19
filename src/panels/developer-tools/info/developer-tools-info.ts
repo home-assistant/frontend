@@ -34,12 +34,12 @@ class HaPanelDevInfo extends LitElement {
         ? this.hass.localize("ui.panel.developer-tools.tabs.info.lovelace_ui")
         : this.hass.localize("ui.panel.developer-tools.tabs.info.states_ui");
 
-    const defaultPageText = `${
+    const defaultPageText = `${this.hass.localize(
+      "ui.panel.developer-tools.tabs.info.default_ui",
+      "action",
       localStorage.defaultPage === OPT_IN_PANEL
         ? this.hass.localize("ui.panel.developer-tools.tabs.info.remove")
-        : this.hass.localize("ui.panel.developer-tools.tabs.info.set")
-    } ${this.hass.localize(
-      "ui.panel.developer-tools.tabs.info.default_ui",
+        : this.hass.localize("ui.panel.developer-tools.tabs.info.set"),
       "name",
       OPT_IN_PANEL
     )}`;
