@@ -502,6 +502,7 @@
     "common": {
       "loading": "Loading",
       "cancel": "Cancel",
+      "delete_view": "Delete View",
       "save": "Save",
       "successfully_saved": "Successfully saved"
     },
