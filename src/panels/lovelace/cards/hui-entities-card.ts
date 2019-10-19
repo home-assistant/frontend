@@ -22,7 +22,7 @@ import { createRowElement } from "../common/create-row-element";
 import { EntitiesCardConfig, EntitiesCardEntityConfig } from "./types";
 
 import { computeDomain } from "../../../common/entity/compute_domain";
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {

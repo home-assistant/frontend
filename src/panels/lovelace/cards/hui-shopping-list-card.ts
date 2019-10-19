@@ -6,6 +6,7 @@ import {
   CSSResult,
   property,
   customElement,
+  PropertyValues,
 } from "lit-element";
 import { repeat } from "lit-html/directives/repeat";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
@@ -24,6 +25,7 @@ import {
   addItem,
 } from "../../../data/shopping-list";
 import { ShoppingListCardConfig } from "./types";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 @customElement("hui-shopping-list-card")
 class HuiShoppingListCard extends LitElement implements LovelaceCard {
@@ -74,6 +76,13 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
 
     if (this._unsubEvents) {
       this._unsubEvents.then((unsub) => unsub());
+    }
+  }
+
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    if (this.hass && this._config) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
   }
 

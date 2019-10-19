@@ -11,7 +11,7 @@ import {
 } from "lit-element";
 import "@polymer/paper-spinner/paper-spinner";
 
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { stateIcon } from "../../../common/entity/state_icon";
 

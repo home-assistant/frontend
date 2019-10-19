@@ -8,6 +8,7 @@ export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;
   name?: string;
   states?: string[];
+  theme?: string;
 }
 
 export interface ConditionalCardConfig extends LovelaceCardConfig {
@@ -134,6 +135,7 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
   title?: string;
   card_size?: number;
   entity_ids?: string | string[];
+  theme?: string;
 }
 
 export interface MediaControlCardConfig extends LovelaceCardConfig {
@@ -198,6 +200,7 @@ export interface PlantAttributeTarget extends EventTarget {
 export interface PlantStatusCardConfig extends LovelaceCardConfig {
   name?: string;
   entity: string;
+  theme?: string;
 }
 
 export interface SensorCardConfig extends LovelaceCardConfig {
@@ -213,6 +216,7 @@ export interface SensorCardConfig extends LovelaceCardConfig {
 
 export interface ShoppingListCardConfig extends LovelaceCardConfig {
   title?: string;
+  theme?: string;
 }
 
 export interface StackCardConfig extends LovelaceCardConfig {

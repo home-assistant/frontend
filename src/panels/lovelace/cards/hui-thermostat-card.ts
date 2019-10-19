@@ -16,7 +16,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../components/hui-warning";
 
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import { hasConfigOrEntityChanged } from "../common/has-changed";

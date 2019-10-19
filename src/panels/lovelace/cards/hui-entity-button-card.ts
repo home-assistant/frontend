@@ -19,7 +19,7 @@ import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 
 import { HomeAssistant, LightEntity } from "../../../types";

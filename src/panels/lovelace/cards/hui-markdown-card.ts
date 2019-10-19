@@ -6,6 +6,7 @@ import {
   property,
   css,
   CSSResult,
+  PropertyValues,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
@@ -17,6 +18,7 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { MarkdownCardConfig } from "./types";
 import { subscribeRenderTemplate } from "../../../data/ws-templates";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 @customElement("hui-markdown-card")
 export class HuiMarkdownCard extends LitElement implements LovelaceCard {
@@ -82,6 +84,13 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
         ></ha-markdown>
       </ha-card>
     `;
+  }
+
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    if (this.hass && this._config) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
   }
 
   private async _connect() {

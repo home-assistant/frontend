@@ -11,7 +11,7 @@ import "@thomasloven/round-slider";
 
 import { stateIcon } from "../../../common/entity/state_icon";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";

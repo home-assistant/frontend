@@ -22,6 +22,7 @@ import {
 } from "../../../data/alarm_control_panel";
 import { AlarmPanelCardConfig } from "./types";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 const ICONS = {
   armed_away: "hass:shield-lock",
@@ -79,6 +80,13 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
     this._config = { ...defaults, ...config };
     this._code = "";
+  }
+
+  protected updated(changedProperties: PropertyValues): void {
+    super.updated(changedProperties);
+    if (this.hass && this._config) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
