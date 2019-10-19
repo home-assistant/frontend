@@ -2,10 +2,10 @@ import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import {
   LitElement,
   html,
-  PropertyDeclarations,
   PropertyValues,
   CSSResult,
   css,
+  property,
 } from "lit-element";
 import "./ha-auth-flow";
 import { AuthProvider, fetchAuthProviders } from "../data/auth";
@@ -20,11 +20,11 @@ interface QueryParams {
 }
 
 class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
-  public clientId?: string;
-  public redirectUri?: string;
-  public oauth2State?: string;
-  private _authProvider?: AuthProvider;
-  private _authProviders?: AuthProvider[];
+  @property() public clientId?: string;
+  @property() public redirectUri?: string;
+  @property() public oauth2State?: string;
+  @property() private _authProvider?: AuthProvider;
+  @property() private _authProviders?: AuthProvider[];
 
   constructor() {
     super();
@@ -46,16 +46,6 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
     if (query.state) {
       this.oauth2State = query.state;
     }
-  }
-
-  static get properties(): PropertyDeclarations {
-    return {
-      _authProvider: {},
-      _authProviders: {},
-      clientId: {},
-      redirectUri: {},
-      oauth2State: {},
-    };
   }
 
   protected render() {

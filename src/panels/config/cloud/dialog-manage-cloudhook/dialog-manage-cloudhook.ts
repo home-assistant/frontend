@@ -1,10 +1,4 @@
-import {
-  html,
-  LitElement,
-  PropertyDeclarations,
-  css,
-  CSSResult,
-} from "lit-element";
+import { html, LitElement, css, CSSResult, property } from "lit-element";
 
 import "@material/mwc-button";
 import "@polymer/paper-input/paper-input";
@@ -24,13 +18,7 @@ const inputLabel = "Public URL – Click to copy to clipboard";
 
 export class DialogManageCloudhook extends LitElement {
   protected hass?: HomeAssistant;
-  private _params?: WebhookDialogParams;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      _params: {},
-    };
-  }
+  @property() private _params?: WebhookDialogParams;
 
   public async showDialog(params: WebhookDialogParams) {
     this._params = params;

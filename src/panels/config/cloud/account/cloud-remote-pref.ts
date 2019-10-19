@@ -1,11 +1,11 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
   customElement,
   CSSResult,
   css,
+  property,
 } from "lit-element";
 import "@material/mwc-button";
 import "@polymer/paper-item/paper-item-body";
@@ -26,15 +26,8 @@ import { showCloudCertificateDialog } from "../dialog-cloud-certificate/show-dia
 
 @customElement("cloud-remote-pref")
 export class CloudRemotePref extends LitElement {
-  public hass?: HomeAssistant;
-  public cloudStatus?: CloudStatusLoggedIn;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      cloudStatus: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
+  @property() public cloudStatus?: CloudStatusLoggedIn;
 
   protected render(): TemplateResult | void {
     if (!this.cloudStatus) {

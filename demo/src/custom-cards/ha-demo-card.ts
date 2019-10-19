@@ -1,10 +1,4 @@
-import {
-  LitElement,
-  html,
-  CSSResult,
-  css,
-  PropertyDeclarations,
-} from "lit-element";
+import { LitElement, html, CSSResult, css, property } from "lit-element";
 import { until } from "lit-html/directives/until";
 import "@material/mwc-button";
 import "@polymer/paper-spinner/paper-spinner-lite";
@@ -20,18 +14,10 @@ import {
 } from "../configs/demo-configs";
 
 export class HADemoCard extends LitElement implements LovelaceCard {
-  public lovelace?: Lovelace;
-  public hass!: MockHomeAssistant;
-  private _switching?: boolean;
+  @property() public lovelace?: Lovelace;
+  @property() public hass!: MockHomeAssistant;
+  @property() private _switching?: boolean;
   private _hidden = localStorage.hide_demo_card;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      lovelace: {},
-      hass: {},
-      _switching: {},
-    };
-  }
 
   public getCardSize() {
     return this._hidden ? 0 : 2;
