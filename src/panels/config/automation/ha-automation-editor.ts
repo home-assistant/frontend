@@ -4,8 +4,8 @@ import {
   html,
   CSSResult,
   css,
-  PropertyDeclarations,
   PropertyValues,
+  property,
 } from "lit-element";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
@@ -38,26 +38,14 @@ function AutomationEditor(mountEl, props, mergeEl) {
 }
 
 export class HaAutomationEditor extends LitElement {
-  public hass!: HomeAssistant;
-  public automation!: AutomationEntity;
-  public isWide?: boolean;
-  public creatingNew?: boolean;
-  private _config?: AutomationConfig;
-  private _dirty?: boolean;
+  @property() public hass!: HomeAssistant;
+  @property() public automation!: AutomationEntity;
+  @property() public isWide?: boolean;
+  @property() public creatingNew?: boolean;
+  @property() private _config?: AutomationConfig;
+  @property() private _dirty?: boolean;
   private _rendered?: unknown;
-  private _errors?: string;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      automation: {},
-      creatingNew: {},
-      isWide: {},
-      _errors: {},
-      _dirty: {},
-      _config: {},
-    };
-  }
+  @property() private _errors?: string;
 
   constructor() {
     super();

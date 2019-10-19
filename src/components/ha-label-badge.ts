@@ -1,31 +1,21 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   PropertyValues,
   TemplateResult,
   CSSResult,
   css,
+  property,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import "./ha-icon";
 
 class HaLabelBadge extends LitElement {
-  public value?: string;
-  public icon?: string;
-  public label?: string;
-  public description?: string;
-  public image?: string;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      value: {},
-      icon: {},
-      label: {},
-      description: {},
-      image: {},
-    };
-  }
+  @property() public value?: string;
+  @property() public icon?: string;
+  @property() public label?: string;
+  @property() public description?: string;
+  @property() public image?: string;
 
   protected render(): TemplateResult | void {
     return html`
