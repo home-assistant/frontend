@@ -29,13 +29,12 @@ export default <T>(superClass: Constructor<T>): Constructor<T & HassBaseEl> =>
     private __provideHass: HTMLElement[] = [];
 
     // Decorators not possible in anonymous classes
+    // And also, we cannot declare the variable without overriding the Lit setter.
     static get properties(): PropertyDeclarations {
       return {
         hass: {},
       };
     }
-
-    protected hass!: HomeAssistant;
 
     // Exists so all methods can safely call super method
     protected hassConnected() {
@@ -62,14 +61,17 @@ export default <T>(superClass: Constructor<T>): Constructor<T & HassBaseEl> =>
 
     public provideHass(el) {
       this.__provideHass.push(el);
+      // @ts-ignore
       el.hass = this.hass;
     }
 
     protected async _updateHass(obj: Partial<HomeAssistant>) {
+      // @ts-ignore
       if (!this.hass) {
         this._pendingHass = { ...this._pendingHass, ...obj };
         return;
       }
+      // @ts-ignore
       this.hass = { ...this.hass, ...obj };
     }
   };

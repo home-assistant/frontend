@@ -12,7 +12,6 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "strict": true,
-    "sourceMap": true,
     "noImplicitAny": false,
     "skipLibCheck": true,
     "resolveJsonModule": true,
