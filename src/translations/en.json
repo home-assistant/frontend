@@ -1187,9 +1187,9 @@
           "configure": "Configure",
           "none": "Nothing configured yet",
           "config_entry": {
-            "settings_button": "Edit settings for {integrationTitle}",
-            "system_options_button": "System options for {integrationTitle}",
-            "delete_button": "Delete {integrationTitle}",
+            "settings_button": "Edit settings for {integration}",
+            "system_options_button": "System options for {integration}",
+            "delete_button": "Delete {integration}",
             "no_devices": "This integration has no devices.",
             "no_device": "Entities without devices",
             "delete_confirm": "Are you sure you want to delete this integration?",
