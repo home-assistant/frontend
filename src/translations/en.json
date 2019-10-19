@@ -417,6 +417,13 @@
         "away_mode": "Away mode",
         "aux_heat": "Aux heat"
       },
+      "counter": {
+        "actions": {
+          "increment": "increment",
+          "decrement": "decrement",
+          "reset": "reset"
+        }
+      },
       "cover": {
         "position": "Position",
         "tilt_position": "Tilt position"
@@ -1835,10 +1842,31 @@
             "notification_event_fired": "Event {type} successful fired!"
           },
           "mqtt": {
-            "title": "MQTT"
+            "title": "MQTT",
+            "description_publish": "Publish a packet",
+            "topic": "topic",
+            "payload": "Payload (template allowed)",
+            "publish": "Publish",
+            "description_listen": "Listen to a topic",
+            "listening_to": "Listening to",
+            "subscribe_to": "Topic to subscribe to",
+            "start_listening": "Start listening",
+            "stop_listening": "Stop listening",
+            "message_received": "Message {id} received on {topic} at {time}:"
           },
           "services": {
-            "title": "Services"
+            "title": "Services",
+            "description": "The service dev tool allows you to call any available service in Home Assistant.",
+            "data": "Service Data (YAML, optional)",
+            "call_service": "Call Service",
+            "select_service": "Select a service to see the description",
+            "no_description": "No description is available",
+            "no_parameters": "This service takes no parameters.",
+            "column_parameter": "Parameter",
+            "column_description": "Description",
+            "column_example": "Example",
+            "fill_example_data": "Fill Example Data",
+            "alert_parsing_yaml": "Error parsing YAML: {data}"
           },
           "states": {
             "title": "States",
@@ -1858,7 +1886,12 @@
             "alert_entity_field": "Entity is a mandatory field"
           },
           "templates": {
-            "title": "Template"
+            "title": "Template",
+            "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
+            "editor": "Template editor",
+            "jinja_documentation": "Jinja2 template documentation",
+            "template_extensions": "Home Assistant template extensions",
+            "unknown_error_template": "Unknown error rendering template"
           }
         }
       },

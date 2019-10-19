@@ -1,10 +1,10 @@
 import {
   html,
   LitElement,
-  PropertyDeclarations,
   TemplateResult,
   CSSResult,
   css,
+  property,
 } from "lit-element";
 import "@material/mwc-button";
 import "../../../../components/buttons/ha-call-api-button";
@@ -21,15 +21,8 @@ import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 
 export class CloudGooglePref extends LitElement {
-  public hass?: HomeAssistant;
-  public cloudStatus?: CloudStatusLoggedIn;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      cloudStatus: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
+  @property() public cloudStatus?: CloudStatusLoggedIn;
 
   protected render(): TemplateResult | void {
     if (!this.cloudStatus) {

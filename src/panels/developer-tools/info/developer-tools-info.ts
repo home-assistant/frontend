@@ -56,8 +56,7 @@ class HaPanelDevInfo extends LitElement {
               )}"
           /></a>
           <br />
-          Home Assistant<br />
-          ${hass.config.version}
+          <h2>Home Assistant ${hass.config.version}</h2>
         </p>
         <p>
           ${this.hass.localize(
@@ -77,7 +76,9 @@ class HaPanelDevInfo extends LitElement {
           </a>
         </p>
         <p>
-          ${this.hass.localize("ui.panel.developer-tools.tabs.info.license")}<br />
+          ${this.hass.localize(
+            "ui.panel.developer-tools.tabs.info.license"
+          )}<br />
           ${this.hass.localize("ui.panel.developer-tools.tabs.info.source")}
           <a
             href="https://github.com/home-assistant/home-assistant"
@@ -118,23 +119,25 @@ class HaPanelDevInfo extends LitElement {
             "type",
             JS_TYPE
           )}
-          ${customUiList.length > 0
-            ? html`
-                <div>
-                  ${this.hass.localize(
-                    "ui.panel.developer-tools.tabs.info.custom_uis"
-                  )}
-                  ${customUiList.map(
-                    (item) => html`
-                      <div>
-                        <a href="${item.url}" target="_blank"> ${item.name}</a>:
-                        ${item.version}
-                      </div>
-                    `
-                  )}
-                </div>
-              `
-            : ""}
+          ${
+            customUiList.length > 0
+              ? html`
+                  <div>
+                    ${this.hass.localize(
+                      "ui.panel.developer-tools.tabs.info.custom_uis"
+                    )}
+                    ${customUiList.map(
+                      (item) => html`
+                        <div>
+                          <a href="${item.url}" target="_blank"> ${item.name}</a
+                          >: ${item.version}
+                        </div>
+                      `
+                    )}
+                  </div>
+                `
+              : ""
+          }
         </p>
         <p>
           <a href="${nonDefaultLink}">${nonDefaultLinkText}</a><br />

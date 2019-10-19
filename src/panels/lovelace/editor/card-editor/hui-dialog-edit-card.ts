@@ -117,16 +117,20 @@ export class HuiDialogEditCard extends LitElement {
           <mwc-button @click="${this._close}">
             ${this.hass!.localize("ui.common.cancel")}
           </mwc-button>
-          <mwc-button
-            ?disabled="${!this._canSave || this._saving}"
-            @click="${this._save}"
-          >
-            ${this._saving
-              ? html`
-                  <paper-spinner active alt="Saving"></paper-spinner>
-                `
-              : this.hass!.localize("ui.common.save")}
-          </mwc-button>
+          ${this._cardConfig !== undefined
+            ? html`
+                <mwc-button
+                  ?disabled="${!this._canSave || this._saving}"
+                  @click="${this._save}"
+                >
+                  ${this._saving
+                    ? html`
+                        <paper-spinner active alt="Saving"></paper-spinner>
+                      `
+                    : this.hass!.localize("ui.common.save")}
+                </mwc-button>
+              `
+            : ``}
         </div>
       </ha-paper-dialog>
     `;

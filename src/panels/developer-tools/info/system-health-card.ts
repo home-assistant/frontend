@@ -3,8 +3,8 @@ import {
   html,
   CSSResult,
   css,
-  PropertyDeclarations,
   TemplateResult,
+  property,
 } from "lit-element";
 import "@polymer/paper-spinner/paper-spinner";
 import "../../../components/ha-card";
@@ -32,15 +32,8 @@ const sortKeys = (a: string, b: string) => {
 };
 
 class SystemHealthCard extends LitElement {
-  public hass!: HomeAssistant;
-  private _info?: SystemHealthInfo;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _info: {},
-    };
-  }
+  @property() public hass!: HomeAssistant;
+  @property() private _info?: SystemHealthInfo;
 
   protected render(): TemplateResult | void {
     if (!this.hass) {
