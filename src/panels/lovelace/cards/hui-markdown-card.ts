@@ -88,8 +88,8 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
-    if (this.hass && this._config) {
-      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    if (this._hass && this._config) {
+      applyThemesOnElement(this, this._hass.themes, this._config.theme);
     }
   }
 
