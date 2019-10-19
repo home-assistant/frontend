@@ -3,8 +3,8 @@ import {
   html,
   CSSResult,
   css,
-  PropertyDeclarations,
   TemplateResult,
+  property,
 } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@material/mwc-button";
@@ -13,15 +13,8 @@ import { HomeAssistant } from "../../../types";
 import { fetchErrorLog } from "../../../data/error_log";
 
 class ErrorLogCard extends LitElement {
-  public hass!: HomeAssistant;
-  private _errorLog?: string;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      _errorLog: {},
-    };
-  }
+  @property() public hass!: HomeAssistant;
+  @property() private _errorLog?: string;
 
   protected render(): TemplateResult | void {
     return html`

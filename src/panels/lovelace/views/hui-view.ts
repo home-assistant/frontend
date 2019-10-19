@@ -4,6 +4,7 @@ import {
   PropertyValues,
   PropertyDeclarations,
   TemplateResult,
+  property,
 } from "lit-element";
 
 import "../../../components/entity/ha-state-label-badge";
@@ -48,29 +49,12 @@ const getColumnIndex = (columnEntityCount: number[], size: number) => {
 };
 
 export class HUIView extends LitElement {
-  public hass?: HomeAssistant;
-  public lovelace?: Lovelace;
-  public columns?: number;
-  public index?: number;
-  private _cards: Array<LovelaceCard | HuiErrorCard>;
-  private _badges: LovelaceBadge[];
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      lovelace: {},
-      columns: { type: Number },
-      index: { type: Number },
-      _cards: {},
-      _badges: {},
-    };
-  }
-
-  constructor() {
-    super();
-    this._cards = [];
-    this._badges = [];
-  }
+  @property() public hass?: HomeAssistant;
+  @property() public lovelace?: Lovelace;
+  @property({ type: Number }) public columns?: number;
+  @property({ type: Number }) public index?: number;
+  @property() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
+  @property() private _badges: LovelaceBadge[] = [];
 
   // Public to make demo happy
   public createCardElement(cardConfig: LovelaceCardConfig) {
