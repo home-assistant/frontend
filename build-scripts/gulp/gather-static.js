@@ -4,8 +4,6 @@ const gulp = require("gulp");
 const path = require("path");
 const cpx = require("cpx");
 const fs = require("fs-extra");
-const zopfli = require("gulp-zopfli-green");
-const merge = require("merge-stream");
 const paths = require("../paths");
 
 const npmPath = (...parts) =>
@@ -67,20 +65,6 @@ function copyMapPanel(staticDir) {
   );
 }
 
-function compressStatic(staticDir) {
-  const staticPath = genStaticPath(staticDir);
-  const polyfills = gulp
-    .src(staticPath("polyfills/*.js"))
-    .pipe(zopfli())
-    .pipe(gulp.dest(staticPath("polyfills")));
-  const translations = gulp
-    .src(staticPath("translations/*.json"))
-    .pipe(zopfli())
-    .pipe(gulp.dest(staticPath("translations")));
-
-  return merge(polyfills, translations);
-}
-
 gulp.task("copy-static", (done) => {
   const staticDir = paths.static;
   const staticPath = genStaticPath(paths.static);
@@ -99,8 +83,6 @@ gulp.task("copy-static", (done) => {
   copyMapPanel(staticDir);
   done();
 });
-
-gulp.task("compress-static", () => compressStatic(paths.static));
 
 gulp.task("copy-static-demo", (done) => {
   // Copy app static files
