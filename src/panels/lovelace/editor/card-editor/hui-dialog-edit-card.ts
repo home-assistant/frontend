@@ -10,7 +10,10 @@ import {
 
 import { HomeAssistant } from "../../../../types";
 import { HASSDomEvent } from "../../../../common/dom/fire_event";
-import { LovelaceCardConfig } from "../../../../data/lovelace";
+import {
+  LovelaceCardConfig,
+  LovelaceViewConfig,
+} from "../../../../data/lovelace";
 import "./hui-card-editor";
 // tslint:disable-next-line
 import { HuiCardEditor } from "./hui-card-editor";
@@ -40,6 +43,7 @@ export class HuiDialogEditCard extends LitElement {
   @property() private _params?: EditCardDialogParams;
 
   @property() private _cardConfig?: LovelaceCardConfig;
+  @property() private _view!: LovelaceViewConfig;
 
   @property() private _saving: boolean = false;
   @property() private _error?: string;
@@ -47,10 +51,8 @@ export class HuiDialogEditCard extends LitElement {
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
     const [view, card] = params.path;
-    this._cardConfig =
-      card !== undefined
-        ? params.lovelace.config.views[view].cards![card]
-        : undefined;
+    this._view = params.lovelace.config.views[view];
+    this._cardConfig = card !== undefined ? this._view.cards![card] : undefined;
   }
 
   private get _cardEditorEl(): HuiCardEditor | null {
@@ -68,14 +70,12 @@ export class HuiDialogEditCard extends LitElement {
         `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
       )} ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.header")}`;
     } else {
-      let viewTitle = this._params.lovelace.config.views[this._params.path[0]]
-        .title;
       heading =
-        viewTitle !== undefined && viewTitle !== ""
+        this._view.title !== undefined && this._view.title !== ""
           ? this.hass!.localize(
               "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
               "name",
-              '"' + viewTitle + '"'
+              '"' + this._view.title + '"'
             )
           : this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card");
     }
