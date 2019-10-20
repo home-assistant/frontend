@@ -15,6 +15,10 @@ export function hasConfigOrEntityChanged(
     return true;
   }
 
+  if (oldHass.themes !== element.hass!.themes) {
+    return true;
+  }
+
   return (
     oldHass.states[element._config!.entity] !==
       element.hass!.states[element._config!.entity] ||

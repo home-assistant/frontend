@@ -92,6 +92,9 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (oldHass) {
+      if (oldHass.themes !== this.hass!.themes) {
+        return true;
+      }
       return (
         oldHass.states[this._config!.entity] !==
         this.hass!.states[this._config!.entity]
