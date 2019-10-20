@@ -43,7 +43,7 @@ export class HuiDialogEditCard extends LitElement {
   @property() private _params?: EditCardDialogParams;
 
   @property() private _cardConfig?: LovelaceCardConfig;
-  @property() private _view!: LovelaceViewConfig;
+  @property() private _viewConfig!: LovelaceViewConfig;
 
   @property() private _saving: boolean = false;
   @property() private _error?: string;
@@ -51,8 +51,9 @@ export class HuiDialogEditCard extends LitElement {
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
     const [view, card] = params.path;
-    this._view = params.lovelace.config.views[view];
-    this._cardConfig = card !== undefined ? this._view.cards![card] : undefined;
+    this._viewConfig = params.lovelace.config.views[view];
+    this._cardConfig =
+      card !== undefined ? this._viewConfig.cards![card] : undefined;
   }
 
   private get _cardEditorEl(): HuiCardEditor | null {
@@ -71,11 +72,11 @@ export class HuiDialogEditCard extends LitElement {
       )} ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.header")}`;
     } else {
       heading =
-        this._view.title !== undefined && this._view.title !== ""
+        !this._cardConfig && this._viewConfig.title
           ? this.hass!.localize(
               "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
               "name",
-              '"' + this._view.title + '"'
+              '"' + this._viewConfig.title + '"'
             )
           : this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card");
     }
