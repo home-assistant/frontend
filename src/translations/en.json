@@ -1403,7 +1403,8 @@
           },
           "edit_card": {
             "header": "Card Configuration",
-            "pick_card": "Pick the card you want to add.",
+            "pick_card": "Which card would you like to add?",
+            "pick_card_view_title": "Which card would you like to add to your {name} view?",
             "toggle_editor": "Toggle Editor",
             "show_visual_editor": "Show Visual Editor",
             "show_code_editor": "Show Code Editor",
