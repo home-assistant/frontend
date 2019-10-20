@@ -17,12 +17,12 @@ import hassCallApi from "../util/hass-call-api";
 import { subscribePanels } from "../data/ws-panels";
 import { forwardHaptic } from "../data/haptics";
 import { fireEvent } from "../common/dom/fire_event";
-import { Constructor, LitElement } from "lit-element";
+import { Constructor } from "../types";
 import { HassBaseEl } from "./hass-base-mixin";
 import { broadcastConnectionStatus } from "../data/connection-status";
 
-export const connectionMixin = (
-  superClass: Constructor<LitElement & HassBaseEl>
+export const connectionMixin = <T extends Constructor<HassBaseEl>>(
+  superClass: T
 ) =>
   class extends superClass {
     protected initializeHass(auth: Auth, conn: Connection) {

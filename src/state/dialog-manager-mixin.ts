@@ -1,7 +1,7 @@
-import { Constructor, LitElement } from "lit-element";
 import { HASSDomEvent } from "../common/dom/fire_event";
 import { HassBaseEl } from "./hass-base-mixin";
 import { makeDialogManager, showDialog } from "../dialogs/make-dialog-manager";
+import { Constructor } from "../types";
 
 interface RegisterDialogParams {
   dialogShowEvent: keyof HASSDomEvents;
@@ -20,8 +20,8 @@ declare global {
   }
 }
 
-export const dialogManagerMixin = (
-  superClass: Constructor<LitElement & HassBaseEl>
+export const dialogManagerMixin = <T extends Constructor<HassBaseEl>>(
+  superClass: T
 ) =>
   class extends superClass {
     protected firstUpdated(changedProps) {
