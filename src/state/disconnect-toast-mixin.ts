@@ -1,8 +1,8 @@
-import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
 import { showToast } from "../util/toast";
+import { Constructor } from "../types";
 
-export default (superClass: Constructor<LitElement & HassBaseEl>) =>
+export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);

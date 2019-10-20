@@ -1,4 +1,3 @@
-import HassBaseMixin from "./hass-base-mixin";
 import AuthMixin from "./auth-mixin";
 import TranslationsMixin from "./translations-mixin";
 import ThemesMixin from "./themes-mixin";
@@ -11,12 +10,13 @@ import NotificationMixin from "./notification-mixin";
 import DisconnectToastMixin from "./disconnect-toast-mixin";
 import { hapticMixin } from "./haptic-mixin";
 import { urlSyncMixin } from "./url-sync-mixin";
-import { LitElement } from "lit-element";
+import { Constructor } from "../types";
+import { HassBaseEl } from "./hass-base-mixin";
 
-const ext = <T>(baseClass: T, mixins): T =>
+const ext = <T extends Constructor>(baseClass: T, mixins): T =>
   mixins.reduceRight((base, mixin) => mixin(base), baseClass);
 
-export class HassElement extends ext(HassBaseMixin(LitElement), [
+export class HassElement extends ext(HassBaseEl, [
   AuthMixin,
   ThemesMixin,
   TranslationsMixin,

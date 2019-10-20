@@ -1,8 +1,9 @@
-import { Constructor, customElement, CSSResult, css, query } from "lit-element";
+import { customElement, CSSResult, css, query } from "lit-element";
 import "@material/mwc-switch";
 import { style } from "@material/mwc-switch/mwc-switch-css";
 // tslint:disable-next-line
 import { Switch } from "@material/mwc-switch";
+import { Constructor } from "../types";
 // tslint:disable-next-line
 const MwcSwitch = customElements.get("mwc-switch") as Constructor<Switch>;
 

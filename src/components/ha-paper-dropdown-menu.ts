@@ -1,6 +1,6 @@
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import { Constructor } from "lit-element";
 import { PolymerElement } from "@polymer/polymer";
+import { Constructor } from "../types";
 
 const paperDropdownClass = customElements.get(
   "paper-dropdown-menu"

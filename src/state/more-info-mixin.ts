@@ -1,6 +1,5 @@
-import { Constructor, LitElement } from "lit-element";
-
 import { HassBaseEl } from "./hass-base-mixin";
+import { Constructor } from "../types";
 
 declare global {
   // for fire event
@@ -11,7 +10,7 @@ declare global {
   }
 }
 
-export default (superClass: Constructor<LitElement & HassBaseEl>) =>
+export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
     private _moreInfoEl?: any;
 
