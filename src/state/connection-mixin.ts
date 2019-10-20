@@ -90,13 +90,13 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
           conn.sendMessage(msg);
         },
         // For messages that expect a response
-        callWS: <T>(msg) => {
+        callWS: <R>(msg) => {
           if (__DEV__) {
             // tslint:disable-next-line: no-console
             console.log("Sending", msg);
           }
 
-          const resp = conn.sendMessagePromise<T>(msg);
+          const resp = conn.sendMessagePromise<R>(msg);
 
           if (__DEV__) {
             resp.then(
