@@ -20,4 +20,8 @@ module.exports = {
   cast_static: path.resolve(__dirname, "../cast/dist/static"),
   cast_output: path.resolve(__dirname, "../cast/dist/frontend_latest"),
   cast_output_es5: path.resolve(__dirname, "../cast/dist/frontend_es5"),
+
+  hassio_dir: path.resolve(__dirname, "../hassio"),
+  hassio_root: path.resolve(__dirname, "../hassio/build"),
+  hassio_publicPath: "/api/hassio/app",
 };

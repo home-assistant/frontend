@@ -1,13 +1,13 @@
 const {
   isProdBuild,
-  createHassioConfig,
+  createCastConfig,
 } = require("../build-scripts/webpack.js");
 
 // File just used for stats builds
 
-const latestBuild = false;
+const latestBuild = true;
 
-module.exports = createHassioConfig({
+module.exports = createCastConfig({
   isProdBuild,
   latestBuild,
 });

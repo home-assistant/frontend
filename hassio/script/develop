@@ -4,11 +4,6 @@
 # Stop on errors
 set -e
 
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 
-OUTPUT_DIR=build
-
-rm -rf $OUTPUT_DIR
-mkdir $OUTPUT_DIR
-node script/gen-icons.js
-../node_modules/.bin/webpack --watch --progress
+./node_modules/.bin/gulp develop-hassio

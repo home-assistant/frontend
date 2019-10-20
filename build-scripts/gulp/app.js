@@ -1,6 +1,8 @@
 // Run HA develop mode
 const gulp = require("gulp");
 
+const envVars = require("../env");
+
 require("./clean.js");
 require("./translations.js");
 require("./gen-icons.js");
@@ -39,7 +41,8 @@ gulp.task(
     gulp.parallel("gen-icons", "build-translations"),
     "copy-static",
     "webpack-prod-app",
-    ...(process.env.CI === "true" ? [] : ["compress-app"]),
+    ...// Don't compress running tests
+    (envVars.isTravis ? [] : ["compress-app"]),
     gulp.parallel(
       "gen-pages-prod",
       "gen-index-app-prod",
