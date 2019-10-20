@@ -118,6 +118,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
         if (entity.attributes.icon) {
           const el = document.createElement("ha-icon");
           el.setAttribute("icon", entity.attributes.icon);
+          el.style.color = "#000000";
           iconHTML = el.outerHTML;
         } else {
           iconHTML = title;
