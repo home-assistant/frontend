@@ -5,6 +5,7 @@ require("./clean.js");
 require("./translations.js");
 require("./gen-icons.js");
 require("./gather-static.js");
+require("./compress.js");
 require("./webpack.js");
 require("./service-worker.js");
 require("./entry-html.js");
@@ -37,11 +38,8 @@ gulp.task(
     "clean",
     gulp.parallel("gen-icons", "build-translations"),
     "copy-static",
-    gulp.parallel(
-      "webpack-prod-app",
-      // Do not compress static files in CI, it's SLOW.
-      ...(process.env.CI === "true" ? [] : ["compress-static"])
-    ),
+    "webpack-prod-app",
+    ...(process.env.CI === "true" ? [] : ["compress-app"]),
     gulp.parallel(
       "gen-pages-prod",
       "gen-index-app-prod",

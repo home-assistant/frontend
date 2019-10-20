@@ -3,8 +3,6 @@ const fs = require("fs");
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
 const WorkboxPlugin = require("workbox-webpack-plugin");
-const CompressionPlugin = require("compression-webpack-plugin");
-const zopfli = require("@gfx/zopfli");
 const ManifestPlugin = require("webpack-manifest-plugin");
 const paths = require("./paths.js");
 const { babelLoaderConfig } = require("./babel.js");
@@ -134,16 +132,6 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
         ),
       }),
       ...plugins,
-      isProdBuild &&
-        !isCI &&
-        !isStatsBuild &&
-        new CompressionPlugin({
-          cache: true,
-          exclude: [/\.js\.map$/, /\.LICENSE$/, /\.py$/, /\.txt$/],
-          algorithm(input, compressionOptions, callback) {
-            return zopfli.gzip(input, compressionOptions, callback);
-          },
-        }),
       latestBuild &&
         new WorkboxPlugin.InjectManifest({
           swSrc: "./src/entrypoints/service-worker-hass.js",
