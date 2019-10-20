@@ -123,14 +123,23 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
     if (!this._config || !this.hass) {
       return;
     }
 
-    const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.themes !== this.hass.themes) {
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldConfig = changedProps.get("_config") as
+      | GlanceCardConfig
+      | undefined;
+
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
   }

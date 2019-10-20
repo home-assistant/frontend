@@ -24,7 +24,7 @@ import {
   clearItems,
   addItem,
 } from "../../../data/shopping-list";
-import { ShoppingListCardConfig } from "./types";
+import { ShoppingListCardConfig, SensorCardConfig } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 @customElement("hui-shopping-list-card")
@@ -85,7 +85,16 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
       return;
     }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.themes !== this.hass.themes) {
+    const oldConfig = changedProps.get("_config") as
+      | SensorCardConfig
+      | undefined;
+
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
   }

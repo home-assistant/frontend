@@ -92,7 +92,16 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
       return;
     }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.themes !== this._hass.themes) {
+    const oldConfig = changedProps.get("_config") as
+      | MarkdownCardConfig
+      | undefined;
+
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
       applyThemesOnElement(this, this._hass.themes, this._config.theme);
     }
   }

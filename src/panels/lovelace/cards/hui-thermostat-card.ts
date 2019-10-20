@@ -235,8 +235,16 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldConfig = changedProps.get("_config") as
+      | ThermostatCardConfig
+      | undefined;
 
-    if (!oldHass || oldHass.themes !== this.hass.themes) {
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
 
