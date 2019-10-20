@@ -326,8 +326,8 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         }
 
         // create icon
-        var iconHTML = "";
-        var iconColor =
+        let iconHTML = "";
+        const iconColor =
           this._config!.dark_mode === true ? "#FFFFFF" : "#000000";
         if (icon) {
           const el = document.createElement("ha-icon");
