@@ -1,31 +1,20 @@
-import {
-  LitElement,
-  Constructor,
-  PropertyValues,
-  PropertyDeclarations,
-} from "lit-element";
+import { LitElement, PropertyValues, property } from "lit-element";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { HomeAssistant, Constructor } from "../types";
 
 export interface HassSubscribeElement {
   hassSubscribe(): UnsubscribeFunc[];
 }
 
 /* tslint:disable-next-line */
-export const SubscribeMixin = <T extends LitElement>(
-  superClass: Constructor<T>
-): Constructor<T & HassSubscribeElement> =>
-  // @ts-ignore
-  class extends superClass {
+export const SubscribeMixin = <T extends Constructor<LitElement>>(
+  superClass: T
+) => {
+  class SubscribeClass extends superClass {
+    @property() public hass?: HomeAssistant;
+
     /* tslint:disable-next-line */
     private __unsubs?: UnsubscribeFunc[];
-
-    // Decorators not possible in anonymous classes
-    // And also, we cannot declare the variable without overriding the Lit setter.
-    static get properties(): PropertyDeclarations {
-      return {
-        hass: {},
-      };
-    }
 
     public connectedCallback() {
       super.connectedCallback();
@@ -57,11 +46,12 @@ export const SubscribeMixin = <T extends LitElement>(
       if (
         this.__unsubs !== undefined ||
         !((this as unknown) as Element).isConnected ||
-        // @ts-ignore
         this.hass === undefined
       ) {
         return;
       }
       this.__unsubs = this.hassSubscribe();
     }
-  };
+  }
+  return SubscribeClass;
+};
