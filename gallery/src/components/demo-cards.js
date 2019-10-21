@@ -26,7 +26,9 @@ class DemoCards extends PolymerElement {
       </style>
       <app-toolbar>
         <div class="filters">
-          <ha-switch checked="{{_showConfig}}">Show config</ha-switch>
+          <ha-switch checked="[[_showConfig]]" on-change="_showConfigToggled">
+            Show config
+          </ha-switch>
         </div>
       </app-toolbar>
       <div class="cards">
@@ -50,6 +52,10 @@ class DemoCards extends PolymerElement {
         value: false,
       },
     };
+  }
+
+  _showConfigToggled(ev) {
+    this._showConfig = ev.target.checked;
   }
 }
 
