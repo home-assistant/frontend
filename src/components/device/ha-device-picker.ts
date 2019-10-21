@@ -12,7 +12,6 @@ import {
   CSSResult,
   customElement,
   property,
-  query,
 } from "lit-element";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { SubscribeMixin } from "../../mixins/subscribe-mixin";
