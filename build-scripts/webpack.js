@@ -3,8 +3,6 @@ const fs = require("fs");
 const path = require("path");
 const TerserPlugin = require("terser-webpack-plugin");
 const WorkboxPlugin = require("workbox-webpack-plugin");
-const CompressionPlugin = require("compression-webpack-plugin");
-const zopfli = require("@gfx/zopfli");
 const ManifestPlugin = require("webpack-manifest-plugin");
 const paths = require("./paths.js");
 const { babelLoaderConfig } = require("./babel.js");
@@ -41,20 +39,6 @@ const resolve = {
   },
 };
 
-const tsLoader = (latestBuild) => ({
-  test: /\.ts|tsx$/,
-  exclude: [path.resolve(paths.polymer_dir, "node_modules")],
-  use: [
-    {
-      loader: "ts-loader",
-      options: {
-        compilerOptions: latestBuild
-          ? { noEmit: false }
-          : { target: "es5", noEmit: false },
-      },
-    },
-  ],
-});
 const cssLoader = {
   test: /\.css$/,
   use: "raw-loader",
@@ -127,17 +111,12 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
     "hass-icons": "./src/entrypoints/hass-icons.ts",
   };
 
-  const rules = [tsLoader(latestBuild), cssLoader, htmlLoader];
-  if (!latestBuild) {
-    rules.push(babelLoaderConfig({ latestBuild }));
-  }
-
   return {
     mode: genMode(isProdBuild),
     devtool: genDevTool(isProdBuild),
     entry,
     module: {
-      rules,
+      rules: [babelLoaderConfig({ latestBuild }), cssLoader, htmlLoader],
     },
     optimization: optimization(latestBuild),
     plugins: [
@@ -153,16 +132,6 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
         ),
       }),
       ...plugins,
-      isProdBuild &&
-        !isCI &&
-        !isStatsBuild &&
-        new CompressionPlugin({
-          cache: true,
-          exclude: [/\.js\.map$/, /\.LICENSE$/, /\.py$/, /\.txt$/],
-          algorithm(input, compressionOptions, callback) {
-            return zopfli.gzip(input, compressionOptions, callback);
-          },
-        }),
       latestBuild &&
         new WorkboxPlugin.InjectManifest({
           swSrc: "./src/entrypoints/service-worker-hass.js",
@@ -197,11 +166,6 @@ const createAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
 };
 
 const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
-  const rules = [tsLoader(latestBuild), cssLoader, htmlLoader];
-  if (!latestBuild) {
-    rules.push(babelLoaderConfig({ latestBuild }));
-  }
-
   return {
     mode: genMode(isProdBuild),
     devtool: genDevTool(isProdBuild),
@@ -210,7 +174,7 @@ const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) => {
       compatibility: "./src/entrypoints/compatibility.ts",
     },
     module: {
-      rules,
+      rules: [babelLoaderConfig({ latestBuild }), cssLoader, htmlLoader],
     },
     optimization: optimization(latestBuild),
     plugins: [
@@ -252,17 +216,12 @@ const createCastConfig = ({ isProdBuild, latestBuild }) => {
     entry.receiver = "./cast/src/receiver/entrypoint.ts";
   }
 
-  const rules = [tsLoader(latestBuild), cssLoader, htmlLoader];
-  if (!latestBuild) {
-    rules.push(babelLoaderConfig({ latestBuild }));
-  }
-
   return {
     mode: genMode(isProdBuild),
     devtool: genDevTool(isProdBuild),
     entry,
     module: {
-      rules,
+      rules: [babelLoaderConfig({ latestBuild }), cssLoader, htmlLoader],
     },
     optimization: optimization(latestBuild),
     plugins: [

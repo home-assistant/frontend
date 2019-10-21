@@ -4,6 +4,8 @@ import {
   TemplateResult,
   customElement,
   property,
+  CSSResult,
+  css,
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
 
@@ -80,20 +82,32 @@ export class HuiViewEditor extends LitElement {
       ${configElementStyle}
       <div class="card-config">
         <paper-input
-          label="Title"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.title"
+          )}  (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value=${this._title}
           .configValue=${"title"}
           @value-changed=${this._valueChanged}
           @blur=${this._handleTitleBlur}
         ></paper-input>
         <paper-input
-          label="Icon"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.icon"
+          )}  (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
         ></paper-input>
         <paper-input
-          label="URL Path"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.url"
+          )}  (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
           .value=${this._path}
           .configValue=${"path"}
           @value-changed=${this._valueChanged}
@@ -108,7 +122,14 @@ export class HuiViewEditor extends LitElement {
           ?checked=${this._panel !== false}
           .configValue=${"panel"}
           @change=${this._valueChanged}
-          >Panel Mode?</ha-switch
+          >${this.hass.localize(
+            "ui.panel.lovelace.editor.view.panel_mode.title"
+          )}</ha-switch
+        >
+        <span class="panel"
+          >${this.hass.localize(
+            "ui.panel.lovelace.editor.view.panel_mode.description"
+          )}</span
         >
       </div>
     `;
@@ -146,6 +167,14 @@ export class HuiViewEditor extends LitElement {
 
     const config = { ...this._config, path: slugify(ev.currentTarget.value) };
     fireEvent(this, "view-config-changed", { config });
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      .panel {
+        color: var(--secondary-text-color);
+      }
+    `;
   }
 }
 

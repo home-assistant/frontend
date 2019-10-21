@@ -7,7 +7,7 @@ import {
   css,
 } from "lit-element";
 import "@material/mwc-button";
-import "../components/ha-form";
+import "../components/ha-form/ha-form";
 import "../components/ha-markdown";
 import { litLocalizeLiteMixin } from "../mixins/lit-localize-lite-mixin";
 import { AuthProvider } from "../data/auth";

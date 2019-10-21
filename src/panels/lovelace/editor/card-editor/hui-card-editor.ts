@@ -229,7 +229,7 @@ export class HuiCardEditor extends LitElement {
           configElement = await elClass.getConfigElement();
         } else {
           configElement = undefined;
-          throw Error(`WARNING: No GUI editor available for: ${cardType}`);
+          throw Error(`WARNING: No visual editor available for: ${cardType}`);
         }
 
         this._configElement = configElement;

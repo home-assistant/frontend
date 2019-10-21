@@ -402,6 +402,13 @@
         "currently": "Currently",
         "on_off": "On / off",
         "target_temperature": "Target temperature",
+        "target_temperature_entity": "{name} target temperature",
+        "target_temperature_mode": "{name} target temperature {mode}",
+        "current_temperature": "{name} current temperature",
+        "heating": "{name} heating",
+        "cooling": "{name} cooling",
+        "high": "high",
+        "low": "low",
         "target_humidity": "Target humidity",
         "operation": "Operation",
         "fan_mode": "Fan mode",
@@ -409,6 +416,13 @@
         "preset_mode": "Preset",
         "away_mode": "Away mode",
         "aux_heat": "Aux heat"
+      },
+      "counter": {
+        "actions": {
+          "increment": "increment",
+          "decrement": "decrement",
+          "reset": "reset"
+        }
       },
       "cover": {
         "position": "Position",
@@ -1173,6 +1187,9 @@
           "configure": "Configure",
           "none": "Nothing configured yet",
           "config_entry": {
+            "settings_button": "Edit settings for {integration}",
+            "system_options_button": "System options for {integration}",
+            "delete_button": "Delete {integration}",
             "no_devices": "This integration has no devices.",
             "no_device": "Entities without devices",
             "delete_confirm": "Are you sure you want to delete this integration?",
@@ -1525,6 +1542,12 @@
             "weather-forecast": {
               "name": "Weather Forecast"
             }
+          },
+          "view": {
+            "panel_mode": {
+              "title": "Panel Mode?",
+              "description": "This renders the first card at full width; other cards in this view will not be rendered."
+            }
           }
         },
         "warning": {
@@ -1773,25 +1796,105 @@
       "developer-tools": {
         "tabs": {
           "info": {
-            "title": "Info"
+            "title": "Info",
+            "remove": "Remove",
+            "set": "Set",
+            "default_ui": "{action} {name} as default page on this device",
+            "lovelace_ui": "Go to the Lovelace UI",
+            "states_ui": "Go to the states UI",
+            "home_assistant_logo": "Home Assistant logo",
+            "path_configuration": "Path to configuration.yaml: {path}",
+            "developed_by": "Developed by a bunch of awesome people.",
+            "license": "Published under the Apache 2.0 license",
+            "source": "Source:",
+            "server": "server",
+            "frontend": "frontend-ui",
+            "built_using": "Built using",
+            "icons_by": "Icons by",
+            "frontend_version": "Frontend version: {version} - {type}",
+            "custom_uis": "Custom UIs:",
+            "system_health_error": "System Health component is not loaded. Add 'system_health:' to configuration.yaml"
           },
           "logs": {
-            "title": "Logs"
+            "title": "Logs",
+            "details": "Log Details ({level})",
+            "load_full_log": "Load Full Home Assistant Log",
+            "loading_log": "Loading error log…",
+            "no_errors": "No errors have been reported.",
+            "no_issues": "There are no new issues!",
+            "clear": "Clear",
+            "refresh": "Refresh",
+            "multiple_messages": "message first occurred at {time} and shows up {counter} times"
           },
           "events": {
-            "title": "Events"
+            "title": "Events",
+            "description": "Fire an event on the event bus.",
+            "documentation": "Events Documentation.",
+            "type": "Event Type",
+            "data": "Event Data (YAML, optional)",
+            "fire_event": "Fire Event",
+            "event_fired": "Event {name} fired",
+            "available_events": "Available Events",
+            "count_listeners": " ({count}  listeners)",
+            "listen_to_events": "Listen to events",
+            "listening_to": "Listening to",
+            "subscribe_to": "Event to subscribe to",
+            "start_listening": "Start listening",
+            "stop_listening": "Stop listening",
+            "alert_event_type": "Event type is a mandatory field",
+            "notification_event_fired": "Event {type} successful fired!"
           },
           "mqtt": {
-            "title": "MQTT"
+            "title": "MQTT",
+            "description_publish": "Publish a packet",
+            "topic": "topic",
+            "payload": "Payload (template allowed)",
+            "publish": "Publish",
+            "description_listen": "Listen to a topic",
+            "listening_to": "Listening to",
+            "subscribe_to": "Topic to subscribe to",
+            "start_listening": "Start listening",
+            "stop_listening": "Stop listening",
+            "message_received": "Message {id} received on {topic} at {time}:"
           },
           "services": {
-            "title": "Services"
+            "title": "Services",
+            "description": "The service dev tool allows you to call any available service in Home Assistant.",
+            "data": "Service Data (YAML, optional)",
+            "call_service": "Call Service",
+            "select_service": "Select a service to see the description",
+            "no_description": "No description is available",
+            "no_parameters": "This service takes no parameters.",
+            "column_parameter": "Parameter",
+            "column_description": "Description",
+            "column_example": "Example",
+            "fill_example_data": "Fill Example Data",
+            "alert_parsing_yaml": "Error parsing YAML: {data}"
           },
           "states": {
-            "title": "States"
+            "title": "States",
+            "description1": "Set the representation of a device within Home Assistant.",
+            "description2": "This will not communicate with the actual device.",
+            "entity": "Entity",
+            "state": "State",
+            "attributes": "Attributes",
+            "state_attributes": "State attributes (YAML, optional)",
+            "set_state": "Set State",
+            "current_entities": "Current entities",
+            "filter_entities": "Filter entities",
+            "filter_states": "Filter states",
+            "filter_attributes": "Filter attributes",
+            "no_entities": "No entities",
+            "more_info": "More Info",
+            "alert_entity_field": "Entity is a mandatory field"
           },
           "templates": {
-            "title": "Template"
+            "title": "Template",
+            "description": "Templates are rendered using the Jinja2 template engine with some Home Assistant specific extensions.",
+            "editor": "Template editor",
+            "jinja_documentation": "Jinja2 template documentation",
+            "template_extensions": "Home Assistant template extensions",
+            "unknown_error_template": "Unknown error rendering template"
           }
         }
       },

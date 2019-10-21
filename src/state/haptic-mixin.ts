@@ -1,8 +1,8 @@
-import { Constructor, LitElement, PropertyValues } from "lit-element";
+import { PropertyValues } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
 
 import { HapticType } from "../data/haptics";
-import { HomeAssistant } from "../types";
+import { HomeAssistant, Constructor } from "../types";
 import { HASSDomEvent } from "../common/dom/fire_event";
 import { storeState } from "../util/ha-pref-storage";
 
@@ -35,7 +35,7 @@ const handleHaptic = (hapticTypeEvent: HASSDomEvent<HapticType>) => {
   navigator.vibrate(hapticPatterns[hapticTypeEvent.detail]);
 };
 
-export const hapticMixin = (superClass: Constructor<LitElement & HassBaseEl>) =>
+export const hapticMixin = <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
     protected firstUpdated(changedProps: PropertyValues) {
       super.firstUpdated(changedProps);
