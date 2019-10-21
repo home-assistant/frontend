@@ -4,7 +4,7 @@ import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import yaml from "js-yaml";
+import { safeLoad } from "js-yaml";
 
 import "../../../components/ha-code-editor";
 import "../../../resources/ha-style";
@@ -138,7 +138,7 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   _computeParsedEventData(eventData) {
     try {
-      return eventData.trim() ? yaml.safeLoad(eventData) : {};
+      return eventData.trim() ? safeLoad(eventData) : {};
     } catch (err) {
       return ERROR_SENTINEL;
     }
