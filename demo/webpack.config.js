@@ -1,10 +1,9 @@
 const { createDemoConfig } = require("../build-scripts/webpack.js");
+const { isProdBuild, isStatsBuild } = require("../build-scripts/env.js");
 
-// This file exists because we haven't migrated the stats script yet
+// File just used for stats builds
 
-const isProdBuild = process.env.NODE_ENV === "production";
-const isStatsBuild = process.env.STATS === "1";
-const latestBuild = false;
+const latestBuild = true;
 
 module.exports = createDemoConfig({
   isProdBuild,
