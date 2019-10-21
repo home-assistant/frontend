@@ -32,7 +32,7 @@ export class HaFormFloat extends LitElement implements HaFormElement {
     return html`
       <paper-input
         .label=${this.label}
-        .value=${this.data}
+        .value=${this._value}
         .required=${this.schema.required}
         .autoValidate=${this.schema.required}
         @value-changed=${this._valueChanged}
@@ -42,9 +42,13 @@ export class HaFormFloat extends LitElement implements HaFormElement {
     `;
   }
 
+  private get _value() {
+    return this.data || 0;
+  }
+
   private _valueChanged(ev: Event) {
     const value = Number((ev.target as PaperInputElement).value);
-    if (this.data === value) {
+    if (this._value === value) {
       return;
     }
     fireEvent(
