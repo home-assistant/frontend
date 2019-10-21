@@ -69,7 +69,7 @@ class MoreInfoWeather extends LitElement {
           ${this.stateObj.attributes.temperature} ${this.getUnit("temperature")}
         </div>
       </div>
-      ${this._showValue(this.stateObj.attributes.pressure)
+      ${this.stateObj.attributes.pressure
         ? html`
             <div class="flex">
               <iron-icon icon="hass:gauge"></iron-icon>
@@ -83,7 +83,7 @@ class MoreInfoWeather extends LitElement {
             </div>
           `
         : ""}
-      ${this._showValue(this.stateObj.attributes.humidity)
+      ${this.stateObj.attributes.humidity
         ? html`
             <div class="flex">
               <iron-icon icon="hass:water-percent"></iron-icon>
@@ -94,7 +94,7 @@ class MoreInfoWeather extends LitElement {
             </div>
           `
         : ""}
-      ${this._showValue(this.stateObj.attributes.wind_speed)
+      ${this.stateObj.attributes.wind_speed
         ? html`
             <div class="flex">
               <iron-icon icon="hass:weather-windy"></iron-icon>
@@ -110,7 +110,7 @@ class MoreInfoWeather extends LitElement {
             </div>
           `
         : ""}
-      ${this._showValue(this.stateObj.attributes.visibility)
+      ${this.stateObj.attributes.visibility
         ? html`
             <div class="flex">
               <iron-icon icon="hass:eye"></iron-icon>
@@ -131,21 +131,21 @@ class MoreInfoWeather extends LitElement {
             ${this.stateObj.attributes.forecast.map((item) => {
               return html`
                 <div class="flex">
-                  ${this._showValue(item.condition)
+                  ${item.condition
                     ? html`
                         <iron-icon
                           .icon="${weatherIcons[item.condition]}"
                         ></iron-icon>
                       `
                     : ""}
-                  ${!this._showValue(item.templow)
+                  ${!item.templow
                     ? html`
                         <div class="main">
                           ${this.computeDateTime(item.datetime)}
                         </div>
                       `
                     : ""}
-                  ${this._showValue(item.templow)
+                  ${item.templow
                     ? html`
                         <div class="main">
                           ${this.computeDate(item.datetime)}
@@ -260,10 +260,6 @@ class MoreInfoWeather extends LitElement {
       ) || cardinalDirection})`;
     }
     return `${speed} ${this.getUnit("length")}/h`;
-  }
-
-  private _showValue(item) {
-    return typeof item !== "undefined" && item !== null;
   }
 }
 
