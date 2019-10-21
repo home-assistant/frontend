@@ -15,7 +15,10 @@ export function hasConfigOrEntityChanged(
     return true;
   }
 
-  if (oldHass.themes !== element.hass!.themes) {
+  if (
+    oldHass.themes !== element.hass!.themes ||
+    oldHass.language !== element.hass!.language
+  ) {
     return true;
   }
 

@@ -87,23 +87,23 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (oldHass) {
-      if (oldHass.themes !== this.hass!.themes) {
+
+    if (
+      !this._configEntities ||
+      !oldHass ||
+      oldHass.themes !== this.hass!.themes ||
+      oldHass.language !== this.hass!.language
+    ) {
+      return true;
+    }
+
+    for (const entity of this._configEntities) {
+      if (oldHass.states[entity.entity] !== this.hass!.states[entity.entity]) {
         return true;
-      }
-      if (this._configEntities) {
-        for (const entity of this._configEntities) {
-          if (
-            oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
-          ) {
-            return true;
-          }
-        }
-        return false;
       }
     }
 
-    return true;
+    return false;
   }
 
   protected render(): TemplateResult | void {

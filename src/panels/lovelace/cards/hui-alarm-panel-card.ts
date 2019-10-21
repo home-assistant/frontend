@@ -109,16 +109,17 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
-    if (oldHass) {
-      if (oldHass.themes !== this.hass!.themes) {
-        return true;
-      }
-      return (
-        oldHass.states[this._config!.entity] !==
-        this.hass!.states[this._config!.entity]
-      );
+    if (
+      !oldHass ||
+      oldHass.themes !== this.hass!.themes ||
+      oldHass.language !== this.hass!.language
+    ) {
+      return true;
     }
-    return true;
+    return (
+      oldHass.states[this._config!.entity] !==
+      this.hass!.states[this._config!.entity]
+    );
   }
 
   protected render(): TemplateResult | void {
