@@ -123,6 +123,9 @@ documentContainer.innerHTML = `<custom-style>
       --paper-slider-container-color: var(--slider-bar-color);
       --ha-paper-slider-pin-font-size: 15px;
 
+      /* set data table style */
+      --data-table-background-color: var(--card-background-color);
+
       /* rgb */
       --rgb-primary-color: 3, 169, 244;
       --rgb-accent-color: 255, 152, 0;
