@@ -24,6 +24,10 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
           width: 100%;
           z-index: 0;
         }
+
+        .light {
+          color: #000000;
+        }
       </style>
 
       <app-toolbar>
@@ -120,16 +124,18 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
           el.setAttribute("icon", entity.attributes.icon);
           iconHTML = el.outerHTML;
         } else {
-          iconHTML = title;
+          const el = document.createElement("span");
+          el.innerHTML = title;
+          iconHTML = el.outerHTML;
         }
 
         icon = this.Leaflet.divIcon({
           html: iconHTML,
           iconSize: [24, 24],
-          className: "",
+          className: "light",
         });
 
-        // create market with the icon
+        // create marker with the icon
         mapItems.push(
           this.Leaflet.marker(
             [entity.attributes.latitude, entity.attributes.longitude],
