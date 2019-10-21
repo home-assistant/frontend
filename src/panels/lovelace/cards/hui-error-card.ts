@@ -7,7 +7,7 @@ import {
   css,
   CSSResult,
 } from "lit-element";
-import yaml from "js-yaml";
+import { safeDump } from "js-yaml";
 
 import { LovelaceCard } from "../types";
 import { HomeAssistant } from "../../../types";
@@ -46,7 +46,7 @@ export class HuiErrorCard extends LitElement implements LovelaceCard {
 
     return html`
       ${this._config.error}
-      <pre>${yaml.safeDump(this._config.origConfig)}</pre>
+      <pre>${safeDump(this._config.origConfig)}</pre>
     `;
   }
 

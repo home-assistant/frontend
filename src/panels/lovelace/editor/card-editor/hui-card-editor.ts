@@ -8,7 +8,7 @@ import {
   property,
 } from "lit-element";
 
-import yaml from "js-yaml";
+import { safeDump, safeLoad } from "js-yaml";
 
 import "@material/mwc-button";
 import { HomeAssistant } from "../../../../types";
@@ -63,7 +63,7 @@ export class HuiCardEditor extends LitElement {
   public set yaml(_yaml: string) {
     this._yaml = _yaml;
     try {
-      this._config = yaml.safeLoad(this.yaml);
+      this._config = safeLoad(this.yaml);
       this._updateConfigElement();
       this._error = undefined;
     } catch (err) {
@@ -80,7 +80,7 @@ export class HuiCardEditor extends LitElement {
   }
   public set value(config: LovelaceCardConfig | undefined) {
     if (JSON.stringify(config) !== JSON.stringify(this._config || {})) {
-      this.yaml = yaml.safeDump(config);
+      this.yaml = safeDump(config);
     }
   }
 
