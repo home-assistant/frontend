@@ -112,6 +112,7 @@ export class PaperTimeInput extends PolymerElement {
           value="{{hour}}"
           label="[[hourLabel]]"
           on-change="_shouldFormatHour"
+          on-focus="_onFocus"
           required
           prevent-invalid-input
           auto-validate="[[autoValidate]]"
@@ -132,6 +133,7 @@ export class PaperTimeInput extends PolymerElement {
           value="{{min}}"
           label="[[minLabel]]"
           on-change="_formatMin"
+          on-focus="_onFocus"
           required
           auto-validate="[[autoValidate]]"
           prevent-invalid-input
@@ -152,6 +154,7 @@ export class PaperTimeInput extends PolymerElement {
           value="{{sec}}"
           label="[[secLabel]]"
           on-change="_formatSec"
+          on-focus="_onFocus"
           required
           auto-validate="[[autoValidate]]"
           prevent-invalid-input
@@ -355,6 +358,10 @@ export class PaperTimeInput extends PolymerElement {
     }
 
     return str;
+  }
+
+  _onFocus(ev) {
+    ev.target.inputElement.inputElement.select();
   }
 
   /**
