@@ -71,10 +71,6 @@ export const haStyleDialog = css`
     --mdc-theme-primary: var(--google-red-500);
   }
 
-  .paper-dialog-buttons .warning.left-align {
-    margin-right: auto;
-  }
-
   @media all and (max-width: 450px), all and (max-height: 500px) {
     paper-dialog,
     ha-paper-dialog {
