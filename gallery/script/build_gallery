@@ -4,14 +4,6 @@
 # Stop on errors
 set -e
 
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 
-OUTPUT_DIR=dist
-
-rm -rf $OUTPUT_DIR
-
-cd ..
-./node_modules/.bin/gulp build-translations gen-icons
-cd gallery
-
-NODE_ENV=production ../node_modules/.bin/webpack -p --config webpack.config.js
+./node_modules/.bin/gulp build-gallery

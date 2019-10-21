@@ -57,18 +57,6 @@ function generateIconset(iconsetName, iconNames) {
   return `<ha-iconset-svg name="${iconsetName}" size="24"><svg><defs>${iconDefs}</defs></svg></ha-iconset-svg>`;
 }
 
-// Generate the full MDI iconset
-function genMDIIcons() {
-  const meta = JSON.parse(
-    fs.readFileSync(path.resolve(ICON_PACKAGE_PATH, META_PATH), "UTF-8")
-  );
-  const iconNames = meta.map((iconInfo) => iconInfo.name);
-  if (!fs.existsSync(OUTPUT_DIR)) {
-    fs.mkdirSync(OUTPUT_DIR);
-  }
-  fs.writeFileSync(MDI_OUTPUT_PATH, generateIconset("mdi", iconNames));
-}
-
 // Helper function to map recursively over files in a folder and it's subfolders
 function mapFiles(startPath, filter, mapFunc) {
   const files = fs.readdirSync(startPath);
@@ -101,24 +89,27 @@ function findIcons(searchPath, iconsetName) {
   return icons;
 }
 
-function genHassIcons() {
+gulp.task("gen-icons-mdi", (done) => {
+  const meta = JSON.parse(
+    fs.readFileSync(path.resolve(ICON_PACKAGE_PATH, META_PATH), "UTF-8")
+  );
+  const iconNames = meta.map((iconInfo) => iconInfo.name);
+  if (!fs.existsSync(OUTPUT_DIR)) {
+    fs.mkdirSync(OUTPUT_DIR);
+  }
+  fs.writeFileSync(MDI_OUTPUT_PATH, generateIconset("mdi", iconNames));
+  done();
+});
+
+gulp.task("gen-icons-app", (done) => {
   const iconNames = findIcons("./src", "hass");
   BUILT_IN_PANEL_ICONS.forEach((name) => iconNames.add(name));
   if (!fs.existsSync(OUTPUT_DIR)) {
     fs.mkdirSync(OUTPUT_DIR);
   }
   fs.writeFileSync(HASS_OUTPUT_PATH, generateIconset("hass", iconNames));
-}
-
-gulp.task("gen-icons-mdi", (done) => {
-  genMDIIcons();
   done();
 });
-gulp.task("gen-icons-hass", (done) => {
-  genHassIcons();
-  done();
-});
-gulp.task("gen-icons", gulp.series("gen-icons-hass", "gen-icons-mdi"));
 
 gulp.task("gen-icons-demo", (done) => {
   const iconNames = findIcons(path.resolve(paths.demo_dir, "./src"), "hademo");
@@ -129,8 +120,21 @@ gulp.task("gen-icons-demo", (done) => {
   done();
 });
 
-module.exports = {
-  findIcons,
-  generateIconset,
-  genMDIIcons,
-};
+gulp.task("gen-icons-hassio", (done) => {
+  const iconNames = findIcons(
+    path.resolve(paths.hassio_dir, "./src"),
+    "hassio"
+  );
+  // Find hassio icons inside HA main repo.
+  for (const item of findIcons(
+    path.resolve(paths.polymer_dir, "./src"),
+    "hassio"
+  )) {
+    iconNames.add(item);
+  }
+  fs.writeFileSync(
+    path.resolve(paths.hassio_dir, "hassio-icons.html"),
+    generateIconset("hassio", iconNames)
+  );
+  done();
+});
