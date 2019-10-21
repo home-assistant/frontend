@@ -89,12 +89,14 @@ export class HuiEditView extends LitElement {
 
   private get _viewConfigTitle(): string {
     if (!this._config || !this._config.title) {
-      return this.hass!.localize(
-        "ui.panel.lovelace.editor.edit_view.header"
-      );;
+      return this.hass!.localize("ui.panel.lovelace.editor.edit_view.header");;
     }
 
-    return this.hass!.localize("ui.panel.lovelace.editor.edit_view.header_name", "name", this._config.title)
+    return this.hass!.localize(
+      "ui.panel.lovelace.editor.edit_view.header_name", 
+      "name", 
+      this._config.title
+    );
   }
 
   protected render(): TemplateResult | void {
