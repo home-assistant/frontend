@@ -41,7 +41,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
             ${this.label}
             <ha-paper-slider
               pin=""
-              .value=${this.data}
+              .value=${this._value}
               .min=${this.schema.valueMin}
               .max=${this.schema.valueMax}
               @value-changed=${this._valueChanged}
@@ -60,11 +60,15 @@ export class HaFormInteger extends LitElement implements HaFormElement {
         `;
   }
 
+  private get _value() {
+    return this.data || 0;
+  }
+
   private _valueChanged(ev: Event) {
     const value = Number(
       (ev.target as PaperInputElement | PaperSliderElement).value
     );
-    if (this.data === value) {
+    if (this._value === value) {
       return;
     }
     fireEvent(
