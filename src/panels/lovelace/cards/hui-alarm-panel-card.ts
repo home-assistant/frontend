@@ -22,6 +22,7 @@ import {
 } from "../../../data/alarm_control_panel";
 import { AlarmPanelCardConfig } from "./types";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 const ICONS = {
   armed_away: "hass:shield-lock",
@@ -81,19 +82,44 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     this._code = "";
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (!this._config || !this.hass) {
+      return;
+    }
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldConfig = changedProps.get("_config") as
+      | AlarmPanelCardConfig
+      | undefined;
+
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
+  }
+
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (changedProps.has("_config") || changedProps.has("_code")) {
       return true;
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (oldHass) {
-      return (
-        oldHass.states[this._config!.entity] !==
-        this.hass!.states[this._config!.entity]
-      );
+
+    if (
+      !oldHass ||
+      oldHass.themes !== this.hass!.themes ||
+      oldHass.language !== this.hass!.language
+    ) {
+      return true;
     }
-    return true;
+    return (
+      oldHass.states[this._config!.entity] !==
+      this.hass!.states[this._config!.entity]
+    );
   }
 
   protected render(): TemplateResult | void {
