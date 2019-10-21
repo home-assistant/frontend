@@ -7,6 +7,7 @@ import {
 } from "lit-element";
 
 import "../../../../components/entity/ha-entity-picker";
+import "../../components/hui-theme-select-editor";
 
 import { struct } from "../../common/structs/struct";
 import { EntitiesEditorEvent, EditorTarget } from "../types";
@@ -20,6 +21,7 @@ const cardConfigStruct = struct({
   type: "string",
   entity: "string?",
   name: "string?",
+  theme: "string?",
 });
 
 @customElement("hui-weather-forecast-card-editor")
@@ -40,6 +42,10 @@ export class HuiWeatherForecastCardEditor extends LitElement
 
   get _name(): string {
     return this._config!.name || "";
+  }
+
+  get _theme(): string {
+    return this._config!.theme || "Backend-selected";
   }
 
   protected render(): TemplateResult | void {
@@ -73,6 +79,12 @@ export class HuiWeatherForecastCardEditor extends LitElement
           .configValue="${"name"}"
           @value-changed="${this._valueChanged}"
         ></paper-input>
+        <hui-theme-select-editor
+          .hass="${this.hass}"
+          .value="${this._theme}"
+          .configValue="${"theme"}"
+          @theme-changed="${this._valueChanged}"
+        ></hui-theme-select-editor>
       </div>
     `;
   }

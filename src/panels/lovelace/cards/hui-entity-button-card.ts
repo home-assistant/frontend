@@ -19,7 +19,7 @@ import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 
 import { HomeAssistant, LightEntity } from "../../../types";
@@ -91,13 +91,19 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (oldHass) {
-      return (
-        oldHass.states[this._config!.entity] !==
-        this.hass!.states[this._config!.entity]
-      );
+
+    if (
+      !oldHass ||
+      oldHass.themes !== this.hass!.themes ||
+      oldHass.language !== this.hass!.language
+    ) {
+      return true;
     }
-    return true;
+
+    return (
+      oldHass.states[this._config!.entity] !==
+      this.hass!.states[this._config!.entity]
+    );
   }
 
   protected render(): TemplateResult | void {
@@ -161,7 +167,16 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
       return;
     }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.themes !== this.hass.themes) {
+    const oldConfig = changedProps.get("_config") as
+      | EntityButtonCardConfig
+      | undefined;
+
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
   }

@@ -1,4 +1,4 @@
-import applyThemesOnElement from "../common/dom/apply_themes_on_element";
+import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 import { storeState } from "../util/ha-pref-storage";
 import { subscribeThemes } from "../data/ws-themes";
 import { HassBaseEl } from "./hass-base-mixin";

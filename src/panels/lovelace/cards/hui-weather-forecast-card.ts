@@ -22,6 +22,7 @@ import { WeatherForecastCardConfig } from "./types";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 const cardinalDirections = [
   "N",
@@ -92,6 +93,23 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
+    if (!this._config || !this.hass) {
+      return;
+    }
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldConfig = changedProps.get("_config") as
+      | WeatherForecastCardConfig
+      | undefined;
+
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
+
     if (changedProps.has("hass")) {
       toggleAttribute(this, "rtl", computeRTL(this.hass!));
     }
