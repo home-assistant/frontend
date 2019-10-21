@@ -70,15 +70,18 @@ export class HuiDialogEditCard extends LitElement {
       heading = `${this.hass!.localize(
         `ui.panel.lovelace.editor.card.${this._cardConfig.type}.name`
       )} ${this.hass!.localize("ui.panel.lovelace.editor.edit_card.header")}`;
+    } else if (!this._cardConfig) {
+      heading = this._viewConfig.title
+        ? this.hass!.localize(
+            "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
+            "name",
+            '"' + this._viewConfig.title + '"'
+          )
+        : this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card");
     } else {
-      heading =
-        !this._cardConfig && this._viewConfig.title
-          ? this.hass!.localize(
-              "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
-              "name",
-              '"' + this._viewConfig.title + '"'
-            )
-          : this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card");
+      heading = this.hass!.localize(
+        "ui.panel.lovelace.editor.edit_card.header"
+      );
     }
 
     return html`
