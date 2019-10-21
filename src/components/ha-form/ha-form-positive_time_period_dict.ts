@@ -79,7 +79,7 @@ export class HaFormTimePeriod extends LitElement implements HaFormElement {
   private _durationChanged(ev, unit) {
     let value = Number(ev.detail.value);
 
-    if (this.data && value === this[`_${unit}`]) {
+    if (value === this[`_${unit}`]) {
       return;
     }
 
