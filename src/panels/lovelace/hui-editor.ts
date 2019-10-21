@@ -1,6 +1,6 @@
 import { LitElement, html, TemplateResult, CSSResult, css } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-import yaml from "js-yaml";
+import { safeDump, safeLoad } from "js-yaml";
 
 import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
@@ -96,7 +96,7 @@ class LovelaceFullConfigEditor extends LitElement {
   }
 
   protected firstUpdated() {
-    this.yamlEditor.value = yaml.safeDump(this.lovelace!.config);
+    this.yamlEditor.value = safeDump(this.lovelace!.config);
   }
 
   static get styles(): CSSResult[] {
@@ -183,7 +183,7 @@ class LovelaceFullConfigEditor extends LitElement {
 
     let value;
     try {
-      value = yaml.safeLoad(this.yamlEditor.value);
+      value = safeLoad(this.yamlEditor.value);
     } catch (err) {
       alert(`Unable to parse YAML: ${err}`);
       this._saving = false;
