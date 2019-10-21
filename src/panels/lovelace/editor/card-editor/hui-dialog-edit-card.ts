@@ -75,7 +75,7 @@ export class HuiDialogEditCard extends LitElement {
         ? this.hass!.localize(
             "ui.panel.lovelace.editor.edit_card.pick_card_view_title",
             "name",
-            '"' + this._viewConfig.title + '"'
+            `"${this._viewConfig.title}"`
           )
         : this.hass!.localize("ui.panel.lovelace.editor.edit_card.pick_card");
     } else {
