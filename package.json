@@ -119,6 +119,7 @@
     "@types/chromecast-caf-sender": "^1.0.1",
     "@types/codemirror": "^0.0.78",
     "@types/hls.js": "^0.12.3",
+    "@types/js-yaml": "^3.12.1",
     "@types/leaflet": "^1.4.3",
     "@types/memoize-one": "4.1.0",
     "@types/mocha": "^5.2.6",
