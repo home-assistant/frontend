@@ -5,7 +5,7 @@ import {
   UpdatingElement,
 } from "lit-element";
 
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";

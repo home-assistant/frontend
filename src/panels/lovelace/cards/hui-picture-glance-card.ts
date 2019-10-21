@@ -28,6 +28,7 @@ import { handleClick } from "../common/handle-click";
 import { hasDoubleClick } from "../common/has-double-click";
 import { PictureGlanceCardConfig, PictureGlanceEntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 
@@ -93,6 +94,14 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
 
+    if (
+      !oldHass ||
+      oldHass.themes !== this.hass!.themes ||
+      oldHass.language !== this.hass!.language
+    ) {
+      return true;
+    }
+
     if (this._entitiesDialog) {
       for (const entity of this._entitiesDialog) {
         if (
@@ -114,6 +123,26 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     }
 
     return false;
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (!this._config || !this.hass) {
+      return;
+    }
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldConfig = changedProps.get("_config") as
+      | PictureGlanceCardConfig
+      | undefined;
+
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
   }
 
   protected render(): TemplateResult | void {
