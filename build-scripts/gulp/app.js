@@ -21,7 +21,7 @@ gulp.task(
     "clean",
     gulp.parallel(
       "gen-service-worker-dev",
-      "gen-icons",
+      gulp.parallel("gen-icons-app", "gen-icons-mdi"),
       "gen-pages-dev",
       "gen-index-app-dev",
       gulp.series("create-test-translation", "build-translations")
@@ -38,7 +38,7 @@ gulp.task(
       process.env.NODE_ENV = "production";
     },
     "clean",
-    gulp.parallel("gen-icons", "build-translations"),
+    gulp.parallel("gen-icons-app", "gen-icons-mdi", "build-translations"),
     "copy-static",
     "webpack-prod-app",
     ...// Don't compress running tests

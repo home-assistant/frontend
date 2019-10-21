@@ -14,7 +14,7 @@ gulp.task(
       process.env.NODE_ENV = "development";
     },
     "clean-hassio",
-    "gen-icons",
+    gulp.parallel("gen-icons-hassio", "gen-icons-mdi"),
     "webpack-watch-hassio"
   )
 );
@@ -26,7 +26,7 @@ gulp.task(
       process.env.NODE_ENV = "production";
     },
     "clean-hassio",
-    "gen-icons",
+    gulp.parallel("gen-icons-hassio", "gen-icons-mdi"),
     "webpack-prod-hassio",
     ...// Don't compress running tests
     (envVars.isTravis ? [] : ["compress-hassio"])
