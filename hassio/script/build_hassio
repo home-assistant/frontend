@@ -4,11 +4,6 @@
 # Stop on errors
 set -e
 
-cd "$(dirname "$0")/.."
+cd "$(dirname "$0")/../.."
 
-OUTPUT_DIR=build
-
-rm -rf $OUTPUT_DIR
-
-node script/gen-icons.js
-NODE_ENV=production CI=false ../node_modules/.bin/webpack -p --config webpack.config.js
+./node_modules/.bin/gulp build-hassio

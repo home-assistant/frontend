@@ -29,3 +29,10 @@ gulp.task("compress-app", function compressApp() {
 
   return merge(jsLatest, jsEs5, polyfills, translations);
 });
+
+gulp.task("compress-hassio", function compressApp() {
+  return gulp
+    .src(path.resolve(paths.hassio_root, "**/*.js"))
+    .pipe(zopfli())
+    .pipe(gulp.dest(paths.hassio_root));
+});
