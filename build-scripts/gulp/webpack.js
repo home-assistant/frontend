@@ -9,6 +9,7 @@ const {
   createDemoConfig,
   createCastConfig,
   createHassioConfig,
+  createGalleryConfig,
 } = require("../webpack");
 
 const bothBuilds = (createConfigFunc, params) => [
@@ -137,6 +138,31 @@ gulp.task(
           isProdBuild: true,
           latestBuild: false,
         }),
+        handler(resolve)
+      )
+    )
+);
+
+gulp.task("webpack-dev-server-gallery", () => {
+  runDevServer({
+    compiler: webpack(
+      createGalleryConfig({ latestBuild: true, isProdBuild: false })
+    ),
+    contentBase: paths.gallery_root,
+    port: 8100,
+  });
+});
+
+gulp.task(
+  "webpack-prod-gallery",
+  () =>
+    new Promise((resolve) =>
+      webpack(
+        createGalleryConfig({
+          isProdBuild: true,
+          latestBuild: true,
+        }),
+
         handler(resolve)
       )
     )

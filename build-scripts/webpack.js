@@ -235,9 +235,26 @@ const createHassioConfig = ({ isProdBuild, latestBuild }) => {
   return config;
 };
 
+const createGalleryConfig = ({ isProdBuild, latestBuild }) => {
+  if (!latestBuild) {
+    throw new Error("Gallery only supports latest build!");
+  }
+  const config = createWebpackConfig({
+    entry: {
+      entrypoint: path.resolve(paths.gallery_dir, "src/entrypoint.js"),
+    },
+    outputRoot: paths.gallery_root,
+    isProdBuild,
+    latestBuild,
+  });
+
+  return config;
+};
+
 module.exports = {
   createAppConfig,
   createDemoConfig,
   createCastConfig,
   createHassioConfig,
+  createGalleryConfig,
 };

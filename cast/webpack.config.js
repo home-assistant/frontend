@@ -1,7 +1,5 @@
-const {
-  isProdBuild,
-  createCastConfig,
-} = require("../build-scripts/webpack.js");
+const { createCastConfig } = require("../build-scripts/webpack.js");
+const { isProdBuild } = require("../build-scripts/env.js");
 
 // File just used for stats builds
 

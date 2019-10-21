@@ -21,6 +21,11 @@ module.exports = {
   cast_output: path.resolve(__dirname, "../cast/dist/frontend_latest"),
   cast_output_es5: path.resolve(__dirname, "../cast/dist/frontend_es5"),
 
+  gallery_dir: path.resolve(__dirname, "../gallery"),
+  gallery_root: path.resolve(__dirname, "../gallery/dist"),
+  gallery_output: path.resolve(__dirname, "../gallery/dist/frontend_latest"),
+  gallery_static: path.resolve(__dirname, "../gallery/dist/static"),
+
   hassio_dir: path.resolve(__dirname, "../hassio"),
   hassio_root: path.resolve(__dirname, "../hassio/build"),
   hassio_publicPath: "/api/hassio/app",

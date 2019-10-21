@@ -30,3 +30,10 @@ gulp.task(
     return del([config.hassio_root, config.build_dir]);
   })
 );
+
+gulp.task(
+  "clean-gallery",
+  gulp.parallel("clean-translations", function cleanOutputAndBuildDir() {
+    return del([config.gallery_root, config.build_dir]);
+  })
+);
