@@ -133,9 +133,11 @@ export class HuiEditView extends LitElement {
         <div class="paper-dialog-buttons">
           ${this.viewIndex !== undefined
             ? html`
-              <mwc-button class="delete" @click="${this._delete}">
-                ${this.hass!.localize("ui.panel.lovelace.editor.edit_view.delete")}
-              </mwc-button>
+                <mwc-button class="delete" @click="${this._delete}">
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.editor.edit_view.delete"
+                  )}
+                </mwc-button>
               `
             : ""}
           <mwc-button @click="${this._closeDialog}"
