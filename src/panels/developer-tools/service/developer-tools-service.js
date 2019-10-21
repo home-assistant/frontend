@@ -2,7 +2,7 @@ import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import yaml from "js-yaml";
+import { safeDump, safeLoad } from "js-yaml";
 
 import { ENTITY_COMPONENT_DOMAINS } from "../../../data/entity";
 import "../../../components/entity/ha-entity-picker";
@@ -266,7 +266,7 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
 
   _computeParsedServiceData(serviceData) {
     try {
-      return serviceData.trim() ? yaml.safeLoad(serviceData) : {};
+      return serviceData.trim() ? safeLoad(serviceData) : {};
     } catch (err) {
       return ERROR_SENTINEL;
     }
@@ -310,18 +310,18 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
       if (attribute.example) {
         let value = "";
         try {
-          value = yaml.safeLoad(attribute.example);
+          value = safeLoad(attribute.example);
         } catch (err) {
           value = attribute.example;
         }
         example[attribute.key] = value;
       }
     });
-    this.serviceData = yaml.safeDump(example);
+    this.serviceData = safeDump(example);
   }
 
   _entityPicked(ev) {
-    this.serviceData = yaml.safeDump({
+    this.serviceData = safeDump({
       ...this.parsedJSON,
       entity_id: ev.target.value,
     });

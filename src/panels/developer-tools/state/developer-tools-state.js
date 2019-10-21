@@ -4,7 +4,7 @@ import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import yaml from "js-yaml";
+import { safeDump, safeLoad } from "js-yaml";
 
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-code-editor";
@@ -235,14 +235,14 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     var state = ev.model.entity;
     this._entityId = state.entity_id;
     this._state = state.state;
-    this._stateAttributes = yaml.safeDump(state.attributes);
+    this._stateAttributes = safeDump(state.attributes);
     ev.preventDefault();
   }
 
   entityIdChanged() {
     var state = this.hass.states[this._entityId];
     this._state = state.state;
-    this._stateAttributes = yaml.safeDump(state.attributes);
+    this._stateAttributes = safeDump(state.attributes);
   }
 
   entityMoreInfo(ev) {
@@ -363,7 +363,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   _computeParsedStateAttributes(stateAttributes) {
     try {
-      return stateAttributes.trim() ? yaml.safeLoad(stateAttributes) : {};
+      return stateAttributes.trim() ? safeLoad(stateAttributes) : {};
     } catch (err) {
       return ERROR_SENTINEL;
     }
