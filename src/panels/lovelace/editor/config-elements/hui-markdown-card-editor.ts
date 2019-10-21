@@ -16,10 +16,13 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { configElementStyle } from "./config-elements-style";
 import { MarkdownCardConfig } from "../../cards/types";
 
+import "../../components/hui-theme-select-editor";
+
 const cardConfigStruct = struct({
   type: "string",
   title: "string?",
   content: "string",
+  theme: "string?",
 });
 
 @customElement("hui-markdown-card-editor")
@@ -40,6 +43,10 @@ export class HuiMarkdownCardEditor extends LitElement
 
   get _content(): string {
     return this._config!.content || "";
+  }
+
+  get _theme(): string {
+    return this._config!.theme || "Backend-selected";
   }
 
   protected render(): TemplateResult | void {
@@ -73,6 +80,12 @@ export class HuiMarkdownCardEditor extends LitElement
           autocomplete="off"
           spellcheck="false"
         ></paper-textarea>
+        <hui-theme-select-editor
+          .hass="${this.hass}"
+          .value="${this._theme}"
+          .configValue="${"theme"}"
+          @theme-changed="${this._valueChanged}"
+        ></hui-theme-select-editor>
       </div>
     `;
   }

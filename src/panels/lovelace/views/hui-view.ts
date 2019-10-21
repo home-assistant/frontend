@@ -9,7 +9,7 @@ import {
 import "../../../components/entity/ha-state-label-badge";
 // This one is for types
 
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 import {
   LovelaceViewConfig,

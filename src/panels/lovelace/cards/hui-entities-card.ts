@@ -22,7 +22,7 @@ import { createRowElement } from "../common/create-row-element";
 import { EntitiesCardConfig, EntitiesCardEntityConfig } from "./types";
 
 import { computeDomain } from "../../../common/entity/compute_domain";
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
@@ -71,9 +71,22 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     this._configEntities = entities;
   }
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
-    if (this._hass && this._config) {
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (!this._config || !this._hass) {
+      return;
+    }
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldConfig = changedProps.get("_config") as
+      | EntitiesCardConfig
+      | undefined;
+
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
       applyThemesOnElement(this, this._hass.themes, this._config.theme);
     }
   }
