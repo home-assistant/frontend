@@ -427,7 +427,7 @@ export class HaDataTable extends BaseElement {
       }
 
       .mdc-data-table {
-        background-color: var(--mdc-data-table-background-color);
+        background-color: var(--data-table-background-color);
         border-radius: 4px;
         border-width: 1px;
         border-style: solid;
