@@ -5,6 +5,7 @@ import {
   CSSResult,
   css,
   customElement,
+  PropertyValues,
 } from "lit-element";
 import { HassEntity } from "home-assistant-js-websocket";
 import { TemplateResult, html } from "lit-html";
@@ -53,6 +54,23 @@ const weatherIcons = {
 class MoreInfoWeather extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public stateObj?: HassEntity;
+
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    if (changedProps.has("stateObj")) {
+      return true;
+    }
+
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (
+      !oldHass ||
+      oldHass.language !== this.hass.language ||
+      oldHass.config.unit_system !== this.hass.config.unit_system
+    ) {
+      return true;
+    }
+
+    return false;
+  }
 
   protected render(): TemplateResult | void {
     if (!this.hass || !this.stateObj) {
