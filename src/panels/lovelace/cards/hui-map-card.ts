@@ -327,17 +327,13 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
         // create icon
         let iconHTML = "";
-        const iconColor =
-          this._config!.dark_mode === true ? "#FFFFFF" : "#000000";
         if (icon) {
           const el = document.createElement("ha-icon");
           el.setAttribute("icon", icon);
-          el.style.color = iconColor;
           iconHTML = el.outerHTML;
         } else {
           const el = document.createElement("span");
           el.innerHTML = title;
-          el.style.color = iconColor;
           iconHTML = el.outerHTML;
         }
 
@@ -347,7 +343,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             icon: Leaflet.divIcon({
               html: iconHTML,
               iconSize: [24, 24],
-              className: "",
+              className: this._config!.dark_mode === true ? "dark" : "light",
             }),
             interactive: false,
             title,
@@ -470,6 +466,14 @@ class HuiMapCard extends LitElement implements LovelaceCard {
 
       :host([ispanel]) #root {
         height: 100%;
+      }
+
+      .dark {
+        color: #ffffff;
+      }
+
+      .light {
+        color: #000000;
       }
     `;
   }
