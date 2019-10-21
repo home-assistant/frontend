@@ -1,4 +1,3 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import {
   property,
   LitElement,
@@ -70,10 +69,9 @@ class MoreInfoSun extends LitElement {
     return css`
       .row {
         margin: 0 8px;
-        padding-top: 20px;
         display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
+        flex-direction: row;
+        justify-content: space-between;
       }
     `;
   }
