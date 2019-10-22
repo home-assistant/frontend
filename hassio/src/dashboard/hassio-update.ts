@@ -168,7 +168,7 @@ export class HassioUpdate extends LitElement {
         }
         .update-heading {
           font-size: var(--paper-font-subhead_-_font-size);
-          font-weight: bold;
+          font-weight: 500;
           margin-bottom: 0.5em;
         }
         .warning {
