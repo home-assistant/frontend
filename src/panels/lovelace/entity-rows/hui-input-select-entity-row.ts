@@ -18,7 +18,7 @@ import "../components/hui-warning";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import { HomeAssistant, InputSelectEntity } from "../../../types";
-import { EntityRow, EntityConfig } from "./types";
+import { EntityRow } from "./types";
 import { setInputSelectOption } from "../../../data/input-select";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { forwardHaptic } from "../../../data/haptics";
@@ -29,14 +29,15 @@ import { handleClick } from "../common/handle-click";
 import { classMap } from "lit-html/directives/class-map";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { EntitiesCardEntityConfig } from "../cards/types";
 
 @customElement("hui-input-select-entity-row")
 class HuiInputSelectEntityRow extends LitElement implements EntityRow {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: EntityConfig;
+  @property() private _config?: EntitiesCardEntityConfig;
 
-  public setConfig(config: EntityConfig): void {
+  public setConfig(config: EntitiesCardEntityConfig): void {
     if (!config || !config.entity) {
       throw new Error("Invalid Configuration: 'entity' required");
     }

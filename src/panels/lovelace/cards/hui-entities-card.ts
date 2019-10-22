@@ -170,9 +170,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      <div>
-        ${element}
-      </div>
+      <div>${element}</div>
     `;
   }
 }
