@@ -111,7 +111,7 @@ class HaConfigEntryPage extends LitElement {
             "integration",
             configEntry.title
           )}
-          @click=${this._removeEntry}
+          @click=${this._confirmRemoveEntry}
         ></paper-icon-button>
 
         <div class="content">
@@ -160,23 +160,26 @@ class HaConfigEntryPage extends LitElement {
     });
   }
 
-  private _removeEntry() {
+  private _confirmRemoveEntry() {
     showConfirmationDialog(this, {
       text: this.hass.localize(
         "ui.panel.config.integrations.config_entry.delete_confirm"
       ),
-      confirm: () =>
-        deleteConfigEntry(this.hass, this.configEntryId).then((result) => {
-          fireEvent(this, "hass-reload-entries");
-          if (result.require_restart) {
-            alert(
-              this.hass.localize(
-                "ui.panel.config.integrations.config_entry.restart_confirm"
-              )
-            );
-          }
-          navigate(this, "/config/integrations/dashboard", true);
-        }),
+      confirm: () => this._removeEntry(),
+    });
+  }
+
+  private _removeEntry() {
+    deleteConfigEntry(this.hass, this.configEntryId).then((result) => {
+      fireEvent(this, "hass-reload-entries");
+      if (result.require_restart) {
+        alert(
+          this.hass.localize(
+            "ui.panel.config.integrations.config_entry.restart_confirm"
+          )
+        );
+      }
+      navigate(this, "/config/integrations/dashboard", true);
     });
   }
 
