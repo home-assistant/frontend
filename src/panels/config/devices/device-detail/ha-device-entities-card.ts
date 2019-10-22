@@ -62,6 +62,7 @@ export class HaDeviceEntitiesCard extends LitElement {
                   ${stateObj
                     ? html`
                         <state-badge
+                          @click=${this._openMoreInfo}
                           .stateObj=${stateObj}
                           slot="item-icon"
                         ></state-badge>
@@ -72,7 +73,7 @@ export class HaDeviceEntitiesCard extends LitElement {
                           .icon=${domainIcon(computeDomain(entry.entity_id))}
                         ></ha-icon>
                       `}
-                  <paper-item-body two-line>
+                  <paper-item-body two-line @click=${this._openMoreInfo}>
                     <div class="name">${entry.stateName}</div>
                     <div class="secondary entity-id">${entry.entity_id}</div>
                   </paper-item-body>
@@ -138,6 +139,12 @@ export class HaDeviceEntitiesCard extends LitElement {
       }
       .disabled-entry {
         color: var(--secondary-text-color);
+      }
+      state-badge {
+        cursor: pointer;
+      }
+      paper-icon-item:not(.disabled-entry) paper-item-body {
+        cursor: pointer;
       }
     `;
   }
