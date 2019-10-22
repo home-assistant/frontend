@@ -75,6 +75,7 @@ export interface DataEntryFlowDialogParams {
   continueFlowId?: string;
   dialogClosedCallback?: (params: { flowFinished: boolean }) => void;
   flowConfig: FlowConfig;
+  showAdvanced?: boolean;
 }
 
 export const loadDataEntryFlowDialog = () =>
