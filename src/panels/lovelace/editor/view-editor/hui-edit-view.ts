@@ -301,9 +301,9 @@ export class HuiEditView extends LitElement {
           height: 14px;
           margin-right: 20px;
         }
-        paper-icon-button.delete {
+        .delete {
           margin-right: auto;
-          color: var(--secondary-text-color);
+          --mdc-theme-primary: var(--secondary-text-color);
         }
         paper-spinner {
           display: none;
@@ -315,8 +315,8 @@ export class HuiEditView extends LitElement {
           display: none;
         }
         .error {
-          color: #ef5350;
-          border-bottom: 1px solid #ef5350;
+          color: var(--error-color);
+          border-bottom: 1px solid var(--error-color);
         }
       </style>
     `,
