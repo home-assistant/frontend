@@ -1397,6 +1397,7 @@
           },
           "edit_view": {
             "header": "View Configuration",
+            "header_name": "{name} View Configuration",
             "add": "Add view",
             "edit": "Edit view",
             "delete": "Delete view"
