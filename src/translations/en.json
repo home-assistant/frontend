@@ -1204,6 +1204,7 @@
             "firmware": "Firmware: {version}",
             "device_unavailable": "device unavailable",
             "entity_unavailable": "entity unavailable",
+            "area": "In {area}",
             "no_area": "No Area"
           },
           "config_flow": {
