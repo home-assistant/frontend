@@ -1,6 +1,5 @@
 // Tasks to run webpack.
 const gulp = require("gulp");
-const path = require("path");
 const webpack = require("webpack");
 const WebpackDevServer = require("webpack-dev-server");
 const log = require("fancy-log");
@@ -9,7 +8,32 @@ const {
   createAppConfig,
   createDemoConfig,
   createCastConfig,
+  createHassioConfig,
+  createGalleryConfig,
 } = require("../webpack");
+
+const bothBuilds = (createConfigFunc, params) => [
+  createConfigFunc({ ...params, latestBuild: true }),
+  createConfigFunc({ ...params, latestBuild: false }),
+];
+
+const runDevServer = ({
+  compiler,
+  contentBase,
+  port,
+  listenHost = "localhost",
+}) =>
+  new WebpackDevServer(compiler, {
+    open: true,
+    watchContentBase: true,
+    contentBase,
+  }).listen(port, listenHost, function(err) {
+    if (err) {
+      throw err;
+    }
+    // Server listening
+    log("[webpack-dev-server]", `http://localhost:${port}`);
+  });
 
 const handler = (done) => (err, stats) => {
   if (err) {
@@ -32,20 +56,11 @@ const handler = (done) => (err, stats) => {
 };
 
 gulp.task("webpack-watch-app", () => {
-  const compiler = webpack([
-    createAppConfig({
-      isProdBuild: false,
-      latestBuild: true,
-      isStatsBuild: false,
-    }),
-    createAppConfig({
-      isProdBuild: false,
-      latestBuild: false,
-      isStatsBuild: false,
-    }),
-  ]);
-  compiler.watch({}, handler());
   // we are not calling done, so this command will run forever
+  webpack(bothBuilds(createAppConfig, { isProdBuild: false })).watch(
+    {},
+    handler()
+  );
 });
 
 gulp.task(
@@ -53,47 +68,17 @@ gulp.task(
   () =>
     new Promise((resolve) =>
       webpack(
-        [
-          createAppConfig({
-            isProdBuild: true,
-            latestBuild: true,
-            isStatsBuild: false,
-          }),
-          createAppConfig({
-            isProdBuild: true,
-            latestBuild: false,
-            isStatsBuild: false,
-          }),
-        ],
+        bothBuilds(createAppConfig, { isProdBuild: true }),
         handler(resolve)
       )
     )
 );
 
 gulp.task("webpack-dev-server-demo", () => {
-  const compiler = webpack([
-    createDemoConfig({
-      isProdBuild: false,
-      latestBuild: false,
-      isStatsBuild: false,
-    }),
-    createDemoConfig({
-      isProdBuild: false,
-      latestBuild: true,
-      isStatsBuild: false,
-    }),
-  ]);
-
-  new WebpackDevServer(compiler, {
-    open: true,
-    watchContentBase: true,
-    contentBase: path.resolve(paths.demo_dir, "dist"),
-  }).listen(8090, "localhost", function(err) {
-    if (err) {
-      throw err;
-    }
-    // Server listening
-    log("[webpack-dev-server]", "http://localhost:8090");
+  runDevServer({
+    compiler: webpack(bothBuilds(createDemoConfig, { isProdBuild: false })),
+    contentBase: paths.demo_root,
+    port: 8090,
   });
 });
 
@@ -102,51 +87,22 @@ gulp.task(
   () =>
     new Promise((resolve) =>
       webpack(
-        [
-          createDemoConfig({
-            isProdBuild: true,
-            latestBuild: false,
-            isStatsBuild: false,
-          }),
-          createDemoConfig({
-            isProdBuild: true,
-            latestBuild: true,
-            isStatsBuild: false,
-          }),
-        ],
+        bothBuilds(createDemoConfig, {
+          isProdBuild: true,
+        }),
         handler(resolve)
       )
     )
 );
 
 gulp.task("webpack-dev-server-cast", () => {
-  const compiler = webpack([
-    createCastConfig({
-      isProdBuild: false,
-      latestBuild: false,
-    }),
-    createCastConfig({
-      isProdBuild: false,
-      latestBuild: true,
-    }),
-  ]);
-
-  new WebpackDevServer(compiler, {
-    open: true,
-    watchContentBase: true,
-    contentBase: path.resolve(paths.cast_dir, "dist"),
-  }).listen(
-    8080,
+  runDevServer({
+    compiler: webpack(bothBuilds(createCastConfig, { isProdBuild: false })),
+    contentBase: paths.cast_root,
+    port: 8080,
     // Accessible from the network, because that's how Cast hits it.
-    "0.0.0.0",
-    function(err) {
-      if (err) {
-        throw err;
-      }
-      // Server listening
-      log("[webpack-dev-server]", "http://localhost:8080");
-    }
-  );
+    listenHost: "0.0.0.0",
+  });
 });
 
 gulp.task(
@@ -154,16 +110,59 @@ gulp.task(
   () =>
     new Promise((resolve) =>
       webpack(
-        [
-          createCastConfig({
-            isProdBuild: true,
-            latestBuild: false,
-          }),
-          createCastConfig({
-            isProdBuild: true,
-            latestBuild: true,
-          }),
-        ],
+        bothBuilds(createCastConfig, {
+          isProdBuild: true,
+        }),
+
+        handler(resolve)
+      )
+    )
+);
+
+gulp.task("webpack-watch-hassio", () => {
+  // we are not calling done, so this command will run forever
+  webpack(
+    createHassioConfig({
+      isProdBuild: false,
+      latestBuild: false,
+    })
+  ).watch({}, handler());
+});
+
+gulp.task(
+  "webpack-prod-hassio",
+  () =>
+    new Promise((resolve) =>
+      webpack(
+        createHassioConfig({
+          isProdBuild: true,
+          latestBuild: false,
+        }),
+        handler(resolve)
+      )
+    )
+);
+
+gulp.task("webpack-dev-server-gallery", () => {
+  runDevServer({
+    compiler: webpack(
+      createGalleryConfig({ latestBuild: true, isProdBuild: false })
+    ),
+    contentBase: paths.gallery_root,
+    port: 8100,
+  });
+});
+
+gulp.task(
+  "webpack-prod-gallery",
+  () =>
+    new Promise((resolve) =>
+      webpack(
+        createGalleryConfig({
+          isProdBuild: true,
+          latestBuild: true,
+        }),
+
         handler(resolve)
       )
     )

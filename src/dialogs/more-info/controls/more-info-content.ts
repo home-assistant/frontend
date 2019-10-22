@@ -1,8 +1,4 @@
-import {
-  PropertyDeclarations,
-  PropertyValues,
-  UpdatingElement,
-} from "lit-element";
+import { PropertyValues, UpdatingElement, property } from "lit-element";
 import { HassEntity } from "home-assistant-js-websocket";
 
 import "./more-info-alarm_control_panel";
@@ -10,6 +6,7 @@ import "./more-info-automation";
 import "./more-info-camera";
 import "./more-info-climate";
 import "./more-info-configurator";
+import "./more-info-counter";
 import "./more-info-cover";
 import "./more-info-default";
 import "./more-info-fan";
@@ -32,16 +29,9 @@ import dynamicContentUpdater from "../../../common/dom/dynamic_content_updater";
 import { HomeAssistant } from "../../../types";
 
 class MoreInfoContent extends UpdatingElement {
-  public hass?: HomeAssistant;
-  public stateObj?: HassEntity;
+  @property() public hass?: HomeAssistant;
+  @property() public stateObj?: HassEntity;
   private _detachedChild?: ChildNode;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      stateObj: {},
-    };
-  }
 
   protected firstUpdated(): void {
     this.style.position = "relative";

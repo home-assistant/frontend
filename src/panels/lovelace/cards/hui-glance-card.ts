@@ -11,7 +11,7 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import relativeTime from "../../../common/datetime/relative_time";
 
 import "../../../components/entity/state-badge";
@@ -87,17 +87,23 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (oldHass && this._configEntities) {
-      for (const entity of this._configEntities) {
-        if (
-          oldHass.states[entity.entity] !== this.hass!.states[entity.entity]
-        ) {
-          return true;
-        }
-      }
-      return false;
+
+    if (
+      !this._configEntities ||
+      !oldHass ||
+      oldHass.themes !== this.hass!.themes ||
+      oldHass.language !== this.hass!.language
+    ) {
+      return true;
     }
-    return true;
+
+    for (const entity of this._configEntities) {
+      if (oldHass.states[entity.entity] !== this.hass!.states[entity.entity]) {
+        return true;
+      }
+    }
+
+    return false;
   }
 
   protected render(): TemplateResult | void {
@@ -117,14 +123,23 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  protected updated(changedProperties: PropertyValues): void {
-    super.updated(changedProperties);
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
     if (!this._config || !this.hass) {
       return;
     }
 
-    const oldHass = changedProperties.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.themes !== this.hass.themes) {
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldConfig = changedProps.get("_config") as
+      | GlanceCardConfig
+      | undefined;
+
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
   }
@@ -183,7 +198,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     return html`
       <div
         class="entity"
-        .entityConf="${entityConf}"
+        .config="${entityConf}"
         @ha-click=${this._handleClick}
         @ha-hold=${this._handleHold}
         @ha-dblclick=${this._handleDblClick}
@@ -231,17 +246,17 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
   }
 
   private _handleClick(ev: MouseEvent): void {
-    const config = (ev.currentTarget as any).entityConf as GlanceConfigEntity;
+    const config = (ev.currentTarget as any).config as GlanceConfigEntity;
     handleClick(this, this.hass!, config, false, false);
   }
 
   private _handleHold(ev: MouseEvent): void {
-    const config = (ev.currentTarget as any).entityConf as GlanceConfigEntity;
+    const config = (ev.currentTarget as any).config as GlanceConfigEntity;
     handleClick(this, this.hass!, config, true, false);
   }
 
   private _handleDblClick(ev: MouseEvent): void {
-    const config = (ev.currentTarget as any).entityConf as GlanceConfigEntity;
+    const config = (ev.currentTarget as any).config as GlanceConfigEntity;
     handleClick(this, this.hass!, config, false, true);
   }
 }

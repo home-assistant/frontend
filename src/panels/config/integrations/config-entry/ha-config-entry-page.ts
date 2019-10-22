@@ -85,17 +85,32 @@ class HaConfigEntryPage extends LitElement {
                 slot="toolbar-icon"
                 icon="hass:settings"
                 @click=${this._showSettings}
+                title=${this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.settings_button",
+                  "integration",
+                  configEntry.title
+                )}
               ></paper-icon-button>
             `
           : ""}
         <paper-icon-button
           slot="toolbar-icon"
           icon="hass:message-settings-variant"
+          title=${this.hass.localize(
+            "ui.panel.config.integrations.config_entry.system_options_button",
+            "integration",
+            configEntry.title
+          )}
           @click=${this._showSystemOptions}
         ></paper-icon-button>
         <paper-icon-button
           slot="toolbar-icon"
           icon="hass:delete"
+          title=${this.hass.localize(
+            "ui.panel.config.integrations.config_entry.delete_button",
+            "integration",
+            configEntry.title
+          )}
           @click=${this._removeEntry}
         ></paper-icon-button>
 

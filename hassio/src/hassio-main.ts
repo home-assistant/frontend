@@ -3,7 +3,7 @@ import { PolymerElement } from "@polymer/polymer";
 import "@polymer/paper-icon-button";
 
 import "../../src/resources/ha-style";
-import applyThemesOnElement from "../../src/common/dom/apply_themes_on_element";
+import { applyThemesOnElement } from "../../src/common/dom/apply_themes_on_element";
 import { fireEvent } from "../../src/common/dom/fire_event";
 import {
   HassRouterPage,
