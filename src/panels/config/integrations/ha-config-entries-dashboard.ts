@@ -42,6 +42,7 @@ import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 @customElement("ha-config-entries-dashboard")
 export class HaConfigManagerDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
+  @property() public showAdvanced!: boolean;
 
   @property() private configEntries!: ConfigEntry[];
 
@@ -164,6 +165,7 @@ export class HaConfigManagerDashboard extends LitElement {
   private _createFlow() {
     showConfigFlowDialog(this, {
       dialogClosedCallback: () => fireEvent(this, "hass-reload-entries"),
+      showAdvanced: this.showAdvanced,
     });
   }
 

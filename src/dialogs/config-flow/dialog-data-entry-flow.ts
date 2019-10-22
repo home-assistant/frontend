@@ -141,6 +141,7 @@ class DataEntryFlowDialog extends LitElement {
                 .flowConfig=${this._params.flowConfig}
                 .hass=${this.hass}
                 .handlers=${this._handlers}
+                .showAdvanced=${this._params.showAdvanced}
               ></step-flow-pick-handler>
             `
           : this._step.type === "form"
