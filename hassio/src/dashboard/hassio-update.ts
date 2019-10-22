@@ -7,6 +7,7 @@ import {
   property,
   customElement,
 } from "lit-element";
+import "@polymer/iron-icon/iron-icon";
 
 import { HomeAssistant } from "../../../src/types";
 import {
@@ -33,12 +34,15 @@ export class HassioUpdate extends LitElement {
   @property() public error?: string;
 
   protected render(): TemplateResult | void {
-    if (
-      this.hassInfo.version === this.hassInfo.last_version &&
-      this.supervisorInfo.version === this.supervisorInfo.last_version &&
-      (!this.hassOsInfo ||
-        this.hassOsInfo.version === this.hassOsInfo.version_latest)
-    ) {
+    const updatesAvailable: number = [
+      this.hassInfo,
+      this.supervisorInfo,
+      this.hassOsInfo,
+    ].filter((value) => {
+      return !!value && value.version !== value.last_version;
+    }).length;
+
+    if (!updatesAvailable) {
       return html``;
     }
 
@@ -50,6 +54,11 @@ export class HassioUpdate extends LitElement {
             `
           : ""}
         <div class="card-group">
+          <div class="title">
+            ${updatesAvailable > 1
+              ? "Updates Available 🎉"
+              : "Update Available 🎉"}
+          </div>
           ${this._renderUpdateCard(
             "Home Assistant",
             this.hassInfo.version,
@@ -57,7 +66,8 @@ export class HassioUpdate extends LitElement {
             "hassio/homeassistant/update",
             `https://${
               this.hassInfo.last_version.includes("b") ? "rc" : "www"
-            }.home-assistant.io/latest-release-notes/`
+            }.home-assistant.io/latest-release-notes/`,
+            "hassio:home-assistant"
           )}
           ${this._renderUpdateCard(
             "Hass.io Supervisor",
@@ -89,18 +99,31 @@ export class HassioUpdate extends LitElement {
     curVersion: string,
     lastVersion: string,
     apiPath: string,
-    releaseNotesUrl: string
+    releaseNotesUrl: string,
+    icon?: string
   ): TemplateResult {
     if (lastVersion === curVersion) {
       return html``;
     }
     return html`
-      <paper-card heading="${name} update available! 🎉">
+      <paper-card>
         <div class="card-content">
-          ${name} ${lastVersion} is available and you are currently running
-          ${name} ${curVersion}.
+          ${icon
+            ? html`
+                <div class="icon">
+                  <iron-icon .icon="${icon}" />
+                </div>
+              `
+            : ""}
+          <div class="update-heading">${name} ${lastVersion}</div>
+          <div class="warning">
+            You are currently running version ${curVersion}
+          </div>
         </div>
         <div class="card-actions">
+          <a href="${releaseNotesUrl}" target="_blank">
+            <mwc-button>Release notes</mwc-button>
+          </a>
           <ha-call-api-button
             .hass=${this.hass}
             .path=${apiPath}
@@ -108,9 +131,6 @@ export class HassioUpdate extends LitElement {
           >
             Update
           </ha-call-api-button>
-          <a href="${releaseNotesUrl}" target="_blank">
-            <mwc-button>Release notes</mwc-button>
-          </a>
         </div>
       </paper-card>
     `;
@@ -139,6 +159,23 @@ export class HassioUpdate extends LitElement {
         paper-card {
           display: inline-block;
           margin-bottom: 32px;
+        }
+        .icon {
+          --iron-icon-height: 48px;
+          --iron-icon-width: 48px;
+          float: right;
+          margin: 0 0 2px 10px;
+        }
+        .update-heading {
+          font-size: var(--paper-font-subhead_-_font-size);
+          font-weight: 500;
+          margin-bottom: 0.5em;
+        }
+        .warning {
+          color: var(--secondary-text-color);
+        }
+        .card-actions {
+          text-align: right;
         }
         .errors {
           color: var(--google-red-500);
