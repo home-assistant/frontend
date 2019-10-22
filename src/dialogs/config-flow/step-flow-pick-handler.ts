@@ -31,6 +31,7 @@ class StepFlowPickHandler extends LitElement {
 
   @property() public hass!: HomeAssistant;
   @property() public handlers!: string[];
+  @property() public showAdvanced?: boolean;
   @property() private filter?: string;
   private _width?: number;
 
@@ -79,18 +80,24 @@ class StepFlowPickHandler extends LitElement {
             `
         )}
       </div>
-      <p>
-        ${this.hass.localize(
-          "ui.panel.config.integrations.note_about_integrations"
-        )}<br />
-        ${this.hass.localize(
-          "ui.panel.config.integrations.note_about_website_reference"
-        )}<a href="https://www.home-assistant.io/integrations/"
-          >${this.hass.localize(
-            "ui.panel.config.integrations.home_assistant_website"
-          )}.</a
-        >
-      </p>
+      ${this.showAdvanced
+        ? html`
+            <p>
+              ${this.hass.localize(
+                "ui.panel.config.integrations.note_about_integrations"
+              )}<br />
+              ${this.hass.localize(
+                "ui.panel.config.integrations.note_about_website_reference"
+              )}<a
+                href="https://www.home-assistant.io/integrations/"
+                target="_blank"
+                >${this.hass.localize(
+                  "ui.panel.config.integrations.home_assistant_website"
+                )}.
+              </a>
+            </p>
+          `
+        : ""}
     `;
   }
 
@@ -133,6 +140,11 @@ class StepFlowPickHandler extends LitElement {
       }
       p {
         text-align: center;
+        padding: 16px;
+        margin: 0;
+      }
+      p > a {
+        color: var(--primary-color);
       }
     `;
   }
