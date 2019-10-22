@@ -546,6 +546,11 @@
       }
     },
     "dialogs": {
+      "confirmation": {
+        "cancel": "Cancel",
+        "ok": "OK",
+        "title": "Are you sure?"
+      },
       "more_info_control": {
         "script": {
           "last_action": "Last Action"
@@ -1354,6 +1359,7 @@
       },
       "lovelace": {
         "cards": {
+          "confirm_delete": "Are you sure you want to delete this card?",
           "empty_state": {
             "title": "Welcome Home",
             "no_devices": "This page allows you to control your devices, however it looks like you have no devices set up yet. Head to the integrations page to get started.",
@@ -1373,6 +1379,10 @@
             "call_service": "Call service {name}",
             "more_info": "Show more-info: {name}"
           }
+        },
+        "views": {
+          "confirm_delete": "Are you sure you want to delete this view?",
+          "existing_cards": "You can't delete a view that has cards in it. Remove the cards first."
         },
         "menu": {
           "configure_ui": "Configure UI",
