@@ -217,6 +217,18 @@ export const demoEntitiesArsaboo: DemoConfig["entities"] = (localize) =>
         icon: "hademo:currency-usd",
       },
     },
+    "sensor.study_temp": {
+      entity_id: "sensor.study_temp",
+      state: "20.9",
+      attributes: {
+        unit_of_measurement: "°C",
+        device_class: "temperature",
+        friendly_name: localize(
+          "ui.panel.page-demo.config.arsaboo.names.temperature_study"
+        ),
+        icon: "hademo:thermometer",
+      },
+    },
     "cover.garagedoor": {
       entity_id: "cover.garagedoor",
       state: "closed",
