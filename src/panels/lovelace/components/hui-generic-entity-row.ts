@@ -52,25 +52,32 @@ class HuiGenericEntityRow extends LitElement {
       `;
     }
 
+    const pointer =
+      (this.config.tap_action && this.config.tap_action.action !== "none") ||
+      (this.config.entity &&
+        !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this.config.entity)));
+
     return html`
       <state-badge
+        class=${classMap({
+          pointer,
+        })}
         .hass=${this.hass}
         .stateObj=${stateObj}
         .overrideIcon=${this.config.icon}
         .overrideImage=${this.config.image}
+        @ha-click=${this._handleClick}
+        @ha-hold=${this._handleHold}
+        @ha-dblclick=${this._handleDblClick}
+        .longPress=${longPress({
+          hasDoubleClick: hasDoubleClick(this.config.double_tap_action),
+        })}
       ></state-badge>
       <div class="flex">
         <div
-          class="info"
           class=${classMap({
             info: true,
-            pointer:
-              (this.config.tap_action &&
-                this.config.tap_action.action !== "none") ||
-              (this.config.entity &&
-                !DOMAINS_HIDE_MORE_INFO.includes(
-                  computeDomain(this.config.entity)
-                )),
+            pointer,
           })}
           @ha-click=${this._handleClick}
           @ha-hold=${this._handleHold}
