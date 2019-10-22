@@ -1782,7 +1782,8 @@
               "master_bedroom": "Master Bedroom",
               "left": "Left",
               "right": "Right",
-              "mirror": "Mirror"
+              "mirror": "Mirror",
+              "temperature_study": "Temperature Study"
             },
             "labels": {
               "lights": "Lights",
