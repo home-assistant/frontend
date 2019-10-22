@@ -165,7 +165,7 @@ export class HuiCardOptions extends LitElement {
   }
 
   private _deleteCard(): void {
-    confDeleteCard(this.lovelace!, this.path!);
+    confDeleteCard(this, this.hass!, this.lovelace!, this.path!);
   }
 }
 
