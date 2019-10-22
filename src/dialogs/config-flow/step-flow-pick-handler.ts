@@ -93,8 +93,8 @@ class StepFlowPickHandler extends LitElement {
                 target="_blank"
                 >${this.hass.localize(
                   "ui.panel.config.integrations.home_assistant_website"
-                )}.
-              </a>
+                )}</a
+              >.
             </p>
           `
         : ""}
