@@ -16,8 +16,14 @@ import "../components/hui-warning";
 
 import { HomeAssistant } from "../../../types";
 import { computeRTL } from "../../../common/util/compute_rtl";
-import { EntitiesCardEntityConfig } from "../cards/types";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
+import { longPress } from "../common/directives/long-press-directive";
+import { hasDoubleClick } from "../common/has-double-click";
+import { handleClick } from "../common/handle-click";
+import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { classMap } from "lit-html/directives/class-map";
+import { EntitiesCardEntityConfig } from "../cards/types";
 
 class HuiGenericEntityRow extends LitElement {
   @property() public hass?: HomeAssistant;
@@ -54,7 +60,25 @@ class HuiGenericEntityRow extends LitElement {
         .overrideImage=${this.config.image}
       ></state-badge>
       <div class="flex">
-        <div class="info">
+        <div
+          class="info"
+          class=${classMap({
+            info: true,
+            pointer:
+              (this.config.tap_action &&
+                this.config.tap_action.action !== "none") ||
+              (this.config.entity &&
+                !DOMAINS_HIDE_MORE_INFO.includes(
+                  computeDomain(this.config.entity)
+                )),
+          })}
+          @ha-click=${this._handleClick}
+          @ha-hold=${this._handleHold}
+          @ha-dblclick=${this._handleDblClick}
+          .longPress=${longPress({
+            hasDoubleClick: hasDoubleClick(this.config.double_tap_action),
+          })}
+        >
           ${this.config.name || computeStateName(stateObj)}
           <div class="secondary">
             ${!this.showSecondary
@@ -84,6 +108,18 @@ class HuiGenericEntityRow extends LitElement {
     if (changedProps.has("hass")) {
       toggleAttribute(this, "rtl", computeRTL(this.hass!));
     }
+  }
+
+  private _handleClick(): void {
+    handleClick(this, this.hass!, this.config!, false, false);
+  }
+
+  private _handleHold(): void {
+    handleClick(this, this.hass!, this.config!, true, false);
+  }
+
+  private _handleDblClick(): void {
+    handleClick(this, this.hass!, this.config!, false, true);
   }
 
   static get styles(): CSSResult {
@@ -131,6 +167,9 @@ class HuiGenericEntityRow extends LitElement {
       :host([rtl]) .flex ::slotted(*) {
         margin-left: 0;
         margin-right: 8px;
+      }
+      .pointer {
+        cursor: pointer;
       }
     `;
   }

@@ -12,18 +12,13 @@ import {
 import "../../../components/ha-card";
 import "../components/hui-entities-toggle";
 
-import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { HomeAssistant } from "../../../types";
 import { EntityRow } from "../entity-rows/types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createRowElement } from "../common/create-row-element";
 import { EntitiesCardConfig, EntitiesCardEntityConfig } from "./types";
-import { computeDomain } from "../../../common/entity/compute_domain";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { longPress } from "../common/directives/long-press-directive";
-import { hasDoubleClick } from "../common/has-double-click";
-import { handleClick } from "../common/handle-click";
 
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
@@ -162,10 +157,6 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         overflow: hidden;
       }
 
-      .state-card-dialog {
-        cursor: pointer;
-      }
-
       .icon {
         padding: 0px 18px 0px 8px;
       }
@@ -177,42 +168,12 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     if (this._hass) {
       element.hass = this._hass;
     }
-    if (
-      (entityConf.tap_action && entityConf.tap_action.action !== "none") ||
-      (entityConf.entity &&
-        !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityConf.entity)))
-    ) {
-      element.classList.add("state-card-dialog");
-    }
 
     return html`
-      <div
-        @ha-click=${this._handleClick}
-        @ha-hold=${this._handleHold}
-        @ha-dblclick=${this._handleDblClick}
-        .longPress=${longPress({
-          hasDoubleClick: hasDoubleClick(entityConf.double_tap_action),
-        })}
-        .config=${entityConf}
-      >
+      <div>
         ${element}
       </div>
     `;
-  }
-
-  private _handleClick(ev: MouseEvent): void {
-    const config = (ev.currentTarget as any).config as EntitiesCardEntityConfig;
-    handleClick(this, this.hass!, config, false, false);
-  }
-
-  private _handleHold(ev: MouseEvent): void {
-    const config = (ev.currentTarget as any).config as EntitiesCardEntityConfig;
-    handleClick(this, this.hass!, config, true, false);
-  }
-
-  private _handleDblClick(ev: MouseEvent): void {
-    const config = (ev.currentTarget as any).config as EntitiesCardEntityConfig;
-    handleClick(this, this.hass!, config, false, true);
   }
 }
 
