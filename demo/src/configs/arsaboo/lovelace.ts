@@ -448,7 +448,7 @@ export const demoLovelaceArsaboo: DemoConfig["lovelace"] = (localize) => ({
         },
         {
           type: "sensor",
-          entity: "sensor.usdinr",
+          entity: "sensor.study_temp",
           graph: "line",
         },
         {
