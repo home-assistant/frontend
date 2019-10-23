@@ -78,6 +78,10 @@ class HuiGenericEntityRow extends LitElement {
           class=${classMap({
             info: true,
             pointer,
+            padName: this.showSecondary && !this.config.secondary_info,
+            padSecondary: Boolean(
+              !this.showSecondary || this.config.secondary_info
+            ),
           })}
           @ha-click=${this._handleClick}
           @ha-hold=${this._handleHold}
@@ -177,6 +181,12 @@ class HuiGenericEntityRow extends LitElement {
       }
       .pointer {
         cursor: pointer;
+      }
+      .padName {
+        padding: 12px 0px;
+      }
+      .padSecondary {
+        padding: 4px 0px;
       }
     `;
   }
