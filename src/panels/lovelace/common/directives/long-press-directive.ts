@@ -138,9 +138,16 @@ class LongPress extends HTMLElement implements LongPress {
       window.setTimeout(() => (this.cooldownEnd = false), 100);
     };
 
+    const handleEnter = (ev: Event) => {
+      if ((ev as KeyboardEvent).keyCode === 13) {
+        return clickEnd(ev);
+      }
+    };
+
     element.addEventListener("touchstart", clickStart, { passive: true });
     element.addEventListener("touchend", clickEnd);
     element.addEventListener("touchcancel", clickEnd);
+    element.addEventListener("keyup", handleEnter);
 
     // iOS 13 sends a complete normal touchstart-touchend series of events followed by a mousedown-click series.
     // That might be a bug, but until it's fixed, this should make long-press work.

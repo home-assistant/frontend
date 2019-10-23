@@ -72,6 +72,7 @@ class HuiGenericEntityRow extends LitElement {
         .longPress=${longPress({
           hasDoubleClick: hasDoubleClick(this.config.double_tap_action),
         })}
+        tabindex="0"
       ></state-badge>
       <div class="flex">
         <div

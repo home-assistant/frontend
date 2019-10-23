@@ -87,6 +87,7 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
         .longPress=${longPress({
           hasDoubleClick: hasDoubleClick(this._config.double_tap_action),
         })}
+        tabindex="0"
       ></state-badge>
       <ha-paper-dropdown-menu
         .label=${this._config.name || computeStateName(stateObj)}
