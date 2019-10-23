@@ -1,6 +1,6 @@
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import JsYaml from "js-yaml";
+import { safeLoad } from "js-yaml";
 
 import { createCardElement } from "../../../src/panels/lovelace/common/create-card-element";
 
@@ -62,7 +62,7 @@ class DemoCard extends PolymerElement {
       card.removeChild(card.lastChild);
     }
 
-    const el = createCardElement(JsYaml.safeLoad(config.config)[0]);
+    const el = createCardElement(safeLoad(config.config)[0]);
     el.hass = this.hass;
     card.appendChild(el);
   }

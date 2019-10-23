@@ -1,12 +1,8 @@
-import {
-  classMap,
-  html,
-  customElement,
-  Constructor,
-} from "@material/mwc-base/base-element";
+import { classMap, html, customElement } from "@material/mwc-base/base-element";
 import { ripple } from "@material/mwc-ripple/ripple-directive.js";
 
 import "@material/mwc-fab";
+import { Constructor } from "../types";
 // tslint:disable-next-line
 import { Fab } from "@material/mwc-fab";
 // tslint:disable-next-line

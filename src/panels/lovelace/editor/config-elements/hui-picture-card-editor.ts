@@ -8,6 +8,7 @@ import {
 import "@polymer/paper-input/paper-input";
 
 import "../../components/hui-action-editor";
+import "../../components/hui-theme-select-editor";
 
 import { struct } from "../../common/structs/struct";
 import {
@@ -27,6 +28,7 @@ const cardConfigStruct = struct({
   image: "string?",
   tap_action: struct.optional(actionConfigStruct),
   hold_action: struct.optional(actionConfigStruct),
+  theme: "string?",
 });
 
 @customElement("hui-picture-card-editor")
@@ -51,6 +53,10 @@ export class HuiPictureCardEditor extends LitElement
 
   get _hold_action(): ActionConfig {
     return this._config!.hold_action || { action: "none" };
+  }
+
+  get _theme(): string {
+    return this._config!.theme || "Backend-selected";
   }
 
   protected render(): TemplateResult | void {
@@ -98,6 +104,12 @@ export class HuiPictureCardEditor extends LitElement
             .configValue="${"hold_action"}"
             @action-changed="${this._valueChanged}"
           ></hui-action-editor>
+          <hui-theme-select-editor
+            .hass="${this.hass}"
+            .value="${this._theme}"
+            .configValue="${"theme"}"
+            @theme-changed="${this._valueChanged}"
+          ></hui-theme-select-editor>
         </div>
       </div>
     `;

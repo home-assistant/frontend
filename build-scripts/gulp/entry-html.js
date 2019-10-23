@@ -11,12 +11,6 @@ const config = require("../paths.js");
 const templatePath = (tpl) =>
   path.resolve(config.polymer_dir, "src/html/", `${tpl}.html.template`);
 
-const demoTemplatePath = (tpl) =>
-  path.resolve(config.demo_dir, "src/html/", `${tpl}.html.template`);
-
-const castTemplatePath = (tpl) =>
-  path.resolve(config.cast_dir, "src/html/", `${tpl}.html.template`);
-
 const readFile = (pth) => fs.readFileSync(pth).toString();
 
 const renderTemplate = (pth, data = {}, pathFunc = templatePath) => {
@@ -25,10 +19,19 @@ const renderTemplate = (pth, data = {}, pathFunc = templatePath) => {
 };
 
 const renderDemoTemplate = (pth, data = {}) =>
-  renderTemplate(pth, data, demoTemplatePath);
+  renderTemplate(pth, data, (tpl) =>
+    path.resolve(config.demo_dir, "src/html/", `${tpl}.html.template`)
+  );
 
 const renderCastTemplate = (pth, data = {}) =>
-  renderTemplate(pth, data, castTemplatePath);
+  renderTemplate(pth, data, (tpl) =>
+    path.resolve(config.cast_dir, "src/html/", `${tpl}.html.template`)
+  );
+
+const renderGalleryTemplate = (pth, data = {}) =>
+  renderTemplate(pth, data, (tpl) =>
+    path.resolve(config.gallery_dir, "src/html/", `${tpl}.html.template`)
+  );
 
 const minifyHtml = (content) =>
   minify(content, {
@@ -209,8 +212,33 @@ gulp.task("gen-index-demo-prod", (done) => {
     es5Compatibility: es5Manifest["compatibility.js"],
     es5DemoJS: es5Manifest["main.js"],
   });
-  const minified = minifyHtml(content).replace(/#THEMEC/g, "{{ theme_color }}");
+  const minified = minifyHtml(content);
 
   fs.outputFileSync(path.resolve(config.demo_root, "index.html"), minified);
+  done();
+});
+
+gulp.task("gen-index-gallery-dev", (done) => {
+  // In dev mode we don't mangle names, so we hardcode urls. That way we can
+  // run webpack as last in watch mode, which blocks output.
+  const content = renderGalleryTemplate("index", {
+    latestGalleryJS: "./entrypoint.js",
+  });
+
+  fs.outputFileSync(path.resolve(config.gallery_root, "index.html"), content);
+  done();
+});
+
+gulp.task("gen-index-gallery-prod", (done) => {
+  const latestManifest = require(path.resolve(
+    config.gallery_output,
+    "manifest.json"
+  ));
+  const content = renderGalleryTemplate("index", {
+    latestGalleryJS: latestManifest["entrypoint.js"],
+  });
+  const minified = minifyHtml(content);
+
+  fs.outputFileSync(path.resolve(config.gallery_root, "index.html"), minified);
   done();
 });

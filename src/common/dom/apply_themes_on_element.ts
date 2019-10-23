@@ -21,12 +21,12 @@ const hexToRgb = (hex: string): string | null => {
  * localTheme: selected theme.
  * updateMeta: boolean if we should update the theme-color meta element.
  */
-export default function applyThemesOnElement(
+export const applyThemesOnElement = (
   element,
   themes,
   localTheme,
   updateMeta = false
-) {
+) => {
   if (!element._themes) {
     element._themes = {};
   }
@@ -76,4 +76,4 @@ export default function applyThemesOnElement(
       styles["--primary-color"] || meta.getAttribute("default-content");
     meta.setAttribute("content", themeColor);
   }
-}
+};
