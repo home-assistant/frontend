@@ -28,6 +28,9 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
   service?: string;
   service_data?: object;
   url?: string;
+  tap_action?: ActionConfig;
+  hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 
 export interface EntitiesCardConfig extends LovelaceCardConfig {
