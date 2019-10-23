@@ -653,7 +653,8 @@
                         "set_wakeup": "Nastaviť interval prebudenia",
                         "config_parameter": "Konfigurovať parameter",
                         "set_config_parameter": "Nastavte konfiguračný parameter"
-                    }
+                    },
+                    "learn_more": "Viac informácií o Z-Wave"
                 },
                 "users": {
                     "caption": "Používatelia",
@@ -728,6 +729,9 @@
                         "header": "Zigbee Home Automation - Pridať zariadenia",
                         "spinner": "Vyhľadávanie ZHA Zigbee zariadení ...",
                         "discovery_text": "Tu sa zobrazia objavené zariadenia. Postupujte podľa pokynov pre zariadenie (zariadenia) a umiestnite zariadenie (zariadenia) do režimu párovania."
+                    },
+                    "cluster_commands": {
+                        "help_command_dropdown": "Vyberte príkaz na interakciu."
                     }
                 },
                 "area_registry": {
@@ -900,6 +904,10 @@
                 "vibrate": {
                     "header": "Vibrácie",
                     "description": "Pri ovládaní zariadení povoľte alebo zakážte vibrácie tohto zariadenia."
+                },
+                "advanced_mode": {
+                    "title": "Rozšírený režim",
+                    "description": "Home Asistent v predvolenom nastavení skryje rozšírené funkcie a možnosti. Začiarknutím tohto prepínača môžete tieto funkcie sprístupniť. Toto nastavenie je špecifické pre konkrétneho používateľa a nemá vplyv na ostatných používateľov používajúcich Home Assistant."
                 }
             },
             "page-authorize": {
@@ -1059,7 +1067,9 @@
                         "add": "Pridať kartu",
                         "edit": "Upraviť",
                         "delete": "Odstrániť",
-                        "move": "Presunúť"
+                        "move": "Presunúť",
+                        "show_visual_editor": "Zobraziť vizuálny editor",
+                        "show_code_editor": "Zobraziť editor kódu"
                     },
                     "migrate": {
                         "header": "Nekompatibilná konfigurácia",
@@ -1100,7 +1110,8 @@
                             "optional": "Voliteľné"
                         },
                         "entities": {
-                            "show_header_toggle": "Zobraziť prepínač hlavičky?"
+                            "show_header_toggle": "Zobraziť prepínač hlavičky?",
+                            "name": "Entity"
                         },
                         "generic": {
                             "entities": "Entity",
@@ -1123,14 +1134,67 @@
                             "geo_location_sources": "Zdroje geolokácie",
                             "dark_mode": "Tmavý režim?",
                             "default_zoom": "Predvolený zoom",
-                            "source": "Zdroj"
+                            "source": "Zdroj",
+                            "name": "Mapa"
                         },
                         "markdown": {
                             "content": "Obsah"
                         },
                         "sensor": {
                             "graph_detail": "Detail grafu",
-                            "graph_type": "Typ grafu"
+                            "graph_type": "Typ grafu",
+                            "name": "Snímač"
+                        },
+                        "alarm-panel": {
+                            "name": "Ovládací panel alarmu"
+                        },
+                        "entity-button": {
+                            "name": "Entita Tlačítka"
+                        },
+                        "entity-filter": {
+                            "name": "Filter entít"
+                        },
+                        "glance": {
+                            "name": "Náhľad"
+                        },
+                        "history-graph": {
+                            "name": "Graf Histórie"
+                        },
+                        "horizontal-stack": {
+                            "name": "Horizontálne zarovnanie"
+                        },
+                        "iframe": {
+                            "name": "iFrame"
+                        },
+                        "light": {
+                            "name": "Svetlo"
+                        },
+                        "media-control": {
+                            "name": "Ovládanie médií"
+                        },
+                        "picture": {
+                            "name": "Obrázok"
+                        },
+                        "picture-elements": {
+                            "name": "Entita obrázka"
+                        },
+                        "picture-entity": {
+                            "name": "Entita obrázka"
+                        },
+                        "picture-glance": {
+                            "name": "Náhľad obrázka"
+                        },
+                        "shopping-list": {
+                            "name": "Zoznam nákupov"
+                        },
+                        "thermostat": {
+                            "name": "Termostat"
+                        },
+                        "vertical-stack": {
+                            "name": "Zvislé zarovnanie"
+                        },
+                        "weather-forecast": {
+                            "name": "Predpoveď počasia"
                         }
                     }
                 },

@@ -659,13 +659,15 @@
                         "true": "True",
                         "false": "False",
                         "set_config_parameter": "Nastavte konfigurační parametr"
-                    }
+                    },
+                    "learn_more": "Další informace o Z-Wave"
                 },
                 "users": {
                     "caption": "Uživatelé",
                     "description": "Správa uživatelů",
                     "picker": {
-                        "title": "Uživatelé"
+                        "title": "Uživatelé",
+                        "system_generated": "Generovaný systémem"
                     },
                     "editor": {
                         "rename_user": "Přejmenovat uživatele",
@@ -673,7 +675,18 @@
                         "activate_user": "Aktivovat uživatele",
                         "deactivate_user": "Deaktivovat uživatele",
                         "delete_user": "Odstranit uživatele",
-                        "caption": "Zobrazit uživatele"
+                        "caption": "Zobrazit uživatele",
+                        "id": "ID",
+                        "owner": "Vlastník",
+                        "group": "Skupina",
+                        "active": "Aktivní",
+                        "system_generated": "Generovaný systémem",
+                        "system_generated_users_not_removable": "Nelze odebrat uživatele generované systémem.",
+                        "unnamed_user": "Nepojmenovaný uživatel",
+                        "enter_new_name": "Zadejte nové jméno",
+                        "user_rename_failed": "Přejmenování uživatele se nezdařilo:",
+                        "group_update_failed": "Aktualizace skupiny se nezdařila:",
+                        "confirm_user_deletion": "Opravdu chcete smazat {name} ?"
                     },
                     "add_user": {
                         "caption": "Přidat uživatele",
@@ -715,7 +728,9 @@
                             "description": "K dokončení tohoto kroku je nutné navštívit externí webovou stránku.",
                             "open_site": "Otevřít webové stránky"
                         }
-                    }
+                    },
+                    "note_about_website_reference": "Další jsou k dispozici na ",
+                    "home_assistant_website": "stránky Home Assistant"
                 },
                 "zha": {
                     "caption": "ZHA",
@@ -734,6 +749,18 @@
                         "header": "Zigbee Home Automation - Přidat zařízení",
                         "spinner": "Hledání zařízení ZHA Zigbee ...",
                         "discovery_text": "Zde se objeví nalezená zařízení. Postupujte dle pokynů pro vaše zařízení a uveďte je do režimu párování."
+                    },
+                    "common": {
+                        "add_devices": "Přidat zařízení",
+                        "clusters": "Clustery"
+                    },
+                    "cluster_attributes": {
+                        "attributes_of_cluster": "Atribut vybraného klastru",
+                        "get_zigbee_attribute": "Získat atribut Zigbee",
+                        "set_zigbee_attribute": "Nastavit atribut Zigbee"
+                    },
+                    "cluster_commands": {
+                        "help_command_dropdown": "Vyberte příkaz, se kterým chcete pracovat."
                     }
                 },
                 "area_registry": {
@@ -786,7 +813,12 @@
                         "name": "Jméno",
                         "device_tracker_intro": "Vyberte zařízení, která patří této osobě.",
                         "device_tracker_picked": "Sledovat zařízení",
-                        "device_tracker_pick": "Vyberte zařízení, které chcete sledovat"
+                        "device_tracker_pick": "Vyberte zařízení, které chcete sledovat",
+                        "link_presence_detection_integrations": "Integrace detekce přítomnosti",
+                        "link_integrations_page": "Stránka integrací",
+                        "delete": "Smazat",
+                        "create": "Vytvořit",
+                        "update": "Aktualizace"
                     }
                 },
                 "server_control": {
@@ -912,6 +944,10 @@
                 "vibrate": {
                     "header": "Vibrovat",
                     "description": "Povolit nebo zakázat vibrace na tomto zařízení při ovládání ostatních zařízení."
+                },
+                "advanced_mode": {
+                    "title": "Pokročilý režim",
+                    "description": "Home Assistant standardně skrývá pokročilé funkce a předvolby. Zapnutím této funkce je můžete zpřístupnit. Toto nastavení je specifické pro každého uživatele a neovlivňuje ostatní uživatele Home Assistantu."
                 }
             },
             "page-authorize": {
@@ -1072,7 +1108,9 @@
                         "add": "Přidat kartu",
                         "edit": "Upravit",
                         "delete": "Odstranit",
-                        "move": "Přesunout"
+                        "move": "Přesunout",
+                        "show_visual_editor": "Zobrazit vizuální editor",
+                        "show_code_editor": "Zobrazit editor kódu"
                     },
                     "migrate": {
                         "header": "Konfigurace není kompatibilní",
@@ -1116,7 +1154,8 @@
                             "optional": "Volitelné"
                         },
                         "entities": {
-                            "show_header_toggle": "Zobrazit přepínač záhlaví?"
+                            "show_header_toggle": "Zobrazit přepínač záhlaví?",
+                            "name": "Entity"
                         },
                         "gauge": {
                             "severity": {
@@ -1124,7 +1163,8 @@
                                 "green": "Zelená",
                                 "red": "Červaná",
                                 "yellow": "Žlutá"
-                            }
+                            },
+                            "name": "Měřidlo"
                         },
                         "glance": {
                             "columns": "Sloupce"
@@ -1157,14 +1197,60 @@
                             "geo_location_sources": "Zdroje geolokace",
                             "dark_mode": "Tmavý režim?",
                             "default_zoom": "Výchozí zvětšení",
-                            "source": "Zdroj"
+                            "source": "Zdroj",
+                            "name": "Mapa"
                         },
                         "markdown": {
-                            "content": "Obsah"
+                            "content": "Obsah",
+                            "name": "Markdown"
                         },
                         "sensor": {
                             "graph_detail": "Detail grafu",
-                            "graph_type": "Typ grafu"
+                            "graph_type": "Typ grafu",
+                            "name": "Senzor"
+                        },
+                        "alarm-panel": {
+                            "name": "Ovládací panel alarmu",
+                            "available_states": "Dostupné stavy"
+                        },
+                        "conditional": {
+                            "name": "Podmínka"
+                        },
+                        "entity-button": {
+                            "name": "Tlačítko entity"
+                        },
+                        "entity-filter": {
+                            "name": "Filtr entit"
+                        },
+                        "history-graph": {
+                            "name": "Graf historie"
+                        },
+                        "light": {
+                            "name": "Světlo"
+                        },
+                        "media-control": {
+                            "name": "Řízení médií"
+                        },
+                        "picture": {
+                            "name": "Obrázek"
+                        },
+                        "picture-entity": {
+                            "name": "Obrazková entita"
+                        },
+                        "plant-status": {
+                            "name": "Stav rostliny"
+                        },
+                        "shopping-list": {
+                            "name": "Nákupní seznam"
+                        },
+                        "thermostat": {
+                            "name": "Termostat"
+                        },
+                        "vertical-stack": {
+                            "name": "Svislá sada"
+                        },
+                        "weather-forecast": {
+                            "name": "Předpověď počasí"
                         }
                     }
                 },
