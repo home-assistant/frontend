@@ -22,7 +22,7 @@ export class HaSwitch extends MwcSwitch {
       Boolean(this._slot.assignedNodes().length)
     );
 
-    this.addEventListener("keyup", (ev) => {
+    this.addEventListener("keyup", (ev: KeyboardEvent) => {
       if (ev.keyCode === 13) {
         this.click();
       }
