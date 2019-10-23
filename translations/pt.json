@@ -305,7 +305,7 @@
     "ui": {
         "panel": {
             "shopping-list": {
-                "clear_completed": "Apagar completados",
+                "clear_completed": "Limpar concluídos",
                 "add_item": "Adicionar item",
                 "microphone_tip": "Clique no microfone do canto superior direito e diga “Add candy to my shopping list”"
             },
@@ -419,7 +419,7 @@
                         "learn_more": "Saber mais sobre automações"
                     },
                     "editor": {
-                        "introduction": "Crie automações para tornar a sua casa viva",
+                        "introduction": "Crie automações para dar vida à sua casa",
                         "default_name": "Nova Automação",
                         "save": "Guardar",
                         "unsaved_confirm": "Existem alterações não guardadas. Tem a certeza de que quer sair?",
@@ -504,7 +504,12 @@
                                     "leave": "Sair"
                                 },
                                 "device": {
-                                    "label": "Dispositivo"
+                                    "label": "Dispositivo",
+                                    "extra_fields": {
+                                        "above": "Acima",
+                                        "below": "Abaixo",
+                                        "for": "Duração"
+                                    }
                                 }
                             },
                             "learn_more": "Saber mais sobre acionadores"
@@ -553,7 +558,18 @@
                                     "zone": "Zona"
                                 },
                                 "device": {
-                                    "label": "Dispositivo"
+                                    "label": "Dispositivo",
+                                    "extra_fields": {
+                                        "above": "Acima de",
+                                        "below": "Abaixo de",
+                                        "for": "Duração"
+                                    }
+                                },
+                                "and": {
+                                    "label": "E"
+                                },
+                                "or": {
+                                    "label": "Ou"
                                 }
                             },
                             "learn_more": "Saber mais sobre condições"
@@ -596,7 +612,11 @@
                             "learn_more": "Saber mais sobre ações"
                         },
                         "load_error_not_editable": "Apenas as automações em automations.yaml são editáveis.",
-                        "load_error_unknown": "Erro ao carregar a automação ({err_no})."
+                        "load_error_unknown": "Erro ao carregar a automação ({err_no}).",
+                        "description": {
+                            "label": "Descrição",
+                            "placeholder": "Descrição opcional"
+                        }
                     }
                 },
                 "script": {
@@ -649,13 +669,18 @@
                         "true": "Verdadeiro",
                         "false": "Falso",
                         "set_config_parameter": "Definir o parâmetro de configuração"
+                    },
+                    "learn_more": "Saiba mais sobre o Z-Wave",
+                    "ozw_log": {
+                        "header": "Log OZW"
                     }
                 },
                 "users": {
                     "caption": "Utilizadores",
                     "description": "Gerir utilizadores",
                     "picker": {
-                        "title": "Utilizadores"
+                        "title": "Utilizadores",
+                        "system_generated": "Gerado pelo sistema"
                     },
                     "editor": {
                         "rename_user": "Alterar nome do utilizador",
@@ -663,7 +688,18 @@
                         "activate_user": "Ativar utilizador",
                         "deactivate_user": "Desativar utilizador",
                         "delete_user": "Apagar utilizador",
-                        "caption": "Ver utilizador"
+                        "caption": "Ver utilizador",
+                        "id": "ID",
+                        "owner": "Proprietário",
+                        "group": "Grupo",
+                        "active": "Ativo",
+                        "system_generated": "Gerado pelo sistema",
+                        "system_generated_users_not_removable": "Não é possível remover usuários gerados pelo sistema.",
+                        "unnamed_user": "Utilizador sem nome",
+                        "enter_new_name": "Introduza um novo nome",
+                        "user_rename_failed": "Falha na renomeação do utilizador:",
+                        "group_update_failed": "Falha na atualização do grupo:",
+                        "confirm_user_deletion": "Tem certeza de que deseja apagar {name} ?"
                     },
                     "add_user": {
                         "caption": "Adicionar Utilizador",
@@ -677,7 +713,70 @@
                     "caption": "Home Assistant Cloud",
                     "description_login": "Ligado como {email}",
                     "description_not_login": "Não está ligado",
-                    "description_features": "Controle fora de casa, integre com a Alexa e o Google Assistant."
+                    "description_features": "Controle fora de casa, integre com a Alexa e o Google Assistant.",
+                    "login": {
+                        "email": "",
+                        "email_error_msg": "E-mail inválido",
+                        "alert_email_confirm_necessary": "É necessário confirmar o seu e-mail antes de fazer login."
+                    },
+                    "forgot_password": {
+                        "instructions": "Introduza o seu endereço de e-mail e nós lhe enviaremos um link para redefinir sua password.",
+                        "email": ""
+                    },
+                    "register": {
+                        "link_terms_conditions": "Termos e condições",
+                        "email_address": "Endereço de e-mail",
+                        "email_error_msg": "E-mail inválido",
+                        "start_trial": "Iniciar avaliação",
+                        "resend_confirm_email": "Reenviar e-mail de confirmação"
+                    },
+                    "account": {
+                        "integrations": "Integrações",
+                        "connected": "Ligado",
+                        "alexa": {
+                            "enable": "Ativar",
+                            "disable": "Desativar"
+                        },
+                        "webhooks": {
+                            "title": "",
+                            "no_hooks_yet2": " ou criando um ",
+                            "no_hooks_yet_link_automation": "automação de webhook",
+                            "loading": "A carregar...",
+                            "manage": "Gerir"
+                        }
+                    },
+                    "alexa": {
+                        "title": "Alexa",
+                        "exposed_entities": "Entidades expostas",
+                        "not_exposed_entities": "Entidades não expostas",
+                        "expose": "Expor para Alexa"
+                    },
+                    "dialog_certificate": {
+                        "certificate_information": "Informações do certificado",
+                        "certificate_expiration_date": "Data de validade do certificado",
+                        "will_be_auto_renewed": "Será renovado automaticamente",
+                        "fingerprint": "Certificado digital:",
+                        "close": "Fechar"
+                    },
+                    "google": {
+                        "title": "Google Assistant",
+                        "expose": "Expor ao Google Assistant",
+                        "disable_2FA": "Desativar a autenticação de dois fatores",
+                        "exposed_entities": "Entidades expostas",
+                        "not_exposed_entities": "Entidades não expostas",
+                        "sync_to_google": "A sincronizar alterações para o Google."
+                    },
+                    "dialog_cloudhook": {
+                        "webhook_for": "Webhook para {nome}",
+                        "available_at": "O webhook está disponível na seguinte URL:",
+                        "managed_by_integration": "Este webhook é gerido por uma integração e não pode ser desabilitado.",
+                        "info_disable_webhook": "Se não quiser utilizar mais este webhook, poderá",
+                        "link_disable_webhook": "desativá-lo",
+                        "view_documentation": "Ver documentação",
+                        "close": "Fechar",
+                        "confirm_disable": "Tem certeza de que deseja desativar este webhook?",
+                        "copied_to_clipboard": "Copiado para a área de transferência"
+                    }
                 },
                 "integrations": {
                     "caption": "Integrações",
@@ -705,7 +804,10 @@
                             "description": "Para ser concluída, esta etapa exige que visite um sítio web externo.",
                             "open_site": "Abrir site"
                         }
-                    }
+                    },
+                    "note_about_integrations": "De momento nem todas as integrações podem ser configuradas via UI.",
+                    "note_about_website_reference": "Existem mais disponíveis no",
+                    "home_assistant_website": "Site do Home Assistant "
                 },
                 "zha": {
                     "caption": "ZHA",
@@ -723,7 +825,32 @@
                     "add_device_page": {
                         "header": "Zigbee Home Automation - Adicionar dispositivos",
                         "spinner": "À procura de dispositivos ZHA Zigbee...",
-                        "discovery_text": "Os dispositivos descobertos aparecerão aqui. Siga as instruções para o(s) seu(s) dispositivo(s) e coloque o(s) dispositivo(s) em modo de emparelhamento."
+                        "discovery_text": "Os dispositivos descobertos aparecerão aqui. Siga as instruções para o(s) seu(s) dispositivo(s) e coloque o(s) dispositivo(s) em modo de emparelhamento.",
+                        "search_again": "Pesquisar Novamente"
+                    },
+                    "common": {
+                        "add_devices": "Adicionar dispositivos",
+                        "clusters": "Grupos",
+                        "devices": "Dispositivos",
+                        "manufacturer_code_override": "Substituição do código do fabricante",
+                        "value": "Valor"
+                    },
+                    "network_management": {
+                        "header": "Gestão ",
+                        "introduction": "Comandos que afetam toda a rede"
+                    },
+                    "node_management": {
+                        "header": "Gestão dispositivos",
+                        "help_node_dropdown": "Selecione um dispositivo para visualizar as opções por dispositivo."
+                    },
+                    "cluster_attributes": {
+                        "get_zigbee_attribute": "Obter atributo Zigbee",
+                        "set_zigbee_attribute": "Definir atributo Zigbee",
+                        "help_get_zigbee_attribute": "Obter o valor para o atributo selecionado."
+                    },
+                    "cluster_commands": {
+                        "issue_zigbee_command": "Emitir comando ZigBee",
+                        "help_command_dropdown": "Selecione um comando com o qual interagir."
                     }
                 },
                 "area_registry": {
@@ -754,7 +881,13 @@
                         "unavailable": "(indisponível)",
                         "introduction": "O Home Assistant mantém um registo de todas as entidades que foram alguma vez detetadas e que podem ser identificadas de uma forma única. Cada uma dessas entidades terá um ID de entidade atribuído, que será reservado apenas para essa entidade.",
                         "introduction2": "Use o registo da entidade para substituir o nome, alterar o ID da entidade ou remover a entrada do Home Assistant. Note que a remoção da entrada do registo de entidade não removerá a entidade. Para fazer isso, siga o link abaixo e remova-o da página de integrações.",
-                        "integrations_page": "Página de Integrações"
+                        "integrations_page": "Página de Integrações",
+                        "headers": {
+                            "name": "Nome",
+                            "entity_id": "ID da Entidade",
+                            "integration": "Integração",
+                            "enabled": "Ativado"
+                        }
                     },
                     "editor": {
                         "unavailable": "Esta entidade não está atualmente disponível.",
@@ -763,7 +896,8 @@
                         "update": "ATUALIZAR",
                         "enabled_label": "Entidade permitida",
                         "enabled_cause": "Desativado por {cause}.",
-                        "enabled_description": "Entidades desativadas não serão adicionadas ao Home Assistant."
+                        "enabled_description": "Entidades desativadas não serão adicionadas ao Home Assistant.",
+                        "confirm_delete": "Tem certeza de que deseja apagar esta entrada?"
                     }
                 },
                 "person": {
@@ -773,8 +907,19 @@
                         "name": "Nome",
                         "device_tracker_intro": "Selecione os dispositivos que pertencem a esta pessoa.",
                         "device_tracker_picked": "Seguir dispositivo",
-                        "device_tracker_pick": "Escolha o dispositivo a seguir"
-                    }
+                        "device_tracker_pick": "Escolha o dispositivo a seguir",
+                        "new_person": "Nova Pessoa",
+                        "name_error_msg": "Nome é obrigatório",
+                        "link_presence_detection_integrations": "Integrações de detecção de presença",
+                        "link_integrations_page": "Página de Integrações",
+                        "delete": "Apagar",
+                        "create": "Criar",
+                        "update": "Atualizar"
+                    },
+                    "no_persons_created_yet": "Parece que você ainda não criou nenhuma pessoa.",
+                    "create_person": "Criar pessoa",
+                    "add_person": "Adicionar Pessoa",
+                    "confirm_delete": "Tens a certeza que queres eliminar esta pessoa?"
                 },
                 "server_control": {
                     "caption": "Controlo do servidor",
@@ -884,6 +1029,12 @@
                 "force_narrow": {
                     "header": "Esconder sempre a barra lateral.",
                     "description": "Isto esconderá por defeito a barra lateral, semelhante à experiência no telemóvel."
+                },
+                "vibrate": {
+                    "header": "Vibrar"
+                },
+                "advanced_mode": {
+                    "title": "Modo avançado"
                 }
             },
             "page-authorize": {
@@ -1043,7 +1194,9 @@
                         "add": "Adicionar Cartão",
                         "edit": "Editar",
                         "delete": "Apagar",
-                        "move": "Mover"
+                        "move": "Mover",
+                        "show_visual_editor": "Mostrar Editor Visual",
+                        "show_code_editor": "Mostrar Editor de Código"
                     },
                     "migrate": {
                         "header": "Configuração Incompatível",
@@ -1077,6 +1230,100 @@
                     "edit_lovelace": {
                         "header": "Título da sua interface do Lovelace",
                         "explanation": "Este título é mostrado acima de todas as vista em Lovelace."
+                    },
+                    "card": {
+                        "alarm_panel": {
+                            "available_states": "Estados Disponíveis"
+                        },
+                        "config": {
+                            "required": "Obrigatório",
+                            "optional": "Opcional"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "green": "Verde",
+                                "red": "Vermelho",
+                                "yellow": "Amarelo"
+                            },
+                            "name": "Manómetro"
+                        },
+                        "glance": {
+                            "columns": "Colunas"
+                        },
+                        "generic": {
+                            "entities": "Entidades",
+                            "entity": "Entidade",
+                            "icon": "Ícone",
+                            "icon_height": "Altura do ícone",
+                            "maximum": "Máximo",
+                            "minimum": "Mínimo",
+                            "name": "Nome",
+                            "show_icon": "Mostrar Ícone?",
+                            "show_name": "Mostrar nome?",
+                            "show_state": "Mostrar Estado?",
+                            "title": "Título",
+                            "theme": "Tema",
+                            "unit": "Unidade",
+                            "url": "Url"
+                        },
+                        "map": {
+                            "source": "Fonte",
+                            "name": "Mapa"
+                        },
+                        "sensor": {
+                            "graph_detail": "Detalhe do Gráfico",
+                            "graph_type": "Tipo De Gráfico",
+                            "name": "Sensor"
+                        },
+                        "alarm-panel": {
+                            "name": "Painel de alarme",
+                            "available_states": "Estados Disponíveis"
+                        },
+                        "conditional": {
+                            "name": "Condicional"
+                        },
+                        "entities": {
+                            "name": "Entidades"
+                        },
+                        "entity-button": {
+                            "name": "Botão Entidade"
+                        },
+                        "entity-filter": {
+                            "name": "Filtro de entidade"
+                        },
+                        "history-graph": {
+                            "name": "Gráfico de histórico"
+                        },
+                        "horizontal-stack": {
+                            "name": "Pilha Horizontal"
+                        },
+                        "iframe": {
+                            "name": ""
+                        },
+                        "light": {
+                            "name": "Luz"
+                        },
+                        "markdown": {
+                            "name": ""
+                        },
+                        "picture": {
+                            "name": "Imagem"
+                        },
+                        "plant-status": {
+                            "name": "Estado da planta"
+                        },
+                        "shopping-list": {
+                            "name": "Lista de compras"
+                        },
+                        "thermostat": {
+                            "name": "Termóstato"
+                        },
+                        "vertical-stack": {
+                            "name": "Pilha Vertical"
+                        },
+                        "weather-forecast": {
+                            "name": "Previsão do tempo"
+                        }
                     }
                 },
                 "menu": {
@@ -1357,6 +1604,11 @@
                     "device_name_placeholder": "Nome do utilizador",
                     "area_picker_label": "Área",
                     "update_name_button": "Atualizar Nome"
+                },
+                "buttons": {
+                    "add": "Adicionar Dispositivos",
+                    "remove": "Remover Dispositivo",
+                    "reconfigure": "Reconfigurar Dispositivo"
                 }
             }
         },
@@ -1372,7 +1624,7 @@
         }
     },
     "domain": {
-        "alarm_control_panel": "Painel de controle do alarme",
+        "alarm_control_panel": "Painel de controlo do alarme",
         "automation": "Automação",
         "binary_sensor": "Sensor binário",
         "calendar": "Calendário",

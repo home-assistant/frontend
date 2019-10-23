@@ -578,6 +578,11 @@
                     "description": "Rheoli eich rhwydwaith Z-Wave",
                     "node_config": {
                         "set_config_parameter": "Gosod Paramedr Ffurfweddu"
+                    },
+                    "learn_more": "Dysgu mwy am Z-Wave",
+                    "ozw_log": {
+                        "header": "OZW Log",
+                        "introduction": "Gweld y log. 0 yn y lleiaf (llwyth cyfan log) a 1000 yn yr uchafswm. Llwyth yn dangos sefydlog o log ac yn y gynffon, bydd yn diweddariad automatig gyda nifer penodol diwethaf o linellau o log."
                     }
                 },
                 "cloud": {
@@ -631,6 +636,29 @@
                         "header": "Awtomeiddiad Cartref Zigbee - Ychwanegwch Dyfeisiadau",
                         "spinner": "Chwilio am ddyfeisiau ZHA Zigbee ...",
                         "discovery_text": "Bydd dyfeisiau a ddarganfuwyd yn ymddangos yma. Dilynwch y cyfarwyddiadau ar gyfer eich dyfais \/ dyfaisiau a rhowch y ddyfais \/ dyfeisiau yn y modd paru."
+                    },
+                    "node_management": {
+                        "help_node_dropdown": "Dewiswch ddyfais i weld yr opsiynau fesul dyfais."
+                    },
+                    "clusters": {
+                        "help_cluster_dropdown": "Dewiswch clwstwr i weld priodoleddau a gorchmynion."
+                    },
+                    "cluster_attributes": {
+                        "header": "Priodoleddau clwstwr",
+                        "introduction": "Gweld a golygu priodoleddau clwstwr.",
+                        "attributes_of_cluster": "Priodoleddau'r clwstwr a ddewiswyd",
+                        "get_zigbee_attribute": "Cael Priodoledd Zigbee",
+                        "set_zigbee_attribute": "Gosod priodoledd Zigbee",
+                        "help_attribute_dropdown": "Dewisiwch y priodoledd i weld neu osod ei werth",
+                        "help_get_zigbee_attribute": "Cael y gwerth ar gyfer y priodoledd a ddewiswyd.",
+                        "help_set_zigbee_attribute": "Gosod gwerth priodwedd ar gyfer y clwstwr penodedig ar yr endid penodedig."
+                    },
+                    "cluster_commands": {
+                        "header": "Gorchmynion clwstwr",
+                        "introduction": "Gweld a chyhoeddi gorchmynion clwstwr.",
+                        "commands_of_cluster": "Gorchmynion y clwstwr a ddewiswyd",
+                        "issue_zigbee_command": "Cyhoeddi Gorchymyn Zigbee",
+                        "help_command_dropdown": "Dewiswch orchymyn i ryngweithio ag ef."
                     }
                 },
                 "area_registry": {
@@ -747,7 +775,9 @@
                         "add": "Ychwanegu Cerdyn",
                         "edit": "Golygu",
                         "delete": "Dileu",
-                        "move": "Symud"
+                        "move": "Symud",
+                        "show_visual_editor": "Dangos Golygydd Gweledol",
+                        "show_code_editor": "Dangos Golygydd Cod"
                     },
                     "migrate": {
                         "header": "Ffurfweddiad anghydnaws",
@@ -777,6 +807,81 @@
                         "save": "Arbed",
                         "unsaved_changes": "Newidiadau heb eu cadw",
                         "saved": "Arbed"
+                    },
+                    "card": {
+                        "alarm-panel": {
+                            "name": "Panel Larwm",
+                            "available_states": "Cyflerau posib"
+                        },
+                        "conditional": {
+                            "name": "Amodol"
+                        },
+                        "entities": {
+                            "name": "Endidau"
+                        },
+                        "entity-button": {
+                            "name": "Botwm Endid"
+                        },
+                        "entity-filter": {
+                            "name": "Hidlo Endid"
+                        },
+                        "gauge": {
+                            "name": "Medrydd"
+                        },
+                        "glance": {
+                            "name": "Cipolwg"
+                        },
+                        "history-graph": {
+                            "name": "Graff Hanes"
+                        },
+                        "horizontal-stack": {
+                            "name": "Stac Fertigol"
+                        },
+                        "iframe": {
+                            "name": "iFrame"
+                        },
+                        "light": {
+                            "name": "Golau"
+                        },
+                        "map": {
+                            "name": "Map"
+                        },
+                        "markdown": {
+                            "name": "Marclawr"
+                        },
+                        "media-control": {
+                            "name": "Rheoli cyfryngau"
+                        },
+                        "picture": {
+                            "name": "Llun"
+                        },
+                        "picture-elements": {
+                            "name": "Elfennau'r Llun"
+                        },
+                        "picture-entity": {
+                            "name": "Endid Llun"
+                        },
+                        "picture-glance": {
+                            "name": "Cipolwg ar lun"
+                        },
+                        "plant-status": {
+                            "name": "Statws planhigyn"
+                        },
+                        "sensor": {
+                            "name": "Synhwyrydd"
+                        },
+                        "shopping-list": {
+                            "name": "Rhestr siopa"
+                        },
+                        "thermostat": {
+                            "name": "Thermostat"
+                        },
+                        "vertical-stack": {
+                            "name": "Stac Fertigol"
+                        },
+                        "weather-forecast": {
+                            "name": "Rhagolwg tywydd"
+                        }
                     }
                 },
                 "menu": {
@@ -887,6 +992,12 @@
                             "minutes_abbr": "munud"
                         }
                     }
+                }
+            },
+            "profile": {
+                "advanced_mode": {
+                    "title": "Modd Uwch",
+                    "description": "Mae Home Assistant yn cuddio nodweddion uwch ac opsiynau yn ddiofyn. Gallwch wneud y nodweddion hyn yn hygyrch trwy ticio'r toggle hwn. Mae hwn yn leoliad penodol i ddefnyddwyr ac nid yw'n effeithio ar ddefnyddwyr eraill sy'n defnyddio Home Assistant."
                 }
             }
         },
