@@ -52,6 +52,9 @@
                 "off": "Hreinsa",
                 "on": "Uppgötvað"
             },
+            "vibration": {
+                "on": "Uppgötvað"
+            },
             "safety": {
                 "off": "Öruggt",
                 "on": "Óöruggt"
@@ -116,10 +119,15 @@
             "dry": "Þurrt",
             "fan_only": "Vifta eingöngu",
             "eco": "Sparnaður",
+            "performance": "Frammistaða",
             "heat_pump": "Hitadæla",
             "gas": "Gas",
             "manual": "Handvirkt",
             "heat_cool": "Hita\/Kæla"
+        },
+        "configurator": {
+            "configure": "Stilli",
+            "configured": "Stillt"
         },
         "cover": {
             "open": "Opin",
@@ -457,7 +465,8 @@
                                     "label": "Tæki",
                                     "extra_fields": {
                                         "above": "Yfir",
-                                        "below": "Undir"
+                                        "below": "Undir",
+                                        "for": "Tímalengd"
                                     }
                                 }
                             },
@@ -485,6 +494,8 @@
                                     "label": "Sól",
                                     "before": "Fyrir:",
                                     "after": "Eftir:",
+                                    "before_offset": "Fyrir hliðrun (valfrjálst)",
+                                    "after_offset": "Eftir hliðrun (valfrjálst)",
                                     "sunrise": "Sólarupprás",
                                     "sunset": "Sólsetur"
                                 },
@@ -503,7 +514,12 @@
                                     "zone": "Öryggissvæði"
                                 },
                                 "device": {
-                                    "label": "Tæki"
+                                    "label": "Tæki",
+                                    "extra_fields": {
+                                        "above": "Yfir",
+                                        "below": "Undir",
+                                        "for": "Tímalengd"
+                                    }
                                 },
                                 "and": {
                                     "label": "Og"
@@ -561,7 +577,10 @@
                 },
                 "script": {
                     "caption": "Skrifta",
-                    "description": "Búa til og breyta skriftum"
+                    "description": "Búa til og breyta skriftum",
+                    "picker": {
+                        "learn_more": "Læra meira um skriftur"
+                    }
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -592,7 +611,8 @@
                         "seconds": "sekúndur",
                         "config_value": "Stillingargildi",
                         "set_config_parameter": "Stilltu Config Parameter"
-                    }
+                    },
+                    "learn_more": "Læra meira um Z-Wave"
                 },
                 "users": {
                     "caption": "Notendur",
@@ -606,7 +626,13 @@
                         "activate_user": "Virkja notanda",
                         "deactivate_user": "Gera notanda óvirkan",
                         "delete_user": "Eyða notanda",
-                        "caption": "Skoða notanda"
+                        "caption": "Skoða notanda",
+                        "id": "ID",
+                        "owner": "Eigandi",
+                        "group": "Hópur",
+                        "active": "Virkur",
+                        "unnamed_user": "Ónefndur notandi",
+                        "enter_new_name": "Sláðu inn nýtt nafn"
                     },
                     "add_user": {
                         "caption": "Bæta við notanda",
@@ -620,7 +646,77 @@
                     "caption": "Home Assistant skýið",
                     "description_login": "Innskráð(ur) sem {email}",
                     "description_not_login": "Ekki skráð(ur) inn",
-                    "description_features": "Stjórna heimili að heiman með Alexa og Google Assistant."
+                    "description_features": "Stjórna heimili að heiman með Alexa og Google Assistant.",
+                    "login": {
+                        "learn_more_link": "Læra meira um Home Assistant skýið",
+                        "dismiss": "Vísa frá",
+                        "sign_in": "Skrá inn",
+                        "email": "Netfang",
+                        "email_error_msg": "Ógilt netfang",
+                        "password": "Lykilorð",
+                        "password_error_msg": "Lykilorð eru að minnsta kosti 8 stafir",
+                        "forgot_password": "gleymt lykilorð?",
+                        "alert_password_change_required": "Þú verður að breyta lykilorðinu þínu áður en þú skráir þig inn.",
+                        "alert_email_confirm_necessary": "Þú þarft að staðfesta tölvupóstinn þinn áður en þú skráir þig inn."
+                    },
+                    "forgot_password": {
+                        "title": "Gleymt lykilorð",
+                        "subtitle": "Gleymdirðu lykilorðinu þínu",
+                        "email": "Netfang",
+                        "email_error_msg": "Ógilt netfang"
+                    },
+                    "register": {
+                        "feature_google_home": "Samþætting við Google Assistant",
+                        "feature_amazon_alexa": "Samþætting við Amazon Alexa",
+                        "link_terms_conditions": "Skilmálar og skilyrði",
+                        "link_privacy_policy": "Friðhelgisstefna",
+                        "create_account": "Stofna aðgang",
+                        "email_address": "Netfang",
+                        "email_error_msg": "Ógilt netfang",
+                        "password": "Lykilorð",
+                        "resend_confirm_email": "Endursenda staðfestingarpóst"
+                    },
+                    "account": {
+                        "nabu_casa_account": "Nabu Casa aðgangur",
+                        "sign_out": "Skrá út",
+                        "integrations": "Samþættingar",
+                        "connected": "Tengdur",
+                        "not_connected": "Ekki tengdur",
+                        "fetching_subscription": "Sæki áskrift...",
+                        "remote": {
+                            "title": "Fjarstýring",
+                            "link_learn_how_it_works": "Læra hvernig þetta virkar",
+                            "certificate_info": "Upplýsingar skilríkis"
+                        },
+                        "alexa": {
+                            "title": "Alexa",
+                            "enable": "virkja",
+                            "disable": "afvirkja"
+                        },
+                        "google": {
+                            "title": "Google Assistant",
+                            "security_devices": "Öryggistæki"
+                        },
+                        "webhooks": {
+                            "title": "Webhooks",
+                            "loading": "Hleð ..."
+                        }
+                    },
+                    "alexa": {
+                        "title": "Alexa"
+                    },
+                    "dialog_certificate": {
+                        "fingerprint": "Fingrafar skilríkis:",
+                        "close": "Loka"
+                    },
+                    "google": {
+                        "title": "Google Assistant"
+                    },
+                    "dialog_cloudhook": {
+                        "close": "Loka",
+                        "confirm_disable": "Ertu viss um að þú viljir afvirkja þennan vefkrók?",
+                        "copied_to_clipboard": "Afritað á klemmuspjald"
+                    }
                 },
                 "integrations": {
                     "caption": "Samþættingar",
@@ -648,7 +744,8 @@
                             "description": "Þetta skref krefst þess að þú heimsækir ytri vefsíðu svo hægt sé að ljúka þessu skrefi.",
                             "open_site": "Opna vefsíðu"
                         }
-                    }
+                    },
+                    "home_assistant_website": "Vefsíða Home Assistant"
                 },
                 "zha": {
                     "caption": "ZHA",
@@ -665,7 +762,20 @@
                     "add_device_page": {
                         "header": "Zigbee sjálfvirkni - Bæta við tækjum",
                         "spinner": "Leitað að ZHA Zigbee tækjum...",
-                        "discovery_text": "Uppgötvuð tæki munu birtast hér. Fylgdu leiðbeiningunum fyrir tækið þitt og setjið tækið í pörunarstillingu."
+                        "discovery_text": "Uppgötvuð tæki munu birtast hér. Fylgdu leiðbeiningunum fyrir tækið þitt og setjið tækið í pörunarstillingu.",
+                        "search_again": "Leita aftur"
+                    },
+                    "common": {
+                        "add_devices": "Bæta við tækjum",
+                        "clusters": "Klasar",
+                        "devices": "Tæki",
+                        "value": "Gildi"
+                    },
+                    "network_management": {
+                        "header": "Netumsýsla"
+                    },
+                    "node_management": {
+                        "header": "Tækjaumsýsla"
                     }
                 },
                 "area_registry": {
@@ -696,14 +806,18 @@
                         "unavailable": "(ekki tiltækt)",
                         "introduction": "Home Assistant heldur bókhald utanum allar einingar sem verið greindar. Hver þessara eininga hafa einingar-auðkenni (ID) sem er frátekið bara fyrir þessa tilteknu einingu.",
                         "integrations_page": "Samþættingar síða",
-                        "show_disabled": "Sýna afvirkjaðar einingar"
+                        "show_disabled": "Sýna afvirkjaðar einingar",
+                        "headers": {
+                            "name": "Nafn"
+                        }
                     },
                     "editor": {
                         "unavailable": "Þessi eining er ekki tiltæk eins og er.",
                         "default_name": "Nýtt svæði",
                         "delete": "EYÐA",
                         "update": "UPPFÆRA",
-                        "enabled_label": "Virkja einingu"
+                        "enabled_label": "Virkja einingu",
+                        "enabled_cause": "Afvirkjað vegna {cause}."
                     }
                 },
                 "person": {
@@ -713,8 +827,19 @@
                         "name": "Nafn",
                         "device_tracker_intro": "Veldu tæki sem tilheyrir þessari persónu.",
                         "device_tracker_picked": "Rekja tæki",
-                        "device_tracker_pick": "Velja tæki til að rekja"
-                    }
+                        "device_tracker_pick": "Velja tæki til að rekja",
+                        "new_person": "Ný persóna",
+                        "name_error_msg": "Nafn er skilyrt",
+                        "linked_user": "Tengdur notandi",
+                        "link_integrations_page": "Samþættingar síða",
+                        "delete": "Eyða",
+                        "create": "Stofna",
+                        "update": "Uppfæra"
+                    },
+                    "create_person": "Stofna persónu",
+                    "add_person": "Bæta við persónu",
+                    "confirm_delete": "Ertu viss um að þú viljir eyða þessari persónu?",
+                    "confirm_delete2": "Öll tæki sem tilheyra þessari persónu munu verða óúthlutuð."
                 },
                 "server_control": {
                     "caption": "Stjórnun þjóns",
@@ -783,6 +908,8 @@
                     "dropdown_label": "Þema"
                 },
                 "refresh_tokens": {
+                    "header": "Uppfæra tóka",
+                    "token_title": "Uppfæra tóka fyrir {clientId}",
                     "created_at": "Búið til þann {date}",
                     "delete_failed": "Ekki tókst að eyða endurnýjunartókanum.",
                     "last_used": "Síðast notaður þann {date} frá {location}",
@@ -953,6 +1080,7 @@
                 "core-config": {
                     "intro": "Hæ {name}, velkomin(n) í Home Assistant. Hvað á heimilið þitt að heita?",
                     "intro_location": "Okkur langar að vita hvar þú býrð. Þessar upplýsingar munu hjálpa varðandi upplýsingar og uppsetningu á sólar-tengdri sjálfvirkni. Þessum upplýsingum er aldrei deilt út fyrir þitt net.",
+                    "intro_location_detect": "Við getum aðstoðað þig við að fylla út þessar upplýsingar með því að kalla einu sinni á utanaðkomandi þjónustu til að sækja þær.",
                     "location_name_default": "Heima",
                     "button_detect": "Uppgötva",
                     "finish": "Næsta"
@@ -976,7 +1104,8 @@
                         "navigate_to": "Fara yfir á {location}",
                         "toggle": "Víxla {name}",
                         "call_service": "Kalla í þjónustu {name}",
-                        "more_info": "Sýna frekari upplýsingar: {name}"
+                        "more_info": "Sýna frekari upplýsingar: {name}",
+                        "url": "Opna glugga á {url_path}"
                     }
                 },
                 "editor": {
@@ -988,7 +1117,9 @@
                         "add": "Bæta við spjaldi",
                         "edit": "Breyta",
                         "delete": "Eyða",
-                        "move": "Færa"
+                        "move": "Færa",
+                        "show_visual_editor": "Birta sjónrænan ritil",
+                        "show_code_editor": "Birta kóða ritil"
                     },
                     "migrate": {
                         "header": "Ósamhæfðar stillingar",
@@ -1031,7 +1162,8 @@
                                 "green": "Grænt",
                                 "red": "Rautt",
                                 "yellow": "Gult"
-                            }
+                            },
+                            "name": "Mælir"
                         },
                         "glance": {
                             "columns": "Dálkar"
@@ -1057,10 +1189,54 @@
                         },
                         "map": {
                             "dark_mode": "Dökkur hamur?",
-                            "default_zoom": "Sjálfgefinn aðdráttur"
+                            "default_zoom": "Sjálfgefinn aðdráttur",
+                            "name": "Kort"
                         },
                         "markdown": {
-                            "content": "Innihald"
+                            "content": "Innihald",
+                            "name": "Markdown"
+                        },
+                        "alarm-panel": {
+                            "available_states": "Tiltækar stöður"
+                        },
+                        "entities": {
+                            "name": "Einingar"
+                        },
+                        "entity-button": {
+                            "name": "Eininga hnappur"
+                        },
+                        "entity-filter": {
+                            "name": "Eininga sía"
+                        },
+                        "history-graph": {
+                            "name": "Sögulínurit"
+                        },
+                        "horizontal-stack": {
+                            "name": "Láréttur stafli"
+                        },
+                        "iframe": {
+                            "name": "iFrame"
+                        },
+                        "light": {
+                            "name": "Ljós"
+                        },
+                        "picture": {
+                            "name": "Mynd"
+                        },
+                        "plant-status": {
+                            "name": "Staða plöntu"
+                        },
+                        "sensor": {
+                            "name": "Skynjari"
+                        },
+                        "shopping-list": {
+                            "name": "Innkaupalisti"
+                        },
+                        "thermostat": {
+                            "name": "Hitastillir"
+                        },
+                        "vertical-stack": {
+                            "name": "Lóðréttur stafli"
                         }
                     }
                 },
@@ -1185,18 +1361,24 @@
             },
             "alarm_control_panel": {
                 "code": "Kóði",
-                "clear_code": "Hreinsa"
+                "clear_code": "Hreinsa",
+                "armed_custom_bypass": "Sérsniðin hjáleið",
+                "arm_custom_bypass": "Sérsniðin hjáleið"
             },
             "automation": {
                 "last_triggered": "Síðast kveikt",
                 "trigger": "Kveikja"
             },
             "cover": {
-                "position": "Staðsetning"
+                "position": "Staðsetning",
+                "tilt_position": "Hallastaða"
             },
             "fan": {
                 "speed": "Hraði",
-                "direction": "Snúningsátt"
+                "oscillate": "Sveiflast",
+                "direction": "Snúningsátt",
+                "forward": "Áfram",
+                "reverse": "Afturábak"
             },
             "light": {
                 "brightness": "Birtustig",
@@ -1320,7 +1502,10 @@
                 "zha_device_card": {
                     "area_picker_label": "Svæði",
                     "update_name_button": "Uppfæra nafn"
-                }
+                },
+                "last_seen": "Síðast séð",
+                "power_source": "Orkugjafi",
+                "unknown": "Óþekkt"
             }
         },
         "auth_store": {
@@ -1393,6 +1578,7 @@
                 "none": "Ekkert",
                 "eco": "Sparnaður",
                 "away": "Fjarverandi",
+                "boost": "Uppörvun",
                 "comfort": "Þægindi",
                 "home": "Heima",
                 "sleep": "Svefn",

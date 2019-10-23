@@ -558,7 +558,12 @@
                                     "zone": "Zone"
                                 },
                                 "device": {
-                                    "label": "Device"
+                                    "label": "Device",
+                                    "extra_fields": {
+                                        "above": "Above",
+                                        "below": "Below",
+                                        "for": "Duration"
+                                    }
                                 },
                                 "and": {
                                     "label": "And"
@@ -602,6 +607,9 @@
                                 },
                                 "device_id": {
                                     "label": "Device"
+                                },
+                                "scene": {
+                                    "label": "Activate scene"
                                 }
                             },
                             "learn_more": "Learn more about actions"
@@ -616,7 +624,20 @@
                 },
                 "script": {
                     "caption": "Script",
-                    "description": "Create and edit scripts"
+                    "description": "Create and edit scripts",
+                    "picker": {
+                        "header": "Script Editor",
+                        "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
+                        "learn_more": "Learn more about scripts",
+                        "no_scripts": "We couldn’t find any editable scripts",
+                        "add_script": "Add script"
+                    },
+                    "editor": {
+                        "header": "Script: {name}",
+                        "default_name": "New Script",
+                        "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
+                        "delete_confirm": "Are you sure you want to delete this script?"
+                    }
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -664,13 +685,19 @@
                         "true": "True",
                         "false": "False",
                         "set_config_parameter": "Set Config Parameter"
+                    },
+                    "learn_more": "Learn more about Z-Wave",
+                    "ozw_log": {
+                        "header": "OZW Log",
+                        "introduction": "View the log. 0 is the minimum (loads entire log) and 1000 is the maximum. Load will show a static log and tail will auto update with the last specified number of lines of the log."
                     }
                 },
                 "users": {
                     "caption": "Users",
                     "description": "Manage users",
                     "picker": {
-                        "title": "Users"
+                        "title": "Users",
+                        "system_generated": "System generated"
                     },
                     "editor": {
                         "rename_user": "Rename user",
@@ -678,7 +705,18 @@
                         "activate_user": "Activate user",
                         "deactivate_user": "Deactivate user",
                         "delete_user": "Delete user",
-                        "caption": "View user"
+                        "caption": "View user",
+                        "id": "ID",
+                        "owner": "Owner",
+                        "group": "Group",
+                        "active": "Active",
+                        "system_generated": "System generated",
+                        "system_generated_users_not_removable": "Unable to remove system generated users.",
+                        "unnamed_user": "Unnamed User",
+                        "enter_new_name": "Enter new name",
+                        "user_rename_failed": "User rename failed:",
+                        "group_update_failed": "Group update failed:",
+                        "confirm_user_deletion": "Are you sure you want to delete {name}?"
                     },
                     "add_user": {
                         "caption": "Add user",
@@ -692,7 +730,156 @@
                     "caption": "Home Assistant Cloud",
                     "description_login": "Logged in as {email}",
                     "description_not_login": "Not logged in",
-                    "description_features": "Control away from home, integrate with Alexa and Google Assistant."
+                    "description_features": "Control away from home, integrate with Alexa and Google Assistant.",
+                    "login": {
+                        "title": "Cloud Login",
+                        "introduction": "Home Assistant Cloud provides you with a secure remote connection to your instance while away from home. It also allows you to connect with cloud-only services: Amazon Alexa and Google Assistant.",
+                        "introduction2": "This service is run by our partner ",
+                        "introduction2a": ", a company founded by the founders of Home Assistant and Hass.io.",
+                        "introduction3": "Home Assistant Cloud is a subscription service with a free one month trial. No payment information necessary.",
+                        "learn_more_link": "Learn more about Home Assistant Cloud",
+                        "dismiss": "Dismiss",
+                        "sign_in": "Sign in",
+                        "email": "Email",
+                        "email_error_msg": "Invalid email",
+                        "password": "Password",
+                        "password_error_msg": "Passwords are at least 8 characters",
+                        "forgot_password": "forgot password?",
+                        "start_trial": "Start your free 1 month trial",
+                        "trial_info": "No payment information necessary",
+                        "alert_password_change_required": "You need to change your password before logging in.",
+                        "alert_email_confirm_necessary": "You need to confirm your email before logging in."
+                    },
+                    "forgot_password": {
+                        "title": "Forgot password",
+                        "subtitle": "Forgot your password",
+                        "instructions": "Enter your email address and we will send you a link to reset your password.",
+                        "email": "Email",
+                        "email_error_msg": "Invalid email",
+                        "send_reset_email": "Send reset email",
+                        "check_your_email": "Check your email for instructions on how to reset your password."
+                    },
+                    "register": {
+                        "title": "Register Account",
+                        "headline": "Start your free trial",
+                        "information": "Create an account to start your free one month trial with Home Assistant Cloud. No payment information necessary.",
+                        "information2": "The trial will give you access to all the benefits of Home Assistant Cloud, including:",
+                        "feature_remote_control": "Control of Home Assistant away from home",
+                        "feature_google_home": "Integration with Google Assistant",
+                        "feature_amazon_alexa": "Integration with Amazon Alexa",
+                        "feature_webhook_apps": "Easy integration with webhook-based apps like OwnTracks",
+                        "information3": "This service is run by our partner ",
+                        "information3a": ", a company founded by the founders of Home Assistant and Hass.io.",
+                        "information4": "By registering an account you agree to the following terms and conditions.",
+                        "link_terms_conditions": "Terms and Conditions",
+                        "link_privacy_policy": "Privacy Policy",
+                        "create_account": "Create Account",
+                        "email_address": "Email address",
+                        "email_error_msg": "Invalid email",
+                        "password": "Password",
+                        "password_error_msg": "Passwords are at least 8 characters",
+                        "start_trial": "Start Trial",
+                        "resend_confirm_email": "Resend confirmation email",
+                        "account_created": "Account created! Check your email for instructions on how to activate your account."
+                    },
+                    "account": {
+                        "thank_you_note": "Thank you for being part of Home Assistant Cloud. It's because of people like you that we are able to make a great home automation experience for everyone. Thank you!",
+                        "nabu_casa_account": "Nabu Casa Account",
+                        "connection_status": "Cloud connection status",
+                        "manage_account": "Manage Account",
+                        "sign_out": "Sign out",
+                        "integrations": "Integrations",
+                        "integrations_introduction": "Integrations for Home Assistant Cloud allow you to connect with services in the cloud without having to expose your Home Assistant instance publicly on the internet.",
+                        "integrations_introduction2": "Check the website for ",
+                        "integrations_link_all_features": " all available features",
+                        "connected": "Connected",
+                        "not_connected": "Not Connected",
+                        "fetching_subscription": "Fetching subscription…",
+                        "remote": {
+                            "title": "Remote Control",
+                            "access_is_being_prepared": "Remote access is being prepared. We will notify you when it's ready.",
+                            "info": "Home Assistant Cloud provides a secure remote connection to your instance while away from home.",
+                            "instance_is_available": "Your instance is available at",
+                            "instance_will_be_available": "Your instance will be available at",
+                            "link_learn_how_it_works": "Learn how it works",
+                            "certificate_info": "Certificate Info"
+                        },
+                        "alexa": {
+                            "title": "Alexa",
+                            "info": "With the Alexa integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Alexa-enabled device.",
+                            "enable_ha_skill": "Enable the Home Assistant skill for Alexa",
+                            "config_documentation": "Config documentation",
+                            "enable_state_reporting": "Enable State Reporting",
+                            "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
+                            "sync_entities": "Sync Entities",
+                            "manage_entities": "Manage Entities",
+                            "sync_entities_error": "Failed to sync entities:",
+                            "state_reporting_error": "Unable to {enable_disable} report state.",
+                            "enable": "enable",
+                            "disable": "disable"
+                        },
+                        "google": {
+                            "title": "Google Assistant",
+                            "info": "With the Google Assistant integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
+                            "enable_ha_skill": "Activate the Home Assistant skill for Google Assistant",
+                            "config_documentation": "Config documentation",
+                            "enable_state_reporting": "Enable State Reporting",
+                            "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Google. This allows you to always see the latest states in the Google app.",
+                            "security_devices": "Security Devices",
+                            "enter_pin_info": "Please enter a pin to interact with security devices. Security devices are doors, garage doors and locks. You will be asked to say\/enter this pin when interacting with such devices via Google Assistant.",
+                            "devices_pin": "Security Devices Pin",
+                            "enter_pin_hint": "Enter a PIN to use security devices",
+                            "sync_entities": "Sync Entities to Google",
+                            "manage_entities": "Manage Entities",
+                            "enter_pin_error": "Unable to store pin:"
+                        },
+                        "webhooks": {
+                            "title": "Webhooks",
+                            "info": "Anything that is configured to be triggered by a webhook can be given a publicly accessible URL to allow you to send data back to Home Assistant from anywhere, without exposing your instance to the internet.",
+                            "no_hooks_yet": "Looks like you have no webhooks yet. Get started by configuring a ",
+                            "no_hooks_yet_link_integration": "webhook-based integration",
+                            "no_hooks_yet2": " or by creating a ",
+                            "no_hooks_yet_link_automation": "webhook automation",
+                            "link_learn_more": "Learn more about creating webhook-powered automations.",
+                            "loading": "Loading ...",
+                            "manage": "Manage",
+                            "disable_hook_error_msg": "Failed to disable webhook:"
+                        }
+                    },
+                    "alexa": {
+                        "title": "Alexa",
+                        "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
+                        "exposed_entities": "Exposed entities",
+                        "not_exposed_entities": "Not Exposed entities",
+                        "expose": "Expose to Alexa"
+                    },
+                    "dialog_certificate": {
+                        "certificate_information": "Certificate Information",
+                        "certificate_expiration_date": "Certificate expiration date",
+                        "will_be_auto_renewed": "Will be automatically renewed",
+                        "fingerprint": "Certificate fingerprint:",
+                        "close": "Close"
+                    },
+                    "google": {
+                        "title": "Google Assistant",
+                        "expose": "Expose to Google Assistant",
+                        "disable_2FA": "Disable two factor authentication",
+                        "banner": "Editing which entities are exposed via this UI is disabled because you have configured entity filters in configuration.yaml.",
+                        "exposed_entities": "Exposed entities",
+                        "not_exposed_entities": "Not Exposed entities",
+                        "sync_to_google": "Synchronizing changes to Google."
+                    },
+                    "dialog_cloudhook": {
+                        "webhook_for": "Webhook for {name}",
+                        "available_at": "The webhook is available at the following url:",
+                        "managed_by_integration": "This webhook is managed by an integration and cannot be disabled.",
+                        "info_disable_webhook": "If you no longer want to use this webhook, you can",
+                        "link_disable_webhook": "disable it",
+                        "view_documentation": "View documentation",
+                        "close": "Close",
+                        "confirm_disable": "Are you sure you want to disable this webhook?",
+                        "copied_to_clipboard": "Copied to clipboard"
+                    }
                 },
                 "integrations": {
                     "caption": "Integrations",
@@ -720,7 +907,10 @@
                             "description": "This step requires you to visit an external website to be completed.",
                             "open_site": "Open website"
                         }
-                    }
+                    },
+                    "note_about_integrations": "Not all integrations can be configured via the UI yet.",
+                    "note_about_website_reference": "More are available on the ",
+                    "home_assistant_website": "Home Assistant website"
                 },
                 "zha": {
                     "caption": "ZHA",
@@ -738,7 +928,46 @@
                     "add_device_page": {
                         "header": "Zigbee Home Automation - Add Devices",
                         "spinner": "Searching for ZHA Zigbee devices...",
-                        "discovery_text": "Discovered devices will show up here. Follow the instructions for your device(s) and place the device(s) in pairing mode."
+                        "discovery_text": "Discovered devices will show up here. Follow the instructions for your device(s) and place the device(s) in pairing mode.",
+                        "search_again": "Search Again"
+                    },
+                    "common": {
+                        "add_devices": "Add Devices",
+                        "clusters": "Clusters",
+                        "devices": "Devices",
+                        "manufacturer_code_override": "Manufacturer Code Override",
+                        "value": "Value"
+                    },
+                    "network_management": {
+                        "header": "Network Management",
+                        "introduction": "Commands that affect the entire network"
+                    },
+                    "node_management": {
+                        "header": "Device Management",
+                        "introduction": "Run ZHA commands that affect a single device. Pick a device to see a list of available commands.",
+                        "hint_battery_devices": "Note: Sleepy (battery powered) devices need to be awake when executing commands against them. You can generally wake a sleepy device by triggering it.",
+                        "hint_wakeup": "Some devices such as Xiaomi sensors have a wake up button that you can press at ~5 second intervals that keep devices awake while you interact with them.",
+                        "help_node_dropdown": "Select a device to view per-device options."
+                    },
+                    "clusters": {
+                        "help_cluster_dropdown": "Select a cluster to view attributes and commands."
+                    },
+                    "cluster_attributes": {
+                        "header": "Cluster Attributes",
+                        "introduction": "View and edit cluster attributes.",
+                        "attributes_of_cluster": "Attributes of the selected cluster",
+                        "get_zigbee_attribute": "Get Zigbee Attribute",
+                        "set_zigbee_attribute": "Set Zigbee Attribute",
+                        "help_attribute_dropdown": "Select an attribute to view or set its value.",
+                        "help_get_zigbee_attribute": "Get the value for the selected attribute.",
+                        "help_set_zigbee_attribute": "Set attribute value for the specified cluster on the specified entity."
+                    },
+                    "cluster_commands": {
+                        "header": "Cluster Commands",
+                        "introduction": "View and issue cluster commands.",
+                        "commands_of_cluster": "Commands of the selected cluster",
+                        "issue_zigbee_command": "Issue Zigbee Command",
+                        "help_command_dropdown": "Select a command to interact with."
                     }
                 },
                 "area_registry": {
@@ -770,7 +999,13 @@
                         "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
                         "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant. Note, removing the entity registry entry won't remove the entity. To do that, follow the link below and remove it from the integrations page.",
                         "integrations_page": "Integrations page",
-                        "show_disabled": "Show disabled entities"
+                        "show_disabled": "Show disabled entities",
+                        "headers": {
+                            "name": "Name",
+                            "entity_id": "Entity ID",
+                            "integration": "Integration",
+                            "enabled": "Enabled"
+                        }
                     },
                     "editor": {
                         "unavailable": "This entity is not currently available.",
@@ -791,8 +1026,24 @@
                         "name": "Name",
                         "device_tracker_intro": "Select the devices that belong to this person.",
                         "device_tracker_picked": "Track Device",
-                        "device_tracker_pick": "Pick device to track"
-                    }
+                        "device_tracker_pick": "Pick device to track",
+                        "new_person": "New Person",
+                        "name_error_msg": "Name is required",
+                        "linked_user": "Linked User",
+                        "no_device_tracker_available_intro": "When you have devices that indicate the presence of a person, you will be able to assign them to a person here. You can add your first device by adding a presence-detection integration from the integrations page.",
+                        "link_presence_detection_integrations": "Presence Detection Integrations",
+                        "link_integrations_page": "Integrations page",
+                        "delete": "Delete",
+                        "create": "Create",
+                        "update": "Update"
+                    },
+                    "introduction": "Here you can define each person of interest in Home Assistant.",
+                    "note_about_persons_configured_in_yaml": "Note: persons configured via configuration.yaml cannot be edited via the UI.",
+                    "no_persons_created_yet": "Looks like you have not created any persons yet.",
+                    "create_person": "Create Person",
+                    "add_person": "Add Person",
+                    "confirm_delete": "Are you sure you want to delete this person?",
+                    "confirm_delete2": "All devices belonging to this person will become unassigned."
                 },
                 "server_control": {
                     "caption": "Server Control",
@@ -837,6 +1088,11 @@
                         "actions": {
                             "caption": "When something is triggered..."
                         }
+                    }
+                },
+                "common": {
+                    "editor": {
+                        "confirm_unsaved": "You have unsaved changes. Are you sure you want to leave?"
                     }
                 }
             },
@@ -917,6 +1173,10 @@
                 "vibrate": {
                     "header": "Vibrate",
                     "description": "Enable or disable vibration on this device when controlling devices."
+                },
+                "advanced_mode": {
+                    "title": "Advanced Mode",
+                    "description": "Home Assistant hides advanced features and options by default. You can make these features accessible by checking this toggle. This is a user-specific setting and does not impact other users using Home Assistant."
                 }
             },
             "page-authorize": {
@@ -1077,7 +1337,9 @@
                         "add": "Add Card",
                         "edit": "Edit",
                         "delete": "Delete",
-                        "move": "Move"
+                        "move": "Move",
+                        "show_visual_editor": "Show Visual Editor",
+                        "show_code_editor": "Show Code Editor"
                     },
                     "migrate": {
                         "header": "Configuration Incompatible",
@@ -1121,7 +1383,8 @@
                             "optional": "Optional"
                         },
                         "entities": {
-                            "show_header_toggle": "Show Header Toggle?"
+                            "show_header_toggle": "Show Header Toggle?",
+                            "name": "Entities"
                         },
                         "gauge": {
                             "severity": {
@@ -1129,10 +1392,12 @@
                                 "green": "Green",
                                 "red": "Red",
                                 "yellow": "Yellow"
-                            }
+                            },
+                            "name": "Gauge"
                         },
                         "glance": {
-                            "columns": "Columns"
+                            "columns": "Columns",
+                            "name": "Glance"
                         },
                         "generic": {
                             "aspect_ratio": "Aspect Ratio",
@@ -1162,14 +1427,72 @@
                             "geo_location_sources": "Geolocation Sources",
                             "dark_mode": "Dark Mode?",
                             "default_zoom": "Default Zoom",
-                            "source": "Source"
+                            "source": "Source",
+                            "name": "Map"
                         },
                         "markdown": {
-                            "content": "Content"
+                            "content": "Content",
+                            "name": "Markdown"
                         },
                         "sensor": {
                             "graph_detail": "Graph Detail",
-                            "graph_type": "Graph Type"
+                            "graph_type": "Graph Type",
+                            "name": "Sensor"
+                        },
+                        "alarm-panel": {
+                            "name": "Alarm Panel",
+                            "available_states": "Available States"
+                        },
+                        "conditional": {
+                            "name": "Conditional"
+                        },
+                        "entity-button": {
+                            "name": "Entity Button"
+                        },
+                        "entity-filter": {
+                            "name": "Entity Filter"
+                        },
+                        "history-graph": {
+                            "name": "History Graph"
+                        },
+                        "horizontal-stack": {
+                            "name": "Horizontal Stack"
+                        },
+                        "iframe": {
+                            "name": "iFrame"
+                        },
+                        "light": {
+                            "name": "Light"
+                        },
+                        "media-control": {
+                            "name": "Media Control"
+                        },
+                        "picture": {
+                            "name": "Picture"
+                        },
+                        "picture-elements": {
+                            "name": "Picture Elements"
+                        },
+                        "picture-entity": {
+                            "name": "Picture Entity"
+                        },
+                        "picture-glance": {
+                            "name": "Picture Glance"
+                        },
+                        "plant-status": {
+                            "name": "Plant Status"
+                        },
+                        "shopping-list": {
+                            "name": "Shopping List"
+                        },
+                        "thermostat": {
+                            "name": "Thermostat"
+                        },
+                        "vertical-stack": {
+                            "name": "Vertical Stack"
+                        },
+                        "weather-forecast": {
+                            "name": "Weather Forecast"
                         }
                     }
                 },
@@ -1405,7 +1728,8 @@
             "entity_turned_off": "Turned off {entity}.",
             "service_called": "Service {service} called.",
             "service_call_failed": "Failed to call service {service}.",
-            "connection_lost": "Connection lost. Reconnecting…"
+            "connection_lost": "Connection lost. Reconnecting…",
+            "triggered": "Triggered {name}"
         },
         "dialogs": {
             "more_info_settings": {
@@ -1445,13 +1769,22 @@
                 "services": {
                     "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
                     "updateDeviceName": "Set a custom name for this device in the device registry.",
-                    "remove": "Remove a device from the ZigBee network."
+                    "remove": "Remove a device from the Zigbee network."
                 },
                 "zha_device_card": {
                     "device_name_placeholder": "User given name",
                     "area_picker_label": "Area",
                     "update_name_button": "Update Name"
-                }
+                },
+                "buttons": {
+                    "add": "Add Devices",
+                    "remove": "Remove Device",
+                    "reconfigure": "Reconfigure Device"
+                },
+                "quirk": "Quirk",
+                "last_seen": "Last Seen",
+                "power_source": "Power Source",
+                "unknown": "Unknown"
             }
         },
         "auth_store": {
