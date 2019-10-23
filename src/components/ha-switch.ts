@@ -21,6 +21,12 @@ export class HaSwitch extends MwcSwitch {
       "slotted",
       Boolean(this._slot.assignedNodes().length)
     );
+
+    this.addEventListener("keyup", (ev) => {
+      if (ev.keyCode === 13) {
+        this.click();
+      }
+    });
   }
 
   protected static get styles(): CSSResult[] {
