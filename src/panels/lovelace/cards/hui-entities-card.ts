@@ -12,16 +12,12 @@ import {
 import "../../../components/ha-card";
 import "../components/hui-entities-toggle";
 
-import { fireEvent } from "../../../common/dom/fire_event";
-import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { HomeAssistant } from "../../../types";
 import { EntityRow } from "../entity-rows/types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createRowElement } from "../common/create-row-element";
 import { EntitiesCardConfig, EntitiesCardEntityConfig } from "./types";
-
-import { computeDomain } from "../../../common/entity/compute_domain";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 @customElement("hui-entities-card")
@@ -161,10 +157,6 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         overflow: hidden;
       }
 
-      .state-card-dialog {
-        cursor: pointer;
-      }
-
       .icon {
         padding: 0px 18px 0px 8px;
       }
@@ -176,22 +168,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     if (this._hass) {
       element.hass = this._hass;
     }
-    if (
-      entityConf.entity &&
-      !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(entityConf.entity))
-    ) {
-      element.classList.add("state-card-dialog");
-      element.addEventListener("click", () => this._handleClick(entityConf));
-    }
 
     return html`
       <div>${element}</div>
     `;
-  }
-
-  private _handleClick(entityConf: EntitiesCardEntityConfig): void {
-    const entityId = entityConf.entity;
-    fireEvent(this, "hass-more-info", { entityId });
   }
 }
 
