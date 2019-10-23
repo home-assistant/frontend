@@ -88,8 +88,16 @@ export class HuiCardEditor extends LitElement {
     return this._error !== undefined;
   }
 
+  public get hasWarning(): boolean {
+    return this._warning !== undefined;
+  }
+
   private get _yamlEditor(): HaCodeEditor {
     return this.shadowRoot!.querySelector("ha-code-editor")! as HaCodeEditor;
+  }
+
+  public get GUImode(): boolean {
+    return this._GUImode;
   }
 
   public toggleMode() {
@@ -104,57 +112,52 @@ export class HuiCardEditor extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="wrapper">
-        ${this._GUImode
-          ? html`
-              <div class="gui-editor">
-                ${this._loading
-                  ? html`
-                      <paper-spinner
-                        active
-                        alt="Loading"
-                        class="center margin-bot"
-                      ></paper-spinner>
-                    `
-                  : this._configElement}
-              </div>
-            `
-          : html`
-              <div class="yaml-editor">
-                <ha-code-editor
-                  mode="yaml"
-                  autofocus
-                  .value=${this.yaml}
-                  .error=${this._error}
-                  .rtl=${computeRTL(this.hass)}
-                  @value-changed=${this._handleYAMLChanged}
-                ></ha-code-editor>
-              </div>
-            `}
-        ${this._error
-          ? html`
-              <div class="error">
-                ${this._error}
-              </div>
-            `
-          : ""}
-        ${this._warning
-          ? html`
-              <div class="warning">
-                ${this._warning}
-              </div>
-            `
-          : ""}
-        <div class="buttons">
-          <mwc-button
-            @click=${this.toggleMode}
-            ?disabled=${this._warning || this._error}
-          >
-            ${this.hass!.localize(
-              this._GUImode
-                ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
-                : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
-            )}
-          </mwc-button>
+        ${
+          this._GUImode
+            ? html`
+                <div class="gui-editor">
+                  ${this._loading
+                    ? html`
+                        <paper-spinner
+                          active
+                          alt="Loading"
+                          class="center margin-bot"
+                        ></paper-spinner>
+                      `
+                    : this._configElement}
+                </div>
+              `
+            : html`
+                <div class="yaml-editor">
+                  <ha-code-editor
+                    mode="yaml"
+                    autofocus
+                    .value=${this.yaml}
+                    .error=${this._error}
+                    .rtl=${computeRTL(this.hass)}
+                    @value-changed=${this._handleYAMLChanged}
+                  ></ha-code-editor>
+                </div>
+              `
+        }
+        ${
+          this._error
+            ? html`
+                <div class="error">
+                  ${this._error}
+                </div>
+              `
+            : ""
+        }
+        ${
+          this._warning
+            ? html`
+                <div class="warning">
+                  ${this._warning}
+                </div>
+              `
+            : ""
+        }
         </div>
       </div>
     `;
@@ -280,10 +283,6 @@ export class HuiCardEditor extends LitElement {
       }
       .warning {
         color: #ffa726;
-      }
-      .buttons {
-        text-align: right;
-        padding: 8px 0px;
       }
       paper-spinner {
         display: block;

@@ -48,6 +48,8 @@ export class HuiDialogEditCard extends LitElement {
   @property() private _saving: boolean = false;
   @property() private _error?: string;
 
+  @property() private _GUImode: boolean = true;
+
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
     const [view, card] = params.path;
@@ -125,6 +127,21 @@ export class HuiDialogEditCard extends LitElement {
               `}
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
+          ${this._cardConfig !== undefined
+            ? html`
+                <mwc-button
+                  id="switch-GUIMode"
+                  ?disabled="${this._isDisabled()}"
+                  @click="${this._toggleMode}"
+                >
+                  ${this.hass!.localize(
+                    this._GUImode
+                      ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
+                      : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
+                  )}
+                </mwc-button>
+              `
+            : ``}
           <mwc-button @click="${this._close}">
             ${this.hass!.localize("ui.common.cancel")}
           </mwc-button>
@@ -145,6 +162,18 @@ export class HuiDialogEditCard extends LitElement {
         </div>
       </ha-paper-dialog>
     `;
+  }
+
+  private _isDisabled(): boolean {
+    if (this._cardEditorEl) {
+      return this._cardEditorEl.hasError || this._cardEditorEl.hasWarning;
+    }
+    return false;
+  }
+
+  private _toggleMode() {
+    this._cardEditorEl!.toggleMode();
+    this._GUImode = this._cardEditorEl!.GUImode;
   }
 
   static get styles(): CSSResultArray {
@@ -211,6 +240,10 @@ export class HuiDialogEditCard extends LitElement {
             margin: auto 10px;
             max-width: 500px;
           }
+        }
+
+        .paper-dialog-buttons #switch-GUIMode {
+          margin-right: auto;
         }
 
         mwc-button paper-spinner {
