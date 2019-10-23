@@ -134,18 +134,18 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       this.stopAnimation();
       this.timer = undefined;
       if (this.held) {
-        fireEvent(this, "action", { action: "hold" });
+        fireEvent(element as HTMLElement, "action", { action: "hold" });
       } else if (options.hasDoubleClick) {
         if ((ev as MouseEvent).detail === 1) {
           this.dblClickTimeout = window.setTimeout(() => {
-            fireEvent(this, "action", { action: "tap" });
+            fireEvent(element as HTMLElement, "action", { action: "tap" });
           }, 250);
         } else {
           clearTimeout(this.dblClickTimeout);
-          fireEvent(this, "action", { action: "double_tap" });
+          fireEvent(element as HTMLElement, "action", { action: "double_tap" });
         }
       } else {
-        fireEvent(this, "action", { action: "tap" });
+        fireEvent(element as HTMLElement, "action", { action: "tap" });
       }
       this.cooldownEnd = true;
       window.setTimeout(() => (this.cooldownEnd = false), 100);

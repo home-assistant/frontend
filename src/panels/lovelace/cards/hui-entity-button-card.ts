@@ -30,6 +30,7 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { handleAction } from "../common/handle-action";
 import { ActionHandlerEvent } from "../../../data/lovelace";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
 
 @customElement("hui-entity-button-card")
 class HuiEntityButtonCard extends LitElement implements LovelaceCard {
@@ -232,9 +233,8 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
   }
 
-  private _handleAction(ev: ActionHandlerEvent) {
-    console.log(ev);
-    handleAction(this, this.hass!, this._config!, ev.action!);
+  private _handleAction(ev: HASSDomEvent<ActionHandlerEvent>) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 }
 
