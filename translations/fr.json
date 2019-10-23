@@ -1531,7 +1531,9 @@
                 "comfort": "Confort",
                 "home": "Présent",
                 "sleep": "Veille",
-                "activity": "Activité"
+                "activity": "Activité",
+                "Frost Guard": "Hors gel",
+                "Schedule": "Programme"
             },
             "hvac_action": {
                 "off": "Éteint",
