@@ -87,6 +87,10 @@ export class PaperTimeInput extends PolymerElement {
 
         label {
           @apply --paper-font-caption;
+          color: var(
+            --paper-input-container-color,
+            var(--secondary-text-color)
+          );
         }
 
         .time-input-wrap {
@@ -106,14 +110,17 @@ export class PaperTimeInput extends PolymerElement {
           id="hour"
           type="number"
           value="{{hour}}"
+          label="[[hourLabel]]"
           on-change="_shouldFormatHour"
-          required=""
+          on-focus="_onFocus"
+          required
+          prevent-invalid-input
           auto-validate="[[autoValidate]]"
-          prevent-invalid-input=""
           maxlength="2"
           max="[[_computeHourMax(format)]]"
           min="0"
-          no-label-float=""
+          no-label-float$="[[!floatInputLabels]]"
+          always-float-label$="[[alwaysFloatInputLabels]]"
           disabled="[[disabled]]"
         >
           <span suffix="" slot="suffix">:</span>
@@ -124,15 +131,40 @@ export class PaperTimeInput extends PolymerElement {
           id="min"
           type="number"
           value="{{min}}"
+          label="[[minLabel]]"
           on-change="_formatMin"
-          required=""
+          on-focus="_onFocus"
+          required
           auto-validate="[[autoValidate]]"
-          prevent-invalid-input=""
+          prevent-invalid-input
           maxlength="2"
           max="59"
           min="0"
-          no-label-float=""
+          no-label-float$="[[!floatInputLabels]]"
+          always-float-label$="[[alwaysFloatInputLabels]]"
           disabled="[[disabled]]"
+        >
+          <span hidden$="[[!enableSecond]]" suffix slot="suffix">:</span>
+        </paper-input>
+
+        <!-- Sec Input -->
+        <paper-input
+          id="sec"
+          type="number"
+          value="{{sec}}"
+          label="[[secLabel]]"
+          on-change="_formatSec"
+          on-focus="_onFocus"
+          required
+          auto-validate="[[autoValidate]]"
+          prevent-invalid-input
+          maxlength="2"
+          max="59"
+          min="0"
+          no-label-float$="[[!floatInputLabels]]"
+          always-float-label$="[[alwaysFloatInputLabels]]"
+          disabled="[[disabled]]"
+          hidden$="[[!enableSecond]]"
         >
         </paper-input>
 
@@ -181,6 +213,20 @@ export class PaperTimeInput extends PolymerElement {
         value: false,
       },
       /**
+       * float the input labels
+       */
+      floatInputLabels: {
+        type: Boolean,
+        value: false,
+      },
+      /**
+       * always float the input labels
+       */
+      alwaysFloatInputLabels: {
+        type: Boolean,
+        value: false,
+      },
+      /**
        * 12 or 24 hr format
        */
       format: {
@@ -209,6 +255,48 @@ export class PaperTimeInput extends PolymerElement {
         notify: true,
       },
       /**
+       * second
+       */
+      sec: {
+        type: String,
+        notify: true,
+      },
+      /**
+       * Suffix for the hour input
+       */
+      hourLabel: {
+        type: String,
+        value: "",
+      },
+      /**
+       * Suffix for the min input
+       */
+      minLabel: {
+        type: String,
+        value: ":",
+      },
+      /**
+       * Suffix for the sec input
+       */
+      secLabel: {
+        type: String,
+        value: "",
+      },
+      /**
+       * show the sec field
+       */
+      enableSecond: {
+        type: Boolean,
+        value: false,
+      },
+      /**
+       * limit hours input
+       */
+      noHoursLimit: {
+        type: Boolean,
+        value: false,
+      },
+      /**
        * AM or PM
        */
       amPm: {
@@ -223,7 +311,7 @@ export class PaperTimeInput extends PolymerElement {
         type: String,
         notify: true,
         readOnly: true,
-        computed: "_computeTime(min, hour, amPm)",
+        computed: "_computeTime(min, hour, sec, amPm)",
       },
     };
   }
@@ -238,6 +326,10 @@ export class PaperTimeInput extends PolymerElement {
     if (!this.$.hour.validate() | !this.$.min.validate()) {
       valid = false;
     }
+    // Validate second field
+    if (this.enableSecond && !this.$.sec.validate()) {
+      valid = false;
+    }
     // Validate AM PM if 12 hour time
     if (this.format === 12 && !this.$.dropdown.validate()) {
       valid = false;
@@ -248,15 +340,37 @@ export class PaperTimeInput extends PolymerElement {
   /**
    * Create time string
    */
-  _computeTime(min, hour, amPm) {
-    if (hour && min) {
-      // No ampm on 24 hr time
-      if (this.format === 24) {
-        amPm = "";
+  _computeTime(min, hour, sec, amPm) {
+    let str;
+    if (hour || min || (sec && this.enableSecond)) {
+      hour = hour || "00";
+      min = min || "00";
+      sec = sec || "00";
+      str = hour + ":" + min;
+      // add sec field
+      if (this.enableSecond && sec) {
+        str = str + ":" + sec;
       }
-      return hour + ":" + min + " " + amPm;
+      // No ampm on 24 hr time
+      if (this.format === 12) {
+        str = str + " " + amPm;
+      }
     }
-    return undefined;
+
+    return str;
+  }
+
+  _onFocus(ev) {
+    ev.target.inputElement.inputElement.select();
+  }
+
+  /**
+   * Format sec
+   */
+  _formatSec() {
+    if (this.sec.toString().length === 1) {
+      this.sec = this.sec.toString().padStart(2, "0");
+    }
   }
 
   /**
@@ -264,16 +378,16 @@ export class PaperTimeInput extends PolymerElement {
    */
   _formatMin() {
     if (this.min.toString().length === 1) {
-      this.min = this.min < 10 ? "0" + this.min : this.min;
+      this.min = this.min.toString().padStart(2, "0");
     }
   }
 
   /**
-   * Hour needs a leading zero in 24hr format
+   * Format hour
    */
   _shouldFormatHour() {
     if (this.format === 24 && this.hour.toString().length === 1) {
-      this.hour = this.hour < 10 ? "0" + this.hour : this.hour;
+      this.hour = this.hour.toString().padStart(2, "0");
     }
   }
 
@@ -281,6 +395,9 @@ export class PaperTimeInput extends PolymerElement {
    * 24 hour format has a max hr of 23
    */
   _computeHourMax(format) {
+    if (this.noHoursLimit) {
+      return null;
+    }
     if (format === 12) {
       return format;
     }

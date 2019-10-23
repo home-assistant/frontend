@@ -3,6 +3,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "./ha-progress-button";
 import { EventsMixin } from "../../mixins/events-mixin";
+import { showConfirmationDialog } from "../../dialogs/confirmation/show-dialog-confirmation";
 
 /*
  * @appliesMixin EventsMixin
@@ -49,10 +50,7 @@ class HaCallServiceButton extends EventsMixin(PolymerElement) {
     };
   }
 
-  buttonTapped() {
-    if (this.confirmation && !window.confirm(this.confirmation)) {
-      return;
-    }
+  callService() {
     this.progress = true;
     var el = this;
     var eventData = {
@@ -78,6 +76,17 @@ class HaCallServiceButton extends EventsMixin(PolymerElement) {
       .then(function() {
         el.fire("hass-service-called", eventData);
       });
+  }
+
+  buttonTapped() {
+    if (this.confirmation) {
+      showConfirmationDialog(this, {
+        text: this.confirmation,
+        confirm: () => this.callService(),
+      });
+    } else {
+      this.callService();
+    }
   }
 }
 

@@ -419,7 +419,7 @@
                         "learn_more": "Meer informatie over automatiseringen"
                     },
                     "editor": {
-                        "introduction": "Gebruik automatiseringen om je huis tot leven te brengen",
+                        "introduction": "Gebruik automatiseringen om je huis tot leven te brengen.",
                         "default_name": "Nieuwe automatisering",
                         "save": "Opslaan",
                         "unsaved_confirm": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt afsluiten?",
@@ -558,7 +558,12 @@
                                     "zone": "Zone"
                                 },
                                 "device": {
-                                    "label": "Apparaat"
+                                    "label": "Apparaat",
+                                    "extra_fields": {
+                                        "above": "Boven",
+                                        "below": "Onder",
+                                        "for": "Duur"
+                                    }
                                 },
                                 "and": {
                                     "label": "En"
@@ -602,6 +607,9 @@
                                 },
                                 "device_id": {
                                     "label": "Apparaat"
+                                },
+                                "scene": {
+                                    "label": "Activeer scène"
                                 }
                             },
                             "learn_more": "Meer informatie over acties"
@@ -616,7 +624,18 @@
                 },
                 "script": {
                     "caption": "Script",
-                    "description": "Maak en bewerk scripts"
+                    "description": "Maak en bewerk scripts",
+                    "picker": {
+                        "header": "Script Editor",
+                        "learn_more": "Meer informatie over scripts",
+                        "add_script": "Script toevoegen"
+                    },
+                    "editor": {
+                        "header": "Script: {name}",
+                        "default_name": "Nieuw script",
+                        "load_error_not_editable": "Alleen scripts in scripts.yaml kunnen worden bewerkt.",
+                        "delete_confirm": "Weet je zeker dat je dit script wilt verwijderen?"
+                    }
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -664,13 +683,18 @@
                         "true": "Waar",
                         "false": "Niet waar",
                         "set_config_parameter": "Stel de configuratieparameter in"
+                    },
+                    "learn_more": "Meer informatie over Z-Wave",
+                    "ozw_log": {
+                        "header": "OZW-logboek"
                     }
                 },
                 "users": {
                     "caption": "Gebruikers",
                     "description": "Gebruikers beheren",
                     "picker": {
-                        "title": "Gebruikers"
+                        "title": "Gebruikers",
+                        "system_generated": "Gemaakt door het systeem"
                     },
                     "editor": {
                         "rename_user": "Naam wijzigen",
@@ -678,7 +702,13 @@
                         "activate_user": "Activeer gebruiker",
                         "deactivate_user": "Deactiveer gebruiker",
                         "delete_user": "Verwijder gebruiker",
-                        "caption": "Bekijk gebruiker"
+                        "caption": "Bekijk gebruiker",
+                        "id": "ID",
+                        "owner": "Eigenaar",
+                        "group": "Groep",
+                        "active": "Actief",
+                        "enter_new_name": "Voer een nieuwe naam in",
+                        "confirm_user_deletion": "Weet je zeker dat je {name} wilt verwijderen?"
                     },
                     "add_user": {
                         "caption": "Gebruiker toevoegen",
@@ -692,7 +722,50 @@
                     "caption": "Home Assistent Cloud",
                     "description_login": "Ingelogd als {email}",
                     "description_not_login": "Niet ingelogd",
-                    "description_features": "Bestuur weg van huis, verbind met Alexa en Google Assistant."
+                    "description_features": "Bestuur weg van huis, verbind met Alexa en Google Assistant.",
+                    "forgot_password": {
+                        "email": "E-mail",
+                        "email_error_msg": "Ongeldig e-mail"
+                    },
+                    "account": {
+                        "sign_out": "Afmelden",
+                        "alexa": {
+                            "info": "Met de Alexa integratie voor Home Assistant Cloud kun je al je Home Assistant apparaten bedienen via elk apparaat met Alexa-ondersteuning",
+                            "enable_ha_skill": "Schakel de Home Assistant skill voor Alexa",
+                            "config_documentation": "Configuratie documentatie",
+                            "enable_state_reporting": "Statusrapportage inschakelen",
+                            "info_state_reporting": "Als u statusrapportage inschakelt, stuurt Home Assistant alle statuswijzingen van opengestelde entiteiten naar Amazon. Hiermee kunt u altijd de laatste status zien in de Alexa app en kunt u de statuswijzgingen gebruiken om routines te maken.",
+                            "enable": "inschakelen",
+                            "disable": "uitschakelen"
+                        },
+                        "google": {
+                            "enable_state_reporting": "Statusrapportage inschakelen",
+                            "enter_pin_error": "Kan pincode niet opslaan:"
+                        },
+                        "webhooks": {
+                            "title": "Webhooks",
+                            "no_hooks_yet": "Het lijkt erop dat je nog geen webhooks hebt. Ga aan de slag door het configureren van een ",
+                            "no_hooks_yet_link_integration": "webhook gebaseerde integratie",
+                            "no_hooks_yet2": " of door het maken van een ",
+                            "no_hooks_yet_link_automation": "webhook automatisering",
+                            "loading": "Laden ...",
+                            "manage": "Beheer"
+                        }
+                    },
+                    "dialog_certificate": {
+                        "close": "Sluiten"
+                    },
+                    "google": {
+                        "title": "Google Assistant",
+                        "sync_to_google": "Wijzigingen synchroniseren met Google."
+                    },
+                    "dialog_cloudhook": {
+                        "managed_by_integration": "Deze webhook wordt beheerd door een integratie en kan niet worden uitgeschakeld.",
+                        "info_disable_webhook": "Als je deze webhook niet langer wilt gebruiken, kun je het",
+                        "link_disable_webhook": "uitschakelen",
+                        "view_documentation": "Bekijk documentatie",
+                        "close": "Sluiten"
+                    }
                 },
                 "integrations": {
                     "caption": "Integraties",
@@ -720,7 +793,9 @@
                             "description": "Deze stap vereist dat je een externe website bezoekt om dit te voltooien.",
                             "open_site": "Open website"
                         }
-                    }
+                    },
+                    "note_about_integrations": "Nog niet alle integraties kunnen via de UI worden geconfigureerd.",
+                    "home_assistant_website": "Home Assistant-website"
                 },
                 "zha": {
                     "caption": "ZHA",
@@ -738,7 +813,22 @@
                     "add_device_page": {
                         "header": "Zigbee Home Automation - Apparaten toevoegen",
                         "spinner": "Zoeken naar ZHA Zigbee-apparaten ...",
-                        "discovery_text": "Gevonden apparaten worden hier weergegeven. Volg de instructies voor je apparaat of apparaten en plaats het apparaat of de apparaten in de koppelingsmodus."
+                        "discovery_text": "Gevonden apparaten worden hier weergegeven. Volg de instructies voor je apparaat of apparaten en plaats het apparaat of de apparaten in de koppelingsmodus.",
+                        "search_again": "Opnieuw zoeken"
+                    },
+                    "common": {
+                        "add_devices": "Apparaten toevoegen",
+                        "clusters": "Clusters",
+                        "devices": "Apparaten",
+                        "value": "Waarde"
+                    },
+                    "network_management": {
+                        "header": "Netwerkbeheer",
+                        "introduction": "Commando's die het hele netwerk beïnvloeden"
+                    },
+                    "node_management": {
+                        "header": "Apparaatbeheer",
+                        "hint_wakeup": "Sommige apparaten, zoals Xiaomi-sensoren hebben een wekknop die u met tussenpozen van 5 seconden kunt indrukken om het apparaat wakker te houden terwijl u ermee communiceert"
                     }
                 },
                 "area_registry": {
@@ -768,9 +858,15 @@
                         "header": "Entiteitenregister",
                         "unavailable": "(niet beschikbaar)",
                         "introduction": "Home Assistant houdt een register bij van elke entiteit die het ooit heeft gezien en die uniek kan worden geïdentificeerd. Elk van deze entiteiten krijgt een entiteit-ID toegewezen die alleen voor deze entiteit wordt gereserveerd.",
-                        "introduction2": "Gebruik het entiteitenregister om de naam te overschrijven, de entiteits-ID te wijzigen of het item te verwijderen uit de Home Assistant. Opmerking: als u de entiteitsregistervermelding verwijdert, wordt de entiteit niet verwijderd. Hiertoe volgt u de onderstaande koppeling en verwijdert u deze van de integratiespagina.",
+                        "introduction2": "Gebruik het entiteitenregister om de naam te overschrijven, de entiteits-ID te wijzigen of het item te verwijderen uit Home Assistant. Opmerking: als u de entiteitsregistervermelding verwijdert, wordt de entiteit niet verwijderd. Hiertoe volgt u de onderstaande koppeling en verwijdert u deze van de integratiespagina.",
                         "integrations_page": "Integratiespagina",
-                        "show_disabled": "Uitgeschakelde entiteiten weergeven"
+                        "show_disabled": "Uitgeschakelde entiteiten weergeven",
+                        "headers": {
+                            "name": "Naam",
+                            "entity_id": "Entiteits-ID",
+                            "integration": "Integratie",
+                            "enabled": "Ingeschakeld"
+                        }
                     },
                     "editor": {
                         "unavailable": "Deze entiteit is momenteel niet beschikbaar.",
@@ -791,8 +887,20 @@
                         "name": "Naam",
                         "device_tracker_intro": "Selecteer de apparaten die bij deze persoon horen.",
                         "device_tracker_picked": "Volg apparaat",
-                        "device_tracker_pick": "Kies apparaat om te volgen"
-                    }
+                        "device_tracker_pick": "Kies apparaat om te volgen",
+                        "new_person": "Nieuw persoon",
+                        "name_error_msg": "Naam is vereist",
+                        "linked_user": "Gekoppelde gebruiker",
+                        "link_presence_detection_integrations": "Aanwezigheidsdetectie-integraties",
+                        "link_integrations_page": "Integratiespagina",
+                        "delete": "Verwijderen",
+                        "create": "Aanmaken",
+                        "update": "Bijwerken"
+                    },
+                    "note_about_persons_configured_in_yaml": "Opmerking: personen die zijn geconfigureerd via configuration.yaml kunnen niet worden bewerkt via de UI.",
+                    "no_persons_created_yet": "Het lijkt erop dat je nog geen personen hebt aangemaakt.",
+                    "create_person": "Persoon aanmaken",
+                    "add_person": "Persoon toevoegen"
                 },
                 "server_control": {
                     "caption": "Serverbeheer",
@@ -917,6 +1025,10 @@
                 "vibrate": {
                     "header": "Trillen",
                     "description": "Schakel trillingen op dit apparaat in of uit wanneer u apparaten bestuurt."
+                },
+                "advanced_mode": {
+                    "title": "Geavanceerde modus",
+                    "description": "Home Assistant verbergt standaard geavanceerde functies en opties. U kunt deze functies toegankelijk maken door deze schakelaar aan te zetten. Dit is een gebruikersspecifieke instelling en heeft geen invloed op andere gebruikers die Home Assistant gebruiken."
                 }
             },
             "page-authorize": {
@@ -1077,7 +1189,9 @@
                         "add": "Kaart toevoegen",
                         "edit": "Bewerken",
                         "delete": "Verwijder",
-                        "move": "Verplaatsen"
+                        "move": "Verplaatsen",
+                        "show_visual_editor": "Visual Editor weergeven",
+                        "show_code_editor": "Code-editor weergeven"
                     },
                     "migrate": {
                         "header": "Configuratie incompatibel",
@@ -1121,7 +1235,8 @@
                             "optional": "Optioneel"
                         },
                         "entities": {
-                            "show_header_toggle": "Koptekst weergeven wisselen?"
+                            "show_header_toggle": "Koptekst weergeven wisselen?",
+                            "name": "Entiteiten"
                         },
                         "gauge": {
                             "severity": {
@@ -1129,10 +1244,12 @@
                                 "green": "Groen",
                                 "red": "Rood",
                                 "yellow": "Geel"
-                            }
+                            },
+                            "name": "Meter"
                         },
                         "glance": {
-                            "columns": "Kolommen"
+                            "columns": "Kolommen",
+                            "name": "Oogopslag"
                         },
                         "generic": {
                             "aspect_ratio": "Beeldverhouding",
@@ -1162,14 +1279,72 @@
                             "geo_location_sources": "Geolocatiebronnen",
                             "dark_mode": "Donkere modus?",
                             "default_zoom": "Standaard zoom",
-                            "source": "Bron"
+                            "source": "Bron",
+                            "name": "Kaart"
                         },
                         "markdown": {
-                            "content": "Inhoud"
+                            "content": "Inhoud",
+                            "name": "Markdown"
                         },
                         "sensor": {
                             "graph_detail": "Grafiek Detail",
-                            "graph_type": "Grafiektype"
+                            "graph_type": "Grafiektype",
+                            "name": "Sensor"
+                        },
+                        "alarm-panel": {
+                            "name": "Alarm paneel",
+                            "available_states": "Beschikbare statussen"
+                        },
+                        "conditional": {
+                            "name": "Conditioneel"
+                        },
+                        "entity-button": {
+                            "name": "Entiteit-knop"
+                        },
+                        "entity-filter": {
+                            "name": "Entiteit-filter"
+                        },
+                        "history-graph": {
+                            "name": "Geschiedenis grafiek"
+                        },
+                        "horizontal-stack": {
+                            "name": "Horizontale stapel"
+                        },
+                        "iframe": {
+                            "name": "iFrame"
+                        },
+                        "light": {
+                            "name": "Lamp"
+                        },
+                        "media-control": {
+                            "name": "Mediaspeler"
+                        },
+                        "picture": {
+                            "name": "Afbeelding"
+                        },
+                        "picture-elements": {
+                            "name": "Afbeeldingselementen"
+                        },
+                        "picture-entity": {
+                            "name": "Afbeelding-entiteit"
+                        },
+                        "picture-glance": {
+                            "name": "Afbeelding oogopslag"
+                        },
+                        "plant-status": {
+                            "name": "toestand plant"
+                        },
+                        "shopping-list": {
+                            "name": "Boodschappenlijst"
+                        },
+                        "thermostat": {
+                            "name": "Thermostaat"
+                        },
+                        "vertical-stack": {
+                            "name": "Verticale stapel"
+                        },
+                        "weather-forecast": {
+                            "name": "Weersverwachting"
                         }
                     }
                 },
@@ -1451,7 +1626,15 @@
                     "device_name_placeholder": "Door gebruiker ingegeven naam",
                     "area_picker_label": "Gebied",
                     "update_name_button": "Naam bijwerken"
-                }
+                },
+                "buttons": {
+                    "add": "Apparaten toevoegen",
+                    "remove": "Verwijder apparaat",
+                    "reconfigure": "Apparaat opnieuw configureren"
+                },
+                "last_seen": "Laatst gezien",
+                "power_source": "Stroombron",
+                "unknown": "Onbekend"
             }
         },
         "auth_store": {

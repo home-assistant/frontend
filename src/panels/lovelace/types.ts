@@ -1,10 +1,15 @@
 import { HomeAssistant } from "../../types";
-import { LovelaceCardConfig, LovelaceConfig } from "../../data/lovelace";
+import {
+  LovelaceCardConfig,
+  LovelaceConfig,
+  LovelaceBadgeConfig,
+} from "../../data/lovelace";
 
 declare global {
   // tslint:disable-next-line
   interface HASSDomEvents {
     "ll-rebuild": {};
+    "ll-badge-rebuild": {};
   }
 }
 
@@ -16,6 +21,11 @@ export interface Lovelace {
   enableFullEditMode: () => void;
   setEditMode: (editMode: boolean) => void;
   saveConfig: (newConfig: LovelaceConfig) => Promise<void>;
+}
+
+export interface LovelaceBadge extends HTMLElement {
+  hass?: HomeAssistant;
+  setConfig(config: LovelaceBadgeConfig): void;
 }
 
 export interface LovelaceCard extends HTMLElement {

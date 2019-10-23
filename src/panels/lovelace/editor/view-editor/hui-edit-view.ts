@@ -26,14 +26,15 @@ import { HomeAssistant } from "../../../../types";
 import {
   LovelaceViewConfig,
   LovelaceCardConfig,
+  LovelaceBadgeConfig,
 } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { EntitiesEditorEvent, ViewEditEvent } from "../types";
 import { processEditorEntities } from "../process-editor-entities";
-import { EntityConfig } from "../../entity-rows/types";
 import { navigate } from "../../../../common/navigate";
 import { Lovelace } from "../../types";
 import { deleteView, addView, replaceView } from "../config-util";
+import { showConfirmationDialog } from "../../../../dialogs/confirmation/show-dialog-confirmation";
 
 @customElement("hui-edit-view")
 export class HuiEditView extends LitElement {
@@ -45,7 +46,7 @@ export class HuiEditView extends LitElement {
 
   @property() private _config?: LovelaceViewConfig;
 
-  @property() private _badges?: EntityConfig[];
+  @property() private _badges?: LovelaceBadgeConfig[];
 
   @property() private _cards?: LovelaceCardConfig[];
 
@@ -87,6 +88,18 @@ export class HuiEditView extends LitElement {
     return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
 
+  private get _viewConfigTitle(): string {
+    if (!this._config || !this._config.title) {
+      return this.hass!.localize("ui.panel.lovelace.editor.edit_view.header");
+    }
+
+    return this.hass!.localize(
+      "ui.panel.lovelace.editor.edit_view.header_name",
+      "name",
+      this._config.title
+    );
+  }
+
   protected render(): TemplateResult | void {
     let content;
     switch (this._curTab) {
@@ -118,7 +131,7 @@ export class HuiEditView extends LitElement {
     return html`
       <ha-paper-dialog with-backdrop>
         <h2>
-          ${this.hass!.localize("ui.panel.lovelace.editor.edit_view.header")}
+          ${this._viewConfigTitle}
         </h2>
         <paper-tabs
           scrollable
@@ -133,12 +146,11 @@ export class HuiEditView extends LitElement {
         <div class="paper-dialog-buttons">
           ${this.viewIndex !== undefined
             ? html`
-                <paper-icon-button
-                  class="delete"
-                  title="Delete"
-                  icon="hass:delete"
-                  @click="${this._delete}"
-                ></paper-icon-button>
+                <mwc-button class="delete" @click="${this._deleteConfirm}">
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.editor.edit_view.delete"
+                  )}
+                </mwc-button>
               `
             : ""}
           <mwc-button @click="${this._closeDialog}"
@@ -160,17 +172,6 @@ export class HuiEditView extends LitElement {
   }
 
   private async _delete(): Promise<void> {
-    if (this._cards && this._cards.length > 0) {
-      alert(
-        "You can't delete a view that has cards in it. Remove the cards first."
-      );
-      return;
-    }
-
-    if (!confirm("Are you sure you want to delete this view?")) {
-      return;
-    }
-
     try {
       await this.lovelace!.saveConfig(
         deleteView(this.lovelace!.config, this.viewIndex!)
@@ -180,6 +181,18 @@ export class HuiEditView extends LitElement {
     } catch (err) {
       alert(`Deleting failed: ${err.message}`);
     }
+  }
+
+  private _deleteConfirm(): void {
+    if (this._cards && this._cards.length > 0) {
+      alert(this.hass!.localize("ui.panel.lovelace.views.existing_cards"));
+      return;
+    }
+
+    showConfirmationDialog(this, {
+      text: this.hass!.localize("ui.panel.lovelace.views.confirm_delete"),
+      confirm: () => this._delete(),
+    });
   }
 
   private async _resizeDialog(): Promise<void> {
@@ -216,7 +229,7 @@ export class HuiEditView extends LitElement {
 
     const viewConf: LovelaceViewConfig = {
       ...this._config,
-      badges: this._badges!.map((entityConf) => entityConf.entity),
+      badges: this._badges,
       cards: this._cards,
     };
 
@@ -246,7 +259,7 @@ export class HuiEditView extends LitElement {
     if (!this._badges || !this.hass || !ev.detail || !ev.detail.entities) {
       return;
     }
-    this._badges = ev.detail.entities;
+    this._badges = processEditorEntities(ev.detail.entities);
   }
 
   private _isConfigChanged(): boolean {
@@ -290,9 +303,9 @@ export class HuiEditView extends LitElement {
           height: 14px;
           margin-right: 20px;
         }
-        paper-icon-button.delete {
+        .delete {
           margin-right: auto;
-          color: var(--secondary-text-color);
+          --mdc-theme-primary: var(--secondary-text-color);
         }
         paper-spinner {
           display: none;
@@ -304,8 +317,8 @@ export class HuiEditView extends LitElement {
           display: none;
         }
         .error {
-          color: #ef5350;
-          border-bottom: 1px solid #ef5350;
+          color: var(--error-color);
+          border-bottom: 1px solid var(--error-color);
         }
       </style>
     `,

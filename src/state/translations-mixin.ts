@@ -4,11 +4,10 @@ import {
   getLocalLanguage,
   getUserLanguage,
 } from "../util/hass-translation";
-import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
 import { computeLocalize } from "../common/translations/localize";
 import { computeRTL } from "../common/util/compute_rtl";
-import { HomeAssistant } from "../types";
+import { HomeAssistant, Constructor } from "../types";
 import { storeState } from "../util/ha-pref-storage";
 import {
   getHassTranslations,
@@ -19,7 +18,7 @@ import {
  * superClass needs to contain `this.hass` and `this._updateHass`.
  */
 
-export default (superClass: Constructor<LitElement & HassBaseEl>) =>
+export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
     // tslint:disable-next-line: variable-name
     private __coreProgress?: string;

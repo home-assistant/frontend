@@ -11,7 +11,7 @@ import "@thomasloven/round-slider";
 
 import { stateIcon } from "../../../common/entity/state_icon";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -112,12 +112,12 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
               filter: this._computeBrightness(stateObj),
               color: this._computeColor(stateObj),
             })}"
-            @click="${this._handleTap}"
+            @click="${this._handleClick}"
           ></ha-icon>
         </div>
 
         <div id="tooltip">
-          <div class="brightness" @ha-click="${this._handleTap}">
+          <div class="brightness" @ha-click="${this._handleClick}">
             ${brightness} %
           </div>
           <div class="name">
@@ -145,7 +145,16 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.themes !== this.hass.themes) {
+    const oldConfig = changedProps.get("_config") as
+      | LightCardConfig
+      | undefined;
+
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
   }
@@ -212,10 +221,12 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
         .name {
           position: absolute;
-          top: 160px;
-          left: 50%;
-          transform: translate(-50%);
           font-size: var(--name-font-size);
+          bottom: 16px;
+          box-sizing: border-box;
+          text-align: center;
+          width: 100%;
+          padding: 0 16px;
         }
 
         .brightness {
@@ -297,7 +308,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
   }
 
-  private _handleTap() {
+  private _handleClick() {
     toggleEntity(this.hass!, this._config!.entity!);
   }
 

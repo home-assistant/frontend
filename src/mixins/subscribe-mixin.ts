@@ -1,31 +1,20 @@
-import {
-  LitElement,
-  Constructor,
-  PropertyValues,
-  PropertyDeclarations,
-} from "lit-element";
+import { LitElement, PropertyValues, property } from "lit-element";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { HomeAssistant } from "../types";
+import { HomeAssistant, Constructor } from "../types";
 
 export interface HassSubscribeElement {
   hassSubscribe(): UnsubscribeFunc[];
 }
 
 /* tslint:disable-next-line */
-export const SubscribeMixin = <T extends LitElement>(
-  superClass: Constructor<T>
-): Constructor<T & HassSubscribeElement> =>
-  // @ts-ignore
-  class extends superClass {
-    private hass?: HomeAssistant;
+export const SubscribeMixin = <T extends Constructor<LitElement>>(
+  superClass: T
+) => {
+  class SubscribeClass extends superClass {
+    @property() public hass?: HomeAssistant;
+
     /* tslint:disable-next-line */
     private __unsubs?: UnsubscribeFunc[];
-
-    static get properties(): PropertyDeclarations {
-      return {
-        hass: {},
-      };
-    }
 
     public connectedCallback() {
       super.connectedCallback();
@@ -50,7 +39,6 @@ export const SubscribeMixin = <T extends LitElement>(
     }
 
     protected hassSubscribe(): UnsubscribeFunc[] {
-      super.hassSubscribe();
       return [];
     }
 
@@ -64,4 +52,6 @@ export const SubscribeMixin = <T extends LitElement>(
       }
       this.__unsubs = this.hassSubscribe();
     }
-  };
+  }
+  return SubscribeClass;
+};

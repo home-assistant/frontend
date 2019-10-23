@@ -1,4 +1,4 @@
-import applyThemesOnElement from "../common/dom/apply_themes_on_element";
+import { applyThemesOnElement } from "../common/dom/apply_themes_on_element";
 
 import { demoConfig } from "./demo_config";
 import { demoServices } from "./demo_services";

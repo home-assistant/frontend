@@ -2,9 +2,9 @@ import {
   LitElement,
   html,
   css,
-  PropertyDeclarations,
   CSSResult,
   TemplateResult,
+  property,
 } from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-input/paper-input";
@@ -17,19 +17,11 @@ import { HomeAssistant } from "../../../types";
 import { AreaRegistryEntryMutableParams } from "../../../data/area_registry";
 
 class DialogAreaDetail extends LitElement {
-  public hass!: HomeAssistant;
-  private _name!: string;
-  private _error?: string;
-  private _params?: AreaRegistryDetailDialogParams;
-  private _submitting?: boolean;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      _error: {},
-      _name: {},
-      _params: {},
-    };
-  }
+  @property() public hass!: HomeAssistant;
+  @property() private _name!: string;
+  @property() private _error?: string;
+  @property() private _params?: AreaRegistryDetailDialogParams;
+  @property() private _submitting?: boolean;
 
   public async showDialog(
     params: AreaRegistryDetailDialogParams

@@ -40,6 +40,8 @@ declare global {
   }
 }
 
+export type Constructor<T = {}> = new (...args: any[]) => T;
+
 export interface WebhookError {
   code: number;
   message: string;

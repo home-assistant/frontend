@@ -19,7 +19,7 @@ import { isValidEntityId } from "../../../common/entity/valid_entity_id";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeDomain } from "../../../common/entity/compute_domain";
 
 import { HomeAssistant, LightEntity } from "../../../types";
@@ -28,6 +28,7 @@ import { longPress } from "../common/directives/long-press-directive";
 import { handleClick } from "../common/handle-click";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { EntityButtonCardConfig } from "./types";
+import { hasDoubleClick } from "../common/has-double-click";
 
 @customElement("hui-entity-button-card")
 class HuiEntityButtonCard extends LitElement implements LovelaceCard {
@@ -61,6 +62,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     this._config = {
       theme: "default",
       hold_action: { action: "more-info" },
+      double_tap_action: { action: "none" },
       show_icon: true,
       show_name: true,
       ...config,
@@ -89,13 +91,19 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (oldHass) {
-      return (
-        oldHass.states[this._config!.entity] !==
-        this.hass!.states[this._config!.entity]
-      );
+
+    if (
+      !oldHass ||
+      oldHass.themes !== this.hass!.themes ||
+      oldHass.language !== this.hass!.language
+    ) {
+      return true;
     }
-    return true;
+
+    return (
+      oldHass.states[this._config!.entity] !==
+      this.hass!.states[this._config!.entity]
+    );
   }
 
   protected render(): TemplateResult | void {
@@ -118,9 +126,12 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
-        @ha-click="${this._handleTap}"
-        @ha-hold="${this._handleHold}"
-        .longPress="${longPress()}"
+        @ha-click=${this._handleClick}
+        @ha-hold=${this._handleHold}
+        @ha-dblclick=${this._handleDblClick}
+        .longPress=${longPress({
+          hasDoubleClick: hasDoubleClick(this._config!.double_tap_action),
+        })}
       >
         ${this._config.show_icon
           ? html`
@@ -156,7 +167,16 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
       return;
     }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (!oldHass || oldHass.themes !== this.hass.themes) {
+    const oldConfig = changedProps.get("_config") as
+      | EntityButtonCardConfig
+      | undefined;
+
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
   }
@@ -212,12 +232,16 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
   }
 
-  private _handleTap() {
-    handleClick(this, this.hass!, this._config!, false);
+  private _handleClick() {
+    handleClick(this, this.hass!, this._config!, false, false);
   }
 
   private _handleHold() {
-    handleClick(this, this.hass!, this._config!, true);
+    handleClick(this, this.hass!, this._config!, true, false);
+  }
+
+  private _handleDblClick() {
+    handleClick(this, this.hass!, this._config!, false, true);
   }
 }
 

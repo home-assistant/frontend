@@ -20,6 +20,7 @@ import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { PlantStatusCardConfig, PlantAttributeTarget } from "./types";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 const SENSORS = {
   moisture: "hass:water",
@@ -58,6 +59,26 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (!this._config || !this.hass) {
+      return;
+    }
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldConfig = changedProps.get("_config") as
+      | PlantStatusCardConfig
+      | undefined;
+
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
   }
 
   protected render(): TemplateResult | void {

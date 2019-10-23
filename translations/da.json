@@ -558,7 +558,12 @@
                                     "zone": "Zone"
                                 },
                                 "device": {
-                                    "label": "Enhed"
+                                    "label": "Enhed",
+                                    "extra_fields": {
+                                        "above": "Over",
+                                        "below": "Under",
+                                        "for": "Varighed"
+                                    }
                                 },
                                 "and": {
                                     "label": "Og"
@@ -602,6 +607,9 @@
                                 },
                                 "device_id": {
                                     "label": "Enhed"
+                                },
+                                "scene": {
+                                    "label": "Aktivér scene"
                                 }
                             },
                             "learn_more": "Lær om handlinger"
@@ -616,7 +624,19 @@
                 },
                 "script": {
                     "caption": "Script",
-                    "description": "Opret og rediger scripts"
+                    "description": "Opret og rediger scripts",
+                    "picker": {
+                        "header": "Script editor",
+                        "learn_more": "Lær mere om scripts",
+                        "no_scripts": "Vi kunne ikke finde nogen redigerbare scripts",
+                        "add_script": "Tilføj script"
+                    },
+                    "editor": {
+                        "header": "Script: {name}",
+                        "default_name": "Ny script",
+                        "load_error_not_editable": "Kun scripts i scripts.yaml kan redigeres.",
+                        "delete_confirm": "Er du sikker på, at du vil slette dette script?"
+                    }
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -664,13 +684,18 @@
                         "true": "Sandt",
                         "false": "Falsk",
                         "set_config_parameter": "Indstil konfigurationsparameter"
+                    },
+                    "learn_more": "Lær mere om Z-Wave",
+                    "ozw_log": {
+                        "header": "OZW log"
                     }
                 },
                 "users": {
                     "caption": "Brugere",
                     "description": "Administrer brugere",
                     "picker": {
-                        "title": "Brugere"
+                        "title": "Brugere",
+                        "system_generated": "System genereret"
                     },
                     "editor": {
                         "rename_user": "Omdøb bruger",
@@ -678,7 +703,18 @@
                         "activate_user": "Aktivér bruger",
                         "deactivate_user": "Deaktiver bruger",
                         "delete_user": "Slet bruger",
-                        "caption": "Vis bruger"
+                        "caption": "Vis bruger",
+                        "id": "ID",
+                        "owner": "Ejer",
+                        "group": "Gruppe",
+                        "active": "Aktiv",
+                        "system_generated": "System genereret",
+                        "system_generated_users_not_removable": "Kan ikke fjerne systemgenererede brugere.",
+                        "unnamed_user": "Unavngivet bruger",
+                        "enter_new_name": "Indtast nyt navn",
+                        "user_rename_failed": "Omdøbning af bruger mislykkedes:",
+                        "group_update_failed": "Gruppe opdatering mislykkedes:",
+                        "confirm_user_deletion": "Er du sikker på, at du vil slette {name}?"
                     },
                     "add_user": {
                         "caption": "Tilføj bruger",
@@ -692,7 +728,122 @@
                     "caption": "Home Assistant Cloud",
                     "description_login": "Logget ind som {email}",
                     "description_not_login": "Ikke logget ind",
-                    "description_features": "Betjen væk fra hjemmet, integrer med Alexa og Google Assistant."
+                    "description_features": "Betjen væk fra hjemmet, integrer med Alexa og Google Assistant.",
+                    "login": {
+                        "title": "Cloud-login",
+                        "learn_more_link": "Lær mere om Home Assistant Cloud",
+                        "dismiss": "Afvis",
+                        "sign_in": "Log ind",
+                        "email": "E-mail",
+                        "email_error_msg": "Ugyldig email",
+                        "password": "Adgangskode",
+                        "password_error_msg": "Adgangskoder er mindst 8 tegn",
+                        "forgot_password": "glemt kodeord?",
+                        "start_trial": "Start din gratis prøveperiode på 1 måned",
+                        "trial_info": "Betalingsoplysninger er ikke nødvendige",
+                        "alert_password_change_required": "Du skal ændre din adgangskode, før du logger ind."
+                    },
+                    "forgot_password": {
+                        "title": "Glemt kodeord",
+                        "instructions": "Indtast din e-mail-adresse, så sender vi dig et link for at nulstille din adgangskode.",
+                        "email": "E-mail",
+                        "email_error_msg": "Ugyldig email",
+                        "check_your_email": "Tjek din e-mail for instruktioner om, hvordan du nulstiller din adgangskode."
+                    },
+                    "register": {
+                        "title": "Registrer konto",
+                        "headline": "Start din gratis prøveperiode",
+                        "feature_remote_control": "Styring af Home Assistant væk fra hjemmet",
+                        "feature_google_home": "Integration med Google Assistant",
+                        "feature_amazon_alexa": "Integration med Amazon Alexa",
+                        "feature_webhook_apps": "Nem integration med webhook-baserede apps som OwnTracks",
+                        "information3": "Denne service drives af vores partner",
+                        "information4": "Ved at registrere en konto accepterer du følgende vilkår og betingelser.",
+                        "link_terms_conditions": "Betingelser og vilkår",
+                        "link_privacy_policy": "Fortrolighedspolitik",
+                        "create_account": "Opret konto",
+                        "email_address": "Email adresse",
+                        "email_error_msg": "Ugyldig email",
+                        "password": "Adgangskode",
+                        "password_error_msg": "Adgangskoder er mindst 8 tegn",
+                        "start_trial": "Start prøveperiode",
+                        "resend_confirm_email": "Gensend bekræftelsesmail",
+                        "account_created": "Konto oprettet! Tjek din e-mail for instruktioner om, hvordan du aktiverer din konto."
+                    },
+                    "account": {
+                        "nabu_casa_account": "Nabu Casa-konto",
+                        "connection_status": "Cloud-forbindelsesstatus",
+                        "manage_account": "Administrer konto",
+                        "sign_out": "Log ud",
+                        "integrations": "Integrationer",
+                        "integrations_introduction2": "Tjek hjemmesiden for",
+                        "integrations_link_all_features": "alle tilgængelige funktioner",
+                        "connected": "Forbundet",
+                        "not_connected": "Ikke forbundet",
+                        "fetching_subscription": "Henter abonnement...",
+                        "remote": {
+                            "certificate_info": "Certifikatoplysninger"
+                        },
+                        "alexa": {
+                            "title": "Alexa",
+                            "enable_state_reporting": "Aktivér tilstandsrapportering",
+                            "sync_entities": "Synkroniser enheder",
+                            "manage_entities": "Administrer enheder",
+                            "sync_entities_error": "Kunne ikke synkronisere enheder:",
+                            "state_reporting_error": "Kan ikke {enable_disable} rapport tilstand.",
+                            "enable": "aktivere",
+                            "disable": "deaktivere"
+                        },
+                        "google": {
+                            "title": "Google Assistant",
+                            "enable_state_reporting": "Aktivér tilstandsrapportering",
+                            "security_devices": "Sikkerhedsenheder",
+                            "devices_pin": "Pinkode til sikkerhedsenheder",
+                            "enter_pin_hint": "Indtast en pinkode for at bruge sikkerhedsenheder",
+                            "sync_entities": "Synkroniser enheder med Google",
+                            "manage_entities": "Administrer enheder",
+                            "enter_pin_error": "Pinkoden kan ikke gemmes:"
+                        },
+                        "webhooks": {
+                            "title": "Webhooks",
+                            "no_hooks_yet_link_integration": "webhook-baseret integration",
+                            "no_hooks_yet2": "eller ved at oprette en",
+                            "no_hooks_yet_link_automation": "webhook automatisering",
+                            "link_learn_more": "Lær mere om at oprette webhook-drevne automatiseringer.",
+                            "loading": "Indlæser ...",
+                            "disable_hook_error_msg": "Webhook kunne ikke deaktiveres:"
+                        }
+                    },
+                    "alexa": {
+                        "title": "Alexa",
+                        "exposed_entities": "Eksponerede enheder",
+                        "not_exposed_entities": "Ikke eksponerede enheder"
+                    },
+                    "dialog_certificate": {
+                        "certificate_information": "Certifikatoplysninger",
+                        "certificate_expiration_date": "Udløbsdato for certifikat",
+                        "will_be_auto_renewed": "Vil automatisk blive fornyet",
+                        "fingerprint": "Certifikat fingeraftryk:",
+                        "close": "Luk"
+                    },
+                    "google": {
+                        "title": "Google Assistant",
+                        "disable_2FA": "Deaktiver to-faktor godkendelse",
+                        "exposed_entities": "Eksponerede enheder",
+                        "not_exposed_entities": "Ikke eksponerede enheder",
+                        "sync_to_google": "Synkroniserer ændringer med Google."
+                    },
+                    "dialog_cloudhook": {
+                        "webhook_for": "Webhook til {name}",
+                        "available_at": "Webhook er tilgængelig på følgende webadresse:",
+                        "managed_by_integration": "Denne webhook administreres af en integration og kan ikke deaktiveres.",
+                        "info_disable_webhook": "Hvis du ikke længere vil bruge denne webhook, kan du",
+                        "link_disable_webhook": "deaktivere den",
+                        "view_documentation": "Se dokumentation",
+                        "close": "Luk",
+                        "confirm_disable": "Er du sikker på, at du vil deaktivere denne webhook?",
+                        "copied_to_clipboard": "Kopieret til udklipsholder"
+                    }
                 },
                 "integrations": {
                     "caption": "Integrationer",
@@ -720,7 +871,10 @@
                             "description": "Dette trin kræver, at du besøger et eksternt websted.",
                             "open_site": "Åbn websted"
                         }
-                    }
+                    },
+                    "note_about_integrations": "Ikke alle integrationer kan konfigureres via brugergrænsefladen endnu.",
+                    "note_about_website_reference": "Flere er tilgængelige på",
+                    "home_assistant_website": "Home Assistant hjemmeside"
                 },
                 "zha": {
                     "caption": "ZHA",
@@ -738,7 +892,41 @@
                     "add_device_page": {
                         "header": "Zigbee Home Automation - Tilføj enheder",
                         "spinner": "Søger efter ZHA Zigbee-enheder...",
-                        "discovery_text": "Fundne enheder vil dukke op her. Følg instruktionerne for din enhed(er) og sæt enhed(erne) i parringstilstand."
+                        "discovery_text": "Fundne enheder vil dukke op her. Følg instruktionerne for din enhed(er) og sæt enhed(erne) i parringstilstand.",
+                        "search_again": "Søg igen"
+                    },
+                    "common": {
+                        "add_devices": "Tilføj enheder",
+                        "clusters": "Klynger",
+                        "devices": "Enheder",
+                        "value": "Værdi"
+                    },
+                    "network_management": {
+                        "header": "Netværksstyring",
+                        "introduction": "Kommandoer, der påvirker hele netværket"
+                    },
+                    "node_management": {
+                        "header": "Enhedshåndtering"
+                    },
+                    "clusters": {
+                        "help_cluster_dropdown": "Vælg en klynge for at se attributter og kommandoer."
+                    },
+                    "cluster_attributes": {
+                        "header": "Klynge attributter",
+                        "introduction": "Se og rediger klynge attributter.",
+                        "attributes_of_cluster": "Attributter for den valgte klynge",
+                        "get_zigbee_attribute": "Hent Zigbee-attribut",
+                        "set_zigbee_attribute": "Angiv Zigbee-attribut",
+                        "help_attribute_dropdown": "Vælg en attribut for at se eller indstille dens værdi.",
+                        "help_get_zigbee_attribute": "Hent værdien for den valgte attribut.",
+                        "help_set_zigbee_attribute": "Indstil attributværdi for den specificerede klynge på den specificerede enhed."
+                    },
+                    "cluster_commands": {
+                        "header": "Klyngekommandoer",
+                        "introduction": "Se og send klyngekommandoer.",
+                        "commands_of_cluster": "Kommandoer for den valgte klynge",
+                        "issue_zigbee_command": "Send ZigBee kommando",
+                        "help_command_dropdown": "Vælg en kommando, du vil interagere med."
                     }
                 },
                 "area_registry": {
@@ -770,7 +958,13 @@
                         "introduction": "Home Assistant opbevarer en registrering over hver unikke enhed det nogensinde har set. Hver af disse enheder vil have et registrerings ID tildelt som er forbeholdt netop denne enhed.",
                         "introduction2": "Brug enhedsregistrering til at overskrive navnet, ændre enheds ID eller fjerne enheden fra Home Assistant. Bemærk at fjernelse af enhedens registrering ikke fjerner enheden. For at gøre det skal du følge linket herunder og fjerne det fra integrationssiden.",
                         "integrations_page": "Integrationsside",
-                        "show_disabled": "Vis deaktiverede enheder"
+                        "show_disabled": "Vis deaktiverede enheder",
+                        "headers": {
+                            "name": "Navn",
+                            "entity_id": "Enheds ID",
+                            "integration": "Integration",
+                            "enabled": "Aktiveret"
+                        }
                     },
                     "editor": {
                         "unavailable": "Denne enhed er ikke tilgængelig i øjeblikket.",
@@ -791,8 +985,19 @@
                         "name": "Navn",
                         "device_tracker_intro": "Vælg de enheder, der tilhører denne person.",
                         "device_tracker_picked": "Spor enhed",
-                        "device_tracker_pick": "Vælg en enhed, der skal spores"
-                    }
+                        "device_tracker_pick": "Vælg en enhed, der skal spores",
+                        "new_person": "Ny person",
+                        "name_error_msg": "Navn er påkrævet",
+                        "linked_user": "Tilknyttet bruger",
+                        "link_integrations_page": "Integrationsside",
+                        "delete": "Slet",
+                        "create": "Opret",
+                        "update": "Opdatering"
+                    },
+                    "no_persons_created_yet": "Det ser ud til, at du endnu ikke har oprettet nogen personer endnu.",
+                    "create_person": "Opret person",
+                    "add_person": "Tilføj person",
+                    "confirm_delete": "Er du sikker på, at du vil slette denne person?"
                 },
                 "server_control": {
                     "caption": "Serveradministration",
@@ -837,6 +1042,11 @@
                         "actions": {
                             "caption": "Når noget påvirkes ..."
                         }
+                    }
+                },
+                "common": {
+                    "editor": {
+                        "confirm_unsaved": "Du har ikke-gemte ændringer. Er du sikker på, at du vil forlade?"
                     }
                 }
             },
@@ -917,6 +1127,9 @@
                 "vibrate": {
                     "header": "Vibrer",
                     "description": "Aktivér eller deaktiver vibrationer på denne enhed, når du styrer enheder."
+                },
+                "advanced_mode": {
+                    "title": "Avanceret tilstand"
                 }
             },
             "page-authorize": {
@@ -1077,7 +1290,9 @@
                         "add": "Tilføj kort",
                         "edit": "Rediger",
                         "delete": "Slet",
-                        "move": "Flyt"
+                        "move": "Flyt",
+                        "show_visual_editor": "Vis visuel editor",
+                        "show_code_editor": "Vis kode editor"
                     },
                     "migrate": {
                         "header": "Konfiguration ikke færdiggjort",
@@ -1121,7 +1336,8 @@
                             "optional": "Valgfri"
                         },
                         "entities": {
-                            "show_header_toggle": "Vis omskifter ved overskrift?"
+                            "show_header_toggle": "Vis omskifter ved overskrift?",
+                            "name": "Enheder"
                         },
                         "gauge": {
                             "severity": {
@@ -1132,7 +1348,8 @@
                             }
                         },
                         "glance": {
-                            "columns": "Kolonner"
+                            "columns": "Kolonner",
+                            "name": "Blik"
                         },
                         "generic": {
                             "aspect_ratio": "Billedproportion",
@@ -1162,14 +1379,71 @@
                             "geo_location_sources": "Geolokationskilder",
                             "dark_mode": "Mørk tilstand?",
                             "default_zoom": "Standard zoom",
-                            "source": "Kilde"
+                            "source": "Kilde",
+                            "name": "Kort"
                         },
                         "markdown": {
                             "content": "Indhold"
                         },
                         "sensor": {
                             "graph_detail": "Graf detaljer",
-                            "graph_type": "Graf type"
+                            "graph_type": "Graf type",
+                            "name": "Sensor"
+                        },
+                        "alarm-panel": {
+                            "name": "Alarmpanel",
+                            "available_states": "Tilgængelige tilstande"
+                        },
+                        "conditional": {
+                            "name": "Betinget"
+                        },
+                        "entity-button": {
+                            "name": "Enhedsknap"
+                        },
+                        "entity-filter": {
+                            "name": "Enhedsfilter"
+                        },
+                        "history-graph": {
+                            "name": "Historik graf"
+                        },
+                        "horizontal-stack": {
+                            "name": "Vandret stak"
+                        },
+                        "iframe": {
+                            "name": "iFrame"
+                        },
+                        "light": {
+                            "name": "Lys"
+                        },
+                        "media-control": {
+                            "name": "Mediekontrol"
+                        },
+                        "picture": {
+                            "name": "Billede"
+                        },
+                        "picture-elements": {
+                            "name": "Billedelementer"
+                        },
+                        "picture-entity": {
+                            "name": "Billedenhed"
+                        },
+                        "picture-glance": {
+                            "name": "Billedblik"
+                        },
+                        "plant-status": {
+                            "name": "Plantestatus"
+                        },
+                        "shopping-list": {
+                            "name": "Indkøbsliste"
+                        },
+                        "thermostat": {
+                            "name": "Termostat"
+                        },
+                        "vertical-stack": {
+                            "name": "Lodret stak"
+                        },
+                        "weather-forecast": {
+                            "name": "Vejrudsigt"
                         }
                     }
                 },
@@ -1451,7 +1725,15 @@
                     "device_name_placeholder": "Bruger tildelt navn",
                     "area_picker_label": "Område",
                     "update_name_button": "Opdater navn"
-                }
+                },
+                "buttons": {
+                    "add": "Tilføj enheder",
+                    "remove": "Fjern enhed",
+                    "reconfigure": "Genkonfigurer enhed"
+                },
+                "last_seen": "Sidst set",
+                "power_source": "Strømkilde",
+                "unknown": "Ukendt"
             }
         },
         "auth_store": {

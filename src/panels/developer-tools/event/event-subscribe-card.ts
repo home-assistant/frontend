@@ -37,12 +37,20 @@ class EventSubscribeCard extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-card header="Listen to events">
+      <ha-card
+        header=${this.hass!.localize(
+          "ui.panel.developer-tools.tabs.events.listen_to_events"
+        )}
+      >
         <form>
           <paper-input
             .label=${this._subscribed
-              ? "Listening to"
-              : "Event to subscribe to"}
+              ? this.hass!.localize(
+                  "ui.panel.developer-tools.tabs.events.listening_to"
+                )
+              : this.hass!.localize(
+                  "ui.panel.developer-tools.tabs.events.subscribe_to"
+                )}
             .disabled=${this._subscribed !== undefined}
             .value=${this._eventType}
             @value-changed=${this._valueChanged}
@@ -52,14 +60,24 @@ class EventSubscribeCard extends LitElement {
             @click=${this._handleSubmit}
             type="submit"
           >
-            ${this._subscribed ? "Stop listening" : "Start listening"}
+            ${this._subscribed
+              ? this.hass!.localize(
+                  "ui.panel.developer-tools.tabs.events.stop_listening"
+                )
+              : this.hass!.localize(
+                  "ui.panel.developer-tools.tabs.events.start_listening"
+                )}
           </mwc-button>
         </form>
         <div class="events">
           ${this._events.map(
             (ev) => html`
               <div class="event">
-                Event ${ev.id} fired
+                ${this.hass!.localize(
+                  "ui.panel.developer-tools.tabs.events.event_fired",
+                  "name",
+                  ev.id
+                )}
                 ${format_time(
                   new Date(ev.event.time_fired),
                   this.hass!.language

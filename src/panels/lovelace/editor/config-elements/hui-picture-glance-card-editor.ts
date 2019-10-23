@@ -13,6 +13,7 @@ import "@polymer/paper-listbox/paper-listbox";
 import "../../components/hui-action-editor";
 import "../../components/hui-entity-editor";
 import "../../../../components/entity/ha-entity-picker";
+import "../../components/hui-theme-select-editor";
 
 import { struct } from "../../common/structs/struct";
 import {
@@ -41,6 +42,7 @@ const cardConfigStruct = struct({
   tap_action: struct.optional(actionConfigStruct),
   hold_action: struct.optional(actionConfigStruct),
   entities: [entitiesConfigStruct],
+  theme: "string?",
 });
 
 @customElement("hui-picture-glance-card-editor")
@@ -102,6 +104,10 @@ export class HuiPictureGlanceCardEditor extends LitElement
 
   get _show_state(): boolean {
     return this._config!.show_state || false;
+  }
+
+  get _theme(): string {
+    return this._config!.theme || "Backend-selected";
   }
 
   protected render(): TemplateResult | void {
@@ -224,6 +230,12 @@ export class HuiPictureGlanceCardEditor extends LitElement
           .entities="${this._configEntities}"
           @entities-changed="${this._valueChanged}"
         ></hui-entity-editor>
+        <hui-theme-select-editor
+          .hass="${this.hass}"
+          .value="${this._theme}"
+          .configValue="${"theme"}"
+          @theme-changed="${this._valueChanged}"
+        ></hui-theme-select-editor>
       </div>
     `;
   }

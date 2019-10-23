@@ -22,6 +22,7 @@ import {
 } from "../../../data/alarm_control_panel";
 import { AlarmPanelCardConfig } from "./types";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 const ICONS = {
   armed_away: "hass:shield-lock",
@@ -81,19 +82,44 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     this._code = "";
   }
 
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (!this._config || !this.hass) {
+      return;
+    }
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldConfig = changedProps.get("_config") as
+      | AlarmPanelCardConfig
+      | undefined;
+
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
+  }
+
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     if (changedProps.has("_config") || changedProps.has("_code")) {
       return true;
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (oldHass) {
-      return (
-        oldHass.states[this._config!.entity] !==
-        this.hass!.states[this._config!.entity]
-      );
+
+    if (
+      !oldHass ||
+      oldHass.themes !== this.hass!.themes ||
+      oldHass.language !== this.hass!.language
+    ) {
+      return true;
     }
-    return true;
+    return (
+      oldHass.states[this._config!.entity] !==
+      this.hass!.states[this._config!.entity]
+    );
   }
 
   protected render(): TemplateResult | void {
@@ -164,7 +190,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                         <mwc-button
                           .value="${value}"
                           @click="${this._handlePadClick}"
-                          dense
+                          outlined
                         >
                           ${value === "clear"
                             ? this._label("clear_code")
@@ -226,8 +252,6 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         --alarm-color-armed: var(--label-badge-red);
         --alarm-color-autoarm: rgba(0, 153, 255, 0.1);
         --alarm-state-color: var(--alarm-color-armed);
-        --base-unit: 15px;
-        font-size: calc(var(--base-unit));
       }
 
       ha-label-badge {
@@ -271,13 +295,11 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
       paper-input {
         margin: 0 auto 8px;
         max-width: 150px;
-        font-size: calc(var(--base-unit));
         text-align: center;
       }
 
       .state {
         margin-left: 16px;
-        font-size: calc(var(--base-unit) * 0.9);
         position: relative;
         bottom: 16px;
         color: var(--alarm-state-color);
@@ -289,14 +311,14 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         justify-content: center;
         flex-wrap: wrap;
         margin: auto;
-        width: 300px;
+        width: 100%;
+        max-width: 300px;
       }
 
       #keypad mwc-button {
-        margin-bottom: 5%;
+        text-size: 20px;
+        padding: 8px;
         width: 30%;
-        padding: calc(var(--base-unit));
-        font-size: calc(var(--base-unit) * 1.1);
         box-sizing: border-box;
       }
 
@@ -306,11 +328,9 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
-        font-size: calc(var(--base-unit) * 1);
       }
 
       .actions mwc-button {
-        min-width: calc(var(--base-unit) * 9);
         margin: 0 4px 4px;
       }
 
