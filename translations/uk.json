@@ -901,6 +901,9 @@
                 "force_narrow": {
                     "header": "Завжди приховувати бічну панель",
                     "description": "Це дозволить приховати бічну панель за замовчуванням, як і для мобільних пристроїв."
+                },
+                "advanced_mode": {
+                    "title": "Розширений режим"
                 }
             },
             "page-authorize": {
@@ -1094,6 +1097,29 @@
                     "edit_lovelace": {
                         "header": "Заголовок для Lovelace",
                         "explanation": "Цей заголовок буде показаний над вашими картками в Lovelace"
+                    },
+                    "card": {
+                        "light": {
+                            "name": "Освітлення"
+                        },
+                        "map": {
+                            "name": "Мапа"
+                        },
+                        "plant-status": {
+                            "name": "Стан рослини"
+                        },
+                        "sensor": {
+                            "name": "Датчик"
+                        },
+                        "thermostat": {
+                            "name": "Термостат"
+                        },
+                        "vertical-stack": {
+                            "name": "Вертикальний стек"
+                        },
+                        "weather-forecast": {
+                            "name": "Прогноз погоди"
+                        }
                     }
                 },
                 "menu": {

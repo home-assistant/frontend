@@ -498,7 +498,12 @@
                                     "leave": "Poistu"
                                 },
                                 "device": {
-                                    "label": "Laite"
+                                    "label": "Laite",
+                                    "extra_fields": {
+                                        "above": "Yli",
+                                        "below": "Alle",
+                                        "for": "Kesto"
+                                    }
                                 }
                             },
                             "learn_more": "Lisätietoja triggereistä"
@@ -547,7 +552,12 @@
                                     "zone": "Alue"
                                 },
                                 "device": {
-                                    "label": "Laite"
+                                    "label": "Laite",
+                                    "extra_fields": {
+                                        "above": "Yli",
+                                        "below": "Alle",
+                                        "for": "Kesto"
+                                    }
                                 },
                                 "and": {
                                     "label": "Ja"
@@ -602,7 +612,11 @@
                 },
                 "script": {
                     "caption": "Skripti",
-                    "description": "Luo ja muokkaa skriptejä"
+                    "description": "Luo ja muokkaa skriptejä",
+                    "editor": {
+                        "header": "Skripti: {name}",
+                        "default_name": "Uusi skripti"
+                    }
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -650,13 +664,19 @@
                         "true": "Tosi",
                         "false": "Eätosi",
                         "set_config_parameter": "Aseta asetusparametri"
+                    },
+                    "learn_more": "Z-wave lisätietoja",
+                    "ozw_log": {
+                        "header": "OZW-loki",
+                        "introduction": "Tarkastele lokia. 0 on pienin (lataa koko lokin) ja 1000 on maksimi. Lataus näyttää staattisen lokin ja päivittää automaattisesti viimeisen määritetyn määrän rivejä lokiin."
                     }
                 },
                 "users": {
                     "caption": "Käyttäjät",
                     "description": "Käyttäjien hallinta",
                     "picker": {
-                        "title": "Käyttäjät"
+                        "title": "Käyttäjät",
+                        "system_generated": "Järjestelmän luoma"
                     },
                     "editor": {
                         "rename_user": "Nimeä käyttäjä uudelleen",
@@ -664,7 +684,18 @@
                         "activate_user": "Aktivoi käyttäjä",
                         "deactivate_user": "Passivoi käyttäjätunnus",
                         "delete_user": "Poista käyttäjä",
-                        "caption": "Näytä käyttäjä"
+                        "caption": "Näytä käyttäjä",
+                        "id": "ID",
+                        "owner": "Omistaja",
+                        "group": "Ryhmä",
+                        "active": "Aktiivinen",
+                        "system_generated": "Järjestelmän luoma",
+                        "system_generated_users_not_removable": "Järjestelmän luomia käyttäjiä ei voi poistaa.",
+                        "unnamed_user": "Nimeämätön käyttäjä",
+                        "enter_new_name": "Kirjoita uusi nimi",
+                        "user_rename_failed": "Käyttäjän uudelleen nimeäminen epäonnistui:",
+                        "group_update_failed": "Ryhmän päivitys epäonnistui:",
+                        "confirm_user_deletion": "Haluatko varmasti poistaa {name}?"
                     },
                     "add_user": {
                         "caption": "Lisää käyttäjä",
@@ -678,7 +709,107 @@
                     "caption": "Home Assistant Cloud",
                     "description_login": "Kirjautunut sisään {email}",
                     "description_not_login": "Et ole kirjautunut",
-                    "description_features": "Ohjaus possa kotoa, käytä Alexaa ja Google Assistentia"
+                    "description_features": "Ohjaus possa kotoa, käytä Alexaa ja Google Assistentia",
+                    "login": {
+                        "introduction2": "Tätä palvelua ylläpitää kumppanimme",
+                        "introduction2a": ", Home Assistantin ja Hass.io: n perustajien perustama yritys.",
+                        "dismiss": "Hylkää",
+                        "sign_in": "Kirjaudu sisään",
+                        "email": "Sähköposti",
+                        "email_error_msg": "Virheellinen sähköpostiosoite",
+                        "password": "Salasana",
+                        "password_error_msg": "Salasanan pitää olla vähintään 8 merkkiä pitkä",
+                        "forgot_password": "Unohtuiko salasana?",
+                        "start_trial": "Aloita ilmainen 1 kuukauden kokeilu",
+                        "trial_info": "Maksutietoja ei tarvita",
+                        "alert_password_change_required": "Sinun on vaihdettava salasanasi ennen sisäänkirjautumista.",
+                        "alert_email_confirm_necessary": "Sinun on vahvistettava sähköpostiosoitteesi ennen sisäänkirjautumista."
+                    },
+                    "forgot_password": {
+                        "title": "Unohtuiko salasana?",
+                        "subtitle": "Unohtuiko salasana?",
+                        "instructions": "Kirjoita sähköpostiosoitteesi ja lähetämme sinulle linkin salasanasi palauttamiseksi.",
+                        "email": "Sähköposti",
+                        "email_error_msg": "Virheellinen sähköpostiosoite",
+                        "send_reset_email": "Lähetä palautusviesti",
+                        "check_your_email": "Tarkista sähköpostistasi ohjeet salasanan vaihtamiseen."
+                    },
+                    "register": {
+                        "title": "Rekisteröi tili",
+                        "headline": "Aloita ilmainen kokeilu",
+                        "information2": "Kokeilu antaa sinulle pääsyn kaikkiin Home Assistant Cloud -etuihin, mukaan lukien:",
+                        "feature_remote_control": "Hallitse Home Assistantia kodin ulkopuolelta",
+                        "information3": "Tätä palvelua ylläpitää kumppanimme",
+                        "information4": "Rekisteröimällä tilin hyväksyt seuraavat ehdot.",
+                        "link_terms_conditions": "Ehdot",
+                        "link_privacy_policy": "Tietosuojakäytäntö",
+                        "create_account": "Luo tili",
+                        "email_address": "Sähköpostiosoite",
+                        "email_error_msg": "Virheellinen sähköpostiosoite",
+                        "password": "Salasana",
+                        "password_error_msg": "Salasanan pitää olla vähintään 8 merkkiä pitkä",
+                        "start_trial": "Aloita kokeilujakso",
+                        "resend_confirm_email": "Lähetä varmistusviesti uudelleen",
+                        "account_created": "Tili luotu! Tarkista sähköpostistasi ohjeet tilisi aktivoimiseksi."
+                    },
+                    "account": {
+                        "nabu_casa_account": "Nabu Casa -tili",
+                        "sign_out": "Kirjaudu ulos",
+                        "integrations": "Integraatiot",
+                        "integrations_introduction": "Home Assistant Cloud integraatiot mahdollistavat pilvipalveluihin käytön ilman että Home Assistant asennus on näkyvissä julkisesti Internetissä.",
+                        "connected": "Yhdistetty",
+                        "not_connected": "Ei yhteyttä",
+                        "remote": {
+                            "title": "Etähallinta",
+                            "access_is_being_prepared": "Etäkäyttöä valmistellaan. Ilmoitamme sinulle, kun se on valmis.",
+                            "info": "Home Assistant Cloud tarjoaa turvallisen etäyhteyden ollessasi poissa kotoa.",
+                            "instance_is_available": "Asennuksesi on saatavilla osoitteessa",
+                            "instance_will_be_available": "Asennuksesi tulee saataville",
+                            "link_learn_how_it_works": "Lisätietoja toiminnasta",
+                            "certificate_info": "Sertifikaatin tiedot"
+                        },
+                        "alexa": {
+                            "title": "Alexa",
+                            "info": "Alexa Integraatio Home Assistant Cloudille mahdollistaa Home Assistant laitteiden ohjaamisen miltä tahansa Alexa laitteelta.",
+                            "sync_entities": "Synkronoi kohteet",
+                            "manage_entities": "Hallitse kohteita",
+                            "state_reporting_error": "Tilaa {enable_disable} .ei ole saatavilla",
+                            "enable": "Ota käyttöön",
+                            "disable": "Poista käytöstä"
+                        },
+                        "google": {
+                            "info": "Google Assistant Integraatio Home Assistant Cloudille mahdollistaa Home Assistant laitteiden ohjaamisen miltä tahansa Google Assistant laitteelta.",
+                            "security_devices": "Turvalaitteet",
+                            "enter_pin_hint": "Anna PIN-koodi turvalaitteiden käyttämistä varten",
+                            "enter_pin_error": "PIN-koodin tallentaminen ei onnistu:"
+                        },
+                        "webhooks": {
+                            "title": "Webhooks",
+                            "manage": "Hallitse"
+                        }
+                    },
+                    "alexa": {
+                        "title": "Alexa"
+                    },
+                    "dialog_certificate": {
+                        "certificate_information": "Sertifikaatin tiedot",
+                        "certificate_expiration_date": "Sertifikaatin vanhenemispäivä",
+                        "will_be_auto_renewed": "Uusitaan automaattisesti",
+                        "fingerprint": "Varmenteen sormenjälki:",
+                        "close": "Sulje"
+                    },
+                    "google": {
+                        "title": "Google Assistant",
+                        "disable_2FA": "Poista kaksivaiheinen tunnistautuminen",
+                        "sync_to_google": "Synkronoidaan muutokset Googleen."
+                    },
+                    "dialog_cloudhook": {
+                        "link_disable_webhook": "Poista käytöstä",
+                        "view_documentation": "Näytä dokumentaatio",
+                        "close": "Sulje",
+                        "confirm_disable": "Haluatko varmasti poistaa tämän webhookin käytöstä?",
+                        "copied_to_clipboard": "Kopioitiin leikepöydälle"
+                    }
                 },
                 "integrations": {
                     "caption": "Integraatiot",
@@ -706,7 +837,10 @@
                             "description": "Tämä vaihe edellyttää, että vierailet ulkopuolisella verkkosivustolla.",
                             "open_site": "Avaa verkkosivusto"
                         }
-                    }
+                    },
+                    "note_about_integrations": "Kaikkia integraatioita ei voi vielä määrittää käyttöliittymän kautta.",
+                    "note_about_website_reference": "Lisää saatavilla",
+                    "home_assistant_website": "Home Assistant – sivusto"
                 },
                 "zha": {
                     "caption": "ZHA",
@@ -719,12 +853,45 @@
                     "device_card": {
                         "device_name_placeholder": "Käyttäjän antama nimeä",
                         "area_picker_label": "Alue",
-                        "update_name_button": "Päivitä nimeä"
+                        "update_name_button": "Päivitä nimi"
                     },
                     "add_device_page": {
                         "header": "Zigbee Home Automation - Lisää laitteita",
                         "spinner": "Etsitään ZHA Zigbee laitteita...",
-                        "discovery_text": "Löydetyt laitteet näkyvät täällä. Noudata laitteen (laitteiden) ohjeita ja aseta laite pariliitostilaan."
+                        "discovery_text": "Löydetyt laitteet näkyvät täällä. Noudata laitteen (laitteiden) ohjeita ja aseta laite pariliitostilaan.",
+                        "search_again": "Etsi uudestaan"
+                    },
+                    "common": {
+                        "add_devices": "Lisää laitteita",
+                        "clusters": "Klusterit",
+                        "devices": "Laitteet",
+                        "value": "Arvo"
+                    },
+                    "network_management": {
+                        "header": "Verkon hallinta"
+                    },
+                    "node_management": {
+                        "header": "Laitehallinta",
+                        "help_node_dropdown": "Valitse laite tarkastellaksesi laitekohtaisia vaihtoehtoja."
+                    },
+                    "clusters": {
+                        "help_cluster_dropdown": "Valitse klusteri tarkastellaksesi määritteitä ja komentoja."
+                    },
+                    "cluster_attributes": {
+                        "header": "Klusterin määritteet",
+                        "introduction": "Tarkastele ja muokkaa klusterimääritteitä.",
+                        "attributes_of_cluster": "Valitun klusterin määritteet",
+                        "get_zigbee_attribute": "Hae Zigbee-ominaisuus",
+                        "set_zigbee_attribute": "Aseta Zigbee-ominaisuus",
+                        "help_attribute_dropdown": "Valitse määrite, jonka arvoa haluat tarkastella tai määrittää.",
+                        "help_get_zigbee_attribute": "Hae valitun määritteen arvo."
+                    },
+                    "cluster_commands": {
+                        "header": "Klusterikomennot",
+                        "introduction": "Tarkastele ja anna klusterikomentoja.",
+                        "commands_of_cluster": "Valitun klusterin komennot",
+                        "issue_zigbee_command": "Anna Zigbee käsky",
+                        "help_command_dropdown": "Valitse lähettettävä komento"
                     }
                 },
                 "area_registry": {
@@ -743,7 +910,7 @@
                     "editor": {
                         "default_name": "Uusi alue",
                         "delete": "POISTA",
-                        "update": "PÄIVITÄ",
+                        "update": "Päivitä",
                         "create": "LUO"
                     }
                 },
@@ -755,13 +922,21 @@
                         "unavailable": "(ei saatavilla)",
                         "introduction": "Home Assistant pitää rekisteriä jokaisesta havaitetusta olemuksesta, joka voidaan yksilöidä. Kullekin näille yksiköille määritetään olemus-ID, varattu juuri tälle yksikölle.",
                         "introduction2": "Yksikkörekisterin avulla voit ohittaa nimeä, muuttaa yksikön tunnusta tai poistaa merkinnän Home Assistantista. Huomaa, että rekisterimerkinnän poistaminen ei poista yksikköä sinäänsä. Sitä voit seuraamalla alla olevaa linkkiä ja poistamalla sitä integrointisivulta.",
-                        "integrations_page": "Integraatiot"
+                        "integrations_page": "Integraatiot",
+                        "headers": {
+                            "name": "Nimi",
+                            "entity_id": "Kohde ID",
+                            "integration": "Integraatio",
+                            "enabled": "Käytössä"
+                        }
                     },
                     "editor": {
                         "unavailable": "Parhaillaan olemus ei ole käytettävissä.",
                         "default_name": "Uusi alue",
                         "delete": "POISTA",
-                        "update": "PÄIVITYS"
+                        "update": "Päivitä",
+                        "enabled_cause": "Poistettu käytöstä {cause} .",
+                        "confirm_delete": "Haluatko varmasti poistaa tämän kohteen?"
                     }
                 },
                 "person": {
@@ -771,8 +946,21 @@
                         "name": "Nimi",
                         "device_tracker_intro": "Valitse tälle henkilölle kuuluvat laitteet.",
                         "device_tracker_picked": "Seuraa laitetta",
-                        "device_tracker_pick": "Valitse seurattava laite"
-                    }
+                        "device_tracker_pick": "Valitse seurattava laite",
+                        "new_person": "Uusi Henkilö",
+                        "name_error_msg": "Nimi on pakollinen",
+                        "linked_user": "Yhdsitetty käyttäjä",
+                        "no_device_tracker_available_intro": "Kun sinulla on laitteita, jotka ilmaisevat henkilön läsnäolon, voit kohdistaa ne henkilöön täällä. Voit lisätä ensimmäisen laitteen lisäämällä läsnäolon tunnistusintegraation sivulta.",
+                        "link_presence_detection_integrations": "Läsnäolon tunnistusintegraatiot",
+                        "link_integrations_page": "Integraatiot",
+                        "delete": "Poista",
+                        "create": "Luo",
+                        "update": "Päivitä"
+                    },
+                    "no_persons_created_yet": "Näyttää siltä, ettet ole vielä luonut yhtään henkilöä.",
+                    "create_person": "Luo henkilö",
+                    "add_person": "Lisää henkilö",
+                    "confirm_delete": "Haluatko varmasti poistaa tämän henkilön?"
                 },
                 "server_control": {
                     "caption": "Palvelimen hallinta",
@@ -805,6 +993,11 @@
                 "devices": {
                     "caption": "Laitteet",
                     "description": "Hallitse yhdistettyjä laitteita"
+                },
+                "common": {
+                    "editor": {
+                        "confirm_unsaved": "Sinulla on tallentamattomia muutoksia. Haluatko varmasti poistua?"
+                    }
                 }
             },
             "profile": {
@@ -879,6 +1072,10 @@
                 "logout": "Kirjaudu ulos",
                 "force_narrow": {
                     "header": "Piilota sivupalkki aina"
+                },
+                "advanced_mode": {
+                    "title": "Lisäasetukset",
+                    "description": "Home Assistant piilottaa lisäominaisuudet ja -asetukset oletuksena. Voit aktivoida nämä ominaisuudet painamalla tästä kytkimestä. Tämä on käyttäjäkohtainen asetus, eikä se vaikuta muihin Home Assistantia käyttäviin käyttäjiin."
                 }
             },
             "page-authorize": {
@@ -1038,7 +1235,9 @@
                         "add": "Lisää kortti",
                         "edit": "Muokkaa",
                         "delete": "Poista",
-                        "move": "Siirrä"
+                        "move": "Siirrä",
+                        "show_visual_editor": "Näytä visuaalinen editori",
+                        "show_code_editor": "Näytä koodieditori"
                     },
                     "migrate": {
                         "header": "Epäkelvot asetukset",
@@ -1068,6 +1267,105 @@
                         "save": "Tallenna",
                         "unsaved_changes": "Tallentamattomat muutokset",
                         "saved": "Tallennettu"
+                    },
+                    "card": {
+                        "alarm_panel": {
+                            "available_states": "Käytettävissä olevat tilat"
+                        },
+                        "config": {
+                            "required": "Vaadittu",
+                            "optional": "Valinnainen"
+                        },
+                        "gauge": {
+                            "severity": {
+                                "define": "Määritä vakavuus?",
+                                "green": "Vihreä",
+                                "red": "Punainen",
+                                "yellow": "Keltainen"
+                            },
+                            "name": "Mittari"
+                        },
+                        "generic": {
+                            "camera_image": "Kamerakohde",
+                            "entity": "Kohde",
+                            "hold_action": "Pitkä painallus toiminto",
+                            "image": "Kuvan polku",
+                            "maximum": "Enimmäismäärä",
+                            "minimum": "Vähimmäismäärä",
+                            "name": "Nimi",
+                            "tap_action": "Napautus toiminto"
+                        },
+                        "sensor": {
+                            "graph_detail": "Kaavion tiedot",
+                            "name": "Sensori"
+                        },
+                        "alarm-panel": {
+                            "name": "Hälytyspaneeli",
+                            "available_states": "Käytettävissä olevat tilat"
+                        },
+                        "conditional": {
+                            "name": "Ehdollinen"
+                        },
+                        "entities": {
+                            "name": "Kohteet"
+                        },
+                        "entity-button": {
+                            "name": "Kohdenappi"
+                        },
+                        "entity-filter": {
+                            "name": "Kohteen suodatus"
+                        },
+                        "glance": {
+                            "name": "Pikavilkaisu"
+                        },
+                        "history-graph": {
+                            "name": "Historiakuvaaja"
+                        },
+                        "horizontal-stack": {
+                            "name": "Vaakapino"
+                        },
+                        "iframe": {
+                            "name": "iFrame"
+                        },
+                        "light": {
+                            "name": "Valo"
+                        },
+                        "map": {
+                            "name": "Kartta"
+                        },
+                        "markdown": {
+                            "name": "Merkintä"
+                        },
+                        "media-control": {
+                            "name": "Mediaohjaus"
+                        },
+                        "picture": {
+                            "name": "Kuva"
+                        },
+                        "picture-elements": {
+                            "name": "Kuvaelementit"
+                        },
+                        "picture-entity": {
+                            "name": "Kuvakohde"
+                        },
+                        "picture-glance": {
+                            "name": "Kuva pikavilkaisu"
+                        },
+                        "plant-status": {
+                            "name": "Kasvin tila"
+                        },
+                        "shopping-list": {
+                            "name": "Ostoslista"
+                        },
+                        "thermostat": {
+                            "name": "Termostaatti"
+                        },
+                        "vertical-stack": {
+                            "name": "Pystypino"
+                        },
+                        "weather-forecast": {
+                            "name": "Sääennuste"
+                        }
                     }
                 },
                 "menu": {
@@ -1137,7 +1435,8 @@
         "common": {
             "loading": "Ladataan",
             "cancel": "Peruuta",
-            "save": "Tallenna"
+            "save": "Tallenna",
+            "successfully_saved": "Tallennus onnistui"
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {päivä}\n  other {päivää}\n}",
@@ -1258,6 +1557,14 @@
                 "target_temperature": "Tavoitelämpötila",
                 "operation": "Toiminto",
                 "away_mode": "Poissa kotoa"
+            },
+            "timer": {
+                "actions": {
+                    "start": "Aloita",
+                    "pause": "tauko",
+                    "cancel": "Peruuta",
+                    "finish": "Valmis"
+                }
             }
         },
         "components": {
@@ -1311,6 +1618,22 @@
                 "updater": {
                     "title": "Päivitysohjeet"
                 }
+            },
+            "config_entry_system_options": {
+                "title": "Järjestelmäasetukset"
+            },
+            "zha_device_info": {
+                "services": {
+                    "remove": "Poista laite Zigbee-verkosta."
+                },
+                "buttons": {
+                    "add": "Lisää laitteita",
+                    "remove": "Poista laite",
+                    "reconfigure": "Määritä laite uudelleen"
+                },
+                "last_seen": "Viimeksi nähty",
+                "power_source": "Virtalähde",
+                "unknown": "Tuntematon"
             }
         },
         "auth_store": {
