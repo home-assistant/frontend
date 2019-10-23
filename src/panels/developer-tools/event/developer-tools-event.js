@@ -12,6 +12,7 @@ import "./events-list";
 import "./event-subscribe-card";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import { showDialog } from "../../../dialogs/generic/show-dialog-box";
 
 const ERROR_SENTINEL = {};
 /*
@@ -154,11 +155,11 @@ class HaPanelDevEvent extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   fireEvent() {
     if (!this.eventType) {
-      alert(
-        this.hass.localize(
+      showDialog(this, {
+        text: this.hass.localize(
           "ui.panel.developer-tools.tabs.events.alert_event_type"
-        )
-      );
+        ),
+      });
       return;
     }
     this.hass.callApi("POST", "events/" + this.eventType, this.parsedJSON).then(

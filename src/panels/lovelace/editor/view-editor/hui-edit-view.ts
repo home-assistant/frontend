@@ -34,7 +34,7 @@ import { processEditorEntities } from "../process-editor-entities";
 import { navigate } from "../../../../common/navigate";
 import { Lovelace } from "../../types";
 import { deleteView, addView, replaceView } from "../config-util";
-import { showConfirmationDialog } from "../../../../dialogs/confirmation/show-dialog-confirmation";
+import { showDialog } from "../../../../dialogs/generic/show-dialog-box";
 
 @customElement("hui-edit-view")
 export class HuiEditView extends LitElement {
@@ -179,17 +179,22 @@ export class HuiEditView extends LitElement {
       this._closeDialog();
       navigate(this, `/lovelace/0`);
     } catch (err) {
-      alert(`Deleting failed: ${err.message}`);
+      showDialog(this, {
+        text: `Deleting failed: ${err.message}`,
+      });
     }
   }
 
   private _deleteConfirm(): void {
     if (this._cards && this._cards.length > 0) {
-      alert(this.hass!.localize("ui.panel.lovelace.views.existing_cards"));
+      showDialog(this, {
+        text: this.hass!.localize("ui.panel.lovelace.views.existing_cards"),
+      });
       return;
     }
 
-    showConfirmationDialog(this, {
+    showDialog(this, {
+      confirmation: true,
       text: this.hass!.localize("ui.panel.lovelace.views.confirm_delete"),
       confirm: () => this._delete(),
     });
@@ -243,7 +248,9 @@ export class HuiEditView extends LitElement {
       );
       this._closeDialog();
     } catch (err) {
-      alert(`Saving failed: ${err.message}`);
+      showDialog(this, {
+        text: `Saving failed: ${err.message}`,
+      });
     } finally {
       this._saving = false;
     }

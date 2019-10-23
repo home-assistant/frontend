@@ -10,6 +10,7 @@ import "../../components/ha-card";
 import "../../resources/ha-style";
 
 import "./ha-settings-row";
+import { showDialog } from "../../dialogs/generic/show-dialog-box";
 
 /*
  * @appliesMixin EventsMixin
@@ -121,9 +122,11 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
     } catch (err) {
       // eslint-disable-next-line
       console.error(err);
-      alert(
-        this.localize("ui.panel.profile.long_lived_access_tokens.create_failed")
-      );
+      showDialog(this, {
+        text: this.localize(
+          "ui.panel.profile.long_lived_access_tokens.create_failed"
+        ),
+      });
     }
   }
 
@@ -148,9 +151,11 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
     } catch (err) {
       // eslint-disable-next-line
       console.error(err);
-      alert(
-        this.localize("ui.panel.profile.long_lived_access_tokens.delete_failed")
-      );
+      showDialog(this, {
+        text: this.localize(
+          "ui.panel.profile.long_lived_access_tokens.delete_failed"
+        ),
+      });
     }
   }
 }

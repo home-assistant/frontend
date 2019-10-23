@@ -400,7 +400,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   }
 
   private _enableSelected() {
-    showConfirmationDialog(this, {
+    showDialog(this, {
+      confirmation: true,
       title: this.hass.localize(
         "ui.panel.config.entities.picker.enable_selected.confirm_title",
         "number",
@@ -409,8 +410,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       text: this.hass.localize(
         "ui.panel.config.entities.picker.enable_selected.confirm_text"
       ),
-      confirmBtnText: this.hass.localize("ui.common.yes"),
-      cancelBtnText: this.hass.localize("ui.common.no"),
+      confirmText: this.hass.localize("ui.common.yes"),
+      dismissText: this.hass.localize("ui.common.no"),
       confirm: () => {
         this._selectedEntities.forEach((entity) =>
           updateEntityRegistryEntry(this.hass, entity, {
@@ -423,7 +424,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   }
 
   private _disableSelected() {
-    showConfirmationDialog(this, {
+    showDialog(this, {
+      confirmation: true,
       title: this.hass.localize(
         "ui.panel.config.entities.picker.disable_selected.confirm_title",
         "number",
@@ -432,8 +434,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       text: this.hass.localize(
         "ui.panel.config.entities.picker.disable_selected.confirm_text"
       ),
-      confirmBtnText: this.hass.localize("ui.common.yes"),
-      cancelBtnText: this.hass.localize("ui.common.no"),
+      confirmText: this.hass.localize("ui.common.yes"),
+      dismissText: this.hass.localize("ui.common.no"),
       confirm: () => {
         this._selectedEntities.forEach((entity) =>
           updateEntityRegistryEntry(this.hass, entity, {
@@ -450,7 +452,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       const stateObj = this.hass.states[entity];
       return stateObj?.attributes.restored;
     });
-    showConfirmationDialog(this, {
+    showDialog(this, {
+      confirmation: true,
       title: this.hass.localize(
         "ui.panel.config.entities.picker.remove_selected.confirm_title",
         "number",
@@ -459,8 +462,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       text: this.hass.localize(
         "ui.panel.config.entities.picker.remove_selected.confirm_text"
       ),
-      confirmBtnText: this.hass.localize("ui.common.yes"),
-      cancelBtnText: this.hass.localize("ui.common.no"),
+      confirmText: this.hass.localize("ui.common.yes"),
+      dismissText: this.hass.localize("ui.common.no"),
       confirm: () => {
         removeableEntities.forEach((entity) =>
           removeEntityRegistryEntry(this.hass, entity)

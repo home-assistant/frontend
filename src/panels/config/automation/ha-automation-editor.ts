@@ -25,7 +25,7 @@ import {
   Trigger,
 } from "../../../data/automation";
 import { Action } from "../../../data/script";
-import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialog-confirmation";
+import { showDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -65,7 +65,7 @@ export class HaAutomationEditor extends LitElement {
                       "ui.panel.config.automation.picker.delete_automation"
                     )}"
                     icon="hass:delete"
-                    @click=${this._delete}
+                    @click=${this._deleteConfirm}
                   ></paper-icon-button>
                 `}
           </app-toolbar>
@@ -252,17 +252,18 @@ export class HaAutomationEditor extends LitElement {
             this._config = config;
           },
           (resp) => {
-            alert(
-              resp.status_code === 404
-                ? this.hass.localize(
-                    "ui.panel.config.automation.editor.load_error_not_editable"
-                  )
-                : this.hass.localize(
-                    "ui.panel.config.automation.editor.load_error_unknown",
-                    "err_no",
-                    resp.status_code
-                  )
-            );
+            showDialog(this, {
+              text:
+                resp.status_code === 404
+                  ? this.hass.localize(
+                      "ui.panel.config.automation.editor.load_error_not_editable"
+                    )
+                  : this.hass.localize(
+                      "ui.panel.config.automation.editor.load_error_unknown",
+                      "err_no",
+                      resp.status_code
+                    ),
+            });
             history.back();
           }
         );
@@ -322,12 +323,13 @@ export class HaAutomationEditor extends LitElement {
 
   private _backTapped(): void {
     if (this._dirty) {
-      showConfirmationDialog(this, {
+      showDialog(this, {
+        confirmation: true,
         text: this.hass!.localize(
           "ui.panel.config.automation.editor.unsaved_confirm"
         ),
-        confirmBtnText: this.hass!.localize("ui.common.yes"),
-        cancelBtnText: this.hass!.localize("ui.common.no"),
+        confirmText: this.hass!.localize("ui.common.yes"),
+        dismissText: this.hass!.localize("ui.common.no"),
         confirm: () => history.back(),
       });
     } else {
@@ -335,14 +337,19 @@ export class HaAutomationEditor extends LitElement {
     }
   }
 
+  private async _deleteConfirm() {
+    showDialog(this, {
+      confirmation: true,
+      text: this.hass.localize(
+        "ui.panel.config.automation.picker.delete_confirm"
+      ),
+      confirmText: this.hass!.localize("ui.common.yes"),
+      dismissText: this.hass!.localize("ui.common.no"),
+      confirm: () => this._delete(),
+    });
+  }
+
   private async _delete() {
-    if (
-      !confirm(
-        this.hass.localize("ui.panel.config.automation.picker.delete_confirm")
-      )
-    ) {
-      return;
-    }
     await deleteAutomation(this.hass, this.automation.attributes.id!);
     history.back();
   }

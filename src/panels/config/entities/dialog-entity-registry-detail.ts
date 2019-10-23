@@ -144,6 +144,20 @@ export class DialogEntityRegistryDetail extends LitElement {
     this._params = undefined;
   }
 
+  private _confirmDeleteEntry(): void {
+    showDialog(this, {
+      confirmation: true,
+      title: this.hass.localize(
+        "ui.panel.config.entity_registry.editor.confirm_delete"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.entities.editor.confirm_delete"
+      ),
+      confirm: () => this._deleteEntry(),
+    });
+    this._params = undefined;
+  }
+
   private _closeDialog(): void {
     this._params = undefined;
   }

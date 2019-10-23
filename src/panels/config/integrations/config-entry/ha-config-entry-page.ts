@@ -17,7 +17,7 @@ import { DeviceRegistryEntry } from "../../../../data/device_registry";
 import { AreaRegistryEntry } from "../../../../data/area_registry";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { showConfigEntrySystemOptionsDialog } from "../../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
-import { showConfirmationDialog } from "../../../../dialogs/confirmation/show-dialog-confirmation";
+import { showDialog } from "../../../../dialogs/generic/show-dialog-box";
 
 class HaConfigEntryPage extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -165,7 +165,8 @@ class HaConfigEntryPage extends LitElement {
   }
 
   private _confirmRemoveEntry() {
-    showConfirmationDialog(this, {
+    showDialog(this, {
+      confirmation: true,
       text: this.hass.localize(
         "ui.panel.config.integrations.config_entry.delete_confirm"
       ),
@@ -177,11 +178,11 @@ class HaConfigEntryPage extends LitElement {
     deleteConfigEntry(this.hass, this.configEntryId).then((result) => {
       fireEvent(this, "hass-reload-entries");
       if (result.require_restart) {
-        alert(
-          this.hass.localize(
+        showDialog(this, {
+          text: this.hass.localize(
             "ui.panel.config.integrations.config_entry.restart_confirm"
-          )
-        );
+          ),
+        });
       }
       navigate(this, "/config/integrations/dashboard", true);
     });
