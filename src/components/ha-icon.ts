@@ -1,4 +1,5 @@
-import { Constructor } from "lit-element";
+import { Constructor } from "../types";
+
 import "@polymer/iron-icon/iron-icon";
 // Not duplicate, this is for typing.
 // tslint:disable-next-line

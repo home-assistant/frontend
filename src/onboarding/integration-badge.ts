@@ -74,6 +74,7 @@ class IntegrationBadge extends LitElement {
 
       .title {
         min-height: 2.3em;
+        word-break: break-word;
       }
     `;
   }

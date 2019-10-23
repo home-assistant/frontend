@@ -3,11 +3,12 @@ import { timeOut } from "@polymer/polymer/lib/utils/async";
 import { Debouncer } from "@polymer/polymer/lib/utils/debounce";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 import "../../../components/ha-code-editor";
 
 import "../../../resources/ha-style";
 
-class HaPanelDevTemplate extends PolymerElement {
+class HaPanelDevTemplate extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style include="ha-style iron-flex iron-positioning"></style>
@@ -60,26 +61,25 @@ class HaPanelDevTemplate extends PolymerElement {
       <div class$="[[computeFormClasses(narrow)]]">
         <div class="edit-pane">
           <p>
-            Templates are rendered using the Jinja2 template engine with some
-            Home Assistant specific extensions.
+            [[localize('ui.panel.developer-tools.tabs.templates.description')]]
           </p>
           <ul>
             <li>
               <a
                 href="http://jinja.pocoo.org/docs/dev/templates/"
                 target="_blank"
-                >Jinja2 template documentation</a
+                >[[localize('ui.panel.developer-tools.tabs.templates.jinja_documentation')]]</a
               >
             </li>
             <li>
               <a
                 href="https://home-assistant.io/docs/configuration/templating/"
                 target="_blank"
-                >Home Assistant template extensions</a
+                >[[localize('ui.panel.developer-tools.tabs.templates.template_extensions')]]</a
               >
             </li>
           </ul>
-          <p>Template editor</p>
+          <p>[[localize('ui.panel.developer-tools.tabs.templates.editor')]]</p>
           <ha-code-editor
             mode="jinja2"
             value="[[template]]"
@@ -188,7 +188,9 @@ For loop example:
       function(error) {
         this.processed =
           (error && error.body && error.body.message) ||
-          "Unknown error rendering template";
+          this.hass.localize(
+            "ui.panel.developer-tools.tabs.templates.unknown_error_template"
+          );
         this.error = true;
         this.rendering = false;
       }.bind(this)

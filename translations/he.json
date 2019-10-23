@@ -349,10 +349,10 @@
                 "introduction": "כאן ניתן להגדיר את הרכיבים ואת ה Home Assistant. לא הכל ניתן להגדיר את ממשק המשתמש עדיין, אבל אנחנו עובדים על זה.",
                 "core": {
                     "caption": "כללי",
-                    "description": "בדיקת קובץ הקונפיגורציה שלך ושליטה על השרת",
+                    "description": "שנה את התצורה הכללית של Home Assistant",
                     "section": {
                         "core": {
-                            "header": "שליטה על הקונפיגורציה ועל השרת",
+                            "header": "הגדרות כלליות",
                             "introduction": "שינוי התצורה שלך יכול להיות תהליך מייגע. אנחנו יודעים. חלק זה ינסה להפוך את החיים שלך קצת יותר קלים.",
                             "core_config": {
                                 "edit_requires_storage": "עורך מושבת משום שתצורה מאוחסנת ב- configuration.yaml.",
@@ -415,7 +415,7 @@
                         "learn_more": "למד עוד על אוטומציות"
                     },
                     "editor": {
-                        "introduction": "השתמש באוטומציות להביא את הבית שלך לחיים",
+                        "introduction": "השתמש\/י באוטומציות להפיח חיים בביתך.",
                         "default_name": "אוטומציה חדשה",
                         "save": "שמור",
                         "unsaved_confirm": "יש לך שינויים שלא נשמרו. אתה בטוח שאתה רוצה לעזוב?",
@@ -636,13 +636,15 @@
                         "true": "True",
                         "false": "False",
                         "set_config_parameter": "הגדר פרמטר Config"
-                    }
+                    },
+                    "learn_more": "למידע נוסף על Z-Wave"
                 },
                 "users": {
                     "caption": "משתמשים",
                     "description": "ניהול משתמשים",
                     "picker": {
-                        "title": "משתמשים"
+                        "title": "משתמשים",
+                        "system_generated": "נוצר ע\"י המערכת"
                     },
                     "editor": {
                         "rename_user": "שנה שם משתמש",
@@ -650,7 +652,13 @@
                         "activate_user": "הפעל משתמש",
                         "deactivate_user": "בטל את המשתמש",
                         "delete_user": "מחיקת משתמש",
-                        "caption": "הצג משתמש"
+                        "caption": "הצג משתמש",
+                        "id": "מזהה",
+                        "owner": "בעלים",
+                        "group": "קבוצה",
+                        "active": "פעיל",
+                        "enter_new_name": "הזן שם חדש",
+                        "confirm_user_deletion": "האם הינך בטוח\/ה שברצונך למחוק את {name} ?"
                     },
                     "add_user": {
                         "caption": "הוסף משתמש",
@@ -664,11 +672,34 @@
                     "caption": "ענן Home Assistant",
                     "description_login": "מחובר בתור {email} מה",
                     "description_not_login": "לא מחובר",
-                    "description_features": "שליטה הרחק מהבית, משתלב עם Alexa ו Google Assistant."
+                    "description_features": "שליטה הרחק מהבית, משתלב עם Alexa ו Google Assistant.",
+                    "register": {
+                        "headline": "התחל את תקופת הניסיון בחינם",
+                        "feature_google_home": "אינטגרציה עם Google Assistant",
+                        "feature_amazon_alexa": "אינטגרציה עם Amazon Alexa"
+                    },
+                    "account": {
+                        "alexa": {
+                            "title": "Alexa",
+                            "info_state_reporting": "אם תאפשר דיווח על מצב, Home Assistant ישלח כל שינוי מצב של ישויות חשופות לאמזון. זה יאפשר לך לראות תמיד את המצב העדכני באפליקציית Alexa ולהשתמש בשינויי המצב ליצירת שגרות."
+                        },
+                        "google": {
+                            "title": "Google Assistant"
+                        }
+                    },
+                    "alexa": {
+                        "title": "Alexa"
+                    },
+                    "google": {
+                        "title": "Google Assistant"
+                    },
+                    "dialog_cloudhook": {
+                        "close": "סגור"
+                    }
                 },
                 "integrations": {
                     "caption": "אינטגרציות",
-                    "description": "ניהול התקנים ושירותים מחוברים",
+                    "description": "ניהול והגדרת אינטגרציות",
                     "discovered": "זוהו",
                     "configured": "הוגדר",
                     "new": "הגדר אינטגרציה",
@@ -692,7 +723,10 @@
                             "description": "שלב זה מחייב אותך לבקר באתר אינטרנט חיצוני להשלמת הפעולה.",
                             "open_site": "פתח אתר"
                         }
-                    }
+                    },
+                    "note_about_integrations": "קיימות אינטגרציות שלא ניתן עדיין להגדירן ע\"י ממשק המשתמש.",
+                    "note_about_website_reference": "מידע נוסף זמין ב:",
+                    "home_assistant_website": "אתר Home Assistant"
                 },
                 "zha": {
                     "caption": "ZHA",
@@ -710,7 +744,25 @@
                     "add_device_page": {
                         "header": "אוטומציית Zigbee - הוספת התקנים",
                         "spinner": "מחפש מכשירי ZHA Zigbee...",
-                        "discovery_text": ". המכשירים שהתגלו יופיעו כאן. עקוב אחר ההוראות עבור ההתקנים שלך והצב את ההתקנים במצב תיאום."
+                        "discovery_text": ". המכשירים שהתגלו יופיעו כאן. עקוב אחר ההוראות עבור ההתקנים שלך והצב את ההתקנים במצב תיאום.",
+                        "search_again": "חפש שוב"
+                    },
+                    "common": {
+                        "add_devices": "הוסף התקנים",
+                        "devices": "התקנים"
+                    },
+                    "node_management": {
+                        "hint_battery_devices": "הערה: מכשירים מנומנמים (מופעלים על סוללות) צריכים להיות ערים בעת ביצוע פקודות מולם. בדרך כלל ניתן להעיר מכשיר מנומנם על ידי ביצוע פקודה מולם.",
+                        "hint_wakeup": "מכשירים מסוימים, כגון חיישני Xiaomi, כוללים כפתור להתעוררות עליו ניתן ללחוץ במרווח של ~5 שניות על מנת להשאיר אותם ערים בזמן שמתקשרים איתם."
+                    },
+                    "cluster_attributes": {
+                        "get_zigbee_attribute": "קבל שדה Zigbee",
+                        "set_zigbee_attribute": "קבע שדה Zigbee",
+                        "help_attribute_dropdown": "בחר שדה לצפייה או לשינוי ערכו.",
+                        "help_get_zigbee_attribute": "קבל את הערך עבור השדה שנבחר."
+                    },
+                    "cluster_commands": {
+                        "issue_zigbee_command": "שלח פקודת Zigbee"
                     }
                 },
                 "area_registry": {
@@ -757,7 +809,9 @@
                         "name": "שם",
                         "device_tracker_intro": "בחר את המכשירים השייכים לאדם זה.",
                         "device_tracker_picked": "עקוב אחר מכשיר",
-                        "device_tracker_pick": "בחר מכשיר למעקב"
+                        "device_tracker_pick": "בחר מכשיר למעקב",
+                        "name_error_msg": "שם נדרש",
+                        "linked_user": "משתמש מקושר"
                     }
                 },
                 "server_control": {
@@ -861,6 +915,10 @@
                 "force_narrow": {
                     "header": "הסתר תמיד את הסרגל הצידי",
                     "description": "פעולה זו תסתיר את הסרגל הצדדי כברירת מחדל, בדומה לחוויה בנייד."
+                },
+                "advanced_mode": {
+                    "title": "מצב מתקדם",
+                    "description": "Home Assistant מסתיר תכונות ואפשרויות מתקדמות כברירת מחדל. ביכולתך לחשוף אותן ע\"י בחירת תיבת הסימון זו. הגדרה זו היא עבור המשתמש הנוכחי ולא תשפיע על משתמשים אחרים ב Home Assistant."
                 }
             },
             "page-authorize": {
@@ -1050,6 +1108,44 @@
                         "save": "שמור",
                         "unsaved_changes": "שינויים שלא נשמרו",
                         "saved": "נשמר"
+                    },
+                    "card": {
+                        "horizontal-stack": {
+                            "name": "עימוד אופקי"
+                        },
+                        "iframe": {
+                            "name": "iFrame"
+                        },
+                        "light": {
+                            "name": "תאורה"
+                        },
+                        "map": {
+                            "name": "מפה"
+                        },
+                        "media-control": {
+                            "name": "שליטה במדיה"
+                        },
+                        "picture": {
+                            "name": "תמונה"
+                        },
+                        "plant-status": {
+                            "name": "מצב הצמח"
+                        },
+                        "sensor": {
+                            "name": "חיישן"
+                        },
+                        "shopping-list": {
+                            "name": "רשימת קניות"
+                        },
+                        "thermostat": {
+                            "name": "וסת חום"
+                        },
+                        "vertical-stack": {
+                            "name": "עימוד אנכי"
+                        },
+                        "weather-forecast": {
+                            "name": "תחזית מזג האוויר"
+                        }
                     }
                 },
                 "menu": {
@@ -1125,8 +1221,8 @@
             "day": "יום ימים",
             "week": "שבוע שבועות",
             "second": "שניה שניות",
-            "minute": "דקה דקות",
-            "hour": "שעה שעות"
+            "minute": "{count} {count, plural,\n  one {דקה}\n  other {דקות}\n}",
+            "hour": "{count} {count, plural,\n  one {שעה}\n  other {שעות}\n}"
         },
         "login-form": {
             "password": "סיסמה",

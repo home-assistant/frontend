@@ -14,7 +14,7 @@ import "../../../components/ha-card";
 import "../components/hui-warning";
 
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import applyThemesOnElement from "../../../common/dom/apply_themes_on_element";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import { HomeAssistant } from "../../../types";
@@ -149,8 +149,16 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     }
 
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldConfig = changedProps.get("_config") as
+      | GaugeCardConfig
+      | undefined;
 
-    if (!oldHass || oldHass.themes !== this.hass.themes) {
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
   }

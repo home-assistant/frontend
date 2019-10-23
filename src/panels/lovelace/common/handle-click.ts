@@ -13,12 +13,16 @@ export const handleClick = (
     camera_image?: string;
     hold_action?: ActionConfig;
     tap_action?: ActionConfig;
+    double_tap_action?: ActionConfig;
   },
-  hold: boolean
+  hold: boolean,
+  dblClick: boolean
 ): void => {
   let actionConfig: ActionConfig | undefined;
 
-  if (hold && config.hold_action) {
+  if (dblClick && config.double_tap_action) {
+    actionConfig = config.double_tap_action;
+  } else if (hold && config.hold_action) {
     actionConfig = config.hold_action;
   } else if (!hold && config.tap_action) {
     actionConfig = config.tap_action;
@@ -28,6 +32,23 @@ export const handleClick = (
     actionConfig = {
       action: "more-info",
     };
+  }
+
+  if (
+    actionConfig.confirmation &&
+    (!actionConfig.confirmation.exemptions ||
+      !actionConfig.confirmation.exemptions.some(
+        (e) => e.user === hass!.user!.id
+      ))
+  ) {
+    if (
+      !confirm(
+        actionConfig.confirmation.text ||
+          `Are you sure you want to ${actionConfig.action}?`
+      )
+    ) {
+      return;
+    }
   }
 
   switch (actionConfig.action) {

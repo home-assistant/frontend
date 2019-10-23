@@ -26,6 +26,7 @@ import {
   updateEntityRegistryEntry,
   removeEntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialog-confirmation";
 
 class DialogEntityRegistryDetail extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -139,7 +140,7 @@ class DialogEntityRegistryDetail extends LitElement {
         <div class="paper-dialog-buttons">
           <mwc-button
             class="warning"
-            @click="${this._deleteEntry}"
+            @click="${this._confirmDeleteEntry}"
             .disabled=${this._submitting}
           >
             ${this.hass.localize(
@@ -186,22 +187,6 @@ class DialogEntityRegistryDetail extends LitElement {
   }
 
   private async _deleteEntry(): Promise<void> {
-    if (
-      !confirm(
-        `${this.hass.localize(
-          "ui.panel.config.entity_registry.editor.confirm_delete"
-        )}
-
-${this.hass.localize(
-  "ui.panel.config.entity_registry.editor.confirm_delete2",
-  "platform",
-  this._platform
-)}`
-      )
-    ) {
-      return;
-    }
-
     this._submitting = true;
 
     try {
@@ -210,6 +195,20 @@ ${this.hass.localize(
     } finally {
       this._submitting = false;
     }
+  }
+
+  private _confirmDeleteEntry(): void {
+    showConfirmationDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.entity_registry.editor.confirm_delete"
+      ),
+      text: this.hass.localize(
+        "ui.panel.config.entity_registry.editor.confirm_delete2",
+        "platform",
+        this._platform
+      ),
+      confirm: () => this._deleteEntry(),
+    });
   }
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>): void {

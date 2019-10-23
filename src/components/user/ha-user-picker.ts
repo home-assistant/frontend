@@ -18,19 +18,20 @@ import { fireEvent } from "../../common/dom/fire_event";
 import { User, fetchUsers } from "../../data/user";
 import { compare } from "../../common/string/compare";
 
-class HaEntityPicker extends LitElement {
+class HaUserPicker extends LitElement {
   public hass?: HomeAssistant;
   @property() public label?: string;
   @property() public value?: string;
   @property() public users?: User[];
 
   private _sortedUsers = memoizeOne((users?: User[]) => {
-    if (!users || users.length === 1) {
-      return users || [];
+    if (!users) {
+      return [];
     }
-    const sorted = [...users];
-    sorted.sort((a, b) => compare(a.name, b.name));
-    return sorted;
+
+    return users
+      .filter((user) => !user.system_generated)
+      .sort((a, b) => compare(a.name, b.name));
   });
 
   protected render(): TemplateResult | void {
@@ -101,4 +102,4 @@ class HaEntityPicker extends LitElement {
   }
 }
 
-customElements.define("ha-user-picker", HaEntityPicker);
+customElements.define("ha-user-picker", HaUserPicker);

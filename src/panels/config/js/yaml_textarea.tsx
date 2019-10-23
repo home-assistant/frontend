@@ -1,5 +1,5 @@
 import { h, Component } from "preact";
-import yaml from "js-yaml";
+import { safeDump, safeLoad } from "js-yaml";
 import "../../../components/ha-code-editor";
 
 const isEmpty = (obj: object) => {
@@ -19,7 +19,7 @@ export default class YAMLTextArea extends Component<any, any> {
     try {
       value =
         props.value && !isEmpty(props.value)
-          ? yaml.safeDump(props.value)
+          ? safeDump(props.value)
           : undefined;
     } catch (err) {
       alert(`There was an error converting to YAML: ${err}`);
@@ -40,7 +40,7 @@ export default class YAMLTextArea extends Component<any, any> {
 
     if (value) {
       try {
-        parsed = yaml.safeLoad(value);
+        parsed = safeLoad(value);
         isValid = true;
       } catch (err) {
         // Invalid YAML

@@ -39,6 +39,7 @@ declare global {
 class HaConfigIntegrations extends HassRouterPage {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
+  @property() public showAdvanced!: boolean;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
@@ -99,6 +100,8 @@ class HaConfigIntegrations extends HassRouterPage {
 
     pageEl.entityRegistryEntries = this._entityRegistryEntries;
     pageEl.configEntries = this._configEntries;
+    pageEl.narrow = this.narrow;
+    pageEl.showAdvanced = this.showAdvanced;
 
     if (this._currentPage === "dashboard") {
       pageEl.configEntriesInProgress = this._configEntriesInProgress;
@@ -108,7 +111,6 @@ class HaConfigIntegrations extends HassRouterPage {
     pageEl.configEntryId = this.routeTail.path.substr(1);
     pageEl.deviceRegistryEntries = this._deviceRegistryEntries;
     pageEl.areas = this._areas;
-    pageEl.narrow = this.narrow;
   }
 
   private _loadData() {

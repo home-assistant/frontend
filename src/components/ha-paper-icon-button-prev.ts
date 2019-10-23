@@ -1,5 +1,5 @@
-import { Constructor } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
+import { Constructor } from "../types";
 // Not duplicate, this is for typing.
 // tslint:disable-next-line
 import { PaperIconButtonElement } from "@polymer/paper-icon-button/paper-icon-button";

@@ -2,7 +2,7 @@ import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import yaml from "js-yaml";
+import { safeDump, safeLoad } from "js-yaml";
 
 import { ENTITY_COMPONENT_DOMAINS } from "../../../data/entity";
 import "../../../components/entity/ha-entity-picker";
@@ -10,9 +10,13 @@ import "../../../components/ha-code-editor";
 import "../../../components/ha-service-picker";
 import "../../../resources/ha-style";
 import "../../../util/app-localstorage-document";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 const ERROR_SENTINEL = {};
-class HaPanelDevService extends PolymerElement {
+/*
+ * @appliesMixin LocalizeMixin
+ */
+class HaPanelDevService extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style include="ha-style">
@@ -94,8 +98,7 @@ class HaPanelDevService extends PolymerElement {
 
       <div class="content">
         <p>
-          The service dev tool allows you to call any available service in Home
-          Assistant.
+          [[localize('ui.panel.developer-tools.tabs.services.description')]]
         </p>
 
         <div class="ha-form">
@@ -113,7 +116,7 @@ class HaPanelDevService extends PolymerElement {
               allow-custom-entity
             ></ha-entity-picker>
           </template>
-          <p>Service Data (YAML, optional)</p>
+          <p>[[localize('ui.panel.developer-tools.tabs.services.data')]]</p>
           <ha-code-editor
             mode="yaml"
             value="[[serviceData]]"
@@ -121,30 +124,42 @@ class HaPanelDevService extends PolymerElement {
             on-value-changed="_yamlChanged"
           ></ha-code-editor>
           <mwc-button on-click="_callService" raised disabled="[[!validJSON]]">
-            Call Service
+            [[localize('ui.panel.developer-tools.tabs.services.call_service')]]
           </mwc-button>
         </div>
 
         <template is="dom-if" if="[[!domainService]]">
-          <h1>Select a service to see the description</h1>
+          <h1>
+            [[localize('ui.panel.developer-tools.tabs.services.select_service')]]
+          </h1>
         </template>
 
         <template is="dom-if" if="[[domainService]]">
           <template is="dom-if" if="[[!_description]]">
-            <h1>No description is available</h1>
+            <h1>
+              [[localize('ui.panel.developer-tools.tabs.services.no_description')]]
+            </h1>
           </template>
           <template is="dom-if" if="[[_description]]">
             <h3>[[_description]]</h3>
 
             <table class="attributes">
               <tr>
-                <th>Parameter</th>
-                <th>Description</th>
-                <th>Example</th>
+                <th>
+                  [[localize('ui.panel.developer-tools.tabs.services.column_parameter')]]
+                </th>
+                <th>
+                  [[localize('ui.panel.developer-tools.tabs.services.column_description')]]
+                </th>
+                <th>
+                  [[localize('ui.panel.developer-tools.tabs.services.column_example')]]
+                </th>
               </tr>
               <template is="dom-if" if="[[!_attributes.length]]">
                 <tr>
-                  <td colspan="3">This service takes no parameters.</td>
+                  <td colspan="3">
+                    [[localize('ui.panel.developer-tools.tabs.services.no_parameters')]]
+                  </td>
                 </tr>
               </template>
               <template is="dom-repeat" items="[[_attributes]]" as="attribute">
@@ -158,7 +173,7 @@ class HaPanelDevService extends PolymerElement {
 
             <template is="dom-if" if="[[_attributes.length]]">
               <mwc-button on-click="_fillExampleData">
-                Fill Example Data
+                [[localize('ui.panel.developer-tools.tabs.services.fill_example_data')]]
               </mwc-button>
             </template>
           </template>
@@ -251,7 +266,7 @@ class HaPanelDevService extends PolymerElement {
 
   _computeParsedServiceData(serviceData) {
     try {
-      return serviceData.trim() ? yaml.safeLoad(serviceData) : {};
+      return serviceData.trim() ? safeLoad(serviceData) : {};
     } catch (err) {
       return ERROR_SENTINEL;
     }
@@ -276,7 +291,13 @@ class HaPanelDevService extends PolymerElement {
   _callService() {
     if (this.parsedJSON === ERROR_SENTINEL) {
       // eslint-disable-next-line
-      alert(`Error parsing YAML: ${this.serviceData}`);
+      alert(
+        this.hass.localize(
+          "ui.panel.developer-tools.tabs.services.alert_parsing_yaml",
+          "data",
+          this.serviceData
+        )
+      );
       return;
     }
 
@@ -289,18 +310,18 @@ class HaPanelDevService extends PolymerElement {
       if (attribute.example) {
         let value = "";
         try {
-          value = yaml.safeLoad(attribute.example);
+          value = safeLoad(attribute.example);
         } catch (err) {
           value = attribute.example;
         }
         example[attribute.key] = value;
       }
     });
-    this.serviceData = yaml.safeDump(example);
+    this.serviceData = safeDump(example);
   }
 
   _entityPicked(ev) {
-    this.serviceData = yaml.safeDump({
+    this.serviceData = safeDump({
       ...this.parsedJSON,
       entity_id: ev.target.value,
     });

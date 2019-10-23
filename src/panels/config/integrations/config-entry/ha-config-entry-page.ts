@@ -17,6 +17,7 @@ import { DeviceRegistryEntry } from "../../../../data/device_registry";
 import { AreaRegistryEntry } from "../../../../data/area_registry";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { showConfigEntrySystemOptionsDialog } from "../../../../dialogs/config-entry-system-options/show-dialog-config-entry-system-options";
+import { showConfirmationDialog } from "../../../../dialogs/confirmation/show-dialog-confirmation";
 
 class HaConfigEntryPage extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -84,18 +85,33 @@ class HaConfigEntryPage extends LitElement {
                 slot="toolbar-icon"
                 icon="hass:settings"
                 @click=${this._showSettings}
+                title=${this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.settings_button",
+                  "integration",
+                  configEntry.title
+                )}
               ></paper-icon-button>
             `
           : ""}
         <paper-icon-button
           slot="toolbar-icon"
           icon="hass:message-settings-variant"
+          title=${this.hass.localize(
+            "ui.panel.config.integrations.config_entry.system_options_button",
+            "integration",
+            configEntry.title
+          )}
           @click=${this._showSystemOptions}
         ></paper-icon-button>
         <paper-icon-button
           slot="toolbar-icon"
           icon="hass:delete"
-          @click=${this._removeEntry}
+          title=${this.hass.localize(
+            "ui.panel.config.integrations.config_entry.delete_button",
+            "integration",
+            configEntry.title
+          )}
+          @click=${this._confirmRemoveEntry}
         ></paper-icon-button>
 
         <div class="content">
@@ -144,17 +160,16 @@ class HaConfigEntryPage extends LitElement {
     });
   }
 
-  private _removeEntry() {
-    if (
-      !confirm(
-        this.hass.localize(
-          "ui.panel.config.integrations.config_entry.delete_confirm"
-        )
-      )
-    ) {
-      return;
-    }
+  private _confirmRemoveEntry() {
+    showConfirmationDialog(this, {
+      text: this.hass.localize(
+        "ui.panel.config.integrations.config_entry.delete_confirm"
+      ),
+      confirm: () => this._removeEntry(),
+    });
+  }
 
+  private _removeEntry() {
     deleteConfigEntry(this.hass, this.configEntryId).then((result) => {
       fireEvent(this, "hass-reload-entries");
       if (result.require_restart) {

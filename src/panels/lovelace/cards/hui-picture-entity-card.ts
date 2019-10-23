@@ -25,6 +25,8 @@ import { handleClick } from "../common/handle-click";
 import { UNAVAILABLE } from "../../../data/entity";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { PictureEntityCardConfig } from "./types";
+import { hasDoubleClick } from "../common/has-double-click";
+import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 @customElement("hui-picture-entity-card")
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {
@@ -65,6 +67,26 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
+  }
+
+  protected updated(changedProps: PropertyValues): void {
+    super.updated(changedProps);
+    if (!this._config || !this.hass) {
+      return;
+    }
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    const oldConfig = changedProps.get("_config") as
+      | PictureEntityCardConfig
+      | undefined;
+
+    if (
+      !oldHass ||
+      !oldConfig ||
+      oldHass.themes !== this.hass.themes ||
+      oldConfig.theme !== this._config.theme
+    ) {
+      applyThemesOnElement(this, this.hass.themes, this._config.theme);
+    }
   }
 
   protected render(): TemplateResult | void {
@@ -124,9 +146,12 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
           .cameraView=${this._config.camera_view}
           .entity=${this._config.entity}
           .aspectRatio=${this._config.aspect_ratio}
-          @ha-click=${this._handleTap}
+          @ha-click=${this._handleClick}
           @ha-hold=${this._handleHold}
-          .longPress=${longPress()}
+          @ha-dblclick=${this._handleDblClick}
+          .longPress=${longPress({
+            hasDoubleClick: hasDoubleClick(this._config!.double_tap_action),
+          })}
           class=${classMap({
             clickable: stateObj.state !== UNAVAILABLE,
           })}
@@ -177,12 +202,16 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _handleTap() {
-    handleClick(this, this.hass!, this._config!, false);
+  private _handleClick() {
+    handleClick(this, this.hass!, this._config!, false, false);
   }
 
   private _handleHold() {
-    handleClick(this, this.hass!, this._config!, true);
+    handleClick(this, this.hass!, this._config!, true, false);
+  }
+
+  private _handleDblClick() {
+    handleClick(this, this.hass!, this._config!, false, true);
   }
 }
 
