@@ -1,8 +1,7 @@
 import { storeState } from "../util/ha-pref-storage";
-import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
 import { HASSDomEvent } from "../common/dom/fire_event";
-import { HomeAssistant } from "../types";
+import { HomeAssistant, Constructor } from "../types";
 
 interface DockSidebarParams {
   dock: HomeAssistant["dockedSidebar"];
@@ -19,7 +18,7 @@ declare global {
   }
 }
 
-export default (superClass: Constructor<LitElement & HassBaseEl>) =>
+export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
   class extends superClass {
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);

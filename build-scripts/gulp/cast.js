@@ -1,4 +1,3 @@
-// Run cast develop mode
 const gulp = require("gulp");
 
 require("./clean.js");
@@ -16,7 +15,12 @@ gulp.task(
       process.env.NODE_ENV = "development";
     },
     "clean-cast",
-    gulp.parallel("gen-icons", "gen-index-cast-dev", "build-translations"),
+    gulp.parallel(
+      "gen-icons-app",
+      "gen-icons-mdi",
+      "gen-index-cast-dev",
+      "build-translations"
+    ),
     "copy-static-cast",
     "webpack-dev-server-cast"
   )
@@ -29,7 +33,7 @@ gulp.task(
       process.env.NODE_ENV = "production";
     },
     "clean-cast",
-    gulp.parallel("gen-icons", "build-translations"),
+    gulp.parallel("gen-icons-app", "gen-icons-mdi", "build-translations"),
     "copy-static-cast",
     "webpack-prod-cast",
     "gen-index-cast-prod"

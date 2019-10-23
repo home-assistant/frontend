@@ -1,12 +1,12 @@
-import { Constructor, LitElement } from "lit-element";
 import { HassBaseEl } from "./hass-base-mixin";
 import { fireEvent } from "../common/dom/fire_event";
+import { Constructor } from "../types";
 
 /* tslint:disable:no-console */
 const DEBUG = false;
 
-export const urlSyncMixin = (
-  superClass: Constructor<LitElement & HassBaseEl>
+export const urlSyncMixin = <T extends Constructor<HassBaseEl>>(
+  superClass: T
 ) =>
   // Disable this functionality in the demo.
   __DEMO__

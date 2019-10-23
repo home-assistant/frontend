@@ -13,9 +13,9 @@ import {
   CSSResult,
   html,
   LitElement,
-  PropertyDeclarations,
   PropertyValues,
   TemplateResult,
+  property,
 } from "lit-element";
 
 import {
@@ -34,36 +34,15 @@ import {
 } from "./types";
 
 export class ZHAClusterCommands extends LitElement {
-  public hass?: HomeAssistant;
-  public isWide?: boolean;
-  public selectedNode?: ZHADevice;
-  public selectedCluster?: Cluster;
-  private _showHelp: boolean;
-  private _commands: Command[];
-  private _selectedCommandIndex: number;
-  private _manufacturerCodeOverride?: number;
-  private _issueClusterCommandServiceData?: IssueCommandServiceData;
-
-  constructor() {
-    super();
-    this._showHelp = false;
-    this._selectedCommandIndex = -1;
-    this._commands = [];
-  }
-
-  static get properties(): PropertyDeclarations {
-    return {
-      hass: {},
-      isWide: {},
-      selectedNode: {},
-      selectedCluster: {},
-      _showHelp: {},
-      _commands: {},
-      _selectedCommandIndex: {},
-      _manufacturerCodeOverride: {},
-      _issueClusterCommandServiceData: {},
-    };
-  }
+  @property() public hass?: HomeAssistant;
+  @property() public isWide?: boolean;
+  @property() public selectedNode?: ZHADevice;
+  @property() public selectedCluster?: Cluster;
+  @property() private _showHelp = false;
+  @property() private _commands: Command[] = [];
+  @property() private _selectedCommandIndex = -1;
+  @property() private _manufacturerCodeOverride?: number;
+  @property() private _issueClusterCommandServiceData?: IssueCommandServiceData;
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedCluster")) {

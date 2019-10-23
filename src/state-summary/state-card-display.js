@@ -39,6 +39,7 @@ class StateCardDisplay extends LocalizeMixin(PolymerElement) {
           text-align: right;
           max-width: 40%;
           flex: 0 0 auto;
+          overflow-wrap: break-word;
         }
         :host([rtl]) .state {
           margin-right: 16px;

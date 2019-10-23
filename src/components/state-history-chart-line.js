@@ -181,23 +181,63 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
               state.attributes.target_temp_low
         );
 
-        addColumn(name + " current temperature", true);
+        addColumn(
+          `${this.hass.localize(
+            "ui.card.climate.current_temperature",
+            "name",
+            name
+          )}`,
+          true
+        );
         if (hasHeat) {
-          addColumn(name + " heating", true, true);
+          addColumn(
+            `${this.hass.localize("ui.card.climate.heating", "name", name)}`,
+            true,
+            true
+          );
           // The "heating" series uses steppedArea to shade the area below the current
           // temperature when the thermostat is calling for heat.
         }
         if (hasCool) {
-          addColumn(name + " cooling", true, true);
+          addColumn(
+            `${this.hass.localize("ui.card.climate.cooling", "name", name)}`,
+            true,
+            true
+          );
           // The "cooling" series uses steppedArea to shade the area below the current
           // temperature when the thermostat is calling for heat.
         }
 
         if (hasTargetRange) {
-          addColumn(name + " target temperature high", true);
-          addColumn(name + " target temperature low", true);
+          addColumn(
+            `${this.hass.localize(
+              "ui.card.climate.target_temperature_mode",
+              "name",
+              name,
+              "mode",
+              this.hass.localize("ui.card.climate.high")
+            )}`,
+            true
+          );
+          addColumn(
+            `${this.hass.localize(
+              "ui.card.climate.target_temperature_mode",
+              "name",
+              name,
+              "mode",
+              this.hass.localize("ui.card.climate.low")
+            )}`,
+            true
+          );
         } else {
-          addColumn(name + " target temperature", true);
+          addColumn(
+            `${this.hass.localize(
+              "ui.card.climate.target_temperature_entity",
+              "name",
+              name
+            )}`,
+            true
+          );
         }
 
         states.states.forEach((state) => {

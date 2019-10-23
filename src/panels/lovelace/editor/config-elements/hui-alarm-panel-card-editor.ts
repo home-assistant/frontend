@@ -17,16 +17,18 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { configElementStyle } from "./config-elements-style";
+import { AlarmPanelCardConfig } from "../../cards/types";
 
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-icon";
-import { AlarmPanelCardConfig } from "../../cards/types";
+import "../../components/hui-theme-select-editor";
 
 const cardConfigStruct = struct({
   type: "string",
   entity: "string?",
   name: "string?",
   states: "array?",
+  theme: "string?",
 });
 
 @customElement("hui-alarm-panel-card-editor")
@@ -51,6 +53,10 @@ export class HuiAlarmPanelCardEditor extends LitElement
 
   get _states(): string[] {
     return this._config!.states || [];
+  }
+
+  get _theme(): string {
+    return this._config!.theme || "Backend-selected";
   }
 
   protected render(): TemplateResult | void {
@@ -113,6 +119,12 @@ export class HuiAlarmPanelCardEditor extends LitElement
             })}
           </paper-listbox>
         </paper-dropdown-menu>
+        <hui-theme-select-editor
+          .hass="${this.hass}"
+          .value="${this._theme}"
+          .configValue="${"theme"}"
+          @theme-changed="${this._valueChanged}"
+        ></hui-theme-select-editor>
       </div>
     `;
   }

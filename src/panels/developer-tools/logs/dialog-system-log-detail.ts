@@ -2,9 +2,9 @@ import {
   LitElement,
   html,
   css,
-  PropertyDeclarations,
   CSSResult,
   TemplateResult,
+  property,
 } from "lit-element";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
@@ -13,15 +13,11 @@ import "../../../components/dialog/ha-paper-dialog";
 import { SystemLogDetailDialogParams } from "./show-dialog-system-log-detail";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
+import { HomeAssistant } from "../../../types";
 
 class DialogSystemLogDetail extends LitElement {
-  private _params?: SystemLogDetailDialogParams;
-
-  static get properties(): PropertyDeclarations {
-    return {
-      _params: {},
-    };
-  }
+  @property() public hass!: HomeAssistant;
+  @property() private _params?: SystemLogDetailDialogParams;
 
   public async showDialog(params: SystemLogDetailDialogParams): Promise<void> {
     this._params = params;
@@ -40,7 +36,13 @@ class DialogSystemLogDetail extends LitElement {
         opened
         @opened-changed="${this._openedChanged}"
       >
-        <h2>Log Details (${item.level})</h2>
+        <h2>
+          ${this.hass.localize(
+            "ui.panel.developer-tools.tabs.logs.details",
+            "level",
+            item.level
+          )}
+        </h2>
         <paper-dialog-scrollable>
           <p>${new Date(item.timestamp * 1000)}</p>
           ${item.message

@@ -34,6 +34,7 @@ import {
   subscribeEntityRegistry,
   EntityRegistryEntry,
 } from "../../../data/entity_registry";
+import { processEditorEntities } from "../editor/process-editor-entities";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const DOMAINS_BADGES = [
@@ -315,7 +316,7 @@ const generateViewConfig = (
   const view: LovelaceViewConfig = {
     path,
     title,
-    badges,
+    badges: processEditorEntities(badges),
     cards,
   };
 

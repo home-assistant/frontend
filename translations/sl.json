@@ -419,7 +419,7 @@
                         "learn_more": "Več o avtomatizacijah"
                     },
                     "editor": {
-                        "introduction": "Uporabite avtomatizacije, da bo vaš dom \"živ\"",
+                        "introduction": "Uporabite avtomatizacije za oživitev vašega doma.",
                         "default_name": "Nova avtomatizacija",
                         "save": "Shrani",
                         "unsaved_confirm": "Imate neshranjene spremembe. Ste prepričani, da želite zapustiti stran?",
@@ -558,7 +558,12 @@
                                     "zone": "Območje"
                                 },
                                 "device": {
-                                    "label": "Naprava"
+                                    "label": "Naprava",
+                                    "extra_fields": {
+                                        "above": "Nad",
+                                        "below": "Pod",
+                                        "for": "Trajanje"
+                                    }
                                 },
                                 "and": {
                                     "label": "In"
@@ -602,6 +607,9 @@
                                 },
                                 "device_id": {
                                     "label": "Naprava"
+                                },
+                                "scene": {
+                                    "label": "Aktivirajte sceno"
                                 }
                             },
                             "learn_more": "Več o akcijah"
@@ -616,7 +624,20 @@
                 },
                 "script": {
                     "caption": "Skripte",
-                    "description": "Ustvarite in uredite skripte"
+                    "description": "Ustvarite in uredite skripte",
+                    "picker": {
+                        "header": "Urejevalnik skript",
+                        "introduction": "Urejevalnik skript vam omogoča njihovo ustvarjanje in urejanje. Upoštevajte spodnjo povezavo in si preberite navodila, da se prepričate, da ste pravilno konfigurirali Home Assistant-a.",
+                        "learn_more": "Preberite več o skriptah",
+                        "no_scripts": "Nismo našli nobene skripte za urejanje",
+                        "add_script": "Dodaj skripto"
+                    },
+                    "editor": {
+                        "header": "Skripta: {name}",
+                        "default_name": "Nova Skripta",
+                        "load_error_not_editable": "Urejati je mogoče le skripte znotraj scripts.yaml.",
+                        "delete_confirm": "Ali ste prepričani, da želite izbrisati to skripto?"
+                    }
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -664,13 +685,19 @@
                         "true": "Prav",
                         "false": "Lažno",
                         "set_config_parameter": "Nastavite Config Parameter"
+                    },
+                    "learn_more": "Preberite več o Z-Wave",
+                    "ozw_log": {
+                        "header": "OZW dnevnik",
+                        "introduction": "Oglejte si dnevnik. 0 je minimum (naloži celoten dnevnik), 1000 pa največ. Prikazan bo statični dnevnik, konec pa se bo samodejno posodobil z zadnjim določenim številom vrstic dnevnika."
                     }
                 },
                 "users": {
                     "caption": "Uporabniki",
                     "description": "Upravljajte uporabnike",
                     "picker": {
-                        "title": "Uporabniki"
+                        "title": "Uporabniki",
+                        "system_generated": "Sistemsko generirano"
                     },
                     "editor": {
                         "rename_user": "Preimenuj uporabnika",
@@ -678,7 +705,18 @@
                         "activate_user": "Aktiviraj uporabnika",
                         "deactivate_user": "Deaktiviraj uporabnika",
                         "delete_user": "Izbriši uporabnika",
-                        "caption": "Prikaži uporabnika"
+                        "caption": "Prikaži uporabnika",
+                        "id": "ID",
+                        "owner": "Lastnik",
+                        "group": "Skupina",
+                        "active": "aktiven",
+                        "system_generated": "Sistemsko generirano",
+                        "system_generated_users_not_removable": "Sistemskih uporabnikov ni mogoče odstraniti.",
+                        "unnamed_user": "Neimenovani uporabnik",
+                        "enter_new_name": "Vnesite novo ime",
+                        "user_rename_failed": "Preimenovanje uporabnika ni uspelo:",
+                        "group_update_failed": "Posodobitev skupine ni uspela:",
+                        "confirm_user_deletion": "Ali ste prepričani, da želite izbrisati {name}?"
                     },
                     "add_user": {
                         "caption": "Dodaj uporabnika",
@@ -692,7 +730,156 @@
                     "caption": "Home Assistant Cloud",
                     "description_login": "Prijavljen kot {email}",
                     "description_not_login": "Niste prijavljeni",
-                    "description_features": "Imejte nadzor nad domom tudi, ko vas ni doma, povežite z Alexa in Google Asistentom."
+                    "description_features": "Imejte nadzor nad domom tudi, ko vas ni doma, povežite z Alexa in Google Asistentom.",
+                    "login": {
+                        "title": "Prijava v oblak",
+                        "introduction": "Home Assistant Cloud vam tudi takrat, ko vas ni doma zagotavlja varno oddaljeno povezavo do vašega Home Assistant-a. Prav tako vam omogoča, da se povežete z ostalimi oblačnimi storitvami Amazon Alexa in Google Assistant.",
+                        "introduction2": "To storitev upravlja naš partner ",
+                        "introduction2a": ", podjetje, ki so ga ustanovili ustanovitelji Home Assistant-a.",
+                        "introduction3": "Home Assistant Cloud je naročniška storitev z enomesečno brezplačno poizkusno dobo. Podatki o plačilnih karticah niso potrebni.",
+                        "learn_more_link": "Preberite več o Home Assistant Cloud-u",
+                        "dismiss": "Opustite",
+                        "sign_in": "Vpišite se",
+                        "email": "E-poštni naslov",
+                        "email_error_msg": "Neveljaven e-poštni naslov",
+                        "password": "Geslo",
+                        "password_error_msg": "Gesla morajo biti dolga vsaj 8 znakov",
+                        "forgot_password": "pozabljeno geslo?",
+                        "start_trial": "Začnite brezplačno 1 mesečno preskusno različico",
+                        "trial_info": "Podatki o plačilu niso potrebni",
+                        "alert_password_change_required": "Pred prijavo morate spremeniti geslo.",
+                        "alert_email_confirm_necessary": "Pred prijavo morate potrditi svojo e-pošto."
+                    },
+                    "forgot_password": {
+                        "title": "Pozabljeno geslo",
+                        "subtitle": "Ste pozabili geslo",
+                        "instructions": "Vnesite svoj e-poštni naslov in poslali vam bomo povezavo za ponastavitev gesla.",
+                        "email": "E-poštni naslov",
+                        "email_error_msg": "Neveljavna e-pošta",
+                        "send_reset_email": "Pošljite email za ponastavitev",
+                        "check_your_email": "Preverite vaš e-poštni za navodila za ponastavitev gesla."
+                    },
+                    "register": {
+                        "title": "Registrirajte račun",
+                        "headline": "Začnite brezplačno preskusno različico",
+                        "information": "Ustvarite račun, če želite začeti brezplačno enomesečno preskušanje Home Assistant Cloud-a. Podatki o plačilu niso potrebni.",
+                        "information2": "Preizkus vam bo omogočil dostop do vseh prednosti Home Assistant Cloud, vključno z:",
+                        "feature_remote_control": "Nadzor Home assistant-a zunaj doma",
+                        "feature_google_home": "Integracijo z Googlovim asistentom",
+                        "feature_amazon_alexa": "Integracija z Amazon Alexo",
+                        "feature_webhook_apps": "Enostavna integracija s spletnimi aplikacijami, kot je OwnTracks",
+                        "information3": "To storitev upravlja naš partner ",
+                        "information3a": ", podjetje, ki so ga ustanovili ustanovitelji Home Assistant-a.",
+                        "information4": "Z registracijo računa se strinjate z naslednjimi pravili in pogoji.",
+                        "link_terms_conditions": "Pravila in Pogoji",
+                        "link_privacy_policy": "Politika zasebnosti",
+                        "create_account": "Ustvarite račun",
+                        "email_address": "E-poštni naslov",
+                        "email_error_msg": "Neveljavna e-pošta",
+                        "password": "Geslo",
+                        "password_error_msg": "Gesla morajo biti dolga vsaj 8 znakov",
+                        "start_trial": "Začnite preizkus",
+                        "resend_confirm_email": "Ponovno pošlji potrditveno e-poštno sporočilo",
+                        "account_created": "Račun ustvarjen! Preverite vašo e-pošto za navodila o tem, kako aktivirate vaš račun."
+                    },
+                    "account": {
+                        "thank_you_note": "Zahvaljujemo se vam za to, da ste del Home Assistant Cloud-a. Zaradi ljudi, kot ste vi, smo sposobni narediti dobro izkušnjo avtomatizacije doma za vsakogar. hvala!",
+                        "nabu_casa_account": "Nabu Casa račun",
+                        "connection_status": "Stanje povezave v oblaku",
+                        "manage_account": "Upravljanje računa",
+                        "sign_out": "Izpis",
+                        "integrations": "Integracije",
+                        "integrations_introduction": "Integracija za Home Assistant Cloud vam omogoča povezovanje s storitvami v oblaku, ne da bi vam bilo treba Home Assistant javno izpostavljati po internetu.",
+                        "integrations_introduction2": "Preverite spletno stran za ",
+                        "integrations_link_all_features": "vse razpoložljive funkcije",
+                        "connected": "Povezan",
+                        "not_connected": "Brez povezave",
+                        "fetching_subscription": "Pridobivam naročnino...",
+                        "remote": {
+                            "title": "Daljinsko Upravljanje",
+                            "access_is_being_prepared": "Oddaljeni dostop se pripravlja. Obvestili vas bomo, ko bo pripravljen.",
+                            "info": "Home Assistant Cloud zagotavlja varno oddaljeno povezavo do vašega primerka, medtem ko ste zunaj doma.",
+                            "instance_is_available": "Vaš primerek je na voljo na",
+                            "instance_will_be_available": "Vaš primerek bo na voljo na",
+                            "link_learn_how_it_works": "Naučite se, kako deluje",
+                            "certificate_info": "Informacije o potrdilu"
+                        },
+                        "alexa": {
+                            "title": "Alexa",
+                            "info": "Z integracijo Alexa za Home Assistant cloud boste lahko nadzirali vse svoje naprave s pomočjo katere koli naprave, ki podpira Alexa.",
+                            "enable_ha_skill": "Omogoči Home Assistant spretnost za Alexo",
+                            "config_documentation": "Dokumentacija o konfiguraciji",
+                            "enable_state_reporting": "Omogoči poročanje o stanju",
+                            "info_state_reporting": "Če omogočite poročanje o stanju, bo Home Assistant amazonu poslal vse spremembe stanja izpostavljenih entitet. To vam omogoča, da vedno vidite najnovejša stanja v aplikaciji Alexa.",
+                            "sync_entities": "Sinhroniziranje entitet",
+                            "manage_entities": "Upravljajte entitete",
+                            "sync_entities_error": "Sinhroniziranje entitet ni uspelo:",
+                            "state_reporting_error": "Stanja poročila ni mogoče {enable_disable}.",
+                            "enable": "omogočiti",
+                            "disable": "onemogočiti"
+                        },
+                        "google": {
+                            "title": "Pomočnik Google",
+                            "info": "Z integracijo Pomočnik Google za Home Assistant cloud boste lahko nadzirali vse svoje naprave s pomočjo katere koli naprave, ki ga podpirajo.",
+                            "enable_ha_skill": "Aktivirajte spretnost Home Assistant za Pomočnika Google",
+                            "config_documentation": "Dokumentacija o konfiguraciji",
+                            "enable_state_reporting": "Omogoči poročanje o stanju",
+                            "info_state_reporting": "Če omogočite poročanje o stanju, bo Home Assistant Googlu poslal vse spremembe stanja izpostavljenih entitet. To vam omogoča, da vedno vidite najnovejša stanja v aplikaciji Google.",
+                            "security_devices": "Varnostne naprave",
+                            "enter_pin_info": "Prosimo vnesite kodo pin za interakcijo z varnostnimi napravami. Varnostne naprave so vrata, garažna vrata in ključavnice. Med interakcijo s takšnimi napravami prek Googlovega pomočnika boste morali povedati \/ vnesti ta pin.",
+                            "devices_pin": "Pin koda za varnostne naprave",
+                            "enter_pin_hint": "Vnesite kodo PIN za uporabo varnostnih naprav",
+                            "sync_entities": "Sinhronizirajte entitete z Googlom",
+                            "manage_entities": "Upravljajte entitete",
+                            "enter_pin_error": "PIN-a ni mogoče shraniti:"
+                        },
+                        "webhooks": {
+                            "title": "Webhooks",
+                            "info": "Vsemu, kar je nastavljeno tako, da se sproži webhook je mogoče dati javno dostopen URL, kar jim omogoča, pošljanje podatkov nazaj na Home Assistant od kjerkoli, ne da bi izpostavili vaš primerek na internetu.",
+                            "no_hooks_yet": "Izgleda, da še nimate webhooks-ov. Začnite s konfiguracijo ",
+                            "no_hooks_yet_link_integration": "integracijo, ki temelji na Webhook-u",
+                            "no_hooks_yet2": "ali z ustvarjanjem",
+                            "no_hooks_yet_link_automation": "webhook avtomatizacije",
+                            "link_learn_more": "Preberite več o ustvarjanju avtomatizacij, ki jih poganjajo webhook-i.",
+                            "loading": "Nalaganje",
+                            "manage": "Upravljanje",
+                            "disable_hook_error_msg": "Ni uspelo onemogočiti webhook:"
+                        }
+                    },
+                    "alexa": {
+                        "title": "Alexa",
+                        "banner": "Urejanje entitet, ki so izpostavljeni prek tega uporabniškega vmesnika, je onemogočeno, ker ste v config.yaml konfigurirali filtre entitet.",
+                        "exposed_entities": "Izpostavljene entitete",
+                        "not_exposed_entities": "Entitete, ki niso izpostavljene",
+                        "expose": "Izpostavite Alexi"
+                    },
+                    "dialog_certificate": {
+                        "certificate_information": "Podatki o certifikatu",
+                        "certificate_expiration_date": "Datum poteka certifikata",
+                        "will_be_auto_renewed": "Bo samodejno obnovljen",
+                        "fingerprint": "Prstni odtis certifikata:",
+                        "close": "Zapri"
+                    },
+                    "google": {
+                        "title": "Pomočnik Google",
+                        "expose": "Izpostavite Pomočniku Google",
+                        "disable_2FA": "Onemogočite dvofaktorsko preverjanje pristnosti",
+                        "banner": "Urejanje entitet, ki so izpostavljeni prek tega uporabniškega vmesnika, je onemogočeno, ker ste v config.yaml konfigurirali filtre entitet.",
+                        "exposed_entities": "Izpostavljene entitete",
+                        "not_exposed_entities": "Entitete, ki niso izpostavljene",
+                        "sync_to_google": "Sinhroniziranje sprememb z Googlom."
+                    },
+                    "dialog_cloudhook": {
+                        "webhook_for": "Webhook za {name}",
+                        "available_at": "Webhook je na voljo na naslednjem URL-ju:",
+                        "managed_by_integration": "Ta webhook upravlja integracija in je ni mogoče onemogočiti.",
+                        "info_disable_webhook": "Če ne želite več uporabljati tega webhook-a, ga lahko",
+                        "link_disable_webhook": "onemogoče",
+                        "view_documentation": "Oglejte si dokumentacijo",
+                        "close": "Zapri",
+                        "confirm_disable": "Ali ste prepričani, da želite onemogočiti ta webhook?",
+                        "copied_to_clipboard": "Kopirano v odložišče"
+                    }
                 },
                 "integrations": {
                     "caption": "Integracije",
@@ -720,7 +907,10 @@
                             "description": "Ta korak zahteva, da za končanje obiščete zunanjo spletno stran.",
                             "open_site": "Odprite spletno stran"
                         }
-                    }
+                    },
+                    "note_about_integrations": "Vseh integracij še ni mogoče konfigurirati prek uporabniškega vmesnika.",
+                    "note_about_website_reference": "Več jih je na voljo prek",
+                    "home_assistant_website": "spletne strani Home Assistant"
                 },
                 "zha": {
                     "caption": "ZHA",
@@ -738,7 +928,46 @@
                     "add_device_page": {
                         "header": "Zigbee Home Automation - Dodaj naprave",
                         "spinner": "Iskanje ZHA Zigbee naprav...",
-                        "discovery_text": "Tukaj bodo prikazane odkrite naprave. Sledite navodilom za napravo in jo postavite v način seznanjanja."
+                        "discovery_text": "Tukaj bodo prikazane odkrite naprave. Sledite navodilom za napravo in jo postavite v način seznanjanja.",
+                        "search_again": "Ponovno iskanje"
+                    },
+                    "common": {
+                        "add_devices": "Dodajte naprave",
+                        "clusters": "Gruče",
+                        "devices": "Naprave",
+                        "manufacturer_code_override": "Preglasitev kode proizvajalca",
+                        "value": "Vrednost"
+                    },
+                    "network_management": {
+                        "header": "Upravljanje omrežja",
+                        "introduction": "Ukazi, ki vplivajo na celotno omrežje"
+                    },
+                    "node_management": {
+                        "header": "Upravljanje naprav",
+                        "introduction": "Zaženite ukaze ZHA, ki vplivajo na posamezno napravo. Izberite napravo in si oglejte seznam ukazov, ki so na voljo.",
+                        "hint_battery_devices": "Opomba: (naprave na baterijski pogon) naprave, ki spijo, morajo biti budne pri izvajanju ukazov proti njim. Zaspano napravo lahko na splošno zbudite tako, da jo sprožite.",
+                        "hint_wakeup": "Nekatere naprave, kot so Xiaomi senzorji, imajo gumb za prebujanje, ki ga lahko pritisnete v ~ 5-sekundnih intervalih, da bodo budne med interakcijo z njimi.",
+                        "help_node_dropdown": "Izberite napravo za ogled njenih možnosti."
+                    },
+                    "clusters": {
+                        "help_cluster_dropdown": "Izberite gručo, če si želite ogledati njene atribute in ukaze."
+                    },
+                    "cluster_attributes": {
+                        "header": "Atributi gruče",
+                        "introduction": "Oglejte si atribute gruče in jih uredite.",
+                        "attributes_of_cluster": "Atributi izbrane gruče",
+                        "get_zigbee_attribute": "Pridobite Zigbee Atribute",
+                        "set_zigbee_attribute": "Nastavite Zigbee atribute",
+                        "help_attribute_dropdown": "Izberite atribut, če si želite ogledati ali nastaviti njegovo vrednost.",
+                        "help_get_zigbee_attribute": "Pridobite vrednost za izbrani atribut.",
+                        "help_set_zigbee_attribute": "Nastavite vrednost atributa za določeno gručo v določeni entiteti."
+                    },
+                    "cluster_commands": {
+                        "header": "Ukazi Gruče",
+                        "introduction": "Oglejte si in izdajte ukaze gruče.",
+                        "commands_of_cluster": "Ukazi izbrane gruče",
+                        "issue_zigbee_command": "Izdajte ukaz Zigbee",
+                        "help_command_dropdown": "Izberite ukaz za interakcijo."
                     }
                 },
                 "area_registry": {
@@ -770,7 +999,13 @@
                         "introduction": "Home Assistant vodi register vseh entitet, ki jih je kdajkoli videl in jih je mogoče enolično identificirati. Vsak od teh entitet ima dodeljen ID entitete, ki bo rezerviran samo za to entiteto.",
                         "introduction2": "Z registrom entitet preglasite ime, spremenite ID entitete ali odstranite vnos iz Home Assistent-a. Opomba, odstranitev vnosa registra entitet ne bo odstranila entitete. Če želite to narediti, sledite spodnji povezavi in jo odstranite s strani za integracijo.",
                         "integrations_page": "Stran za integracije",
-                        "show_disabled": "Pokaži onemogočene subjekte"
+                        "show_disabled": "Pokaži onemogočene subjekte",
+                        "headers": {
+                            "name": "Ime",
+                            "entity_id": "ID subjekta",
+                            "integration": "Integracija",
+                            "enabled": "Omogočeno"
+                        }
                     },
                     "editor": {
                         "unavailable": "Ta entiteta trenutno ni na voljo.",
@@ -791,8 +1026,24 @@
                         "name": "Ime",
                         "device_tracker_intro": "Izberite naprave, ki pripadajo tej osebi.",
                         "device_tracker_picked": "Sledi Napravi",
-                        "device_tracker_pick": "Izberite napravo za sledenje"
-                    }
+                        "device_tracker_pick": "Izberite napravo za sledenje",
+                        "new_person": "Nova oseba",
+                        "name_error_msg": "Ime je obvezno",
+                        "linked_user": "Povezani uporabnik",
+                        "no_device_tracker_available_intro": "Ko imate naprave, ki kažejo na prisotnost osebe, jih boste lahko tukaj dodelili osebi. Svojo prvo napravo lahko dodate tako, da na strani z integracijami dodate zaznavanje prisotnosti.",
+                        "link_presence_detection_integrations": "Integracije zaznavanja prisotnosti",
+                        "link_integrations_page": "Stran za integracije",
+                        "delete": "Izbriši",
+                        "create": "Ustvarite",
+                        "update": "Posodobite"
+                    },
+                    "introduction": "Tu lahko določite vsako osebo (uporabnika) v Home Assistant-a.",
+                    "note_about_persons_configured_in_yaml": "Opomba: oseb, konfiguriranih prek config.yaml, ni mogoče urejati prek uporabniškega vmesnika.",
+                    "no_persons_created_yet": "Izgleda, da še niste ustvarili nobene osebe.",
+                    "create_person": "Ustvari osebo",
+                    "add_person": "Dodaj osebo",
+                    "confirm_delete": "Ali ste prepričani, da želite izbrisati to osebo?",
+                    "confirm_delete2": "Vse naprave, ki pripadajo tej osebi, bodo postale nedodeljene."
                 },
                 "server_control": {
                     "caption": "Nadzor strežnika",
@@ -837,6 +1088,11 @@
                         "actions": {
                             "caption": "Ko se nekaj sproži ..."
                         }
+                    }
+                },
+                "common": {
+                    "editor": {
+                        "confirm_unsaved": "Imate neshranjene spremembe. Ste prepričani, da želite zapustiti?"
                     }
                 }
             },
@@ -917,6 +1173,10 @@
                 "vibrate": {
                     "header": "Vibriraj",
                     "description": "V tej napravi omogočite ali onemogočite vibracije pri krmiljenju naprav."
+                },
+                "advanced_mode": {
+                    "title": "Napredni način",
+                    "description": "Home Assistant privzeto skrije napredne funkcije in možnosti. Do teh funkcij lahko dostopate tako, da vklopite to stikalo. To je uporabniško določena nastavitev, ki ne vpliva na druge uporabnike."
                 }
             },
             "page-authorize": {
@@ -1077,7 +1337,9 @@
                         "add": "Dodaj kartico",
                         "edit": "Uredi",
                         "delete": "Izbriši",
-                        "move": "Premakni"
+                        "move": "Premakni",
+                        "show_visual_editor": "Pokaži vizualni urejevalnik",
+                        "show_code_editor": "Pokaži urejevalnik kode"
                     },
                     "migrate": {
                         "header": "Konfiguracija Nezdružljiva",
@@ -1121,7 +1383,8 @@
                             "optional": "Neobvezno"
                         },
                         "entities": {
-                            "show_header_toggle": "Pokaži preklop glave?"
+                            "show_header_toggle": "Pokaži preklop glave?",
+                            "name": "Subjekti"
                         },
                         "gauge": {
                             "severity": {
@@ -1129,10 +1392,12 @@
                                 "green": "Zelena",
                                 "red": "Rdeča",
                                 "yellow": "Rumena"
-                            }
+                            },
+                            "name": "Merilnik"
                         },
                         "glance": {
-                            "columns": "Stolpci"
+                            "columns": "Stolpci",
+                            "name": "Pregled"
                         },
                         "generic": {
                             "aspect_ratio": "Razmerje Med Širino In Višino",
@@ -1162,14 +1427,72 @@
                             "geo_location_sources": "Geolokacijski viri",
                             "dark_mode": "Temni način?",
                             "default_zoom": "Privzeta povečava",
-                            "source": "Vir"
+                            "source": "Vir",
+                            "name": "Zemljevid"
                         },
                         "markdown": {
-                            "content": "Vsebina"
+                            "content": "Vsebina",
+                            "name": "Markdown"
                         },
                         "sensor": {
                             "graph_detail": "Podrobnosti grafa",
-                            "graph_type": "Vrsta grafikona"
+                            "graph_type": "Vrsta grafikona",
+                            "name": "Senzor"
+                        },
+                        "alarm-panel": {
+                            "name": "Alarmna plošča",
+                            "available_states": "Stanja na voljo"
+                        },
+                        "conditional": {
+                            "name": "Pogojno"
+                        },
+                        "entity-button": {
+                            "name": "Subjekt gumba"
+                        },
+                        "entity-filter": {
+                            "name": "Filter entitet"
+                        },
+                        "history-graph": {
+                            "name": "Graf zgodovine"
+                        },
+                        "horizontal-stack": {
+                            "name": "Vodoravna skladnica"
+                        },
+                        "iframe": {
+                            "name": "iFrame"
+                        },
+                        "light": {
+                            "name": "Luči"
+                        },
+                        "media-control": {
+                            "name": "Nadzor predvajalnika"
+                        },
+                        "picture": {
+                            "name": "Slika"
+                        },
+                        "picture-elements": {
+                            "name": "Slikovni elementi"
+                        },
+                        "picture-entity": {
+                            "name": "Subjekt slike"
+                        },
+                        "picture-glance": {
+                            "name": "Pogled slike"
+                        },
+                        "plant-status": {
+                            "name": "Stanje rastline"
+                        },
+                        "shopping-list": {
+                            "name": "Nakupovalni seznam"
+                        },
+                        "thermostat": {
+                            "name": "Termostat"
+                        },
+                        "vertical-stack": {
+                            "name": "Navpična skladnica"
+                        },
+                        "weather-forecast": {
+                            "name": "Vremenska napoved"
                         }
                     }
                 },
@@ -1405,7 +1728,8 @@
             "entity_turned_off": "Izklopljen {entity}.",
             "service_called": "Storitev {service} klicana.",
             "service_call_failed": "Storitve ni bilo mogoče poklicati {service}.",
-            "connection_lost": "Povezava prekinjena. Vnovično vzpostavljanje povezave..."
+            "connection_lost": "Povezava prekinjena. Vnovično vzpostavljanje povezave...",
+            "triggered": "Sproženo {name}"
         },
         "dialogs": {
             "more_info_settings": {
@@ -1451,7 +1775,16 @@
                     "device_name_placeholder": "Ime, ki ga je dodelil uporabnik",
                     "area_picker_label": "Območje",
                     "update_name_button": "Posodobi ime"
-                }
+                },
+                "buttons": {
+                    "add": "Dodajte naprave",
+                    "remove": "Odstranite napravo",
+                    "reconfigure": "Ponovno konfigurirajte napravo"
+                },
+                "quirk": "Posebnost",
+                "last_seen": "Nazadnje viden",
+                "power_source": "Vir napajanja",
+                "unknown": "Neznano"
             }
         },
         "auth_store": {

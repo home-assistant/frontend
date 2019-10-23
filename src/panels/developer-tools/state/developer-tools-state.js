@@ -4,18 +4,20 @@ import "@polymer/paper-input/paper-input";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import yaml from "js-yaml";
+import { safeDump, safeLoad } from "js-yaml";
 
 import "../../../components/entity/ha-entity-picker";
 import "../../../components/ha-code-editor";
 import "../../../resources/ha-style";
 import { EventsMixin } from "../../../mixins/events-mixin";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 const ERROR_SENTINEL = {};
 /*
  * @appliesMixin EventsMixin
+ * @appliesMixin LocalizeMixin
  */
-class HaPanelDevState extends EventsMixin(PolymerElement) {
+class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   static get template() {
     return html`
       <style include="ha-style">
@@ -70,8 +72,8 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
 
       <div class="inputs">
         <p>
-          Set the representation of a device within Home Assistant.<br />
-          This will not communicate with the actual device.
+          [[localize('ui.panel.developer-tools.tabs.states.description1')]]<br />
+          [[localize('ui.panel.developer-tools.tabs.states.description2')]]
         </p>
 
         <ha-entity-picker
@@ -82,7 +84,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
           allow-custom-entity
         ></ha-entity-picker>
         <paper-input
-          label="State"
+          label="[[localize('ui.panel.developer-tools.tabs.states.state')]]"
           required
           autocapitalize="none"
           autocomplete="off"
@@ -91,7 +93,9 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
           value="{{_state}}"
           class="state-input"
         ></paper-input>
-        <p>State attributes (YAML, optional)</p>
+        <p>
+          [[localize('ui.panel.developer-tools.tabs.states.state_attributes')]]
+        </p>
         <ha-code-editor
           mode="yaml"
           value="[[_stateAttributes]]"
@@ -99,54 +103,58 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
           on-value-changed="_yamlChanged"
         ></ha-code-editor>
         <mwc-button on-click="handleSetState" disabled="[[!validJSON]]" raised
-          >Set State</mwc-button
+          >[[localize('ui.panel.developer-tools.tabs.states.set_state')]]</mwc-button
         >
       </div>
 
-      <h1>Current entities</h1>
+      <h1>
+        [[localize('ui.panel.developer-tools.tabs.states.current_entities')]]
+      </h1>
       <table class="entities">
         <tr>
-          <th>Entity</th>
-          <th>State</th>
+          <th>[[localize('ui.panel.developer-tools.tabs.states.entity')]]</th>
+          <th>[[localize('ui.panel.developer-tools.tabs.states.state')]]</th>
           <th hidden$="[[narrow]]">
-            Attributes
+            [[localize('ui.panel.developer-tools.tabs.states.attributes')]]
             <paper-checkbox checked="{{_showAttributes}}"></paper-checkbox>
           </th>
         </tr>
         <tr>
           <th>
             <paper-input
-              label="Filter entities"
+              label="[[localize('ui.panel.developer-tools.tabs.states.filter_entities')]]"
               type="search"
               value="{{_entityFilter}}"
             ></paper-input>
           </th>
           <th>
             <paper-input
-              label="Filter states"
+              label="[[localize('ui.panel.developer-tools.tabs.states.filter_states')]]"
               type="search"
               value="{{_stateFilter}}"
             ></paper-input>
           </th>
           <th hidden$="[[!computeShowAttributes(narrow, _showAttributes)]]">
             <paper-input
-              label="Filter attributes"
+              label="[[localize('ui.panel.developer-tools.tabs.states.filter_attributes')]]"
               type="search"
               value="{{_attributeFilter}}"
             ></paper-input>
           </th>
         </tr>
         <tr hidden$="[[!computeShowEntitiesPlaceholder(_entities)]]">
-          <td colspan="3">No entities</td>
+          <td colspan="3">
+            [[localize('ui.panel.developer-tools.tabs.states.no_entities')]]
+          </td>
         </tr>
         <template is="dom-repeat" items="[[_entities]]" as="entity">
           <tr>
             <td>
               <paper-icon-button
                 on-click="entityMoreInfo"
-                icon="hass:open-in-new"
-                alt="More Info"
-                title="More Info"
+                icon="hass:information-outline"
+                alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
+                title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
               >
               </paper-icon-button>
               <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
@@ -227,14 +235,14 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
     var state = ev.model.entity;
     this._entityId = state.entity_id;
     this._state = state.state;
-    this._stateAttributes = yaml.safeDump(state.attributes);
+    this._stateAttributes = safeDump(state.attributes);
     ev.preventDefault();
   }
 
   entityIdChanged() {
     var state = this.hass.states[this._entityId];
     this._state = state.state;
-    this._stateAttributes = yaml.safeDump(state.attributes);
+    this._stateAttributes = safeDump(state.attributes);
   }
 
   entityMoreInfo(ev) {
@@ -244,7 +252,11 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
 
   handleSetState() {
     if (!this._entityId) {
-      alert("Entity is a mandatory field");
+      alert(
+        this.hass.localize(
+          "ui.panel.developer-tools.tabs.states.alert_entity_field"
+        )
+      );
       return;
     }
     this.hass.callApi("POST", "states/" + this._entityId, {
@@ -351,7 +363,7 @@ class HaPanelDevState extends EventsMixin(PolymerElement) {
 
   _computeParsedStateAttributes(stateAttributes) {
     try {
-      return stateAttributes.trim() ? yaml.safeLoad(stateAttributes) : {};
+      return stateAttributes.trim() ? safeLoad(stateAttributes) : {};
     } catch (err) {
       return ERROR_SENTINEL;
     }

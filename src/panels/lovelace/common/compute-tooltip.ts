@@ -8,6 +8,7 @@ interface Config extends LovelaceElementConfig {
   title?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
+  double_tap_action?: ActionConfig;
 }
 
 export const computeTooltip = (hass: HomeAssistant, config: Config): string => {

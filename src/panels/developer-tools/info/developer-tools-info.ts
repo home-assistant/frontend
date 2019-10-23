@@ -31,12 +31,18 @@ class HaPanelDevInfo extends LitElement {
 
     const nonDefaultLinkText =
       localStorage.defaultPage === OPT_IN_PANEL && OPT_IN_PANEL === "states"
-        ? "Go to the Lovelace UI"
-        : "Go to the states UI";
+        ? this.hass.localize("ui.panel.developer-tools.tabs.info.lovelace_ui")
+        : this.hass.localize("ui.panel.developer-tools.tabs.info.states_ui");
 
-    const defaultPageText = `${
-      localStorage.defaultPage === OPT_IN_PANEL ? "Remove" : "Set"
-    } ${OPT_IN_PANEL} as default page on this device`;
+    const defaultPageText = `${this.hass.localize(
+      "ui.panel.developer-tools.tabs.info.default_ui",
+      "action",
+      localStorage.defaultPage === OPT_IN_PANEL
+        ? this.hass.localize("ui.panel.developer-tools.tabs.info.remove")
+        : this.hass.localize("ui.panel.developer-tools.tabs.info.set"),
+      "name",
+      OPT_IN_PANEL
+    )}`;
 
     return html`
       <div class="about">
@@ -45,43 +51,58 @@ class HaPanelDevInfo extends LitElement {
             ><img
               src="/static/icons/favicon-192x192.png"
               height="192"
-              alt="Home Assistant logo"
+              alt="${this.hass.localize(
+                "ui.panel.developer-tools.tabs.info.home_assistant_logo"
+              )}"
           /></a>
           <br />
-          Home Assistant<br />
-          ${hass.config.version}
+          <h2>Home Assistant ${hass.config.version}</h2>
         </p>
         <p>
-          Path to configuration.yaml: ${hass.config.config_dir}
+          ${this.hass.localize(
+            "ui.panel.developer-tools.tabs.info.path_configuration",
+            "path",
+            hass.config.config_dir
+          )}
         </p>
         <p class="develop">
           <a
             href="https://www.home-assistant.io/developers/credits/"
             target="_blank"
           >
-            Developed by a bunch of awesome people.
+            ${this.hass.localize(
+              "ui.panel.developer-tools.tabs.info.developed_by"
+            )}
           </a>
         </p>
         <p>
-          Published under the Apache 2.0 license<br />
-          Source:
+          ${this.hass.localize(
+            "ui.panel.developer-tools.tabs.info.license"
+          )}<br />
+          ${this.hass.localize("ui.panel.developer-tools.tabs.info.source")}
           <a
             href="https://github.com/home-assistant/home-assistant"
             target="_blank"
-            >server</a
+            >${this.hass.localize(
+              "ui.panel.developer-tools.tabs.info.server"
+            )}</a
           >
           &mdash;
           <a
             href="https://github.com/home-assistant/home-assistant-polymer"
             target="_blank"
-            >frontend-ui</a
+            >${this.hass.localize(
+              "ui.panel.developer-tools.tabs.info.frontend"
+            )}</a
           >
         </p>
         <p>
-          Built using
+          ${this.hass.localize(
+            "ui.panel.developer-tools.tabs.info.built_using"
+          )}
           <a href="https://www.python.org">Python 3</a>,
           <a href="https://www.polymer-project.org" target="_blank">Polymer</a>,
-          Icons by
+          ${this.hass.localize("ui.panel.developer-tools.tabs.info.icons_by")}
           <a href="https://www.google.com/design/icons/" target="_blank"
             >Google</a
           >
@@ -91,22 +112,32 @@ class HaPanelDevInfo extends LitElement {
           >.
         </p>
         <p>
-          Frontend version: ${JS_VERSION} - ${JS_TYPE}
-          ${customUiList.length > 0
-            ? html`
-                <div>
-                  Custom UIs:
-                  ${customUiList.map(
-                    (item) => html`
-                      <div>
-                        <a href="${item.url}" target="_blank"> ${item.name}</a>:
-                        ${item.version}
-                      </div>
-                    `
-                  )}
-                </div>
-              `
-            : ""}
+          ${this.hass.localize(
+            "ui.panel.developer-tools.tabs.info.frontend_version",
+            "version",
+            JS_VERSION,
+            "type",
+            JS_TYPE
+          )}
+          ${
+            customUiList.length > 0
+              ? html`
+                  <div>
+                    ${this.hass.localize(
+                      "ui.panel.developer-tools.tabs.info.custom_uis"
+                    )}
+                    ${customUiList.map(
+                      (item) => html`
+                        <div>
+                          <a href="${item.url}" target="_blank"> ${item.name}</a
+                          >: ${item.version}
+                        </div>
+                      `
+                    )}
+                  </div>
+                `
+              : ""
+          }
         </p>
         <p>
           <a href="${nonDefaultLink}">${nonDefaultLinkText}</a><br />

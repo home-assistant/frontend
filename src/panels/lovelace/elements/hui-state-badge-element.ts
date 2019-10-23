@@ -14,6 +14,9 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { LovelaceElement, StateBadgeElementConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { longPress } from "../common/directives/long-press-directive";
+import { hasDoubleClick } from "../common/has-double-click";
+import { handleClick } from "../common/handle-click";
 
 @customElement("hui-state-badge-element")
 export class HuiStateBadgeElement extends LitElement
@@ -61,8 +64,26 @@ export class HuiStateBadgeElement extends LitElement
           : this._config.title === null
           ? ""
           : this._config.title}"
+        @ha-click=${this._handleClick}
+        @ha-hold=${this._handleHold}
+        @ha-dblclick=${this._handleDblClick}
+        .longPress=${longPress({
+          hasDoubleClick: hasDoubleClick(this._config!.double_tap_action),
+        })}
       ></ha-state-label-badge>
     `;
+  }
+
+  private _handleClick() {
+    handleClick(this, this.hass!, this._config!, false, false);
+  }
+
+  private _handleHold() {
+    handleClick(this, this.hass!, this._config!, true, false);
+  }
+
+  private _handleDblClick() {
+    handleClick(this, this.hass!, this._config!, false, true);
   }
 }
 

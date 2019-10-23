@@ -1,5 +1,6 @@
 import { directive, PropertyPart } from "lit-html";
 import "@material/mwc-ripple";
+import { LongPressOptions } from "../../../../data/lovelace";
 
 const isTouch =
   "ontouchstart" in window ||
@@ -8,7 +9,7 @@ const isTouch =
 
 interface LongPress extends HTMLElement {
   holdTime: number;
-  bind(element: Element): void;
+  bind(element: Element, options): void;
 }
 interface LongPressElement extends Element {
   longPress?: boolean;
@@ -21,6 +22,7 @@ class LongPress extends HTMLElement implements LongPress {
   protected held: boolean;
   protected cooldownStart: boolean;
   protected cooldownEnd: boolean;
+  private dblClickTimeout: number | undefined;
 
   constructor() {
     super();
@@ -65,7 +67,7 @@ class LongPress extends HTMLElement implements LongPress {
     });
   }
 
-  public bind(element: LongPressElement) {
+  public bind(element: LongPressElement, options) {
     if (element.longPress) {
       return;
     }
@@ -120,6 +122,15 @@ class LongPress extends HTMLElement implements LongPress {
       this.timer = undefined;
       if (this.held) {
         element.dispatchEvent(new Event("ha-hold"));
+      } else if (options.hasDoubleClick) {
+        if ((ev as MouseEvent).detail === 1) {
+          this.dblClickTimeout = window.setTimeout(() => {
+            element.dispatchEvent(new Event("ha-click"));
+          }, 250);
+        } else {
+          clearTimeout(this.dblClickTimeout);
+          element.dispatchEvent(new Event("ha-dblclick"));
+        }
       } else {
         element.dispatchEvent(new Event("ha-click"));
       }
@@ -127,9 +138,16 @@ class LongPress extends HTMLElement implements LongPress {
       window.setTimeout(() => (this.cooldownEnd = false), 100);
     };
 
+    const handleEnter = (ev: Event) => {
+      if ((ev as KeyboardEvent).keyCode === 13) {
+        return clickEnd(ev);
+      }
+    };
+
     element.addEventListener("touchstart", clickStart, { passive: true });
     element.addEventListener("touchend", clickEnd);
     element.addEventListener("touchcancel", clickEnd);
+    element.addEventListener("keyup", handleEnter);
 
     // iOS 13 sends a complete normal touchstart-touchend series of events followed by a mousedown-click series.
     // That might be a bug, but until it's fixed, this should make long-press work.
@@ -174,14 +192,19 @@ const getLongPress = (): LongPress => {
   return longpress as LongPress;
 };
 
-export const longPressBind = (element: LongPressElement) => {
+export const longPressBind = (
+  element: LongPressElement,
+  options: LongPressOptions
+) => {
   const longpress: LongPress = getLongPress();
   if (!longpress) {
     return;
   }
-  longpress.bind(element);
+  longpress.bind(element, options);
 };
 
-export const longPress = directive(() => (part: PropertyPart) => {
-  longPressBind(part.committer.element);
-});
+export const longPress = directive(
+  (options: LongPressOptions = {}) => (part: PropertyPart) => {
+    longPressBind(part.committer.element, options);
+  }
+);
