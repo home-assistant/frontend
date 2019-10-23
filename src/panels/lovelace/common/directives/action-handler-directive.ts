@@ -1,6 +1,10 @@
 import { directive, PropertyPart } from "lit-html";
 import "@material/mwc-ripple";
-import { ActionHandlerOptions } from "../../../../data/lovelace";
+import {
+  ActionHandlerOptions,
+  ActionHandlerEvent,
+} from "../../../../data/lovelace";
+import { fireEvent } from "../../../../common/dom/fire_event";
 
 const isTouch =
   "ontouchstart" in window ||
@@ -13,6 +17,12 @@ interface ActionHandler extends HTMLElement {
 }
 interface ActionHandlerElement extends Element {
   actionHandler?: boolean;
+}
+
+declare global {
+  interface HASSDomEvents {
+    action: ActionHandlerEvent;
+  }
 }
 
 class ActionHandler extends HTMLElement implements ActionHandler {
@@ -123,24 +133,19 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       clearTimeout(this.timer);
       this.stopAnimation();
       this.timer = undefined;
-      const event = new Event("action");
       if (this.held) {
-        (event as any).action = "hold";
-        element.dispatchEvent(event);
+        fireEvent(this, "action", { action: "hold" });
       } else if (options.hasDoubleClick) {
         if ((ev as MouseEvent).detail === 1) {
           this.dblClickTimeout = window.setTimeout(() => {
-            (event as any).action = "tap";
-            element.dispatchEvent(event);
+            fireEvent(this, "action", { action: "tap" });
           }, 250);
         } else {
           clearTimeout(this.dblClickTimeout);
-          (event as any).action = "double_tap";
-          element.dispatchEvent(event);
+          fireEvent(this, "action", { action: "double_tap" });
         }
       } else {
-        (event as any).action = "tap";
-        element.dispatchEvent(event);
+        fireEvent(this, "action", { action: "tap" });
       }
       this.cooldownEnd = true;
       window.setTimeout(() => (this.cooldownEnd = false), 100);

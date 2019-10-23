@@ -135,3 +135,7 @@ export interface ActionHandlerOptions {
   hasHold?: boolean;
   hasDoubleClick?: boolean;
 }
+
+export interface ActionHandlerEvent {
+  action?: string;
+}
