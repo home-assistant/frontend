@@ -130,3 +130,8 @@ export interface WindowWithLovelaceProm extends Window {
 export interface LongPressOptions {
   hasDoubleClick?: boolean;
 }
+
+export interface ActionHandlerOptions {
+  hasHold?: boolean;
+  hasDoubleClick?: boolean;
+}
