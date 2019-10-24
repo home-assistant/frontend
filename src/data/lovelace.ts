@@ -69,6 +69,11 @@ export interface NoActionConfig extends BaseActionConfig {
   action: "none";
 }
 
+export interface CardActionConfig extends BaseActionConfig {
+  action: "card";
+  card: LovelaceCardConfig;
+}
+
 export interface BaseActionConfig {
   confirmation?: ConfirmationRestrictionConfig;
 }
@@ -88,7 +93,8 @@ export type ActionConfig =
   | NavigateActionConfig
   | UrlActionConfig
   | MoreInfoActionConfig
-  | NoActionConfig;
+  | NoActionConfig
+  | CardActionConfig;
 
 export const fetchConfig = (
   conn: Connection,

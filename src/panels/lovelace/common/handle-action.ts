@@ -4,6 +4,7 @@ import { navigate } from "../../../common/navigate";
 import { toggleEntity } from "./entity/toggle-entity";
 import { ActionConfig } from "../../../data/lovelace";
 import { forwardHaptic } from "../../../data/haptics";
+import { showCardDialog } from "../dialogs/card/show-dialog-card";
 
 export const handleAction = (
   node: HTMLElement,
@@ -76,7 +77,7 @@ export const handleAction = (
         forwardHaptic("light");
       }
       break;
-    case "call-service": {
+    case "call-service":
       if (!actionConfig.service) {
         forwardHaptic("failure");
         return;
@@ -84,6 +85,11 @@ export const handleAction = (
       const [domain, service] = actionConfig.service.split(".", 2);
       hass.callService(domain, service, actionConfig.service_data);
       forwardHaptic("light");
-    }
+      break;
+    case "card":
+      if (actionConfig.card) {
+        showCardDialog(node, { card: actionConfig.card });
+      }
+      break;
   }
 };
