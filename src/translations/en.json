@@ -522,8 +522,14 @@
     "components": {
       "entity": {
         "entity-picker": {
-          "entity": "Entity"
+          "entity": "Entity",
+          "clear": "Clear",
+          "show_entities": "Show entities"
         }
+      },
+      "device-picker": {
+        "clear": "Clear",
+        "show_devices": "Show devices"
       },
       "relative_time": {
         "past": "{time} ago",
@@ -629,7 +635,8 @@
       "triggered": "Triggered {name}"
     },
     "sidebar": {
-      "external_app_configuration": "App Configuration"
+      "external_app_configuration": "App Configuration",
+      "sidebar_toggle": "Sidebar Toggle"
     },
     "panel": {
       "config": {
@@ -1394,6 +1401,7 @@
         "editor": {
           "header": "Edit UI",
           "menu": {
+            "open": "Open Lovelace menu",
             "raw_editor": "Raw config editor"
           },
           "raw_editor": {
@@ -1423,7 +1431,8 @@
             "add": "Add Card",
             "edit": "Edit",
             "delete": "Delete",
-            "move": "Move"
+            "move": "Move",
+            "options": "More options"
           },
           "save_config": {
             "header": "Take control of your Lovelace UI",
@@ -1452,7 +1461,8 @@
             },
             "entities": {
               "name": "Entities",
-              "show_header_toggle": "Show Header Toggle?"
+              "show_header_toggle": "Show Header Toggle?",
+              "toggle": "Toggle entities."
             },
             "entity-button": {
               "name": "Entity Button"
