@@ -110,7 +110,9 @@ class HUIRoot extends LitElement {
                     horizontal-offset="-5"
                   >
                     <paper-icon-button
-                      aria-label="Open Lovelace menu"
+                      aria-label=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.menu.open"
+                      )}
                       icon="hass:dots-vertical"
                       slot="dropdown-trigger"
                     ></paper-icon-button>
