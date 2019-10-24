@@ -20,7 +20,7 @@ class HaCustomizeIcon extends PolymerElement {
       <iron-icon class="icon-image" icon="[[item.value]]"></iron-icon>
       <paper-input
         disabled="[[item.secondary]]"
-        label="icon"
+        label="[[localize('ui.panel.lovelace.editor.card.generic.icon')]]"
         value="{{item.value}}"
       >
       </paper-input>

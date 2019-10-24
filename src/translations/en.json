@@ -726,7 +726,21 @@
           "picker": {
             "header": "Customization",
             "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated."
-          }
+          },
+          "warning": {
+              "include_sentence": "It seems that your configuration.yaml doesn't properly",
+              "include_link": "include customize.yaml",
+              "not_applied": "Changes made here are written in it, but will not be applied after a configuration reload unless the include is in place."
+          },
+          "attributes_customize": "The following attributes are already set in customize.yaml",
+          "attributes_outside": "The following attributes are customized from outside of customize.yaml",
+          "different_include": "Possibly via a domain, a glob or a different include.",
+          "attributes_set": "The following attributes of the entity are set programmatically.",
+          "attributes_override": "You can override them if you like.",
+          "attributes_not_set": "The following attributes weren't set. Set them if you like.",
+          "pick_attribute": "Pick an attribute to override",
+          "attribute_name": "Attribute name",
+          "attribute_value": "Attribute value"
         },
         "automation": {
           "caption": "Automation",
