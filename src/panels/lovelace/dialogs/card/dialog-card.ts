@@ -17,14 +17,24 @@ import { haStyleDialog } from "../../../../resources/styles";
 import { CardDialogParams } from "./show-dialog-card";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { createCardElement } from "../../common/create-card-element";
+import { LovelaceCard } from "../../types";
 
 @customElement("dialog-card")
 class DialogCard extends LitElement {
-  @property() public hass!: HomeAssistant;
+  @property() private _hass!: HomeAssistant;
   @property() private _params?: CardDialogParams;
 
   public async showDialog(params: CardDialogParams): Promise<void> {
     this._params = params;
+  }
+
+  set hass(hass: HomeAssistant) {
+    this._hass = hass;
+
+    const element = this.shadowRoot!.querySelector("#card > *") as LovelaceCard;
+    if (element) {
+      element.hass = hass;
+    }
   }
 
   protected render(): TemplateResult | void {
@@ -34,7 +44,7 @@ class DialogCard extends LitElement {
 
     return html`
       <ha-paper-dialog
-        with-backdrop
+        id="card"
         opened
         @opened-changed="${this._openedChanged}"
       >
@@ -45,8 +55,8 @@ class DialogCard extends LitElement {
 
   private _renderCard(config: LovelaceCardConfig): TemplateResult {
     const element = createCardElement(config);
-    if (this.hass) {
-      element.hass = this.hass;
+    if (this._hass) {
+      element.hass = this._hass;
     }
 
     return html`
