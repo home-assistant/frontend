@@ -9,7 +9,7 @@ import {
 } from "lit-element";
 
 import { HomeAssistant } from "../../../../types";
-import { HASSDomEvent } from "../../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import {
   LovelaceCardConfig,
   LovelaceViewConfig,
@@ -131,7 +131,7 @@ export class HuiDialogEditCard extends LitElement {
             ? html`
                 <mwc-button
                   id="switch-GUIMode"
-                  ?disabled="${this._isDisabled()}"
+                  ?disabled="${this._isDisabled}"
                   @click="${this._toggleMode}"
                 >
                   ${this.hass!.localize(
@@ -164,7 +164,15 @@ export class HuiDialogEditCard extends LitElement {
     `;
   }
 
-  private _isDisabled(): boolean {
+  protected updated(changedProperties) {
+    super.updated(changedProperties);
+
+    if (changedProperties.has("_GUImode")) {
+      fireEvent(this as HTMLElement, "iron-resize");
+    }
+  }
+
+  private get _isDisabled(): boolean {
     if (this._cardEditorEl) {
       return this._cardEditorEl.hasError || this._cardEditorEl.hasWarning;
     }
