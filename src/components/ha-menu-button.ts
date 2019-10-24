@@ -51,7 +51,7 @@ class HaMenuButton extends LitElement {
         ));
     return html`
       <paper-icon-button
-        aria-label="Sidebar Toggle"
+        aria-label=${hass.localize("ui.sidebar.sidebar_toggle")}
         .icon=${this.hassio ? "hassio:menu" : "hass:menu"}
         @click=${this._toggleMenu}
       ></paper-icon-button>
