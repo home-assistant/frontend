@@ -1145,6 +1145,20 @@
             "actions": {
               "caption": "When something is triggered..."
             }
+          },
+          "device_not_found": "Device not found.",
+          "info": "Device info",
+          "details": "Here are all the details of your device.",
+          "entities": "Entities",
+          "automations": "Automations",
+          "confirm_rename_entity_ids": "Do you also want to rename the entity id's of your entities?",
+          "data_table": {
+              "device": "Device",
+              "manufacturer": "Manufacturer",
+              "model": "Model",
+              "area": "Area",
+              "integration": "Integration",
+              "battery": "Battery"
           }
         },
         "entity_registry": {
@@ -1172,7 +1186,8 @@
             "delete": "DELETE",
             "confirm_delete": "Are you sure you want to delete this entry?",
             "confirm_delete2": "Deleting an entry will not remove the entity from Home Assistant. To do this, you will need to remove the integration '{platform}' from Home Assistant.",
-            "update": "UPDATE"
+            "update": "UPDATE",
+            "note": "Note: this might not work yet with all integrations."
           }
         },
         "person": {
@@ -1212,6 +1227,7 @@
           "home_assistant_website": "Home Assistant website",
           "configure": "Configure",
           "none": "Nothing configured yet",
+          "error_not_found": "Integration not found.",
           "config_entry": {
             "settings_button": "Edit settings for {integration}",
             "system_options_button": "System options for {integration}",
@@ -1657,7 +1673,9 @@
         },
         "advanced_mode": {
           "title": "Advanced Mode",
-          "description": "Home Assistant hides advanced features and options by default. You can make these features accessible by checking this toggle. This is a user-specific setting and does not impact other users using Home Assistant."
+          "description": "Home Assistant hides advanced features and options by default. You can make these features accessible by checking this toggle. This is a user-specific setting and does not impact other users using Home Assistant.",
+          "hint_enable": "Missing config options? Enable advanced mode on",
+          "link_profile_page": "your profile page"
         },
         "refresh_tokens": {
           "header": "Refresh Tokens",

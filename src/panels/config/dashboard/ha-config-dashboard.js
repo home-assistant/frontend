@@ -124,7 +124,7 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
 
           <template is='dom-if' if='[[!showAdvanced]]'>
             <div class='promo-advanced'>
-              Missing config options? Enable advanced mode on <a href="/profile">your profile page.</a>
+            [[localize('ui.panel.profile.advanced_mode.hint_enable')]] <a href="/profile">[[localize('ui.panel.profile.advanced_mode.link_profile_page')]]</a>.
             </div>
           </template>
         </ha-config-section>

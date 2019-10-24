@@ -159,33 +159,33 @@ export class HaDevicesDataTable extends LitElement {
           }
         : {
             name: {
-              title: "Device",
+              title: this.hass.localize('ui.panel.config.devices.data_table.device'),
               sortable: true,
               filterable: true,
               direction: "asc",
             },
             manufacturer: {
-              title: "Manufacturer",
+              title: this.hass.localize('ui.panel.config.devices.data_table.manufacturer'),
               sortable: true,
               filterable: true,
             },
             model: {
-              title: "Model",
+              title: this.hass.localize('ui.panel.config.devices.data_table.model'),
               sortable: true,
               filterable: true,
             },
             area: {
-              title: "Area",
+              title: this.hass.localize('ui.panel.config.devices.data_table.area'),
               sortable: true,
               filterable: true,
             },
             integration: {
-              title: "Integration",
+              title: this.hass.localize('ui.panel.config.devices.data_table.integration'),
               sortable: true,
               filterable: true,
             },
             battery_entity: {
-              title: "Battery",
+              title: this.hass.localize('ui.panel.config.devices.data_table.battery'),
               sortable: true,
               type: "numeric",
               template: (batteryEntity: string) => {
