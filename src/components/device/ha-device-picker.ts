@@ -158,7 +158,9 @@ class HaDevicePicker extends SubscribeMixin(LitElement) {
           ${this.value
             ? html`
                 <paper-icon-button
-                  aria-label="Clear"
+                  aria-label=${this.hass.localize(
+                    "ui.components.device-picker.clear"
+                  )}
                   slot="suffix"
                   class="clear-button"
                   icon="hass:close"
@@ -171,7 +173,9 @@ class HaDevicePicker extends SubscribeMixin(LitElement) {
           ${devices.length > 0
             ? html`
                 <paper-icon-button
-                  aria-label="Show devices"
+                  aria-label=${this.hass.localize(
+                    "ui.components.device-picker.show_devices"
+                  )}
                   slot="suffix"
                   class="toggle-button"
                   .icon=${this._opened ? "hass:menu-up" : "hass:menu-down"}
