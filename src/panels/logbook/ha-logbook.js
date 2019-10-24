@@ -55,7 +55,7 @@ class HaLogbook extends EventsMixin(PolymerElement) {
       </style>
 
       <template is="dom-if" if="[[!entries.length]]">
-        No logbook entries found.
+        [[localize('ui.panel.logbook.no_entries')]]
       </template>
 
       <template is="dom-repeat" items="[[entries]]">

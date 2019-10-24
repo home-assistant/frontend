@@ -1393,7 +1393,8 @@
       },
       "logbook": {
         "showing_entries": "[%key:ui::panel::history::showing_entries%]",
-        "period": "Period"
+        "period": "Period",
+        "no_entries": "No logbook entries found."
       },
       "lovelace": {
         "cards": {
