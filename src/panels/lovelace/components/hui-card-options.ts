@@ -66,7 +66,9 @@ export class HuiCardOptions extends LitElement {
             <paper-icon-button
               icon="hass:dots-vertical"
               slot="dropdown-trigger"
-              aria-label="More options"
+              aria-label=${this.hass!.localize(
+                "ui.panel.lovelace.editor.edit_card.options"
+              )}
             ></paper-icon-button>
             <paper-listbox slot="dropdown-content">
               <paper-item @click="${this._moveCard}">
