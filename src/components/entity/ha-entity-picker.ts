@@ -139,7 +139,7 @@ class HaEntityPicker extends LitElement {
           ${this.value
             ? html`
                 <paper-icon-button
-                  aria-label=${this._hass.localize(
+                  aria-label=${this.hass!.localize(
                     "ui.components.entity.entity-picker.clear"
                   )}
                   slot="suffix"
@@ -154,7 +154,7 @@ class HaEntityPicker extends LitElement {
           ${states.length > 0
             ? html`
                 <paper-icon-button
-                  aria-label=${this._hass.localize(
+                  aria-label=${this.hass!.localize(
                     "ui.components.entity.entity-picker.show_entities"
                   )}
                   slot="suffix"
