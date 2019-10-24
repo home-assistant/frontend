@@ -17,13 +17,15 @@ import "../components/hui-warning";
 import { HomeAssistant } from "../../../types";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
-import { longPress } from "../common/directives/long-press-directive";
-import { hasDoubleClick } from "../common/has-double-click";
-import { handleClick } from "../common/handle-click";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { classMap } from "lit-html/directives/class-map";
 import { EntitiesCardEntityConfig } from "../cards/types";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { hasAction } from "../common/has-action";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { handleAction } from "../common/handle-action";
 
 class HuiGenericEntityRow extends LitElement {
   @property() public hass?: HomeAssistant;
@@ -66,11 +68,10 @@ class HuiGenericEntityRow extends LitElement {
         .stateObj=${stateObj}
         .overrideIcon=${this.config.icon}
         .overrideImage=${this.config.image}
-        @ha-click=${this._handleClick}
-        @ha-hold=${this._handleHold}
-        @ha-dblclick=${this._handleDblClick}
-        .longPress=${longPress({
-          hasDoubleClick: hasDoubleClick(this.config.double_tap_action),
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this.config!.hold_action),
+          hasDoubleClick: hasAction(this.config!.double_tap_action),
         })}
         tabindex="0"
       ></state-badge>
@@ -84,11 +85,10 @@ class HuiGenericEntityRow extends LitElement {
               !this.showSecondary || this.config.secondary_info
             ),
           })}
-          @ha-click=${this._handleClick}
-          @ha-hold=${this._handleHold}
-          @ha-dblclick=${this._handleDblClick}
-          .longPress=${longPress({
-            hasDoubleClick: hasDoubleClick(this.config.double_tap_action),
+          @action=${this._handleAction}
+          .actionHandler=${actionHandler({
+            hasHold: hasAction(this.config!.hold_action),
+            hasDoubleClick: hasAction(this.config!.double_tap_action),
           })}
         >
           ${this.config.name || computeStateName(stateObj)}
@@ -122,16 +122,8 @@ class HuiGenericEntityRow extends LitElement {
     }
   }
 
-  private _handleClick(): void {
-    handleClick(this, this.hass!, this.config!, false, false);
-  }
-
-  private _handleHold(): void {
-    handleClick(this, this.hass!, this.config!, true, false);
-  }
-
-  private _handleDblClick(): void {
-    handleClick(this, this.hass!, this.config!, false, true);
+  private _handleAction(ev: HASSDomEvent<ActionHandlerEvent>) {
+    handleAction(this, this.hass!, this.config!, ev.detail.action!);
   }
 
   static get styles(): CSSResult {

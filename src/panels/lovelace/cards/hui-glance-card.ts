@@ -22,11 +22,13 @@ import "../components/hui-warning-element";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { longPress } from "../common/directives/long-press-directive";
 import { processConfigEntities } from "../common/process-config-entities";
-import { handleClick } from "../common/handle-click";
 import { GlanceCardConfig, GlanceConfigEntity } from "./types";
-import { hasDoubleClick } from "../common/has-double-click";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { hasAction } from "../common/has-action";
+import { HASSDomEvent } from "../../../common/dom/fire_event";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { handleAction } from "../common/handle-action";
 
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {
@@ -199,11 +201,10 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
       <div
         class="entity"
         .config="${entityConf}"
-        @ha-click=${this._handleClick}
-        @ha-hold=${this._handleHold}
-        @ha-dblclick=${this._handleDblClick}
-        .longPress=${longPress({
-          hasDoubleClick: hasDoubleClick(entityConf.double_tap_action),
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(entityConf.hold_action),
+          hasDoubleClick: hasAction(entityConf.double_tap_action),
         })}
       >
         ${this._config!.show_name !== false
@@ -245,19 +246,9 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _handleClick(ev: MouseEvent): void {
+  private _handleAction(ev: HASSDomEvent<ActionHandlerEvent>) {
     const config = (ev.currentTarget as any).config as GlanceConfigEntity;
-    handleClick(this, this.hass!, config, false, false);
-  }
-
-  private _handleHold(ev: MouseEvent): void {
-    const config = (ev.currentTarget as any).config as GlanceConfigEntity;
-    handleClick(this, this.hass!, config, true, false);
-  }
-
-  private _handleDblClick(ev: MouseEvent): void {
-    const config = (ev.currentTarget as any).config as GlanceConfigEntity;
-    handleClick(this, this.hass!, config, false, true);
+    handleAction(this, this.hass!, config, ev.detail.action!);
   }
 }
 
