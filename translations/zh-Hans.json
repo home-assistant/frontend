@@ -311,25 +311,104 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "title": "服务"
+                        "title": "服务",
+                        "description": "服务开发工具可让您在Home Assistant中调用任何可用的服务。",
+                        "data": "服务数据（格式为YAML，选填）",
+                        "call_service": "调用服务",
+                        "select_service": "选择服务以查看其描述",
+                        "no_description": "没有描述",
+                        "no_parameters": "此服务不带任何参数。",
+                        "column_parameter": "参数",
+                        "column_description": "描述",
+                        "column_example": "示例",
+                        "fill_example_data": "填写示例数据",
+                        "alert_parsing_yaml": "解析YAML时出错： {data}"
                     },
                     "states": {
-                        "title": "状态"
+                        "title": "状态",
+                        "description1": "设置设备在Homo Assistant中的呈现方式。",
+                        "description2": "这将不影响实际设备。",
+                        "entity": "设备\/实体",
+                        "state": "状态",
+                        "attributes": "属性",
+                        "state_attributes": "状态属性（格式为YAML，选填）",
+                        "set_state": "设置状态",
+                        "current_entities": "现有设备\/实体",
+                        "filter_entities": "输入筛选设备\/实体",
+                        "filter_states": "输入筛选状态",
+                        "filter_attributes": "输入筛选属性",
+                        "no_entities": "没有可用设备\/实体",
+                        "more_info": "更多信息",
+                        "alert_entity_field": "设备\/实体是必填字段"
                     },
                     "events": {
-                        "title": "事件"
+                        "title": "事件",
+                        "description": "将事件发送到事件总线",
+                        "documentation": "事件文档。",
+                        "type": "事件类型",
+                        "data": "事件数据（格式为YAML，选填）",
+                        "fire_event": "触发事件",
+                        "event_fired": "事件 {name} 已触发",
+                        "available_events": "可用事件",
+                        "count_listeners": "({count} 个监听器)",
+                        "listen_to_events": "监听事件",
+                        "listening_to": "监听",
+                        "subscribe_to": "订阅事件",
+                        "start_listening": "开始监听",
+                        "stop_listening": "停止监听",
+                        "alert_event_type": "事件类型是必填字段",
+                        "notification_event_fired": "事件 {type} 成功触发！"
                     },
                     "templates": {
-                        "title": "模板"
+                        "title": "模板",
+                        "description": "模板使用jinja2模板引擎和一些Home Assistant特定的插件进行呈现。",
+                        "editor": "模板编辑器",
+                        "jinja_documentation": "Jinja2 模板文档",
+                        "template_extensions": "Home Assistant 模板插件",
+                        "unknown_error_template": "渲染模板时发生了未知错误"
                     },
                     "mqtt": {
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "description_publish": "发送一个数据包",
+                        "topic": "主题(Topic)",
+                        "payload": "有效负载（允许模板）",
+                        "publish": "发送",
+                        "description_listen": "监听一个主题(Topic)",
+                        "listening_to": "监听",
+                        "subscribe_to": "订阅主题(Topic)",
+                        "start_listening": "开始监听",
+                        "stop_listening": "停止监听",
+                        "message_received": "{time} 收到关于 {topic} 的消息[ {id} ]"
                     },
                     "info": {
-                        "title": "信息"
+                        "title": "信息",
+                        "remove": "移除",
+                        "set": "设置",
+                        "default_ui": "{action} {name}为此设备上的默认页面",
+                        "lovelace_ui": "前往使用 Lovelace UI 的默认页面",
+                        "states_ui": "前往使用 states UI 的默认页面",
+                        "home_assistant_logo": "Home Assistant logo",
+                        "path_configuration": "configuration.yaml路径: {path}",
+                        "developed_by": "由一帮很Awosome~~~的人开发。",
+                        "license": "根据Apache 2.0许可发布",
+                        "server": "服务器",
+                        "frontend": "前端用户界面",
+                        "built_using": "建于",
+                        "icons_by": "图标来自",
+                        "frontend_version": "前端版本： {version} - {type}",
+                        "custom_uis": "自定义用户界面：",
+                        "system_health_error": "未加载系统健康组件。请将 'system_health:' 添加到 configuration.yaml"
                     },
                     "logs": {
-                        "title": "日志"
+                        "title": "日志",
+                        "details": "日志详细信息（ {level} ）",
+                        "load_full_log": "加载完整Home Assistant日志",
+                        "loading_log": "正在加载错误日志...",
+                        "no_errors": "未报告任何错误。",
+                        "no_issues": "没有新问题！",
+                        "clear": "清除",
+                        "refresh": "刷新",
+                        "multiple_messages": "邮件首次出现在{time},显示了{counter}次"
                     }
                 }
             },
@@ -1069,6 +1148,11 @@
                     },
                     "edit_lovelace": {
                         "header": "Lovelace UI标题"
+                    },
+                    "card": {
+                        "generic": {
+                            "title": "标题"
+                        }
                     }
                 },
                 "menu": {
