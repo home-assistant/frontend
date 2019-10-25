@@ -312,25 +312,86 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "title": "Serveis"
+                        "title": "Serveis",
+                        "data": "Dades del servei (en YAML, opcionals)",
+                        "call_service": "Crida servei",
+                        "select_service": "Selecciona un servei per veure'n la descripció",
+                        "no_description": "No hi ha cap descripció disponible",
+                        "no_parameters": "Aquest servei no té paràmetres.",
+                        "column_parameter": "Paràmetre",
+                        "column_description": "Descripció",
+                        "column_example": "Exemple",
+                        "alert_parsing_yaml": "S'ha produït un error analitzant el codi YAML: {data}"
                     },
                     "states": {
-                        "title": "Estats"
+                        "title": "Estats",
+                        "entity": "Entitat",
+                        "state": "Estat",
+                        "attributes": "Atributs",
+                        "state_attributes": "Atributs d'estats (en YAML, opcionals)",
+                        "set_state": "Estableix estat",
+                        "no_entities": "No hi ha entitats",
+                        "more_info": "Més informació",
+                        "alert_entity_field": "L’entitat és un camp obligatori"
                     },
                     "events": {
-                        "title": "Esdeveniments"
+                        "title": "Esdeveniments",
+                        "documentation": "Documentació d'esdeveniments.",
+                        "type": "Tipus d'esdeveniment",
+                        "data": "Dades de l'esdeveniment (en YAML, opcionals)",
+                        "fire_event": "Executa esdeveniment",
+                        "event_fired": "Esdeveniment {name} executat",
+                        "available_events": "Esdeveniments disponibles",
+                        "listen_to_events": "Escolta esdeveniments",
+                        "listening_to": "Escoltant a",
+                        "subscribe_to": "Esdeveniment al qual subscriure's",
+                        "start_listening": "Comença a escoltar",
+                        "stop_listening": "Deixa d’escoltar",
+                        "alert_event_type": "El tipus d'esdeveniment és un camp obligatori"
                     },
                     "templates": {
-                        "title": "Plantilla"
+                        "title": "Plantilla",
+                        "editor": "Editor de plantilles",
+                        "jinja_documentation": "Documentació sobre plantilles amb Jinja2",
+                        "template_extensions": "Extensions de plantilla de Home Assistant",
+                        "unknown_error_template": "Error desconegut renderitzant plantilla"
                     },
                     "mqtt": {
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "description_publish": "Publicació d'un paquet",
+                        "topic": "tòpic",
+                        "payload": "Dades\/missatge (plantilla permesa)",
+                        "publish": "Publica",
+                        "description_listen": "Escolta d'un tòpic",
+                        "listening_to": "Escoltant a",
+                        "subscribe_to": "Tòpic al qual subscriure's",
+                        "start_listening": "Comença a escoltar",
+                        "stop_listening": "Deixa d’escoltar",
+                        "message_received": "Missatge {id} rebut a {topic} a les {time}:"
                     },
                     "info": {
-                        "title": "Informació"
+                        "title": "Informació",
+                        "lovelace_ui": "Vés a la UI Lovelace",
+                        "states_ui": "Vés a la UI d’estats",
+                        "home_assistant_logo": "Logotip de Home Assistant",
+                        "path_configuration": "Ruta al fitxer configuration.yaml: {path}",
+                        "developed_by": "Desenvolupat per un munt de gent fantàstica.",
+                        "license": "Publicat amb la llicència Apache 2.0",
+                        "source": "Font:",
+                        "server": "servidor",
+                        "built_using": "Creat utilitzant",
+                        "icons_by": "Icones de",
+                        "custom_uis": "Interfícies d'usuari personalitzades:"
                     },
                     "logs": {
-                        "title": "Registres"
+                        "title": "Registres",
+                        "details": "Detalls del registre ({level})",
+                        "load_full_log": "Carrega el registre complet de Home Assistant",
+                        "loading_log": "Carregant el registre d'errors...",
+                        "no_errors": "No s'ha informat de cap error.",
+                        "no_issues": "No hi ha problemes nous!",
+                        "clear": "Esborra",
+                        "refresh": "Actualitza"
                     }
                 }
             },
@@ -606,7 +667,10 @@
                                     "service_data": "Dades de servei"
                                 },
                                 "device_id": {
-                                    "label": "Dispositiu"
+                                    "label": "Dispositiu",
+                                    "extra_fields": {
+                                        "code": "Codi"
+                                    }
                                 },
                                 "scene": {
                                     "label": "Activa escena"
@@ -623,7 +687,7 @@
                     }
                 },
                 "script": {
-                    "caption": "Programació",
+                    "caption": "Programació (scripts)",
                     "description": "Crea i edita programes (scripts)",
                     "picker": {
                         "header": "Editor de scripts",
@@ -900,7 +964,11 @@
                         "device_unavailable": "dispositiu no disponible",
                         "entity_unavailable": "entitat no disponible",
                         "no_area": "Sense àrea",
-                        "hub": "Connectat a través de"
+                        "hub": "Connectat a través de",
+                        "settings_button": "Edita la configuració de {integration}",
+                        "system_options_button": "Opcions de sistema de {integration}",
+                        "delete_button": "Suprimeix {integration}",
+                        "area": "A {area}"
                     },
                     "config_flow": {
                         "external_step": {
@@ -1326,7 +1394,8 @@
                         "call_service": "Cridar servei {name}",
                         "more_info": "Mostra més informació: {name}",
                         "url": "Obre un finestra a {url_path}"
-                    }
+                    },
+                    "confirm_delete": "Estàs segur que vols eliminar aquesta targeta?"
                 },
                 "editor": {
                     "edit_card": {
@@ -1494,6 +1563,11 @@
                         "weather-forecast": {
                             "name": "Previsió meteorològica"
                         }
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "title": "Mode panell?"
+                        }
                     }
                 },
                 "menu": {
@@ -1510,7 +1584,11 @@
                     "message": "S'ha actualitzat la configuració de Lovelace, vols actualitzar la pàgina?",
                     "refresh": "Actualitza"
                 },
-                "reload_lovelace": "Recarrega Lovelace"
+                "reload_lovelace": "Recarrega Lovelace",
+                "views": {
+                    "confirm_delete": "Estàs segur que vols eliminar aquesta visualització?",
+                    "existing_cards": "No pots suprimir una visualització si conté targetes, elimina-les primer."
+                }
             },
             "page-demo": {
                 "cards": {
@@ -1665,7 +1743,13 @@
                 "swing_mode": "Mode oscil·lació",
                 "away_mode": "Mode absent",
                 "aux_heat": "Calefactor auxiliar",
-                "preset_mode": "Programat"
+                "preset_mode": "Programat",
+                "target_temperature_entity": "Temperatura objectiu de {name}",
+                "current_temperature": "Temperatura actual de {name}",
+                "heating": "{name} escalfant",
+                "cooling": "{name} refredant",
+                "high": "alt",
+                "low": "baix"
             },
             "lock": {
                 "code": "Codi",
@@ -1694,6 +1778,13 @@
                     "pause": "pausa",
                     "cancel": "cancel·la",
                     "finish": "finalitza"
+                }
+            },
+            "counter": {
+                "actions": {
+                    "increment": "increment",
+                    "decrement": "decreixement",
+                    "reset": "restablir"
                 }
             }
         },
@@ -1785,6 +1876,11 @@
                 "last_seen": "Vist per últim cop",
                 "power_source": "Font d'alimentació",
                 "unknown": "Desconeguda"
+            },
+            "confirmation": {
+                "cancel": "Cancel·la",
+                "ok": "D'acord",
+                "title": "Estàs segur?"
             }
         },
         "auth_store": {
