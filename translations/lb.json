@@ -312,25 +312,105 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "title": "Servicen"
+                        "title": "Servicen",
+                        "description": "De Service am Entwécklungsgeschir erlaabt Iech e verfügbare Service am Home Assistant opzeruffen.",
+                        "data": "Service Donnéeë (YAML, fakultativ)",
+                        "call_service": "Service opruffen",
+                        "select_service": "Wielt ee Service aus fir d'Beschreiwung ze gesinn",
+                        "no_description": "Keng Beschreiwung verfügbar",
+                        "no_parameters": "Dëse Service huet keng Parameteren.",
+                        "column_parameter": "Parameter",
+                        "column_description": "Beschreiwung",
+                        "column_example": "Beispill",
+                        "fill_example_data": "Gitt Beispill Donnéeën un",
+                        "alert_parsing_yaml": "Feeler beim Parse vum YAML: {data}"
                     },
                     "states": {
-                        "title": "Zoustänn"
+                        "title": "Zoustänn",
+                        "description1": "Setzt d'Representatioun vun engem Apparat am Home Assistant.",
+                        "description2": "Dëst wäert net mam aktuellen Apparat kommunizéieren.",
+                        "entity": "Entitéit",
+                        "state": "Zoustand",
+                        "attributes": "Attributer",
+                        "state_attributes": "Atrributer vum Zoustand (YAML, fakultativ)",
+                        "set_state": "Zoustand setzen",
+                        "current_entities": "Aktuell Entitéiten",
+                        "filter_entities": "Entitéite filteren",
+                        "filter_states": "Zoustänn filteren",
+                        "filter_attributes": "Attributer filteren",
+                        "no_entities": "Keng Entitéiten",
+                        "more_info": "Méi Info",
+                        "alert_entity_field": "Entitéit ass e obligatorescht Feld"
                     },
                     "events": {
-                        "title": "Evenementer"
+                        "title": "Evenementer",
+                        "description": "Een Evenement um Evenement Bus starten",
+                        "documentation": "Dokumentatioun iwwert d'Evenementer",
+                        "type": "Typ vun Evenement",
+                        "data": "Evenement Donnéeë (YAML, fakultativ)",
+                        "fire_event": "Evenement starten",
+                        "event_fired": "Evenement {name} gestart",
+                        "available_events": "Verfügbar Evenementer",
+                        "count_listeners": " ({count} gelauschtert)",
+                        "listen_to_events": "Op Evenementer lauschteren",
+                        "listening_to": "Lauschtert op",
+                        "subscribe_to": "Evenement fir unzemellen",
+                        "start_listening": "Fänk un mam lauschteren",
+                        "stop_listening": "Hal op mam lauschteren",
+                        "alert_event_type": "Type vun Evenement ass obligatorescht",
+                        "notification_event_fired": "Event {type} erfollegräich gestart"
                     },
                     "templates": {
-                        "title": "Modeller"
+                        "title": "Modeller",
+                        "description": "Modeller ginn mëttels Jinja2 template engine duergestallt mat e puer Home Assistant spezifesch Erweiderungen.",
+                        "editor": "Modell Editeur",
+                        "jinja_documentation": "Jinja2 Modell Dokumentatioun",
+                        "template_extensions": "Home Assistant Modell Erweiderungen",
+                        "unknown_error_template": "Onbekannte Feeler beim duerstelle vum Modell"
                     },
                     "mqtt": {
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "description_publish": "Ee Pak publizéieren",
+                        "topic": "Sujet",
+                        "payload": "Payload (Modell erlaabt)",
+                        "publish": "Publizéieren",
+                        "description_listen": "Sujet lauschteren",
+                        "listening_to": "Lauschtert op",
+                        "subscribe_to": "Sujet fir unzemellen",
+                        "start_listening": "Fänk un mam lauschteren",
+                        "stop_listening": "Hal op mam lauschteren",
+                        "message_received": "Noriicht {id} empfaangen am {topic} um {time}:"
                     },
                     "info": {
-                        "title": "Info"
+                        "title": "Info",
+                        "remove": "Läschen",
+                        "set": "Setzen",
+                        "default_ui": "{action} {name} als Standard Säit op dësem Apparat",
+                        "lovelace_ui": "Zum Lovelace Benotzer Interface wiesselen",
+                        "states_ui": "Zum Zoustänn Benotzer Interface wiesselen",
+                        "home_assistant_logo": "Home Assistant logo",
+                        "path_configuration": "Pad zur configuration.yaml: {path}",
+                        "developed_by": "Entwéckelt vun enger ganzer Rei fantastesche Leit.",
+                        "license": "Verëffentlecht ënnert der Apache 2.0 Lizenz",
+                        "source": "Quell:",
+                        "server": "server",
+                        "frontend": "frontend-ui",
+                        "built_using": "Gebaut mat",
+                        "icons_by": "Ikoner vun",
+                        "frontend_version": "Frontend Versioun: {version} - {type}",
+                        "custom_uis": "Personaliséierte Benotzer Interface:",
+                        "system_health_error": "System Gesondheet Komponent net gelueden. Setz 'system_health:' zur configuration.yaml dobäi"
                     },
                     "logs": {
-                        "title": "Logbicher"
+                        "title": "Logbicher",
+                        "details": "Detailler vum Log ({level})",
+                        "load_full_log": "Kompletten Home Assistant Log lueden",
+                        "loading_log": "Feeler Log gëtt gelueden...",
+                        "no_errors": "Et gouf kee Feeler gemellt.",
+                        "no_issues": "Keng nei Problemer!",
+                        "clear": "Läschen",
+                        "refresh": "Aktualiséieren",
+                        "multiple_messages": "Noriicht als éischt opgetrueden um {time} a säit deem {counter} mol opgetrueden"
                     }
                 }
             },
@@ -606,7 +686,10 @@
                                     "service_data": "Service-Donnéeën"
                                 },
                                 "device_id": {
-                                    "label": "Apparat"
+                                    "label": "Apparat",
+                                    "extra_fields": {
+                                        "code": "Code"
+                                    }
                                 },
                                 "scene": {
                                     "label": "Zeen aktivéieren"
@@ -900,7 +983,11 @@
                         "device_unavailable": "Apparat net erreechbar",
                         "entity_unavailable": "Entitéit net erreechbar",
                         "no_area": "Kee Beräich",
-                        "hub": "Verbonnen via"
+                        "hub": "Verbonnen via",
+                        "settings_button": "Astellungen ännere fir {integration}",
+                        "system_options_button": "System Optioune fir {integration}",
+                        "delete_button": "{integration} läschen",
+                        "area": "An {area}"
                     },
                     "config_flow": {
                         "external_step": {
@@ -1326,7 +1413,8 @@
                         "call_service": "Service {name} opruffen",
                         "more_info": "méi Informatiounen: {name}",
                         "url": "Fënster opmaachen mat {url_path}"
-                    }
+                    },
+                    "confirm_delete": "Sécher fir dës Kaart ze läschen?"
                 },
                 "editor": {
                     "edit_card": {
@@ -1339,7 +1427,8 @@
                         "delete": "Läschen",
                         "move": "Réckelen",
                         "show_visual_editor": "Visuellen Editeur uweisen",
-                        "show_code_editor": "Code Editeur uweisen"
+                        "show_code_editor": "Code Editeur uweisen",
+                        "pick_card_view_title": "Wéieng Kaart wëllt dir zu ärer {name] Usiicht dobäisetzen?"
                     },
                     "migrate": {
                         "header": "Konfiguratioun net kompatibel",
@@ -1352,7 +1441,8 @@
                         "header": "Konfiguratioun kucken",
                         "add": "Vue dobäisetzen",
                         "edit": "Vue änneren",
-                        "delete": "Vue läschen"
+                        "delete": "Vue läschen",
+                        "header_name": "{name} Konfiguratioun kucken"
                     },
                     "save_config": {
                         "header": "Kontroll iwwert Loveloce UI iwwerhuelen",
@@ -1494,6 +1584,12 @@
                         "weather-forecast": {
                             "name": "Wiederprevisioune"
                         }
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "title": "Panel Modus?",
+                            "description": "Dëst stellt déi éischt Kaart op voller Breet duer; aner Kaarte ginn net duergestallt."
+                        }
                     }
                 },
                 "menu": {
@@ -1510,7 +1606,11 @@
                     "message": "Lovelace Konfiguratioun gouf geännert, soll frësch geluede ginn?",
                     "refresh": "Frësch lueden"
                 },
-                "reload_lovelace": "Lovelace frësch lueden"
+                "reload_lovelace": "Lovelace frësch lueden",
+                "views": {
+                    "confirm_delete": "Sécher fir dës Usiicht ze läsche?",
+                    "existing_cards": "Dir kënnt keng Usiicht mat Kaarten läschen. Läscht d'Kaarten fir d'éischt."
+                }
             },
             "page-demo": {
                 "cards": {
@@ -1532,7 +1632,8 @@
                             "master_bedroom": "Schlofkummer",
                             "left": "Lénks",
                             "right": "Riets",
-                            "mirror": "Spigel"
+                            "mirror": "Spigel",
+                            "temperature_study": "Edude vun der Temperatur"
                         },
                         "labels": {
                             "lights": "Luuchten",
@@ -1665,7 +1766,14 @@
                 "swing_mode": "Schwenk Modus",
                 "away_mode": "Modus Keen Doheem",
                 "aux_heat": "Zousätzlech Heizung",
-                "preset_mode": "Virastellung"
+                "preset_mode": "Virastellung",
+                "target_temperature_entity": "{name} Zieltemperatur",
+                "target_temperature_mode": "{name} Zieltemperatur {mode}",
+                "current_temperature": "{name} aktuell Temperatur",
+                "heating": "{name} hëtzen",
+                "cooling": "{name} killen",
+                "high": "héich",
+                "low": "niddreg"
             },
             "lock": {
                 "code": "Code",
@@ -1694,6 +1802,13 @@
                     "pause": "Pause",
                     "cancel": "Ofbriechen",
                     "finish": "Ofschléissen"
+                }
+            },
+            "counter": {
+                "actions": {
+                    "increment": "Inkremental",
+                    "decrement": "Dekremental",
+                    "reset": "reset"
                 }
             }
         },
@@ -1785,6 +1900,11 @@
                 "last_seen": "Fir d'läscht gesinn",
                 "power_source": "Energie Quell",
                 "unknown": "Onbekannt"
+            },
+            "confirmation": {
+                "cancel": "Ofbriechen",
+                "ok": "OK",
+                "title": "Sécher?"
             }
         },
         "auth_store": {

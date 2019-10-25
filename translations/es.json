@@ -312,25 +312,105 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "title": "Servicios"
+                        "title": "Servicios",
+                        "description": "La herramienta de desarrollo de servicios te permite llamar a cualquier servicio disponible en Home Assistant.",
+                        "data": "Datos del servicio (YAML, opcional)",
+                        "call_service": "Llamar servicio",
+                        "select_service": "Seleccione un servicio para ver la descripción.",
+                        "no_description": "No hay descripción disponible.",
+                        "no_parameters": "Este servicio no toma parámetros.",
+                        "column_parameter": "Parámetro",
+                        "column_description": "Descripción",
+                        "column_example": "Ejemplo",
+                        "fill_example_data": "Rellenar datos de ejemplo",
+                        "alert_parsing_yaml": "Error al analizar YAML: {data}"
                     },
                     "states": {
-                        "title": "Estados"
+                        "title": "Estados",
+                        "description1": "Establecer la representación de un dispositivo dentro de Home Assistant.",
+                        "description2": "Esto no se comunicará con el dispositivo actual.",
+                        "entity": "Entidad",
+                        "state": "Estado",
+                        "attributes": "Atributos",
+                        "state_attributes": "Atributos de estado (YAML, opcional)",
+                        "set_state": "Establecer estado",
+                        "current_entities": "Entidades actuales",
+                        "filter_entities": "Filtrar entidades",
+                        "filter_states": "Filtrar estados",
+                        "filter_attributes": "Filtrar atributos",
+                        "no_entities": "Sin entidades",
+                        "more_info": "Más Información",
+                        "alert_entity_field": "Entidad es un campo obligatorio"
                     },
                     "events": {
-                        "title": "Eventos"
+                        "title": "Eventos",
+                        "description": "Disparar un evento en el bus de eventos.",
+                        "documentation": "Documentación de eventos.",
+                        "type": "Tipo de evento",
+                        "data": "Datos del evento (YAML, opcional)",
+                        "fire_event": "Disparar evento",
+                        "event_fired": "Evento {name} disparado",
+                        "available_events": "Eventos disponibles",
+                        "count_listeners": " ({count} oyentes)",
+                        "listen_to_events": "Escuchar eventos",
+                        "listening_to": "Escuchando",
+                        "subscribe_to": "Evento al que suscribirse",
+                        "start_listening": "Empezar a escuchar",
+                        "stop_listening": "Dejar de escuchar",
+                        "alert_event_type": "El tipo de evento es un campo obligatorio.",
+                        "notification_event_fired": "¡Evento {tipe} disparado con éxito!"
                     },
                     "templates": {
-                        "title": "Plantillas"
+                        "title": "Plantillas",
+                        "description": "Las plantillas se muestran utilizando el motor de plantillas Jinja2 con algunas extensiones específicas de Home Assistant.",
+                        "editor": "Editor de plantillas",
+                        "jinja_documentation": "Documentación de plantilla Jinja2",
+                        "template_extensions": "Extensiones de plantilla de Home Assistant",
+                        "unknown_error_template": "Error desconocido al mostrar la plantilla"
                     },
                     "mqtt": {
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "description_publish": "Publicar un paquete",
+                        "topic": "tema",
+                        "payload": "Payload (plantilla permitida)",
+                        "publish": "Publicar",
+                        "description_listen": "Escuchar un tema",
+                        "listening_to": "Escuchando",
+                        "subscribe_to": "Tema al que suscribirse",
+                        "start_listening": "Empezar a escuchar",
+                        "stop_listening": "Dejar de escuchar",
+                        "message_received": "Mensaje {id} recibido en {topic} a las {time}:"
                     },
                     "info": {
-                        "title": "Información"
+                        "title": "Información",
+                        "remove": "Eliminar",
+                        "set": "Establecer",
+                        "default_ui": "{action} {name} como página predeterminada en este dispositivo",
+                        "lovelace_ui": "Ir a la interfaz de usuario de Lovelace",
+                        "states_ui": "Ir a la interfaz de usuario de estados",
+                        "home_assistant_logo": "Logotipo de Home Assistant",
+                        "path_configuration": "Ruta a configuration.yaml: {path}",
+                        "developed_by": "Desarrollado por un montón de gente impresionante.",
+                        "license": "Publicado bajo la licencia Apache 2.0",
+                        "source": "Fuente:",
+                        "server": "servidor",
+                        "frontend": "interfaz de usuario",
+                        "built_using": "Construido usando",
+                        "icons_by": "Iconos por",
+                        "frontend_version": "Versión del frontend: {version} - {type}",
+                        "custom_uis": "IU personalizadas:",
+                        "system_health_error": "El componente Salud del sistema no está cargado. Añade 'system_health:' a configuration.yaml"
                     },
                     "logs": {
-                        "title": "Registros"
+                        "title": "Registros",
+                        "details": "Detalles de registro ({level})",
+                        "load_full_log": "Cargar registro completo de Home Assistant",
+                        "loading_log": "Cargando registro de errores...",
+                        "no_errors": "No se han reportado errores.",
+                        "no_issues": "¡No hay nuevos problemas!",
+                        "clear": "Limpiar",
+                        "refresh": "Actualizar",
+                        "multiple_messages": "el mensaje se produjo por primera vez a las {time} y aparece {counter} veces"
                     }
                 }
             },
@@ -606,7 +686,10 @@
                                     "service_data": "Datos de servicio"
                                 },
                                 "device_id": {
-                                    "label": "Dispositivo"
+                                    "label": "Dispositivo",
+                                    "extra_fields": {
+                                        "code": "Código"
+                                    }
                                 },
                                 "scene": {
                                     "label": "Activar escena"
@@ -900,7 +983,11 @@
                         "device_unavailable": "dispositivo no disponible",
                         "entity_unavailable": "entidad no disponible",
                         "no_area": "Ningún área",
-                        "hub": "Conectado a través de"
+                        "hub": "Conectado a través de",
+                        "settings_button": "Editar configuración para {integration}",
+                        "system_options_button": "Opciones del sistema para {integration}",
+                        "delete_button": "Eliminar {integration}",
+                        "area": "En {area}"
                     },
                     "config_flow": {
                         "external_step": {
@@ -1326,20 +1413,22 @@
                         "call_service": "Ejecutar servicio {name}",
                         "more_info": "Mostrar más información: {name}",
                         "url": "Abrir ventana a {url_path}"
-                    }
+                    },
+                    "confirm_delete": "¿Seguro que quieres eliminar esta tarjeta?"
                 },
                 "editor": {
                     "edit_card": {
                         "header": "Configuración de la tarjeta",
                         "save": "Guardar",
                         "toggle_editor": "Alternar editor",
-                        "pick_card": "Escoge la tarjeta que deseas agregar.",
+                        "pick_card": "¿Qué tarjeta te gustaría añadir?",
                         "add": "Añadir tarjeta",
                         "edit": "Editar",
                         "delete": "Eliminar",
                         "move": "Mover",
                         "show_visual_editor": "Mostrar editor visual",
-                        "show_code_editor": "Mostrar editor de código"
+                        "show_code_editor": "Mostrar editor de código",
+                        "pick_card_view_title": "¿Qué tarjeta te gustaría agregar a tu vista {name} ?"
                     },
                     "migrate": {
                         "header": "Configuración incompatible",
@@ -1352,7 +1441,8 @@
                         "header": "Ver configuración",
                         "add": "Añadir vista",
                         "edit": "Editar vista",
-                        "delete": "Borrar vista"
+                        "delete": "Borrar vista",
+                        "header_name": "{name} Ver configuración"
                     },
                     "save_config": {
                         "header": "Tomar el control de la interfaz de usuario Lovelace",
@@ -1494,6 +1584,12 @@
                         "weather-forecast": {
                             "name": "Pronóstico del tiempo"
                         }
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "title": "¿Modo de panel?",
+                            "description": "Esto muestra la primera tarjeta a ancho completo; otras tarjetas en esta vista no se mostrarán."
+                        }
                     }
                 },
                 "menu": {
@@ -1510,7 +1606,11 @@
                     "message": "La configuración de Lovelace se actualizó, ¿te gustaría volver a cargarla?",
                     "refresh": "Actualizar"
                 },
-                "reload_lovelace": "Recargar Lovelace"
+                "reload_lovelace": "Recargar Lovelace",
+                "views": {
+                    "confirm_delete": "¿Seguro que quieres eliminar esta vista?",
+                    "existing_cards": "No puedes eliminar una vista que tiene tarjetas. Elimina las tarjetas primero."
+                }
             },
             "page-demo": {
                 "cards": {
@@ -1532,7 +1632,8 @@
                             "master_bedroom": "Dormitorio principal",
                             "left": "Izquierda",
                             "right": "Derecha",
-                            "mirror": "Espejo"
+                            "mirror": "Espejo",
+                            "temperature_study": "Estudio de temperatura"
                         },
                         "labels": {
                             "lights": "Luces",
@@ -1665,7 +1766,14 @@
                 "swing_mode": "Modo de oscilación",
                 "away_mode": "Fuera de casa",
                 "aux_heat": "Calor auxiliar",
-                "preset_mode": "Preajuste"
+                "preset_mode": "Preajuste",
+                "target_temperature_entity": "{name} temperatura objetivo",
+                "target_temperature_mode": "{name} temperatura objetivo {mode}",
+                "current_temperature": "{name} temperatura actual",
+                "heating": "{name} calentando",
+                "cooling": "{name} enfriando",
+                "high": "máximo",
+                "low": "mínimo"
             },
             "lock": {
                 "code": "Código",
@@ -1694,6 +1802,13 @@
                     "pause": "Pausar",
                     "cancel": "Cancelar",
                     "finish": "Terminar"
+                }
+            },
+            "counter": {
+                "actions": {
+                    "increment": "incrementar",
+                    "decrement": "decrementar",
+                    "reset": "reiniciar"
                 }
             }
         },
@@ -1759,9 +1874,9 @@
                 }
             },
             "config_entry_system_options": {
-                "title": "Opciones del sistema",
+                "title": "Opciones del sistema para {integration}",
                 "enable_new_entities_label": "Activar entidades recién añadidas.",
-                "enable_new_entities_description": "Si está desactivado, las entidades recién descubiertas no se añadirán automáticamente a Home Assistant."
+                "enable_new_entities_description": "Si está deshabilitada, las nuevas entidades que se descubran para {integration} no se agregarán automáticamente a Home Assistant."
             },
             "zha_device_info": {
                 "manuf": "por {manufacturer}",
@@ -1785,6 +1900,11 @@
                 "last_seen": "Ultima vez visto",
                 "power_source": "Fuente de alimentación",
                 "unknown": "Desconocido"
+            },
+            "confirmation": {
+                "cancel": "Cancelar",
+                "ok": "OK",
+                "title": "¿Estás seguro?"
             }
         },
         "auth_store": {
