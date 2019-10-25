@@ -312,25 +312,105 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "title": "Tjenester"
+                        "title": "Tjenester",
+                        "description": "Med verktøyet for tjenesteutvikling kan du utføre alle tilgjengelige tjenester i Home Assistant.",
+                        "data": "Tjenestedata (YAML, valgfritt)",
+                        "call_service": "Utfør tjeneste",
+                        "select_service": "Velg en tjeneste for å se beskrivelsen",
+                        "no_description": "Ingen beskrivelse er tilgjengelig",
+                        "no_parameters": "Denne tjenesten tar ingen parametere.",
+                        "column_parameter": "Parameter",
+                        "column_description": "Beskrivelse",
+                        "column_example": "Eksempel",
+                        "fill_example_data": "Fyll ut eksempeldata",
+                        "alert_parsing_yaml": "Feil ved parsing av YAML: {data}"
                     },
                     "states": {
-                        "title": "Statuser"
+                        "title": "Statuser",
+                        "description1": "Angi representasjonen av en enhet i Home Assistant.",
+                        "description2": "Dette vil ikke kommunisere med den faktiske enheten.",
+                        "entity": "Enhet",
+                        "state": "Tilstand",
+                        "attributes": "Attributter",
+                        "state_attributes": "Tilstands attributter (YAML, valgfritt)",
+                        "set_state": "Sett tilstand",
+                        "current_entities": "Gjeldende enheter",
+                        "filter_entities": "Filtrer enheter",
+                        "filter_states": "Filtrer tilstander",
+                        "filter_attributes": "Filtrer attributter",
+                        "no_entities": "Ingen enheter",
+                        "more_info": "Mer info",
+                        "alert_entity_field": "Enhet er et obligatorisk felt"
                     },
                     "events": {
-                        "title": "Hendelser"
+                        "title": "Hendelser",
+                        "description": "Fire an event on the event bus.",
+                        "documentation": "Hendelses dokumentasjon.",
+                        "type": "Type hendelse",
+                        "data": "Hendelses data (YAML, valgfritt)",
+                        "fire_event": "Avfyr hendlese",
+                        "event_fired": "Hendelse {name} avfyrt",
+                        "available_events": "Tilgjengelige hendelser",
+                        "count_listeners": " ({Count} lyttere)",
+                        "listen_to_events": "Lytt til hendelser",
+                        "listening_to": "Lytte til",
+                        "subscribe_to": "Hendelse for å abonnere på",
+                        "start_listening": "Begynn å lytte",
+                        "stop_listening": "Stopp lytting",
+                        "alert_event_type": "Hendelsestype er et obligatorisk felt",
+                        "notification_event_fired": "Hendelse {type} vellykket avfyrt!"
                     },
                     "templates": {
-                        "title": "Mal"
+                        "title": "Mal",
+                        "description": "Maler blir rendret ved hjelp av Jinja2-malmotoren med noen spesifikke utvidelser for Home Assistant.",
+                        "editor": "Maleditor",
+                        "jinja_documentation": "Jinja2 mal dokumentasjon",
+                        "template_extensions": "Mal utvidelser for Home Assistant",
+                        "unknown_error_template": "Ukjent feil ved rendring av mal"
                     },
                     "mqtt": {
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "description_publish": "Publiser en pakke",
+                        "topic": "emne",
+                        "payload": "Payload (mal tillatt)",
+                        "publish": "Publiser",
+                        "description_listen": "Lytt til et emne",
+                        "listening_to": "Lytte til",
+                        "subscribe_to": "Emne å abonnere på",
+                        "start_listening": "Begynn å lytte",
+                        "stop_listening": "Stopp lytting",
+                        "message_received": "Meldingen {ID} ble mottatt på {topic} klokken {time}:"
                     },
                     "info": {
-                        "title": "Info"
+                        "title": "Info",
+                        "remove": "Fjerne",
+                        "set": "Angi",
+                        "default_ui": "{action} {name} som standard side på denne enheten",
+                        "lovelace_ui": "Gå til Lovelace UI",
+                        "states_ui": "Gå til states UI",
+                        "home_assistant_logo": "Logo for Home Assistant",
+                        "path_configuration": "Sti til configurasjon.yaml: {path}",
+                        "developed_by": "Utviklet av en gjeng med fantastiske mennesker.",
+                        "license": "Publisert under Apache 2.0-lisensen",
+                        "source": "Kilde:",
+                        "server": "Server",
+                        "frontend": "frontend-ui",
+                        "built_using": "Bygget med",
+                        "icons_by": "Ikoner av",
+                        "frontend_version": "Frontend-versjon: {version} - {type}",
+                        "custom_uis": "Tilpasset UIs:",
+                        "system_health_error": "System Health-komponenten er ikke lastet. Legg til 'system_health:' til configurasjon.yaml"
                     },
                     "logs": {
-                        "title": "Logger"
+                        "title": "Logger",
+                        "details": "Loggdetaljer ( {level} )",
+                        "load_full_log": "Last inn fullstendig Home Assistant logg",
+                        "loading_log": "Laster inn feillogg ...",
+                        "no_errors": "Ingen feil er rapportert.",
+                        "no_issues": "Det er ingen nye problemer!",
+                        "clear": "Tøm",
+                        "refresh": "Oppdater",
+                        "multiple_messages": "meldingen oppstod først ved {time} og viser {teller} ganger"
                     }
                 }
             },
@@ -606,7 +686,10 @@
                                     "service_data": "Tjenestedata"
                                 },
                                 "device_id": {
-                                    "label": "Enhet"
+                                    "label": "Enhet",
+                                    "extra_fields": {
+                                        "code": "Kode"
+                                    }
                                 },
                                 "scene": {
                                     "label": "Aktiver scene"
@@ -900,7 +983,11 @@
                         "device_unavailable": "enheten er utilgjengelig",
                         "entity_unavailable": "oppføringen er utilgjengelig",
                         "no_area": "Intet område",
-                        "hub": "Tilkoblet via"
+                        "hub": "Tilkoblet via",
+                        "settings_button": "Rediger innstillinger for {Integration}",
+                        "system_options_button": "System alternativer for {Integration}",
+                        "delete_button": "Slett {integration}",
+                        "area": "I {area}"
                     },
                     "config_flow": {
                         "external_step": {
@@ -953,7 +1040,7 @@
                         "help_cluster_dropdown": "Velg en klynge for å vise attributter og kommandoer."
                     },
                     "cluster_attributes": {
-                        "header": "Attributter for klynge",
+                        "header": "Klyngeattributter",
                         "introduction": "Se og rediger klyngeattributter.",
                         "attributes_of_cluster": "Attributter for den valgte klyngen",
                         "get_zigbee_attribute": "Hent ZigBee-attributt",
@@ -1326,20 +1413,22 @@
                         "call_service": "Tjenestekall {name}",
                         "more_info": "Vis mer info: {name}",
                         "url": "Åpne vindu til {url_path}"
-                    }
+                    },
+                    "confirm_delete": "Er du sikker på at du vil slette dette kortet?"
                 },
                 "editor": {
                     "edit_card": {
                         "header": "Kortkonfigurasjon",
                         "save": "Lagre",
                         "toggle_editor": "Bytt redigering",
-                        "pick_card": "Velge det kortet du ønsker å legge til.",
+                        "pick_card": "Hvilket kort vil du legge til?",
                         "add": "Legg til kort",
                         "edit": "Rediger",
                         "delete": "Slett",
                         "move": "Flytt",
                         "show_visual_editor": "Vis visuell redigering",
-                        "show_code_editor": "Vis koderedigering"
+                        "show_code_editor": "Vis koderedigering",
+                        "pick_card_view_title": "Hvilket kort vil du legge til i {name} visningen?"
                     },
                     "migrate": {
                         "header": "Inkompatibel Konfigurasjon",
@@ -1352,7 +1441,8 @@
                         "header": "Vis konfigurasjon",
                         "add": "Legg til visning",
                         "edit": "Rediger visning",
-                        "delete": "Slett visning"
+                        "delete": "Slett visning",
+                        "header_name": "{name} Vis konfigurasjon"
                     },
                     "save_config": {
                         "header": "Ta kontroll over Lovelace brukergrensesnittet ditt",
@@ -1471,7 +1561,7 @@
                             "name": "Bilde"
                         },
                         "picture-elements": {
-                            "name": "Bilde Elements"
+                            "name": "Bildeelementer"
                         },
                         "picture-entity": {
                             "name": "Bildeenhet"
@@ -1494,6 +1584,12 @@
                         "weather-forecast": {
                             "name": "Værmelding"
                         }
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "title": "Panel modus?",
+                            "description": "Dette gjengir det første kortet i full bredde; andre kort i denne visningen vil ikke bli gitt."
+                        }
                     }
                 },
                 "menu": {
@@ -1510,7 +1606,11 @@
                     "message": "Lovelace-konfigurasjonen ble oppdatert, ønsker du å oppdatere?",
                     "refresh": "Oppdater"
                 },
-                "reload_lovelace": "Laste Lovelace på nytt"
+                "reload_lovelace": "Laste Lovelace på nytt",
+                "views": {
+                    "confirm_delete": "Er du sikker på at du vil slette denne visningen?",
+                    "existing_cards": "Du kan ikke slette en visning som har kort i den. Fjern kortene først."
+                }
             },
             "page-demo": {
                 "cards": {
@@ -1532,7 +1632,8 @@
                             "master_bedroom": "Hovedsoverom",
                             "left": "Venstre",
                             "right": "Høyre",
-                            "mirror": "Speil"
+                            "mirror": "Speil",
+                            "temperature_study": "Temperaturstudie"
                         },
                         "labels": {
                             "lights": "Lys",
@@ -1665,7 +1766,14 @@
                 "swing_mode": "Svingmodus",
                 "away_mode": "Bortemodus",
                 "aux_heat": "Aux varme",
-                "preset_mode": "Preset"
+                "preset_mode": "Preset",
+                "target_temperature_entity": "{name} måltemperatur",
+                "target_temperature_mode": "{name} måltemperatur {mode}",
+                "current_temperature": "{name} nåværende temperatur",
+                "heating": "{name} oppvarming",
+                "cooling": "{name} kjøling",
+                "high": "høy",
+                "low": "lav"
             },
             "lock": {
                 "code": "Kode",
@@ -1694,6 +1802,13 @@
                     "pause": "pause",
                     "cancel": "Avbryt",
                     "finish": "Ferdig"
+                }
+            },
+            "counter": {
+                "actions": {
+                    "increment": "øke",
+                    "decrement": "redusere",
+                    "reset": "tilbakestille"
                 }
             }
         },
@@ -1759,9 +1874,9 @@
                 }
             },
             "config_entry_system_options": {
-                "title": "Systemalternativer",
+                "title": "Systemalternativer for {integration}",
                 "enable_new_entities_label": "Aktiver enheter som nylig er lagt til.",
-                "enable_new_entities_description": "Hvis deaktivert, vil ikke nyoppdagede enheter automatisk bli lagt til i Home Assistant."
+                "enable_new_entities_description": "Hvis den er deaktivert, blir ikke nyoppdagede enheter for {integration} automatisk lagt til i Home Assistant."
             },
             "zha_device_info": {
                 "manuf": "av {manufacturer}",
@@ -1785,6 +1900,11 @@
                 "last_seen": "Sist sett",
                 "power_source": "Strømkilde",
                 "unknown": "Ukjent"
+            },
+            "confirmation": {
+                "cancel": "Avbryt",
+                "ok": "OK",
+                "title": "Er du sikker?"
             }
         },
         "auth_store": {

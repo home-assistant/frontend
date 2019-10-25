@@ -146,7 +146,7 @@ export class HuiEditView extends LitElement {
         <div class="paper-dialog-buttons">
           ${this.viewIndex !== undefined
             ? html`
-                <mwc-button class="delete" @click="${this._deleteConfirm}">
+                <mwc-button class="warning" @click="${this._deleteConfirm}">
                   ${this.hass!.localize(
                     "ui.panel.lovelace.editor.edit_view.delete"
                   )}
@@ -303,9 +303,8 @@ export class HuiEditView extends LitElement {
           height: 14px;
           margin-right: 20px;
         }
-        .delete {
+        mwc-button.warning {
           margin-right: auto;
-          --mdc-theme-primary: var(--secondary-text-color);
         }
         paper-spinner {
           display: none;

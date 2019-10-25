@@ -21,7 +21,6 @@ import "../../../components/ha-switch";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { computeDomain } from "../../../common/entity/compute_domain";
-import "../ha-config-section";
 import {
   showEntityRegistryDetailDialog,
   loadEntityRegistryDetailDialog,
@@ -134,13 +133,14 @@ class HaConfigEntityRegistry extends LitElement {
           "ui.panel.config.entity_registry.caption"
         )}"
       >
-        <ha-config-section .isWide=${this.isWide}>
-          <span slot="header">
+      <div class="content">
+        <div class="intro">
+          <h2>
             ${this.hass.localize(
               "ui.panel.config.entity_registry.picker.header"
             )}
-          </span>
-          <span slot="introduction">
+          </h2>
+          <p>
             ${this.hass.localize(
               "ui.panel.config.entity_registry.picker.introduction"
             )}
@@ -159,17 +159,18 @@ class HaConfigEntityRegistry extends LitElement {
               @change=${this._showDisabledChanged}
               >${this.hass.localize(
                 "ui.panel.config.entity_registry.picker.show_disabled"
-              )}</ha-switch
-            >
-          </span>
-          <ha-data-table
-            .columns=${this._columns(this.hass.language)}
-            .data=${this._filteredEntities(this._entities, this._showDisabled)}
-            @row-click=${this._openEditEntry}
-            id="entity_id"
-          >
-          </ha-data-table>
-        </ha-config-section>
+              )}
+            </ha-switch>
+          </div>
+        </p>
+        <ha-data-table
+          .columns=${this._columns(this.hass.language)}
+          .data=${this._filteredEntities(this._entities, this._showDisabled)}
+          @row-click=${this._openEditEntry}
+          id="entity_id"
+        >
+        </ha-data-table>
+        </div>
       </hass-subpage>
     `;
   }
@@ -212,6 +213,34 @@ class HaConfigEntityRegistry extends LitElement {
     return css`
       a {
         color: var(--primary-color);
+      }
+      h2 {
+        margin-top: 0;
+        font-family: var(--paper-font-display1_-_font-family);
+        -webkit-font-smoothing: var(
+          --paper-font-display1_-_-webkit-font-smoothing
+        );
+        font-size: var(--paper-font-display1_-_font-size);
+        font-weight: var(--paper-font-display1_-_font-weight);
+        letter-spacing: var(--paper-font-display1_-_letter-spacing);
+        line-height: var(--paper-font-display1_-_line-height);
+        opacity: var(--dark-primary-opacity);
+      }
+      p {
+        font-family: var(--paper-font-subhead_-_font-family);
+        -webkit-font-smoothing: var(
+          --paper-font-subhead_-_-webkit-font-smoothing
+        );
+        font-size: var(--paper-font-subhead_-_font-size);
+        font-weight: var(--paper-font-subhead_-_font-weight);
+        line-height: var(--paper-font-subhead_-_line-height);
+        opacity: var(--dark-primary-opacity);
+      }
+      .intro {
+        padding: 24px 16px 0;
+      }
+      .content {
+        padding: 4px;
       }
       ha-data-table {
         margin-bottom: 24px;
