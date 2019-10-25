@@ -19,6 +19,10 @@
             "unknown": "Óþekkt",
             "unavailable": "Ekki tiltækt"
         },
+        "alarm_control_panel": {
+            "disarmed": "ekki á verði",
+            "disarming": "tek af verði"
+        },
         "automation": {
             "off": "Óvirk",
             "on": "Virk"
@@ -258,6 +262,9 @@
             "entity_not_found": "Eining fannst ekki"
         },
         "alarm_control_panel": {
+            "disarmed": "ekki á verði",
+            "arming": "set á vörð",
+            "disarming": "tek af verði",
             "triggered": "Kveik"
         },
         "device_tracker": {
@@ -1362,6 +1369,10 @@
             "alarm_control_panel": {
                 "code": "Kóði",
                 "clear_code": "Hreinsa",
+                "disarm": "Taka af verði",
+                "arm_home": "Vörður heima",
+                "arm_away": "Vörður úti",
+                "arm_night": "Vörður nótt",
                 "armed_custom_bypass": "Sérsniðin hjáleið",
                 "arm_custom_bypass": "Sérsniðin hjáleið"
             },
@@ -1520,6 +1531,7 @@
         }
     },
     "domain": {
+        "alarm_control_panel": "Stjórnborð öryggiskerfis",
         "automation": "Sjálfvirkni",
         "binary_sensor": "Tvíundar skynjari",
         "calendar": "Dagatal",

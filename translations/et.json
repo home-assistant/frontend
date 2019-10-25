@@ -312,25 +312,70 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "title": "Teenused"
+                        "title": "Teenused",
+                        "data": "Teenuse andmed (YAML, valikuline)",
+                        "call_service": "Kutsu teenus",
+                        "select_service": "Kirjelduse kuvamiseks vali teenus",
+                        "no_description": "Kirjeldus pole saadaval",
+                        "no_parameters": "Sellel teenusel pole parameetreid.",
+                        "column_parameter": "Parameeter",
+                        "column_description": "Kirjeldus",
+                        "column_example": "Näide",
+                        "fill_example_data": "Täida näidisandmetega",
+                        "alert_parsing_yaml": "Viga YAML'i parsimisel: {data}"
                     },
                     "states": {
-                        "title": "Olekud"
+                        "title": "Olekud",
+                        "entity": "Olem",
+                        "state": "Olek",
+                        "attributes": "Atribuudid",
+                        "state_attributes": "Oleku atribuudid (YAML, valikuline)",
+                        "set_state": "Määra olek",
+                        "current_entities": "Praegused olemid",
+                        "no_entities": "Olemid puuduvad",
+                        "more_info": "Rohkem infot",
+                        "alert_entity_field": "Olem on kohustuslik väli"
                     },
                     "events": {
-                        "title": "Sündmused"
+                        "title": "Sündmused",
+                        "description": "Vallanda sündmus sündmuste siinil.",
+                        "type": "Sündmuse tüüp",
+                        "fire_event": "Vallanda sündmus",
+                        "event_fired": "Sündmus {name} vallandus",
+                        "count_listeners": " ({count}  kuulajat)",
+                        "listen_to_events": "Kuula sündmusi",
+                        "listening_to": "Kuulamas",
+                        "subscribe_to": "Sündmus, mida tellida",
+                        "start_listening": "Alusta kuulamist",
+                        "stop_listening": "Lõpeta kuulamine"
                     },
                     "templates": {
-                        "title": "Mall"
+                        "title": "Mall",
+                        "editor": "Malliredaktor",
+                        "jinja_documentation": "Jinja2 malli dokumentatsioon"
                     },
                     "mqtt": {
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "topic": "teema",
+                        "publish": "Avalda",
+                        "description_listen": "Kuula teemat",
+                        "listening_to": "Kuulamas",
+                        "subscribe_to": "Teema, mida tellida",
+                        "start_listening": "Alusta kuulamist",
+                        "stop_listening": "Lõpeta kuulamine"
                     },
                     "info": {
-                        "title": "Info"
+                        "title": "Info",
+                        "remove": "Eemalda",
+                        "set": "Säti",
+                        "home_assistant_logo": "Home Assistant'i logo",
+                        "source": "Allikas:",
+                        "server": "server"
                     },
                     "logs": {
-                        "title": "Logid"
+                        "title": "Logid",
+                        "clear": "Puhasta",
+                        "refresh": "Värskenda"
                     }
                 }
             },
@@ -419,7 +464,7 @@
                         "learn_more": "Lisateave automatiseeringute kohta"
                     },
                     "editor": {
-                        "introduction": "Kasuta oma kodule elu sisse puhumiseks automatiseeringuid",
+                        "introduction": "Kasuta oma kodule elu sisse puhumiseks automatiseeringuid.",
                         "default_name": "Uus automatiseering",
                         "save": "Salvesta",
                         "unsaved_confirm": "Sul on salvestamata muudatusi. Oled kindel, et soovid lahkuda?",
@@ -606,7 +651,10 @@
                                     "service_data": "Teenuse andmed"
                                 },
                                 "device_id": {
-                                    "label": "Seade"
+                                    "label": "Seade",
+                                    "extra_fields": {
+                                        "code": "Kood"
+                                    }
                                 },
                                 "scene": {
                                     "label": "Aktiveeri stseen"
@@ -627,6 +675,7 @@
                     "description": "Loo ja muuda skripte",
                     "picker": {
                         "header": "Skriptiredaktor",
+                        "learn_more": "Lisateave skriptide kohta",
                         "add_script": "Lisa skript"
                     },
                     "editor": {
@@ -709,6 +758,7 @@
                         "unnamed_user": "Nimetu kasutaja",
                         "enter_new_name": "Sisesta uus nimi",
                         "user_rename_failed": "Kasutaja ümbernimetamine nurjus:",
+                        "group_update_failed": "Grupi värskendamine ebaõnnestus:",
                         "confirm_user_deletion": "Oled kindel, et soovid kustutada {name}?"
                     },
                     "add_user": {
@@ -724,19 +774,30 @@
                     "description_login": "Sisse logitud kui {email}",
                     "description_not_login": "Pole sisse logitud",
                     "description_features": "Juhi kodust eemal viibides, seo Alexa ja Google Assistant'iga.",
+                    "login": {
+                        "title": "Pilve sisselogimine",
+                        "learn_more_link": "Lisateave Home Assistant Cloud kohta",
+                        "dismiss": "Loobu",
+                        "sign_in": "Logi sisse"
+                    },
                     "forgot_password": {
                         "email": "E-post",
                         "email_error_msg": "Vigane meiliaadress"
                     },
                     "register": {
                         "headline": "Alusta tasuta prooviperioodi",
+                        "feature_google_home": "Sidumine Google Assistant'iga",
+                        "feature_amazon_alexa": "Sidumine Amazon Alexa'ga",
+                        "information4": "Konto registreerimisega nõustud järgmiste tingimustega.",
                         "link_terms_conditions": "Tingimused",
                         "link_privacy_policy": "Privaatsuspoliitika",
                         "create_account": "Loo konto",
                         "email_address": "E-posti aadress",
                         "email_error_msg": "Vigane meiliaadress",
                         "password": "Salasõna",
-                        "start_trial": "Alusta proovimist"
+                        "password_error_msg": "Paroolid on vähemalt 8 tähemärki",
+                        "start_trial": "Alusta proovimist",
+                        "resend_confirm_email": "Saada kinnitusmeil uuesti"
                     },
                     "account": {
                         "nabu_casa_account": "Nabu Casa konto",
@@ -744,7 +805,11 @@
                         "manage_account": "Halda kontot",
                         "sign_out": "Logi välja",
                         "integrations": "Sidumised",
+                        "connected": "Ühendatud",
+                        "not_connected": "Pole ühendatud",
                         "remote": {
+                            "title": "Kaugjuhtimine",
+                            "link_learn_how_it_works": "Loe, kuidas see töötab",
                             "certificate_info": "Sertifikaadi teave"
                         },
                         "alexa": {
@@ -795,6 +860,7 @@
                     },
                     "dialog_cloudhook": {
                         "webhook_for": "Veebihaak {name} jaoks",
+                        "available_at": "Veebihook on saadaval järgmisel URL-il:",
                         "info_disable_webhook": "Kui sa ei soovi enam seda veebihaaki kasutada, võid",
                         "link_disable_webhook": "keela see",
                         "view_documentation": "Vaata dokumentatsiooni",
@@ -805,7 +871,7 @@
                 },
                 "integrations": {
                     "caption": "Sidumised",
-                    "description": "Halda ühendatud seadmeid ja teenuseid",
+                    "description": "Halda ja seadista sidumisi",
                     "discovered": "Leitud",
                     "configured": "Seadistatud",
                     "new": "Loo uus sidumine",
@@ -822,7 +888,8 @@
                         "device_unavailable": "seade pole saadaval",
                         "entity_unavailable": "olem pole saadaval",
                         "no_area": "Ala puudub",
-                        "hub": "Ühendatud"
+                        "hub": "Ühendatud",
+                        "delete_button": "Kustuta {integration}"
                     },
                     "config_flow": {
                         "external_step": {
@@ -863,6 +930,13 @@
                     },
                     "node_management": {
                         "header": "Seadme haldus"
+                    },
+                    "clusters": {
+                        "help_cluster_dropdown": "Atribuutide ja käskude vaatamiseks vali klaster."
+                    },
+                    "cluster_attributes": {
+                        "header": "Klastri atribuudid",
+                        "introduction": "Vaata ja muuda klastri atribuute."
                     },
                     "cluster_commands": {
                         "header": "Klastri käsud",
@@ -976,6 +1050,9 @@
                     "caption": "Seadmed",
                     "description": "Halda ühendatud seadmeid",
                     "automation": {
+                        "triggers": {
+                            "caption": "Tee midagi, kui..."
+                        },
                         "conditions": {
                             "caption": "Tee midagi ainult siis, kui ..."
                         },
@@ -1066,6 +1143,9 @@
                 },
                 "vibrate": {
                     "header": "Vibreeri"
+                },
+                "advanced_mode": {
+                    "title": "Edasijõudnute režiim"
                 }
             },
             "page-authorize": {
@@ -1214,7 +1294,8 @@
                         "toggle": "Lülita {name}",
                         "call_service": "Kutsu välja teenus {name}",
                         "more_info": "Näita rohkem teavet: {name}"
-                    }
+                    },
+                    "confirm_delete": "Oled kindel, et soovid selle kaardi kustutada?"
                 },
                 "editor": {
                     "edit_card": {
@@ -1338,6 +1419,12 @@
                         "picture": {
                             "name": "Pilt"
                         },
+                        "picture-elements": {
+                            "name": "Pildi elemendid"
+                        },
+                        "picture-entity": {
+                            "name": "Pildi olem"
+                        },
                         "plant-status": {
                             "name": "Taime olek"
                         },
@@ -1372,7 +1459,10 @@
                     "message": "Lovelace'i seadeid uuendati, kas soovid värskendada?",
                     "refresh": "Värskenda"
                 },
-                "reload_lovelace": "Taaslae Lovelace"
+                "reload_lovelace": "Taaslae Lovelace",
+                "views": {
+                    "confirm_delete": "Oled kindel, et soovid selle vaate kustutada?"
+                }
             },
             "page-demo": {
                 "cards": {
@@ -1557,6 +1647,12 @@
                     "cancel": "loobu",
                     "finish": "lõpeta"
                 }
+            },
+            "counter": {
+                "actions": {
+                    "decrement": "vähenda",
+                    "reset": "lähtesta"
+                }
             }
         },
         "components": {
@@ -1644,6 +1740,11 @@
                 "last_seen": "Viimati nähtud",
                 "power_source": "Toiteallikas",
                 "unknown": "Teadmata"
+            },
+            "confirmation": {
+                "cancel": "Loobu",
+                "ok": "OK",
+                "title": "Oled sa kindel?"
             }
         },
         "auth_store": {

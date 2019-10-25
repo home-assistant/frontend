@@ -312,25 +312,46 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "title": "Services"
+                        "title": "Services",
+                        "no_description": "Ingen beskrivelse er tilgængelig",
+                        "column_parameter": "Parameter",
+                        "column_description": "Beskrivelse",
+                        "column_example": "Eksempel"
                     },
                     "states": {
-                        "title": "Tilstand"
+                        "title": "Tilstand",
+                        "entity": "Enhed",
+                        "state": "Tilstand",
+                        "no_entities": "Ingen enheder",
+                        "more_info": "Mere information"
                     },
                     "events": {
-                        "title": "Begivenheder"
+                        "title": "Begivenheder",
+                        "listening_to": "Lytter til",
+                        "start_listening": "Begynd at lytte",
+                        "stop_listening": "Stop med at lytte"
                     },
                     "templates": {
                         "title": "Skabelon"
                     },
                     "mqtt": {
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "start_listening": "Begynd at lytte",
+                        "stop_listening": "Stop med at lytte"
                     },
                     "info": {
-                        "title": "Udvikler Information"
+                        "title": "Udvikler Information",
+                        "remove": "Fjern",
+                        "set": "Sæt",
+                        "home_assistant_logo": "Home Assistant logo",
+                        "path_configuration": "Sti til configuration.yaml: {path}",
+                        "server": "server",
+                        "icons_by": "Ikoner af",
+                        "frontend_version": "Frontend version: {version} - {type}"
                     },
                     "logs": {
-                        "title": "Logs"
+                        "title": "Logs",
+                        "refresh": "Opdater"
                     }
                 }
             },
@@ -353,7 +374,7 @@
                 "introduction": "Her er det muligt at konfigurere dine komponenter og Home Assistant. Ikke alt er muligt at konfigurere fra brugergrænsefladen endnu, men vi arbejder på det.",
                 "core": {
                     "caption": "Generelt",
-                    "description": "Valider din konfigurationsfil og administrer serveren",
+                    "description": "Administrer konfigurationen og serveren",
                     "section": {
                         "core": {
                             "header": "Konfiguration og server kontrol",
@@ -606,7 +627,10 @@
                                     "service_data": "Service data"
                                 },
                                 "device_id": {
-                                    "label": "Enhed"
+                                    "label": "Enhed",
+                                    "extra_fields": {
+                                        "code": "Kode"
+                                    }
                                 },
                                 "scene": {
                                     "label": "Aktivér scene"
@@ -864,7 +888,11 @@
                         "device_unavailable": "enhed utilgængelig",
                         "entity_unavailable": "entitet utilgængelig",
                         "no_area": "Intet område",
-                        "hub": "Tilsluttet via"
+                        "hub": "Tilsluttet via",
+                        "settings_button": "Ret indstillinger for {integration}",
+                        "system_options_button": "System indstillinger for {integration}",
+                        "delete_button": "Slet {integration}",
+                        "area": "I {area}"
                     },
                     "config_flow": {
                         "external_step": {
@@ -992,7 +1020,7 @@
                         "link_integrations_page": "Integrationsside",
                         "delete": "Slet",
                         "create": "Opret",
-                        "update": "Opdatering"
+                        "update": "Opdater"
                     },
                     "no_persons_created_yet": "Det ser ud til, at du endnu ikke har oprettet nogen personer endnu.",
                     "create_person": "Opret person",
@@ -1001,7 +1029,7 @@
                 },
                 "server_control": {
                     "caption": "Serveradministration",
-                    "description": "Genstart og stop Home Assistant serveren",
+                    "description": "Valider din konfigurationsfil og genstart Home Assistant serveren",
                     "section": {
                         "validation": {
                             "heading": "Validering af konfiguration",
@@ -1279,7 +1307,8 @@
                         "call_service": "Kald service {name}",
                         "more_info": "Vis mere-info: {name}",
                         "url": "Åbn vindue til {url_path}"
-                    }
+                    },
+                    "confirm_delete": "Er du sikker på, at du vil slette dette kort?"
                 },
                 "editor": {
                     "edit_card": {
@@ -1376,7 +1405,7 @@
                             "url": "Url"
                         },
                         "map": {
-                            "geo_location_sources": "Geolokationskilder",
+                            "geo_location_sources": "Geolokations Kilder",
                             "dark_mode": "Mørk tilstand?",
                             "default_zoom": "Standard zoom",
                             "source": "Kilde",
@@ -1445,6 +1474,11 @@
                         "weather-forecast": {
                             "name": "Vejrudsigt"
                         }
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "title": "Panel Mode?"
+                        }
                     }
                 },
                 "menu": {
@@ -1461,7 +1495,10 @@
                     "message": "Lovelace-konfigurationen blev opdateret, vil du genindlæse?",
                     "refresh": "Opdater"
                 },
-                "reload_lovelace": "Genindlæs Lovelace"
+                "reload_lovelace": "Genindlæs Lovelace",
+                "views": {
+                    "confirm_delete": "Er du sikker på, at du vil slette denne visning?"
+                }
             },
             "page-demo": {
                 "cards": {
@@ -1616,7 +1653,14 @@
                 "swing_mode": "Swing tilstand",
                 "away_mode": "Ude af huset-modus",
                 "aux_heat": "Støtte-varme",
-                "preset_mode": "Forudindstilling"
+                "preset_mode": "Forudindstilling",
+                "target_temperature_entity": "{name} ønsket temperatur",
+                "target_temperature_mode": "{name} ønske temperatur {mode}",
+                "current_temperature": "{name} nuværende temperatur",
+                "heating": "{name} opvarmer",
+                "cooling": "{name} køler",
+                "high": "høj",
+                "low": "lav"
             },
             "lock": {
                 "code": "Kode",
@@ -1645,6 +1689,11 @@
                     "pause": "pause",
                     "cancel": "annuller",
                     "finish": "afslut"
+                }
+            },
+            "counter": {
+                "actions": {
+                    "reset": "nulstil"
                 }
             }
         },
@@ -1709,9 +1758,9 @@
                 }
             },
             "config_entry_system_options": {
-                "title": "Systemindstillinger",
+                "title": "Systemindstillinger for {integration}",
                 "enable_new_entities_label": "Aktivér nyligt tilføjede enheder.",
-                "enable_new_entities_description": "Hvis deaktiveret, tilføjes nyligt opdagede enheder ikke automatisk til Home Assistant."
+                "enable_new_entities_description": "Hvis deaktiveret, tilføjes nyligt opdagede enheder for {integration} ikke automatisk til Home Assistant."
             },
             "zha_device_info": {
                 "manuf": "af {manufacturer}",
@@ -1734,6 +1783,11 @@
                 "last_seen": "Sidst set",
                 "power_source": "Strømkilde",
                 "unknown": "Ukendt"
+            },
+            "confirmation": {
+                "cancel": "Annuller",
+                "ok": "OK",
+                "title": "Er du sikker?"
             }
         },
         "auth_store": {
