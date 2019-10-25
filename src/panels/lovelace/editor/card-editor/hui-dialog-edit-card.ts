@@ -9,7 +9,7 @@ import {
 } from "lit-element";
 
 import { HomeAssistant } from "../../../../types";
-import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
+import { HASSDomEvent } from "../../../../common/dom/fire_event";
 import {
   LovelaceCardConfig,
   LovelaceViewConfig,
@@ -47,8 +47,6 @@ export class HuiDialogEditCard extends LitElement {
 
   @property() private _saving: boolean = false;
   @property() private _error?: string;
-
-  @property() private _GUImode: boolean = true;
 
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
@@ -135,7 +133,7 @@ export class HuiDialogEditCard extends LitElement {
                   @click="${this._toggleMode}"
                 >
                   ${this.hass!.localize(
-                    this._GUImode
+                    this._cardEditorEl == null || this._cardEditorEl!.GUImode
                       ? "ui.panel.lovelace.editor.edit_card.show_code_editor"
                       : "ui.panel.lovelace.editor.edit_card.show_visual_editor"
                   )}
@@ -164,14 +162,6 @@ export class HuiDialogEditCard extends LitElement {
     `;
   }
 
-  protected updated(changedProperties) {
-    super.updated(changedProperties);
-
-    if (changedProperties.has("_GUImode")) {
-      fireEvent(this as HTMLElement, "iron-resize");
-    }
-  }
-
   private get _isDisabled(): boolean {
     if (this._cardEditorEl) {
       return this._cardEditorEl.hasError || this._cardEditorEl.hasWarning;
@@ -181,7 +171,7 @@ export class HuiDialogEditCard extends LitElement {
 
   private _toggleMode() {
     this._cardEditorEl!.toggleMode();
-    this._GUImode = this._cardEditorEl!.GUImode;
+    this.requestUpdate();
   }
 
   static get styles(): CSSResultArray {
