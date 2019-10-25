@@ -312,25 +312,102 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "title": "Services"
+                        "title": "Services",
+                        "description": "L'outil service dev vous permet d'appeler n'importe quel service disponible dans Home Assistant.",
+                        "data": "Données de service (YAML, facultatif)",
+                        "call_service": "Appeler le service",
+                        "select_service": "Sélectionnez un service pour voir la description",
+                        "no_description": "Aucune description n'est disponible",
+                        "no_parameters": "Ce service ne prend aucun paramètre.",
+                        "column_parameter": "Paramètre",
+                        "column_description": "Description",
+                        "column_example": "Exemple",
+                        "fill_example_data": "Remplir des exemples de données",
+                        "alert_parsing_yaml": "Erreur d'analyse de YAML: {data}"
                     },
                     "states": {
-                        "title": "États"
+                        "title": "États",
+                        "description1": "Définir la représentation d'un périphérique dans Home Assistant.",
+                        "description2": "Cela ne communiquera pas avec le périphérique réel.",
+                        "entity": "Entité",
+                        "state": "Etat",
+                        "attributes": "Attributs",
+                        "state_attributes": "Attributs d'état (YAML, facultatif)",
+                        "set_state": "Définir l'état",
+                        "current_entities": "Entités actuelles",
+                        "filter_entities": "Filtrer les entités",
+                        "filter_states": "Filtrer les états",
+                        "filter_attributes": "Filtrer les attributs",
+                        "no_entities": "Aucune entité",
+                        "more_info": "Plus d’infos",
+                        "alert_entity_field": "L'entité est un champ obligatoire"
                     },
                     "events": {
-                        "title": "Événements"
+                        "title": "Événements",
+                        "documentation": "Documentation sur les événements.",
+                        "type": "Type d'événement",
+                        "data": "Données d'événement (YAML, facultatif)",
+                        "fire_event": "Déclencher l'événement",
+                        "event_fired": "Evénement {name} déclenché",
+                        "available_events": "Événements disponibles",
+                        "listen_to_events": "Écoutez les événements",
+                        "listening_to": "Écouter",
+                        "subscribe_to": "Évènement auquel s'abonner",
+                        "start_listening": "Commence à écouter",
+                        "stop_listening": "Arrêter d'écouter",
+                        "alert_event_type": "Le type d'événement est un champ obligatoire",
+                        "notification_event_fired": "L'événement {type} été déclenché avec succès!"
                     },
                     "templates": {
-                        "title": "Template"
+                        "title": "Template",
+                        "description": "Les modèles sont rendus à l'aide du moteur de modèles Jinja2 avec certaines extensions spécifiques de Home Assistant.",
+                        "editor": "Éditeur de modèles",
+                        "jinja_documentation": "Documentation de modèle Jinja2",
+                        "template_extensions": "Extensions de modèles de Home Assistant",
+                        "unknown_error_template": "Erreur inconnue du rendu du modèle"
                     },
                     "mqtt": {
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "description_publish": "Publier un paquet",
+                        "topic": "sujet",
+                        "payload": "Charge utile (modèle autorisé)",
+                        "publish": "Publier",
+                        "description_listen": "Écouter un sujet",
+                        "listening_to": "Écouter",
+                        "subscribe_to": "Sujet auquel s'abonner",
+                        "start_listening": "Commencer à écouter",
+                        "stop_listening": "Arrêter d'écouter",
+                        "message_received": "Message {id} reçu sur {topic} à {time} :"
                     },
                     "info": {
-                        "title": "Info"
+                        "title": "Info",
+                        "remove": "Supprimer",
+                        "default_ui": "{action} {name} comme page par défaut sur ce périphérique",
+                        "lovelace_ui": "Accéder à l'interface utilisateur de Lovelace",
+                        "states_ui": "Aller à l'interface utilisateur des états",
+                        "home_assistant_logo": "Logo de Home Assistant",
+                        "path_configuration": "Chemin vers configuration.yaml: {path}",
+                        "developed_by": "Développé par un groupe de personnes formidables.",
+                        "license": "Publié sous la licence Apache 2.0",
+                        "source": "Source:",
+                        "server": "serveur",
+                        "frontend": "interface utilisateur",
+                        "built_using": "Construit en utilisant",
+                        "icons_by": "Icônes par",
+                        "frontend_version": "Version interface utilisateur: {version} - {type}",
+                        "custom_uis": "Interface utilisateur personnalisée:",
+                        "system_health_error": "Le composant System Health n'est pas chargé. Ajouter 'system_health:' à configuration.yaml"
                     },
                     "logs": {
-                        "title": "Journaux"
+                        "title": "Journaux",
+                        "details": "Détails du journal ( {level} )",
+                        "load_full_log": "Charger le journal complet",
+                        "loading_log": "Chargement du journal des erreurs…",
+                        "no_errors": "Aucune erreur n'a été signalée.",
+                        "no_issues": "Il n'y a pas de nouveaux problèmes!",
+                        "clear": "Nettoyer",
+                        "refresh": "Rafraîchir",
+                        "multiple_messages": "le message est apparu pour la première fois à {time} et est apparu {counter} fois. "
                     }
                 }
             },
@@ -606,7 +683,10 @@
                                     "service_data": "Données du service"
                                 },
                                 "device_id": {
-                                    "label": "Appareil"
+                                    "label": "Appareil",
+                                    "extra_fields": {
+                                        "code": "Code"
+                                    }
                                 },
                                 "scene": {
                                     "label": "Activer scène"
@@ -900,7 +980,11 @@
                         "device_unavailable": "appareil indisponible",
                         "entity_unavailable": "entité indisponible",
                         "no_area": "Pas de pièce",
-                        "hub": "Connecté via"
+                        "hub": "Connecté via",
+                        "settings_button": "Modifier les paramètres pour {integration}",
+                        "system_options_button": "Options système pour {integration}",
+                        "delete_button": "Supprimer {integration}",
+                        "area": "Dans{area}"
                     },
                     "config_flow": {
                         "external_step": {
@@ -909,8 +993,8 @@
                         }
                     },
                     "note_about_integrations": "Toutes les intégrations ne peuvent pas encore être configurées via l'interface utilisateur.",
-                    "note_about_website_reference": "Plus sont disponibles sur le",
-                    "home_assistant_website": "Site Web de Home Assistant"
+                    "note_about_website_reference": "D'autres sont disponibles sur ",
+                    "home_assistant_website": "site web de Home Assistant"
                 },
                 "zha": {
                     "caption": "ZHA",
@@ -1326,7 +1410,8 @@
                         "call_service": "Appeler le service {name}",
                         "more_info": "Afficher plus d'informations: {name}",
                         "url": "Ouvrir la fenêtre vers {url_path}."
-                    }
+                    },
+                    "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette carte?"
                 },
                 "editor": {
                     "edit_card": {
@@ -1339,7 +1424,8 @@
                         "delete": "Supprimer",
                         "move": "Déplacer",
                         "show_visual_editor": "Afficher l'éditeur visuel",
-                        "show_code_editor": "Afficher l'éditeur de code"
+                        "show_code_editor": "Afficher l'éditeur de code",
+                        "pick_card_view_title": "Quelle carte souhaitez-vous ajouter à votre vue {name} ?"
                     },
                     "migrate": {
                         "header": "Configuration incompatible",
@@ -1352,7 +1438,8 @@
                         "header": "Voir la configuration",
                         "add": "Ajouter la vue",
                         "edit": "Modifier la vue",
-                        "delete": "Supprimer la vue"
+                        "delete": "Supprimer la vue",
+                        "header_name": "{name} Voir la configuration"
                     },
                     "save_config": {
                         "header": "Prenez le contrôle de votre Interface Lovelace",
@@ -1494,6 +1581,12 @@
                         "weather-forecast": {
                             "name": "Prévisions Météo"
                         }
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "title": "Mode panneau?",
+                            "description": "Cela affiche la première carte en pleine largeur; les autres cartes de cette vue ne seront pas affichées."
+                        }
                     }
                 },
                 "menu": {
@@ -1510,7 +1603,11 @@
                     "message": "La configuration de Lovelace a été modifiée, voulez-vous rafraîchir?",
                     "refresh": "Rafraîchir"
                 },
-                "reload_lovelace": "Recharger Lovelace"
+                "reload_lovelace": "Recharger Lovelace",
+                "views": {
+                    "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette vue?",
+                    "existing_cards": "Vous ne pouvez pas supprimer une vue contenant des cartes. Retirez les cartes en premier."
+                }
             },
             "page-demo": {
                 "cards": {
@@ -1532,7 +1629,8 @@
                             "master_bedroom": "Chambre principale",
                             "left": "Gauche",
                             "right": "Droite",
-                            "mirror": "Miroir"
+                            "mirror": "Miroir",
+                            "temperature_study": "Étude de température"
                         },
                         "labels": {
                             "lights": "Lumières",
@@ -1665,7 +1763,14 @@
                 "swing_mode": "Mode de balancement",
                 "away_mode": "Mode \"Absent\"",
                 "aux_heat": "Chauffage d'appoint",
-                "preset_mode": "Préréglage"
+                "preset_mode": "Préréglage",
+                "target_temperature_entity": "{name} température cible",
+                "target_temperature_mode": "{name} température cible {mode}",
+                "current_temperature": "{name} température actuelle",
+                "heating": "{name} chauffage",
+                "cooling": "{name} refroidissement",
+                "high": "haute",
+                "low": "basse"
             },
             "lock": {
                 "code": "Code",
@@ -1694,6 +1799,13 @@
                     "pause": "pause",
                     "cancel": "annuler",
                     "finish": "terminer"
+                }
+            },
+            "counter": {
+                "actions": {
+                    "increment": "incrémenter",
+                    "decrement": "décrémenter",
+                    "reset": "réinitialiser"
                 }
             }
         },
@@ -1785,6 +1897,11 @@
                 "last_seen": "Dernière vue",
                 "power_source": "Source d'énergie",
                 "unknown": "Inconnu"
+            },
+            "confirmation": {
+                "cancel": "Annuler",
+                "ok": "OK",
+                "title": "Êtes-vous sûr?"
             }
         },
         "auth_store": {

@@ -312,19 +312,42 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "title": "Servicii"
+                        "title": "Servicii",
+                        "data": "Date serviciu (YAML, opțional)",
+                        "call_service": "Apelare serviciu",
+                        "select_service": "Alegeți un serviciu pentru a vizualiza descrierea",
+                        "no_description": "Nici o descriere nu este disponibilă",
+                        "column_parameter": "Parametru",
+                        "column_description": "Descriere",
+                        "column_example": "Exemplu"
                     },
                     "states": {
-                        "title": "Status"
+                        "title": "Status",
+                        "entity": "Entitate",
+                        "state": "Stare",
+                        "attributes": "Atribute",
+                        "state_attributes": "Atribute stare (YAML, opțional)",
+                        "set_state": "Stabilire stare",
+                        "current_entities": "Entități actuale",
+                        "filter_entities": "Filtrare entități",
+                        "filter_states": "Filtrare stări",
+                        "filter_attributes": "Filtrare atribute",
+                        "no_entities": "Nu sunt entități",
+                        "more_info": "Mai multe informații",
+                        "alert_entity_field": "Entitatea este un câmp obligatoriu"
                     },
                     "events": {
                         "title": "Evenimente"
                     },
                     "templates": {
-                        "title": "Sabloane"
+                        "title": "Sabloane",
+                        "editor": "Editor șabloane",
+                        "jinja_documentation": "Șablon documentație Jinja2",
+                        "template_extensions": "Șabloane de extensie pentru Home Assistant"
                     },
                     "mqtt": {
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "publish": "Publică"
                     },
                     "info": {
                         "title": "Info"
@@ -587,7 +610,7 @@
                                 "event": {
                                     "label": "Eveniment declansare",
                                     "event": "Eveniment",
-                                    "service_data": "Date serviciu"
+                                    "service_data": "Date servicii"
                                 },
                                 "device_id": {
                                     "label": "Dispozitiv"
@@ -1316,7 +1339,7 @@
         "dialogs": {
             "more_info_settings": {
                 "save": "Salvați",
-                "name": "Nume",
+                "name": "Nume suprascris",
                 "entity_id": "ID-ul entității"
             },
             "more_info_control": {
@@ -1436,7 +1459,7 @@
                 "boost": "Boost",
                 "comfort": "Confort",
                 "home": "Acasă",
-                "sleep": "Sleep",
+                "sleep": "Adormit",
                 "activity": "Activitate"
             },
             "hvac_action": {
