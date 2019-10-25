@@ -25,6 +25,7 @@ import "../entity-rows/hui-toggle-entity-row";
 import "../special-rows/hui-call-service-row";
 import "../special-rows/hui-divider-row";
 import "../special-rows/hui-section-row";
+import "../special-rows/hui-text-divider-row";
 import "../special-rows/hui-weblink-row";
 import "../special-rows/hui-cast-row";
 import { EntityConfig, EntityRow } from "../entity-rows/types";
@@ -37,6 +38,7 @@ const SPECIAL_TYPES = new Set([
   "weblink",
   "cast",
   "select",
+  "text-divider",
 ]);
 const DOMAIN_TO_ELEMENT_TYPE = {
   alert: "toggle",

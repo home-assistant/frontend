@@ -14,6 +14,10 @@ export interface DividerConfig {
   type: "divider";
   style: string;
 }
+export interface TextDividerConfig {
+  type: "divider";
+  label: string;
+}
 export interface SectionConfig {
   type: "section";
   label: string;
