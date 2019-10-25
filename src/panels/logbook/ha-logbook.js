@@ -6,13 +6,14 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import formatTime from "../../common/datetime/format_time";
 import formatDate from "../../common/datetime/format_date";
 import { EventsMixin } from "../../mixins/events-mixin";
+import LocalizeMixin from "../../mixins/localize-mixin";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { computeRTL } from "../../common/util/compute_rtl";
 
 /*
  * @appliesMixin EventsMixin
  */
-class HaLogbook extends EventsMixin(PolymerElement) {
+class HaLogbook extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
       <style include="iron-flex"></style>
@@ -54,8 +55,8 @@ class HaLogbook extends EventsMixin(PolymerElement) {
         }
       </style>
 
-      <template is="dom-if" if="[[!entries.length]]">
-        [[localize('ui.panel.logbook.no_entries')]]
+      <template is="dom-if" if="true">
+        [[localize('ui.panel.logbook.entries_not_found')]]
       </template>
 
       <template is="dom-repeat" items="[[entries]]">

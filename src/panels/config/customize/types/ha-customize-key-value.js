@@ -19,13 +19,13 @@ class HaCustomizeKeyValue extends PolymerElement {
       <paper-input
         disabled="[[item.secondary]]"
         class="key"
-        label="[[localize('ui.panel.config.customize.attribute_name')]]"
+        label="Attribute name"
         value="{{item.attribute}}"
       >
       </paper-input>
       <paper-input
         disabled="[[item.secondary]]"
-        label="[[localize('ui.panel.config.customize.attribute_value')]]"
+        label="Attribute value"
         value="{{item.value}}"
       >
       </paper-input>

@@ -3,13 +3,14 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 import hassAttributeUtil from "../../../util/hass-attributes-util";
 import "./ha-form-customize-attributes";
 
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 
-class HaFormCustomize extends PolymerElement {
+class HaFormCustomize extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style include="iron-flex ha-style ha-form-style">

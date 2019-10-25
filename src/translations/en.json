@@ -728,9 +728,9 @@
             "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated."
           },
           "warning": {
-              "include_sentence": "It seems that your configuration.yaml doesn't properly",
-              "include_link": "include customize.yaml",
-              "not_applied": "Changes made here are written in it, but will not be applied after a configuration reload unless the include is in place."
+            "include_sentence": "It seems that your configuration.yaml doesn't properly",
+            "include_link": "include customize.yaml",
+            "not_applied": "Changes made here are written in it, but will not be applied after a configuration reload unless the include is in place."
           },
           "attributes_customize": "The following attributes are already set in customize.yaml",
           "attributes_outside": "The following attributes are customized from outside of customize.yaml",
@@ -738,9 +738,7 @@
           "attributes_set": "The following attributes of the entity are set programmatically.",
           "attributes_override": "You can override them if you like.",
           "attributes_not_set": "The following attributes weren't set. Set them if you like.",
-          "pick_attribute": "Pick an attribute to override",
-          "attribute_name": "Attribute name",
-          "attribute_value": "Attribute value"
+          "pick_attribute": "Pick an attribute to override"
         },
         "automation": {
           "caption": "Automation",
@@ -1153,12 +1151,12 @@
           "automations": "Automations",
           "confirm_rename_entity_ids": "Do you also want to rename the entity id's of your entities?",
           "data_table": {
-              "device": "Device",
-              "manufacturer": "Manufacturer",
-              "model": "Model",
-              "area": "Area",
-              "integration": "Integration",
-              "battery": "Battery"
+            "device": "Device",
+            "manufacturer": "Manufacturer",
+            "model": "Model",
+            "area": "Area",
+            "integration": "Integration",
+            "battery": "Battery"
           }
         },
         "entity_registry": {
@@ -1227,7 +1225,7 @@
           "home_assistant_website": "Home Assistant website",
           "configure": "Configure",
           "none": "Nothing configured yet",
-          "error_not_found": "Integration not found.",
+          "integration_not_found": "Integration not found.",
           "config_entry": {
             "settings_button": "Edit settings for {integration}",
             "system_options_button": "System options for {integration}",
@@ -1394,7 +1392,7 @@
       "logbook": {
         "showing_entries": "[%key:ui::panel::history::showing_entries%]",
         "period": "Period",
-        "no_entries": "No logbook entries found."
+        "entries_not_found": "No logbook entries found."
       },
       "lovelace": {
         "cards": {
@@ -1987,11 +1985,11 @@
         }
       },
       "custom": {
-          "external_panel": {
-              "question_trust": "Do you trust the external panel {name} at {link}?",
-              "complete_access": "It will have access to all data in Home Assistant.",
-              "hide_message": "Check docs for the panel_custom component to hide this message"
-          }
+        "external_panel": {
+          "question_trust": "Do you trust the external panel {name} at {link}?",
+          "complete_access": "It will have access to all data in Home Assistant.",
+          "hide_message": "Check docs for the panel_custom component to hide this message"
+        }
       }
     }
   }

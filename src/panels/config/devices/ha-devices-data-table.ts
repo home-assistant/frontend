@@ -159,33 +159,45 @@ export class HaDevicesDataTable extends LitElement {
           }
         : {
             name: {
-              title: this.hass.localize('ui.panel.config.devices.data_table.device'),
+              title: this.hass.localize(
+                "ui.panel.config.devices.data_table.device"
+              ),
               sortable: true,
               filterable: true,
               direction: "asc",
             },
             manufacturer: {
-              title: this.hass.localize('ui.panel.config.devices.data_table.manufacturer'),
+              title: this.hass.localize(
+                "ui.panel.config.devices.data_table.manufacturer"
+              ),
               sortable: true,
               filterable: true,
             },
             model: {
-              title: this.hass.localize('ui.panel.config.devices.data_table.model'),
+              title: this.hass.localize(
+                "ui.panel.config.devices.data_table.model"
+              ),
               sortable: true,
               filterable: true,
             },
             area: {
-              title: this.hass.localize('ui.panel.config.devices.data_table.area'),
+              title: this.hass.localize(
+                "ui.panel.config.devices.data_table.area"
+              ),
               sortable: true,
               filterable: true,
             },
             integration: {
-              title: this.hass.localize('ui.panel.config.devices.data_table.integration'),
+              title: this.hass.localize(
+                "ui.panel.config.devices.data_table.integration"
+              ),
               sortable: true,
               filterable: true,
             },
             battery_entity: {
-              title: this.hass.localize('ui.panel.config.devices.data_table.battery'),
+              title: this.hass.localize(
+                "ui.panel.config.devices.data_table.battery"
+              ),
               sortable: true,
               type: "numeric",
               template: (batteryEntity: string) => {

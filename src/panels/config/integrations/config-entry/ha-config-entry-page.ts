@@ -65,7 +65,7 @@ class HaConfigEntryPage extends LitElement {
       return html`
         <hass-error-screen
           error="${this.hass.localize(
-            "ui.panel.config.integrations.error_not_found"
+            "ui.panel.config.integrations.integration_not_found"
           )}"
         ></hass-error-screen>
       `;
