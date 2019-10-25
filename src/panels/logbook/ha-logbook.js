@@ -55,7 +55,7 @@ class HaLogbook extends LocalizeMixin(EventsMixin(PolymerElement)) {
         }
       </style>
 
-      <template is="dom-if" if="true">
+      <template is="dom-if" if="[[!entries.length]]">
         [[localize('ui.panel.logbook.entries_not_found')]]
       </template>
 
