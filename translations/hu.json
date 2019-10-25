@@ -312,16 +312,33 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "title": "Szolgáltatások"
+                        "title": "Szolgáltatások",
+                        "call_service": "Szolgáltatás meghívása",
+                        "no_description": "Nem áll rendelkezésre leírás",
+                        "no_parameters": "Ennek a szolgáltatásnak nincsenek paraméterei.",
+                        "column_parameter": "Paraméter",
+                        "column_description": "Leírás",
+                        "column_example": "Példa"
                     },
                     "states": {
-                        "title": "Állapotok"
+                        "title": "Állapotok",
+                        "entity": "Entitás",
+                        "state": "Állapot",
+                        "attributes": "Attribútumok",
+                        "state_attributes": "Attribútumok beállítása (YAML, opcionális)",
+                        "set_state": "Állapot beállítása",
+                        "current_entities": "Jelenlegi entitások",
+                        "filter_entities": "Entitások szűrése",
+                        "filter_states": "Állapotok szűrése",
+                        "filter_attributes": "Attribútumok szűrése",
+                        "no_entities": "Nincs entitás"
                     },
                     "events": {
                         "title": "Események"
                     },
                     "templates": {
-                        "title": "Sablon"
+                        "title": "Sablon",
+                        "editor": "Sablonszerkesztő"
                     },
                     "mqtt": {
                         "title": "MQTT"
@@ -330,7 +347,9 @@
                         "title": "Infó"
                     },
                     "logs": {
-                        "title": "Napló"
+                        "title": "Napló",
+                        "clear": "Törlés",
+                        "refresh": "Frissítés"
                     }
                 }
             },
@@ -1037,13 +1056,13 @@
                     "description": "Csatlakoztatott eszközök kezelése",
                     "automation": {
                         "triggers": {
-                            "caption": "Csinálj valamit, amikor..."
+                            "caption": "Csinálj valamit, amikor a(z)..."
                         },
                         "conditions": {
-                            "caption": "Csak akkor csinálj valamit, ha"
+                            "caption": "Csak akkor csinálj valamit, ha a(z)..."
                         },
                         "actions": {
-                            "caption": "Amikor valami indításra kerül..."
+                            "caption": "Ha valamitriggerelődik, akkor..."
                         }
                     }
                 },
@@ -1290,7 +1309,7 @@
                         "header": "Kártya Konfiguráció",
                         "save": "Mentés",
                         "toggle_editor": "Szerkesztő",
-                        "pick_card": "Válaszd ki a kártyát amit hozzá szeretnél adni.",
+                        "pick_card": "Melyik kártyát szeretnéd hozzáadni?",
                         "add": "Kártya hozzáadása",
                         "edit": "Szerkesztés",
                         "delete": "Törlés",
@@ -1716,9 +1735,9 @@
                 }
             },
             "config_entry_system_options": {
-                "title": "Rendszerbeállítások",
+                "title": "{integration} rendszerbeállításai",
                 "enable_new_entities_label": "Újonnan hozzáadott entitások engedélyezése.",
-                "enable_new_entities_description": "Ha le van tiltva, akkor az újonnan felfedezett entitások nem lesznek automatikusan hozzáadva a Home Assistant-hoz."
+                "enable_new_entities_description": "Ha le van tiltva, akkor az újonnan felfedezett {integration} entitások nem lesznek automatikusan hozzáadva a Home Assistant-hoz."
             },
             "zha_device_info": {
                 "manuf": "{manufacturer} által",

@@ -312,25 +312,105 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "title": "Службы"
+                        "title": "Службы",
+                        "description": "Здесь Вы можете вызвать любую службу Home Assistant из списка доступных.",
+                        "data": "Данные службы в формате YAML (необязательно)",
+                        "call_service": "Вызвать службу",
+                        "select_service": "Выберите службу, чтобы увидеть описание.",
+                        "no_description": "Описание недоступно",
+                        "no_parameters": "Нет параметров для этой службы.",
+                        "column_parameter": "Параметр",
+                        "column_description": "Описание",
+                        "column_example": "Пример",
+                        "fill_example_data": "Пример заполнения данных",
+                        "alert_parsing_yaml": "Ошибка при разборе синтаксиса YAML: {data}"
                     },
                     "states": {
-                        "title": "Состояния"
+                        "title": "Состояния",
+                        "description1": "Здесь Вы можете вручную изменить состояние устройства в Home Assistant.",
+                        "description2": "Изменённое состояние не будет синхронизировано с устройством.",
+                        "entity": "Объект",
+                        "state": "Состояние",
+                        "attributes": "Атрибуты",
+                        "state_attributes": "Атрибуты состояния в формате YAML (необязательно)",
+                        "set_state": "Задать состояние",
+                        "current_entities": "Список актуальных объектов",
+                        "filter_entities": "Фильтр по объектам",
+                        "filter_states": "Фильтр по состояниям",
+                        "filter_attributes": "Фильтр по атрибутам",
+                        "no_entities": "Не найдено",
+                        "more_info": "Подробнее",
+                        "alert_entity_field": "Укажите объект."
                     },
                     "events": {
-                        "title": "События"
+                        "title": "События",
+                        "description": "Здесь Вы можете создать и отправить событие в Home Assistant.",
+                        "documentation": "Узнайте больше о событиях.",
+                        "type": "Событие",
+                        "data": "Данные события в формате YAML (необязательно)",
+                        "fire_event": "Создать событие",
+                        "event_fired": "Событие {name} произошло в",
+                        "available_events": "Доступные события",
+                        "count_listeners": "(подписано: {count})",
+                        "listen_to_events": "Подписаться на событие",
+                        "listening_to": "Подписано на",
+                        "subscribe_to": "Событие",
+                        "start_listening": "Подписаться",
+                        "stop_listening": "Отписаться",
+                        "alert_event_type": "Укажите событие.",
+                        "notification_event_fired": "Событие {type} успешно создано"
                     },
                     "templates": {
-                        "title": "Шаблоны"
+                        "title": "Шаблоны",
+                        "description": "Здесь Вы можете протестировать поведение шаблонов. Шаблоны используют шаблонизатор Jinja2 с некоторыми специальными расширениями Home Assistant.",
+                        "editor": "Редактор шаблонов",
+                        "jinja_documentation": "Узнайте больше о шаблонизаторе Jinja2",
+                        "template_extensions": "Узнайте больше о шаблонах Home Assistant",
+                        "unknown_error_template": "Неизвестная ошибка при визуализации шаблона."
                     },
                     "mqtt": {
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "description_publish": "Опубликовать данные",
+                        "topic": "Топик",
+                        "payload": "Значение (включая шаблоны)",
+                        "publish": "Опубликовать",
+                        "description_listen": "Подписаться на топик",
+                        "listening_to": "Подписано на",
+                        "subscribe_to": "Топик",
+                        "start_listening": "Подписаться",
+                        "stop_listening": "Отписаться",
+                        "message_received": "Сообщение {id} получено в {time} из {topic}:"
                     },
                     "info": {
-                        "title": "О системе"
+                        "title": "О системе",
+                        "remove": "Не использовать",
+                        "set": "Использовать",
+                        "default_ui": "{action} {name} по умолчанию на этом устройстве",
+                        "lovelace_ui": "Перейти к пользовательскому интерфейсу Lovelace",
+                        "states_ui": "Перейти к пользовательскому интерфейсу на основе состояний",
+                        "home_assistant_logo": "Логотип Home Assistant",
+                        "path_configuration": "Путь к configuration.yaml: {path}",
+                        "developed_by": "Разработано множеством замечательных людей.",
+                        "license": "Опубликовано под лицензией Apache 2.0",
+                        "source": "Исходный код:",
+                        "server": "сервер",
+                        "frontend": "пользовательский интерфейс",
+                        "built_using": "Создано с использованием",
+                        "icons_by": "Значки от",
+                        "frontend_version": "Версия интерфейса: {version} - {type}",
+                        "custom_uis": "Кастомные интерфейсы:",
+                        "system_health_error": "Компонент System Health не загружен. Добавьте 'system_health:' в файл configuration.yaml."
                     },
                     "logs": {
-                        "title": "Лог"
+                        "title": "Лог",
+                        "details": "Детализация журнала: {level}",
+                        "load_full_log": "Показать весь журнал",
+                        "loading_log": "Загрузка журнала…",
+                        "no_errors": "Нет сообщений об ошибках.",
+                        "no_issues": "Нет сообщений о проблемах.",
+                        "clear": "Очистить",
+                        "refresh": "Обновить",
+                        "multiple_messages": "первое сообщение получено в {time} и повторялось {counter} раз"
                     }
                 }
             },
@@ -414,7 +494,7 @@
                         "header": "Редактор автоматизаций",
                         "introduction": "Этот редактор позволяет создавать и редактировать автоматизации.\nПожалуйста, ознакомьтесь с инструкциями по указанной ниже ссылке и убедитесь, что правильно настроили Home Assistant.",
                         "pick_automation": "Выберите автоматизацию для редактирования",
-                        "no_automations": "Мы не нашли редактируемые автоматизации",
+                        "no_automations": "Редактируемые автоматизации не найдены",
                         "add_automation": "Добавить автоматизацию",
                         "learn_more": "Узнайте больше об автоматизациях"
                     },
@@ -454,20 +534,20 @@
                                 "mqtt": {
                                     "label": "MQTT",
                                     "topic": "Топик",
-                                    "payload": "Значение (опционально)"
+                                    "payload": "Значение (необязательно)"
                                 },
                                 "numeric_state": {
                                     "label": "Числовое состояние",
                                     "above": "Выше",
                                     "below": "Ниже",
-                                    "value_template": "Шаблон значения (опционально)"
+                                    "value_template": "Шаблон значения (необязательно)"
                                 },
                                 "sun": {
                                     "label": "Солнце",
                                     "event": "Событие:",
                                     "sunrise": "Восход",
                                     "sunset": "Закат",
-                                    "offset": "Смещение (опционально)"
+                                    "offset": "Смещение (необязательно)"
                                 },
                                 "template": {
                                     "label": "Шаблон",
@@ -532,14 +612,14 @@
                                     "label": "Числовое состояние",
                                     "above": "Выше",
                                     "below": "Ниже",
-                                    "value_template": "Шаблон значения (опционально)"
+                                    "value_template": "Шаблон значения (необязательно)"
                                 },
                                 "sun": {
                                     "label": "Солнце",
                                     "before": "До:",
                                     "after": "После:",
-                                    "before_offset": "Смещение (опционально)",
-                                    "after_offset": "Смещение (опционально)",
+                                    "before_offset": "Смещение (необязательно)",
+                                    "after_offset": "Смещение (необязательно)",
                                     "sunrise": "Восхода",
                                     "sunset": "Заката"
                                 },
@@ -595,7 +675,7 @@
                                 "wait_template": {
                                     "label": "Ожидание",
                                     "wait_template": "Шаблон ожидания",
-                                    "timeout": "Тайм-аут (опционально)"
+                                    "timeout": "Тайм-аут (необязательно)"
                                 },
                                 "condition": {
                                     "label": "Условие"
@@ -606,7 +686,10 @@
                                     "service_data": "Данные"
                                 },
                                 "device_id": {
-                                    "label": "Устройство"
+                                    "label": "Устройство",
+                                    "extra_fields": {
+                                        "code": "Код"
+                                    }
                                 },
                                 "scene": {
                                     "label": "Активировать сцену"
@@ -629,7 +712,7 @@
                         "header": "Редактор сценариев",
                         "introduction": "Этот редактор позволяет создавать и редактировать сценарии.\nПожалуйста, ознакомьтесь с инструкциями по указанной ниже ссылке и убедитесь, что правильно настроили Home Assistant.",
                         "learn_more": "Узнайте больше о сценариях",
-                        "no_scripts": "Мы не нашли редактируемые сценарии",
+                        "no_scripts": "Редактируемые сценарии не найдены",
                         "add_script": "Добавить сценарий"
                     },
                     "editor": {
@@ -709,8 +792,8 @@
                         "id": "ID",
                         "owner": "Владелец",
                         "group": "Группа",
-                        "active": "Активный",
-                        "system_generated": "Сгенерировано системой",
+                        "active": "Активен",
+                        "system_generated": "Системный",
                         "system_generated_users_not_removable": "Системные пользователи защищены от удаления.",
                         "unnamed_user": "Безымянный пользователь",
                         "enter_new_name": "Введите новое имя",
@@ -728,15 +811,15 @@
                 },
                 "cloud": {
                     "caption": "Home Assistant Cloud",
-                    "description_login": "Выполнен вход с учетной записью {email}",
+                    "description_login": "Выполнен вход {email}",
                     "description_not_login": "Вход не выполнен",
                     "description_features": "Управление вдали от дома, интеграция с Alexa и Google Assistant.",
                     "login": {
                         "title": "Home Assistant Cloud",
                         "introduction": "Home Assistant Cloud обеспечивает безопасное удаленное подключение к Вашему серверу, даже если Вы находитесь вдали от дома. Также это даёт возможность подключения к функциям облачных сервисов Amazon Alexa и Google Assistant.",
-                        "introduction2": "Эта услуга предоставляется нашим партнером ",
-                        "introduction2a": ", компания от основателей Home Assistant и Hass.io.",
-                        "introduction3": "Home Assistant Cloud предлагает одноразовый бесплатный пробный период продолжительностью один месяц. Информация об оплате не требуется.",
+                        "introduction2": "Услуга предоставляется нашим партнером ",
+                        "introduction2a": ", компанией от основателей Home Assistant и Hass.io.",
+                        "introduction3": "Home Assistant Cloud предлагает одноразовый бесплатный пробный период продолжительностью один месяц. Для активации пробного периода платёжная информация не требуется.",
                         "learn_more_link": "Узнайте больше о Home Assistant Cloud",
                         "dismiss": "Отклонить",
                         "sign_in": "Авторизация",
@@ -746,7 +829,7 @@
                         "password_error_msg": "Пароль должен содержать не менее 8 символов.",
                         "forgot_password": "забыли пароль?",
                         "start_trial": "Начать бесплатный пробный период",
-                        "trial_info": "Информация об оплате не требуется. Продолжительность периода - 1 месяц",
+                        "trial_info": "Платёжная информация не требуется. Продолжительность периода - 1 месяц",
                         "alert_password_change_required": "Вы должны изменить свой пароль перед входом.",
                         "alert_email_confirm_necessary": "Вам должны подтвердить Вашу электронную почту перед входом."
                     },
@@ -762,14 +845,14 @@
                     "register": {
                         "title": "Регистрация новой учетной записи",
                         "headline": "Начните Ваш бесплатный пробный период",
-                        "information": "Создайте учетную запись Home Assistant Cloud, чтобы начать бесплатный пробный период. Информация об оплате не требуется.",
+                        "information": "Создайте учетную запись Home Assistant Cloud, чтобы начать бесплатный пробный период.",
                         "information2": "В течении пробного периода Вам будет предоставлен доступ ко всем преимуществам Home Assistant Cloud, включая:",
                         "feature_remote_control": "Безопасный доступ к Вашему Home Assistant, даже вдали от дома",
                         "feature_google_home": "Интеграция с Google Assistant",
                         "feature_amazon_alexa": "Интеграция с Amazon Alexa",
                         "feature_webhook_apps": "Простая интеграция с приложениями на основе webhook, такими как OwnTracks",
-                        "information3": "Эта услуга предоставляется нашим партнером ",
-                        "information3a": ", компания от основателей Home Assistant и Hass.io.",
+                        "information3": "Услуга предоставляется нашим партнером ",
+                        "information3a": ", компанией от основателей Home Assistant и Hass.io.",
                         "information4": "Регистрируя учетную запись, Вы соглашаетесь со следующими условиями:",
                         "link_terms_conditions": "Правила и условия",
                         "link_privacy_policy": "Политика конфиденциальности",
@@ -789,7 +872,15 @@
                         "manage_account": "Управление учетной записью",
                         "sign_out": "Выйти",
                         "integrations": "Интеграции",
+                        "integrations_introduction": "Интеграции для Home Assistant Cloud позволяют подключаться к облачным службам без необходимости выставлять Ваш Home Assistant в интернет.",
+                        "integrations_introduction2": "Посетите веб-сайт для получения информации о ",
+                        "integrations_link_all_features": "всех доступных функциях",
+                        "connected": "Подключено",
+                        "not_connected": "Не подключено",
+                        "fetching_subscription": "Получение информации о подписке…",
                         "remote": {
+                            "title": "Удалённое управление",
+                            "access_is_being_prepared": "Удаленный доступ подготавливается. Мы сообщим Вам, когда он будет готов.",
                             "info": "Home Assistant Cloud обеспечивает безопасное удаленное подключение к Вашему серверу, даже если Вы находитесь вдали от дома.",
                             "instance_is_available": "Ваш Home Assistant доступен по адресу",
                             "instance_will_be_available": "Ваш Home Assistant будет доступен по адресу",
@@ -800,15 +891,30 @@
                             "title": "Alexa",
                             "info": "Благодаря интеграции Alexa для Home Assistant Cloud Вы сможете управлять всеми своими устройствами Home Assistant через любое устройство с поддержкой Alexa.",
                             "enable_ha_skill": "Активировать навык Home Assistant для Alexa",
+                            "config_documentation": "Инструкция по настройке",
+                            "enable_state_reporting": "Отправлять изменения состояний объектов",
+                            "info_state_reporting": "Если Вы включите этот параметр, Home Assistant будет отправлять все изменения состояний объектов, доступных Amazon. Это позволит Вам всегда видеть актуальные состояния в приложениях Alexa и использовать изменения состояний для автоматизации повседневных задач.",
                             "sync_entities": "Синхронизировать объекты",
                             "manage_entities": "Управление объектами",
-                            "sync_entities_error": "Не удалось синхронизировать объекты:"
+                            "sync_entities_error": "Не удалось синхронизировать объекты:",
+                            "state_reporting_error": "Не удалось {enable_disable} отправку изменения состояний.",
+                            "enable": "включить",
+                            "disable": "отключить"
                         },
                         "google": {
                             "title": "Google Assistant",
                             "info": "Благодаря интеграции Google Assistant для Home Assistant Cloud Вы сможете управлять всеми своими устройствами Home Assistant через любое устройство с поддержкой Google Assistant.",
                             "enable_ha_skill": "Активировать навык Home Assistant для Google Assistant",
-                            "manage_entities": "Управление объектами"
+                            "config_documentation": "Инструкция по настройке",
+                            "enable_state_reporting": "Отправлять изменения состояний объектов",
+                            "info_state_reporting": "Если Вы включите этот параметр, Home Assistant будет отправлять все изменения состояний объектов, доступных Google. Это позволит Вам всегда видеть актуальные состояния в приложениях Google.",
+                            "security_devices": "Устройства безопасности",
+                            "enter_pin_info": "Введите PIN-код для взаимодействия с устройствами безопасности. Устройства безопасности — это двери, гаражные ворота и замки. При взаимодействии с такими устройствами через Google Assistant, Вам будет предложено сказать или ввести этот PIN-код.",
+                            "devices_pin": "PIN-код устройств безопасности",
+                            "enter_pin_hint": "PIN-код",
+                            "sync_entities": "Синхронизировать объекты",
+                            "manage_entities": "Управление объектами",
+                            "enter_pin_error": "Не удалось сохранить PIN-код:"
                         },
                         "webhooks": {
                             "title": "Webhook",
@@ -819,21 +925,31 @@
                             "no_hooks_yet_link_automation": "Webhook автоматизацию",
                             "link_learn_more": "Узнайте больше о создании автоматизаций на базе Webhook.",
                             "loading": "Загрузка ...",
+                            "manage": "Управление",
                             "disable_hook_error_msg": "Не удалось отключить Webhook"
                         }
                     },
+                    "alexa": {
+                        "title": "Alexa",
+                        "banner": "Редактирование списка доступных объектов через пользовательский интерфейс отключено, так как Вы уже настроили фильтры в файле configuration.yaml.",
+                        "exposed_entities": "Доступ предоставлен",
+                        "not_exposed_entities": "Доступ не предоставлен",
+                        "expose": "Предоставить доступ"
+                    },
                     "dialog_certificate": {
                         "certificate_information": "Информация о сертификате",
-                        "certificate_expiration_date": "Срок действия сертификата",
-                        "will_be_auto_renewed": "Будет автоматически продлен",
+                        "certificate_expiration_date": "Сертификат действителен до",
+                        "will_be_auto_renewed": "по окончанию срока действия сертификат будет продлён автоматически",
                         "fingerprint": "Отпечаток сертификата:",
                         "close": "Закрыть"
                     },
                     "google": {
                         "title": "Google Assistant",
+                        "expose": "Предоставить доступ",
                         "disable_2FA": "Отключить двухфакторную аутентификацию",
-                        "exposed_entities": "Выставленные объекты",
-                        "not_exposed_entities": "Не выставленные объекты",
+                        "banner": "Редактирование списка доступных объектов через пользовательский интерфейс отключено, так как Вы уже настроили фильтры в файле configuration.yaml.",
+                        "exposed_entities": "Доступ предоставлен",
+                        "not_exposed_entities": "Доступ не предоставлен",
                         "sync_to_google": "Синхронизация изменений с Google."
                     },
                     "dialog_cloudhook": {
@@ -842,7 +958,7 @@
                         "managed_by_integration": "Этот Webhook управляется интеграцией и не может быть отключен.",
                         "info_disable_webhook": "Если Вы больше не хотите использовать этот Webhook, Вы можете",
                         "link_disable_webhook": "отключить его.",
-                        "view_documentation": "Просмотреть документацию",
+                        "view_documentation": "Инструкции",
                         "close": "Закрыть",
                         "confirm_disable": "Вы уверены, что хотите отключить этот Webhook?",
                         "copied_to_clipboard": "Скопировано в буфер обмена"
@@ -867,7 +983,11 @@
                         "device_unavailable": "устройство недоступно",
                         "entity_unavailable": "объект недоступен",
                         "no_area": "Не указано",
-                        "hub": "Подключено через"
+                        "hub": "Подключено через",
+                        "settings_button": "Настройки для {integration}",
+                        "system_options_button": "Системные параметры для {integration}",
+                        "delete_button": "Удалить {integration}",
+                        "area": "Помещение: {area}"
                     },
                     "config_flow": {
                         "external_step": {
@@ -997,14 +1117,14 @@
                         "new_person": "Новая персона",
                         "name_error_msg": "Укажите имя",
                         "linked_user": "Связанный пользователь",
-                        "no_device_tracker_available_intro": "Если у Вас есть устройства, указывающие на присутствие человека, Вы можете назначить их этому человеку. Вы можете добавить Ваше первое устройство, добавив интеграцию обнаружения присутствия со страницы интеграции.",
+                        "no_device_tracker_available_intro": "Если у Вас есть отслеживающие устройства, Вы можете назначить их этому человеку. Вы можете добавить Ваше первое устройство, добавив интеграцию обнаружения присутствия со страницы интеграции.",
                         "link_presence_detection_integrations": "Интеграции обнаружения присутствия",
                         "link_integrations_page": "Страница интеграций",
                         "delete": "Удалить",
                         "create": "Создать",
                         "update": "Обновить"
                     },
-                    "introduction": "Здесь Вы можете определить каждого интересующего Вас человека в Home Assistant.",
+                    "introduction": "Этот раздел позволяет добавлять в Home Assistant интересующих Вас персон.",
                     "note_about_persons_configured_in_yaml": "Примечание:\nПерсоны, настроенные с помощью configuration.yaml, не могут быть изменены с помощью пользовательского интерфейса.",
                     "no_persons_created_yet": "У Вас еще нет добавленных персон.",
                     "create_person": "Добавить персону",
@@ -1293,20 +1413,22 @@
                         "call_service": "Вызвать службу {name}",
                         "more_info": "Показать больше информации: {name}",
                         "url": "Открыть окно {url_path}"
-                    }
+                    },
+                    "confirm_delete": "Вы уверены, что хотите удалить эту карточку?"
                 },
                 "editor": {
                     "edit_card": {
                         "header": "Настройка карточки",
                         "save": "Сохранить",
                         "toggle_editor": "Переключить редактор",
-                        "pick_card": "Выберите карточку, которую Вы хотите добавить",
+                        "pick_card": "Какую карточку Вы хотели бы добавить?",
                         "add": "Добавить карточку",
                         "edit": "Изменить",
                         "delete": "Удалить",
                         "move": "Переместить",
                         "show_visual_editor": "Форма ввода",
-                        "show_code_editor": "Текстовый редактор"
+                        "show_code_editor": "Текстовый редактор",
+                        "pick_card_view_title": "Какую карточку Вы хотели бы добавить на вкладку \"{name}\"?"
                     },
                     "migrate": {
                         "header": "Конфигурация несовместима",
@@ -1319,7 +1441,8 @@
                         "header": "Настройки вкладки",
                         "add": "Добавить вкладку",
                         "edit": "Изменить вкладку",
-                        "delete": "Удалить вкладку"
+                        "delete": "Удалить вкладку",
+                        "header_name": "Настройки вкладки \"{name}\""
                     },
                     "save_config": {
                         "header": "Получение контроля над пользовательским интерфейсом",
@@ -1347,11 +1470,11 @@
                         },
                         "config": {
                             "required": "Обязательное поле",
-                            "optional": "Опционально"
+                            "optional": "Необязательно"
                         },
                         "entities": {
                             "show_header_toggle": "Показывать переключатель в заголовке",
-                            "name": "Объекты"
+                            "name": "Entities"
                         },
                         "gauge": {
                             "severity": {
@@ -1359,10 +1482,12 @@
                                 "green": "Зелёный",
                                 "red": "Красный",
                                 "yellow": "Желтый"
-                            }
+                            },
+                            "name": "Gauge"
                         },
                         "glance": {
-                            "columns": "Столбцы"
+                            "columns": "Столбцы",
+                            "name": "Glance"
                         },
                         "generic": {
                             "aspect_ratio": "Соотношение сторон",
@@ -1393,7 +1518,7 @@
                             "dark_mode": "Ночной режим",
                             "default_zoom": "Масштаб по умолчанию",
                             "source": "Источник",
-                            "name": "Карта"
+                            "name": "Map"
                         },
                         "markdown": {
                             "content": "Содержание",
@@ -1405,29 +1530,44 @@
                             "name": "Датчик"
                         },
                         "alarm-panel": {
-                            "name": "Панель сигнализации",
+                            "name": "Alarm Panel",
                             "available_states": "Доступные состояния"
                         },
+                        "conditional": {
+                            "name": "Conditional"
+                        },
                         "entity-button": {
-                            "name": "Кнопка"
+                            "name": "Entity Button"
                         },
                         "entity-filter": {
-                            "name": "Фильтр"
+                            "name": "Entity Filter"
                         },
                         "history-graph": {
-                            "name": "График истории"
+                            "name": "History Graph"
                         },
                         "horizontal-stack": {
-                            "name": "Горизонтальный массив"
+                            "name": "Horizontal Stack"
                         },
                         "iframe": {
                             "name": "iFrame"
                         },
                         "light": {
-                            "name": "Освещение"
+                            "name": "Light"
                         },
                         "media-control": {
                             "name": "Медиа"
+                        },
+                        "picture": {
+                            "name": "Picture"
+                        },
+                        "picture-elements": {
+                            "name": "Picture Elements"
+                        },
+                        "picture-entity": {
+                            "name": "Picture Entity"
+                        },
+                        "picture-glance": {
+                            "name": "Picture Glance"
                         },
                         "plant-status": {
                             "name": "Растение"
@@ -1443,6 +1583,12 @@
                         },
                         "weather-forecast": {
                             "name": "Прогноз погоды"
+                        }
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "title": "Режим панели",
+                            "description": "Первая карточка будет растянута на всю ширину. Другие карточки не будут отображаться на этой вкладке."
                         }
                     }
                 },
@@ -1460,7 +1606,11 @@
                     "message": "Конфигурация Lovelace была изменена, обновить эту страницу?",
                     "refresh": "Обновить"
                 },
-                "reload_lovelace": "Перезагрузить Lovelace"
+                "reload_lovelace": "Перезагрузить Lovelace",
+                "views": {
+                    "confirm_delete": "Вы уверены, что хотите удалить эту вкладку?",
+                    "existing_cards": "Прежде чем удалять вкладку, удалите из нее все карточки."
+                }
             },
             "page-demo": {
                 "cards": {
@@ -1482,7 +1632,8 @@
                             "master_bedroom": "Спальня",
                             "left": "Левая сторона",
                             "right": "Правая сторона",
-                            "mirror": "Зеркало"
+                            "mirror": "Зеркало",
+                            "temperature_study": "Температура в кабинете"
                         },
                         "labels": {
                             "lights": "Освещение",
@@ -1615,7 +1766,14 @@
                 "swing_mode": "Режим качания воздушных шторок",
                 "away_mode": "Режим ожидания",
                 "aux_heat": "Дополнительный нагрев",
-                "preset_mode": "Режим"
+                "preset_mode": "Режим",
+                "target_temperature_entity": "{name} заданная температура",
+                "target_temperature_mode": "{name} заданная температура {mode}",
+                "current_temperature": "{name} текущая температура",
+                "heating": "{name} обогрев",
+                "cooling": "{name} охлаждение",
+                "high": "высокий",
+                "low": "низкий"
             },
             "lock": {
                 "code": "Код",
@@ -1644,6 +1802,13 @@
                     "pause": "Пауза",
                     "cancel": "Отмена",
                     "finish": "Готово"
+                }
+            },
+            "counter": {
+                "actions": {
+                    "increment": "прибавлять",
+                    "decrement": "убавлять",
+                    "reset": "сбросить"
                 }
             }
         },
@@ -1708,9 +1873,9 @@
                 }
             },
             "config_entry_system_options": {
-                "title": "Настройки интеграции",
-                "enable_new_entities_label": "Добавлять новые объекты.",
-                "enable_new_entities_description": "Автоматически добавлять в Home Assistant вновь обнаруженные объекты."
+                "title": "Системные параметры для {integration}",
+                "enable_new_entities_label": "Добавлять новые объекты",
+                "enable_new_entities_description": "{integration} будет автоматически добавлять в Home Assistant вновь обнаруженные объекты."
             },
             "zha_device_info": {
                 "manuf": "{manufacturer}",
@@ -1732,6 +1897,11 @@
                 },
                 "power_source": "Источник питания",
                 "unknown": "Неизвестно"
+            },
+            "confirmation": {
+                "cancel": "Отменить",
+                "ok": "ОК",
+                "title": "Вы уверены?"
             }
         },
         "auth_store": {

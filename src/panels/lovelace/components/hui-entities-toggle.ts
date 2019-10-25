@@ -44,7 +44,9 @@ class HuiEntitiesToggle extends LitElement {
 
     return html`
       <ha-switch
-        aria-label="Toggle entities."
+        aria-label=${this.hass!.localize(
+          "ui.panel.lovelace.card.entities.toggle"
+        )}
         ?checked="${this._toggleEntities!.some((entityId) => {
           const stateObj = this.hass!.states[entityId];
           return stateObj && stateObj.state === "on";

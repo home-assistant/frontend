@@ -321,16 +321,44 @@
                         "title": "Zdarzenia"
                     },
                     "templates": {
-                        "title": "Szablon"
+                        "title": "Szablon",
+                        "editor": "Edytor szablonów",
+                        "jinja_documentation": "Dokumentacja szablonów Jinja2",
+                        "template_extensions": "Rozszerzenia szablonów Home Assistant'a",
+                        "unknown_error_template": "Nieznany błąd podczas renderowania szablonu."
                     },
                     "mqtt": {
                         "title": "MQTT"
                     },
                     "info": {
-                        "title": "Informacje"
+                        "title": "Informacje",
+                        "remove": "Usuń",
+                        "set": "Ustaw",
+                        "default_ui": "{action} {name} jako domyślną stronę na tym urządzeniu",
+                        "lovelace_ui": "Przejdź do interfejsu użytkownika Lovelace",
+                        "states_ui": "Przejdź do interfejsu użytkownika stanów",
+                        "home_assistant_logo": "Logo Home Assistant",
+                        "path_configuration": "Ścieżka do configuration.yaml: {path}",
+                        "developed_by": "Opracowany przez grono wspaniałych ludzi.",
+                        "license": "Opublikowany na licencji Apache 2.0",
+                        "source": "Źródło:",
+                        "server": "serwer",
+                        "frontend": "frontend-ui",
+                        "built_using": "Zbudowany przy użyciu",
+                        "icons_by": "Ikony",
+                        "frontend_version": "Wersja interfejsu użytkownika: {version} - {type}",
+                        "custom_uis": "Niestandardowe interfejsy użytkownika:",
+                        "system_health_error": "Komponent kondycji systemu nie jest załadowany. Dodaj 'system_health:' do pliku configuration.yaml"
                     },
                     "logs": {
-                        "title": "Logi"
+                        "title": "Logi",
+                        "details": "Szczegóły loga ({level})",
+                        "load_full_log": "Załaduj cały log Home Assistant'a",
+                        "loading_log": "Ładowanie loga błędów…",
+                        "no_errors": "Nie zgłoszono żadnych błędów.",
+                        "no_issues": "Nie ma nowych problemów!",
+                        "clear": "Wyczyść",
+                        "refresh": "Odśwież"
                     }
                 }
             },
@@ -606,7 +634,10 @@
                                     "service_data": "Dane usługi"
                                 },
                                 "device_id": {
-                                    "label": "Urządzenie"
+                                    "label": "Urządzenie",
+                                    "extra_fields": {
+                                        "code": "Kod"
+                                    }
                                 },
                                 "scene": {
                                     "label": "Aktywuj scenę"
@@ -730,12 +761,12 @@
                     "caption": "Chmura Home Assistant",
                     "description_login": "Zalogowany jako {email}",
                     "description_not_login": "Nie zalogowany",
-                    "description_features": "Sterowanie spoza domu, integracja z Alexą i Google Assistant.",
+                    "description_features": "Sterowanie spoza domu, integracja z Alexą i Google Assistant'em.",
                     "login": {
                         "title": "Logowanie do chmury",
                         "introduction": "Chmura Home Assistant zapewnia bezpieczne zdalne połączenie z instancją z dala od domu. Umożliwia także łączenie się z usługami w chmurze: Amazon Alexa i Google Assistant.",
                         "introduction2": "Ta usługa jest prowadzona przez naszego partnera ",
-                        "introduction2a": ", firma założona przez założycieli Home Assistant i Hass.io.",
+                        "introduction2a": ", firmę założoną przez założycieli Home Assistant i Hass.io.",
                         "introduction3": "Chmura Home Assistant to usługa subskrypcyjna z bezpłatnym miesięcznym okresem próbnym. Informacje o środkach płatności nie są konieczne.",
                         "learn_more_link": "Dowiedz się więcej o Chmurze Home Assistant",
                         "dismiss": "Odrzuć",
@@ -769,7 +800,7 @@
                         "feature_amazon_alexa": "integracja z Amazon Alexa",
                         "feature_webhook_apps": "prosta integracja z aplikacjami opartymi na webhook'ach, takimi jak OwnTracks",
                         "information3": "Ta usługa jest prowadzona przez naszego partnera ",
-                        "information3a": ", firma założona przez założycieli Home Assistant i Hass.io.",
+                        "information3a": ", firmę założoną przez założycieli Home Assistant i Hass.io.",
                         "information4": "Rejestrując konto, wyrażasz zgodę na następujące warunki.",
                         "link_terms_conditions": "Zasady i warunki",
                         "link_privacy_policy": "Polityka prywatności",
@@ -900,7 +931,11 @@
                         "device_unavailable": "urządzenie niedostępne",
                         "entity_unavailable": "encja niedostępna",
                         "no_area": "brak",
-                        "hub": "Połączony przez"
+                        "hub": "Połączony przez",
+                        "settings_button": "Edytuj ustawienia dla {integration}",
+                        "system_options_button": "Opcje systemowe dla {integracja}",
+                        "delete_button": "Usuń {integration}",
+                        "area": "W {area}"
                     },
                     "config_flow": {
                         "external_step": {
@@ -909,7 +944,7 @@
                         }
                     },
                     "note_about_integrations": "Jeszcze nie wszystkie integracje można skonfigurować za pomocą interfejsu użytkownika.",
-                    "note_about_website_reference": "Więcej jest dostępnych na stronie ",
+                    "note_about_website_reference": "Więcej jest dostępnych na stronie integracji ",
                     "home_assistant_website": "Home Assistant'a"
                 },
                 "zha": {
@@ -999,7 +1034,7 @@
                         "introduction": "Home Assistant prowadzi rejestr każdej encji, jaką kiedykolwiek widział i którą można jednoznacznie zidentyfikować. Każda z tych encji będzie miała przypisany unikalny identyfikator, który będzie zarezerwowany tylko dla niej.",
                         "introduction2": "Użyj rejestru encji, aby nadpisać jej nazwę, zmienić jej identyfikator lub usunąć ją z Home Assistant'a. Uwaga: usunięcie wpisu rejestru encji nie spowoduje usunięcia encji. Aby to zrobić, kliknij poniższy link i usuń integracje encji.",
                         "integrations_page": "Strona integracji",
-                        "show_disabled": "Wyświetl nieużywane encje",
+                        "show_disabled": "Wyświetlaj nieużywane encje",
                         "headers": {
                             "name": "Nazwa",
                             "entity_id": "Identyfikator encji",
@@ -1070,7 +1105,7 @@
                             "introduction": "Kontroluj serwer Home Assistant'a.",
                             "restart": "Uruchom ponownie",
                             "stop": "Zatrzymaj",
-                            "confirm_restart": "Na pewno chcesz ponownie uruchomić Home Assistant?",
+                            "confirm_restart": "Na pewno chcesz ponownie uruchomić Home Assistant'a?",
                             "confirm_stop": "Na pewno chcesz zatrzymać Home Assistant'a?"
                         }
                     }
@@ -1665,7 +1700,14 @@
                 "swing_mode": "Tryb ruchu łopatek",
                 "away_mode": "Tryb poza domem",
                 "aux_heat": "Dodatkowe źródło ciepła",
-                "preset_mode": "Ustawienia"
+                "preset_mode": "Ustawienia",
+                "target_temperature_entity": "{name} temperatura docelowa",
+                "target_temperature_mode": "{name} temperatura docelowa {mode}",
+                "current_temperature": "{name} aktualna temperatura",
+                "heating": "{name} grzanie",
+                "cooling": "{name} chłodzenie",
+                "high": "wysoka",
+                "low": "niska"
             },
             "lock": {
                 "code": "Kod",
@@ -1694,6 +1736,13 @@
                     "pause": "pauza",
                     "cancel": "anuluj",
                     "finish": "koniec"
+                }
+            },
+            "counter": {
+                "actions": {
+                    "increment": "przyrost",
+                    "decrement": "ubytek",
+                    "reset": "reset"
                 }
             }
         },
@@ -1785,6 +1834,11 @@
                 "last_seen": "Ostatnio widziane",
                 "power_source": "Źródło zasilania",
                 "unknown": "Nieznany"
+            },
+            "confirmation": {
+                "cancel": "Anuluj",
+                "ok": "OK",
+                "title": "Jesteś pewny?"
             }
         },
         "auth_store": {
