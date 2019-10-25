@@ -312,25 +312,105 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "title": "服務"
+                        "title": "服務",
+                        "description": "服務開發工具允許呼叫任何 Home Assistant 中可用服務。",
+                        "data": "服務資料（YAML，選項）",
+                        "call_service": "執行服務",
+                        "select_service": "選擇服務以檢視其說明",
+                        "no_description": "無描述可使用",
+                        "no_parameters": "此服務未含任何參數。",
+                        "column_parameter": "參數",
+                        "column_description": "說明",
+                        "column_example": "範例",
+                        "fill_example_data": "填寫範例資料",
+                        "alert_parsing_yaml": "解析 YAML 錯誤：{data}"
                     },
                     "states": {
-                        "title": "狀態"
+                        "title": "狀態",
+                        "description1": "設定 Home Assistant 裝置代表。",
+                        "description2": "將不會與實際設備進行通訊。",
+                        "entity": "物件",
+                        "state": "狀態",
+                        "attributes": "屬性",
+                        "state_attributes": "狀態屬性（YAML，選項）",
+                        "set_state": "設定狀態",
+                        "current_entities": "目前物件",
+                        "filter_entities": "過濾器物件",
+                        "filter_states": "過濾器狀態",
+                        "filter_attributes": "過濾器屬性",
+                        "no_entities": "無物件",
+                        "more_info": "更多資訊",
+                        "alert_entity_field": "物件為必填欄位"
                     },
                     "events": {
-                        "title": "事件"
+                        "title": "事件",
+                        "description": "於事件匯流排中執行事件。",
+                        "documentation": "事件文件。",
+                        "type": "事件類別",
+                        "data": "事件資料（YAML，選項）",
+                        "fire_event": "觸發事件",
+                        "event_fired": "事件 {name} 已觸發",
+                        "available_events": "可用事件",
+                        "count_listeners": " （{count}  位監聽者）",
+                        "listen_to_events": "監聽事件",
+                        "listening_to": "監聽：",
+                        "subscribe_to": "訂閱事件",
+                        "start_listening": "開始監聽",
+                        "stop_listening": "調整監聽",
+                        "alert_event_type": "事件類型為必填欄位",
+                        "notification_event_fired": "事件 {type} 已成功觸發！"
                     },
                     "templates": {
-                        "title": "模板"
+                        "title": "模板",
+                        "description": "模版使用 Jinja2 模板引擎及 Home Assistant 特殊擴充進行模板渲染。",
+                        "editor": "模板編輯器",
+                        "jinja_documentation": "Jinja2 模版文件",
+                        "template_extensions": "Home Assistant 模板擴充",
+                        "unknown_error_template": "未知渲染模版錯誤"
                     },
                     "mqtt": {
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "description_publish": "發佈封包",
+                        "topic": "主題",
+                        "payload": "負載（允取模版）",
+                        "publish": "發佈",
+                        "description_listen": "監聽主題",
+                        "listening_to": "監聽：",
+                        "subscribe_to": "訂閱主題",
+                        "start_listening": "開始監聽",
+                        "stop_listening": "調整監聽",
+                        "message_received": "主題 - {topic}，時間 - {time}，訊息 - {id}："
                     },
                     "info": {
-                        "title": "資訊"
+                        "title": "資訊",
+                        "remove": "移除",
+                        "set": "組",
+                        "default_ui": "{action} {name} 為此設備預設頁面",
+                        "lovelace_ui": "至狀態介面",
+                        "states_ui": "至 Lovelace 介面",
+                        "home_assistant_logo": "Home Assistant logo",
+                        "path_configuration": "configuration.yaml 路徑：{path}",
+                        "developed_by": "由一群充滿熱情的人們所開發。",
+                        "license": "依據 Apache 2.0 授權許可發行",
+                        "source": "來源：",
+                        "server": "伺服器",
+                        "frontend": "frontend-ui",
+                        "built_using": "建置使用",
+                        "icons_by": "圖示使用",
+                        "frontend_version": "Frontend 版本：{version} - {type}",
+                        "custom_uis": "自定介面：",
+                        "system_health_error": "系統健康元件未載入。請於 configuration.yaml 內加入「system_health:」"
                     },
                     "logs": {
-                        "title": "記錄"
+                        "title": "記錄",
+                        "details": "記錄詳細資料（{level}）",
+                        "load_full_log": "載入完整 Home Assistant 記錄",
+                        "loading_log": "載入錯誤記錄中...",
+                        "no_errors": "未回報任何錯誤。",
+                        "no_issues": "沒有新問題！",
+                        "clear": "清除",
+                        "refresh": "更新",
+                        "multiple_messages": "訊息首先於 {time} 發生，顯示 {counter} 次"
                     }
                 }
             },
@@ -606,7 +686,10 @@
                                     "service_data": "資料"
                                 },
                                 "device_id": {
-                                    "label": "設備"
+                                    "label": "設備",
+                                    "extra_fields": {
+                                        "code": "碼"
+                                    }
                                 },
                                 "scene": {
                                     "label": "啟用場景"
@@ -900,7 +983,11 @@
                         "device_unavailable": "設備不可用",
                         "entity_unavailable": "物件不可用",
                         "no_area": "無分區",
-                        "hub": "連線："
+                        "hub": "連線：",
+                        "settings_button": "編輯 {integration} 設定",
+                        "system_options_button": "{integration} 系統選項",
+                        "delete_button": "刪除 {integration}",
+                        "area": "於 {area}"
                     },
                     "config_flow": {
                         "external_step": {
@@ -1326,20 +1413,22 @@
                         "call_service": "執行服務 {name}",
                         "more_info": "顯示更多資訊：{name}",
                         "url": "開啟視窗至 {url_path}"
-                    }
+                    },
+                    "confirm_delete": "確定要刪除此卡片？"
                 },
                 "editor": {
                     "edit_card": {
                         "header": "卡片設定",
                         "save": "儲存",
                         "toggle_editor": "切換編輯器",
-                        "pick_card": "選擇所要新增的卡片。",
+                        "pick_card": "選擇所要新增的卡片？",
                         "add": "新增卡片",
                         "edit": "編輯",
                         "delete": "刪除",
                         "move": "移動",
                         "show_visual_editor": "顯示視覺編輯器",
-                        "show_code_editor": "顯示編碼編輯器"
+                        "show_code_editor": "顯示編碼編輯器",
+                        "pick_card_view_title": "要加入 {name} 視圖的卡片？"
                     },
                     "migrate": {
                         "header": "設定不相容",
@@ -1352,7 +1441,8 @@
                         "header": "檢視設定",
                         "add": "新增視圖",
                         "edit": "編輯視圖",
-                        "delete": "刪除視圖"
+                        "delete": "刪除視圖",
+                        "header_name": "{name} 檢視設定"
                     },
                     "save_config": {
                         "header": "自行編輯 Lovelace UI",
@@ -1494,6 +1584,12 @@
                         "weather-forecast": {
                             "name": "天氣預報"
                         }
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "title": "面板模式？",
+                            "description": "將會以全寬繪製第一張卡，視圖中其他卡片將不進行呈現。"
+                        }
                     }
                 },
                 "menu": {
@@ -1510,7 +1606,11 @@
                     "message": "Lovelace 設定已更新，是否要更新頁面？",
                     "refresh": "更新"
                 },
-                "reload_lovelace": "重新載入 Lovelace"
+                "reload_lovelace": "重新載入 Lovelace",
+                "views": {
+                    "confirm_delete": "確定要刪除此視圖？",
+                    "existing_cards": "無法刪除內含卡片的視圖，請先移除卡片。"
+                }
             },
             "page-demo": {
                 "cards": {
@@ -1532,7 +1632,8 @@
                             "master_bedroom": "主臥室",
                             "left": "左",
                             "right": "右",
-                            "mirror": "鏡子"
+                            "mirror": "鏡子",
+                            "temperature_study": "溫度學習"
                         },
                         "labels": {
                             "lights": "燈光",
@@ -1665,7 +1766,14 @@
                 "swing_mode": "擺動模式",
                 "away_mode": "外出模式",
                 "aux_heat": "輔助暖氣",
-                "preset_mode": "預置"
+                "preset_mode": "預置",
+                "target_temperature_entity": "{name} 目標溫度",
+                "target_temperature_mode": "{name} 目標溫度 {mode}",
+                "current_temperature": "{name} 目前溫度",
+                "heating": "{name} 加熱中",
+                "cooling": "{name} 制冷中",
+                "high": "調高",
+                "low": "調低"
             },
             "lock": {
                 "code": "密碼",
@@ -1694,6 +1802,13 @@
                     "pause": "暫停",
                     "cancel": "取消",
                     "finish": "完成"
+                }
+            },
+            "counter": {
+                "actions": {
+                    "increment": "增量",
+                    "decrement": "減量",
+                    "reset": "重置"
                 }
             }
         },
@@ -1759,9 +1874,9 @@
                 }
             },
             "config_entry_system_options": {
-                "title": "系統選項",
+                "title": "{integration} 系統選項",
                 "enable_new_entities_label": "啟用新增物件",
-                "enable_new_entities_description": "關閉後，新發現的物件將不會自動新增至 Home Assistant。"
+                "enable_new_entities_description": "關閉後，{integration} 新發現的物件將不會自動新增至 Home Assistant。"
             },
             "zha_device_info": {
                 "manuf": "由 {manufacturer}",
@@ -1785,6 +1900,11 @@
                 "last_seen": "上次出現",
                 "power_source": "電力來源",
                 "unknown": "未知"
+            },
+            "confirmation": {
+                "cancel": "取消",
+                "ok": "好",
+                "title": "確認？"
             }
         },
         "auth_store": {

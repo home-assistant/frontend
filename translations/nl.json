@@ -312,19 +312,53 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "title": "Services"
+                        "title": "Services",
+                        "description": "Met de tool service Dev kunt u elke beschikbare service in Home Assistant aanroepen.",
+                        "call_service": "Aanroepen service",
+                        "no_description": "Er is geen beschrijving beschikbaar",
+                        "column_parameter": "Parameter",
+                        "column_description": "Beschrijving",
+                        "column_example": "Voorbeeld"
                     },
                     "states": {
-                        "title": "Toestanden"
+                        "title": "Toestanden",
+                        "description1": "Stelt de weergave van een apparaat in Home Assistant in.",
+                        "entity": "Entiteit",
+                        "state": "Toestand",
+                        "attributes": "Attributen",
+                        "set_state": "Instellen status",
+                        "current_entities": "Huidge entiteiten",
+                        "filter_entities": "Filter entiteiten",
+                        "filter_states": "Filter toestanden",
+                        "filter_attributes": "Filter attributen",
+                        "no_entities": "Geen entiteiten",
+                        "more_info": "Meer informatie",
+                        "alert_entity_field": "Entiteit is een verplicht veld"
                     },
                     "events": {
-                        "title": "Gebeurtenissen"
+                        "title": "Gebeurtenissen",
+                        "listen_to_events": "Luisteren naar evenementen",
+                        "listening_to": "Luisteren naar",
+                        "start_listening": "Begin te luisteren",
+                        "stop_listening": "Stop met luisteren",
+                        "alert_event_type": "Het type gebeurtenis is een verplicht veld"
                     },
                     "templates": {
-                        "title": "Sjablonen"
+                        "title": "Sjablonen",
+                        "description": "Sjablonen worden weergegeven met de Jinja2-sjabloonediter samen met enkele extensies van Home Assistant.",
+                        "editor": "Sjabloonediter",
+                        "jinja_documentation": "Jinja2-sjabloondocumentatie"
                     },
                     "mqtt": {
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "description_publish": "Publiceer een pakket",
+                        "topic": "onderwerp",
+                        "payload": "Lading (sjabloon toegestaan)",
+                        "publish": "Publiceer",
+                        "description_listen": "Luisteren naar onderwerp",
+                        "listening_to": "Luisteren naar",
+                        "start_listening": "Begin te luisteren",
+                        "stop_listening": "Stop met luisteren"
                     },
                     "info": {
                         "title": "Info"
@@ -1185,7 +1219,7 @@
                         "header": "Kaart configuratie",
                         "save": "Opslaan",
                         "toggle_editor": "Toggle Editor",
-                        "pick_card": "Kies de kaart die je wilt toevoegen.",
+                        "pick_card": "Welke kaart wil je toevoegen?",
                         "add": "Kaart toevoegen",
                         "edit": "Bewerken",
                         "delete": "Verwijder",
@@ -1610,7 +1644,7 @@
                 }
             },
             "config_entry_system_options": {
-                "title": "Systeemopties",
+                "title": "Systeeminstellingen voor {integratie}",
                 "enable_new_entities_label": "Voeg nieuwe entiteiten automatisch toe",
                 "enable_new_entities_description": "Als uitgeschakeld, worden nieuw ontdekte entiteiten niet aan Home Assistant toegevoegd."
             },
