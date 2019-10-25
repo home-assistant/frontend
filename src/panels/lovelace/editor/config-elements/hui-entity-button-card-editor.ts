@@ -124,8 +124,16 @@ export class HuiEntityButtonCardEditor extends LitElement
               </paper-listbox>
             `
           : html`
-              <ha-icon @click=${this._showList} icon="hass:arrow-left"
-                >Back</ha-icon
+              <ha-icon
+                @click=${this._showList}
+                icon="hass:arrow-left"
+              ></ha-icon>
+              <span
+                >${this._showEntityOptions
+                  ? "Entity Options"
+                  : this._showActionOptions
+                  ? "Action Options"
+                  : "Display Options"}</span
               >
             `}
         ${this._showEntityOptions
