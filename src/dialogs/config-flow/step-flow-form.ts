@@ -87,14 +87,17 @@ class StepFlowForm extends LitElement {
                 <mwc-button
                   @click=${this._submitStep}
                   .disabled=${!allRequiredInfoFilledIn}
-                >
-                  Submit
+                  >${this.hass.localize(
+                    "ui.panel.config.integrations.config_entry.submit"
+                  )}
                 </mwc-button>
 
                 ${!allRequiredInfoFilledIn
                   ? html`
-                      <paper-tooltip position="left">
-                        Not all required fields are filled in.
+                      <paper-tooltip position="left"
+                        >${this.hass.localize(
+                          "ui.panel.config.integrations.config_entry.not_all_fields_required"
+                        )}
                       </paper-tooltip>
                     `
                   : html``}

@@ -26,12 +26,20 @@ class StepFlowAbort extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <h2>Aborted</h2>
+      <h2>
+        ${this.hass.localize(
+          "ui.panel.config.integrations.config_entry.aborted"
+        )}
+      </h2>
       <div class="content">
         ${this.flowConfig.renderAbortDescription(this.hass, this.step)}
       </div>
       <div class="buttons">
-        <mwc-button @click="${this._flowDone}">Close</mwc-button>
+        <mwc-button @click="${this._flowDone}"
+          >${this.hass.localize(
+            "ui.panel.config.integrations.config_entry.close"
+          )}</mwc-button
+        >
       </div>
     `;
   }

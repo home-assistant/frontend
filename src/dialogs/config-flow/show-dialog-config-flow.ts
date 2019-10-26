@@ -122,7 +122,13 @@ export const showConfigFlowDialog = (
               <ha-markdown allowsvg .content=${description}></ha-markdown>
             `
           : ""}
-        <p>Created config for ${step.title}.</p>
+        <p>
+          ${hass.localize(
+            "ui.panel.config.integrations.config_flow.external_step.created_config",
+            "name",
+            step.title
+          )}
+        </p>
       `;
     },
   });
