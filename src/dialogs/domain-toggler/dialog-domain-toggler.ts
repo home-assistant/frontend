@@ -37,7 +37,11 @@ class DomainTogglerDialog extends LitElement {
         opened
         @opened-changed=${this._openedChanged}
       >
-        <h2>Toggle Domains</h2>
+        <h2>
+          ${this.hass.localize(
+            "ui.panel.config.entity_registry.toggle_domains"
+          )}
+        </h2>
         <div>
           ${domains.map(
             (domain) =>
