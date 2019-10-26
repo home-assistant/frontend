@@ -1398,7 +1398,15 @@
         },
         "menu": {
           "configure_ui": "Configure UI",
-          "unused_entities": "Unused entities",
+          "unused_entities": {
+            "title": "Unused entities",
+            "available_entities": "These are the entities that you have available, but are not in your Lovelace UI yet.",
+            "select_to_add": "Select the entities you want to add to a card and then click the add card button.",
+            "entity": "Entity",
+            "entity_id": "Entity ID",
+            "domain": "Domain",
+            "last_changed": "Last Changed"
+          },
           "help": "Help",
           "refresh": "Refresh"
         },
