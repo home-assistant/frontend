@@ -1408,7 +1408,12 @@
             "header": "Edit Config",
             "save": "Save",
             "unsaved_changes": "Unsaved changes",
-            "saved": "Saved"
+            "saved": "Saved",
+            "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
+            "confirm_unsaved_comments": "Your config contains comment(s), these will not be saved. Do you want to continue?",
+            "error_parse_yaml": "Unable to parse YAML: {error}",
+            "error_invalid_config": "Your config is not valid: {error}",
+            "error_save_yaml": "Unable to save YAML: {error}"
           },
           "edit_lovelace": {
             "header": "Title of your Lovelace UI",
@@ -1419,7 +1424,9 @@
             "header_name": "{name} View Configuration",
             "add": "Add view",
             "edit": "Edit view",
-            "delete": "Delete view"
+            "delete": "Delete view",
+            "move_left": "Move view left",
+            "move_right": "Move view right"
           },
           "edit_card": {
             "header": "Card Configuration",
