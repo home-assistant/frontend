@@ -737,7 +737,12 @@
             "learn_more": "Learn more about automations",
             "pick_automation": "Pick automation to edit",
             "no_automations": "We couldn’t find any editable automations",
-            "add_automation": "Add automation"
+            "add_automation": "Add automation",
+            "only_editable": "Only automations defined in automations.yaml are editable.",
+            "edit_automation": "Edit automation",
+            "show_info_automation": "Show info about automation",
+            "delete_automation": "Delete automation",
+            "delete_confirm": "Are you sure you want to delete this automation?"
           },
           "editor": {
             "introduction": "Use automations to bring your home alive.",
@@ -954,13 +959,20 @@
             "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
             "learn_more": "Learn more about scripts",
             "no_scripts": "We couldn’t find any editable scripts",
-            "add_script": "Add script"
+            "add_script": "Add script",
+            "trigger_script": "Trigger script",
+            "edit_script": "Edit script"
           },
           "editor": {
+            "introduction": "Use scripts to execute a sequence of actions.",
             "header": "Script: {name}",
             "default_name": "New Script",
             "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
-            "delete_confirm": "Are you sure you want to delete this script?"
+            "delete_confirm": "Are you sure you want to delete this script?",
+            "delete_script": "Delete script",
+            "sequence": "Sequence",
+            "sequence_sentence": "The sequence of actions of this script.",
+            "link_available_actions": "Learn more about available actions."
           }
         },
         "cloud": {
