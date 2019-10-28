@@ -12,7 +12,6 @@ import "@polymer/paper-tabs/paper-tabs";
 import "../../components/ha-cards";
 import "../../components/ha-icon";
 import "../../components/ha-menu-button";
-import "../../components/ha-start-voice-button";
 
 import "../../layouts/ha-app-layout";
 
@@ -23,6 +22,7 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import computeLocationName from "../../common/config/location_name";
 import NavigateMixin from "../../mixins/navigate-mixin";
 import { EventsMixin } from "../../mixins/events-mixin";
+import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const ALWAYS_SHOW_DOMAIN = ["persistent_notification", "configurator"];
@@ -72,7 +72,11 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
             <div main-title="">
               [[computeTitle(views, defaultView, locationName)]]
             </div>
-            <ha-start-voice-button hass="[[hass]]"></ha-start-voice-button>
+            <paper-icon-button
+              aria-label="Start conversation"
+              icon="hass:microphone"
+              on-click="_showVoiceCommandDialog"
+            ></paper-icon-button>
           </app-toolbar>
 
           <div sticky="" hidden$="[[areTabsHidden(views, showTabs)]]">
@@ -239,6 +243,10 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
       1,
       matchColumns - (!this.narrow && this.hass.dockedSidebar === "docked")
     );
+  }
+
+  _showVoiceCommandDialog() {
+    showVoiceCommandDialog(this);
   }
 
   areTabsHidden(views, showTabs) {

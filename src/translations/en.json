@@ -554,6 +554,12 @@
       }
     },
     "dialogs": {
+      "voice_command": {
+        "did_not_hear": "<Home Assistant did not hear anything>",
+        "how_can_i_help": "How can I help?",
+        "label": "Type a question and press <Enter>",
+        "label_voice": "Type and press <Enter> or tap the microphone icon to speak"
+      },
       "confirmation": {
         "cancel": "Cancel",
         "ok": "OK",
@@ -1677,7 +1683,7 @@
       "shopping-list": {
         "clear_completed": "Clear completed",
         "add_item": "Add item",
-        "microphone_tip": "Tap the microphone on the top right and say “Add candy to my shopping list”"
+        "microphone_tip": "Tap the microphone on the top right and say or type “Add candy to my shopping list”"
       },
       "page-authorize": {
         "initializing": "Initializing",
