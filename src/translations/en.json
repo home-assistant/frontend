@@ -323,7 +323,9 @@
         "comfort": "Comfort",
         "home": "Home",
         "sleep": "Sleep",
-        "activity": "Activity"
+        "activity": "Activity",
+        "Frost Guard": "Frost Guard",
+        "Schedule": "Schedule"
       },
       "hvac_action": {
         "off": "Off",
