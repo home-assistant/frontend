@@ -55,7 +55,9 @@ export const handleAction = (
 
   switch (actionConfig.action) {
     case "more-info":
-      if (config.entity || config.camera_image) {
+      if (actionConfig.card) {
+        showCardDialog(node, { card: actionConfig.card });
+      } else if (config.entity || config.camera_image) {
         fireEvent(node, "hass-more-info", {
           entityId: config.entity ? config.entity : config.camera_image!,
         });
@@ -85,11 +87,6 @@ export const handleAction = (
       const [domain, service] = actionConfig.service.split(".", 2);
       hass.callService(domain, service, actionConfig.service_data);
       forwardHaptic("light");
-      break;
-    case "card":
-      if (actionConfig.card) {
-        showCardDialog(node, { card: actionConfig.card });
-      }
       break;
   }
 };

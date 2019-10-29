@@ -63,15 +63,11 @@ export interface UrlActionConfig extends BaseActionConfig {
 
 export interface MoreInfoActionConfig extends BaseActionConfig {
   action: "more-info";
+  card?: LovelaceCardConfig;
 }
 
 export interface NoActionConfig extends BaseActionConfig {
   action: "none";
-}
-
-export interface CardActionConfig extends BaseActionConfig {
-  action: "card";
-  card: LovelaceCardConfig;
 }
 
 export interface BaseActionConfig {
@@ -93,8 +89,7 @@ export type ActionConfig =
   | NavigateActionConfig
   | UrlActionConfig
   | MoreInfoActionConfig
-  | NoActionConfig
-  | CardActionConfig;
+  | NoActionConfig;
 
 export const fetchConfig = (
   conn: Connection,
