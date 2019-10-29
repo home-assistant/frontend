@@ -24,7 +24,6 @@ import "@polymer/paper-tabs/paper-tabs";
 import scrollToTarget from "../../common/dom/scroll-to-target";
 
 import "../../layouts/ha-app-layout";
-import "../../components/ha-start-voice-button";
 import "../../components/ha-paper-icon-button-arrow-next";
 import "../../components/ha-paper-icon-button-arrow-prev";
 import "../../components/ha-icon";
@@ -49,9 +48,12 @@ import { afterNextRender } from "../../common/util/render-status";
 import { haStyle } from "../../resources/styles";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { loadLovelaceResources } from "./common/load-resources";
+import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import memoizeOne from "memoize-one";
 
 class HUIRoot extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property() public hass!: HomeAssistant;
   @property() public lovelace?: Lovelace;
   @property() public columns?: number;
   @property() public narrow?: boolean;
@@ -61,6 +63,10 @@ class HUIRoot extends LitElement {
   private _viewCache?: { [viewId: string]: HUIView };
 
   private _debouncedConfigChanged: () => void;
+
+  private _conversation = memoizeOne((_components) =>
+    isComponentLoaded(this.hass, "conversation")
+  );
 
   constructor() {
     super();
@@ -161,9 +167,15 @@ class HUIRoot extends LitElement {
                     .narrow=${this.narrow}
                   ></ha-menu-button>
                   <div main-title>${this.config.title || "Home Assistant"}</div>
-                  <ha-start-voice-button
-                    .hass="${this.hass}"
-                  ></ha-start-voice-button>
+                  ${this._conversation(this.hass.config.components)
+                    ? html`
+                        <paper-icon-button
+                          aria-label="Start conversation"
+                          icon="hass:microphone"
+                          @click=${this._showVoiceCommandDialog}
+                        ></paper-icon-button>
+                      `
+                    : ""}
                   <paper-menu-button
                     no-animations
                     horizontal-align="right"
@@ -544,6 +556,10 @@ class HUIRoot extends LitElement {
 
   private _deselect(ev): void {
     ev.target.selected = null;
+  }
+
+  private _showVoiceCommandDialog(): void {
+    showVoiceCommandDialog(this);
   }
 
   private _handleHelp(): void {
