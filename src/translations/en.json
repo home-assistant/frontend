@@ -1398,7 +1398,8 @@
           "configure_ui": "Configure UI",
           "unused_entities": "Unused entities",
           "help": "Help",
-          "refresh": "Refresh"
+          "refresh": "Refresh",
+          "close": "Close"
         },
         "editor": {
           "header": "Edit UI",
@@ -1414,7 +1415,8 @@
           },
           "edit_lovelace": {
             "header": "Title of your Lovelace UI",
-            "explanation": "This title is shown above all your views in Lovelace."
+            "explanation": "This title is shown above all your views in Lovelace.",
+            "edit_title": "Edit title"
           },
           "edit_view": {
             "header": "View Configuration",
