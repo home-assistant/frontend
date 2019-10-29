@@ -107,7 +107,9 @@ class HUIRoot extends LitElement {
                   </div>
                   <paper-icon-button
                     icon="hass:help-circle"
-                    title="Help"
+                    title="${this.hass!.localize(
+                      "ui.panel.lovelace.menu.help"
+                    )}"
                     @click="${this._handleHelp}"
                   ></paper-icon-button>
                   <paper-menu-button
@@ -256,7 +258,9 @@ class HUIRoot extends LitElement {
                           ${this._editMode
                             ? html`
                                 <ha-paper-icon-button-arrow-prev
-                                  title="Move view left"
+                                  title="${this.hass!.localize(
+                                    "ui.panel.lovelace.editor.edit_view.move_left"
+                                  )}"
                                   class="edit-icon view"
                                   @click="${this._moveViewLeft}"
                                   ?disabled="${this._curView === 0}"
@@ -274,13 +278,17 @@ class HUIRoot extends LitElement {
                           ${this._editMode
                             ? html`
                                 <ha-icon
-                                  title="Edit view"
+                                  title="${this.hass!.localize(
+                                    "ui.panel.lovelace.editor.edit_view.edit"
+                                  )}"
                                   class="edit-icon view"
                                   icon="hass:pencil"
                                   @click="${this._editView}"
                                 ></ha-icon>
                                 <ha-paper-icon-button-arrow-next
-                                  title="Move view right"
+                                  title="${this.hass!.localize(
+                                    "ui.panel.lovelace.editor.edit_view.move_right"
+                                  )}"
                                   class="edit-icon view"
                                   @click="${this._moveViewRight}"
                                   ?disabled="${(this._curView! as number) +
