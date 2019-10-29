@@ -26,7 +26,6 @@ import { processConfigEntities } from "../common/process-config-entities";
 import { GlanceCardConfig, GlanceConfigEntity } from "./types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
 
@@ -246,7 +245,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _handleAction(ev: HASSDomEvent<ActionHandlerEvent>) {
+  private _handleAction(ev: ActionHandlerEvent) {
     const config = (ev.currentTarget as any).config as GlanceConfigEntity;
     handleAction(this, this.hass!, config, ev.detail.action!);
   }

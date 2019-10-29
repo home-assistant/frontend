@@ -29,7 +29,6 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
 
@@ -128,7 +127,7 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
     )!.selected = stateObj.attributes.options.indexOf(stateObj.state);
   }
 
-  private _handleAction(ev: HASSDomEvent<ActionHandlerEvent>) {
+  private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 

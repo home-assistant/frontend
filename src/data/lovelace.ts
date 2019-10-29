@@ -1,5 +1,6 @@
 import { HomeAssistant } from "../types";
 import { Connection, getCollection } from "home-assistant-js-websocket";
+import { HASSDomEvent } from "../common/dom/fire_event";
 
 export interface LovelaceConfig {
   title?: string;
@@ -132,6 +133,8 @@ export interface ActionHandlerOptions {
   hasDoubleClick?: boolean;
 }
 
-export interface ActionHandlerEvent {
-  action?: string;
+export interface ActionHandlerDetail {
+  action: string;
 }
+
+export type ActionHandlerEvent = HASSDomEvent<ActionHandlerDetail>;

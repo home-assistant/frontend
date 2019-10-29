@@ -16,7 +16,6 @@ import { HomeAssistant } from "../../../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
 
@@ -75,7 +74,7 @@ export class HuiStateBadgeElement extends LitElement
     `;
   }
 
-  private _handleAction(ev: HASSDomEvent<ActionHandlerEvent>) {
+  private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 }

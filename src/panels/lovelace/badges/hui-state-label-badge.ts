@@ -15,7 +15,6 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { StateLabelBadgeConfig } from "./types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
 
@@ -55,7 +54,7 @@ export class HuiStateLabelBadge extends LitElement implements LovelaceBadge {
     `;
   }
 
-  private _handleAction(ev: HASSDomEvent<ActionHandlerEvent>) {
+  private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 }

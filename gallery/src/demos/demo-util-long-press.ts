@@ -3,7 +3,6 @@ import "@material/mwc-button";
 
 import "../../../src/components/ha-card";
 import { actionHandler } from "../../../src/panels/lovelace/common/directives/action-handler-directive";
-import { HASSDomEvent } from "../../../src/common/dom/fire_event";
 import { ActionHandlerEvent } from "../../../src/data/lovelace";
 
 export class DemoUtilLongPress extends LitElement {
@@ -29,7 +28,7 @@ export class DemoUtilLongPress extends LitElement {
     `;
   }
 
-  private _handleAction(ev: HASSDomEvent<ActionHandlerEvent>) {
+  private _handleAction(ev: ActionHandlerEvent) {
     this._addValue(ev, ev.detail.action!);
   }
 

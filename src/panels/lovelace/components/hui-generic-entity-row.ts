@@ -23,7 +23,6 @@ import { classMap } from "lit-html/directives/class-map";
 import { EntitiesCardEntityConfig } from "../cards/types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
-import { HASSDomEvent } from "../../../common/dom/fire_event";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
 
@@ -122,7 +121,7 @@ class HuiGenericEntityRow extends LitElement {
     }
   }
 
-  private _handleAction(ev: HASSDomEvent<ActionHandlerEvent>) {
+  private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this.config!, ev.detail.action!);
   }
 
