@@ -1212,23 +1212,23 @@
             "device_unavailable": "device unavailable",
             "entity_unavailable": "entity unavailable",
             "area": "In {area}",
-            "no_area": "No Area",
-            "area_picker_label": "Area",
-            "add_area": "Add Area",
-            "finish": "Finish",
-            "name_new_area": "Name of the new area?",
-            "failed_create_area": "Failed to create area.",
-            "error_saving_area": "Error saving area: {name}",
-            "aborted": "Aborted",
-            "close": "Close",
-            "submit": "Submit",
-            "not_all_fields_required": "Not all required fields are filled in."
+            "no_area": "No Area"
           },
           "config_flow": {
+            "aborted": "Aborted",
+            "close": "Close",
+            "finish": "Finish",
+            "submit": "Submit",
+            "not_all_fields_required": "Not all required fields are filled in.",
+            "add_area": "Add Area",
+            "area_picker_label": "Area",
+            "failed_create_area": "Failed to create area.",
+            "error_saving_area": "Error saving area: {error}",
+            "name_new_area": "Name of the new area?",
+            "created_config": "Created config for {name}.",
             "external_step": {
               "description": "This step requires you to visit an external website to be completed.",
-              "open_site": "Open website",
-              "created_config": "Created config for {name}."
+              "open_site": "Open website"
             }
           }
         },

@@ -64,7 +64,7 @@ class StepFlowCreateEntry extends LitElement {
                         </div>
                         <paper-dropdown-menu-light
                           label="${localize(
-                            "ui.panel.config.integrations.config_entry.area_picker_label"
+                            "ui.panel.config.integrations.config_flow.area_picker_label"
                           )}"
                           .device=${device.id}
                           @selected-item-changed=${this._handleAreaChanged}
@@ -95,7 +95,7 @@ class StepFlowCreateEntry extends LitElement {
           ? html`
               <mwc-button @click="${this._addArea}"
                 >${localize(
-                  "ui.panel.config.integrations.config_entry.add_area"
+                  "ui.panel.config.integrations.config_flow.add_area"
                 )}</mwc-button
               >
             `
@@ -103,7 +103,7 @@ class StepFlowCreateEntry extends LitElement {
 
         <mwc-button @click="${this._flowDone}"
           >${localize(
-            "ui.panel.config.integrations.config_entry.finish"
+            "ui.panel.config.integrations.config_flow.finish"
           )}</mwc-button
         >
       </div>
@@ -117,7 +117,7 @@ class StepFlowCreateEntry extends LitElement {
   private async _addArea() {
     const name = prompt(
       this.hass.localize(
-        "ui.panel.config.integrations.config_entry.name_new_area"
+        "ui.panel.config.integrations.config_flow.name_new_area"
       )
     );
     if (!name) {
@@ -131,7 +131,7 @@ class StepFlowCreateEntry extends LitElement {
     } catch (err) {
       alert(
         this.hass.localize(
-          "ui.panel.config.integrations.config_entry.failed_create_area"
+          "ui.panel.config.integrations.config_flow.failed_create_area"
         )
       );
     }
@@ -154,8 +154,8 @@ class StepFlowCreateEntry extends LitElement {
     } catch (err) {
       alert(
         this.hass.localize(
-          "ui.panel.config.integrations.config_entry.error_saving_area",
-          "name",
+          "ui.panel.config.integrations.config_flow.error_saving_area",
+          "error",
           "err.message"
         )
       );
