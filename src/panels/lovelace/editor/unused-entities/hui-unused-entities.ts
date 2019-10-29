@@ -57,9 +57,7 @@ export class HuiUnusedEntities extends LitElement {
   private _columns = memoizeOne((narrow: boolean) => {
     const columns: DataTableColumnContainer = {
       entity: {
-        title: this.hass!.localize(
-          "ui.panel.lovelace.menu.unused_entities.entity"
-        ),
+        title: this.hass!.localize("ui.panel.lovelace.unused_entities.entity"),
         sortable: true,
         filterable: true,
         filterKey: "friendly_name",
@@ -81,22 +79,18 @@ export class HuiUnusedEntities extends LitElement {
     }
 
     columns.entity_id = {
-      title: this.hass!.localize(
-        "ui.panel.lovelace.menu.unused_entities.entity_id"
-      ),
+      title: this.hass!.localize("ui.panel.lovelace.unused_entities.entity_id"),
       sortable: true,
       filterable: true,
     };
     columns.domain = {
-      title: this.hass!.localize(
-        "ui.panel.lovelace.menu.unused_entities.domain"
-      ),
+      title: this.hass!.localize("ui.panel.lovelace.unused_entities.domain"),
       sortable: true,
       filterable: true,
     };
     columns.last_changed = {
       title: this.hass!.localize(
-        "ui.panel.lovelace.menu.unused_entities.last_changed"
+        "ui.panel.lovelace.unused_entities.last_changed"
       ),
       type: "numeric",
       sortable: true,
@@ -131,17 +125,17 @@ export class HuiUnusedEntities extends LitElement {
     return html`
       <ha-card
         header="${this.hass.localize(
-          "ui.panel.lovelace.menu.unused_entities.title"
+          "ui.panel.lovelace.unused_entities.title"
         )}"
       >
         <div class="card-content">
           ${this.hass.localize(
-            "ui.panel.lovelace.menu.unused_entities.available_entities"
+            "ui.panel.lovelace.unused_entities.available_entities"
           )}
           ${this.lovelace.mode === "storage"
             ? html`
                 <br />${this.hass.localize(
-                  "ui.panel.lovelace.menu.unused_entities.select_to_add"
+                  "ui.panel.lovelace.unused_entities.select_to_add"
                 )}
               `
             : ""}
