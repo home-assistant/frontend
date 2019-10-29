@@ -50,6 +50,7 @@ import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { loadLovelaceResources } from "./common/load-resources";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import memoizeOne from "memoize-one";
 
 class HUIRoot extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -60,9 +61,12 @@ class HUIRoot extends LitElement {
   @property() private _routeData?: { view: string };
   @property() private _curView?: number | "hass-unused-entities";
   private _viewCache?: { [viewId: string]: HUIView };
-  @property() private _conversation = false;
 
   private _debouncedConfigChanged: () => void;
+
+  private _conversation = memoizeOne((_components) =>
+    isComponentLoaded(this.hass, "conversation")
+  );
 
   constructor() {
     super();
@@ -152,7 +156,7 @@ class HUIRoot extends LitElement {
                     .narrow=${this.narrow}
                   ></ha-menu-button>
                   <div main-title>${this.config.title || "Home Assistant"}</div>
-                  ${this._conversation
+                  ${this._conversation(this.hass.config.components)
                     ? html`
                         <paper-icon-button
                           aria-label="Start conversation"
@@ -409,11 +413,6 @@ class HUIRoot extends LitElement {
         }
       `,
     ];
-  }
-
-  protected firstUpdated(changedProperties: PropertyValues) {
-    super.updated(changedProperties);
-    this._conversation = isComponentLoaded(this.hass, "conversation");
   }
 
   protected updated(changedProperties: PropertyValues): void {
