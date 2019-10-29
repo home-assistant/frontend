@@ -35,7 +35,7 @@ interface Results {
 // @ts-ignore
 window.SpeechRecognition =
   // @ts-ignore
-  window.webkitSpeechRecognition || window.SpeechRecognition;
+  window.SpeechRecognition || window.webkitSpeechRecognition;
 // @ts-ignore
 window.SpeechGrammarList =
   // @ts-ignore
@@ -111,9 +111,9 @@ export class HaVoiceCommandDialog extends LitElement {
               ? html`
                   <span suffix="" slot="suffix">
                     <paper-icon-button
-                      .disabled=${Boolean(this.results)}
+                      .active=${Boolean(this.results)}
                       icon="hass:microphone"
-                      @click=${this._startListening}
+                      @click=${this._toggleListening}
                     ></paper-icon-button>
                   </span>
                 `
@@ -148,6 +148,9 @@ export class HaVoiceCommandDialog extends LitElement {
   private _handleKeyUp(ev: KeyboardEvent) {
     const input = ev.target as PaperInputElement;
     if (ev.keyCode === 13 && input.value) {
+      if (this.recognition) {
+        this.recognition!.abort();
+      }
       this._processText(input.value);
       input.value = "";
     }
@@ -163,14 +166,16 @@ export class HaVoiceCommandDialog extends LitElement {
         transcript: "",
       };
     };
-    this.recognition!.onerror = () => {
+    this.recognition!.onerror = (event) => {
       this.recognition!.abort();
-      const text =
-        this.results && this.results.transcript
-          ? this.results.transcript
-          : this.hass.localize("ui.dialogs.voice_command.did_not_hear");
+      if (event.error !== "aborted") {
+        const text =
+          this.results && this.results.transcript
+            ? this.results.transcript
+            : this.hass.localize("ui.dialogs.voice_command.did_not_hear");
+        this._addMessage({ who: "user", text, error: true });
+      }
       this.results = null;
-      this._addMessage({ who: "user", text, error: true });
     };
     this.recognition!.onend = () => {
       // Already handled by onerror
@@ -210,6 +215,14 @@ export class HaVoiceCommandDialog extends LitElement {
     } catch {
       this._conversation.slice(-1).pop()!.error = true;
       this.requestUpdate();
+    }
+  }
+
+  private _toggleListening() {
+    if (!this.results) {
+      this._startListening();
+    } else {
+      this.recognition!.stop();
     }
   }
 
@@ -254,7 +267,7 @@ export class HaVoiceCommandDialog extends LitElement {
         color: var(--secondary-text-color);
       }
 
-      paper-icon-button[disabled] {
+      paper-icon-button[active] {
         color: var(--primary-color);
       }
 
@@ -306,7 +319,7 @@ export class HaVoiceCommandDialog extends LitElement {
       }
 
       .interimTranscript {
-        color: darkgrey;
+        color: var(--secondary-text-color);
       }
 
       [hidden] {
