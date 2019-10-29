@@ -74,7 +74,10 @@ class LovelacePanel extends LitElement {
 
     if (state === "error") {
       return html`
-        <hass-error-screen title="Lovelace" .error="${this._errorMsg}">
+        <hass-error-screen
+          title="${this.hass!.localize("domain.lovelace")}"
+          .error="${this._errorMsg}"
+        >
           <mwc-button on-click="_forceFetchConfig"
             >${this.hass!.localize(
               "ui.panel.lovelace.reload_lovelace"
