@@ -323,7 +323,9 @@
         "comfort": "Comfort",
         "home": "Home",
         "sleep": "Sleep",
-        "activity": "Activity"
+        "activity": "Activity",
+        "Frost Guard": "Frost Guard",
+        "Schedule": "Schedule"
       },
       "hvac_action": {
         "off": "Off",
@@ -740,7 +742,12 @@
             "learn_more": "Learn more about automations",
             "pick_automation": "Pick automation to edit",
             "no_automations": "We couldn’t find any editable automations",
-            "add_automation": "Add automation"
+            "add_automation": "Add automation",
+            "only_editable": "Only automations defined in automations.yaml are editable.",
+            "edit_automation": "Edit automation",
+            "show_info_automation": "Show info about automation",
+            "delete_automation": "Delete automation",
+            "delete_confirm": "Are you sure you want to delete this automation?"
           },
           "editor": {
             "introduction": "Use automations to bring your home alive.",
@@ -957,13 +964,20 @@
             "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
             "learn_more": "Learn more about scripts",
             "no_scripts": "We couldn’t find any editable scripts",
-            "add_script": "Add script"
+            "add_script": "Add script",
+            "trigger_script": "Trigger script",
+            "edit_script": "Edit script"
           },
           "editor": {
+            "introduction": "Use scripts to execute a sequence of actions.",
             "header": "Script: {name}",
             "default_name": "New Script",
             "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
-            "delete_confirm": "Are you sure you want to delete this script?"
+            "delete_confirm": "Are you sure you want to delete this script?",
+            "delete_script": "Delete script",
+            "sequence": "Sequence",
+            "sequence_sentence": "The sequence of actions of this script.",
+            "link_available_actions": "Learn more about available actions."
           }
         },
         "cloud": {
@@ -1410,7 +1424,8 @@
         "menu": {
           "configure_ui": "Configure UI",
           "help": "Help",
-          "refresh": "Refresh"
+          "refresh": "Refresh",
+          "close": "Close"
         },
         "editor": {
           "header": "Edit UI",
@@ -1422,18 +1437,26 @@
             "header": "Edit Config",
             "save": "Save",
             "unsaved_changes": "Unsaved changes",
-            "saved": "Saved"
+            "saved": "Saved",
+            "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
+            "confirm_unsaved_comments": "Your config contains comment(s), these will not be saved. Do you want to continue?",
+            "error_parse_yaml": "Unable to parse YAML: {error}",
+            "error_invalid_config": "Your config is not valid: {error}",
+            "error_save_yaml": "Unable to save YAML: {error}"
           },
           "edit_lovelace": {
             "header": "Title of your Lovelace UI",
-            "explanation": "This title is shown above all your views in Lovelace."
+            "explanation": "This title is shown above all your views in Lovelace.",
+            "edit_title": "Edit title"
           },
           "edit_view": {
             "header": "View Configuration",
             "header_name": "{name} View Configuration",
             "add": "Add view",
             "edit": "Edit view",
-            "delete": "Delete view"
+            "delete": "Delete view",
+            "move_left": "Move view left",
+            "move_right": "Move view right"
           },
           "edit_card": {
             "header": "Card Configuration",
@@ -1444,8 +1467,8 @@
             "show_code_editor": "Show Code Editor",
             "add": "Add Card",
             "edit": "Edit",
-            "delete": "Delete",
-            "move": "Move",
+            "delete": "Delete Card",
+            "move": "Move to View",
             "options": "More options"
           },
           "save_config": {

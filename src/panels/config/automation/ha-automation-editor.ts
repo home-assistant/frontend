@@ -82,6 +82,9 @@ export class HaAutomationEditor extends LitElement {
               ? ""
               : html`
                   <paper-icon-button
+                    title="${this.hass.localize(
+                      "ui.panel.config.automation.picker.delete_automation"
+                    )}"
                     icon="hass:delete"
                     @click=${this._delete}
                   ></paper-icon-button>
@@ -218,7 +221,11 @@ export class HaAutomationEditor extends LitElement {
   }
 
   private async _delete() {
-    if (!confirm("Are you sure you want to delete this automation?")) {
+    if (
+      !confirm(
+        this.hass.localize("ui.panel.config.automation.picker.delete_confirm")
+      )
+    ) {
       return;
     }
     await deleteAutomation(this.hass, this.automation.attributes.id!);

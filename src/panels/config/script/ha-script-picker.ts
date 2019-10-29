@@ -72,6 +72,9 @@ class HaScriptPicker extends LitElement {
                       <paper-icon-button
                         .script=${script}
                         icon="hass:play"
+                        title="${this.hass.localize(
+                          "ui.panel.config.script.picker.trigger_script"
+                        )}"
                         @click=${this._runScript}
                       ></paper-icon-button>
                       <paper-item-body>
@@ -81,6 +84,9 @@ class HaScriptPicker extends LitElement {
                         <a href=${`/config/script/edit/${script.entity_id}`}>
                           <paper-icon-button
                             icon="hass:pencil"
+                            title="${this.hass.localize(
+                              "ui.panel.config.script.picker.edit_script"
+                            )}"
                           ></paper-icon-button>
                         </a>
                       </div>
