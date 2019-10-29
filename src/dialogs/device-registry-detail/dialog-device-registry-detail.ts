@@ -95,7 +95,7 @@ class DialogDeviceRegistryDetail extends LitElement {
             <div class="area">
               <paper-dropdown-menu
                 label="${this.hass.localize(
-                  "ui.panel.config.integrations.config_entry.area_picker_label"
+                  "ui.panel.config.devices.area_picker_label"
                 )}"
                 class="flex"
               >
@@ -173,9 +173,7 @@ class DialogDeviceRegistryDetail extends LitElement {
     } catch (err) {
       this._error =
         err.message ||
-        this.hass.localize(
-          "ui.panel.config.entity_registry.editor.unknown_error"
-        );
+        this.hass.localize("ui.panel.config.devices.unknown_error");
     } finally {
       this._submitting = false;
     }

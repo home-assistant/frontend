@@ -1139,6 +1139,8 @@
           "caption": "Devices",
           "description": "Manage connected devices",
           "unnamed_device": "Unnamed device",
+          "unknown_error": "Unknown error",
+          "area_picker_label": "Area",
           "automation": {
             "triggers": {
               "caption": "Do something when..."
@@ -1176,8 +1178,7 @@
             "delete": "DELETE",
             "confirm_delete": "Are you sure you want to delete this entry?",
             "confirm_delete2": "Deleting an entry will not remove the entity from Home Assistant. To do this, you will need to remove the integration '{platform}' from Home Assistant.",
-            "update": "UPDATE",
-            "unknown_error": "Unknown error"
+            "update": "UPDATE"
           }
         },
         "person": {
@@ -1231,8 +1232,7 @@
             "device_unavailable": "device unavailable",
             "entity_unavailable": "entity unavailable",
             "area": "In {area}",
-            "no_area": "No Area",
-            "area_picker_label": "Area"
+            "no_area": "No Area"
           },
           "config_flow": {
             "external_step": {
