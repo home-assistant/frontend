@@ -79,21 +79,21 @@ export class HaPanelCustom extends UpdatingElement {
     ) {
       if (
         !confirm(
-          this.hass.localize(
+          `${this.hass.localize(
             "ui.panel.custom.external_panel.question_trust",
             "name",
             config.name,
             "link",
             tempA.href
-          ) +
-            "\n\n" +
-            this.hass.localize(
-              "ui.panel.custom.external_panel.complete_access"
-            ) +
-            "\n\n" +
-            "(" +
-            this.hass.localize("ui.panel.custom.external_panel.hide_message") +
-            ")"
+          )}
+
+           ${this.hass.localize(
+             "ui.panel.custom.external_panel.complete_access"
+           )}
+
+           (${this.hass.localize(
+             "ui.panel.custom.external_panel.hide_message"
+           )})`
         )
       ) {
         return;
