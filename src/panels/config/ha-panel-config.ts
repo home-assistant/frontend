@@ -1,6 +1,6 @@
 import { property, PropertyValues, customElement } from "lit-element";
 import "../../layouts/hass-loading-screen";
-import isComponentLoaded from "../../common/config/is_component_loaded";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { HomeAssistant } from "../../types";
 import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
 import { listenMediaQuery } from "../../common/dom/media_query";

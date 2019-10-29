@@ -9,7 +9,7 @@ import "./more-info/more-info-controls";
 import "./more-info/more-info-settings";
 
 import { computeStateDomain } from "../common/entity/compute_state_domain";
-import isComponentLoaded from "../common/config/is_component_loaded";
+import { isComponentLoaded } from "../common/config/is_component_loaded";
 
 import DialogMixin from "../mixins/dialog-mixin";
 
