@@ -67,7 +67,7 @@
     "@polymer/paper-toast": "^3.0.1",
     "@polymer/paper-tooltip": "^3.0.1",
     "@polymer/polymer": "3.1.0",
-    "@thomasloven/round-slider": "^0.2.2",
+    "@thomasloven/round-slider": "^0.3.3",
     "@vaadin/vaadin-combo-box": "^4.2.8",
     "@vaadin/vaadin-date-picker": "^3.3.3",
     "@webcomponents/shadycss": "^1.9.0",
