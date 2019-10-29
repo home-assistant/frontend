@@ -222,7 +222,7 @@ class DialogPersonDetail extends LitElement {
   }
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
-    if (!(ev.detail as any).value) {
+    if (ev.detail.value) {
       this._params = undefined;
     }
   }
