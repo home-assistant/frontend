@@ -182,7 +182,9 @@ export class HaVoiceCommandDialog extends LitElement {
         const text =
           this.results && this.results.transcript
             ? this.results.transcript
-            : this.hass.localize("ui.dialogs.voice_command.did_not_hear");
+            : `<${this.hass.localize(
+                "ui.dialogs.voice_command.did_not_hear"
+              )}>`;
         this._addMessage({ who: "user", text, error: true });
       }
       this.results = null;
@@ -199,7 +201,9 @@ export class HaVoiceCommandDialog extends LitElement {
       } else {
         this._addMessage({
           who: "user",
-          text: this.hass.localize("ui.dialogs.voice_command.did_not_hear"),
+          text: `<${this.hass.localize(
+            "ui.dialogs.voice_command.did_not_hear"
+          )}>`,
           error: true,
         });
       }

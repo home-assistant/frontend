@@ -15,6 +15,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "../../components/ha-menu-button";
 import "../../components/ha-card";
 import LocalizeMixin from "../../mixins/localize-mixin";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 
 /*
@@ -72,11 +73,14 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
               narrow="[[narrow]]"
             ></ha-menu-button>
             <div main-title>[[localize('panel.shopping_list')]]</div>
+
             <paper-icon-button
+              hidden$="[[!conversation]]"
               aria-label="Start conversation"
               icon="hass:microphone"
               on-click="_showVoiceCommandDialog"
             ></paper-icon-button>
+
             <paper-menu-button
               horizontal-align="right"
               horizontal-offset="-5"
@@ -132,7 +136,7 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
               </paper-icon-item>
             </template>
           </ha-card>
-          <div class="tip">
+          <div class="tip" hidden$="[[!conversation]]">
             [[localize('ui.panel.shopping-list.microphone_tip')]]
           </div>
         </div>
@@ -144,7 +148,10 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
     return {
       hass: Object,
       narrow: Boolean,
-      canListen: Boolean,
+      conversation: {
+        type: Boolean,
+        computed: "_computeConversation(hass)",
+      },
       items: {
         type: Array,
         value: [],
@@ -206,6 +213,10 @@ class HaPanelShoppingList extends LocalizeMixin(PolymerElement) {
     if (ev.keyCode === 13) {
       this._addItem();
     }
+  }
+
+  _computeConversation(hass) {
+    return isComponentLoaded(hass, "conversation");
   }
 
   _showVoiceCommandDialog() {

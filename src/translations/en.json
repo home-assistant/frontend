@@ -555,7 +555,7 @@
     },
     "dialogs": {
       "voice_command": {
-        "did_not_hear": "<Home Assistant did not hear anything>",
+        "did_not_hear": "Home Assistant did not hear anything",
         "how_can_i_help": "How can I help?",
         "label": "Type a question and press <Enter>",
         "label_voice": "Type and press <Enter> or tap the microphone icon to speak"

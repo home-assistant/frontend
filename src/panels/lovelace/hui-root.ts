@@ -49,9 +49,10 @@ import { haStyle } from "../../resources/styles";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { loadLovelaceResources } from "./common/load-resources";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 
 class HUIRoot extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property() public hass!: HomeAssistant;
   @property() public lovelace?: Lovelace;
   @property() public columns?: number;
   @property() public narrow?: boolean;
@@ -59,6 +60,7 @@ class HUIRoot extends LitElement {
   @property() private _routeData?: { view: string };
   @property() private _curView?: number | "hass-unused-entities";
   private _viewCache?: { [viewId: string]: HUIView };
+  @property() private _conversation = false;
 
   private _debouncedConfigChanged: () => void;
 
@@ -150,11 +152,15 @@ class HUIRoot extends LitElement {
                     .narrow=${this.narrow}
                   ></ha-menu-button>
                   <div main-title>${this.config.title || "Home Assistant"}</div>
-                  <paper-icon-button
-                    aria-label="Start conversation"
-                    icon="hass:microphone"
-                    @click=${this._showVoiceCommandDialog}
-                  ></paper-icon-button>
+                  ${this._conversation
+                    ? html`
+                        <paper-icon-button
+                          aria-label="Start conversation"
+                          icon="hass:microphone"
+                          @click=${this._showVoiceCommandDialog}
+                        ></paper-icon-button>
+                      `
+                    : ""}
                   <paper-menu-button
                     no-animations
                     horizontal-align="right"
@@ -403,6 +409,11 @@ class HUIRoot extends LitElement {
         }
       `,
     ];
+  }
+
+  protected firstUpdated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
+    this._conversation = isComponentLoaded(this.hass, "conversation");
   }
 
   protected updated(changedProperties: PropertyValues): void {

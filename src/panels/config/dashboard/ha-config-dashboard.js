@@ -14,7 +14,7 @@ import "../../../components/ha-icon-next";
 import "../ha-config-section";
 import "./ha-config-navigation";
 
-import isComponentLoaded from "../../../common/config/is_component_loaded";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 import NavigateMixin from "../../../mixins/navigate-mixin";
 

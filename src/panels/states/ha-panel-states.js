@@ -23,6 +23,7 @@ import computeLocationName from "../../common/config/location_name";
 import NavigateMixin from "../../mixins/navigate-mixin";
 import { EventsMixin } from "../../mixins/events-mixin";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const ALWAYS_SHOW_DOMAIN = ["persistent_notification", "configurator"];
@@ -73,6 +74,7 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
               [[computeTitle(views, defaultView, locationName)]]
             </div>
             <paper-icon-button
+              hidden$="[[!conversation]]"
               aria-label="Start conversation"
               icon="hass:microphone"
               on-click="_showVoiceCommandDialog"
@@ -178,6 +180,11 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
         value: 1,
       },
 
+      conversation: {
+        type: Boolean,
+        computed: "_computeConversation(hass)",
+      },
+
       locationName: {
         type: String,
         value: "",
@@ -243,6 +250,10 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
       1,
       matchColumns - (!this.narrow && this.hass.dockedSidebar === "docked")
     );
+  }
+
+  _computeConversation(hass) {
+    return isComponentLoaded(hass, "conversation");
   }
 
   _showVoiceCommandDialog() {
