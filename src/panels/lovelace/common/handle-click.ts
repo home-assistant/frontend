@@ -72,6 +72,7 @@ export const handleClick = (
     case "toggle":
       if (config.entity) {
         toggleEntity(hass, config.entity!);
+        forwardHaptic("light");
       }
       break;
     case "call-service": {
@@ -81,7 +82,7 @@ export const handleClick = (
       }
       const [domain, service] = actionConfig.service.split(".", 2);
       hass.callService(domain, service, actionConfig.service_data);
+      forwardHaptic("light");
     }
   }
-  forwardHaptic("light");
 };
