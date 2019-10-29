@@ -76,7 +76,7 @@ export class HuiCardOptions extends LitElement {
                   "ui.panel.lovelace.editor.edit_card.move"
                 )}</paper-item
               >
-              <paper-item @click="${this._deleteCard}">
+              <paper-item .class="delete-item" @click="${this._deleteCard}">
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.delete"
                 )}</paper-item
@@ -132,6 +132,10 @@ export class HuiCardOptions extends LitElement {
 
       paper-item {
         cursor: pointer;
+      }
+
+      paper-item.delete-item {
+        color: var(--google-red-500);
       }
     `;
   }
