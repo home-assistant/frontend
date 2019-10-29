@@ -104,6 +104,7 @@ class HaScriptEditor extends LocalizeMixin(NavigateMixin(PolymerElement)) {
             <template is="dom-if" if="[[!creatingNew]]">
               <paper-icon-button
                 icon="hass:delete"
+                title="[[localize('ui.panel.config.script.editor.delete_script')]]"
                 on-click="_delete"
               ></paper-icon-button>
             </template>
