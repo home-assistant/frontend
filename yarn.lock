@@ -1651,10 +1651,10 @@
   resolved "https://registry.yarnpkg.com/@sinonjs/text-encoding/-/text-encoding-0.7.1.tgz#8da5c6530915653f3a1f38fd5f101d8c3f8079c5"
   integrity sha512-+iTbntw2IZPb/anVDbypzfQa+ay64MW0Zo8aJ8gZPWMMK6/OubMVb6lUPMagqjOPnmtauXnFCACVl3O7ogjeqQ==
 
-"@thomasloven/round-slider@^0.2.2":
-  version "0.2.2"
-  resolved "https://registry.yarnpkg.com/@thomasloven/round-slider/-/round-slider-0.2.2.tgz#498e2d0b545cefd457c1249e3f90dec9b91dd91b"
-  integrity sha512-nh4Um3srnTnWaOWkq6sMaXsSgn07MfV/u5rjFZAoSETJrLCBkwWM5IToN3Tqy9SSQk6Zonk1/wpcY5tdACq2lg==
+"@thomasloven/round-slider@^0.3.3":
+  version "0.3.3"
+  resolved "https://registry.yarnpkg.com/@thomasloven/round-slider/-/round-slider-0.3.3.tgz#1bc3eded7ce89ede34aafbfd9dd3f0221e7c0d02"
+  integrity sha512-005fwsNlm80w6uRl5RxxferteJYMjWXqDuwtvtTGz6UWnoLcZjrILmWk2FcRnka5GQoa0OCTIA2vDdwQHq8PHA==
   dependencies:
     lit-element "^2.2.1"
 
