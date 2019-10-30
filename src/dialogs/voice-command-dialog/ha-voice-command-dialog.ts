@@ -181,11 +181,7 @@ export class HaVoiceCommandDialog extends LitElement {
   }
 
   private _addMessage(message: Message) {
-    // We want to keep a reference to the message so we can update the content
-    // so we don't copy the array but requestUpdate,
-    // changeProps.get("_conversation") will be undefined, because we don't pass an oldValue
-    this._conversation.push(message);
-    this.requestUpdate("_conversation");
+    this._conversation = [...this._conversation, message];
   }
 
   private _handleKeyUp(ev: KeyboardEvent) {
