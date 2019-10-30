@@ -13,6 +13,7 @@ export interface EntityFilterEntityConfig extends EntityConfig {
 export interface DividerConfig {
   type: "divider";
   style: string;
+  label?: string;
 }
 export interface TextDividerConfig {
   type: "divider";
