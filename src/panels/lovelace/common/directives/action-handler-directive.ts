@@ -2,7 +2,7 @@ import { directive, PropertyPart } from "lit-html";
 import "@material/mwc-ripple";
 import {
   ActionHandlerOptions,
-  ActionHandlerEvent,
+  ActionHandlerDetail,
 } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
 
@@ -21,7 +21,7 @@ interface ActionHandlerElement extends Element {
 
 declare global {
   interface HASSDomEvents {
-    action: ActionHandlerEvent;
+    action: ActionHandlerDetail;
   }
 }
 
