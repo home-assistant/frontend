@@ -92,7 +92,7 @@ export class HaVoiceCommandDialog extends LitElement {
           }
         }
 
-        @media all and (max-width: 550px), all and (max-height: 500px) {
+        @media all and (max-width: 450px), all and (max-height: 500px) {
           paper-dialog-scrollable {
             --paper-dialog-scrollable: {
               -webkit-overflow-scrolling: auto;
@@ -206,10 +206,6 @@ export class HaVoiceCommandDialog extends LitElement {
     }
   }
 
-  private _handleChoice(ev: Event) {
-    this._processText((ev.target as HTMLElement).innerText);
-  }
-
   private _addMessage(message: Message) {
     this._conversation = [...this._conversation, message];
   }
@@ -217,12 +213,13 @@ export class HaVoiceCommandDialog extends LitElement {
   private _handleKeyUp(ev: KeyboardEvent) {
     const input = ev.target as PaperInputElement;
     if (ev.keyCode === 13 && input.value) {
-      if (this.recognition) {
-        this.recognition!.abort();
-      }
       this._processText(input.value);
       input.value = "";
     }
+  }
+
+  private _handleChoice(ev: Event) {
+    this._processText((ev.target as HTMLElement).innerText);
   }
 
   private _initRecognition() {
@@ -257,7 +254,7 @@ export class HaVoiceCommandDialog extends LitElement {
       const text = this.results.transcript;
       this.results = null;
       if (text) {
-        this._processText(text);
+        this._processText(text, true);
       } else {
         this._addMessage({
           who: "user",
@@ -278,7 +275,10 @@ export class HaVoiceCommandDialog extends LitElement {
     };
   }
 
-  private async _processText(text: string) {
+  private async _processText(text: string, fromSpeech = false) {
+    if (this.recognition) {
+      this.recognition.abort();
+    }
     this._addMessage({ who: "user", text });
     const message: Message = {
       who: "hass",
@@ -288,15 +288,22 @@ export class HaVoiceCommandDialog extends LitElement {
     this._addMessage(message);
     try {
       const response = await processText(this.hass, text);
-      message.text = response.speech.plain.speech;
+      const plain = response.speech.plain;
+      message.text = plain.speech;
 
       if (!message.text) {
-        message.text = "I found the following for you:";
+        if (plain.extra_data.lenght) {
+          this.hass.localize("ui.dialogs.voice_command.found");
+        } else {
+          throw new Error("no response");
+        }
       }
 
       this.requestUpdate("_conversation");
 
-      response.speech.plain.extra_data.forEach((extra) => {
+      let feedback = false;
+
+      plain.extra_data.forEach((extra) => {
         switch (extra.type) {
           case "rdl":
             this._addMessage({
@@ -314,6 +321,7 @@ export class HaVoiceCommandDialog extends LitElement {
             });
             break;
           case "choice":
+            feedback = true;
             this._addMessage({
               who: "hass",
               type: "choice",
@@ -330,6 +338,13 @@ export class HaVoiceCommandDialog extends LitElement {
           response.speech.plain.speech
         );
         speech.lang = "en-US";
+        if (feedback && fromSpeech) {
+          speech.onend = () => {
+            if (!speechSynthesis.speaking && !speechSynthesis.pending) {
+              this._startListening();
+            }
+          };
+        }
         speechSynthesis.speak(speech);
       }
     } catch {
@@ -495,6 +510,12 @@ export class HaVoiceCommandDialog extends LitElement {
           50% {
             transform: scale(1);
             -webkit-transform: scale(1);
+          }
+        }
+
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          .message {
+            font-size: 16px;
           }
         }
       `,

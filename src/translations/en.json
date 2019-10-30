@@ -556,6 +556,7 @@
     "dialogs": {
       "voice_command": {
         "did_not_hear": "Home Assistant did not hear anything",
+        "found": "I found the following for you:",
         "error": "Oops, an error has occurred",
         "how_can_i_help": "How can I help?",
         "label": "Type a question and press <Enter>",
