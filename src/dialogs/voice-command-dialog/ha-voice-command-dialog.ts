@@ -12,6 +12,7 @@ import {
   customElement,
   query,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -22,9 +23,13 @@ import { haStyleDialog } from "../../resources/styles";
 // tslint:disable-next-line
 import { PaperDialogScrollableElement } from "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
+type MessageType = "text" | "link" | "image" | "choice";
+
 interface Message {
   who: string;
-  text: string;
+  text?: string;
+  type?: MessageType;
+  data?: any;
   error?: boolean;
 }
 
@@ -69,7 +74,7 @@ export class HaVoiceCommandDialog extends LitElement {
     }
   }
 
-  protected render() {
+  protected render(): TemplateResult {
     // CSS custom property mixins only work in render https://github.com/Polymer/lit-element/issues/633
     return html`
       <style>
@@ -112,7 +117,7 @@ export class HaVoiceCommandDialog extends LitElement {
           ${this._conversation.map(
             (message) => html`
               <div class="${this._computeMessageClasses(message)}">
-                ${message.text}
+                ${this._renderMessage(message)}
               </div>
             `
           )}
@@ -178,6 +183,31 @@ export class HaVoiceCommandDialog extends LitElement {
     if (changedProps.has("_conversation") || changedProps.has("results")) {
       this._scrollMessagesBottom();
     }
+  }
+
+  private _renderMessage(message: Message): TemplateResult {
+    switch (message.type) {
+      case "link":
+        return html`
+          <a href=${message.data} target="_blank">${message.text}</a>
+        `;
+      case "image":
+        return html`
+          <img src=${message.data} />
+        `;
+      case "choice":
+        return html`
+          <a href="#" @click=${this._handleChoice}>${message.text}</a>
+        `;
+      default:
+        return html`
+          ${message.text}
+        `;
+    }
+  }
+
+  private _handleChoice(ev: Event) {
+    this._processText((ev.target as HTMLElement).innerText);
   }
 
   private _addMessage(message: Message) {
@@ -259,7 +289,42 @@ export class HaVoiceCommandDialog extends LitElement {
     try {
       const response = await processText(this.hass, text);
       message.text = response.speech.plain.speech;
+
+      if (!message.text) {
+        message.text = "I found the following for you:";
+      }
+
       this.requestUpdate("_conversation");
+
+      response.speech.plain.extra_data.forEach((extra) => {
+        switch (extra.type) {
+          case "rdl":
+            this._addMessage({
+              who: "hass",
+              type: "link",
+              text: extra.rdl.displayTitle,
+              data: extra.rdl.webCallback,
+            });
+            break;
+          case "picture":
+            this._addMessage({
+              who: "hass",
+              type: "image",
+              data: extra.url,
+            });
+            break;
+          case "choice":
+            this._addMessage({
+              who: "hass",
+              type: "choice",
+              text: extra.title,
+            });
+            break;
+          default:
+            console.log(extra);
+        }
+      });
+
       if (speechSynthesis) {
         const speech = new SpeechSynthesisUtterance(
           response.speech.plain.speech
@@ -313,7 +378,9 @@ export class HaVoiceCommandDialog extends LitElement {
   }
 
   private _computeMessageClasses(message) {
-    return "message " + message.who + (message.error ? " error" : "");
+    return `message ${message.who} ${message.error ? " error" : ""} ${
+      message.type && message.type !== "text" ? "extra" : ""
+    }`;
   }
 
   static get styles(): CSSResult[] {
@@ -363,6 +430,19 @@ export class HaVoiceCommandDialog extends LitElement {
           border-bottom-left-radius: 0px;
           background-color: var(--primary-color);
           color: var(--text-primary-color);
+        }
+
+        .message.extra {
+          background-color: var(--secondary-text-color);
+        }
+
+        .message a {
+          color: var(--text-primary-color);
+        }
+
+        .message img {
+          width: 100%;
+          border-radius: 10px;
         }
 
         .message.error {
