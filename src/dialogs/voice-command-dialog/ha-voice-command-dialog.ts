@@ -163,8 +163,8 @@ export class HaVoiceCommandDialog extends LitElement {
     `;
   }
 
-  protected firstUpdated(changeProps: PropertyValues) {
-    super.updated(changeProps);
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.updated(changedProps);
     this._conversation = [
       {
         who: "hass",
@@ -173,9 +173,9 @@ export class HaVoiceCommandDialog extends LitElement {
     ];
   }
 
-  protected updated(changedPros: PropertyValues) {
-    super.updated(changedPros);
-    if (changedPros.has("_conversation") || changedPros.has("results")) {
+  protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
+    if (changedProps.has("_conversation") || changedProps.has("results")) {
       this._scrollMessagesBottom();
     }
   }
