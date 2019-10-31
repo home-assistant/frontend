@@ -120,6 +120,7 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
               <div
                 class="attributes"
                 @click="${this._handleMoreInfo}"
+                tabindex="0"
                 .value="${item}"
               >
                 <div>

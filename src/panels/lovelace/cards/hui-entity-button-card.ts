@@ -134,6 +134,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
+        tabindex="0"
       >
         ${this._config.show_icon
           ? html`

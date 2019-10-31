@@ -241,7 +241,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
       graph = "";
     }
     return html`
-      <ha-card @click="${this._handleClick}">
+      <ha-card @click="${this._handleClick}" tabindex="0">
         <div class="flex">
           <div class="icon">
             <ha-icon

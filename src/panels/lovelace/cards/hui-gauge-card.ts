@@ -104,6 +104,7 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card
         @click="${this._handleClick}"
+        tabindex="0"
         style=${styleMap({
           "--base-unit": this._baseUnit,
         })}

@@ -56,6 +56,7 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
+        tabindex="0"
       ></hui-image>
     `;
   }

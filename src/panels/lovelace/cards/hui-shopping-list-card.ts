@@ -166,6 +166,7 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
                 <ha-icon
                   class="clearall"
                   @click="${this._clearItems}"
+                  tabindex="0"
                   icon="hass:notification-clear-all"
                   .title="${this.hass!.localize(
                     "ui.panel.lovelace.cards.shopping-list.clear_items"

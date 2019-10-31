@@ -168,6 +168,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             hasHold: hasAction(this._config!.hold_action),
             hasDoubleClick: hasAction(this._config!.double_tap_action),
           })}
+          tabindex="0"
           .config=${this._config}
           .hass=${this.hass}
           .image=${this._config.image}
@@ -230,6 +231,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             hasHold: hasAction(entityConf.hold_action),
             hasDoubleClick: hasAction(entityConf.double_tap_action),
           })}
+          tabindex="0"
           .config=${entityConf}
           class="${classMap({
             "state-on": !STATES_OFF.has(stateObj.state),

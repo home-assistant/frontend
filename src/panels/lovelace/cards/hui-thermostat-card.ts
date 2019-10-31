@@ -364,9 +364,10 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         class="${classMap({ "selected-icon": currentMode === mode })}"
         .mode="${mode}"
         .icon="${modeIcons[mode]}"
-        @click="${this._handleModeClick}"
+        @click="${this._handleClick}"
+        @keyup=${this._handleKey}
         tabindex="0"
-      ></paper-icon-button>
+      ></ha-icon>
     `;
   }
 
@@ -376,7 +377,13 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private _handleModeClick(e: MouseEvent): void {
+  private _handleKey(e: KeyboardEvent): void {
+    if (e.keyCode === 13) {
+      return this._handleClick(e as any);
+    }
+  }
+
+  private _handleClick(e: MouseEvent): void {
     this.hass!.callService("climate", "set_hvac_mode", {
       entity_id: this._config!.entity,
       hvac_mode: (e.currentTarget as any).mode,
