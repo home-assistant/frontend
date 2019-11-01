@@ -122,7 +122,11 @@ export class HaConfigDevicePage extends LitElement {
 
     if (!device) {
       return html`
-        <hass-error-screen error="Device not found."></hass-error-screen>
+        <hass-error-screen
+          error="${this.hass.localize(
+            "ui.panel.config.devices.device_not_found"
+          )}"
+        ></hass-error-screen>
       `;
     }
 
@@ -136,9 +140,11 @@ export class HaConfigDevicePage extends LitElement {
           @click=${this._showSettings}
         ></paper-icon-button>
         <ha-config-section .isWide=${!this.narrow}>
-          <span slot="header">Device info</span>
+          <span slot="header"
+            >${this.hass.localize("ui.panel.config.devices.info")}</span
+          >
           <span slot="introduction">
-            Here are all the details of your device.
+            ${this.hass.localize("ui.panel.config.devices.details")}
           </span>
           <ha-device-card
             .hass=${this.hass}
@@ -149,7 +155,9 @@ export class HaConfigDevicePage extends LitElement {
 
           ${entities.length
             ? html`
-                <div class="header">Entities</div>
+                <div class="header">
+                  ${this.hass.localize("ui.panel.config.devices.entities")}
+                </div>
                 <ha-device-entities-card
                   .hass=${this.hass}
                   .entities=${entities}
@@ -161,7 +169,9 @@ export class HaConfigDevicePage extends LitElement {
           this._conditions.length ||
           this._actions.length
             ? html`
-                <div class="header">Automations</div>
+                <div class="header">
+                  ${this.hass.localize("ui.panel.config.devices.automations")}
+                </div>
                 ${this._triggers.length
                   ? html`
                       <ha-device-triggers-card
@@ -222,7 +232,9 @@ export class HaConfigDevicePage extends LitElement {
         const renameEntityid =
           this.showAdvanced &&
           confirm(
-            "Do you also want to rename the entity id's of your entities?"
+            this.hass.localize(
+              "ui.panel.config.devices.confirm_rename_entity_ids"
+            )
           );
 
         const updateProms = entities.map((entity) => {
