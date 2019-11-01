@@ -130,7 +130,9 @@ class DialogEntityRegistryDetail extends LitElement {
                     ${this.hass.localize(
                       "ui.panel.config.entity_registry.editor.enabled_description"
                     )}
-                    <br />Note: this might not work yet with all integrations.
+                    <br />${this.hass.localize(
+                      "ui.panel.config.entity_registry.editor.note"
+                    )}
                   </div>
                 </div>
               </ha-switch>
