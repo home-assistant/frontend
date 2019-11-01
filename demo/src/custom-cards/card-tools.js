@@ -161,8 +161,8 @@ if (!window.cardTools) {
   };
 
   cardTools.longpress = (element) => {
-    customElements.whenDefined("long-press").then(() => {
-      const longpress = document.body.querySelector("long-press");
+    customElements.whenDefined("action-handler").then(() => {
+      const longpress = document.body.querySelector("action-handler");
       longpress.bind(element);
     });
     return element;
