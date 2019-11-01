@@ -1025,7 +1025,7 @@
             "name": "Name",
             "devices": {
               "header": "Devices",
-              "introduction": "Add the devices that you want to be included in your theme. Set all the devices to the state you want for this scene.",
+              "introduction": "Add the devices that you want to be included in your scene. Set all the devices to the state you want for this scene.",
               "add": "Add a device",
               "delete": "Delete device"
             },
