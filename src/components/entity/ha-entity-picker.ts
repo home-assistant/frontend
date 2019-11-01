@@ -61,6 +61,8 @@ class HaEntityPicker extends LitElement {
   @property() public label?: string;
   @property() public value?: string;
   @property({ attribute: "domain-filter" }) public domainFilter?: string;
+  @property({ type: Array, attribute: "exclude-domains" })
+  public excludeDomains?: string[];
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
   @property({ type: Boolean }) private _opened?: boolean;
   @property() private _hass?: HomeAssistant;
@@ -69,6 +71,7 @@ class HaEntityPicker extends LitElement {
     (
       hass: this["hass"],
       domainFilter: this["domainFilter"],
+      excludeDomains: this["excludeDomains"],
       entityFilter: this["entityFilter"]
     ) => {
       let states: HassEntity[] = [];
@@ -81,6 +84,12 @@ class HaEntityPicker extends LitElement {
       if (domainFilter) {
         entityIds = entityIds.filter(
           (eid) => eid.substr(0, eid.indexOf(".")) === domainFilter
+        );
+      }
+
+      if (excludeDomains) {
+        entityIds = entityIds.filter(
+          (eid) => !excludeDomains.includes(eid.substr(0, eid.indexOf(".")))
         );
       }
 
@@ -109,6 +118,7 @@ class HaEntityPicker extends LitElement {
     const states = this._getStates(
       this._hass,
       this.domainFilter,
+      this.excludeDomains,
       this.entityFilter
     );
 

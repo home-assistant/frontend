@@ -29,6 +29,7 @@ const PAGES: Array<{
   { page: "area_registry", core: true },
   { page: "automation" },
   { page: "script" },
+  { page: "scene" },
   { page: "zha" },
   { page: "zwave" },
   { page: "customize", core: true, advanced: true },

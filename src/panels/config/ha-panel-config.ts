@@ -88,6 +88,11 @@ class HaPanelConfig extends HassRouterPage {
         load: () =>
           import(/* webpackChunkName: "panel-config-script" */ "./script/ha-config-script"),
       },
+      scene: {
+        tag: "ha-config-scene",
+        load: () =>
+          import(/* webpackChunkName: "panel-config-scene" */ "./scene/ha-config-scene"),
+      },
       users: {
         tag: "ha-config-users",
         load: () =>

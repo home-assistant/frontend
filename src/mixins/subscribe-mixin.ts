@@ -1,4 +1,4 @@
-import { LitElement, PropertyValues, property } from "lit-element";
+import { PropertyValues, property, UpdatingElement } from "lit-element";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { HomeAssistant, Constructor } from "../types";
 
@@ -7,7 +7,7 @@ export interface HassSubscribeElement {
 }
 
 /* tslint:disable-next-line:variable-name */
-export const SubscribeMixin = <T extends Constructor<LitElement>>(
+export const SubscribeMixin = <T extends Constructor<UpdatingElement>>(
   superClass: T
 ) => {
   class SubscribeClass extends superClass {

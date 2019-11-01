@@ -3,6 +3,8 @@ import { fireEvent } from "../../common/dom/fire_event";
 export interface ConfirmationDialogParams {
   title?: string;
   text: string;
+  confirmBtnText?: string;
+  cancelBtnText?: string;
   confirm: () => void;
 }
 
