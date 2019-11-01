@@ -618,6 +618,9 @@
           "area_picker_label": "Area",
           "update_name_button": "Update Name"
         }
+      },
+      "domain_toggler": {
+        "title": "Toggle Domains"
       }
     },
     "duration": {
@@ -1141,6 +1144,9 @@
         "devices": {
           "caption": "Devices",
           "description": "Manage connected devices",
+          "unnamed_device": "Unnamed device",
+          "unknown_error": "Unknown error",
+          "area_picker_label": "Area",
           "automation": {
             "triggers": {
               "caption": "Do something when..."
@@ -1408,13 +1414,21 @@
             "more_info": "Show more-info: {name}"
           }
         },
+        "unused_entities": {
+          "title": "Unused entities",
+          "available_entities": "These are the entities that you have available, but are not in your Lovelace UI yet.",
+          "select_to_add": "Select the entities you want to add to a card and then click the add card button.",
+          "entity": "Entity",
+          "entity_id": "Entity ID",
+          "domain": "Domain",
+          "last_changed": "Last Changed"
+        },
         "views": {
           "confirm_delete": "Are you sure you want to delete this view?",
           "existing_cards": "You can't delete a view that has cards in it. Remove the cards first."
         },
         "menu": {
           "configure_ui": "Configure UI",
-          "unused_entities": "Unused entities",
           "help": "Help",
           "refresh": "Refresh",
           "close": "Close"
