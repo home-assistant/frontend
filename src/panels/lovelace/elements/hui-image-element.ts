@@ -71,6 +71,11 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
       hui-image {
         -webkit-user-select: none !important;
       }
+      hui-image:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 100%;
+      }
     `;
   }
 

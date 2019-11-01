@@ -59,6 +59,11 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
       :host {
         cursor: pointer;
       }
+      ha-icon:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 100%;
+      }
     `;
   }
 }

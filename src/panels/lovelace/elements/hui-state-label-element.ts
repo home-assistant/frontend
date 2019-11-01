@@ -91,6 +91,11 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
         padding: 8px;
         white-space: nowrap;
       }
+      div:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 100%;
+      }
     `;
   }
 }

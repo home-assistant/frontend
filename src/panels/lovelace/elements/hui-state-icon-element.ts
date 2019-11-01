@@ -77,6 +77,11 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
       :host {
         cursor: pointer;
       }
+      state-badge:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 100%;
+      }
     `;
   }
 

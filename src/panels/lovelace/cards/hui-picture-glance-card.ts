@@ -323,7 +323,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
       ha-icon:focus {
         outline: none;
         background: var(--divider-color);
-        border-radius: 100px;
+        border-radius: 100%;
       }
       .state {
         display: block;
