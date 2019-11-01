@@ -18,15 +18,16 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
-import { longPress } from "../common/directives/long-press-directive";
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { handleClick } from "../common/handle-click";
 import { UNAVAILABLE } from "../../../data/entity";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { PictureEntityCardConfig } from "./types";
-import { hasDoubleClick } from "../common/has-double-click";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { hasAction } from "../common/has-action";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { handleAction } from "../common/handle-action";
 
 @customElement("hui-picture-entity-card")
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {
@@ -146,11 +147,10 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
           .cameraView=${this._config.camera_view}
           .entity=${this._config.entity}
           .aspectRatio=${this._config.aspect_ratio}
-          @ha-click=${this._handleClick}
-          @ha-hold=${this._handleHold}
-          @ha-dblclick=${this._handleDblClick}
-          .longPress=${longPress({
-            hasDoubleClick: hasDoubleClick(this._config!.double_tap_action),
+          @action=${this._handleAction}
+          .actionHandler=${actionHandler({
+            hasHold: hasAction(this._config!.hold_action),
+            hasDoubleClick: hasAction(this._config!.double_tap_action),
           })}
           class=${classMap({
             clickable: stateObj.state !== UNAVAILABLE,
@@ -202,16 +202,8 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _handleClick() {
-    handleClick(this, this.hass!, this._config!, false, false);
-  }
-
-  private _handleHold() {
-    handleClick(this, this.hass!, this._config!, true, false);
-  }
-
-  private _handleDblClick() {
-    handleClick(this, this.hass!, this._config!, false, true);
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 }
 
