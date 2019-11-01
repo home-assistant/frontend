@@ -15,7 +15,7 @@ interface ActionHandler extends HTMLElement {
   holdTime: number;
   bind(element: Element, options): void;
 }
-interface ActionHandlerElement extends Element {
+interface ActionHandlerElement extends HTMLElement {
   actionHandler?: boolean;
 }
 
@@ -134,18 +134,18 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       this.stopAnimation();
       this.timer = undefined;
       if (this.held) {
-        fireEvent(element as HTMLElement, "action", { action: "hold" });
+        fireEvent(element, "action", { action: "hold" });
       } else if (options.hasDoubleClick) {
         if ((ev as MouseEvent).detail === 1 || (ev as KeyboardEvent).keyCode) {
           this.dblClickTimeout = window.setTimeout(() => {
-            fireEvent(element as HTMLElement, "action", { action: "tap" });
+            fireEvent(element, "action", { action: "tap" });
           }, 250);
         } else {
           clearTimeout(this.dblClickTimeout);
-          fireEvent(element as HTMLElement, "action", { action: "double_tap" });
+          fireEvent(element, "action", { action: "double_tap" });
         }
       } else {
-        fireEvent(element as HTMLElement, "action", { action: "tap" });
+        fireEvent(element, "action", { action: "tap" });
       }
       this.cooldownEnd = true;
       window.setTimeout(() => (this.cooldownEnd = false), 100);
@@ -218,6 +218,6 @@ export const actionHandlerBind = (
 
 export const actionHandler = directive(
   (options: ActionHandlerOptions = {}) => (part: PropertyPart) => {
-    actionHandlerBind(part.committer.element, options);
+    actionHandlerBind(part.committer.element as ActionHandlerElement, options);
   }
 );
