@@ -229,6 +229,10 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
         position: relative;
         cursor: pointer;
       }
+      ha-card:focus {
+        outline: none;
+        background: var(--divider-color);
+      }
       .container {
         width: calc(var(--base-unit) * 4);
         height: calc(var(--base-unit) * 2);

@@ -196,6 +196,11 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
         font-size: 1.2rem;
       }
 
+      ha-card:focus {
+        outline: none;
+        background: var(--divider-color);
+      }
+
       ha-icon {
         width: 40%;
         height: auto;

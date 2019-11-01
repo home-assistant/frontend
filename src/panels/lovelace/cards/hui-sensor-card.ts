@@ -358,6 +358,11 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
         cursor: pointer;
       }
 
+      ha-card:focus {
+        outline: none;
+        background: var(--divider-color);
+      }
+
       .flex {
         display: flex;
       }

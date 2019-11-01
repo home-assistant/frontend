@@ -209,6 +209,12 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
         cursor: pointer;
       }
 
+      .attributes:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 100%;
+      }
+
       .attributes div {
         text-align: center;
       }
