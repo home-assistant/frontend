@@ -320,6 +320,11 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
         padding-bottom: 4px;
         padding-top: 4px;
       }
+      ha-icon:focus {
+        outline: none;
+        box-shadow: 0 0 2px 2px #51a7e8;
+        border-radius: 100px;
+      }
       .state {
         display: block;
         font-size: 12px;
