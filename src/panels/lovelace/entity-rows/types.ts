@@ -1,4 +1,5 @@
 import { HomeAssistant } from "../../../types";
+import { Condition } from "../common/validate-condition";
 
 export interface EntityConfig {
   entity: string;
@@ -30,6 +31,11 @@ export interface CallServiceConfig extends EntityConfig {
   service: string;
   service_data?: { [key: string]: any };
 }
+export interface ConditionalRowConfig extends EntityConfig {
+  type: "conditional";
+  row: EntityRowConfig;
+  conditions: Condition[];
+}
 export interface CastConfig {
   type: "cast";
   icon: string;
@@ -46,7 +52,7 @@ export type EntityRowConfig =
   | CallServiceConfig
   | CastConfig;
 
-export interface EntityRow extends HTMLElement {
+export interface LovelaceRow extends HTMLElement {
   hass?: HomeAssistant;
   setConfig(config: EntityRowConfig);
 }

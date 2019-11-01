@@ -13,7 +13,7 @@ import "../../../components/ha-card";
 import "../components/hui-entities-toggle";
 
 import { HomeAssistant } from "../../../types";
-import { EntityRow } from "../entity-rows/types";
+import { LovelaceRow } from "../entity-rows/types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createRowElement } from "../common/create-row-element";
@@ -41,7 +41,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     this._hass = hass;
     this.shadowRoot!.querySelectorAll("#states > div > *").forEach(
       (element: unknown) => {
-        (element as EntityRow).hass = hass;
+        (element as LovelaceRow).hass = hass;
       }
     );
     const entitiesToggle = this.shadowRoot!.querySelector(

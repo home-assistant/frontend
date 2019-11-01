@@ -23,15 +23,17 @@ import "../entity-rows/hui-text-entity-row";
 import "../entity-rows/hui-timer-entity-row";
 import "../entity-rows/hui-toggle-entity-row";
 import "../special-rows/hui-call-service-row";
+import "../special-rows/hui-conditional-row";
 import "../special-rows/hui-divider-row";
 import "../special-rows/hui-section-row";
 import "../special-rows/hui-weblink-row";
 import "../special-rows/hui-cast-row";
-import { EntityConfig, EntityRow } from "../entity-rows/types";
+import { EntityConfig, LovelaceRow } from "../entity-rows/types";
 
 const CUSTOM_TYPE_PREFIX = "custom:";
 const SPECIAL_TYPES = new Set([
   "call-service",
+  "conditional",
   "divider",
   "section",
   "weblink",
@@ -69,8 +71,8 @@ const TIMEOUT = 2000;
 const _createElement = (
   tag: string,
   config: EntityConfig
-): EntityRow | HuiErrorCard => {
-  const element = document.createElement(tag) as EntityRow;
+): LovelaceRow | HuiErrorCard => {
+  const element = document.createElement(tag) as LovelaceRow;
   try {
     element.setConfig(deepClone(config));
   } catch (err) {
@@ -96,7 +98,7 @@ const _hideErrorElement = (element) => {
 
 export const createRowElement = (
   config: EntityConfig
-): EntityRow | HuiErrorCard => {
+): LovelaceRow | HuiErrorCard => {
   let tag;
 
   if (
