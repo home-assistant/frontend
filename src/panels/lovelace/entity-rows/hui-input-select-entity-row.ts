@@ -23,13 +23,14 @@ import { setInputSelectOption } from "../../../data/input-select";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { forwardHaptic } from "../../../data/haptics";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
-import { longPress } from "../common/directives/long-press-directive";
-import { hasDoubleClick } from "../common/has-double-click";
-import { handleClick } from "../common/handle-click";
 import { classMap } from "lit-html/directives/class-map";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { EntitiesCardEntityConfig } from "../cards/types";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { hasAction } from "../common/has-action";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { handleAction } from "../common/handle-action";
 
 @customElement("hui-input-select-entity-row")
 class HuiInputSelectEntityRow extends LitElement implements EntityRow {
@@ -81,11 +82,10 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
         class=${classMap({
           pointer,
         })}
-        @ha-click=${this._handleClick}
-        @ha-hold=${this._handleHold}
-        @ha-dblclick=${this._handleDblClick}
-        .longPress=${longPress({
-          hasDoubleClick: hasDoubleClick(this._config.double_tap_action),
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config!.hold_action),
+          hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
         tabindex="0"
       ></state-badge>
@@ -127,16 +127,8 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
     )!.selected = stateObj.attributes.options.indexOf(stateObj.state);
   }
 
-  private _handleClick(): void {
-    handleClick(this, this.hass!, this._config!, false, false);
-  }
-
-  private _handleHold(): void {
-    handleClick(this, this.hass!, this._config!, true, false);
-  }
-
-  private _handleDblClick(): void {
-    handleClick(this, this.hass!, this._config!, false, true);
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 
   static get styles(): CSSResult {
