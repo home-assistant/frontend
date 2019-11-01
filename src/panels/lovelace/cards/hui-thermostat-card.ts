@@ -33,6 +33,7 @@ import {
   CLIMATE_PRESET_NONE,
 } from "../../../data/climate";
 import { HassEntity } from "home-assistant-js-websocket";
+import { actionHandler } from "../common/directives/action-handler-directive";
 
 const modeIcons: { [mode in HvacMode]: string } = {
   auto: "hass:calendar-repeat",
@@ -364,8 +365,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         class="${classMap({ "selected-icon": currentMode === mode })}"
         .mode="${mode}"
         .icon="${modeIcons[mode]}"
-        @click="${this._handleClick}"
-        @keyup=${this._handleKey}
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler()}
         tabindex="0"
       ></ha-icon>
     `;
@@ -377,13 +378,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private _handleKey(e: KeyboardEvent): void {
-    if (e.keyCode === 13) {
-      return this._handleClick(e as any);
-    }
-  }
-
-  private _handleClick(e: MouseEvent): void {
+  private _handleAction(e: MouseEvent): void {
     this.hass!.callService("climate", "set_hvac_mode", {
       entity_id: this._config!.entity,
       hvac_mode: (e.currentTarget as any).mode,

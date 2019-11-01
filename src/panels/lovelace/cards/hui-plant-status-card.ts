@@ -21,6 +21,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { PlantStatusCardConfig, PlantAttributeTarget } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { actionHandler } from "../common/directives/action-handler-directive";
 
 const SENSORS = {
   moisture: "hass:water",
@@ -119,7 +120,8 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
             (item) => html`
               <div
                 class="attributes"
-                @click="${this._handleMoreInfo}"
+                @action=${this._handleMoreInfo}
+                .actionHandler=${actionHandler()}
                 tabindex="0"
                 .value="${item}"
               >

@@ -26,6 +26,7 @@ import {
 } from "../../../data/shopping-list";
 import { ShoppingListCardConfig, SensorCardConfig } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { actionHandler } from "../common/directives/action-handler-directive";
 
 @customElement("hui-shopping-list-card")
 class HuiShoppingListCard extends LitElement implements LovelaceCard {
@@ -165,7 +166,8 @@ class HuiShoppingListCard extends LitElement implements LovelaceCard {
                 </span>
                 <ha-icon
                   class="clearall"
-                  @click="${this._clearItems}"
+                  @action=${this._clearItems}
+                  .actionHandler=${actionHandler()}
                   tabindex="0"
                   icon="hass:notification-clear-all"
                   .title="${this.hass!.localize(
