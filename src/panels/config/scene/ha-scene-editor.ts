@@ -507,7 +507,9 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
       return;
     }
     this._devices = [...this._devices, device];
-    this._deviceEntityLookup[device].forEach((entity) => {
+    const deviceEntities = this._deviceEntityLookup[device];
+    this._entities = [...this._entities, ...deviceEntities];
+    deviceEntities.forEach((entity) => {
       this._storeState(entity);
     });
     this._dirty = true;
@@ -572,18 +574,8 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   }
 
   private _calculateStates(): EntityStates {
-    const { devices, entities } = this._getEntitiesDevices(
-      this._entities,
-      this._devices,
-      this._deviceEntityLookup,
-      this._deviceRegistryEntries
-    );
     const output: EntityStates = {};
-    let allEntites = entities;
-    devices.forEach(
-      (device) => (allEntites = allEntites.concat(device.entities))
-    );
-    allEntites.forEach((entity) => {
+    this._entities.forEach((entity) => {
       const state = this._getCurrentState(entity);
       if (state) {
         output[entity] = state;
