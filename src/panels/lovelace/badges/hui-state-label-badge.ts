@@ -11,7 +11,6 @@ import "../components/hui-warning-element";
 
 import { LovelaceBadge } from "../types";
 import { HomeAssistant } from "../../../types";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { StateLabelBadgeConfig } from "./types";
 import { longPress } from "../common/directives/long-press-directive";
 import { hasDoubleClick } from "../common/has-double-click";
@@ -37,11 +36,7 @@ export class HuiStateLabelBadge extends LitElement implements LovelaceBadge {
       <ha-state-label-badge
         .hass=${this.hass}
         .state=${stateObj}
-        .title=${this._config.name
-          ? this._config.name
-          : stateObj
-          ? computeStateName(stateObj)
-          : ""}
+        .name=${this._config.name}
         .icon=${this._config.icon}
         .image=${this._config.image}
         @ha-click=${this._handleClick}
