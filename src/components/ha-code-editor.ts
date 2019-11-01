@@ -87,6 +87,8 @@ export class HaCodeEditor extends UpdatingElement {
     <style>
       ${loaded.codeMirrorCss}
       .CodeMirror {
+        background-color: var(--paper-dialog-background-color, var(--primary-background-color));
+        color: var(--primary-text-color);
         height: var(--code-mirror-height, auto);
         direction: var(--code-mirror-direction, ltr);
       }
