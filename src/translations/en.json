@@ -1269,6 +1269,17 @@
             "no_area": "No Area"
           },
           "config_flow": {
+            "aborted": "Aborted",
+            "close": "Close",
+            "finish": "Finish",
+            "submit": "Submit",
+            "not_all_required_fields": "Not all required fields are filled in.",
+            "add_area": "Add Area",
+            "area_picker_label": "Area",
+            "failed_create_area": "Failed to create area.",
+            "error_saving_area": "Error saving area: {error}",
+            "name_new_area": "Name of the new area?",
+            "created_config": "Created config for {name}.",
             "external_step": {
               "description": "This step requires you to visit an external website to be completed.",
               "open_site": "Open website"
