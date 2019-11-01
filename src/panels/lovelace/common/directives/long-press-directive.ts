@@ -123,7 +123,7 @@ class LongPress extends HTMLElement implements LongPress {
       if (this.held) {
         element.dispatchEvent(new Event("ha-hold"));
       } else if (options.hasDoubleClick) {
-        if ((ev as MouseEvent).detail === 1) {
+        if ((ev as MouseEvent).detail === || (ev as KeyboardEvent).keyCode) {
           this.dblClickTimeout = window.setTimeout(() => {
             element.dispatchEvent(new Event("ha-click"));
           }, 250);
