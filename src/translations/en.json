@@ -1219,7 +1219,7 @@
             "close": "Close",
             "finish": "Finish",
             "submit": "Submit",
-            "not_all_fields_required": "Not all required fields are filled in.",
+            "not_all_required_fields": "Not all required fields are filled in.",
             "add_area": "Add Area",
             "area_picker_label": "Area",
             "failed_create_area": "Failed to create area.",
