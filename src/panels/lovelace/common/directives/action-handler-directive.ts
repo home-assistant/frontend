@@ -136,7 +136,7 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       if (this.held) {
         fireEvent(element, "action", { action: "hold" });
       } else if (options.hasDoubleClick) {
-        if ((ev as MouseEvent).detail === 1 || (ev as KeyboardEvent).keyCode) {
+        if ((ev as MouseEvent).detail === 1 || ev.type === "keyup") {
           this.dblClickTimeout = window.setTimeout(() => {
             fireEvent(element, "action", { action: "tap" });
           }, 250);
