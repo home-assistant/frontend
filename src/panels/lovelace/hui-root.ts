@@ -142,12 +142,12 @@ class HUIRoot extends LitElement {
                         : html`
                             <paper-item
                               aria-label=${this.hass!.localize(
-                                "ui.panel.lovelace.menu.unused_entities"
+                                "ui.panel.lovelace.unused_entities.title"
                               )}
                               @tap="${this._handleUnusedEntities}"
                             >
                               ${this.hass!.localize(
-                                "ui.panel.lovelace.menu.unused_entities"
+                                "ui.panel.lovelace.unused_entities.title"
                               )}
                             </paper-item>
                           `}
@@ -203,12 +203,12 @@ class HUIRoot extends LitElement {
                             </paper-item>
                             <paper-item
                               aria-label=${this.hass!.localize(
-                                "ui.panel.lovelace.menu.unused_entities"
+                                "ui.panel.lovelace.unused_entities.title"
                               )}
                               @tap="${this._handleUnusedEntities}"
                             >
                               ${this.hass!.localize(
-                                "ui.panel.lovelace.menu.unused_entities"
+                                "ui.panel.lovelace.unused_entities.title"
                               )}
                             </paper-item>
                           `
