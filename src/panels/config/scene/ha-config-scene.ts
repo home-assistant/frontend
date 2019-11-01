@@ -38,7 +38,6 @@ class HaConfigScene extends HassRouterPage {
     pageEl.hass = this.hass;
     pageEl.narrow = this.narrow;
     pageEl.showAdvanced = this.showAdvanced;
-    let scenesChanges = false;
     const oldHass = changedProps
       ? (changedProps.get("hass") as HomeAssistant | undefined)
       : undefined;
@@ -47,7 +46,6 @@ class HaConfigScene extends HassRouterPage {
       (!changedProps || !oldHass || this.hass.states !== oldHass.states)
     ) {
       pageEl.scenes = this._computeScenes(this.hass);
-      scenesChanges = true;
     }
 
     if (
