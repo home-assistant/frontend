@@ -245,7 +245,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       #controls {
         display: flex;
         justify-content: center;
-        padding: 12px 8px 8px;
+        padding: 16px;
         position: relative;
       }
 
@@ -265,14 +265,17 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
       .slider-center {
         position: absolute;
-        width: calc(100% - 40px);
-        height: calc(100% - 40px);
+        width: 70%;
+        height: 70%;
+        max-height: calc(100% - 40px);
+        max-width: calc(100% - 40px);
         box-sizing: border-box;
         border-radius: 100%;
-        top: 20px;
-        left: 20px;
+        top: 50%;
+        left: 50%;
         color: var(--paper-item-icon-color, #44739e);
         cursor: pointer;
+        transform: translate(-50%, -50%);
       }
       .slider-center:focus {
         outline: none;
@@ -291,13 +294,13 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         display: flex-vertical;
         justify-content: center;
         text-align: center;
-        padding: 8px;
+        margin-top: -56px;
+        padding: 16px;
         font-size: var(--name-font-size);
       }
 
       .brightness {
         font-size: var(--brightness-font-size);
-        margin-top: -40px;
         opacity: 0;
         transition: opacity 0.5s ease-in-out;
         -moz-transition: opacity 0.5s ease-in-out;
