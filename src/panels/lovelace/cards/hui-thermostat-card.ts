@@ -430,7 +430,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       #controls {
         display: flex;
         justify-content: center;
-        padding: 12px 8px 8px;
+        padding: 16px;
         position: relative;
       }
 
@@ -483,12 +483,12 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         display: flex-vertical;
         justify-content: center;
         text-align: center;
-        padding: 8px;
+        padding: 16px;
+        margin-top: -60px;
         font-size: var(--name-font-size);
       }
 
       #modes {
-        margin-top: -48px;
       }
 
       #modes ha-icon {
