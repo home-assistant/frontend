@@ -3,9 +3,9 @@ import {
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
 
-import { HomeAssistant } from "../types";
+import { HomeAssistant, ServiceCallResponse } from "../types";
 
-export const IGNORED_DOMAINS = [
+export const SCENE_IGNORED_DOMAINS = [
   "sensor",
   "binary_sensor",
   "device_tracker",
@@ -18,7 +18,7 @@ export const IGNORED_DOMAINS = [
   "zone",
 ];
 
-export const SAVED_ATTRIBUTES = {
+export const SCENE_SAVED_ATTRIBUTES = {
   light: [
     "brightness",
     "color_temp",
@@ -42,23 +42,24 @@ export interface SceneEntity extends HassEntityBase {
 
 export interface SceneConfig {
   name: string;
-  entities: EntityStates;
+  entities: SceneEntities;
 }
 
-export interface EntityStates {
-  [entityId: string]: any;
+export interface SceneEntities {
+  [entityId: string]: string | { state: string; [key: string]: any };
 }
 
 export const activateScene = (
   hass: HomeAssistant,
   entityId: string
-): Promise<void> =>
+): Promise<ServiceCallResponse> =>
   hass.callService("scene", "turn_on", { entity_id: entityId });
 
 export const applyScene = (
   hass: HomeAssistant,
-  entities: EntityStates
-): Promise<void> => hass.callService("scene", "apply", { entities });
+  entities: SceneEntities
+): Promise<ServiceCallResponse> =>
+  hass.callService("scene", "apply", { entities });
 
 export const getSceneConfig = (
   hass: HomeAssistant,

@@ -24,6 +24,7 @@ import { HomeAssistant } from "../../../types";
 import { SceneEntity, activateScene } from "../../../data/scene";
 import { showToast } from "../../../util/toast";
 import { ifDefined } from "lit-html/directives/if-defined";
+import { forwardHaptic } from "../../../data/haptics";
 
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends LitElement {
@@ -140,6 +141,7 @@ class HaSceneDashboard extends LitElement {
         computeStateName(scene)
       ),
     });
+    forwardHaptic("light");
   }
 
   static get styles(): CSSResultArray {

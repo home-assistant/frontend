@@ -35,9 +35,9 @@ import {
   getSceneConfig,
   deleteScene,
   saveScene,
-  IGNORED_DOMAINS,
-  EntityStates,
-  SAVED_ATTRIBUTES,
+  SCENE_IGNORED_DOMAINS,
+  SceneEntities,
+  SCENE_SAVED_ATTRIBUTES,
   applyScene,
   activateScene,
 } from "../../../data/scene";
@@ -80,9 +80,10 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   @property() private _devices: string[] = [];
   @property() private _deviceRegistryEntries: DeviceRegistryEntry[] = [];
   @property() private _entityRegistryEntries: EntityRegistryEntry[] = [];
-  private _storedStates: EntityStates = {};
+  private _storedStates: SceneEntities = {};
   private _unsubscribeEvents?: () => void;
   private _deviceEntityLookup: DeviceEntitiesLookup = {};
+  private _activateContextId?: string;
 
   private _getEntitiesDevices = memoizeOne(
     (
@@ -270,7 +271,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
               )}
 
               <ha-card
-                header=${this.hass.localize(
+                .header=${this.hass.localize(
                   "ui.panel.config.scene.editor.devices.add"
                 )}
               >
@@ -278,7 +279,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                   <ha-device-picker
                     @value-changed=${this._devicePicked}
                     .hass=${this.hass}
-                    label=${this.hass.localize(
+                    .label=${this.hass.localize(
                       "ui.panel.config.scene.editor.devices.add"
                     )}
                   />
@@ -303,7 +304,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                       ? html`
                           <ha-card
                             class="entities"
-                            header=${this.hass.localize(
+                            .header=${this.hass.localize(
                               "ui.panel.config.scene.editor.entities.without_device"
                             )}
                           >
@@ -328,7 +329,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                                   <paper-icon-button
                                     icon="hass:delete"
                                     .entity=${entity}
-                                    title="${this.hass.localize(
+                                    .title="${this.hass.localize(
                                       "ui.panel.config.scene.editor.entities.delete"
                                     )}"
                                     @click=${this._deleteEntity}
@@ -351,7 +352,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                         )}
                         <ha-entity-picker
                           @value-changed=${this._entityPicked}
-                          .excludeDomains=${IGNORED_DOMAINS}
+                          .excludeDomains=${SCENE_IGNORED_DOMAINS}
                           .hass=${this.hass}
                           label=${this.hass.localize(
                             "ui.panel.config.scene.editor.entities.add"
@@ -397,7 +398,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
       this._dirty = false;
       this._config = {
         name: this.hass.localize("ui.panel.config.scene.editor.default_name"),
-        entities: [],
+        entities: {},
       };
     }
 
@@ -405,7 +406,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
       for (const entity of this._entityRegistryEntries) {
         if (
           !entity.device_id ||
-          IGNORED_DOMAINS.includes(computeDomain(entity.entity_id))
+          SCENE_IGNORED_DOMAINS.includes(computeDomain(entity.entity_id))
         ) {
           continue;
         }
@@ -427,46 +428,9 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   }
 
   private async _loadConfig() {
+    let config: SceneConfig;
     try {
-      const config = await getSceneConfig(
-        this.hass,
-        this.scene!.attributes.id!
-      );
-
-      if (!config.entities) {
-        config.entities = {};
-      }
-
-      this._entities = Object.keys(config.entities);
-
-      this._entities.forEach((entity) => {
-        this._storeState(entity);
-      });
-
-      const filteredEntityReg = this._entityRegistryEntries.filter(
-        (entityReg) => this._entities.includes(entityReg.entity_id)
-      );
-
-      for (const entityReg of filteredEntityReg) {
-        if (!entityReg.device_id) {
-          continue;
-        }
-        if (!this._devices.includes(entityReg.device_id)) {
-          this._devices = [...this._devices, entityReg.device_id];
-        }
-      }
-
-      activateScene(this.hass, this.scene!.entity_id);
-
-      // we want to check if states changed after the initial scene was activated, when is that done?
-      setTimeout(async () => {
-        this._unsubscribeEvents = await this.hass!.connection.subscribeEvents<
-          HassEvent
-        >((event) => this._stateChanged(event), "state_changed");
-      }, 500);
-
-      this._dirty = false;
-      this._config = config;
+      config = await getSceneConfig(this.hass, this.scene!.attributes.id!);
     } catch (err) {
       alert(
         err.status_code === 404
@@ -480,24 +444,62 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
             )
       );
       history.back();
+      return;
     }
+
+    if (!config.entities) {
+      config.entities = {};
+    }
+
+    this._entities = Object.keys(config.entities);
+
+    this._entities.forEach((entity) => {
+      this._storeState(entity);
+    });
+
+    const filteredEntityReg = this._entityRegistryEntries.filter((entityReg) =>
+      this._entities.includes(entityReg.entity_id)
+    );
+
+    for (const entityReg of filteredEntityReg) {
+      if (!entityReg.device_id) {
+        continue;
+      }
+      if (!this._devices.includes(entityReg.device_id)) {
+        this._devices = [...this._devices, entityReg.device_id];
+      }
+    }
+
+    const { context } = await activateScene(this.hass, this.scene!.entity_id);
+
+    this._activateContextId = context.id;
+
+    this._unsubscribeEvents = await this.hass!.connection.subscribeEvents<
+      HassEvent
+    >((event) => this._stateChanged(event), "state_changed");
+
+    this._dirty = false;
+    this._config = config;
   }
 
   private _entityPicked(ev: CustomEvent) {
-    const entity = ev.detail.value;
+    const entityId = ev.detail.value;
     (ev.target as any).value = "";
-    if (this._entities.includes(entity)) {
+    if (this._entities.includes(entityId)) {
       return;
     }
-    this._entities = [...this._entities, entity];
-    this._storeState(entity);
+    this._entities = [...this._entities, entityId];
+    this._storeState(entityId);
     this._dirty = true;
   }
 
   private _deleteEntity(ev: Event) {
     ev.stopPropagation();
-    const entityId = (ev.target as any).entity;
-    this._entities = this._entities.filter((entity) => entity !== entityId);
+    const deleteEntityId = (ev.target as any).entityId;
+    this._entities = this._entities.filter(
+      (entityId) => entityId !== deleteEntityId
+    );
+    this._dirty = true;
   }
 
   private _devicePicked(ev: CustomEvent) {
@@ -509,8 +511,8 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
     this._devices = [...this._devices, device];
     const deviceEntities = this._deviceEntityLookup[device];
     this._entities = [...this._entities, ...deviceEntities];
-    deviceEntities.forEach((entity) => {
-      this._storeState(entity);
+    deviceEntities.forEach((entityId) => {
+      this._storeState(entityId);
     });
     this._dirty = true;
   }
@@ -520,8 +522,9 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
     this._devices = this._devices.filter((device) => device !== deviceId);
     const deviceEntities = this._deviceEntityLookup[deviceId];
     this._entities = this._entities.filter(
-      (entity) => !deviceEntities.includes(entity)
+      (entityId) => !deviceEntities.includes(entityId)
     );
+    this._dirty = true;
   }
 
   private _nameChanged(ev: CustomEvent) {
@@ -533,7 +536,10 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   }
 
   private _stateChanged(event: HassEvent) {
-    if (this._entities.includes(event.data.entity_id)) {
+    if (
+      event.context.id !== this._activateContextId &&
+      this._entities.includes(event.data.entity_id)
+    ) {
       this._dirty = true;
     }
   }
@@ -573,44 +579,44 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
     history.back();
   }
 
-  private _calculateStates(): EntityStates {
-    const output: EntityStates = {};
-    this._entities.forEach((entity) => {
-      const state = this._getCurrentState(entity);
+  private _calculateStates(): SceneEntities {
+    const output: SceneEntities = {};
+    this._entities.forEach((entityId) => {
+      const state = this._getCurrentState(entityId);
       if (state) {
-        output[entity] = state;
+        output[entityId] = state;
       }
     });
     return output;
   }
 
-  private _storeState(entity: string): void {
-    if (entity in this._storedStates) {
+  private _storeState(entityId: string): void {
+    if (entityId in this._storedStates) {
       return;
     }
-    const state = this._getCurrentState(entity);
+    const state = this._getCurrentState(entityId);
     if (!state) {
       return;
     }
-    this._storedStates[entity] = state;
+    this._storedStates[entityId] = state;
   }
 
-  private _getCurrentState(entity: string) {
-    const stateObj = this.hass.states[entity];
+  private _getCurrentState(entityId: string) {
+    const stateObj = this.hass.states[entityId];
     if (!stateObj) {
       return;
     }
-    const domain = computeDomain(entity);
+    const domain = computeDomain(entityId);
     const attributes = {};
     for (const attribute in stateObj.attributes) {
       if (
-        SAVED_ATTRIBUTES[domain] &&
-        SAVED_ATTRIBUTES[domain].includes(attribute)
+        SCENE_SAVED_ATTRIBUTES[domain] &&
+        SCENE_SAVED_ATTRIBUTES[domain].includes(attribute)
       ) {
         attributes[attribute] = stateObj.attributes[attribute];
       }
     }
-    return { state: stateObj.state, ...attributes };
+    return { ...attributes, state: stateObj.state };
   }
 
   private async _saveScene(): Promise<void> {
