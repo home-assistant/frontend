@@ -23,13 +23,9 @@ import { haStyleDialog } from "../../resources/styles";
 // tslint:disable-next-line
 import { PaperDialogScrollableElement } from "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 
-type MessageType = "text" | "link" | "image" | "choice";
-
 interface Message {
   who: string;
   text?: string;
-  type?: MessageType;
-  data?: any;
   error?: boolean;
 }
 
@@ -117,7 +113,7 @@ export class HaVoiceCommandDialog extends LitElement {
           ${this._conversation.map(
             (message) => html`
               <div class="${this._computeMessageClasses(message)}">
-                ${this._renderMessage(message)}
+                ${message.text}
               </div>
             `
           )}
@@ -185,27 +181,6 @@ export class HaVoiceCommandDialog extends LitElement {
     }
   }
 
-  private _renderMessage(message: Message): TemplateResult {
-    switch (message.type) {
-      case "link":
-        return html`
-          <a href=${message.data} target="_blank">${message.text}</a>
-        `;
-      case "image":
-        return html`
-          <img src=${message.data} />
-        `;
-      case "choice":
-        return html`
-          <a href="#" @click=${this._handleChoice}>${message.text}</a>
-        `;
-      default:
-        return html`
-          ${message.text}
-        `;
-    }
-  }
-
   private _addMessage(message: Message) {
     this._conversation = [...this._conversation, message];
   }
@@ -216,10 +191,6 @@ export class HaVoiceCommandDialog extends LitElement {
       this._processText(input.value);
       input.value = "";
     }
-  }
-
-  private _handleChoice(ev: Event) {
-    this._processText((ev.target as HTMLElement).innerText);
   }
 
   private _initRecognition() {
@@ -254,7 +225,7 @@ export class HaVoiceCommandDialog extends LitElement {
       const text = this.results.transcript;
       this.results = null;
       if (text) {
-        this._processText(text, true);
+        this._processText(text);
       } else {
         this._addMessage({
           who: "user",
@@ -275,7 +246,7 @@ export class HaVoiceCommandDialog extends LitElement {
     };
   }
 
-  private async _processText(text: string, fromSpeech = false) {
+  private async _processText(text: string) {
     if (this.recognition) {
       this.recognition.abort();
     }
@@ -291,60 +262,13 @@ export class HaVoiceCommandDialog extends LitElement {
       const plain = response.speech.plain;
       message.text = plain.speech;
 
-      if (!message.text) {
-        if (plain.extra_data.lenght) {
-          this.hass.localize("ui.dialogs.voice_command.found");
-        } else {
-          throw new Error("no response");
-        }
-      }
-
       this.requestUpdate("_conversation");
-
-      let feedback = false;
-
-      plain.extra_data.forEach((extra) => {
-        switch (extra.type) {
-          case "rdl":
-            this._addMessage({
-              who: "hass",
-              type: "link",
-              text: extra.rdl.displayTitle,
-              data: extra.rdl.webCallback,
-            });
-            break;
-          case "picture":
-            this._addMessage({
-              who: "hass",
-              type: "image",
-              data: extra.url,
-            });
-            break;
-          case "choice":
-            feedback = true;
-            this._addMessage({
-              who: "hass",
-              type: "choice",
-              text: extra.title,
-            });
-            break;
-          default:
-            console.log(extra);
-        }
-      });
 
       if (speechSynthesis) {
         const speech = new SpeechSynthesisUtterance(
           response.speech.plain.speech
         );
         speech.lang = "en-US";
-        if (feedback && fromSpeech) {
-          speech.onend = () => {
-            if (!speechSynthesis.speaking && !speechSynthesis.pending) {
-              this._startListening();
-            }
-          };
-        }
         speechSynthesis.speak(speech);
       }
     } catch {
@@ -392,10 +316,8 @@ export class HaVoiceCommandDialog extends LitElement {
     }
   }
 
-  private _computeMessageClasses(message) {
-    return `message ${message.who} ${message.error ? " error" : ""} ${
-      message.type && message.type !== "text" ? "extra" : ""
-    }`;
+  private _computeMessageClasses(message: Message) {
+    return `message ${message.who} ${message.error ? " error" : ""}`;
   }
 
   static get styles(): CSSResult[] {
@@ -445,10 +367,6 @@ export class HaVoiceCommandDialog extends LitElement {
           border-bottom-left-radius: 0px;
           background-color: var(--primary-color);
           color: var(--text-primary-color);
-        }
-
-        .message.extra {
-          background-color: var(--secondary-text-color);
         }
 
         .message a {
