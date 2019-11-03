@@ -45,6 +45,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
+  computeDeviceName,
 } from "../../../data/device_registry";
 import {
   EntityRegistryEntry,
@@ -104,7 +105,11 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
           const device = deviceLookup[deviceId];
           const deviceEntities: string[] = deviceEntityLookup[deviceId] || [];
           outputDevices.push({
-            name: device.name_by_user || device.name || "<No name>",
+            name: computeDeviceName(
+              device,
+              this.hass,
+              this._deviceEntityLookup[device.id]
+            ),
             id: device.id,
             entities: deviceEntities,
           });

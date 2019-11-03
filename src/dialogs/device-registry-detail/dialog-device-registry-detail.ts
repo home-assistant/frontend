@@ -24,6 +24,7 @@ import {
   subscribeAreaRegistry,
   AreaRegistryEntry,
 } from "../../data/area_registry";
+import { computeDeviceName } from "../../data/device_registry";
 
 @customElement("dialog-device-registry-detail")
 class DialogDeviceRegistryDetail extends LitElement {
@@ -75,8 +76,7 @@ class DialogDeviceRegistryDetail extends LitElement {
         @opened-changed="${this._openedChanged}"
       >
         <h2>
-          ${device.name ||
-            this.hass.localize("ui.panel.config.devices.unnamed_device")}
+          ${computeDeviceName(device, this.hass)}
         </h2>
         <paper-dialog-scrollable>
           ${this._error

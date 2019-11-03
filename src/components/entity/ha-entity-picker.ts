@@ -60,7 +60,18 @@ class HaEntityPicker extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public label?: string;
   @property() public value?: string;
-  @property({ attribute: "domain-filter" }) public domainFilter?: string;
+  /**
+   * Show entities from specific domains.
+   * @type {string}
+   * @attr include-domains
+   */
+  @property({ type: Array, attribute: "include-domains" })
+  public includeDomains?: string[];
+  /**
+   * Show no entities of these domains.
+   * @type {Array}
+   * @attr exclude-domains
+   */
   @property({ type: Array, attribute: "exclude-domains" })
   public excludeDomains?: string[];
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
@@ -70,7 +81,7 @@ class HaEntityPicker extends LitElement {
   private _getStates = memoizeOne(
     (
       hass: this["hass"],
-      domainFilter: this["domainFilter"],
+      includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
       entityFilter: this["entityFilter"]
     ) => {
@@ -81,9 +92,11 @@ class HaEntityPicker extends LitElement {
       }
       let entityIds = Object.keys(hass.states);
 
-      if (domainFilter) {
-        entityIds = entityIds.filter(
-          (eid) => eid.substr(0, eid.indexOf(".")) === domainFilter
+      console.log(includeDomains);
+
+      if (includeDomains) {
+        entityIds = entityIds.filter((eid) =>
+          includeDomains.includes(eid.substr(0, eid.indexOf(".")))
         );
       }
 
@@ -117,7 +130,7 @@ class HaEntityPicker extends LitElement {
   protected render(): TemplateResult | void {
     const states = this._getStates(
       this._hass,
-      this.domainFilter,
+      this.includeDomains,
       this.excludeDomains,
       this.entityFilter
     );

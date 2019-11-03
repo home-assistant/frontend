@@ -13,6 +13,8 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { compare } from "../../../common/string/compare";
 import { SceneEntity } from "../../../data/scene";
+import memoizeOne from "memoize-one";
+import { HassEntities } from "home-assistant-js-websocket";
 
 @customElement("ha-config-scene")
 class HaConfigScene extends HassRouterPage {
@@ -34,18 +36,26 @@ class HaConfigScene extends HassRouterPage {
     },
   };
 
+  private _computeScenes = memoizeOne((states: HassEntities) => {
+    const scenes: SceneEntity[] = [];
+    Object.keys(states).forEach((entityId) => {
+      if (computeDomain(entityId) === "scene") {
+        scenes.push(states[entityId] as SceneEntity);
+      }
+    });
+
+    return scenes.sort((a, b) => {
+      return compare(computeStateName(a), computeStateName(b));
+    });
+  });
+
   protected updatePageEl(pageEl, changedProps: PropertyValues) {
     pageEl.hass = this.hass;
     pageEl.narrow = this.narrow;
     pageEl.showAdvanced = this.showAdvanced;
-    const oldHass = changedProps
-      ? (changedProps.get("hass") as HomeAssistant | undefined)
-      : undefined;
-    if (
-      this.hass &&
-      (!changedProps || !oldHass || this.hass.states !== oldHass.states)
-    ) {
-      pageEl.scenes = this._computeScenes(this.hass);
+
+    if (this.hass) {
+      pageEl.scenes = this._computeScenes(this.hass.states);
     }
 
     if (
@@ -61,19 +71,6 @@ class HaConfigScene extends HassRouterPage {
               (entity: SceneEntity) => entity.attributes.id === sceneId
             );
     }
-  }
-
-  private _computeScenes(hass: HomeAssistant) {
-    const scenes: SceneEntity[] = [];
-    Object.keys(hass.states).forEach((entityId) => {
-      if (computeDomain(entityId) === "scene") {
-        scenes.push(hass.states[entityId] as SceneEntity);
-      }
-    });
-
-    return scenes.sort((a, b) => {
-      return compare(computeStateName(a), computeStateName(b));
-    });
   }
 }
 
