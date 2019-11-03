@@ -92,8 +92,6 @@ class HaEntityPicker extends LitElement {
       }
       let entityIds = Object.keys(hass.states);
 
-      console.log(includeDomains);
-
       if (includeDomains) {
         entityIds = entityIds.filter((eid) =>
           includeDomains.includes(eid.substr(0, eid.indexOf(".")))

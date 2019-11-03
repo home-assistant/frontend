@@ -44,7 +44,6 @@ class HaEntitiesPickerLight extends LitElement {
     if (!this.hass) {
       return;
     }
-    console.log(this.includeDomains);
 
     const currentEntities = this._currentEntities;
     return html`

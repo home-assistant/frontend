@@ -27,7 +27,6 @@ import { ConfigEntry } from "../../../data/config_entries";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 
 export interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
