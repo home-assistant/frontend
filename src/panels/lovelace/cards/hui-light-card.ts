@@ -29,6 +29,7 @@ import { toggleEntity } from "../common/entity/toggle-entity";
 import { LightCardConfig } from "./types";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { SUPPORT_BRIGHTNESS } from "../../../data/light";
+import { actionHandler } from "../common/directives/action-handler-directive";
 
 @customElement("hui-light-card")
 export class HuiLightCard extends LitElement implements LovelaceCard {
@@ -114,7 +115,8 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                 filter: this._computeBrightness(stateObj),
                 color: this._computeColor(stateObj),
               })}"
-              @click="${this._handleClick}"
+              @action="${this._handleClick}"
+              .actionHandler=${actionHandler()}
               tabindex="0"
             ></ha-icon>
           </div>
