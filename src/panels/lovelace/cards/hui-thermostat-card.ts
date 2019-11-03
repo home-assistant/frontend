@@ -115,8 +115,8 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         : html`
             <round-slider
               .value=${targetTemp}
-              .low=${stateObj.attributes.target_temp_low || undefined}
-              .high=${stateObj.attributes.target_temp_high || undefined}
+              .low=${stateObj.attributes.target_temp_low}
+              .high=${stateObj.attributes.target_temp_high}
               .min=${stateObj.attributes.min_temp}
               .max=${stateObj.attributes.max_temp}
               .step=${this._stepSize}
@@ -459,6 +459,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         top: 20px;
         text-align: center;
         overflow-wrap: break-word;
+        pointer-events: none;
       }
 
       #temperature {
