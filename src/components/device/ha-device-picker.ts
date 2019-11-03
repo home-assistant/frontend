@@ -34,7 +34,6 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../data/entity_registry";
-import { computeStateName } from "../../common/entity/compute_state_name";
 
 interface Device {
   name: string;
