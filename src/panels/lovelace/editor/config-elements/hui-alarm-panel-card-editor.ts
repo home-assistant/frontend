@@ -78,7 +78,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
           .hass="${this.hass}"
           .value="${this._entity}"
           .configValue=${"entity"}
-          domain-filter="alarm_control_panel"
+          include-domains='["alarm_control_panel"]'
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>
