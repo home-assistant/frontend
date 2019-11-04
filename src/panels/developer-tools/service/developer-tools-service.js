@@ -112,7 +112,7 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
               value="[[_computeEntityValue(parsedJSON)]]"
               on-change="_entityPicked"
               disabled="[[!validJSON]]"
-              domain-filter="[[_computeEntityDomainFilter(_domain)]]"
+              include-domains="[[_computeEntityDomainFilter(_domain)]]"
               allow-custom-entity
             ></ha-entity-picker>
           </template>
@@ -285,7 +285,7 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
   }
 
   _computeEntityDomainFilter(domain) {
-    return ENTITY_COMPONENT_DOMAINS.includes(domain) ? domain : null;
+    return ENTITY_COMPONENT_DOMAINS.includes(domain) ? [domain] : null;
   }
 
   _callService() {

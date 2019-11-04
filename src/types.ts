@@ -116,6 +116,16 @@ export interface Resources {
   [language: string]: { [key: string]: string };
 }
 
+export interface Context {
+  id: string;
+  parrent_id?: string;
+  user_id?: string;
+}
+
+export interface ServiceCallResponse {
+  context: Context;
+}
+
 export interface HomeAssistant {
   auth: Auth & { external?: ExternalMessaging };
   connection: Connection;
@@ -150,7 +160,7 @@ export interface HomeAssistant {
     domain: string,
     service: string,
     serviceData?: { [key: string]: any }
-  ): Promise<void>;
+  ): Promise<ServiceCallResponse>;
   callApi<T>(
     method: "GET" | "POST" | "PUT" | "DELETE",
     path: string,
