@@ -56,6 +56,7 @@ export class HaFormString extends LitElement implements HaFormElement {
         `
       : html`
           <paper-input
+            .type=${this._stringType}
             .label=${this.label}
             .value=${this.data}
             .required=${this.schema.required}
@@ -83,6 +84,12 @@ export class HaFormString extends LitElement implements HaFormElement {
       },
       { bubbles: false }
     );
+  }
+
+  private _stringType() {
+    if (["email", "url"].includes(this.schema.format)) return this.schema.format;
+    if (this.schema.format === "fqdnurl") return "url";
+    return "text";
   }
 }
 
