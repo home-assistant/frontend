@@ -65,7 +65,7 @@ export class HuiWeatherForecastCardEditor extends LitElement
           .hass="${this.hass}"
           .value="${this._entity}"
           .configValue=${"entity"}
-          domain-filter="weather"
+          include-domains='["weather"]'
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>

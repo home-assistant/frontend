@@ -18,13 +18,15 @@ import {
   DataTableRowData,
 } from "../../../components/data-table/ha-data-table";
 // tslint:disable-next-line
-import { DeviceRegistryEntry } from "../../../data/device_registry";
+import {
+  DeviceRegistryEntry,
+  computeDeviceName,
+} from "../../../data/device_registry";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 
 export interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
@@ -99,11 +101,11 @@ export class HaDevicesDataTable extends LitElement {
       outputDevices = outputDevices.map((device) => {
         return {
           ...device,
-          name:
-            device.name_by_user ||
-            device.name ||
-            this._fallbackDeviceName(device.id, deviceEntityLookup) ||
-            "No name",
+          name: computeDeviceName(
+            device,
+            this.hass,
+            deviceEntityLookup[device.id]
+          ),
           model: device.model || "<unknown>",
           manufacturer: device.manufacturer || "<unknown>",
           area: device.area_id ? areaLookup[device.area_id].name : "No area",
@@ -248,20 +250,6 @@ export class HaDevicesDataTable extends LitElement {
     );
 
     return batteryEntity ? batteryEntity.entity_id : undefined;
-  }
-
-  private _fallbackDeviceName(
-    deviceId: string,
-    deviceEntityLookup: DeviceEntityLookup
-  ): string | undefined {
-    for (const entity of deviceEntityLookup[deviceId] || []) {
-      const stateObj = this.hass.states[entity.entity_id];
-      if (stateObj) {
-        return computeStateName(stateObj);
-      }
-    }
-
-    return undefined;
   }
 
   private _handleRowClicked(ev: CustomEvent) {

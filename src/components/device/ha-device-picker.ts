@@ -21,6 +21,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
+  computeDeviceName,
 } from "../../data/device_registry";
 import { compare } from "../../common/string/compare";
 import { PolymerChangedEvent } from "../../polymer-types";
@@ -33,7 +34,6 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../data/entity_registry";
-import { computeStateName } from "../../common/entity/compute_state_name";
 
 interface Device {
   name: string;
@@ -102,11 +102,11 @@ class HaDevicePicker extends SubscribeMixin(LitElement) {
       const outputDevices = devices.map((device) => {
         return {
           id: device.id,
-          name:
-            device.name_by_user ||
-            device.name ||
-            this._fallbackDeviceName(device.id, deviceEntityLookup) ||
-            "No name",
+          name: computeDeviceName(
+            device,
+            this.hass,
+            deviceEntityLookup[device.id]
+          ),
           area: device.area_id ? areaLookup[device.area_id].name : "No area",
         };
       });
@@ -207,20 +207,6 @@ class HaDevicePicker extends SubscribeMixin(LitElement) {
         fireEvent(this, "change");
       }, 0);
     }
-  }
-
-  private _fallbackDeviceName(
-    deviceId: string,
-    deviceEntityLookup: DeviceEntityLookup
-  ): string | undefined {
-    for (const entity of deviceEntityLookup[deviceId] || []) {
-      const stateObj = this.hass.states[entity.entity_id];
-      if (stateObj) {
-        return computeStateName(stateObj);
-      }
-    }
-
-    return undefined;
   }
 
   static get styles(): CSSResult {
