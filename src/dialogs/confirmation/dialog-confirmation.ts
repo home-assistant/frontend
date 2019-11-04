@@ -36,6 +36,7 @@ class DialogConfirmation extends LitElement {
       <ha-paper-dialog
         with-backdrop
         opened
+        modal
         @opened-changed="${this._openedChanged}"
       >
         <h2>
@@ -48,10 +49,14 @@ class DialogConfirmation extends LitElement {
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
           <mwc-button @click="${this._dismiss}">
-            ${this.hass.localize("ui.dialogs.confirmation.cancel")}
+            ${this._params.cancelBtnText
+              ? this._params.cancelBtnText
+              : this.hass.localize("ui.dialogs.confirmation.cancel")}
           </mwc-button>
           <mwc-button @click="${this._confirm}">
-            ${this.hass.localize("ui.dialogs.confirmation.ok")}
+            ${this._params.confirmBtnText
+              ? this._params.confirmBtnText
+              : this.hass.localize("ui.dialogs.confirmation.ok")}
           </mwc-button>
         </div>
       </ha-paper-dialog>

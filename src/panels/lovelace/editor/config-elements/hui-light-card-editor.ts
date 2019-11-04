@@ -71,7 +71,7 @@ export class HuiLightCardEditor extends LitElement
           .hass="${this.hass}"
           .value="${this._entity}"
           .configValue=${"entity"}
-          domain-filter="light"
+          include-domains='["light"]'
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>

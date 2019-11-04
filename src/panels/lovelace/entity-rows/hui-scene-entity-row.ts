@@ -16,10 +16,11 @@ import "../components/hui-warning";
 import { HomeAssistant } from "../../../types";
 import { EntityRow, EntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { activateScene } from "../../../data/scene";
 
 @customElement("hui-scene-entity-row")
 class HuiSceneEntityRow extends LitElement implements EntityRow {
-  @property() public hass?: HomeAssistant;
+  @property() public hass!: HomeAssistant;
 
   @property() private _config?: EntityConfig;
 
@@ -79,11 +80,9 @@ class HuiSceneEntityRow extends LitElement implements EntityRow {
     `;
   }
 
-  private _callService(ev): void {
+  private _callService(ev: Event): void {
     ev.stopPropagation();
-    this.hass!.callService("scene", "turn_on", {
-      entity_id: this._config!.entity,
-    });
+    activateScene(this.hass, this._config!.entity);
   }
 }
 
