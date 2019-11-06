@@ -531,7 +531,8 @@
       },
       "device-picker": {
         "clear": "Clear",
-        "show_devices": "Show devices"
+        "show_devices": "Show devices",
+        "device": "Device"
       },
       "relative_time": {
         "past": "{time} ago",
@@ -782,6 +783,7 @@
               "placeholder": "Optional description"
             },
             "triggers": {
+              "name": "Trigger",
               "header": "Triggers",
               "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.",
               "learn_more": "Learn more about triggers",
@@ -872,6 +874,7 @@
               }
             },
             "conditions": {
+              "name": "Condition",
               "header": "Conditions",
               "introduction": "Conditions are an optional part of an automation rule and can be used to prevent an action from happening when triggered. Conditions look very similar to triggers but are very different. A trigger will look at events happening in the system while a condition only looks at how the system looks right now. A trigger can observe that a switch is being turned on. A condition can only see if a switch is currently on or off.",
               "learn_more": "Learn more about conditions",
@@ -932,6 +935,7 @@
               }
             },
             "actions": {
+              "name": "Action",
               "header": "Actions",
               "introduction": "The actions are what Home Assistant will do when the automation is triggered.",
               "learn_more": "Learn more about actions",

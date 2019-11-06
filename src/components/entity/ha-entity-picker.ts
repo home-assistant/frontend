@@ -21,6 +21,7 @@ import { HomeAssistant } from "../../types";
 import { HassEntity } from "home-assistant-js-websocket";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDomain } from "../../common/entity/compute_domain";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
@@ -62,7 +63,7 @@ class HaEntityPicker extends LitElement {
   @property() public value?: string;
   /**
    * Show entities from specific domains.
-   * @type {string}
+   * @type {Array}
    * @attr include-domains
    */
   @property({ type: Array, attribute: "include-domains" })
@@ -94,13 +95,13 @@ class HaEntityPicker extends LitElement {
 
       if (includeDomains) {
         entityIds = entityIds.filter((eid) =>
-          includeDomains.includes(eid.substr(0, eid.indexOf(".")))
+          includeDomains.includes(computeDomain(eid))
         );
       }
 
       if (excludeDomains) {
         entityIds = entityIds.filter(
-          (eid) => !excludeDomains.includes(eid.substr(0, eid.indexOf(".")))
+          (eid) => !excludeDomains.includes(computeDomain(eid))
         );
       }
 

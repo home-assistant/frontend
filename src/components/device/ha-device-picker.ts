@@ -34,6 +34,7 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../data/entity_registry";
+import { computeDomain } from "../../common/entity/compute_domain";
 
 interface Device {
   name: string;
@@ -64,20 +65,36 @@ const rowRenderer = (root: HTMLElement, _owner, model: { item: Device }) => {
 };
 
 @customElement("ha-device-picker")
-class HaDevicePicker extends SubscribeMixin(LitElement) {
+export class HaDevicePicker extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
   @property() public label?: string;
   @property() public value?: string;
   @property() public devices?: DeviceRegistryEntry[];
   @property() public areas?: AreaRegistryEntry[];
   @property() public entities?: EntityRegistryEntry[];
+  /**
+   * Show entities from specific domains.
+   * @type {Array}
+   * @attr include-domains
+   */
+  @property({ type: Array, attribute: "include-domains" })
+  public includeDomains?: string[];
+  /**
+   * Show no entities of these domains.
+   * @type {Array}
+   * @attr exclude-domains
+   */
+  @property({ type: Array, attribute: "exclude-domains" })
+  public excludeDomains?: string[];
   @property({ type: Boolean }) private _opened?: boolean;
 
   private _getDevices = memoizeOne(
     (
       devices: DeviceRegistryEntry[],
       areas: AreaRegistryEntry[],
-      entities: EntityRegistryEntry[]
+      entities: EntityRegistryEntry[],
+      includeDomains: this["includeDomains"],
+      excludeDomains: this["excludeDomains"]
     ): Device[] => {
       if (!devices.length) {
         return [];
@@ -99,7 +116,34 @@ class HaDevicePicker extends SubscribeMixin(LitElement) {
         areaLookup[area.area_id] = area;
       }
 
-      const outputDevices = devices.map((device) => {
+      let inputDevices = [...devices];
+
+      if (includeDomains) {
+        inputDevices = inputDevices.filter((device) => {
+          const devEntities = deviceEntityLookup[device.id];
+          if (!devEntities || !devEntities.length) {
+            return false;
+          }
+          return deviceEntityLookup[device.id].some((entity) =>
+            includeDomains.includes(computeDomain(entity.entity_id))
+          );
+        });
+      }
+
+      if (excludeDomains) {
+        inputDevices = inputDevices.filter((device) => {
+          const devEntities = deviceEntityLookup[device.id];
+          if (!devEntities || !devEntities.length) {
+            return true;
+          }
+          return entities.every(
+            (entity) =>
+              !excludeDomains.includes(computeDomain(entity.entity_id))
+          );
+        });
+      }
+
+      const outputDevices = inputDevices.map((device) => {
         return {
           id: device.id,
           name: computeDeviceName(
@@ -135,7 +179,13 @@ class HaDevicePicker extends SubscribeMixin(LitElement) {
     if (!this.devices || !this.areas || !this.entities) {
       return;
     }
-    const devices = this._getDevices(this.devices, this.areas, this.entities);
+    const devices = this._getDevices(
+      this.devices,
+      this.areas,
+      this.entities,
+      this.includeDomains,
+      this.excludeDomains
+    );
     return html`
       <vaadin-combo-box-light
         item-value-path="id"
@@ -148,7 +198,9 @@ class HaDevicePicker extends SubscribeMixin(LitElement) {
         @value-changed=${this._deviceChanged}
       >
         <paper-input
-          .label=${this.label}
+          .label=${this.label === undefined && this.hass
+            ? this.hass.localize("ui.components.device-picker.device")
+            : this.label}
           class="input"
           autocapitalize="none"
           autocomplete="off"
