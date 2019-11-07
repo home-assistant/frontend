@@ -7,14 +7,9 @@ interface ProcessResults {
   };
 }
 
-export interface ConversationAttribution {
-  name: string;
-  url: string;
-}
-
-export interface ConversationOnboarding {
-  text: string;
-  url: string;
+export interface AgentInfo {
+  attribution?: { name: string; url: string };
+  onboarding?: { text: string; url: string };
 }
 
 export const processText = (
@@ -23,11 +18,9 @@ export const processText = (
 ): Promise<ProcessResults> =>
   hass.callApi("POST", "conversation/process", { text });
 
-export const getConversationOnboarding = (
-  hass: HomeAssistant
-): Promise<ConversationOnboarding> =>
+export const getAgentInfo = (hass: HomeAssistant): Promise<AgentInfo> =>
   hass.callWS({
-    type: "conversation/onboarding/get",
+    type: "conversation/agent/info",
   });
 
 export const setConversationOnboarding = (
@@ -36,12 +29,5 @@ export const setConversationOnboarding = (
 ): Promise<boolean> =>
   hass.callWS({
     type: "conversation/onboarding/set",
-    data: { onboarded: value },
-  });
-
-export const getConversationAttribution = (
-  hass: HomeAssistant
-): Promise<ConversationAttribution> =>
-  hass.callWS({
-    type: "conversation/attribution",
+    shown: value,
   });

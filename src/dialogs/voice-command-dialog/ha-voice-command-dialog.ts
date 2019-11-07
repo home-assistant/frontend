@@ -18,18 +18,15 @@ import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import {
   processText,
-  getConversationOnboarding,
-  getConversationAttribution,
+  getAgentInfo,
   setConversationOnboarding,
-  ConversationAttribution,
-  ConversationOnboarding,
+  AgentInfo,
 } from "../../data/conversation";
 import { classMap } from "lit-html/directives/class-map";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { haStyleDialog } from "../../resources/styles";
 // tslint:disable-next-line
 import { PaperDialogScrollableElement } from "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import { isComponentLoaded } from "../../common/config/is_component_loaded";
 
 interface Message {
   who: string;
@@ -68,8 +65,7 @@ export class HaVoiceCommandDialog extends LitElement {
     },
   ];
   @property() private _opened = false;
-  @property() private _onboarding?: ConversationOnboarding;
-  @property() private _attribution?: ConversationAttribution;
+  @property() private _agentInfo?: AgentInfo;
   @query("#messages") private messages!: PaperDialogScrollableElement;
   private recognition?: SpeechRecognition;
 
@@ -78,8 +74,7 @@ export class HaVoiceCommandDialog extends LitElement {
     if (SpeechRecognition) {
       this._startListening();
     }
-    this._onboarding = await getConversationOnboarding(this.hass);
-    this._attribution = await getConversationAttribution(this.hass);
+    this._agentInfo = await getAgentInfo(this.hass);
   }
 
   protected render(): TemplateResult {
@@ -122,15 +117,15 @@ export class HaVoiceCommandDialog extends LitElement {
         @opened-changed=${this._openedChanged}
       >
         <paper-dialog-scrollable id="messages">
-          ${this._onboarding
+          ${this._agentInfo && this._agentInfo.onboarding
             ? html`
                 <div @click=${this._completeOnboarding}>
                   <a
                     class="button"
-                    href="${this._onboarding.url}"
+                    href="${this._agentInfo.onboarding.url}"
                     target="_blank"
                     ><mwc-button class="full-width"
-                      >${this._onboarding.text}</mwc-button
+                      >${this._agentInfo.onboarding.text}</mwc-button
                     ></a
                   >
                   <br />
@@ -192,13 +187,13 @@ export class HaVoiceCommandDialog extends LitElement {
                 `
               : ""}
           </paper-input>
-          ${this._attribution
+          ${this._agentInfo && this._agentInfo.attribution
             ? html`
                 <a
-                  href=${this._attribution.url}
+                  href=${this._agentInfo.attribution.url}
                   class="attribution"
                   target="_blank"
-                  >${this._attribution.name}</a
+                  >${this._agentInfo.attribution.name}</a
                 >
               `
             : ""}
@@ -238,7 +233,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
   private _completeOnboarding() {
     setConversationOnboarding(this.hass, true);
-    this._onboarding = undefined;
+    this._agentInfo! = { ...this._agentInfo, onboarding: undefined };
   }
 
   private _initRecognition() {
