@@ -9,6 +9,8 @@ interface ProcessResults {
 
 export const processText = (
   hass: HomeAssistant,
-  text: string
+  text: string,
+  // tslint:disable-next-line: variable-name
+  conversation_id: string
 ): Promise<ProcessResults> =>
-  hass.callApi("POST", "conversation/process", { text });
+  hass.callApi("POST", "conversation/process", { text, conversation_id });
