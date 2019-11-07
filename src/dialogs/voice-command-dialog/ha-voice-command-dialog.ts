@@ -16,12 +16,20 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
-import { processText } from "../../data/conversation";
+import {
+  processText,
+  getConversationOnboarding,
+  getConversationAttribution,
+  setConversationOnboarding,
+  ConversationAttribution,
+  ConversationOnboarding,
+} from "../../data/conversation";
 import { classMap } from "lit-html/directives/class-map";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { haStyleDialog } from "../../resources/styles";
 // tslint:disable-next-line
 import { PaperDialogScrollableElement } from "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 
 interface Message {
   who: string;
@@ -60,6 +68,8 @@ export class HaVoiceCommandDialog extends LitElement {
     },
   ];
   @property() private _opened = false;
+  @property() private _onboarding?: ConversationOnboarding;
+  @property() private _attribution?: ConversationAttribution;
   @query("#messages") private messages!: PaperDialogScrollableElement;
   private recognition?: SpeechRecognition;
 
@@ -68,6 +78,8 @@ export class HaVoiceCommandDialog extends LitElement {
     if (SpeechRecognition) {
       this._startListening();
     }
+    this._onboarding = await getConversationOnboarding(this.hass);
+    this._attribution = await getConversationAttribution(this.hass);
   }
 
   protected render(): TemplateResult {
@@ -110,6 +122,25 @@ export class HaVoiceCommandDialog extends LitElement {
         @opened-changed=${this._openedChanged}
       >
         <paper-dialog-scrollable id="messages">
+          ${this._onboarding
+            ? html`
+                <div @click=${this._completeOnboarding}>
+                  <a
+                    class="button"
+                    href="${this._onboarding.url}"
+                    target="_blank"
+                    ><mwc-button class="full-width"
+                      >${this._onboarding.text}</mwc-button
+                    ></a
+                  >
+                  <br />
+                  <mwc-button class="full-width"
+                    >No, I don't want to help</mwc-button
+                  >
+                  <br />
+                </div>
+              `
+            : ""}
           ${this._conversation.map(
             (message) => html`
               <div class="${this._computeMessageClasses(message)}">
@@ -130,36 +161,48 @@ export class HaVoiceCommandDialog extends LitElement {
               `
             : ""}
         </paper-dialog-scrollable>
-        <paper-input
-          @keyup=${this._handleKeyUp}
-          label="${this.hass!.localize(
-            `ui.dialogs.voice_command.${
-              SpeechRecognition ? "label_voice" : "label"
-            }`
-          )}"
-          autofocus
-        >
-          ${SpeechRecognition
+        <div class="input">
+          <paper-input
+            @keyup=${this._handleKeyUp}
+            label="${this.hass!.localize(
+              `ui.dialogs.voice_command.${
+                SpeechRecognition ? "label_voice" : "label"
+              }`
+            )}"
+            autofocus
+          >
+            ${SpeechRecognition
+              ? html`
+                  <span suffix="" slot="suffix">
+                    ${this.results
+                      ? html`
+                          <div class="bouncer">
+                            <div class="double-bounce1"></div>
+                            <div class="double-bounce2"></div>
+                          </div>
+                        `
+                      : ""}
+                    <paper-icon-button
+                      .active=${Boolean(this.results)}
+                      icon="hass:microphone"
+                      @click=${this._toggleListening}
+                    >
+                    </paper-icon-button>
+                  </span>
+                `
+              : ""}
+          </paper-input>
+          ${this._attribution
             ? html`
-                <span suffix="" slot="suffix">
-                  ${this.results
-                    ? html`
-                        <div class="bouncer">
-                          <div class="double-bounce1"></div>
-                          <div class="double-bounce2"></div>
-                        </div>
-                      `
-                    : ""}
-                  <paper-icon-button
-                    .active=${Boolean(this.results)}
-                    icon="hass:microphone"
-                    @click=${this._toggleListening}
-                  >
-                  </paper-icon-button>
-                </span>
+                <a
+                  href=${this._attribution.url}
+                  class="attribution"
+                  target="_blank"
+                  >${this._attribution.name}</a
+                >
               `
             : ""}
-        </paper-input>
+        </div>
       </ha-paper-dialog>
     `;
   }
@@ -191,6 +234,11 @@ export class HaVoiceCommandDialog extends LitElement {
       this._processText(input.value);
       input.value = "";
     }
+  }
+
+  private _completeOnboarding() {
+    setConversationOnboarding(this.hass, true);
+    this._onboarding = undefined;
   }
 
   private _initRecognition() {
@@ -263,14 +311,6 @@ export class HaVoiceCommandDialog extends LitElement {
       message.text = plain.speech;
 
       this.requestUpdate("_conversation");
-
-      if (speechSynthesis) {
-        const speech = new SpeechSynthesisUtterance(
-          response.speech.plain.speech
-        );
-        speech.lang = "en-US";
-        speechSynthesis.speak(speech);
-      }
     } catch {
       message.text = this.hass.localize("ui.dialogs.voice_command.error");
       message.error = true;
@@ -336,14 +376,22 @@ export class HaVoiceCommandDialog extends LitElement {
           color: var(--primary-color);
         }
 
-        paper-input {
+        .input {
           margin: 0 0 16px 0;
         }
 
         ha-paper-dialog {
           width: 450px;
         }
-
+        a.button {
+          text-decoration: none;
+        }
+        .full-width {
+          width: 100%;
+        }
+        .attribution {
+          color: var(--secondary-text-color);
+        }
         .message {
           font-size: 18px;
           clear: both;
