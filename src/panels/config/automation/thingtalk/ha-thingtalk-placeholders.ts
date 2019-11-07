@@ -277,8 +277,11 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
         mwc-button.left {
           margin-right: auto;
         }
+        paper-dialog-scrollable {
+          margin-top: 10px;
+        }
         h3 {
-          margin: 0;
+          margin: 10px 0 0 0;
           font-weight: 500;
         }
         .error {

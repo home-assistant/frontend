@@ -17,13 +17,14 @@ import "../../../../components/dialog/ha-paper-dialog";
 import "./ha-thingtalk-placeholders";
 import { ThingtalkDialogParams } from "../show-dialog-thingtalk";
 import { PolymerChangedEvent } from "../../../../polymer-types";
-import { haStyleDialog } from "../../../../resources/styles";
+import { haStyleDialog, haStyle } from "../../../../resources/styles";
 import { HomeAssistant } from "../../../../types";
 // tslint:disable-next-line
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { AutomationConfig } from "../../../../data/automation";
 // tslint:disable-next-line
 import { PlaceholderValues } from "./ha-thingtalk-placeholders";
+import { convertThingTalk } from "../../../../data/cloud";
 
 export interface Placeholder {
   index: number;
@@ -91,14 +92,14 @@ class DialogThingtalk extends LitElement {
           For example:
           <ul @click=${this._handleExampleClick}>
             <li>
-              <a href="#"
-                >Turn the lights on when I come home and the sun is set</a
-              >
+              <button class="link">
+                Turn the lights on when I come home and the sun is set
+              </button>
             </li>
             <li>
-              <a href="#"
-                >Set the thermostat to 15 degrees when I leave the house</a
-              >
+              <button class="link">
+                Set the thermostat to 15 degrees when I leave the house
+              </button>
             </li>
           </ul>
           <paper-input
@@ -121,7 +122,7 @@ class DialogThingtalk extends LitElement {
           <mwc-button @click="${this._generate}" .disabled=${this._submitting}>
             <paper-spinner
               ?active="${this._submitting}"
-              alt="Creating your automation"
+              alt="Creating your automation..."
             ></paper-spinner>
             Create automation
           </mwc-button>
@@ -137,31 +138,15 @@ class DialogThingtalk extends LitElement {
       return;
     }
     this._submitting = true;
-    // const config = await convertThinkTalk(this._value);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    const config: Partial<AutomationConfig> = {
-      trigger: [
-        { platform: "zone", entity_id: "", zone: "zone.home", event: "enter" },
-      ],
-      condition: [
-        {
-          condition: "device",
-          device_id: "",
-          domain: "sensor",
-          type: "is_value",
-          above: "20",
-          entity_id: "",
-        },
-      ],
-      action: [
-        {
-          device_id: "",
-          domain: "light",
-          type: "turn_on",
-          entity_id: "",
-        },
-      ],
-    };
+    let config: Partial<AutomationConfig>;
+    try {
+      const result = await convertThingTalk(this.hass, this._value);
+      config = result.config;
+    } catch (err) {
+      this._error = err.message;
+      this._submitting = false;
+      return;
+    }
     const placeholders: PlaceholderContainer = {};
     this._getPlaceholders(placeholders, "trigger", config.trigger);
     this._getPlaceholders(placeholders, "condition", config.condition);
@@ -221,9 +206,6 @@ class DialogThingtalk extends LitElement {
 
   private _sendConfig(input, config) {
     this._params!.callback({ alias: input, ...config });
-    if (this._input) {
-      this._input.value = null;
-    }
     this._closeDialog();
   }
 
@@ -234,6 +216,9 @@ class DialogThingtalk extends LitElement {
 
   private _closeDialog() {
     this._placeholders = undefined;
+    if (this._input) {
+      this._input.value = null;
+    }
     this._opened = false;
   }
 
@@ -255,6 +240,7 @@ class DialogThingtalk extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
+      haStyle,
       haStyleDialog,
       css`
         ha-paper-dialog {
@@ -276,9 +262,6 @@ class DialogThingtalk extends LitElement {
         }
         .error {
           color: var(--google-red-500);
-        }
-        a {
-          color: var(--primary-color);
         }
         .attribution {
           color: var(--secondary-text-color);

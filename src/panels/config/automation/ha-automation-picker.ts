@@ -147,7 +147,7 @@ class HaAutomationPicker extends LitElement {
                 )}
           </ha-card>
         </ha-config-section>
-        <a href="#">
+        <div>
           <ha-fab
             slot="fab"
             ?is-wide=${this.isWide}
@@ -158,7 +158,7 @@ class HaAutomationPicker extends LitElement {
             ?rtl=${computeRTL(this.hass)}
             @click=${this._createNew}
           ></ha-fab>
-        </a>
+        </div>
       </hass-subpage>
     `;
   }
@@ -215,6 +215,7 @@ class HaAutomationPicker extends LitElement {
           bottom: 16px;
           right: 16px;
           z-index: 1;
+          cursor: pointer;
         }
 
         ha-fab[is-wide] {
