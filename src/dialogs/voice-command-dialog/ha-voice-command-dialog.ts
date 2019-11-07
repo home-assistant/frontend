@@ -27,6 +27,7 @@ import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { haStyleDialog } from "../../resources/styles";
 // tslint:disable-next-line
 import { PaperDialogScrollableElement } from "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import { uid } from "../../common/util/uid";
 
 interface Message {
   who: string;
@@ -68,6 +69,7 @@ export class HaVoiceCommandDialog extends LitElement {
   @property() private _agentInfo?: AgentInfo;
   @query("#messages") private messages!: PaperDialogScrollableElement;
   private recognition?: SpeechRecognition;
+  private _conversationId?: string;
 
   public async showDialog(): Promise<void> {
     this._opened = true;
@@ -204,6 +206,7 @@ export class HaVoiceCommandDialog extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.updated(changedProps);
+    this._conversationId = uid();
     this._conversation = [
       {
         who: "hass",
@@ -301,7 +304,11 @@ export class HaVoiceCommandDialog extends LitElement {
     // To make sure the answer is placed at the right user text, we add it before we process it
     this._addMessage(message);
     try {
-      const response = await processText(this.hass, text);
+      const response = await processText(
+        this.hass,
+        text,
+        this._conversationId!
+      );
       const plain = response.speech.plain;
       message.text = plain.speech;
 
