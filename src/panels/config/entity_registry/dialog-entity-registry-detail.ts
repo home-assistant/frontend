@@ -63,11 +63,6 @@ class DialogEntityRegistryDetail extends LitElement {
       computeDomain(this._params.entry.entity_id);
 
     return html`
-      <style include="ha-style-dialog">
-        :host {
-          --paper-font-title_-_white-space: normal;
-        }
-      </style>
       <ha-paper-dialog
         with-backdrop
         opened
@@ -231,6 +226,9 @@ class DialogEntityRegistryDetail extends LitElement {
     return [
       haStyleDialog,
       css`
+        :host {
+          --paper-font-title_-_white-space: normal;
+        }
         ha-paper-dialog {
           min-width: 400px;
           max-width: 450px;
