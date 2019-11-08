@@ -313,6 +313,7 @@
                 "tabs": {
                     "services": {
                         "title": "Serveis",
+                        "description": "L'eina Serveis et permet fer crides a qualsevol servei disponible a Home Assistant.",
                         "data": "Dades del servei (en YAML, opcionals)",
                         "call_service": "Crida servei",
                         "select_service": "Selecciona un servei per veure'n la descripció",
@@ -321,36 +322,47 @@
                         "column_parameter": "Paràmetre",
                         "column_description": "Descripció",
                         "column_example": "Exemple",
+                        "fill_example_data": "Omple amb dades d’exemple",
                         "alert_parsing_yaml": "S'ha produït un error analitzant el codi YAML: {data}"
                     },
                     "states": {
                         "title": "Estats",
+                        "description1": "Defineix la representació d'un dispositiu a Home Assistant.",
+                        "description2": "No hi haurà cap comunicació amb el dispositiu real.",
                         "entity": "Entitat",
                         "state": "Estat",
                         "attributes": "Atributs",
                         "state_attributes": "Atributs d'estats (en YAML, opcionals)",
                         "set_state": "Estableix estat",
+                        "current_entities": "Entitats actuals",
+                        "filter_entities": "Filtra entitats",
+                        "filter_states": "Filtra estats",
+                        "filter_attributes": "Filtra atributs",
                         "no_entities": "No hi ha entitats",
                         "more_info": "Més informació",
                         "alert_entity_field": "L’entitat és un camp obligatori"
                     },
                     "events": {
                         "title": "Esdeveniments",
+                        "description": "Crida un esdeveniment al bus d'esdeveniments.",
                         "documentation": "Documentació d'esdeveniments.",
                         "type": "Tipus d'esdeveniment",
                         "data": "Dades de l'esdeveniment (en YAML, opcionals)",
-                        "fire_event": "Executa esdeveniment",
-                        "event_fired": "Esdeveniment {name} executat",
+                        "fire_event": "Crida esdeveniment",
+                        "event_fired": "Esdeveniment {name} cridat",
                         "available_events": "Esdeveniments disponibles",
+                        "count_listeners": " ({count} oients)",
                         "listen_to_events": "Escolta esdeveniments",
                         "listening_to": "Escoltant a",
                         "subscribe_to": "Esdeveniment al qual subscriure's",
                         "start_listening": "Comença a escoltar",
                         "stop_listening": "Deixa d’escoltar",
-                        "alert_event_type": "El tipus d'esdeveniment és un camp obligatori"
+                        "alert_event_type": "El tipus d'esdeveniment és un camp obligatori",
+                        "notification_event_fired": "L'esdeveniment {type} s'ha cridat correctament"
                     },
                     "templates": {
                         "title": "Plantilla",
+                        "description": "Les plantilles es renderitzen mitjançant el motor Jinja2 amb algunes extensions específiques de Home Assistant.",
                         "editor": "Editor de plantilles",
                         "jinja_documentation": "Documentació sobre plantilles amb Jinja2",
                         "template_extensions": "Extensions de plantilla de Home Assistant",
@@ -371,6 +383,9 @@
                     },
                     "info": {
                         "title": "Informació",
+                        "remove": "Elimina",
+                        "set": "Estableix",
+                        "default_ui": "{action} {name} com a pàgina predeterminada del dispositiu",
                         "lovelace_ui": "Vés a la UI Lovelace",
                         "states_ui": "Vés a la UI d’estats",
                         "home_assistant_logo": "Logotip de Home Assistant",
@@ -379,9 +394,12 @@
                         "license": "Publicat amb la llicència Apache 2.0",
                         "source": "Font:",
                         "server": "servidor",
+                        "frontend": "frontend-ui",
                         "built_using": "Creat utilitzant",
                         "icons_by": "Icones de",
-                        "custom_uis": "Interfícies d'usuari personalitzades:"
+                        "frontend_version": "Versió de la interfície web d'usuari: {version} - {type}",
+                        "custom_uis": "Interfícies d'usuari personalitzades:",
+                        "system_health_error": "El component Estat del Sistema no està configurat. Afegeix 'system_health:' a configuration.yaml"
                     },
                     "logs": {
                         "title": "Registres",
@@ -389,9 +407,10 @@
                         "load_full_log": "Carrega el registre complet de Home Assistant",
                         "loading_log": "Carregant el registre d'errors...",
                         "no_errors": "No s'ha informat de cap error.",
-                        "no_issues": "No hi ha problemes nous!",
+                        "no_issues": "No hi ha registres nous!",
                         "clear": "Esborra",
-                        "refresh": "Actualitza"
+                        "refresh": "Actualitza",
+                        "multiple_messages": "missatge produit per primera vegada a les {time}, apareix {counter} vegades"
                     }
                 }
             },
@@ -414,7 +433,7 @@
                 "introduction": "Aquí pots configurar Home Assistant i els seus components. Encara no és possible configurar-ho tot des de la interfície d'usuari, però hi estem treballant.",
                 "core": {
                     "caption": "General",
-                    "description": "Canviar la configuració general de Home Assistant",
+                    "description": "Canvia la configuració general de Home Assistant",
                     "section": {
                         "core": {
                             "header": "Configuració general",
@@ -543,8 +562,8 @@
                                     "entity": "Entitat amb ubicació",
                                     "zone": "Zona",
                                     "event": "Esdeveniment:",
-                                    "enter": "Entrar",
-                                    "leave": "Sortir"
+                                    "enter": "Entra",
+                                    "leave": "Surt"
                                 },
                                 "webhook": {
                                     "label": "Webhook",
@@ -561,8 +580,8 @@
                                     "source": "Font",
                                     "zone": "Zona",
                                     "event": "Esdeveniment:",
-                                    "enter": "Entrar",
-                                    "leave": "Sortir"
+                                    "enter": "Entra",
+                                    "leave": "Surt"
                                 },
                                 "device": {
                                     "label": "Dispositiu",
@@ -646,7 +665,7 @@
                             "type_select": "Tipus d'acció",
                             "type": {
                                 "service": {
-                                    "label": "Cridar servei",
+                                    "label": "Crida servei",
                                     "service_data": "Dades de servei"
                                 },
                                 "delay": {
@@ -769,7 +788,7 @@
                         "activate_user": "Activar usuari",
                         "deactivate_user": "Desactivar usuari",
                         "delete_user": "Eliminar usuari",
-                        "caption": "Mostrar usuari",
+                        "caption": "Mostra usuari",
                         "id": "ID",
                         "owner": "Propietari",
                         "group": "Grup",
@@ -977,8 +996,8 @@
                         }
                     },
                     "note_about_integrations": "Encara no es poden configurar totes les integracions a través de la UI.",
-                    "note_about_website_reference": "N'hi ha més disponible a ",
-                    "home_assistant_website": "Lloc web de Home Assistant"
+                    "note_about_website_reference": "N'hi ha més disponibles al ",
+                    "home_assistant_website": "lloc web de Home Assistant"
                 },
                 "zha": {
                     "caption": "ZHA",
@@ -1125,7 +1144,7 @@
                             "invalid": "Configuració invàlida"
                         },
                         "reloading": {
-                            "heading": "Tornant a carregar configuració",
+                            "heading": "Torna a carregar la configuració",
                             "introduction": "Algunes parts de la configuració de Home Assistant es poden recarregar sense necessitat de reiniciar. Els botons de sota esborraran la configuració antiga i en carregaran la nova.",
                             "core": "Actualitza el nucli",
                             "group": "Actualitza grups",
@@ -1391,7 +1410,7 @@
                         "tap": "Tocar:",
                         "navigate_to": "Navega a {location}",
                         "toggle": "Commuta {name}",
-                        "call_service": "Cridar servei {name}",
+                        "call_service": "Crida servei {name}",
                         "more_info": "Mostra més informació: {name}",
                         "url": "Obre un finestra a {url_path}"
                     },
@@ -1408,7 +1427,9 @@
                         "delete": "Elimina",
                         "move": "Mou",
                         "show_visual_editor": "Mostra l'editor visual",
-                        "show_code_editor": "Mostra l'editor de codi"
+                        "show_code_editor": "Mostra l'editor de codi",
+                        "pick_card_view_title": "Quina targeta vols afegir a la visualització {name}?",
+                        "options": "Més opcions"
                     },
                     "migrate": {
                         "header": "Configuració incompatible",
@@ -1421,7 +1442,8 @@
                         "header": "Configuració de la visualització",
                         "add": "Afegeix visualització",
                         "edit": "Editar visualització",
-                        "delete": "Eliminar visualització"
+                        "delete": "Eliminar visualització",
+                        "header_name": "Configuració de la visualització {name}"
                     },
                     "save_config": {
                         "header": "Pren el control de la interfície d'usuari Lovelace",
@@ -1431,7 +1453,8 @@
                         "save": "Prendre el control"
                     },
                     "menu": {
-                        "raw_editor": "Editor de codi"
+                        "raw_editor": "Editor de codi",
+                        "open": "Obre el menú de Lovelace"
                     },
                     "raw_editor": {
                         "header": "Edita la configuració",
@@ -1452,8 +1475,9 @@
                             "optional": "Opcional"
                         },
                         "entities": {
-                            "show_header_toggle": "Mostrar commutació a la capçalera?",
-                            "name": "Entitats"
+                            "show_header_toggle": "Mostra commutació a la capçalera?",
+                            "name": "Entitats",
+                            "toggle": "Commuta les entitats."
                         },
                         "gauge": {
                             "severity": {
@@ -1483,9 +1507,9 @@
                             "minimum": "Mínim",
                             "name": "Nom",
                             "refresh_interval": "Interval d'actualització",
-                            "show_icon": "Mostrar icona?",
-                            "show_name": "Mostrar nom?",
-                            "show_state": "Mostrar estat?",
+                            "show_icon": "Mostra icona?",
+                            "show_name": "Mostra nom?",
+                            "show_state": "Mostra estat?",
                             "tap_action": "Acció en tocar",
                             "title": "Títol",
                             "theme": "Tema",
@@ -1566,7 +1590,8 @@
                     },
                     "view": {
                         "panel_mode": {
-                            "title": "Mode panell?"
+                            "title": "Mode panell?",
+                            "description": "Es renderitzarà la primera targeta a amplada completa; les altres targetes d'aquesta visualització no es mostraran."
                         }
                     }
                 },
@@ -1636,7 +1661,8 @@
         },
         "sidebar": {
             "log_out": "Desconnectar",
-            "external_app_configuration": "Configuració de l’aplicació"
+            "external_app_configuration": "Configuració de l’aplicació",
+            "sidebar_toggle": "Commutació de la barra lateral"
         },
         "common": {
             "loading": "Carregant",
@@ -1791,7 +1817,9 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Entitat"
+                    "entity": "Entitat",
+                    "clear": "Esborra",
+                    "show_entities": "Mostra entitats"
                 }
             },
             "service-picker": {
@@ -1812,6 +1840,10 @@
             "history_charts": {
                 "loading_history": "Carregant historial d'estats...",
                 "no_history_found": "No s'ha trobat cap historial d'estats."
+            },
+            "device-picker": {
+                "clear": "Esborra",
+                "show_devices": "Mostra dispositius"
             }
         },
         "notification_toast": {
@@ -1935,7 +1967,7 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "Estat del sistema",
+        "system_health": "Estat del Sistema",
         "person": "Persona"
     },
     "attribute": {

@@ -1321,7 +1321,8 @@
                         "delete": "Slet",
                         "move": "Flyt",
                         "show_visual_editor": "Vis visuel editor",
-                        "show_code_editor": "Vis kode editor"
+                        "show_code_editor": "Vis kode editor",
+                        "options": "Flere indstillinger"
                     },
                     "migrate": {
                         "header": "Konfiguration ikke færdiggjort",
@@ -1700,7 +1701,9 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Enhed"
+                    "entity": "Enhed",
+                    "clear": "Ryd",
+                    "show_entities": "Vis enheder"
                 }
             },
             "service-picker": {
@@ -1721,6 +1724,10 @@
             "history_charts": {
                 "loading_history": "Indlæser statushistorik ...",
                 "no_history_found": "Ingen statushistorik fundet."
+            },
+            "device-picker": {
+                "clear": "Ryd",
+                "show_devices": "Vis enheder"
             }
         },
         "notification_toast": {

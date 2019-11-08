@@ -314,20 +314,27 @@
                     "services": {
                         "title": "Services",
                         "description": "Met de tool service Dev kunt u elke beschikbare service in Home Assistant aanroepen.",
+                        "data": "Service data (YAML, optioneel)",
                         "call_service": "Aanroepen service",
+                        "select_service": "Selecteer een service om de beschrijving te bekijken",
                         "no_description": "Er is geen beschrijving beschikbaar",
+                        "no_parameters": "Deze service heeft geen parameters nodig.",
                         "column_parameter": "Parameter",
                         "column_description": "Beschrijving",
-                        "column_example": "Voorbeeld"
+                        "column_example": "Voorbeeld",
+                        "fill_example_data": "Voorbeeldgegeven invullen",
+                        "alert_parsing_yaml": "Fout bij het parseren van YAML: {data}"
                     },
                     "states": {
                         "title": "Toestanden",
                         "description1": "Stelt de weergave van een apparaat in Home Assistant in.",
+                        "description2": "Er vindt geen communicatie met het daadwerkelijke apparaat plaat.",
                         "entity": "Entiteit",
                         "state": "Toestand",
                         "attributes": "Attributen",
-                        "set_state": "Instellen status",
-                        "current_entities": "Huidge entiteiten",
+                        "state_attributes": "Status attributen (YAML, optioneel)",
+                        "set_state": "Definieer toestand",
+                        "current_entities": "Huidige entiteiten",
                         "filter_entities": "Filter entiteiten",
                         "filter_states": "Filter toestanden",
                         "filter_attributes": "Filter attributen",
@@ -337,34 +344,73 @@
                     },
                     "events": {
                         "title": "Gebeurtenissen",
-                        "listen_to_events": "Luisteren naar evenementen",
+                        "description": "Start een evenement op de Home Assistant-gebeurtenisbus",
+                        "documentation": "Gebeurtenissen documentatie.",
+                        "type": "Type gebeurtenis",
+                        "data": "Gebeurtenis data (YAML, optioneel)",
+                        "fire_event": "Gebeurtenis uitvoeren",
+                        "event_fired": "Gebeurtenis {naam} afgevuurd",
+                        "available_events": "Beschikbare gebeurtenissen",
+                        "count_listeners": "({count} luisteraars)",
+                        "listen_to_events": "Luisteren naar gebeurtenissen",
                         "listening_to": "Luisteren naar",
+                        "subscribe_to": "Gebeurtenis om op te abonneren",
                         "start_listening": "Begin te luisteren",
                         "stop_listening": "Stop met luisteren",
-                        "alert_event_type": "Het type gebeurtenis is een verplicht veld"
+                        "alert_event_type": "Het type gebeurtenis is een verplicht veld",
+                        "notification_event_fired": "Gebeurtenis {type} met succes uitgevoerd!"
                     },
                     "templates": {
                         "title": "Sjablonen",
                         "description": "Sjablonen worden weergegeven met de Jinja2-sjabloonediter samen met enkele extensies van Home Assistant.",
                         "editor": "Sjabloonediter",
-                        "jinja_documentation": "Jinja2-sjabloondocumentatie"
+                        "jinja_documentation": "Jinja2-sjabloondocumentatie",
+                        "template_extensions": "Home Assistant sjabloon extensiesHome Assistant",
+                        "unknown_error_template": "Onbekende fout bij weergave sjabloon"
                     },
                     "mqtt": {
                         "title": "MQTT",
                         "description_publish": "Publiceer een pakket",
                         "topic": "onderwerp",
-                        "payload": "Lading (sjabloon toegestaan)",
+                        "payload": "Payload (sjabloon toegestaan)",
                         "publish": "Publiceer",
                         "description_listen": "Luisteren naar onderwerp",
                         "listening_to": "Luisteren naar",
+                        "subscribe_to": "Gebeurtenis om op te abonneren",
                         "start_listening": "Begin te luisteren",
-                        "stop_listening": "Stop met luisteren"
+                        "stop_listening": "Stop met luisteren",
+                        "message_received": "Bericht {id} ontvangen op {topic} om {time} :"
                     },
                     "info": {
-                        "title": "Info"
+                        "title": "Info",
+                        "remove": "Verwijderen",
+                        "set": "Stel in",
+                        "default_ui": "{action} {name} als standaardpagina op dit apparaat",
+                        "lovelace_ui": "Ga naar de Lovelace UI",
+                        "states_ui": "Ga naar de status UI",
+                        "home_assistant_logo": "Home Assistent-logo",
+                        "path_configuration": "Pad naar configuration.yaml: {path}",
+                        "developed_by": "Ontwikkeld door een stel geweldige mensen.",
+                        "license": "Gepubliceerd onder de Apache 2.0-licentie",
+                        "source": "Bron:",
+                        "server": "Server",
+                        "frontend": "Frontend",
+                        "built_using": "Gebouwd met behulp van",
+                        "icons_by": "Icons door",
+                        "frontend_version": "Frontend-versie: {version} - {type}",
+                        "custom_uis": "Aangepaste UI's:",
+                        "system_health_error": "De systeemstatus component is niet geladen. Voeg ' system_health: ' toe aan het configuratiebestand."
                     },
                     "logs": {
-                        "title": "Logboek"
+                        "title": "Logboek",
+                        "details": "Logboekdetails ( {level} )",
+                        "load_full_log": "Laad volledige Home Assistant logboek",
+                        "loading_log": "Foutenlogboek laden ...",
+                        "no_errors": "Er zijn geen fouten gerapporteerd.",
+                        "no_issues": "Er zijn geen problemen!",
+                        "clear": "Wis",
+                        "refresh": "Vernieuwen",
+                        "multiple_messages": "bericht kwam voor het eerst om {time} en verschijnt {counter} malen"
                     }
                 }
             },
@@ -640,7 +686,10 @@
                                     "service_data": "Service data"
                                 },
                                 "device_id": {
-                                    "label": "Apparaat"
+                                    "label": "Apparaat",
+                                    "extra_fields": {
+                                        "code": "Code"
+                                    }
                                 },
                                 "scene": {
                                     "label": "Activeer scène"
@@ -661,7 +710,9 @@
                     "description": "Maak en bewerk scripts",
                     "picker": {
                         "header": "Script Editor",
+                        "introduction": "Met de editor kunt u scripts maken en bewerken. Volg de onderstaande link om de instructies te lezen om ervoor te zorgen dat u Home Assistant correct hebt geconfigureerd.",
                         "learn_more": "Meer informatie over scripts",
+                        "no_scripts": "We hebben geen bewerkbare scrips gevonden",
                         "add_script": "Script toevoegen"
                     },
                     "editor": {
@@ -720,7 +771,8 @@
                     },
                     "learn_more": "Meer informatie over Z-Wave",
                     "ozw_log": {
-                        "header": "OZW-logboek"
+                        "header": "OZW-logboek",
+                        "introduction": "Bekijk het logboek. 0 is het minimum (laadt het gehele logboek) en 1000 is het maximum. Laad toont een statisch logboek en staart wordt automatisch bijgewerkt met het laatst opgegeven aantal regels van het logboek."
                     }
                 },
                 "users": {
@@ -741,7 +793,12 @@
                         "owner": "Eigenaar",
                         "group": "Groep",
                         "active": "Actief",
+                        "system_generated": "Gegenereerd door systeem",
+                        "system_generated_users_not_removable": "Kan door het systeem gegenereerde gebruikers niet verwijderen.",
+                        "unnamed_user": "Naamloze gebruiker",
                         "enter_new_name": "Voer een nieuwe naam in",
+                        "user_rename_failed": "Hernoemen gebruiker mislukt:",
+                        "group_update_failed": "Groepsupdate mislukt:",
                         "confirm_user_deletion": "Weet je zeker dat je {name} wilt verwijderen?"
                     },
                     "add_user": {
@@ -757,48 +814,154 @@
                     "description_login": "Ingelogd als {email}",
                     "description_not_login": "Niet ingelogd",
                     "description_features": "Bestuur weg van huis, verbind met Alexa en Google Assistant.",
-                    "forgot_password": {
+                    "login": {
+                        "title": "Cloud aanmelding",
+                        "introduction": "Home Assistant Cloud biedt u een veilige externe verbinding met uw Home Assistant terwijl u niet thuis bent. Hiermee kunt u ook verbinding maken met cloudservices: Amazon, Alexa en Google Assistant.",
+                        "introduction2": "Deze service wordt uitgevoerd door onze partner ",
+                        "introduction2a": ", een bedrijf dat is opgericht door de oprichters van Home Assistent en Hass.io.",
+                        "introduction3": "Home Assistant Cloud is een abonnementsdienst met een gratis proefperiode van een maand. Geen betalingsinformatie nodig.",
+                        "learn_more_link": "Meer informatie over Home Assistant Cloud",
+                        "dismiss": "Sluiten",
+                        "sign_in": "Aanmelden",
                         "email": "E-mail",
-                        "email_error_msg": "Ongeldig e-mail"
+                        "email_error_msg": "Ongeldig e-mailadres",
+                        "password": "Wachtwoord",
+                        "password_error_msg": "Wachtwoorden moeten uit ten minste 8 tekens bestaan",
+                        "forgot_password": "Wachtwoord vergeten?",
+                        "start_trial": "Start je gratis proefperiode van 1 maand",
+                        "trial_info": "Geen betalingsinformatie nodig",
+                        "alert_password_change_required": "Je moet je wachtwoord wijzigen voordat je je aanmeldt.",
+                        "alert_email_confirm_necessary": "Je moet je e-mailadres bevestigen voordat je inlogt."
+                    },
+                    "forgot_password": {
+                        "title": "Wachtwoord vergeten",
+                        "subtitle": "Wachtwoord vergeten",
+                        "instructions": "Voer je e-mailadres in en wij sturen je een link om je wachtwoord opnieuw in te stellen.",
+                        "email": "E-mail",
+                        "email_error_msg": "Ongeldig e-mail",
+                        "send_reset_email": "Reset e-mail verzenden",
+                        "check_your_email": "Controleer uw e-mail voor instructies voor het resetten van uw wachtwoord."
+                    },
+                    "register": {
+                        "title": "Account aanmaken",
+                        "headline": "Start uw gratis proefperiode",
+                        "information": "Maak een account om uw gratis proefperiode van een maand te starten met Home Assistant Cloud. Geen betalingsinformatie nodig.",
+                        "information2": "De proefversie geeft u toegang tot alle voordelen van Home Assistant Cloud, waaronder:",
+                        "feature_remote_control": "Beheer van Home Assistant van buitenaf",
+                        "feature_google_home": "Integratie met Google Assistent",
+                        "feature_amazon_alexa": "Integratie met Amazon Alexa",
+                        "feature_webhook_apps": "Eenvoudige integratie met webhook gebaseerde apps zoals OwnTracks",
+                        "information3": "Deze service wordt uitgevoerd door onze partner",
+                        "information3a": ", een bedrijf dat is opgericht door de oprichters van Home Assistant en Hass.io.",
+                        "information4": "Door het registreren van het account gaat u akkoord met de volgende voorwaarden.",
+                        "link_terms_conditions": "Algemene voorwaarden",
+                        "link_privacy_policy": "Privacybeleid",
+                        "create_account": "Account aanmaken",
+                        "email_address": "E-mailadres",
+                        "email_error_msg": "Ongeldig e-mailadres",
+                        "password": "Wachtwoord",
+                        "password_error_msg": "Wachtwoorden moeten uit ten minste 8 tekens bestaan",
+                        "start_trial": "Start proefperiode",
+                        "resend_confirm_email": "Bevestigingsmail opnieuw verzenden",
+                        "account_created": "Account is aangemaakt! Controleer uw e-mailadres voor instructies over het activeren van uw account."
                     },
                     "account": {
+                        "thank_you_note": "Bedankt voor uw deelname aan Home Assistant Cloud. Het is vanwege mensen zoals u dat we een geweldige domotica-ervaring voor iedereen kunnen maken. Dank je!",
+                        "nabu_casa_account": "Nabu Casa-account",
+                        "connection_status": "Cloud verbindingsstatus",
+                        "manage_account": "Beheer account",
                         "sign_out": "Afmelden",
+                        "integrations": "Integraties",
+                        "integrations_introduction": "Met integraties voor Home Assistant Cloud kunt u verbinding maken met services in de cloud zonder dat u uw Home Assistant-instantie openbaar hoeft te maken op internet.",
+                        "integrations_introduction2": "Kijk op de website voor",
+                        "integrations_link_all_features": "alle beschikbare functies",
+                        "connected": "Verbonden",
+                        "not_connected": "Niet verbonden",
+                        "fetching_subscription": "Abonnement ophalen...",
+                        "remote": {
+                            "title": "Afstand Bediening",
+                            "access_is_being_prepared": "Toegang op afstand wordt voorbereid. We zullen u op de hoogte brengen wanneer het klaar is.",
+                            "info": "Home Assistant Cloud biedt een veilige externe verbinding met uw exemplaar terwijl u niet thuis bent.",
+                            "instance_is_available": "Uw exemplaar is beschikbaar op",
+                            "instance_will_be_available": "Uw exemplaar zal beschikbaar zijn op",
+                            "link_learn_how_it_works": "Leer hoe het werkt",
+                            "certificate_info": "Certificaatinfo"
+                        },
                         "alexa": {
+                            "title": "Alexa",
                             "info": "Met de Alexa integratie voor Home Assistant Cloud kun je al je Home Assistant apparaten bedienen via elk apparaat met Alexa-ondersteuning",
                             "enable_ha_skill": "Schakel de Home Assistant skill voor Alexa",
                             "config_documentation": "Configuratie documentatie",
                             "enable_state_reporting": "Statusrapportage inschakelen",
                             "info_state_reporting": "Als u statusrapportage inschakelt, stuurt Home Assistant alle statuswijzingen van opengestelde entiteiten naar Amazon. Hiermee kunt u altijd de laatste status zien in de Alexa app en kunt u de statuswijzgingen gebruiken om routines te maken.",
+                            "sync_entities": "Synchronisatie-entiteiten",
+                            "manage_entities": "Entiteiten beheren",
+                            "sync_entities_error": "Kan entiteiten niet synchroniseren:",
+                            "state_reporting_error": "Kan de rapportstatus niet {aanzetten_uitzetten}",
                             "enable": "inschakelen",
                             "disable": "uitschakelen"
                         },
                         "google": {
+                            "title": "Google Assistant",
+                            "info": "Met de Google Assistant integratie voor Home Assistant Cloud kun je al je Home Assistant apparaten bedienen via elk apparaat waarop Google Assistant is ingeschakeld.",
+                            "enable_ha_skill": "Activeer Home Assistant voor Google Assistant",
+                            "config_documentation": "Configuratie documentatie",
                             "enable_state_reporting": "Statusrapportage inschakelen",
+                            "info_state_reporting": "Als u statusrapportage inschakelt, stuurt Home Assistant alle statuswijzigingen van blootgestelde entiteiten naar Google. Hierdoor kunt u altijd de meest actuele statussen in de Google-app zien.",
+                            "security_devices": "Beveiligingsapparaten",
+                            "enter_pin_info": "Voer een pincode in om te communiceren met beveiligingsapparaten. Beveiligingsapparaten zijn deuren, garagedeuren en sloten. U wordt gevraagd om deze pincode uit te spreken of in te voeren bij interactie met dergelijke apparaten via Google Assistant.",
+                            "devices_pin": "Beveiligingsapparaten Pin",
+                            "enter_pin_hint": "Voer een pincode in om beveiligingsapparaten te gebruiken",
+                            "sync_entities": "Synchroniseer entiteiten met Google",
+                            "manage_entities": "Entiteiten beheren",
                             "enter_pin_error": "Kan pincode niet opslaan:"
                         },
                         "webhooks": {
                             "title": "Webhooks",
+                            "info": "Alles dat is geconfigureerd om door een webhook te worden geactiveerd, kan een openbaar toegankelijke URL krijgen zodat u gegevens overal naar Home Assistant kunt terugsturen, zonder uw exemplaar aan internet bloot te stellen.",
                             "no_hooks_yet": "Het lijkt erop dat je nog geen webhooks hebt. Ga aan de slag door het configureren van een ",
                             "no_hooks_yet_link_integration": "webhook gebaseerde integratie",
                             "no_hooks_yet2": " of door het maken van een ",
                             "no_hooks_yet_link_automation": "webhook automatisering",
+                            "link_learn_more": "Meer informatie over het maken van door webhook aangedreven automatiseringen.",
                             "loading": "Laden ...",
-                            "manage": "Beheer"
+                            "manage": "Beheer",
+                            "disable_hook_error_msg": "Kan webhook niet uitschakelen:"
                         }
                     },
+                    "alexa": {
+                        "title": "Alexa",
+                        "banner": "Het bewerken van de entiteiten die via deze UI worden blootgesteld, is uitgeschakeld omdat u geconfigureerde entiteitenfilters hebt in configuration.yaml.",
+                        "exposed_entities": "Blootgestelde entiteiten",
+                        "not_exposed_entities": "Niet blootgestelde entiteiten",
+                        "expose": "Blootstellen aan Alexa"
+                    },
                     "dialog_certificate": {
+                        "certificate_information": "Certificaatinfo",
+                        "certificate_expiration_date": "Vervaldatum certificaat",
+                        "will_be_auto_renewed": "Wordt automatisch vernieuwd",
+                        "fingerprint": "Certificaat vingerafdruk:",
                         "close": "Sluiten"
                     },
                     "google": {
                         "title": "Google Assistant",
+                        "expose": "Blootstellen aan Google Assistant",
+                        "disable_2FA": "Schakel tweestapsverificatie uit",
+                        "banner": "Het bewerken van de entiteiten die via deze UI worden blootgesteld, is uitgeschakeld omdat u geconfigureerde entiteitenfilters hebt in configuration.yaml.",
+                        "exposed_entities": "Blootgestelde entiteiten",
+                        "not_exposed_entities": "Niet blootgestelde entiteiten",
                         "sync_to_google": "Wijzigingen synchroniseren met Google."
                     },
                     "dialog_cloudhook": {
+                        "webhook_for": "Webhook voor {name}",
+                        "available_at": "De webhook is beschikbaar op de volgende URL:",
                         "managed_by_integration": "Deze webhook wordt beheerd door een integratie en kan niet worden uitgeschakeld.",
                         "info_disable_webhook": "Als je deze webhook niet langer wilt gebruiken, kun je het",
                         "link_disable_webhook": "uitschakelen",
                         "view_documentation": "Bekijk documentatie",
-                        "close": "Sluiten"
+                        "close": "Sluiten",
+                        "confirm_disable": "Weet u zeker dat u deze Webhook wilt uitschakelen?",
+                        "copied_to_clipboard": "Gekopieerd naar het klembord"
                     }
                 },
                 "integrations": {
@@ -820,7 +983,11 @@
                         "device_unavailable": "apparaat niet beschikbaar",
                         "entity_unavailable": "entiteit niet beschikbaar",
                         "no_area": "Geen Gebied",
-                        "hub": "Verbonden via"
+                        "hub": "Verbonden via",
+                        "settings_button": "Instellingen bewerken voor {integration}",
+                        "system_options_button": "Systeeminstellingen voor {integratie}",
+                        "delete_button": "Verwijder {integratie}.",
+                        "area": "In {area}"
                     },
                     "config_flow": {
                         "external_step": {
@@ -829,6 +996,7 @@
                         }
                     },
                     "note_about_integrations": "Nog niet alle integraties kunnen via de UI worden geconfigureerd.",
+                    "note_about_website_reference": "Meer zijn beschikbaar op de",
                     "home_assistant_website": "Home Assistant-website"
                 },
                 "zha": {
@@ -854,6 +1022,7 @@
                         "add_devices": "Apparaten toevoegen",
                         "clusters": "Clusters",
                         "devices": "Apparaten",
+                        "manufacturer_code_override": "Fabrikant Code Override",
                         "value": "Waarde"
                     },
                     "network_management": {
@@ -862,7 +1031,30 @@
                     },
                     "node_management": {
                         "header": "Apparaatbeheer",
-                        "hint_wakeup": "Sommige apparaten, zoals Xiaomi-sensoren hebben een wekknop die u met tussenpozen van 5 seconden kunt indrukken om het apparaat wakker te houden terwijl u ermee communiceert"
+                        "introduction": "Voer ZHA-commando's uit die van invloed zijn op een enkel apparaat. Kies een apparaat om een lijst met beschikbare commando's te zien.",
+                        "hint_battery_devices": "Opmerking: Slappende (op batterij werkende) apparaten moeten wakker zijn wanneer deze apparaten opdrachten moeten uitvoeren. Over het algemeen kunnen slapende apparaten wakker worden gemaakt door deze te activeren.",
+                        "hint_wakeup": "Sommige apparaten, zoals Xiaomi-sensoren hebben een wekknop die u met tussenpozen van 5 seconden kunt indrukken om het apparaat wakker te houden terwijl u ermee communiceert",
+                        "help_node_dropdown": "Selecteer een apparaat om de opties per apparaat te bekijken."
+                    },
+                    "clusters": {
+                        "help_cluster_dropdown": "Selecteer een cluster om attributen en commando's te bekijken."
+                    },
+                    "cluster_attributes": {
+                        "header": "Cluster Attributen",
+                        "introduction": "Weergeven en bewerken cluster attributen.",
+                        "attributes_of_cluster": "Attributen van het geselecteerde cluster",
+                        "get_zigbee_attribute": "Haal de Zigbee attribuut op",
+                        "set_zigbee_attribute": "Stel Zigbee attribuut in",
+                        "help_attribute_dropdown": "Selecteer een attribuut om deze te bekijken of de waarde in te stellen",
+                        "help_get_zigbee_attribute": "Haal de waarde voor de geselecteerde attribuut op",
+                        "help_set_zigbee_attribute": "Stel attribuutwaarde in voor het gespecificeerde cluster op de gespecificeerde entiteit."
+                    },
+                    "cluster_commands": {
+                        "header": "Cluster commando's",
+                        "introduction": "Bekijk en geef opdrachten voor clustercommando's.",
+                        "commands_of_cluster": "Commando's van het geselecteerde cluster",
+                        "issue_zigbee_command": "Geef Zigbee Command uit",
+                        "help_command_dropdown": "Selecteer een commando om mee te communiceren."
                     }
                 },
                 "area_registry": {
@@ -925,16 +1117,20 @@
                         "new_person": "Nieuw persoon",
                         "name_error_msg": "Naam is vereist",
                         "linked_user": "Gekoppelde gebruiker",
+                        "no_device_tracker_available_intro": "Wanneer u apparaten hebt die de aanwezigheid van een persoon detecteren, kunt u deze aan een persoon toewijzen. U kunt uw eerste apparaat toevoegen door een integratie voor aanwezigheidsdetectie toe te voegen vanaf de integratiepagina.",
                         "link_presence_detection_integrations": "Aanwezigheidsdetectie-integraties",
                         "link_integrations_page": "Integratiespagina",
                         "delete": "Verwijderen",
                         "create": "Aanmaken",
                         "update": "Bijwerken"
                     },
+                    "introduction": "Hier kunt u personen toevoegen die gebruik maken van Home Assistant.",
                     "note_about_persons_configured_in_yaml": "Opmerking: personen die zijn geconfigureerd via configuration.yaml kunnen niet worden bewerkt via de UI.",
                     "no_persons_created_yet": "Het lijkt erop dat je nog geen personen hebt aangemaakt.",
                     "create_person": "Persoon aanmaken",
-                    "add_person": "Persoon toevoegen"
+                    "add_person": "Persoon toevoegen",
+                    "confirm_delete": "Weet je zeker dat je deze persoon wilt verwijderen?",
+                    "confirm_delete2": "Alle apparaten die behoren tot deze persoon zullen worden ontkoppeld."
                 },
                 "server_control": {
                     "caption": "Serverbeheer",
@@ -979,6 +1175,11 @@
                         "actions": {
                             "caption": "Wanneer iets wordt getriggerd..."
                         }
+                    }
+                },
+                "common": {
+                    "editor": {
+                        "confirm_unsaved": "Je hebt niet-opgeslagen wijzigingen. Weet je zeker dat je wilt afsluiten?"
                     }
                 }
             },
@@ -1212,7 +1413,8 @@
                         "call_service": "Roep service {name} aan",
                         "more_info": "Meer informatie weergeven: {name}",
                         "url": "Open venster naar {url_path}"
-                    }
+                    },
+                    "confirm_delete": "Weet je zeker dat je deze kaart wilt verwijderen?"
                 },
                 "editor": {
                     "edit_card": {
@@ -1225,7 +1427,9 @@
                         "delete": "Verwijder",
                         "move": "Verplaatsen",
                         "show_visual_editor": "Visual Editor weergeven",
-                        "show_code_editor": "Code-editor weergeven"
+                        "show_code_editor": "Code-editor weergeven",
+                        "pick_card_view_title": "Welke kaart wil je toevoegen aan je {name} weergeve?",
+                        "options": "Meer opties"
                     },
                     "migrate": {
                         "header": "Configuratie incompatibel",
@@ -1238,7 +1442,8 @@
                         "header": "Bekijk de configuratie",
                         "add": "Weergave toevoegen",
                         "edit": "Weergave bewerken",
-                        "delete": "Weergave verwijderen"
+                        "delete": "Weergave verwijderen",
+                        "header_name": "{name} Bekijk de configuratie"
                     },
                     "save_config": {
                         "header": "Neem de controle over je Lovelace UI",
@@ -1248,7 +1453,8 @@
                         "save": "Neem over"
                     },
                     "menu": {
-                        "raw_editor": "Platte configuratie-editor"
+                        "raw_editor": "Platte configuratie-editor",
+                        "open": "Open het Lovelace-menu"
                     },
                     "raw_editor": {
                         "header": "Configuratie bewerken",
@@ -1270,7 +1476,8 @@
                         },
                         "entities": {
                             "show_header_toggle": "Koptekst weergeven wisselen?",
-                            "name": "Entiteiten"
+                            "name": "Entiteiten",
+                            "toggle": "Entiteiten in- en uitschakelen"
                         },
                         "gauge": {
                             "severity": {
@@ -1380,6 +1587,12 @@
                         "weather-forecast": {
                             "name": "Weersverwachting"
                         }
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "title": "Paneelmodus?",
+                            "description": "Hierdoor wordt de eerste kaart op volledige breedte weergegeven; andere kaarten in deze weergave worden niet weergegeven."
+                        }
                     }
                 },
                 "menu": {
@@ -1396,7 +1609,11 @@
                     "message": "De Lovelace configuratie is bijgewerkt. Wil je de pagina vernieuwen?",
                     "refresh": "Vernieuwen"
                 },
-                "reload_lovelace": "Lovelace herladen"
+                "reload_lovelace": "Lovelace herladen",
+                "views": {
+                    "confirm_delete": "Weet u zeker dat u dit item wilt verwijderen?",
+                    "existing_cards": "U kunt een weergave met kaarten niet verwijderen. Verwijder eerst de kaarten."
+                }
             },
             "page-demo": {
                 "cards": {
@@ -1418,7 +1635,8 @@
                             "master_bedroom": "Hoofdslaapkamer",
                             "left": "Links",
                             "right": "Rechts",
-                            "mirror": "Spiegel"
+                            "mirror": "Spiegel",
+                            "temperature_study": "Temperatuur bestuderen"
                         },
                         "labels": {
                             "lights": "Lichten",
@@ -1444,7 +1662,8 @@
         },
         "sidebar": {
             "log_out": "Uitloggen",
-            "external_app_configuration": "App configuratie"
+            "external_app_configuration": "App configuratie",
+            "sidebar_toggle": "Zijbalk in- en uitschakelen"
         },
         "common": {
             "loading": "Bezig met laden",
@@ -1551,7 +1770,14 @@
                 "swing_mode": "Swingmodus",
                 "away_mode": "Afwezigheidsmodus",
                 "aux_heat": "Extra warmte",
-                "preset_mode": "Voorinstelling"
+                "preset_mode": "Voorinstelling",
+                "target_temperature_entity": "{name} doeltemperatuur",
+                "target_temperature_mode": "{name} doeltemperatuur {mode}",
+                "current_temperature": "{name} huidige temperatuur",
+                "heating": "{name} verwarming",
+                "cooling": "{name} koeling",
+                "high": "hoog",
+                "low": "laag"
             },
             "lock": {
                 "code": "Code",
@@ -1581,12 +1807,21 @@
                     "cancel": "annuleren",
                     "finish": "voltooien"
                 }
+            },
+            "counter": {
+                "actions": {
+                    "increment": "verhoging",
+                    "decrement": "verlagen",
+                    "reset": "reset"
+                }
             }
         },
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Entiteit"
+                    "entity": "Entiteit",
+                    "clear": "Wis",
+                    "show_entities": "Entiteiten weergeven"
                 }
             },
             "service-picker": {
@@ -1607,6 +1842,10 @@
             "history_charts": {
                 "loading_history": "Geschiedenis laden ...",
                 "no_history_found": "Geen geschiedenis gevonden"
+            },
+            "device-picker": {
+                "clear": "Wis",
+                "show_devices": "Apparaten weergeven"
             }
         },
         "notification_toast": {
@@ -1614,7 +1853,8 @@
             "entity_turned_off": "{entity} uitgeschakeld.",
             "service_called": "Service {service} aangeroepen",
             "service_call_failed": "Kan service {service} niet aanroepen",
-            "connection_lost": "Verbinding verbroken. Opnieuw verbinden..."
+            "connection_lost": "Verbinding verbroken. Opnieuw verbinden...",
+            "triggered": "Geactiveerd {naam}"
         },
         "dialogs": {
             "more_info_settings": {
@@ -1646,7 +1886,7 @@
             "config_entry_system_options": {
                 "title": "Systeeminstellingen voor {integratie}",
                 "enable_new_entities_label": "Voeg nieuwe entiteiten automatisch toe",
-                "enable_new_entities_description": "Als uitgeschakeld, worden nieuw ontdekte entiteiten niet aan Home Assistant toegevoegd."
+                "enable_new_entities_description": "Indien uitgeschakeld dan worden nieuwe entiteiten van {integration} niet automatisch aan Home Assistant toegevoegd."
             },
             "zha_device_info": {
                 "manuf": "door {manufacturer}",
@@ -1666,9 +1906,15 @@
                     "remove": "Verwijder apparaat",
                     "reconfigure": "Apparaat opnieuw configureren"
                 },
+                "quirk": "Quirk",
                 "last_seen": "Laatst gezien",
                 "power_source": "Stroombron",
                 "unknown": "Onbekend"
+            },
+            "confirmation": {
+                "cancel": "Annuleren",
+                "ok": "OK",
+                "title": "Weet je het zeker?"
             }
         },
         "auth_store": {
