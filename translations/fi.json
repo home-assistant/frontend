@@ -312,19 +312,45 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "title": "Palvelut"
+                        "title": "Palvelut",
+                        "call_service": "Kutsu palvelua",
+                        "select_service": "Valitse palvelu nähdäksesi kuvauksen",
+                        "no_description": "Kuvausta ei ole saatavilla",
+                        "no_parameters": "Tämä palvelu ei ota parametreja.",
+                        "column_parameter": "Parametri",
+                        "column_description": "Kuvaus",
+                        "column_example": "Esimerkki"
                     },
                     "states": {
-                        "title": "Tilat"
+                        "title": "Tilat",
+                        "attributes": "Määritteet",
+                        "set_state": "Aseta tila",
+                        "more_info": "Lisätietoja"
                     },
                     "events": {
-                        "title": "Tapahtumat"
+                        "title": "Tapahtumat",
+                        "listening_to": "Kuunnellaan",
+                        "start_listening": "Aloita kuuntelu",
+                        "stop_listening": "Lopeta kuuntelu"
                     },
                     "templates": {
                         "title": "Malli"
                     },
                     "mqtt": {
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "publish": "Julkaise",
+                        "listening_to": "Kuunnellaan",
+                        "start_listening": "Aloita kuuntelu",
+                        "stop_listening": "Lopeta kuuntelu"
+                    },
+                    "info": {
+                        "title": "Tiedot",
+                        "remove": "Poista",
+                        "set": "Aseta",
+                        "home_assistant_logo": "Home Assistant-logo",
+                        "developed_by": "Kehittänyt joukko mahtavia ihmisiä.",
+                        "license": "Julkaistu Apache 2.0-lisenssillä",
+                        "server": "palvelin"
                     }
                 }
             },
@@ -598,6 +624,9 @@
                                     "label": "Lähetä tapahtuma",
                                     "event": "Tapahtuma",
                                     "service_data": "Palvelun data"
+                                },
+                                "device_id": {
+                                    "label": "Laite"
                                 }
                             },
                             "learn_more": "Lisätietoja toiminnoista"
@@ -754,9 +783,11 @@
                     },
                     "account": {
                         "nabu_casa_account": "Nabu Casa -tili",
+                        "manage_account": "Tilin Hallinta",
                         "sign_out": "Kirjaudu ulos",
                         "integrations": "Integraatiot",
                         "integrations_introduction": "Home Assistant Cloud integraatiot mahdollistavat pilvipalveluihin käytön ilman että Home Assistant asennus on näkyvissä julkisesti Internetissä.",
+                        "integrations_link_all_features": " kaikki käytettävissä olevat ominaisuudet",
                         "connected": "Yhdistetty",
                         "not_connected": "Ei yhteyttä",
                         "remote": {
@@ -830,7 +861,10 @@
                         "device_unavailable": "laite ei saatavissa",
                         "entity_unavailable": "kohde ei saatavilla",
                         "no_area": "Ei aluetta",
-                        "hub": "Yhdistetty kautta"
+                        "hub": "Yhdistetty kautta",
+                        "settings_button": "Muokkaa {Integration}-asetuksia",
+                        "system_options_button": "{Integration}-järjestelmän asetukset",
+                        "delete_button": "Poista {integration}"
                     },
                     "config_flow": {
                         "external_step": {
@@ -868,7 +902,8 @@
                         "value": "Arvo"
                     },
                     "network_management": {
-                        "header": "Verkon hallinta"
+                        "header": "Verkon hallinta",
+                        "introduction": "Koko verkkoon vaikuttavat komennot"
                     },
                     "node_management": {
                         "header": "Laitehallinta",
@@ -1224,7 +1259,8 @@
                         "toggle": "Kytke {name}",
                         "call_service": "Kutsu palvelua {name}",
                         "more_info": "Näytä lisätietoa: {name}"
-                    }
+                    },
+                    "confirm_delete": "Oletko varma, että haluat poistaa tämän kortin?"
                 },
                 "editor": {
                     "edit_card": {
@@ -1237,7 +1273,8 @@
                         "delete": "Poista",
                         "move": "Siirrä",
                         "show_visual_editor": "Näytä visuaalinen editori",
-                        "show_code_editor": "Näytä koodieditori"
+                        "show_code_editor": "Näytä koodieditori",
+                        "options": "Lisää vaihtoehtoja"
                     },
                     "migrate": {
                         "header": "Epäkelvot asetukset",
@@ -1260,7 +1297,8 @@
                         "save": "Ota hallintaan"
                     },
                     "menu": {
-                        "raw_editor": "Raaka konfigurointieditori"
+                        "raw_editor": "Raaka konfigurointieditori",
+                        "open": "Avaa Lovelace-valikko"
                     },
                     "raw_editor": {
                         "header": "Muokkaa asetuksia",
@@ -1289,11 +1327,22 @@
                             "camera_image": "Kamerakohde",
                             "entity": "Kohde",
                             "hold_action": "Pitkä painallus toiminto",
+                            "icon": "Kuvake",
+                            "icon_height": "Kuvakkeen korkeus",
                             "image": "Kuvan polku",
                             "maximum": "Enimmäismäärä",
                             "minimum": "Vähimmäismäärä",
                             "name": "Nimi",
-                            "tap_action": "Napautus toiminto"
+                            "refresh_interval": "Päivitysväli",
+                            "show_icon": "Näytä kuvake?",
+                            "show_name": "Näytä nimi?",
+                            "tap_action": "Napautus toiminto",
+                            "title": "Otsikko",
+                            "theme": "Teema"
+                        },
+                        "map": {
+                            "dark_mode": "Tumma tila?",
+                            "name": "Kartta"
                         },
                         "sensor": {
                             "graph_detail": "Kaavion tiedot",
@@ -1329,9 +1378,6 @@
                         },
                         "light": {
                             "name": "Valo"
-                        },
-                        "map": {
-                            "name": "Kartta"
                         },
                         "markdown": {
                             "name": "Merkintä"
@@ -1382,7 +1428,11 @@
                     "message": "Lovelace-asetukset päivitettiin, haluatko päivittää näkymän?",
                     "refresh": "Päivitä"
                 },
-                "reload_lovelace": "Lataa Lovelace uudelleen"
+                "reload_lovelace": "Lataa Lovelace uudelleen",
+                "views": {
+                    "confirm_delete": "Oletko varma, että haluat poistaa tämän näkymän?",
+                    "existing_cards": "Et voi poistaa näkymää, jossa on kortteja. Poista ensin kortit näkymästä."
+                }
             },
             "page-demo": {
                 "cards": {
@@ -1565,12 +1615,18 @@
                     "cancel": "Peruuta",
                     "finish": "Valmis"
                 }
+            },
+            "counter": {
+                "actions": {
+                    "reset": "Palauta"
+                }
             }
         },
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Kohde"
+                    "entity": "Kohde",
+                    "clear": "Tyhjennä"
                 }
             },
             "service-picker": {
@@ -1591,6 +1647,10 @@
             "history_charts": {
                 "loading_history": "Ladataan tilahistoriaa...",
                 "no_history_found": "Tilahistoriaa ei löydetty"
+            },
+            "device-picker": {
+                "clear": "Tyhjennä",
+                "show_devices": "Näytä laitteet"
             }
         },
         "notification_toast": {
@@ -1619,12 +1679,20 @@
                     "title": "Päivitysohjeet"
                 }
             },
+            "options_flow": {
+                "form": {
+                    "header": "Asetukset"
+                }
+            },
             "config_entry_system_options": {
                 "title": "Järjestelmäasetukset"
             },
             "zha_device_info": {
                 "services": {
                     "remove": "Poista laite Zigbee-verkosta."
+                },
+                "zha_device_card": {
+                    "update_name_button": "Päivitä nimi"
                 },
                 "buttons": {
                     "add": "Lisää laitteita",
@@ -1634,6 +1702,11 @@
                 "last_seen": "Viimeksi nähty",
                 "power_source": "Virtalähde",
                 "unknown": "Tuntematon"
+            },
+            "confirmation": {
+                "cancel": "Peruuta",
+                "ok": "OK",
+                "title": "Oletko varma?"
             }
         },
         "auth_store": {

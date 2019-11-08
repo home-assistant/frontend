@@ -24,6 +24,7 @@ import {
   subscribeAreaRegistry,
   AreaRegistryEntry,
 } from "../../data/area_registry";
+import { computeDeviceName } from "../../data/device_registry";
 
 @customElement("dialog-device-registry-detail")
 class DialogDeviceRegistryDetail extends LitElement {
@@ -74,7 +75,9 @@ class DialogDeviceRegistryDetail extends LitElement {
         opened
         @opened-changed="${this._openedChanged}"
       >
-        <h2>${device.name || "Unnamed device"}</h2>
+        <h2>
+          ${computeDeviceName(device, this.hass)}
+        </h2>
         <paper-dialog-scrollable>
           ${this._error
             ? html`
@@ -90,7 +93,12 @@ class DialogDeviceRegistryDetail extends LitElement {
               .disabled=${this._submitting}
             ></paper-input>
             <div class="area">
-              <paper-dropdown-menu label="Area" class="flex">
+              <paper-dropdown-menu
+                label="${this.hass.localize(
+                  "ui.panel.config.devices.area_picker_label"
+                )}"
+                class="flex"
+              >
                 <paper-listbox
                   slot="dropdown-content"
                   .selected="${this._computeSelectedArea()}"
@@ -163,7 +171,9 @@ class DialogDeviceRegistryDetail extends LitElement {
       });
       this._params = undefined;
     } catch (err) {
-      this._error = err.message || "Unknown error";
+      this._error =
+        err.message ||
+        this.hass.localize("ui.panel.config.devices.unknown_error");
     } finally {
       this._submitting = false;
     }

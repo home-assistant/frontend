@@ -339,9 +339,12 @@
                     "events": {
                         "title": "Sündmused",
                         "description": "Vallanda sündmus sündmuste siinil.",
+                        "documentation": "Sündmuste dokumentatsioon.",
                         "type": "Sündmuse tüüp",
+                        "data": "Sündmuse andmed (YAML, valikuline)",
                         "fire_event": "Vallanda sündmus",
                         "event_fired": "Sündmus {name} vallandus",
+                        "available_events": "Saadaolevad sündmused",
                         "count_listeners": " ({count}  kuulajat)",
                         "listen_to_events": "Kuula sündmusi",
                         "listening_to": "Kuulamas",
@@ -374,6 +377,10 @@
                     },
                     "logs": {
                         "title": "Logid",
+                        "details": "Logi üksikasjad ({level})",
+                        "loading_log": "Laadin vigade logi...",
+                        "no_errors": "Vigadest pole teatatud.",
+                        "no_issues": "Uusi probleeme pole!",
                         "clear": "Puhasta",
                         "refresh": "Värskenda"
                     }
@@ -778,9 +785,13 @@
                         "title": "Pilve sisselogimine",
                         "learn_more_link": "Lisateave Home Assistant Cloud kohta",
                         "dismiss": "Loobu",
-                        "sign_in": "Logi sisse"
+                        "sign_in": "Logi sisse",
+                        "forgot_password": "unustasid salasõna?",
+                        "start_trial": "Alusta oma tasuta 1-kuulist prooviversiooni"
                     },
                     "forgot_password": {
+                        "title": "Unustasid salasõna",
+                        "subtitle": "Unustasid oma salasõna",
                         "email": "E-post",
                         "email_error_msg": "Vigane meiliaadress"
                     },
@@ -795,7 +806,7 @@
                         "email_address": "E-posti aadress",
                         "email_error_msg": "Vigane meiliaadress",
                         "password": "Salasõna",
-                        "password_error_msg": "Paroolid on vähemalt 8 tähemärki",
+                        "password_error_msg": "Salasõnad on vähemalt 8 tähemärki",
                         "start_trial": "Alusta proovimist",
                         "resend_confirm_email": "Saada kinnitusmeil uuesti"
                     },
@@ -1321,7 +1332,8 @@
                         "header": "Vaata seadeid",
                         "add": "Lisa vaade",
                         "edit": "Muuda vaadet",
-                        "delete": "Kustuta vaade"
+                        "delete": "Kustuta vaade",
+                        "header_name": "{name} Vaata seadeid"
                     },
                     "save_config": {
                         "header": "Võta Lovelace kasutajaliides oma kontrolli alla",
@@ -1510,7 +1522,8 @@
         },
         "sidebar": {
             "log_out": "Logi välja",
-            "external_app_configuration": "Äpi seaded"
+            "external_app_configuration": "Äpi seaded",
+            "sidebar_toggle": "Külgriba lülitamine"
         },
         "common": {
             "loading": "Laadimine",
@@ -1617,7 +1630,14 @@
                 "swing_mode": "Õõtsumise režiim",
                 "away_mode": "Eemal",
                 "aux_heat": "Abiküte",
-                "preset_mode": "Eelseade"
+                "preset_mode": "Eelseade",
+                "target_temperature_entity": "{name} soovitud temperatuur",
+                "target_temperature_mode": "{name} soovitud temperatuur {mode}",
+                "current_temperature": "{name} praegune temperatuur",
+                "heating": "{name} soojendab",
+                "cooling": "{name} jahutab",
+                "high": "kõrge",
+                "low": "madal"
             },
             "lock": {
                 "code": "Kood",
@@ -1650,6 +1670,7 @@
             },
             "counter": {
                 "actions": {
+                    "increment": "suurenda",
                     "decrement": "vähenda",
                     "reset": "lähtesta"
                 }
@@ -1658,7 +1679,9 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Olem"
+                    "entity": "Olem",
+                    "clear": "Puhasta",
+                    "show_entities": "Näita olemeid"
                 }
             },
             "service-picker": {
@@ -1679,6 +1702,10 @@
             "history_charts": {
                 "loading_history": "Laadin ajalugu...",
                 "no_history_found": "Oleku ajalugu ei leitud"
+            },
+            "device-picker": {
+                "clear": "Puhasta",
+                "show_devices": "Näita seadmeid"
             }
         },
         "notification_toast": {

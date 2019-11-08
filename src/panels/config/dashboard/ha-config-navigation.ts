@@ -2,7 +2,7 @@ import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
 
-import isComponentLoaded from "../../../common/config/is_component_loaded";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
@@ -29,6 +29,7 @@ const PAGES: Array<{
   { page: "area_registry", core: true },
   { page: "automation" },
   { page: "script" },
+  { page: "scene" },
   { page: "zha" },
   { page: "zwave" },
   { page: "customize", core: true, advanced: true },

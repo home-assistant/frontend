@@ -1,11 +1,11 @@
 import { HomeAssistant } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
-import { toggleEntity } from "../../../../src/panels/lovelace/common/entity/toggle-entity";
+import { toggleEntity } from "./entity/toggle-entity";
 import { ActionConfig } from "../../../data/lovelace";
 import { forwardHaptic } from "../../../data/haptics";
 
-export const handleClick = (
+export const handleAction = (
   node: HTMLElement,
   hass: HomeAssistant,
   config: {
@@ -15,16 +15,15 @@ export const handleClick = (
     tap_action?: ActionConfig;
     double_tap_action?: ActionConfig;
   },
-  hold: boolean,
-  dblClick: boolean
+  action: string
 ): void => {
   let actionConfig: ActionConfig | undefined;
 
-  if (dblClick && config.double_tap_action) {
+  if (action === "double_tap" && config.double_tap_action) {
     actionConfig = config.double_tap_action;
-  } else if (hold && config.hold_action) {
+  } else if (action === "hold" && config.hold_action) {
     actionConfig = config.hold_action;
-  } else if (!hold && config.tap_action) {
+  } else if (action === "tap" && config.tap_action) {
     actionConfig = config.tap_action;
   }
 
@@ -41,6 +40,8 @@ export const handleClick = (
         (e) => e.user === hass!.user!.id
       ))
   ) {
+    forwardHaptic("warning");
+
     if (
       !confirm(
         actionConfig.confirmation.text ||

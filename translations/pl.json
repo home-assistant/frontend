@@ -312,23 +312,74 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "title": "Usługi"
+                        "title": "Usługi",
+                        "description": "Narzędzie deweloperskie Usługi pozwala na wywołanie dowolnej dostępnej usługi.",
+                        "data": "Dane usługi (YAML, opcjonalnie)",
+                        "call_service": "Wywołaj usługę",
+                        "select_service": "Wybierz usługę, aby zobaczyć opis",
+                        "no_description": "Opis nie jest dostępny",
+                        "no_parameters": "Ta usługa nie przyjmuje parametrów.",
+                        "column_parameter": "Parametr",
+                        "column_description": "Opis",
+                        "column_example": "Przykład",
+                        "fill_example_data": "Wypełnij przykładowymi danymi",
+                        "alert_parsing_yaml": "Błąd parsowania YAML: {data}"
                     },
                     "states": {
-                        "title": "Stany"
+                        "title": "Stany",
+                        "description1": "Ustaw stany encji urządzeń Home Assistant'a.",
+                        "description2": "Nie wpłynie to na rzeczywiste urządzenia.",
+                        "entity": "Encja",
+                        "state": "Stan",
+                        "attributes": "Atrybuty",
+                        "state_attributes": "Atrybuty stanu (YAML, opcjonalnie)",
+                        "set_state": "Ustaw stan",
+                        "current_entities": "Obecne encje",
+                        "filter_entities": "Filtr encji",
+                        "filter_states": "Filtr stanów",
+                        "filter_attributes": "filtr atrybutów",
+                        "no_entities": "Brak encji",
+                        "more_info": "Więcej informacji",
+                        "alert_entity_field": "Encja jest polem obowiązkowym"
                     },
                     "events": {
-                        "title": "Zdarzenia"
+                        "title": "Zdarzenia",
+                        "description": "Wywołaj zdarzenie na szynie zdarzeń.",
+                        "documentation": "Dokumentacja zdarzeń.",
+                        "type": "Typ zdarzenia",
+                        "data": "Dane zdarzenia (YAML, opcjonalnie)",
+                        "fire_event": "Wywołaj zdarzenie",
+                        "event_fired": "Zdarzenie {name} wywołane",
+                        "available_events": "Dostępne zdarzenia",
+                        "count_listeners": " ({count} słuchaczy)",
+                        "listen_to_events": "Nasłuch zdarzeń",
+                        "listening_to": "Nasłuchiwanie...",
+                        "subscribe_to": "Zdarzenie do zasubskrybowania",
+                        "start_listening": "Rozpocznij nasłuch",
+                        "stop_listening": "Zatrzymaj nasłuch",
+                        "alert_event_type": "Typ zdarzenia jest polem obowiązkowym",
+                        "notification_event_fired": "Udało się wywołać zdarzenie {type}!"
                     },
                     "templates": {
                         "title": "Szablon",
+                        "description": "Szablony są renderowane przy użyciu silnika szablonów Jinja2 z kilkoma specyficznymi rozszerzeniami Home Assistant'a.",
                         "editor": "Edytor szablonów",
                         "jinja_documentation": "Dokumentacja szablonów Jinja2",
                         "template_extensions": "Rozszerzenia szablonów Home Assistant'a",
                         "unknown_error_template": "Nieznany błąd podczas renderowania szablonu."
                     },
                     "mqtt": {
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "description_publish": "Opublikuj pakiet",
+                        "topic": "temat",
+                        "payload": "Payload (z możliwością użycia szablonów)",
+                        "publish": "Opublikuj",
+                        "description_listen": "Nasłuch tematu",
+                        "listening_to": "Nasłuchiwanie...",
+                        "subscribe_to": "Temat do zasubskrybowania",
+                        "start_listening": "Rozpocznij nasłuch",
+                        "stop_listening": "Zatrzymaj nasłuch",
+                        "message_received": "Wiadomość {id} otrzymana w {topic} o godzinie {time}:"
                     },
                     "info": {
                         "title": "Informacje",
@@ -345,7 +396,7 @@
                         "server": "serwer",
                         "frontend": "frontend-ui",
                         "built_using": "Zbudowany przy użyciu",
-                        "icons_by": "Ikony",
+                        "icons_by": "ikon",
                         "frontend_version": "Wersja interfejsu użytkownika: {version} - {type}",
                         "custom_uis": "Niestandardowe interfejsy użytkownika:",
                         "system_health_error": "Komponent kondycji systemu nie jest załadowany. Dodaj 'system_health:' do pliku configuration.yaml"
@@ -358,7 +409,8 @@
                         "no_errors": "Nie zgłoszono żadnych błędów.",
                         "no_issues": "Nie ma nowych problemów!",
                         "clear": "Wyczyść",
-                        "refresh": "Odśwież"
+                        "refresh": "Odśwież",
+                        "multiple_messages": "wiadomość pojawiła się po raz pierwszy o godzinie {time} i powtarzała się {counter} razy"
                     }
                 }
             },
@@ -1361,7 +1413,8 @@
                         "call_service": "Wywołaj usługę {name}",
                         "more_info": "Pokaż więcej informacji: {name}",
                         "url": "Otwórz okno do {url_path}"
-                    }
+                    },
+                    "confirm_delete": "Na pewno chcesz usunąć tę kartę?"
                 },
                 "editor": {
                     "edit_card": {
@@ -1374,7 +1427,9 @@
                         "delete": "Usuń",
                         "move": "Przenieś",
                         "show_visual_editor": "Edytor wizualny",
-                        "show_code_editor": "Edytor kodu"
+                        "show_code_editor": "Edytor kodu",
+                        "pick_card_view_title": "Którą kartę chcesz dodać do widoku {name}?",
+                        "options": "Więcej opcji"
                     },
                     "migrate": {
                         "header": "Konfiguracja niekompatybilna",
@@ -1387,7 +1442,8 @@
                         "header": "Konfiguracja widoku",
                         "add": "Dodaj widok",
                         "edit": "Edytuj widok",
-                        "delete": "Usuń widok"
+                        "delete": "Usuń widok",
+                        "header_name": "Konfiguracja widoku {name}"
                     },
                     "save_config": {
                         "header": "Przejmij kontrolę nad interfejsem użytkownika Lovelace",
@@ -1397,7 +1453,8 @@
                         "save": "Przejmuję kontrolę"
                     },
                     "menu": {
-                        "raw_editor": "Ręczny edytor konfiguracji"
+                        "raw_editor": "Ręczny edytor konfiguracji",
+                        "open": "Otwórz menu interfejsu użytkownika Lovelace"
                     },
                     "raw_editor": {
                         "header": "Edytuj konfigurację",
@@ -1418,8 +1475,9 @@
                             "optional": "Opcjonalne"
                         },
                         "entities": {
-                            "show_header_toggle": "Wyświetlać przełącznik nagłówka?",
-                            "name": "Encje"
+                            "show_header_toggle": "Pokaż przełącznik w nagłówku?",
+                            "name": "Encje",
+                            "toggle": "Przełącz encje"
                         },
                         "gauge": {
                             "severity": {
@@ -1529,6 +1587,12 @@
                         "weather-forecast": {
                             "name": "Prognoza pogody"
                         }
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "title": "Tryb panelu?",
+                            "description": "Pierwsza karta renderowana jest w pełnej szerokości; inne karty w tym widoku nie będą renderowane."
+                        }
                     }
                 },
                 "menu": {
@@ -1545,7 +1609,11 @@
                     "message": "Zaktualizowano konfigurację interfejsu użytkownika, czy chcesz ją wczytać ponownie?",
                     "refresh": "Wczytaj ponownie"
                 },
-                "reload_lovelace": "Wczytaj ponownie Lovelace"
+                "reload_lovelace": "Wczytaj ponownie Lovelace",
+                "views": {
+                    "confirm_delete": "Na pewno chcesz usunąć ten widok?",
+                    "existing_cards": "Nie można usunąć widoku zawierającego karty. Najpierw usuń karty."
+                }
             },
             "page-demo": {
                 "cards": {
@@ -1567,7 +1635,8 @@
                             "master_bedroom": "Główna sypialnia",
                             "left": "Lewo",
                             "right": "Prawo",
-                            "mirror": "Lustro"
+                            "mirror": "Lustro",
+                            "temperature_study": "Badanie temperatury"
                         },
                         "labels": {
                             "lights": "Światła",
@@ -1593,7 +1662,8 @@
         },
         "sidebar": {
             "log_out": "Wyloguj",
-            "external_app_configuration": "Konfiguracja aplikacji"
+            "external_app_configuration": "Konfiguracja aplikacji",
+            "sidebar_toggle": "Przełącz pasek boczny"
         },
         "common": {
             "loading": "Ładowanie",
@@ -1749,7 +1819,9 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Encja"
+                    "entity": "Encja",
+                    "clear": "Wyczyść",
+                    "show_entities": "Wyświetl encje"
                 }
             },
             "service-picker": {
@@ -1770,6 +1842,10 @@
             "history_charts": {
                 "loading_history": "Ładowanie historii...",
                 "no_history_found": "Nie znaleziono historii."
+            },
+            "device-picker": {
+                "clear": "Wyczyść",
+                "show_devices": "Wyświetl urządzenia"
             }
         },
         "notification_toast": {

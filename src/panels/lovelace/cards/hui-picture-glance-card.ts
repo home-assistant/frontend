@@ -22,13 +22,14 @@ import { computeStateDisplay } from "../../../common/entity/compute_state_displa
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { HomeAssistant } from "../../../types";
-import { longPress } from "../common/directives/long-press-directive";
 import { processConfigEntities } from "../common/process-config-entities";
-import { handleClick } from "../common/handle-click";
-import { hasDoubleClick } from "../common/has-double-click";
 import { PictureGlanceCardConfig, PictureGlanceEntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { hasAction } from "../common/has-action";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { handleAction } from "../common/handle-action";
 
 const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 
@@ -160,11 +161,10 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
                 this._config.camera_image
             ),
           })}
-          @ha-click=${this._handleClick}
-          @ha-hold=${this._handleHold}
-          @ha-dblclick=${this._handleDblClick}
-          .longPress=${longPress({
-            hasDoubleClick: hasDoubleClick(this._config!.double_tap_action),
+          @action=${this._handleAction}
+          .actionHandler=${actionHandler({
+            hasHold: hasAction(this._config!.hold_action),
+            hasDoubleClick: hasAction(this._config!.double_tap_action),
           })}
           .config=${this._config}
           .hass=${this.hass}
@@ -223,11 +223,10 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     return html`
       <div class="wrapper">
         <ha-icon
-          @ha-click=${this._handleClick}
-          @ha-hold=${this._handleHold}
-          @ha-dblclick=${this._handleDblClick}
-          .longPress=${longPress({
-            hasDoubleClick: hasDoubleClick(entityConf.double_tap_action),
+          @action=${this._handleAction}
+          .actionHandler=${actionHandler({
+            hasHold: hasAction(entityConf.hold_action),
+            hasDoubleClick: hasAction(entityConf.double_tap_action),
           })}
           .config=${entityConf}
           class="${classMap({
@@ -259,19 +258,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _handleClick(ev: MouseEvent): void {
+  private _handleAction(ev: ActionHandlerEvent) {
     const config = (ev.currentTarget as any).config as any;
-    handleClick(this, this.hass!, config, false, false);
-  }
-
-  private _handleHold(ev: MouseEvent): void {
-    const config = (ev.currentTarget as any).config as any;
-    handleClick(this, this.hass!, config, true, false);
-  }
-
-  private _handleDblClick(ev: MouseEvent): void {
-    const config = (ev.currentTarget as any).config as any;
-    handleClick(this, this.hass!, config, false, true);
+    handleAction(this, this.hass!, config, ev.detail.action!);
   }
 
   static get styles(): CSSResult {

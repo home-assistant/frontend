@@ -63,7 +63,11 @@ class HaConfigEntryPage extends LitElement {
 
     if (!configEntry) {
       return html`
-        <hass-error-screen error="Integration not found."></hass-error-screen>
+        <hass-error-screen
+          error="${this.hass.localize(
+            "ui.panel.config.integrations.integration_not_found"
+          )}"
+        ></hass-error-screen>
       `;
     }
 

@@ -312,25 +312,93 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "title": "Dienste"
+                        "title": "Dienste",
+                        "data": "Servicedaten (YAML, optional)",
+                        "call_service": "Dienst ausführen",
+                        "select_service": "Wählen Sie einen Service aus, um die Beschreibung anzuzeigen",
+                        "no_description": "Es ist keine Beschreibung verfügbar",
+                        "no_parameters": "Dieser Dienst benötigt keine Parameter.",
+                        "column_parameter": "Parameter",
+                        "column_description": "Beschreibung",
+                        "column_example": "Beispiel",
+                        "fill_example_data": "Mit Beispieldaten füllen",
+                        "alert_parsing_yaml": "Fehler beim Parsen von YAML: {data}"
                     },
                     "states": {
-                        "title": "Zustände"
+                        "title": "Zustände",
+                        "description1": "Stellen Sie die Darstellung eines Geräts in Home Assistant ein.",
+                        "description2": "Dies führt nicht zur Kommunikation mit dem eigentlichen Gerät.",
+                        "entity": "Entität",
+                        "state": "Zustand",
+                        "attributes": "Attribute",
+                        "state_attributes": "Statusattribute (YAML, optional)",
+                        "set_state": "Status setzen",
+                        "current_entities": "Aktuelle Entitäten",
+                        "filter_entities": "Entitäten filtern",
+                        "filter_states": "Zustände filtern",
+                        "filter_attributes": "Attribute filtern",
+                        "no_entities": "Keine Entitäten",
+                        "more_info": "Mehr Info",
+                        "alert_entity_field": "Die Entität ist ein Pflichtfeld"
                     },
                     "events": {
-                        "title": "Ereignisse"
+                        "title": "Ereignisse",
+                        "description": "Lösen Sie ein Ereignis im Ereignisbus aus.",
+                        "documentation": "Dokumentation von Ereignissen.",
+                        "type": "Ereignistyp",
+                        "data": "Ereignisdaten (YAML, optional)",
+                        "fire_event": "Ereignis auslösen",
+                        "event_fired": "Ereignis {name} ausgelöst",
+                        "available_events": "Verfügbare Ereignisse",
+                        "count_listeners": " ({count} Listener)",
+                        "listen_to_events": "Hören auf Ereignisse",
+                        "listening_to": "Hören auf"
                     },
                     "templates": {
-                        "title": "Vorlage"
+                        "title": "Vorlage",
+                        "description": "Vorlagen werden durch die Jinja2-Template-Engine mit einigen für Home Assistant spezifischen Erweiterungen gerendert.",
+                        "editor": "Vorlageneditor",
+                        "jinja_documentation": "Jinja2 Template Dokumentation",
+                        "template_extensions": "Home Assistant-Vorlagenerweiterungen",
+                        "unknown_error_template": "Unbekannter Fehler beim Rendern der Vorlage"
                     },
                     "mqtt": {
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "description_publish": "Ein Paket veröffentlichen",
+                        "topic": "Topic",
+                        "publish": "Veröffentlichen",
+                        "message_received": "Nachricht {id} empfangen auf {topic} um {time} :"
                     },
                     "info": {
-                        "title": "Info"
+                        "title": "Info",
+                        "remove": "Entfernen",
+                        "set": "Setzen",
+                        "default_ui": "{action} {name} als Standardseite auf diesem Gerät",
+                        "lovelace_ui": "Gehen Sie zur Lovelace-Benutzeroberfläche",
+                        "states_ui": "Gehen Sie zu den State UI",
+                        "home_assistant_logo": "Home Assistant-Logo",
+                        "path_configuration": "Pfad zu configuration.yaml: {path}",
+                        "developed_by": "Entwickelt von einem Haufen toller Leute.",
+                        "license": "Veröffentlicht unter der Apache 2.0 Lizenz",
+                        "source": "Quelle:",
+                        "server": "Server",
+                        "frontend": "Frontend-UI",
+                        "built_using": "Gebaut mit",
+                        "icons_by": "Icons von",
+                        "frontend_version": "Frontend-Version: {version} - {type}",
+                        "custom_uis": "Benutzerdefinierte UIs:",
+                        "system_health_error": "System Health-Komponente wird nicht geladen. Fügen Sie 'system_health:' zu configuration.yaml hinzu"
                     },
                     "logs": {
-                        "title": "Logs"
+                        "title": "Logs",
+                        "details": "Protokolldetails ( {level} )",
+                        "load_full_log": "Vollständiges Home Assistant-Protokoll laden",
+                        "loading_log": "Fehlerprotokoll wird geladen ...",
+                        "no_errors": "Es wurden keine Fehler gemeldet.",
+                        "no_issues": "Es gibt keine neuen Probleme!",
+                        "clear": "Leeren",
+                        "refresh": "Aktualisieren",
+                        "multiple_messages": "Die Nachricht ist zum ersten Mal um {time} aufgetreten und erscheint {counter} mal"
                     }
                 }
             },
@@ -606,7 +674,10 @@
                                     "service_data": "Dienstdaten"
                                 },
                                 "device_id": {
-                                    "label": "Gerät"
+                                    "label": "Gerät",
+                                    "extra_fields": {
+                                        "code": "Code"
+                                    }
                                 },
                                 "scene": {
                                     "label": "Szene aktivieren"
@@ -900,7 +971,11 @@
                         "device_unavailable": "Gerät nicht verfügbar",
                         "entity_unavailable": "Entität nicht verfügbar",
                         "no_area": "Kein Bereich",
-                        "hub": "Verbunden über"
+                        "hub": "Verbunden über",
+                        "settings_button": "Einstellungen für {integration} bearbeiten",
+                        "system_options_button": "Systemoptionen für {integration}",
+                        "delete_button": "{integration} löschen",
+                        "area": "In {area}"
                     },
                     "config_flow": {
                         "external_step": {
@@ -1326,7 +1401,8 @@
                         "call_service": "Dienst {name} ausführen",
                         "more_info": "Zeige weitere Informationen: {name}",
                         "url": "Fenster zu {url_path} öffnen"
-                    }
+                    },
+                    "confirm_delete": "Möchten Sie diese Karte wirklich löschen?"
                 },
                 "editor": {
                     "edit_card": {
@@ -1339,7 +1415,9 @@
                         "delete": "Löschen",
                         "move": "Bewegen",
                         "show_visual_editor": "Visuellen Editor anzeigen",
-                        "show_code_editor": "Code-Editor anzeigen"
+                        "show_code_editor": "Code-Editor anzeigen",
+                        "pick_card_view_title": "Welche Karte möchten Sie Ihrer {name} -Ansicht hinzufügen?",
+                        "options": "Mehr Optionen"
                     },
                     "migrate": {
                         "header": "Konfiguration inkompatibel",
@@ -1352,7 +1430,8 @@
                         "header": "Konfiguration anzeigen",
                         "add": "Ansicht hinzufügen",
                         "edit": "Ansicht bearbeiten",
-                        "delete": "Ansicht löschen"
+                        "delete": "Ansicht löschen",
+                        "header_name": "{name} Konfiguration anzeigen"
                     },
                     "save_config": {
                         "header": "Lovelace Userinterface selbst verwalten",
@@ -1362,7 +1441,8 @@
                         "save": "Kontrolle übernehmen"
                     },
                     "menu": {
-                        "raw_editor": "Raw-Konfigurationseditor"
+                        "raw_editor": "Raw-Konfigurationseditor",
+                        "open": "Lovelace-Menü öffnen"
                     },
                     "raw_editor": {
                         "header": "Konfiguration bearbeiten",
@@ -1384,7 +1464,8 @@
                         },
                         "entities": {
                             "show_header_toggle": "Namen anzeigen?",
-                            "name": "Elemente"
+                            "name": "Elemente",
+                            "toggle": "Entitäten umschalten"
                         },
                         "gauge": {
                             "severity": {
@@ -1494,6 +1575,12 @@
                         "weather-forecast": {
                             "name": "Wettervorhersage"
                         }
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "title": "Panel-Modus?",
+                            "description": "Dadurch wird die erste Karte in voller Breite gerendert. Andere Karten in dieser Ansicht werden nicht gerendert."
+                        }
                     }
                 },
                 "menu": {
@@ -1510,7 +1597,11 @@
                     "message": "Die Lovelace-Konfiguration wurde aktualisiert, möchtest du sie aktualisieren?",
                     "refresh": "Aktualisieren"
                 },
-                "reload_lovelace": "Lovelace neu laden"
+                "reload_lovelace": "Lovelace neu laden",
+                "views": {
+                    "confirm_delete": "Möchten Sie diese Ansicht wirklich löschen?",
+                    "existing_cards": "Sie können eine Ansicht mit Karten nicht löschen. Entfernen Sie zuerst die Karten."
+                }
             },
             "page-demo": {
                 "cards": {
@@ -1532,7 +1623,8 @@
                             "master_bedroom": "Schlafzimmer",
                             "left": "Links",
                             "right": "Rechts",
-                            "mirror": "Spiegel"
+                            "mirror": "Spiegel",
+                            "temperature_study": "Temperatur Arbeitszimmer"
                         },
                         "labels": {
                             "lights": "Beleuchtung",
@@ -1558,7 +1650,8 @@
         },
         "sidebar": {
             "log_out": "Abmelden",
-            "external_app_configuration": "App-Konfiguration"
+            "external_app_configuration": "App-Konfiguration",
+            "sidebar_toggle": "Seitenleiste umschalten"
         },
         "common": {
             "loading": "Laden",
@@ -1665,7 +1758,14 @@
                 "swing_mode": "Schwenk-Modus",
                 "away_mode": "Abwesenheitsmodus",
                 "aux_heat": "Hilfswärme",
-                "preset_mode": "Voreinstellung"
+                "preset_mode": "Voreinstellung",
+                "target_temperature_entity": "{name} Zieltemperatur",
+                "target_temperature_mode": "{name} Zieltemperatur {mode}",
+                "current_temperature": "{name} aktuelle Temperatur",
+                "heating": "{name} Heizung",
+                "cooling": "{name} Kühlung",
+                "high": "hoch",
+                "low": "niedrig"
             },
             "lock": {
                 "code": "Code",
@@ -1695,12 +1795,21 @@
                     "cancel": "Abbrechen",
                     "finish": "Ende"
                 }
+            },
+            "counter": {
+                "actions": {
+                    "increment": "inkrementieren",
+                    "decrement": "dekrementieren",
+                    "reset": "zurücksetzen"
+                }
             }
         },
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Entität"
+                    "entity": "Entität",
+                    "clear": "Löschen",
+                    "show_entities": "Entitäten anzeigen"
                 }
             },
             "service-picker": {
@@ -1721,6 +1830,10 @@
             "history_charts": {
                 "loading_history": "Lade Zustandsverlauf...",
                 "no_history_found": "Kein Zustandsverlauf gefunden."
+            },
+            "device-picker": {
+                "clear": "Löschen",
+                "show_devices": "Geräte anzeigen"
             }
         },
         "notification_toast": {
@@ -1785,6 +1898,11 @@
                 "last_seen": "Zuletzt gesehen",
                 "power_source": "Energiequelle",
                 "unknown": "Unbekannt"
+            },
+            "confirmation": {
+                "cancel": "Abbrechen",
+                "ok": "OK",
+                "title": "Sind Sie sicher?"
             }
         },
         "auth_store": {
