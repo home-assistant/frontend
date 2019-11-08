@@ -16,12 +16,12 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
+import { SpeechRecognition } from "../../common/dom/speech-recognition";
 import {
   processText,
   getAgentInfo,
   setConversationOnboarding,
   AgentInfo,
-  SpeechRecognition,
 } from "../../data/conversation";
 import { classMap } from "lit-html/directives/class-map";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
