@@ -1428,7 +1428,8 @@
                         "move": "Move",
                         "show_visual_editor": "Show Visual Editor",
                         "show_code_editor": "Show Code Editor",
-                        "pick_card_view_title": "Which card would you like to add to your {name} view?"
+                        "pick_card_view_title": "Which card would you like to add to your {name} view?",
+                        "options": "More options"
                     },
                     "migrate": {
                         "header": "Configuration Incompatible",
@@ -1452,7 +1453,8 @@
                         "save": "Take control"
                     },
                     "menu": {
-                        "raw_editor": "Raw config editor"
+                        "raw_editor": "Raw config editor",
+                        "open": "Open Lovelace menu"
                     },
                     "raw_editor": {
                         "header": "Edit Config",
@@ -1474,7 +1476,8 @@
                         },
                         "entities": {
                             "show_header_toggle": "Show Header Toggle?",
-                            "name": "Entities"
+                            "name": "Entities",
+                            "toggle": "Toggle entities."
                         },
                         "gauge": {
                             "severity": {
@@ -1659,7 +1662,8 @@
         },
         "sidebar": {
             "log_out": "Log out",
-            "external_app_configuration": "App Configuration"
+            "external_app_configuration": "App Configuration",
+            "sidebar_toggle": "Sidebar Toggle"
         },
         "common": {
             "loading": "Loading",
@@ -1815,7 +1819,9 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Entity"
+                    "entity": "Entity",
+                    "clear": "Clear",
+                    "show_entities": "Show entities"
                 }
             },
             "service-picker": {
@@ -1836,6 +1842,10 @@
             "history_charts": {
                 "loading_history": "Loading state history...",
                 "no_history_found": "No state history found."
+            },
+            "device-picker": {
+                "clear": "Clear",
+                "show_devices": "Show devices"
             }
         },
         "notification_toast": {

@@ -442,6 +442,14 @@
             },
             "relative_time": {
                 "never": "Niä"
+            },
+            "entity": {
+                "entity-picker": {
+                    "clear": "Lösche"
+                }
+            },
+            "device-picker": {
+                "clear": "Lösche"
             }
         },
         "card": {

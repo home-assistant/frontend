@@ -384,7 +384,7 @@
                     "info": {
                         "title": "Info",
                         "remove": "Läschen",
-                        "set": "Setzen",
+                        "set": "Définéier",
                         "default_ui": "{action} {name} als Standard Säit op dësem Apparat",
                         "lovelace_ui": "Zum Lovelace Benotzer Interface wiesselen",
                         "states_ui": "Zum Zoustänn Benotzer Interface wiesselen",
@@ -1428,7 +1428,8 @@
                         "move": "Réckelen",
                         "show_visual_editor": "Visuellen Editeur uweisen",
                         "show_code_editor": "Code Editeur uweisen",
-                        "pick_card_view_title": "Wéieng Kaart wëllt dir zu ärer {name] Usiicht dobäisetzen?"
+                        "pick_card_view_title": "Wéieng Kaart wëllt dir zu ärer {name] Usiicht dobäisetzen?",
+                        "options": "Méi Optiounen"
                     },
                     "migrate": {
                         "header": "Konfiguratioun net kompatibel",
@@ -1452,7 +1453,8 @@
                         "save": "Kontroll iwwerhuelen"
                     },
                     "menu": {
-                        "raw_editor": "Editeur fir déi reng Konfiguratioun"
+                        "raw_editor": "Editeur fir déi reng Konfiguratioun",
+                        "open": "Lovelace Menu opmaachen"
                     },
                     "raw_editor": {
                         "header": "Konfiguratioun änneren",
@@ -1474,7 +1476,8 @@
                         },
                         "entities": {
                             "show_header_toggle": "Titel Schalter uweisen?",
-                            "name": "Entitéiten"
+                            "name": "Entitéiten",
+                            "toggle": "Entitéiten ëmschalten"
                         },
                         "gauge": {
                             "severity": {
@@ -1659,7 +1662,8 @@
         },
         "sidebar": {
             "log_out": "Ausloggen",
-            "external_app_configuration": "App Konfiguratioun"
+            "external_app_configuration": "App Konfiguratioun",
+            "sidebar_toggle": "Säite Kolonne ëmschalten"
         },
         "common": {
             "loading": "Lued",
@@ -1815,7 +1819,9 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Entitéit"
+                    "entity": "Entitéit",
+                    "clear": "Läschen",
+                    "show_entities": "Entitéite uweisen"
                 }
             },
             "service-picker": {
@@ -1836,6 +1842,10 @@
             "history_charts": {
                 "loading_history": "Lued Status Verlaaf",
                 "no_history_found": "Keen Status Verlaaf fonnt"
+            },
+            "device-picker": {
+                "clear": "Läschen",
+                "show_devices": "Apparater uweisen"
             }
         },
         "notification_toast": {
