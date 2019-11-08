@@ -121,20 +121,15 @@ export class HaVoiceCommandDialog extends LitElement {
         <paper-dialog-scrollable id="messages">
           ${this._agentInfo && this._agentInfo.onboarding
             ? html`
-                <div @click=${this._completeOnboarding}>
+                ${this._agentInfo.onboarding.text}
+                <div class="side-by-side" @click=${this._completeOnboarding}>
                   <a
                     class="button"
                     href="${this._agentInfo.onboarding.url}"
                     target="_blank"
-                    ><mwc-button class="full-width"
-                      >${this._agentInfo.onboarding.text}</mwc-button
-                    ></a
+                    ><mwc-button unelevated>Yes!</mwc-button></a
                   >
-                  <br />
-                  <mwc-button class="full-width"
-                    >No, I don't want to help</mwc-button
-                  >
-                  <br />
+                  <mwc-button outlined>No</mwc-button>
                 </div>
               `
             : ""}
@@ -388,8 +383,16 @@ export class HaVoiceCommandDialog extends LitElement {
         a.button {
           text-decoration: none;
         }
-        .full-width {
+        a.button > mwc-button {
           width: 100%;
+        }
+        .side-by-side {
+          display: flex;
+          margin: 8px 0;
+        }
+        .side-by-side > * {
+          flex: 1 0;
+          padding: 4px;
         }
         .attribution {
           color: var(--secondary-text-color);
