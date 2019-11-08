@@ -335,9 +335,9 @@
                         "state_attributes": "狀態屬性（YAML，選項）",
                         "set_state": "設定狀態",
                         "current_entities": "目前物件",
-                        "filter_entities": "過濾器物件",
-                        "filter_states": "過濾器狀態",
-                        "filter_attributes": "過濾器屬性",
+                        "filter_entities": "物件過濾器",
+                        "filter_states": "狀態過濾器",
+                        "filter_attributes": "屬性過濾器",
                         "no_entities": "無物件",
                         "more_info": "更多資訊",
                         "alert_entity_field": "物件為必填欄位"
@@ -384,7 +384,7 @@
                     "info": {
                         "title": "資訊",
                         "remove": "移除",
-                        "set": "組",
+                        "set": "設定",
                         "default_ui": "{action} {name} 為此設備預設頁面",
                         "lovelace_ui": "至狀態介面",
                         "states_ui": "至 Lovelace 介面",
@@ -410,7 +410,7 @@
                         "no_issues": "沒有新問題！",
                         "clear": "清除",
                         "refresh": "更新",
-                        "multiple_messages": "訊息首先於 {time} 發生，顯示 {counter} 次"
+                        "multiple_messages": "訊息首次出現於 {time}、共顯示 {counter} 次"
                     }
                 }
             },
@@ -1428,7 +1428,8 @@
                         "move": "移動",
                         "show_visual_editor": "顯示視覺編輯器",
                         "show_code_editor": "顯示編碼編輯器",
-                        "pick_card_view_title": "要加入 {name} 視圖的卡片？"
+                        "pick_card_view_title": "要加入 {name} 視圖的卡片？",
+                        "options": "更多選項"
                     },
                     "migrate": {
                         "header": "設定不相容",
@@ -1452,7 +1453,8 @@
                         "save": "自行編輯"
                     },
                     "menu": {
-                        "raw_editor": "文字模式編輯器"
+                        "raw_editor": "文字模式編輯器",
+                        "open": "開啟 Lovelace 選單"
                     },
                     "raw_editor": {
                         "header": "編輯設定",
@@ -1474,7 +1476,8 @@
                         },
                         "entities": {
                             "show_header_toggle": "顯示名稱切換？",
-                            "name": "物件"
+                            "name": "物件",
+                            "toggle": "切換物件。"
                         },
                         "gauge": {
                             "severity": {
@@ -1659,7 +1662,8 @@
         },
         "sidebar": {
             "log_out": "登出",
-            "external_app_configuration": "App 設定"
+            "external_app_configuration": "App 設定",
+            "sidebar_toggle": "側邊欄開關"
         },
         "common": {
             "loading": "讀取中",
@@ -1815,7 +1819,9 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "物件"
+                    "entity": "物件",
+                    "clear": "清除",
+                    "show_entities": "顯示物件"
                 }
             },
             "service-picker": {
@@ -1836,6 +1842,10 @@
             "history_charts": {
                 "loading_history": "正在載入狀態歷史...",
                 "no_history_found": "找不到狀態歷史。"
+            },
+            "device-picker": {
+                "clear": "清除",
+                "show_devices": "顯示設備"
             }
         },
         "notification_toast": {
@@ -1959,7 +1969,7 @@
         "hassio": "Hass.io",
         "homeassistant": "Home Assistant",
         "lovelace": "Lovelace",
-        "system_health": "系統健康",
+        "system_health": "系統健康狀態",
         "person": "個人"
     },
     "attribute": {
