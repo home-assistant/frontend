@@ -21,6 +21,7 @@ import {
   getAgentInfo,
   setConversationOnboarding,
   AgentInfo,
+  SpeechRecognition,
 } from "../../data/conversation";
 import { classMap } from "lit-html/directives/class-map";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
@@ -40,21 +41,6 @@ interface Results {
   final: boolean;
 }
 
-/* tslint:disable */
-// @ts-ignore
-window.SpeechRecognition =
-  // @ts-ignore
-  window.SpeechRecognition || window.webkitSpeechRecognition;
-// @ts-ignore
-window.SpeechGrammarList =
-  // @ts-ignore
-  window.SpeechGrammarList || window.webkitSpeechGrammarList;
-// @ts-ignore
-window.SpeechRecognitionEvent =
-  // @ts-ignore
-  window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent;
-/* tslint:enable */
-
 @customElement("ha-voice-command-dialog")
 export class HaVoiceCommandDialog extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -68,7 +54,7 @@ export class HaVoiceCommandDialog extends LitElement {
   @property() private _opened = false;
   @property() private _agentInfo?: AgentInfo;
   @query("#messages") private messages!: PaperDialogScrollableElement;
-  private recognition?: SpeechRecognition;
+  private recognition!: SpeechRecognition;
   private _conversationId?: string;
 
   public async showDialog(): Promise<void> {
@@ -239,13 +225,13 @@ export class HaVoiceCommandDialog extends LitElement {
     this.recognition.interimResults = true;
     this.recognition.lang = "en-US";
 
-    this.recognition!.onstart = () => {
+    this.recognition.onstart = () => {
       this.results = {
         final: false,
         transcript: "",
       };
     };
-    this.recognition!.onerror = (event) => {
+    this.recognition.onerror = (event) => {
       this.recognition!.abort();
       if (event.error !== "aborted") {
         const text =
@@ -258,7 +244,7 @@ export class HaVoiceCommandDialog extends LitElement {
       }
       this.results = null;
     };
-    this.recognition!.onend = () => {
+    this.recognition.onend = () => {
       // Already handled by onerror
       if (this.results == null) {
         return;
@@ -278,7 +264,7 @@ export class HaVoiceCommandDialog extends LitElement {
       }
     };
 
-    this.recognition!.onresult = (event) => {
+    this.recognition.onresult = (event) => {
       const result = event.results[0];
       this.results = {
         transcript: result[0].transcript,
