@@ -344,12 +344,14 @@
                     },
                     "events": {
                         "title": "Événements",
+                        "description": "Déclencher un événement dans le bus d'événement.",
                         "documentation": "Documentation sur les événements.",
                         "type": "Type d'événement",
                         "data": "Données d'événement (YAML, facultatif)",
                         "fire_event": "Déclencher l'événement",
                         "event_fired": "Evénement {name} déclenché",
                         "available_events": "Événements disponibles",
+                        "count_listeners": " ({count} récepteurs)",
                         "listen_to_events": "Écoutez les événements",
                         "listening_to": "Écouter",
                         "subscribe_to": "Évènement auquel s'abonner",
@@ -382,6 +384,7 @@
                     "info": {
                         "title": "Info",
                         "remove": "Supprimer",
+                        "set": "Mettre",
                         "default_ui": "{action} {name} comme page par défaut sur ce périphérique",
                         "lovelace_ui": "Accéder à l'interface utilisateur de Lovelace",
                         "states_ui": "Aller à l'interface utilisateur des états",
@@ -478,7 +481,7 @@
                 },
                 "customize": {
                     "caption": "Personnalisation",
-                    "description": "Personnalisez vos entités",
+                    "description": "Personnaliser vos entités",
                     "picker": {
                         "header": "Personnalisation",
                         "introduction": "Ajuster les attributs par entité. Les personnalisations ajoutées \/ modifiées prendront effet immédiatement. Les personnalisations supprimées prendront effet lors de la mise à jour de l'entité."
@@ -984,7 +987,7 @@
                         "settings_button": "Modifier les paramètres pour {integration}",
                         "system_options_button": "Options système pour {integration}",
                         "delete_button": "Supprimer {integration}",
-                        "area": "Dans{area}"
+                        "area": "Dans {area}"
                     },
                     "config_flow": {
                         "external_step": {
@@ -993,7 +996,7 @@
                         }
                     },
                     "note_about_integrations": "Toutes les intégrations ne peuvent pas encore être configurées via l'interface utilisateur.",
-                    "note_about_website_reference": "D'autres sont disponibles sur ",
+                    "note_about_website_reference": "D'autres sont disponibles sur le ",
                     "home_assistant_website": "site web de Home Assistant"
                 },
                 "zha": {
@@ -1167,7 +1170,7 @@
                             "caption": "Faire quelque chose quand ..."
                         },
                         "conditions": {
-                            "caption": "Ne faire quelque chose si ..."
+                            "caption": "Ne faire quelque chose que si ..."
                         },
                         "actions": {
                             "caption": "Quand quelque chose est déclenché ..."
@@ -1425,7 +1428,8 @@
                         "move": "Déplacer",
                         "show_visual_editor": "Afficher l'éditeur visuel",
                         "show_code_editor": "Afficher l'éditeur de code",
-                        "pick_card_view_title": "Quelle carte souhaitez-vous ajouter à votre vue {name} ?"
+                        "pick_card_view_title": "Quelle carte souhaitez-vous ajouter à votre vue {name} ?",
+                        "options": "Plus d'options"
                     },
                     "migrate": {
                         "header": "Configuration incompatible",
@@ -1449,7 +1453,8 @@
                         "save": "Prenez le contrôle"
                     },
                     "menu": {
-                        "raw_editor": "Éditeur de configuration"
+                        "raw_editor": "Éditeur de configuration",
+                        "open": "Ouvrir le menu Lovelace"
                     },
                     "raw_editor": {
                         "header": "Modifier la configuration",
@@ -1471,7 +1476,8 @@
                         },
                         "entities": {
                             "show_header_toggle": "Afficher le bouton d'en-tête ?",
-                            "name": "Entités"
+                            "name": "Entités",
+                            "toggle": "Basculer les entités."
                         },
                         "gauge": {
                             "severity": {
@@ -1656,7 +1662,8 @@
         },
         "sidebar": {
             "log_out": "Déconnexion",
-            "external_app_configuration": "Configuration de l'application"
+            "external_app_configuration": "Configuration de l'application",
+            "sidebar_toggle": "Activer la barre latérale"
         },
         "common": {
             "loading": "Chargement",
@@ -1812,7 +1819,9 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Entité"
+                    "entity": "Entité",
+                    "clear": "Effacer",
+                    "show_entities": "Afficher les entités"
                 }
             },
             "service-picker": {
@@ -1833,6 +1842,10 @@
             "history_charts": {
                 "loading_history": "Chargement de l'historique des valeurs ...",
                 "no_history_found": "Aucun historique des valeurs trouvé."
+            },
+            "device-picker": {
+                "clear": "Effacer",
+                "show_devices": "Afficher les appareils"
             }
         },
         "notification_toast": {
@@ -1871,7 +1884,7 @@
                 }
             },
             "config_entry_system_options": {
-                "title": "Options du système",
+                "title": "Options système pour {integration}",
                 "enable_new_entities_label": "Activer les entités nouvellement ajoutées.",
                 "enable_new_entities_description": "Si désactivé, les entités nouvellement découvertes ne seront pas ajoutées automatiquement à Home Assistant."
             },
@@ -1985,7 +1998,7 @@
             },
             "hvac_action": {
                 "off": "Éteint",
-                "heating": "Chauffage",
+                "heating": "En chauffe",
                 "cooling": "Refroidissement",
                 "drying": "Séchage",
                 "idle": "Inactif",
