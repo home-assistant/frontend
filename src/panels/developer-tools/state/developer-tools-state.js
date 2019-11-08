@@ -1,6 +1,8 @@
 import "@material/mwc-button";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
+// import "copy-to-clipboard";
+import copy from "copy-to-clipboard";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
@@ -157,6 +159,13 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
               >
               </paper-icon-button>
+              <paper-icon-button
+                on-click="entityCopyId"
+                icon="hass:content-copy"
+                alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
+                title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
+              >
+              </paper-icon-button>
               <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
             </td>
             <td>[[entity.state]]</td>
@@ -253,6 +262,13 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   entityMoreInfo(ev) {
     ev.preventDefault();
     this.fire("hass-more-info", { entityId: ev.model.entity.entity_id });
+  }
+
+  entityCopyId(ev) {
+    copy(ev.model.entity.entity_id, {
+      debug: true,
+    });
+    alert("Copied to clipboard successfully!");
   }
 
   handleSetState() {

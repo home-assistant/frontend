@@ -99,6 +99,7 @@
     "regenerator-runtime": "^0.13.2",
     "roboto-fontface": "^0.10.0",
     "superstruct": "^0.6.1",
+    "copy-to-clipboard": "^1.0.9",
     "tslib": "^1.10.0",
     "unfetch": "^4.1.0",
     "web-animations-js": "^2.3.1",
