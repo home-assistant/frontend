@@ -313,16 +313,22 @@
                 "tabs": {
                     "services": {
                         "title": "Servicii",
+                        "description": "Instrumentul de serviciu dev vă permite să apelați orice serviciu disponibil în Home Assistant.",
                         "data": "Date serviciu (YAML, opțional)",
                         "call_service": "Apelare serviciu",
                         "select_service": "Alegeți un serviciu pentru a vizualiza descrierea",
                         "no_description": "Nici o descriere nu este disponibilă",
+                        "no_parameters": "Acest serviciu nu are parametri.",
                         "column_parameter": "Parametru",
                         "column_description": "Descriere",
-                        "column_example": "Exemplu"
+                        "column_example": "Exemplu",
+                        "fill_example_data": "Completați exemple de date",
+                        "alert_parsing_yaml": "Eroare de parsare YAML: {date}"
                     },
                     "states": {
                         "title": "Status",
+                        "description1": "Setați reprezentarea unui dispozitiv în cadrul Home Assistant.",
+                        "description2": "Acesta nu va comunica cu dispozitivul actual.",
                         "entity": "Entitate",
                         "state": "Stare",
                         "attributes": "Atribute",
@@ -337,20 +343,41 @@
                         "alert_entity_field": "Entitatea este un câmp obligatoriu"
                     },
                     "events": {
-                        "title": "Evenimente"
+                        "title": "Evenimente",
+                        "available_events": "Evenimente disponibile"
                     },
                     "templates": {
                         "title": "Sabloane",
+                        "description": "Șabloanele sunt redate utilizând motorul de șablon Jinja2 cu unele extensii specifice Home Assistant.",
                         "editor": "Editor șabloane",
                         "jinja_documentation": "Șablon documentație Jinja2",
-                        "template_extensions": "Șabloane de extensie pentru Home Assistant"
+                        "template_extensions": "Șabloane de extensie pentru Home Assistant",
+                        "unknown_error_template": "Sa produs o eroare de randare necunoscută."
                     },
                     "mqtt": {
                         "title": "MQTT",
-                        "publish": "Publică"
+                        "description_publish": "Publică un pachet",
+                        "topic": "subiect",
+                        "payload": "Sarcină utilă (șablon permis)",
+                        "publish": "Publică",
+                        "description_listen": "Ascultă un subiect",
+                        "listening_to": "Ascultand",
+                        "subscribe_to": "Topic la care să vă abonați",
+                        "start_listening": "Începe ascultare",
+                        "stop_listening": "Nu mai asculta",
+                        "message_received": "Mesajul {id} primit pe {topic} la {time} :"
                     },
                     "info": {
-                        "title": "Info"
+                        "title": "Info",
+                        "default_ui": "{action} {name} ca pagină implicită pe acest dispozitiv",
+                        "lovelace_ui": "Accesați interfața de utilizare Lovelace",
+                        "states_ui": "Filtrare stări",
+                        "license": "Publicat sub licenta Apache 2.0",
+                        "source": "Sursă:",
+                        "server": "Server",
+                        "frontend": "front-end-ui",
+                        "built_using": "Construit folosind",
+                        "icons_by": "Icoane ca"
                     },
                     "logs": {
                         "title": "Jurnale"
@@ -1066,7 +1093,8 @@
                         "add": "Adăugare card",
                         "edit": "Editeaza",
                         "delete": "Șterge",
-                        "move": "Muta"
+                        "move": "Muta",
+                        "options": "Mai multe optiuni"
                     },
                     "migrate": {
                         "header": "Configurație Incompatibilă",
@@ -1089,7 +1117,8 @@
                         "save": "Preia controlul"
                     },
                     "menu": {
-                        "raw_editor": "Raw config editor"
+                        "raw_editor": "Raw config editor",
+                        "open": "Deschideti meniul Lovelace"
                     },
                     "raw_editor": {
                         "header": "Editați configurația",
@@ -1100,6 +1129,11 @@
                     "edit_lovelace": {
                         "header": "Titlul interfeței dvs. Lovelace",
                         "explanation": "Acest titlu este arătat mai sus toate punctele de vedere în Lovelace."
+                    },
+                    "card": {
+                        "entities": {
+                            "toggle": "Schimbati entitatile"
+                        }
                     }
                 },
                 "menu": {
@@ -1164,7 +1198,8 @@
         },
         "sidebar": {
             "log_out": "Deconectare",
-            "external_app_configuration": "Configurație aplicație"
+            "external_app_configuration": "Configurație aplicație",
+            "sidebar_toggle": "Schimbati bara laterală"
         },
         "common": {
             "loading": "Se încarcă",
@@ -1306,7 +1341,9 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Entitate"
+                    "entity": "Entitate",
+                    "clear": "Şterge",
+                    "show_entities": "Arata entitatile"
                 }
             },
             "service-picker": {
@@ -1327,6 +1364,10 @@
             "history_charts": {
                 "loading_history": "Încărcarea istoricului de stare ...",
                 "no_history_found": "Nici un istoric de stare nu a fost găsit."
+            },
+            "device-picker": {
+                "clear": "Şterge",
+                "show_devices": "Arata dispozitivele"
             }
         },
         "notification_toast": {

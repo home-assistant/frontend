@@ -322,7 +322,7 @@
                         "column_parameter": "Параметр",
                         "column_description": "Описание",
                         "column_example": "Пример",
-                        "fill_example_data": "Пример заполнения данных",
+                        "fill_example_data": "Заполнить данными из примера",
                         "alert_parsing_yaml": "Ошибка при разборе синтаксиса YAML: {data}"
                     },
                     "states": {
@@ -387,7 +387,7 @@
                         "set": "Использовать",
                         "default_ui": "{action} {name} по умолчанию на этом устройстве",
                         "lovelace_ui": "Перейти к пользовательскому интерфейсу Lovelace",
-                        "states_ui": "Перейти к пользовательскому интерфейсу на основе состояний",
+                        "states_ui": "Перейти к пользовательскому интерфейсу states",
                         "home_assistant_logo": "Логотип Home Assistant",
                         "path_configuration": "Путь к configuration.yaml: {path}",
                         "developed_by": "Разработано множеством замечательных людей.",
@@ -813,7 +813,7 @@
                     "caption": "Home Assistant Cloud",
                     "description_login": "Выполнен вход {email}",
                     "description_not_login": "Вход не выполнен",
-                    "description_features": "Управление вдали от дома, интеграция с Alexa и Google Assistant.",
+                    "description_features": "Управление вдали от дома, интеграция с Alexa и Google Assistant",
                     "login": {
                         "title": "Home Assistant Cloud",
                         "introduction": "Home Assistant Cloud обеспечивает безопасное удаленное подключение к Вашему серверу, даже если Вы находитесь вдали от дома. Также это даёт возможность подключения к функциям облачных сервисов Amazon Alexa и Google Assistant.",
@@ -869,7 +869,7 @@
                         "thank_you_note": "Спасибо за то, что стали частью Home Assistant Cloud. Именно благодаря таким людям, как Вы, мы можем сделать все возможное для того, чтобы домашняя автоматизация была максимально удобной для всех. Спасибо!",
                         "nabu_casa_account": "Учетная запись Nabu Casa",
                         "connection_status": "Статус подключения к облаку",
-                        "manage_account": "Управление учетной записью",
+                        "manage_account": "Учетная запись",
                         "sign_out": "Выйти",
                         "integrations": "Интеграции",
                         "integrations_introduction": "Интеграции для Home Assistant Cloud позволяют подключаться к облачным службам без необходимости выставлять Ваш Home Assistant в интернет.",
@@ -889,7 +889,7 @@
                         },
                         "alexa": {
                             "title": "Alexa",
-                            "info": "Благодаря интеграции Alexa для Home Assistant Cloud Вы сможете управлять всеми своими устройствами Home Assistant через любое устройство с поддержкой Alexa.",
+                            "info": "Интеграция Alexa позволяет управлять устройствами, добавленными в Home Assistant, через любое устройство с поддержкой Alexa.",
                             "enable_ha_skill": "Активировать навык Home Assistant для Alexa",
                             "config_documentation": "Инструкция по настройке",
                             "enable_state_reporting": "Отправлять изменения состояний объектов",
@@ -903,7 +903,7 @@
                         },
                         "google": {
                             "title": "Google Assistant",
-                            "info": "Благодаря интеграции Google Assistant для Home Assistant Cloud Вы сможете управлять всеми своими устройствами Home Assistant через любое устройство с поддержкой Google Assistant.",
+                            "info": "Интеграция Google Assistant позволяет управлять устройствами, добавленными в Home Assistant, через любое устройство с поддержкой Google Assistant.",
                             "enable_ha_skill": "Активировать навык Home Assistant для Google Assistant",
                             "config_documentation": "Инструкция по настройке",
                             "enable_state_reporting": "Отправлять изменения состояний объектов",
@@ -1255,11 +1255,11 @@
                 "logout": "Выйти",
                 "force_narrow": {
                     "header": "Всегда скрывать боковую панель",
-                    "description": "Боковая панель будет скрыта, аналогично мобильному интерфейсу."
+                    "description": "Боковая панель будет скрыта, аналогично мобильному интерфейсу"
                 },
                 "vibrate": {
                     "header": "Вибрация",
-                    "description": "Получать тактильный отклик при управлении устройствами."
+                    "description": "Получать тактильный отклик при управлении устройствами"
                 },
                 "advanced_mode": {
                     "title": "Расширенный режим",
@@ -1428,7 +1428,8 @@
                         "move": "Переместить",
                         "show_visual_editor": "Форма ввода",
                         "show_code_editor": "Текстовый редактор",
-                        "pick_card_view_title": "Какую карточку Вы хотели бы добавить на вкладку \"{name}\"?"
+                        "pick_card_view_title": "Какую карточку Вы хотели бы добавить на вкладку {name}?",
+                        "options": "Больше параметров"
                     },
                     "migrate": {
                         "header": "Конфигурация несовместима",
@@ -1452,7 +1453,8 @@
                         "save": "Получить контроль"
                     },
                     "menu": {
-                        "raw_editor": "Текстовый редактор"
+                        "raw_editor": "Текстовый редактор",
+                        "open": "Открыть меню Lovelace"
                     },
                     "raw_editor": {
                         "header": "Редактирование конфигурации",
@@ -1469,12 +1471,13 @@
                             "available_states": "Доступные состояния"
                         },
                         "config": {
-                            "required": "Обязательное поле",
-                            "optional": "Необязательно"
+                            "required": "обязательно",
+                            "optional": "необязательно"
                         },
                         "entities": {
-                            "show_header_toggle": "Показывать переключатель в заголовке",
-                            "name": "Entities"
+                            "show_header_toggle": "Переключатель в заголовке",
+                            "name": "Entities",
+                            "toggle": "Переключить объекты"
                         },
                         "gauge": {
                             "severity": {
@@ -1522,12 +1525,12 @@
                         },
                         "markdown": {
                             "content": "Содержание",
-                            "name": "Разметка"
+                            "name": "Markdown"
                         },
                         "sensor": {
                             "graph_detail": "Детализация графика",
                             "graph_type": "Тип графика",
-                            "name": "Датчик"
+                            "name": "Sensor"
                         },
                         "alarm-panel": {
                             "name": "Alarm Panel",
@@ -1555,7 +1558,7 @@
                             "name": "Light"
                         },
                         "media-control": {
-                            "name": "Медиа"
+                            "name": "Media Control"
                         },
                         "picture": {
                             "name": "Picture"
@@ -1570,7 +1573,7 @@
                             "name": "Picture Glance"
                         },
                         "plant-status": {
-                            "name": "Растение"
+                            "name": "Plant Status"
                         },
                         "shopping-list": {
                             "name": "Список покупок"
@@ -1588,7 +1591,7 @@
                     "view": {
                         "panel_mode": {
                             "title": "Режим панели",
-                            "description": "Первая карточка будет растянута на всю ширину. Другие карточки не будут отображаться на этой вкладке."
+                            "description": "Первая карточка будет растянута на всю ширину. Другие карточки не будут отображаться на этой вкладке"
                         }
                     }
                 },
@@ -1659,7 +1662,8 @@
         },
         "sidebar": {
             "log_out": "Выход",
-            "external_app_configuration": "Настройки приложения"
+            "external_app_configuration": "Настройки приложения",
+            "sidebar_toggle": "Переключатель в боковой панели"
         },
         "common": {
             "loading": "Загрузка",
@@ -1766,7 +1770,7 @@
                 "swing_mode": "Режим качания воздушных шторок",
                 "away_mode": "Режим ожидания",
                 "aux_heat": "Дополнительный нагрев",
-                "preset_mode": "Режим",
+                "preset_mode": "Набор настроек",
                 "target_temperature_entity": "{name} заданная температура",
                 "target_temperature_mode": "{name} заданная температура {mode}",
                 "current_temperature": "{name} текущая температура",
@@ -1815,7 +1819,9 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Объект"
+                    "entity": "Объект",
+                    "clear": "Очистить",
+                    "show_entities": "Показать объекты"
                 }
             },
             "service-picker": {
@@ -1836,6 +1842,10 @@
             "history_charts": {
                 "loading_history": "Загрузка истории...",
                 "no_history_found": "История не найдена."
+            },
+            "device-picker": {
+                "clear": "Очистить",
+                "show_devices": "Показать устройства"
             }
         },
         "notification_toast": {
@@ -1843,7 +1853,8 @@
             "entity_turned_off": "{entity} выключается",
             "service_called": "Вызов службы {service}.",
             "service_call_failed": "Не удалось вызвать службу {service}.",
-            "connection_lost": "Соединение потеряно. Переподключение ..."
+            "connection_lost": "Соединение потеряно. Повторное подключение ...",
+            "triggered": "Сработало от {name}"
         },
         "dialogs": {
             "more_info_settings": {
@@ -1873,9 +1884,9 @@
                 }
             },
             "config_entry_system_options": {
-                "title": "Системные параметры для {integration}",
+                "title": "{integration}",
                 "enable_new_entities_label": "Добавлять новые объекты",
-                "enable_new_entities_description": "{integration} будет автоматически добавлять в Home Assistant вновь обнаруженные объекты."
+                "enable_new_entities_description": "{integration} будет автоматически добавлять в Home Assistant вновь обнаруженные объекты"
             },
             "zha_device_info": {
                 "manuf": "{manufacturer}",
@@ -1895,6 +1906,8 @@
                     "remove": "Удалить устройство",
                     "reconfigure": "Перенастроить устройство"
                 },
+                "quirk": "Нестандартный обработчик",
+                "last_seen": "Устройство было в сети",
                 "power_source": "Источник питания",
                 "unknown": "Неизвестно"
             },
@@ -1980,7 +1993,7 @@
                 "boost": "Турбо",
                 "comfort": "Комфорт",
                 "home": "Дома",
-                "sleep": "Ночной",
+                "sleep": "Ночь",
                 "activity": "Активность"
             },
             "hvac_action": {

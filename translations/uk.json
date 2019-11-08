@@ -315,22 +315,39 @@
                         "title": "Сервіси"
                     },
                     "states": {
-                        "title": "Стан"
+                        "title": "Стан",
+                        "more_info": "Більше інформації"
                     },
                     "events": {
                         "title": "Події"
                     },
                     "templates": {
-                        "title": "Шаблон"
+                        "title": "Шаблон",
+                        "editor": "Редактор шаблонів",
+                        "jinja_documentation": "Документація щодо шаблону Jinja2",
+                        "template_extensions": "Розширення шаблонів Home Assistant",
+                        "unknown_error_template": "Невідома помилка відтворення шаблону"
                     },
                     "mqtt": {
                         "title": "MQTT"
                     },
                     "info": {
-                        "title": "Інформація"
+                        "title": "Інформація",
+                        "remove": "Видалити",
+                        "set": "Встановити",
+                        "path_configuration": "Шлях до config.yaml: {path}",
+                        "developed_by": "Розроблена купою дивовижних людей.",
+                        "license": "Опубліковано під ліцензією Apache 2.0",
+                        "source": "Джерело:",
+                        "built_using": "Побудований за допомогою",
+                        "icons_by": "Ікони від",
+                        "frontend_version": "Версія Frontend: {version} - {type}"
                     },
                     "logs": {
-                        "title": "Лог"
+                        "title": "Лог",
+                        "details": "Деталі журналу ({level})",
+                        "load_full_log": "Завантажте повний журнал Home Assistant",
+                        "multiple_messages": "повідомлення вперше виникло в {time} і показується {counter} раз"
                     }
                 }
             },
@@ -596,7 +613,10 @@
                                     "service_data": "Дані сервісу"
                                 },
                                 "device_id": {
-                                    "label": "Пристрій"
+                                    "label": "Пристрій",
+                                    "extra_fields": {
+                                        "code": "Код"
+                                    }
                                 }
                             },
                             "learn_more": "Докладніше про дії"
@@ -610,7 +630,19 @@
                 },
                 "script": {
                     "caption": "Сценарій",
-                    "description": "Створення та редагування скриптів"
+                    "description": "Створення та редагування скриптів",
+                    "picker": {
+                        "header": "Редактор Скриптів ",
+                        "introduction": "Редактор скриптів дозволяє створювати та редагувати скрипти. Перейдіть за посиланням нижче, щоб прочитати вказівки, щоб переконатися, що ви правильно налаштували Home Assistant.",
+                        "learn_more": "Дізнатися більше про скрипти",
+                        "add_script": "Додати скрипт"
+                    },
+                    "editor": {
+                        "header": "Скрипт: {name}",
+                        "default_name": "Новий Скрипт",
+                        "load_error_not_editable": "Тільки скрипти всередині scripts.yaml доступні для редагування",
+                        "delete_confirm": "Ви впевнені, що хочете видалити цей скрипт?"
+                    }
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -664,7 +696,8 @@
                     "caption": "Користувачі",
                     "description": "Управління користувачами",
                     "picker": {
-                        "title": "Користувачі"
+                        "title": "Користувачі",
+                        "system_generated": "Системний"
                     },
                     "editor": {
                         "rename_user": "Перейменувати користувача",
@@ -672,7 +705,17 @@
                         "activate_user": "Активувати користувача",
                         "deactivate_user": "Деактивувати користувача",
                         "delete_user": "Видалити користувача",
-                        "caption": "Переглянути користувача"
+                        "caption": "Переглянути користувача",
+                        "owner": "Власник",
+                        "group": "Група",
+                        "active": "Активний",
+                        "system_generated": "Системний",
+                        "system_generated_users_not_removable": "Не вдається видалити користувачів, створених системою.",
+                        "unnamed_user": "Безіменний користувач",
+                        "enter_new_name": "Введіть нове ім'я",
+                        "user_rename_failed": "Помилка перейменування користувача:",
+                        "group_update_failed": "Помилка оновлення групи:",
+                        "confirm_user_deletion": "Справді видалити {name} ?"
                     },
                     "add_user": {
                         "caption": "Додати користувача",
@@ -686,7 +729,10 @@
                     "caption": "Хмара Home Assistant",
                     "description_login": "Увійшли в систему як {email}",
                     "description_not_login": "Не ввійшли в систему",
-                    "description_features": "Керуйте далеко від дому, інтегруйтеся з Alexa та Google Assistant."
+                    "description_features": "Керуйте далеко від дому, інтегруйтеся з Alexa та Google Assistant.",
+                    "dialog_cloudhook": {
+                        "close": "Закрити"
+                    }
                 },
                 "integrations": {
                     "caption": "Інтеграція",
@@ -714,7 +760,10 @@
                             "description": "На цьому кроці необхідно відвідати зовнішній веб-сайт.",
                             "open_site": "Відкрити веб-сайт"
                         }
-                    }
+                    },
+                    "note_about_integrations": "Ще не всі інтеграції можна налаштувати через інтерфейс користувача.",
+                    "note_about_website_reference": "Більше можна знайти на",
+                    "home_assistant_website": "Веб-сайт Home Assistant"
                 },
                 "zha": {
                     "caption": "ZHA",
@@ -763,7 +812,12 @@
                         "unavailable": "(недоступно)",
                         "introduction": "Home Assistant зберігає реєстр кожного об'єкта, який він коли-небудь бачив, який може бути унікально ідентифікований. Кожному з цих об'єктів буде призначений ідентифікатор, який буде зарезервований тільки для цього об'єкта.",
                         "introduction2": "Використовуйте реєстр об'єктів, щоб перевизначити ім'я, змінити ідентифікатор об'єкта або видалити запис з Home Assistant. Примітка: видалення запису реєстру не видалить об'єкт. Щоб зробити це, перейдіть за наведеним нижче посиланням і видаліть його з сторінки інтеграції.",
-                        "integrations_page": "Сторінка інтеграцій"
+                        "integrations_page": "Сторінка інтеграцій",
+                        "headers": {
+                            "name": "Назва",
+                            "integration": "Інтеграція",
+                            "enabled": "Увімкнено"
+                        }
                     },
                     "editor": {
                         "unavailable": "Цей об'єкт наразі недоступний.",
@@ -782,8 +836,23 @@
                         "name": "Ім'я",
                         "device_tracker_intro": "Виберіть пристрої, які належать цій людині.",
                         "device_tracker_picked": "Пристрій для відстеження",
-                        "device_tracker_pick": "Виберіть пристрій для відстеження"
-                    }
+                        "device_tracker_pick": "Виберіть пристрій для відстеження",
+                        "new_person": "Нова людина",
+                        "name_error_msg": "Ім'я є обов'язковим",
+                        "linked_user": "Пов'язаний користувач",
+                        "no_device_tracker_available_intro": "Коли у вас будуть пристрої, які вказують на присутність людини, ви зможете призначити їх людині тут. Ви можете додати свій перший пристрій, додавши інтеграцію виявлення присутності на сторінці інтеграції.",
+                        "link_presence_detection_integrations": "Інтеграції виявлення присутності",
+                        "link_integrations_page": "Сторінка інтеграцій",
+                        "delete": "Видалити",
+                        "create": "Створити",
+                        "update": "Оновити"
+                    },
+                    "note_about_persons_configured_in_yaml": "Примітка: люди, налаштовані за допомогою config.yaml, не можуть редагуватися через інтерфейс користувача.",
+                    "no_persons_created_yet": "Схоже, ви ще не створили жодної людини.",
+                    "create_person": "Створити Людину",
+                    "add_person": "Додати Людини",
+                    "confirm_delete": "Ви впевнені, що хочете видалити цю людину?",
+                    "confirm_delete2": "Усі пристрої, які належать цій особі, стануть непризначеними."
                 },
                 "server_control": {
                     "caption": "Керування сервером",
@@ -1052,7 +1121,8 @@
                         "toggle": "Переключити {name}",
                         "call_service": "Звернутись до сервісу {name}",
                         "more_info": "Показати більше: {name}"
-                    }
+                    },
+                    "confirm_delete": "Ви впевнені, що хочете видалити цю карту?"
                 },
                 "editor": {
                     "edit_card": {
@@ -1120,6 +1190,11 @@
                         "weather-forecast": {
                             "name": "Прогноз погоди"
                         }
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "title": "Панельний режим?"
+                        }
                     }
                 },
                 "menu": {
@@ -1136,7 +1211,10 @@
                     "message": "Конфігурацію Lovelace було оновлено, хочете оновити?",
                     "refresh": "Оновити"
                 },
-                "reload_lovelace": "Перезавантажити Lovelace"
+                "reload_lovelace": "Перезавантажити Lovelace",
+                "views": {
+                    "confirm_delete": "Ви впевнені, що хочете видалити цей вид?"
+                }
             },
             "page-demo": {
                 "cards": {
@@ -1326,7 +1404,9 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Об'єкт"
+                    "entity": "Об'єкт",
+                    "clear": "Очистити",
+                    "show_entities": "Показати об'єкти"
                 }
             },
             "service-picker": {
@@ -1347,6 +1427,10 @@
             "history_charts": {
                 "loading_history": "Завантаження історії стану ...",
                 "no_history_found": "Немає історії станів."
+            },
+            "device-picker": {
+                "clear": "Очистити",
+                "show_devices": "Показати пристрої"
             }
         },
         "notification_toast": {
@@ -1384,9 +1468,9 @@
                 }
             },
             "config_entry_system_options": {
-                "title": "Системні налаштування",
+                "title": "Параметри системи для {integration}",
                 "enable_new_entities_label": "Додавати нові об'єкти.",
-                "enable_new_entities_description": "Автоматично додавати в Home Assistant знову виявлені об'єкти."
+                "enable_new_entities_description": "Якщо вимкнено, нововиявлені об'єкти для {integration} не будуть автоматично додані до Home Assistant."
             },
             "zha_device_info": {
                 "manuf": "Виробник: {manufacturer}",
@@ -1401,6 +1485,10 @@
                     "area_picker_label": "Приміщення",
                     "update_name_button": "Оновити назву"
                 }
+            },
+            "confirmation": {
+                "cancel": "Скасувати",
+                "title": "Ви впевнені?"
             }
         },
         "auth_store": {
