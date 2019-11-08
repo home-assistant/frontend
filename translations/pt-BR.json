@@ -584,7 +584,12 @@
                                     "leave": "Sair"
                                 },
                                 "device": {
-                                    "label": "Dispositivo"
+                                    "label": "Dispositivo",
+                                    "extra_fields": {
+                                        "above": "Acima",
+                                        "below": "Abaixo",
+                                        "for": "Duração"
+                                    }
                                 }
                             },
                             "learn_more": "Saiba mais sobre gatilhos"
@@ -711,7 +716,8 @@
                         "add_script": "Adicionar script"
                     },
                     "editor": {
-                        "header": "Script: {name}"
+                        "header": "Script: {name}",
+                        "default_name": "Novo Script"
                     }
                 },
                 "zwave": {
@@ -786,6 +792,7 @@
                         "group": "Grupo",
                         "active": "Ativo",
                         "system_generated": "Gerado pelo sistema",
+                        "system_generated_users_not_removable": "Não foi possível remover usuários gerados pelo sistema.",
                         "unnamed_user": "Usuário sem nome",
                         "enter_new_name": "Digite o novo nome",
                         "user_rename_failed": "Falha ao renomear usuário:",
@@ -807,9 +814,18 @@
                     "description_features": "Controle mesmo longe de casa, integrar com Alexa e Google Assistant.",
                     "login": {
                         "introduction2": "Este serviço é executado pelo nosso parceiro ",
-                        "introduction2a": ", uma empresa fundada pelos fundadores do Home Assistant e do Hass.io."
+                        "introduction2a": ", uma empresa fundada pelos fundadores do Home Assistant e do Hass.io.",
+                        "learn_more_link": "Saiba mais sobre o Home Assistant Cloud",
+                        "dismiss": "Dispensar",
+                        "sign_in": "Entrar",
+                        "email_error_msg": "E-mail inválido",
+                        "password": "Senha"
+                    },
+                    "forgot_password": {
+                        "check_your_email": "Verifique seu e-mail para obter instruções sobre como redefinir sua senha."
                     },
                     "register": {
+                        "title": "Registar Conta",
                         "feature_remote_control": "Controle o Home Assistant de fora de casa",
                         "feature_google_home": "Integração com o Google Assistant",
                         "feature_amazon_alexa": "Integração com a Amazon Alexa",
@@ -843,6 +859,7 @@
                         "fetching_subscription": "Buscando assinatura…",
                         "remote": {
                             "title": "Controle Remoto",
+                            "instance_is_available": "Sua instância está disponível em",
                             "certificate_info": "Informações do certificado"
                         },
                         "alexa": {
@@ -898,6 +915,7 @@
                         "certificate_information": "Informações do certificado",
                         "certificate_expiration_date": "Data de validade do certificado",
                         "will_be_auto_renewed": "Será renovado automaticamente",
+                        "fingerprint": "Impressão digital do certificado:",
                         "close": "Fechar"
                     },
                     "google": {
@@ -915,7 +933,9 @@
                         "managed_by_integration": "Este webhook é gerenciado por uma integração e não pode ser desativado.",
                         "info_disable_webhook": "Se você não quiser mais usar este webhook, você pode",
                         "link_disable_webhook": "desativar",
-                        "view_documentation": "Ver documentação"
+                        "view_documentation": "Ver documentação",
+                        "close": "Fechar",
+                        "copied_to_clipboard": "Copiado para a área de transferência"
                     }
                 },
                 "integrations": {
@@ -986,7 +1006,11 @@
                     "node_management": {
                         "header": "Gerenciamento de Dispositivos",
                         "introduction": "Execute comandos ZHA que afetam um único dispositivo. Escolha um dispositivo para ver uma lista dos comandos disponíveis.",
-                        "hint_battery_devices": "Nota: Os dispositivos sonolentos (alimentados por bateria) precisam estar ativos ao executar comandos contra eles. Geralmente, você pode ativar um dispositivo sonolento acionando-o."
+                        "hint_battery_devices": "Nota: Os dispositivos sonolentos (alimentados por bateria) precisam estar ativos ao executar comandos contra eles. Geralmente, você pode ativar um dispositivo sonolento acionando-o.",
+                        "help_node_dropdown": "Selecione um dispositivo para visualizar as opções por dispositivo."
+                    },
+                    "clusters": {
+                        "help_cluster_dropdown": "Selecione um cluster para visualizar atributos e comandos."
                     },
                     "cluster_attributes": {
                         "header": "Atributos do cluster",
@@ -1034,7 +1058,13 @@
                         "unavailable": "(indisponível)",
                         "introduction": "O Home Assistant mantém um registro de todas as entidades que já viu e que podem ser identificadas exclusivamente. Cada uma dessas entidades terá um ID de entidade atribuído, que será reservado apenas para essa entidade.",
                         "introduction2": "Use o registro da entidade para substituir o nome, alterar o ID da entidade ou remover a entrada do Home Assistant. Observe que a remoção do registro de entidade não removerá a entidade totalmente. Para fazer isso, siga o link abaixo e remova-o da página de integrações.",
-                        "integrations_page": "Página de integrações"
+                        "integrations_page": "Página de integrações",
+                        "show_disabled": "Mostrar entidades desativadas",
+                        "headers": {
+                            "name": "Nome",
+                            "integration": "Integração",
+                            "enabled": "Habilitado"
+                        }
                     },
                     "editor": {
                         "unavailable": "Esta entidade não está disponível no momento.",
@@ -1043,7 +1073,8 @@
                         "update": "ATUALIZAR",
                         "enabled_label": "Ativar entidade",
                         "enabled_cause": "Desativado por {cause}.",
-                        "enabled_description": "As entidades desativadas não serão adicionadas ao Home Assistant."
+                        "enabled_description": "As entidades desativadas não serão adicionadas ao Home Assistant.",
+                        "confirm_delete": "Tem certeza de que deseja excluir esta entrada?"
                     }
                 },
                 "person": {
@@ -1054,11 +1085,19 @@
                         "device_tracker_intro": "Selecione os dispositivos que pertencem a essa pessoa.",
                         "device_tracker_picked": "Rastrear dispositivo",
                         "device_tracker_pick": "Escolha o dispositivo para rastrear",
+                        "new_person": "Nova pessoa",
+                        "name_error_msg": "Nome é obrigatório",
+                        "linked_user": "Usuário vinculado",
+                        "no_device_tracker_available_intro": "Quando você possui dispositivos que indicam a presença de uma pessoa, poderá atribuí-los a uma pessoa aqui. Você pode adicionar seu primeiro dispositivo adicionando uma integração de detecção de presença na página de integrações.",
+                        "link_presence_detection_integrations": "Integrações de detecção de presença",
                         "link_integrations_page": "Página de integrações",
                         "delete": "Excluir",
                         "create": "Criar",
                         "update": "Atualizar"
-                    }
+                    },
+                    "create_person": "Criar Pessoa",
+                    "add_person": "Adicionar pessoa",
+                    "confirm_delete": "Tem certeza de que deseja excluir esta pessoa?"
                 },
                 "server_control": {
                     "caption": "Controle do servidor",
@@ -1092,7 +1131,15 @@
                 },
                 "devices": {
                     "caption": "Dispositivos",
-                    "description": "Gerenciar dispositivos conectados"
+                    "description": "Gerenciar dispositivos conectados",
+                    "automation": {
+                        "triggers": {
+                            "caption": "Faça alguma coisa quando ..."
+                        },
+                        "conditions": {
+                            "caption": "Só faça alguma coisa se ..."
+                        }
+                    }
                 },
                 "common": {
                     "editor": {
@@ -1327,7 +1374,8 @@
                         "navigate_to": "Navegue até {location}",
                         "toggle": "Alternar {name}",
                         "call_service": "Iniciar Serviço {name}",
-                        "more_info": "Mostrar mais informações: {name}"
+                        "more_info": "Mostrar mais informações: {name}",
+                        "url": "Abrir janela para {url_path}"
                     },
                     "confirm_delete": "Tem certeza de que deseja excluir este cartão?"
                 },
@@ -1343,7 +1391,8 @@
                         "move": "Mover",
                         "show_visual_editor": "Mostrar Editor Visual",
                         "show_code_editor": "Mostrar Editor de Código",
-                        "pick_card_view_title": "Qual cartão você gostaria de adicionar à sua visualização {name} ?"
+                        "pick_card_view_title": "Qual cartão você gostaria de adicionar à sua visualização {name} ?",
+                        "options": "Mais opções"
                     },
                     "migrate": {
                         "header": "Configuração Incompatível",
@@ -1367,7 +1416,8 @@
                         "save": "Assuma o controle"
                     },
                     "menu": {
-                        "raw_editor": "Editor de configuração RAW"
+                        "raw_editor": "Editor de configuração RAW",
+                        "open": "Abra o menu Lovelace"
                     },
                     "raw_editor": {
                         "header": "Editar Configuração",
@@ -1380,6 +1430,9 @@
                         "explanation": "Este título é mostrado acima de todas as suas visualizações no Lovelace."
                     },
                     "card": {
+                        "alarm_panel": {
+                            "available_states": "Estados Disponíveis"
+                        },
                         "config": {
                             "required": "Obrigatório",
                             "optional": "Opcional"
@@ -1402,6 +1455,7 @@
                             "hold_action": "Manter Ação",
                             "hours_to_show": "Horas a Mostrar",
                             "icon": "Ícone",
+                            "image": "Caminho da imagem",
                             "maximum": "Máximo",
                             "minimum": "Mínimo",
                             "name": "Nome",
@@ -1662,6 +1716,8 @@
                 "away_mode": "Modo ausente",
                 "aux_heat": "Aquecedor aux",
                 "preset_mode": "Predefinir",
+                "target_temperature_entity": "Temperatura desejada",
+                "target_temperature_mode": "Temperatura desejada",
                 "current_temperature": "Temperatura atual {name}",
                 "heating": "Aquecendo {name}",
                 "cooling": "Resfriando {name}",
@@ -1708,7 +1764,9 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Entidade"
+                    "entity": "Entidade",
+                    "clear": "Limpar",
+                    "show_entities": "Mostrar entidades"
                 }
             },
             "service-picker": {
@@ -1729,6 +1787,10 @@
             "history_charts": {
                 "loading_history": "Carregando histórico do estado ...",
                 "no_history_found": "Histórico de estado não encontrado."
+            },
+            "device-picker": {
+                "clear": "Limpar",
+                "show_devices": "Mostrar dispositivos"
             }
         },
         "notification_toast": {
@@ -1782,7 +1844,14 @@
                     "device_name_placeholder": "Nome",
                     "area_picker_label": "Área",
                     "update_name_button": "Atualizar Nome"
-                }
+                },
+                "buttons": {
+                    "add": "Adicionar Dispositivos",
+                    "reconfigure": "Reconfigurar O Dispositivo"
+                },
+                "last_seen": "Visto pela última vez",
+                "power_source": "Fonte de energia",
+                "unknown": "Desconhecido"
             },
             "confirmation": {
                 "cancel": "Cancelar",

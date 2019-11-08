@@ -1428,7 +1428,8 @@
                         "move": "Mover",
                         "show_visual_editor": "Mostrar editor visual",
                         "show_code_editor": "Mostrar editor de código",
-                        "pick_card_view_title": "¿Qué tarjeta te gustaría agregar a tu vista {name} ?"
+                        "pick_card_view_title": "¿Qué tarjeta te gustaría agregar a tu vista {name} ?",
+                        "options": "Más opciones"
                     },
                     "migrate": {
                         "header": "Configuración incompatible",
@@ -1452,7 +1453,8 @@
                         "save": "Tomar el control"
                     },
                     "menu": {
-                        "raw_editor": "Editor de configuración en bruto"
+                        "raw_editor": "Editor de configuración en bruto",
+                        "open": "Abrir el menú de Lovelace"
                     },
                     "raw_editor": {
                         "header": "Editar configuración",
@@ -1474,7 +1476,8 @@
                         },
                         "entities": {
                             "show_header_toggle": "¿Mostrar interruptor en encabezado?",
-                            "name": "Entidades"
+                            "name": "Entidades",
+                            "toggle": "Alternar entidades."
                         },
                         "gauge": {
                             "severity": {
@@ -1659,7 +1662,8 @@
         },
         "sidebar": {
             "log_out": "Cerrar sesión",
-            "external_app_configuration": "Configuración de la aplicación"
+            "external_app_configuration": "Configuración de la aplicación",
+            "sidebar_toggle": "Alternar barra lateral"
         },
         "common": {
             "loading": "Cargando",
@@ -1815,7 +1819,9 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Entidad"
+                    "entity": "Entidad",
+                    "clear": "Limpiar",
+                    "show_entities": "Mostrar entidades"
                 }
             },
             "service-picker": {
@@ -1836,6 +1842,10 @@
             "history_charts": {
                 "loading_history": "Cargando historial de estado...",
                 "no_history_found": "No se encontró historial de estado."
+            },
+            "device-picker": {
+                "clear": "Limpiar",
+                "show_devices": "Mostrar dispositivos"
             }
         },
         "notification_toast": {

@@ -92,7 +92,7 @@ export class HuiGaugeCardEditor extends LitElement
           .hass="${this.hass}"
           .value="${this._entity}"
           .configValue=${"entity"}
-          domain-filter="sensor"
+          include-domains='["sensor"]'
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>

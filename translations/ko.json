@@ -312,25 +312,105 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "title": "서비스"
+                        "title": "서비스",
+                        "description": "서비스 개발 도구를 사용하면 Home Assistant 에서 사용 가능한 서비스를 호출할 수 있습니다.",
+                        "data": "서비스 데이터 (YAML, 선택 사항)",
+                        "call_service": "서비스 호출",
+                        "select_service": "상세정보를 보려면 서비스를 선택해주세요",
+                        "no_description": "상세정보가 없습니다",
+                        "no_parameters": "이 서비스에는 파라메터가 필요 없습니다.",
+                        "column_parameter": "파라메터",
+                        "column_description": "상세정보",
+                        "column_example": "예제",
+                        "fill_example_data": "예제 데이터를 필드에 넣기",
+                        "alert_parsing_yaml": "YAML 구문 분석 오류: {data}"
                     },
                     "states": {
-                        "title": "상태"
+                        "title": "상태",
+                        "description1": "Home Assistant 구성요소의 상태를 설정합니다.",
+                        "description2": "Home Assistant 내에서만 설정되며, 실제 장치와 통신하는것은 아닙니다.",
+                        "entity": "구성요소",
+                        "state": "상태",
+                        "attributes": "속성",
+                        "state_attributes": "상태 속성 (YAML, 선택 사항)",
+                        "set_state": "상태 설정",
+                        "current_entities": "구성요소 현재 상태",
+                        "filter_entities": "구성요소 필터",
+                        "filter_states": "상태 필터",
+                        "filter_attributes": "속성 필터",
+                        "no_entities": "구성요소가 없습니다",
+                        "more_info": "정보 더보기",
+                        "alert_entity_field": "구성요소는 필수 필드입니다"
                     },
                     "events": {
-                        "title": "이벤트"
+                        "title": "이벤트",
+                        "description": "이벤트 버스에서 이벤트를 발행합니다.",
+                        "documentation": "이벤트 문서 보기.",
+                        "type": "이벤트 유형",
+                        "data": "이벤트 데이터 (YAML, 선택 사항)",
+                        "fire_event": "이벤트 발행",
+                        "event_fired": "{name} 이벤트가 발행됨",
+                        "available_events": "사용 가능한 이벤트",
+                        "count_listeners": " ({count} 청취객체)",
+                        "listen_to_events": "이벤트 내용 들어보기",
+                        "listening_to": "이벤트 청취 중",
+                        "subscribe_to": "청취할 이벤트",
+                        "start_listening": "청취 시작",
+                        "stop_listening": "그만 듣기",
+                        "alert_event_type": "이벤트 유형은 필수 필드입니다",
+                        "notification_event_fired": "{type} 이벤트가 성공적으로 발행되었습니다!"
                     },
                     "templates": {
-                        "title": "템플릿"
+                        "title": "템플릿",
+                        "description": "템플릿은 Home Assistant 의 특정 확장기능의 일부로써, Jinja2 템플릿 엔진을 사용하여 구성됩니다.",
+                        "editor": "템플릿 편집기",
+                        "jinja_documentation": "Jinja2 템플릿 문서 보기",
+                        "template_extensions": "Home Assistant 템플릿 확장기능 문서 보기",
+                        "unknown_error_template": "템플릿 구성 중 알 수 없는 오류가 발생했습니다"
                     },
                     "mqtt": {
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "description_publish": "패킷 발행",
+                        "topic": "토픽",
+                        "payload": "페이로드 (템플릿 허용)",
+                        "publish": "발행",
+                        "description_listen": "토픽 내용 들어보기",
+                        "listening_to": "토픽 청취 중",
+                        "subscribe_to": "청취할 토픽",
+                        "start_listening": "청취 시작",
+                        "stop_listening": "그만 듣기",
+                        "message_received": "{time} 에 {id} 메시지가 {topic} 에 수신되었습니다."
                     },
                     "info": {
-                        "title": "정보"
+                        "title": "정보",
+                        "remove": "설정 해제",
+                        "set": "설정",
+                        "default_ui": "{name} 을(를) 이 기기에서 기본 UI 로 {action}",
+                        "lovelace_ui": "Lovelace UI 보러가기",
+                        "states_ui": "일반 UI 보러가기",
+                        "home_assistant_logo": "Home Assistant 로고",
+                        "path_configuration": "configuration.yaml 의 위치: {path}",
+                        "developed_by": "Home Assistant 는 수많은 멋진 사람들에 의해 개발되었습니다.",
+                        "license": "Apache 2.0 License 에 따라 게시",
+                        "source": "소스:",
+                        "server": "서버",
+                        "frontend": "프런트엔드-UI",
+                        "built_using": "다음을 사용하여 제작",
+                        "icons_by": "아이콘 출처",
+                        "frontend_version": "프런트엔드 버전: {version} - {type}",
+                        "custom_uis": "사용자 UI :",
+                        "system_health_error": "시스템 상태보기 구성요소가 로드되지 않았습니다. configuration.yaml 에 'system_health:' 를 추가해주세요."
                     },
                     "logs": {
-                        "title": "로그"
+                        "title": "로그",
+                        "details": "로그 상세정보 ({level})",
+                        "load_full_log": "Home Assistant 로그 전부 불러오기",
+                        "loading_log": "오류 로그를 읽는 중...",
+                        "no_errors": "보고된 오류가 없습니다.",
+                        "no_issues": "새롭게 보고된 문제가 없습니다!",
+                        "clear": "지우기",
+                        "refresh": "새로고침",
+                        "multiple_messages": "{time} 에 처음 발생했으며, {counter} 번 발생했습니다."
                     }
                 }
             },
@@ -606,7 +686,10 @@
                                     "service_data": "서비스 데이터"
                                 },
                                 "device_id": {
-                                    "label": "기기"
+                                    "label": "기기",
+                                    "extra_fields": {
+                                        "code": "코드"
+                                    }
                                 },
                                 "scene": {
                                     "label": "씬 활성화"
@@ -618,7 +701,7 @@
                         "load_error_unknown": "자동화를 읽어오는 도중 오류가 발생했습니다 ({err_no}).",
                         "description": {
                             "label": "설명",
-                            "placeholder": "부가설명"
+                            "placeholder": "부가 설명"
                         }
                     }
                 },
@@ -689,7 +772,7 @@
                     "learn_more": "Z-Wave 에 대해 더 알아보기",
                     "ozw_log": {
                         "header": "OZW 로그",
-                        "introduction": "로그를 봐주세요. 0은 최소값(전체 로그 로드)이고 1000은 최대값입니다. 로드는 정적 로그를 보여주며 로그의 마지막은 최근 지정된 로그의 행으로 자동으로 업데이트됩니다."
+                        "introduction": "로그를 봐주세요. 최소값은 0(전체 로그를 불러올 때)이고 최대값은 1000 입니다. 로드된 로그는 정적 로그를 보여주며 로그의 끝 부분은 최근 기록된 로그의 행으로 자동으로 업데이트됩니다."
                     }
                 },
                 "users": {
@@ -733,7 +816,7 @@
                     "description_features": "Alexa 및 Google 어시스턴트를 통해 집 밖에서도 집을 관리하세요.",
                     "login": {
                         "title": "클라우드 로그인",
-                        "introduction": "Home Assistant Cloud 는 집 밖에서도 구성요소에 대해 안전한 원격 연결을 제공합니다. 또한 Amazon Alexa 및 Google 어시스턴트와 같은 클라우드 전용 서비스에 연결할 수 있습니다.",
+                        "introduction": "Home Assistant Cloud 는 집 밖에서도 구성요소에 대한 안전한 원격 연결을 제공해드립니다. 또한 Amazon Alexa 및 Google 어시스턴트와 같은 클라우드 전용 서비스에 연결할 수 있습니다.",
                         "introduction2": "이 서비스는 Home Assistant 와 Hass.io 의 설립자가 설립한 회사인 ",
                         "introduction2a": " 에 의해 운영되고 있습니다.",
                         "introduction3": "Home Assistant Cloud 는 1개월 무료 평가판이 포함된 구독 서비스입니다. 결제 정보는 필요하지 않습니다.",
@@ -770,7 +853,7 @@
                         "feature_webhook_apps": "OwnTracks 와 같은 Webhook 기반 앱과 쉬운 연동",
                         "information3": "이 서비스는 Home Assistant 와 Hass.io 의 설립자가 설립한 회사인 ",
                         "information3a": " 에 의해 운영되고 있습니다.",
-                        "information4": "계정을 등록하시면 다음과 같이 이용 약관에 동의하게 됩니다.",
+                        "information4": "계정 등록은 다음 이용 약관의 동의를 포함합니다.",
                         "link_terms_conditions": "이용 약관",
                         "link_privacy_policy": "개인 정보 정책",
                         "create_account": "계정 만들기",
@@ -783,14 +866,14 @@
                         "account_created": "계정이 생성되었습니다! 계정을 활성화 하는 방법은 보내드린 이메일을 확인해주세요."
                     },
                     "account": {
-                        "thank_you_note": "Home Assistant Cloud 를 이용해주셔서 감사합니다. 여러분 덕분에 저희는 모든 사람에게 더 나은 홈 자동화를 제공해드릴 수 있습니다. 감사합니다!",
+                        "thank_you_note": "Home Assistant Cloud 를 이용해주셔서 감사합니다. 여러분 덕분에 저희는 모든 분들에게 더 나은 홈 자동화를 제공해드릴 수 있습니다. 감사합니다!",
                         "nabu_casa_account": "Nabu Casa 계정",
                         "connection_status": "클라우드 연결 상태",
                         "manage_account": "계정 관리",
                         "sign_out": "로그 아웃",
                         "integrations": "서비스 연동",
                         "integrations_introduction": "Home Assistant Cloud 연동을 통해 Home Assistant 구성요소를 인터넷상에 공개 노출시키지 않고도 클라우드의 서비스에 연결시킬 수 있습니다.",
-                        "integrations_introduction2": "웹사이트를 통해 다음을 확인해보세요. ",
+                        "integrations_introduction2": "웹사이트를 방문하여 다음을 확인해보세요. ",
                         "integrations_link_all_features": "사용 가능한 모든 기능",
                         "connected": "연결됨",
                         "not_connected": "연결되지 않음",
@@ -798,9 +881,9 @@
                         "remote": {
                             "title": "원격 제어",
                             "access_is_being_prepared": "원격 액세스가 준비 중입니다. 준비가 되면 알려드리겠습니다.",
-                            "info": "Home Assistant Cloud 는 집을 비운 상태에서도 구성요소에 대한 안전한 원격 연결을 제공합니다.",
-                            "instance_is_available": "구성요소는 다음의 서비스에서 사용이 가능합니다.",
-                            "instance_will_be_available": "구성요소는 다음의 서비스에서 제공 예정입니다.",
+                            "info": "Home Assistant Cloud 는 집 밖에서도 구성요소에 대한 안전한 원격 연결을 제공해드립니다.",
+                            "instance_is_available": "구성요소는 다음의 주소에서 사용할 수 있습니다.",
+                            "instance_will_be_available": "토글을 활성화하여 다음의 주소에서 구성요소를 사용해보세요.",
                             "link_learn_how_it_works": "작동 방식에 대해 알아보기",
                             "certificate_info": "인증서 정보"
                         },
@@ -828,7 +911,7 @@
                             "security_devices": "보안 기기",
                             "enter_pin_info": "보안 기기를 제어하기 위한 PIN 을 설정해주세요. 보안 기기란 현관문, 차고문, 도어락과 같은 기기입니다. Google 어시스턴트를 통해 이러한 기기를 제어할 때 PIN 을 입력하거나 말씀해주셔야 합니다.",
                             "devices_pin": "보안 기기 PIN",
-                            "enter_pin_hint": "보안 기기를 사용하시려면 PIN 을 입력해주세요",
+                            "enter_pin_hint": "보안 기기 사용 PIN 입력",
                             "sync_entities": "구성요소를 Google 에 동기화",
                             "manage_entities": "구성요소 관리",
                             "enter_pin_error": "PIN 을 저장할 수 없습니다:"
@@ -872,7 +955,7 @@
                     "dialog_cloudhook": {
                         "webhook_for": "{name} Webhook",
                         "available_at": "Webhook 는 다음의 URL 을 사용해 주세요:",
-                        "managed_by_integration": "이 Webhook 는 통합 구성요소에 의해 관리되며 비활성화할 수 없습니다.",
+                        "managed_by_integration": "이 Webhook 는 통합 구성요소에 의해 관리되고 있어 비활성화할 수 없습니다.",
                         "info_disable_webhook": "이 Webhook 를 더 이상 사용하지 않으려면, 다음을 해보세요: ",
                         "link_disable_webhook": "비활성화",
                         "view_documentation": "관련문서 보기",
@@ -900,7 +983,11 @@
                         "device_unavailable": "기기 사용불가",
                         "entity_unavailable": "구성요소 사용불가",
                         "no_area": "영역 없음",
-                        "hub": "연결 경유 대상"
+                        "hub": "연결 경유 대상",
+                        "settings_button": "{integration} 설정 편집",
+                        "system_options_button": "{integration} 시스템 옵션",
+                        "delete_button": "{integration} 삭제",
+                        "area": "{area}에 위치"
                     },
                     "config_flow": {
                         "external_step": {
@@ -946,7 +1033,7 @@
                         "header": "기기 관리",
                         "introduction": "단일 기기에 영향을 주는 ZHA 명령을 실행합니다. 사용 가능한 명령 목록을 보려면 기기를 선택해주세요.",
                         "hint_battery_devices": "참고: 절전(배터리 구동) 기기는 명령을 실행할 때 절전 모드가 해제되어 있어야 합니다. 일반적으로 절전 기기는 트리거해서 절전 모드를 해제할 수 있습니다.",
-                        "hint_wakeup": "Xiaomi 센서와 같은 일부 기기는 상호 작용하는 동안 기기의 절전 모드를 해제할 수 있는 최대 5초 간격으로 누를 수 있는 절전 해제 버튼이 있습니다.",
+                        "hint_wakeup": "Xiaomi 센서와 같은 일부 기기는 상호 작용하는 동안 기기의 절전 모드 해제가 가능한 약 5초 동안 누를 수 있는 절전 해제 버튼이 있습니다.",
                         "help_node_dropdown": "기기별 옵션을 보려면 기기를 선택해주세요."
                     },
                     "clusters": {
@@ -975,7 +1062,7 @@
                     "description": "영역을 만들고 편집합니다",
                     "picker": {
                         "header": "영역 등록",
-                        "introduction": "영역은 기기가 있는 위치를 설정하는데 사용합니다. 이 정보는 인터페이스와 권한 그리고 다른 시스템과의 통합을 구성하는 데 도움이 되도록 Home Assistant 에 사용됩니다.",
+                        "introduction": "영역은 기기가 있는 위치를 설정하는데 사용합니다. 이 정보는 인터페이스와 권한 그리고 다른 시스템과의 연동을 구성하는 데 도움이 되도록 Home Assistant 에 사용됩니다.",
                         "introduction2": "특정 영역에 기기를 배치하려면 아래 링크를 따라 통합 구성요소 페이지로 이동 한 다음, 설정된 구성요소의 기기를 클릭하여 영역을 설정해주세요.",
                         "integrations_page": "통합 구성요소 페이지",
                         "no_areas": "등록된 영역이 없습니다. 거실, 침실과 같이 영역을 등록해보세요!",
@@ -1062,7 +1149,7 @@
                             "core": "코어 새로고침",
                             "group": "그룹 새로고침",
                             "automation": "자동화 새로고침",
-                            "script": "스크립트 새로 고침",
+                            "script": "스크립트 새로고침",
                             "scene": "씬 다시읽기"
                         },
                         "server_management": {
@@ -1326,20 +1413,23 @@
                         "call_service": "{name} 서비스 호출",
                         "more_info": "추가 정보 표시: {name}",
                         "url": "{url_path} 창 열기"
-                    }
+                    },
+                    "confirm_delete": "이 카드를 삭제 하시겠습니까?"
                 },
                 "editor": {
                     "edit_card": {
                         "header": "카드 구성",
                         "save": "저장하기",
                         "toggle_editor": "에디터 전환",
-                        "pick_card": "추가하려는 카드를 선택해주세요",
+                        "pick_card": "어떤 카드를 추가 하시겠습니까?",
                         "add": "카드 추가하기",
                         "edit": "편집",
                         "delete": "삭제",
                         "move": "이동",
                         "show_visual_editor": "비주얼 편집기 보기",
-                        "show_code_editor": "코드 편집기 보기"
+                        "show_code_editor": "코드 편집기 보기",
+                        "pick_card_view_title": "{name} 뷰에 어떤 카드를 추가 하시겠습니까?",
+                        "options": "옵션 더보기"
                     },
                     "migrate": {
                         "header": "구성 내용이 호환되지 않습니다",
@@ -1352,7 +1442,8 @@
                         "header": "구성 보기",
                         "add": "뷰 추가",
                         "edit": "뷰 편집",
-                        "delete": "뷰 삭제"
+                        "delete": "뷰 삭제",
+                        "header_name": "{name} 뷰 구성"
                     },
                     "save_config": {
                         "header": "Lovelace UI 직접 관리하기",
@@ -1362,7 +1453,8 @@
                         "save": "직접 관리할게요"
                     },
                     "menu": {
-                        "raw_editor": "구성 코드 편집기"
+                        "raw_editor": "구성 코드 편집기",
+                        "open": "Lovelace 메뉴 열기"
                     },
                     "raw_editor": {
                         "header": "구성 코드 편집",
@@ -1380,11 +1472,12 @@
                         },
                         "config": {
                             "required": "필수 요소",
-                            "optional": "선택사항"
+                            "optional": "선택 사항"
                         },
                         "entities": {
                             "show_header_toggle": "헤더 토글 표시",
-                            "name": "구성요소"
+                            "name": "구성요소",
+                            "toggle": "구성요소 토글"
                         },
                         "gauge": {
                             "severity": {
@@ -1421,7 +1514,7 @@
                             "title": "제목",
                             "theme": "테마",
                             "unit": "단위",
-                            "url": "Url"
+                            "url": "URL"
                         },
                         "map": {
                             "geo_location_sources": "위치정보 소스",
@@ -1494,6 +1587,12 @@
                         "weather-forecast": {
                             "name": "날씨 예보"
                         }
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "title": "패널 모드",
+                            "description": "패널 모드는 첫 번째 카드를 전체 너비로 보여줍니다. 이 뷰에서는 다른 카드는 보여지지 않습니다."
+                        }
                     }
                 },
                 "menu": {
@@ -1510,7 +1609,11 @@
                     "message": "Lovelace 구성이 업데이트되었습니다. 새로고침 하시겠습니까?",
                     "refresh": "새로고침"
                 },
-                "reload_lovelace": "Lovelace 새로고침"
+                "reload_lovelace": "Lovelace 새로고침",
+                "views": {
+                    "confirm_delete": "이 뷰를 삭제 하시겠습니까?",
+                    "existing_cards": "카드가 포함된 뷰는 삭제할 수 없습니다. 먼저 카드를 제거해주세요."
+                }
             },
             "page-demo": {
                 "cards": {
@@ -1532,7 +1635,8 @@
                             "master_bedroom": "안방",
                             "left": "왼쪽",
                             "right": "오른쪽",
-                            "mirror": "거울"
+                            "mirror": "거울",
+                            "temperature_study": "온도 학습"
                         },
                         "labels": {
                             "lights": "조명",
@@ -1558,7 +1662,8 @@
         },
         "sidebar": {
             "log_out": "로그아웃",
-            "external_app_configuration": "앱 구성"
+            "external_app_configuration": "앱 구성",
+            "sidebar_toggle": "사이드바 토글"
         },
         "common": {
             "loading": "읽는 중",
@@ -1665,7 +1770,14 @@
                 "swing_mode": "회전 모드",
                 "away_mode": "외출 모드",
                 "aux_heat": "보조 히터",
-                "preset_mode": "프리셋"
+                "preset_mode": "프리셋",
+                "target_temperature_entity": "{name} 희망 온도",
+                "target_temperature_mode": "{name} 희망 온도 {mode}",
+                "current_temperature": "{name} 현재 온도",
+                "heating": "{name} 난방중",
+                "cooling": "{name} 냉방중",
+                "high": "높음",
+                "low": "낮음"
             },
             "lock": {
                 "code": "비밀번호",
@@ -1695,12 +1807,21 @@
                     "cancel": "취소",
                     "finish": "완료"
                 }
+            },
+            "counter": {
+                "actions": {
+                    "increment": "증가",
+                    "decrement": "감소",
+                    "reset": "초기화"
+                }
             }
         },
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "구성요소"
+                    "entity": "구성요소",
+                    "clear": "지우기",
+                    "show_entities": "구성요소 표시"
                 }
             },
             "service-picker": {
@@ -1721,6 +1842,10 @@
             "history_charts": {
                 "loading_history": "상태 기록 내용 읽는 중...",
                 "no_history_found": "상태 기록 내용이 없습니다."
+            },
+            "device-picker": {
+                "clear": "지우기",
+                "show_devices": "기기 표시"
             }
         },
         "notification_toast": {
@@ -1759,9 +1884,9 @@
                 }
             },
             "config_entry_system_options": {
-                "title": "시스템 옵션",
+                "title": "{integration} 시스템 옵션",
                 "enable_new_entities_label": "새로 추가된 구성요소를 활성화합니다.",
-                "enable_new_entities_description": "비활성화한 경우 새로 검색된 구성요소는 Home Assistant 에 자동으로 추가되지 않습니다."
+                "enable_new_entities_description": "비활성화한 경우 새로 검색된 {integration} 구성요소는 Home Assistant 에 자동으로 추가되지 않습니다."
             },
             "zha_device_info": {
                 "manuf": "{manufacturer} 제조",
@@ -1781,10 +1906,15 @@
                     "remove": "기기 제거",
                     "reconfigure": "기기 재설정"
                 },
-                "quirk": "습관",
+                "quirk": "규격외 사양 표준화(Quirk)",
                 "last_seen": "마지막 확인",
                 "power_source": "전원",
                 "unknown": "알 수 없슴"
+            },
+            "confirmation": {
+                "cancel": "취소",
+                "ok": "확인",
+                "title": "다시 한번 확인해주세요"
             }
         },
         "auth_store": {

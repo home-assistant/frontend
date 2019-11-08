@@ -1,5 +1,6 @@
 import { HomeAssistant } from "../types";
 import { Connection, getCollection } from "home-assistant-js-websocket";
+import { HASSDomEvent } from "../common/dom/fire_event";
 
 export interface LovelaceConfig {
   title?: string;
@@ -127,6 +128,13 @@ export interface WindowWithLovelaceProm extends Window {
   llConfProm?: Promise<LovelaceConfig>;
 }
 
-export interface LongPressOptions {
+export interface ActionHandlerOptions {
+  hasHold?: boolean;
   hasDoubleClick?: boolean;
 }
+
+export interface ActionHandlerDetail {
+  action: string;
+}
+
+export type ActionHandlerEvent = HASSDomEvent<ActionHandlerDetail>;

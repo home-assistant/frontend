@@ -17,7 +17,7 @@ import hassCallApi from "../util/hass-call-api";
 import { subscribePanels } from "../data/ws-panels";
 import { forwardHaptic } from "../data/haptics";
 import { fireEvent } from "../common/dom/fire_event";
-import { Constructor } from "../types";
+import { Constructor, ServiceCallResponse } from "../types";
 import { HassBaseEl } from "./hass-base-mixin";
 import { broadcastConnectionStatus } from "../data/connection-status";
 
@@ -54,7 +54,12 @@ export const connectionMixin = <T extends Constructor<HassBaseEl>>(
             console.log("Calling service", domain, service, serviceData);
           }
           try {
-            await callService(conn, domain, service, serviceData);
+            return (await callService(
+              conn,
+              domain,
+              service,
+              serviceData
+            )) as Promise<ServiceCallResponse>;
           } catch (err) {
             if (__DEV__) {
               // tslint:disable-next-line: no-console

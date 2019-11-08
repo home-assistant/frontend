@@ -40,7 +40,7 @@ export default class ScriptEditor extends Component<{
         <ha-config-section is-wide={isWide}>
           <span slot="header">{alias}</span>
           <span slot="introduction">
-            Use scripts to execute a sequence of actions.
+            {localize("ui.panel.config.script.editor.introduction")}
           </span>
           <ha-card>
             <div class="card-content">
@@ -55,12 +55,16 @@ export default class ScriptEditor extends Component<{
         </ha-config-section>
 
         <ha-config-section is-wide={isWide}>
-          <span slot="header">Sequence</span>
+          <span slot="header">
+            {localize("ui.panel.config.script.editor.sequence")}
+          </span>
           <span slot="introduction">
-            The sequence of actions of this script.
+            {localize("ui.panel.config.script.editor.sequence_sentence")}
             <p>
               <a href="https://home-assistant.io/docs/scripts/" target="_blank">
-                Learn more about available actions.
+                {localize(
+                  "ui.panel.config.script.editor.link_available_actions"
+                )}
               </a>
             </p>
           </span>
