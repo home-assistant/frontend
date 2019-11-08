@@ -52,7 +52,7 @@ export default class ZoneCondition extends Component<any> {
           onChange={this.zonePicked}
           hass={hass}
           allowCustomEntity
-          domainFilter="zone"
+          includeDomains={["zone"]}
         />
       </div>
     );

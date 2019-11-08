@@ -152,7 +152,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
           .configValue=${"camera_image"}
           @change="${this._valueChanged}"
           allow-custom-entity
-          domain-filter="camera"
+          include-domains='["camera"]'
         ></ha-entity-picker>
         <div class="side-by-side">
           <paper-dropdown-menu

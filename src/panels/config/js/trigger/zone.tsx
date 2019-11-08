@@ -42,7 +42,7 @@ export default class ZoneTrigger extends Component<any> {
           onChange={this.zonePicked}
           hass={hass}
           allowCustomEntity
-          domainFilter="zone"
+          includeDomains={["zone"]}
         />
         <label id="eventlabel">
           {localize(

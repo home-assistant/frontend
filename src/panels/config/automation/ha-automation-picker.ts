@@ -85,16 +85,16 @@ class HaAutomationPicker extends LitElement {
                         <paper-item-body two-line>
                           <div>${computeStateName(automation)}</div>
                           <div secondary>
-                            Last triggered: ${
-                              automation.attributes.last_triggered
-                                ? format_date_time(
-                                    new Date(
-                                      automation.attributes.last_triggered
-                                    ),
-                                    this.hass.language
-                                  )
-                                : "never"
-                            }
+                            ${this.hass.localize(
+                              "ui.card.automation.last_triggered"
+                            )}: ${
+                    automation.attributes.last_triggered
+                      ? format_date_time(
+                          new Date(automation.attributes.last_triggered),
+                          this.hass.language
+                        )
+                      : this.hass.localize("ui.components.relative_time.never")
+                  }
                           </div>
                         </paper-item-body>
                         <div class='actions'>
@@ -102,6 +102,9 @@ class HaAutomationPicker extends LitElement {
                             .automation=${automation}
                             @click=${this._showInfo}
                             icon="hass:information-outline"
+                            title="${this.hass.localize(
+                              "ui.panel.config.automation.picker.show_info_automation"
+                            )}"
                           ></paper-icon-button>
                           <a
                             href=${ifDefined(
@@ -113,6 +116,9 @@ class HaAutomationPicker extends LitElement {
                             )}
                           >
                             <paper-icon-button
+                              title="${this.hass.localize(
+                                "ui.panel.config.automation.picker.edit_automation"
+                              )}"
                               icon="hass:pencil"
                               .disabled=${!automation.attributes.id}
                             ></paper-icon-button>
@@ -120,8 +126,9 @@ class HaAutomationPicker extends LitElement {
                               !automation.attributes.id
                                 ? html`
                                     <paper-tooltip position="left">
-                                      Only automations defined in
-                                      automations.yaml are editable.
+                                      ${this.hass.localize(
+                                        "ui.panel.config.automation.picker.only_editable"
+                                      )}
                                     </paper-tooltip>
                                   `
                                 : ""

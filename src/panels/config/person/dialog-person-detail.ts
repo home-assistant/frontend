@@ -104,7 +104,7 @@ class DialogPersonDetail extends LitElement {
                   <ha-entities-picker
                     .hass=${this.hass}
                     .value=${this._deviceTrackers}
-                    domain-filter="device_tracker"
+                    include-domains='["device_tracker"]'
                     .pickedEntityLabel=${this.hass.localize(
                       "ui.panel.config.person.detail.device_tracker_picked"
                     )}
@@ -222,7 +222,7 @@ class DialogPersonDetail extends LitElement {
   }
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
-    if (!(ev.detail as any).value) {
+    if (ev.detail.value) {
       this._params = undefined;
     }
   }

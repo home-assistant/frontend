@@ -9,7 +9,7 @@ import "../../../resources/ha-style";
 
 import "../ha-config-section";
 
-import isComponentLoaded from "../../../common/config/is_component_loaded";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
