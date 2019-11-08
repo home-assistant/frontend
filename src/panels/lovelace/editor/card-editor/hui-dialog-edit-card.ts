@@ -163,7 +163,7 @@ export class HuiDialogEditCard extends LitElement {
           }
         }
 
-        @media all and (min-width: 660px) {
+        @media all and (min-width: 850px) {
           ha-paper-dialog {
             width: 845px;
           }

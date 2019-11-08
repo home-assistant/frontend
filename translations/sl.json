@@ -312,25 +312,105 @@
             "developer-tools": {
                 "tabs": {
                     "services": {
-                        "title": "Storitve"
+                        "title": "Storitve",
+                        "description": "Storitev dev orodje vam omogoča, da pokličete vse razpoložljive storitve v Home Assistant.",
+                        "data": "Podatki o storitvah (YAML, neobvezno)",
+                        "call_service": "Kliči Storitev",
+                        "select_service": "Izberite storitev, da si ogledate opis",
+                        "no_description": "Opis ni na voljo",
+                        "no_parameters": "Ta storitev nima nobenih parametrov.",
+                        "column_parameter": "Parameter",
+                        "column_description": "Opis",
+                        "column_example": "Primer",
+                        "fill_example_data": "Izpolnite primer podatkov",
+                        "alert_parsing_yaml": "Napaka pri razčlenjevanju YAML-a: {data}"
                     },
                     "states": {
-                        "title": "Stanja"
+                        "title": "Stanja",
+                        "description1": "Nastavite predstavitev naprave v programu Home Assistant.",
+                        "description2": "To ne bo komuniciralo z dejansko napravo.",
+                        "entity": "Subjekt",
+                        "state": "Stanje",
+                        "attributes": "Lastnosti",
+                        "state_attributes": "Lastnosti stanja (YAML, neobvezno)",
+                        "set_state": "Nastavi stanje",
+                        "current_entities": "Trenutne entitete",
+                        "filter_entities": "Filter entitet",
+                        "filter_states": "Filter stanj",
+                        "filter_attributes": "Filter atributov",
+                        "no_entities": "Brez entitet",
+                        "more_info": "Več informacij",
+                        "alert_entity_field": "Entiteta je obvezno polje"
                     },
                     "events": {
-                        "title": "Dogodki"
+                        "title": "Dogodki",
+                        "description": "Zaženite dogodek na \"event bus\".",
+                        "documentation": "Dokumentacija o dogodkih.",
+                        "type": "Vrsta dogodka",
+                        "data": "Podatki o dogodku (YAML, neobvezno)",
+                        "fire_event": "Zaženite dogodek",
+                        "event_fired": "Dogodek {name} zagnan",
+                        "available_events": "Razpoložljivi dogodki",
+                        "count_listeners": "({count} poslušalcev)",
+                        "listen_to_events": "Poslušajte dogodkom",
+                        "listening_to": "Poslušanje",
+                        "subscribe_to": "Dogodek, na katerega se lahko naročite",
+                        "start_listening": "Začnite poslušati",
+                        "stop_listening": "Nehajte poslušati",
+                        "alert_event_type": "Vrsta dogodka je obvezno polje",
+                        "notification_event_fired": "Dogodek {type} uspešno zagnan!"
                     },
                     "templates": {
-                        "title": "Predloge"
+                        "title": "Predloge",
+                        "description": "Predloge so upodobljene s pomočjo mehanizma za predloge Jinja2 z nekaterimi posebnimi razširitvami Home Assistant.",
+                        "editor": "Urejevalnik predlog",
+                        "jinja_documentation": "Dokumentacija predloge Jinja2",
+                        "template_extensions": "Home Assistant razširitvene predloge",
+                        "unknown_error_template": "Neznana napaka upodabljanju predloge"
                     },
                     "mqtt": {
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "description_publish": "Objavi paket",
+                        "topic": "tema",
+                        "payload": "Tovor (predloga je dovoljena)",
+                        "publish": "Objavi",
+                        "description_listen": "Poslušajte temi",
+                        "listening_to": "Poslušanje",
+                        "subscribe_to": "Tema, na katero se lahko naročite",
+                        "start_listening": "Začnite poslušati",
+                        "stop_listening": "Nehajte poslušati",
+                        "message_received": "Sporočilo {id} prejeto v {topic} ob {time}:"
                     },
                     "info": {
-                        "title": "Info"
+                        "title": "Info",
+                        "remove": "Odstrani",
+                        "set": "Nastavite",
+                        "default_ui": "{action} {name} kot privzeta stran v tej napravi",
+                        "lovelace_ui": "Pojdite na uporabniški vmesnik Lovelace",
+                        "states_ui": "Pojdite na uporabniški vmesnik \"states\"",
+                        "home_assistant_logo": "Home Assistant logotip",
+                        "path_configuration": "Pot do configuration.yaml: {path}",
+                        "developed_by": "Razvija ga kup osupljivih ljudi.",
+                        "license": "Objavljeno pod licenco Apache 2.0",
+                        "source": "Vir:",
+                        "server": "strežnik",
+                        "frontend": "frontend-ui",
+                        "built_using": "Zgrajen z uporabo",
+                        "icons_by": "Ikone ustvarili z",
+                        "frontend_version": "Frontend različica: {version} - {type}",
+                        "custom_uis": "Uporabniški vmesniki po meri:",
+                        "system_health_error": "Komponenta \"system health\" ni naložena. Dodajte \"system_health:\" v svoj configuration.yaml"
                     },
                     "logs": {
-                        "title": "Dnevniki"
+                        "title": "Dnevniki",
+                        "details": "Podrobnosti dnevnika ({level})",
+                        "load_full_log": "Naloži celoten dnevnik Home Assistant-a",
+                        "loading_log": "Nalaganje dnevnika napak ...",
+                        "no_errors": "Ni prijavljenih napak.",
+                        "no_issues": "Ni novih težav!",
+                        "clear": "Počisti",
+                        "refresh": "Osveži",
+                        "multiple_messages": "sporočilo se je prvič pojavilo ob {time} in se prikaže {counter} krat"
                     }
                 }
             },
@@ -606,7 +686,10 @@
                                     "service_data": "Podatki storitve"
                                 },
                                 "device_id": {
-                                    "label": "Naprava"
+                                    "label": "Naprava",
+                                    "extra_fields": {
+                                        "code": "Koda"
+                                    }
                                 },
                                 "scene": {
                                     "label": "Aktivirajte sceno"
@@ -900,7 +983,11 @@
                         "device_unavailable": "naprava ni na voljo",
                         "entity_unavailable": "entiteta ni na voljo",
                         "no_area": "Brez območja",
-                        "hub": "Povezan prek"
+                        "hub": "Povezan prek",
+                        "settings_button": "Uredite nastavitve za {integration}",
+                        "system_options_button": "Sistemske možnosti za {integration}",
+                        "delete_button": "Izbriši {integration}",
+                        "area": "V {area}"
                     },
                     "config_flow": {
                         "external_step": {
@@ -1326,20 +1413,23 @@
                         "call_service": "Kličite storitev {name}",
                         "more_info": "Pokaži več informacij: {name}",
                         "url": "Odprite okno za {url_path}"
-                    }
+                    },
+                    "confirm_delete": "Ali ste prepričani, da želite izbrisati to kartico?"
                 },
                 "editor": {
                     "edit_card": {
                         "header": "Konfiguracija kartice",
                         "save": "Shrani",
                         "toggle_editor": "Preklop na urejevalnik",
-                        "pick_card": "Izberite kartico, ki jo želite dodati.",
+                        "pick_card": "Katero kartico želite dodati?",
                         "add": "Dodaj kartico",
                         "edit": "Uredi",
                         "delete": "Izbriši",
                         "move": "Premakni",
                         "show_visual_editor": "Pokaži vizualni urejevalnik",
-                        "show_code_editor": "Pokaži urejevalnik kode"
+                        "show_code_editor": "Pokaži urejevalnik kode",
+                        "pick_card_view_title": "Katero kartico želite dodati v pogled {name}?",
+                        "options": "Več možnosti"
                     },
                     "migrate": {
                         "header": "Konfiguracija Nezdružljiva",
@@ -1352,7 +1442,8 @@
                         "header": "Prikaži konfiguracijo",
                         "add": "Dodaj pogled",
                         "edit": "Uredi pogled",
-                        "delete": "Izbriši pogled"
+                        "delete": "Izbriši pogled",
+                        "header_name": "{name} Prikaži konfiguracijo"
                     },
                     "save_config": {
                         "header": "Prevzemite nadzor nad lovelace vmesnikom",
@@ -1362,7 +1453,8 @@
                         "save": "Prevzemite nadzor"
                     },
                     "menu": {
-                        "raw_editor": "Urejevalnik konfiguracije"
+                        "raw_editor": "Urejevalnik konfiguracije",
+                        "open": "Odprite meni Lovelace"
                     },
                     "raw_editor": {
                         "header": "Uredi nastavitve",
@@ -1384,7 +1476,8 @@
                         },
                         "entities": {
                             "show_header_toggle": "Pokaži preklop glave?",
-                            "name": "Subjekti"
+                            "name": "Subjekti",
+                            "toggle": "Preklopi entitete."
                         },
                         "gauge": {
                             "severity": {
@@ -1494,6 +1587,12 @@
                         "weather-forecast": {
                             "name": "Vremenska napoved"
                         }
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "title": "Način panel?",
+                            "description": "To prikaže prvo kartico v polni širini, ostale ne bodo prikazane."
+                        }
                     }
                 },
                 "menu": {
@@ -1510,7 +1609,11 @@
                     "message": "Konfiguracija Lovelace je bila spremenjena, jo želiš osvežiti?",
                     "refresh": "Osveži"
                 },
-                "reload_lovelace": "Ponovno naloži Lovelace"
+                "reload_lovelace": "Ponovno naloži Lovelace",
+                "views": {
+                    "confirm_delete": "Ali ste prepričani, da želite izbrisati ta pogled?",
+                    "existing_cards": "Ne morete izbrisati pogleda, v katerem so kartice. Najprej jih odstranite."
+                }
             },
             "page-demo": {
                 "cards": {
@@ -1532,7 +1635,8 @@
                             "master_bedroom": "Glavna spalnica",
                             "left": "Levo",
                             "right": "Desno",
-                            "mirror": "Ogledalo"
+                            "mirror": "Ogledalo",
+                            "temperature_study": "Študija temperature"
                         },
                         "labels": {
                             "lights": "Luči",
@@ -1558,7 +1662,8 @@
         },
         "sidebar": {
             "log_out": "Odjava",
-            "external_app_configuration": "Konfiguracija aplikacije"
+            "external_app_configuration": "Konfiguracija aplikacije",
+            "sidebar_toggle": "Preklop stranske vrstice"
         },
         "common": {
             "loading": "Nalaganje",
@@ -1665,7 +1770,14 @@
                 "swing_mode": "Način Swing",
                 "away_mode": "Način odsotnosti",
                 "aux_heat": "Dodatna toplota",
-                "preset_mode": "Prednastavitev"
+                "preset_mode": "Prednastavitev",
+                "target_temperature_entity": "{name} ciljna temperatura",
+                "target_temperature_mode": "{name} ciljna temperatura {mode}",
+                "current_temperature": "{name} trenutna temperatura",
+                "heating": "{name} ogrevanje",
+                "cooling": "{name} hlajenje",
+                "high": "visoka",
+                "low": "nizka"
             },
             "lock": {
                 "code": "Koda",
@@ -1695,12 +1807,21 @@
                     "cancel": "Prekliči",
                     "finish": "Dokončaj"
                 }
+            },
+            "counter": {
+                "actions": {
+                    "increment": "prirastek",
+                    "decrement": "pojemek",
+                    "reset": "ponastavi"
+                }
             }
         },
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Entiteta"
+                    "entity": "Entiteta",
+                    "clear": "Počisti",
+                    "show_entities": "Pokaži entitete"
                 }
             },
             "service-picker": {
@@ -1721,6 +1842,10 @@
             "history_charts": {
                 "loading_history": "Nalagam zgodovino stanj...",
                 "no_history_found": "Ni najdene zgodovine stanj."
+            },
+            "device-picker": {
+                "clear": "Počisti",
+                "show_devices": "Pokažite naprave"
             }
         },
         "notification_toast": {
@@ -1759,9 +1884,9 @@
                 }
             },
             "config_entry_system_options": {
-                "title": "Sistemske možnosti",
+                "title": "Sistemske možnosti za {integration}",
                 "enable_new_entities_label": "Omogočite novo dodane subjekte.",
-                "enable_new_entities_description": "Če je onemogočeno, novo odkrite entitete ne bodo samodejno dodane v Home Assistant."
+                "enable_new_entities_description": "Če je onemogočeno, novo odkrite entitete za {integration} ne bodo samodejno dodane v Home Assistant."
             },
             "zha_device_info": {
                 "manuf": "naredil: {manufacturer}",
@@ -1785,6 +1910,11 @@
                 "last_seen": "Nazadnje viden",
                 "power_source": "Vir napajanja",
                 "unknown": "Neznano"
+            },
+            "confirmation": {
+                "cancel": "Prekliči",
+                "ok": "V redu",
+                "title": "Ste prepričani?"
             }
         },
         "auth_store": {

@@ -517,6 +517,8 @@
       "loading": "Loading",
       "cancel": "Cancel",
       "save": "Save",
+      "yes": "Yes",
+      "no": "No",
       "successfully_saved": "Successfully saved"
     },
     "components": {
@@ -552,6 +554,14 @@
       }
     },
     "dialogs": {
+      "voice_command": {
+        "did_not_hear": "Home Assistant did not hear anything",
+        "found": "I found the following for you:",
+        "error": "Oops, an error has occurred",
+        "how_can_i_help": "How can I help?",
+        "label": "Type a question and press <Enter>",
+        "label_voice": "Type and press <Enter> or tap the microphone icon to speak"
+      },
       "confirmation": {
         "cancel": "Cancel",
         "ok": "OK",
@@ -610,6 +620,9 @@
           "area_picker_label": "Area",
           "update_name_button": "Update Name"
         }
+      },
+      "domain_toggler": {
+        "title": "Toggle Domains"
       }
     },
     "duration": {
@@ -726,7 +739,19 @@
           "picker": {
             "header": "Customization",
             "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated."
-          }
+          },
+          "warning": {
+            "include_sentence": "It seems that your configuration.yaml doesn't properly",
+            "include_link": "include customize.yaml",
+            "not_applied": "Changes made here are written in it, but will not be applied after a configuration reload unless the include is in place."
+          },
+          "attributes_customize": "The following attributes are already set in customize.yaml",
+          "attributes_outside": "The following attributes are customized from outside of customize.yaml",
+          "different_include": "Possibly via a domain, a glob or a different include.",
+          "attributes_set": "The following attributes of the entity are set programmatically.",
+          "attributes_override": "You can override them if you like.",
+          "attributes_not_set": "The following attributes weren't set. Set them if you like.",
+          "pick_attribute": "Pick an attribute to override"
         },
         "automation": {
           "caption": "Automation",
@@ -737,7 +762,12 @@
             "learn_more": "Learn more about automations",
             "pick_automation": "Pick automation to edit",
             "no_automations": "We couldn’t find any editable automations",
-            "add_automation": "Add automation"
+            "add_automation": "Add automation",
+            "only_editable": "Only automations defined in automations.yaml are editable.",
+            "edit_automation": "Edit automation",
+            "show_info_automation": "Show info about automation",
+            "delete_automation": "Delete automation",
+            "delete_confirm": "Are you sure you want to delete this automation?"
           },
           "editor": {
             "introduction": "Use automations to bring your home alive.",
@@ -954,13 +984,61 @@
             "introduction": "The script editor allows you to create and edit scripts. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
             "learn_more": "Learn more about scripts",
             "no_scripts": "We couldn’t find any editable scripts",
-            "add_script": "Add script"
+            "add_script": "Add script",
+            "trigger_script": "Trigger script",
+            "edit_script": "Edit script"
           },
           "editor": {
+            "introduction": "Use scripts to execute a sequence of actions.",
             "header": "Script: {name}",
             "default_name": "New Script",
             "load_error_not_editable": "Only scripts inside scripts.yaml are editable.",
-            "delete_confirm": "Are you sure you want to delete this script?"
+            "delete_confirm": "Are you sure you want to delete this script?",
+            "delete_script": "Delete script",
+            "sequence": "Sequence",
+            "sequence_sentence": "The sequence of actions of this script.",
+            "link_available_actions": "Learn more about available actions."
+          }
+        },
+        "scene": {
+          "caption": "Scenes",
+          "description": "Create and edit scenes",
+          "activated": "Activated scene {name}.",
+          "picker": {
+            "header": "Scene Editor",
+            "introduction": "The scene editor allows you to create and edit scenes. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
+            "learn_more": "Learn more about scenes",
+            "pick_scene": "Pick scene to edit",
+            "no_scenes": "We couldn’t find any editable scenes",
+            "add_scene": "Add scene",
+            "only_editable": "Only scenes defined in scenes.yaml are editable.",
+            "edit_scene": "Edit scene",
+            "show_info_scene": "Show info about scene",
+            "delete_scene": "Delete scene",
+            "delete_confirm": "Are you sure you want to delete this scene?"
+          },
+          "editor": {
+            "introduction": "Use scenes to bring your home alive.",
+            "default_name": "New Scene",
+            "load_error_not_editable": "Only scenes in scenes.yaml are editable.",
+            "load_error_unknown": "Error loading scene ({err_no}).",
+            "save": "Save",
+            "unsaved_confirm": "You have unsaved changes. Are you sure you want to leave?",
+            "name": "Name",
+            "devices": {
+              "header": "Devices",
+              "introduction": "Add the devices that you want to be included in your scene. Set all the devices to the state you want for this scene.",
+              "add": "Add a device",
+              "delete": "Delete device"
+            },
+            "entities": {
+              "header": "Entities",
+              "introduction": "Entities that do not belong to a devices can be set here.",
+              "without_device": "Entities without device",
+              "device_entities": "If you add an entity that belongs to a device, the device will be added.",
+              "add": "Add an entity",
+              "delete": "Delete entity"
+            }
           }
         },
         "cloud": {
@@ -1121,6 +1199,9 @@
         "devices": {
           "caption": "Devices",
           "description": "Manage connected devices",
+          "unnamed_device": "Unnamed device",
+          "unknown_error": "Unknown error",
+          "area_picker_label": "Area",
           "automation": {
             "triggers": {
               "caption": "Do something when..."
@@ -1131,6 +1212,20 @@
             "actions": {
               "caption": "When something is triggered..."
             }
+          },
+          "device_not_found": "Device not found.",
+          "info": "Device info",
+          "details": "Here are all the details of your device.",
+          "entities": "Entities",
+          "automations": "Automations",
+          "confirm_rename_entity_ids": "Do you also want to rename the entity id's of your entities?",
+          "data_table": {
+            "device": "Device",
+            "manufacturer": "Manufacturer",
+            "model": "Model",
+            "area": "Area",
+            "integration": "Integration",
+            "battery": "Battery"
           }
         },
         "entity_registry": {
@@ -1158,7 +1253,8 @@
             "delete": "DELETE",
             "confirm_delete": "Are you sure you want to delete this entry?",
             "confirm_delete2": "Deleting an entry will not remove the entity from Home Assistant. To do this, you will need to remove the integration '{platform}' from Home Assistant.",
-            "update": "UPDATE"
+            "update": "UPDATE",
+            "note": "Note: this might not work yet with all integrations."
           }
         },
         "person": {
@@ -1198,6 +1294,7 @@
           "home_assistant_website": "Home Assistant website",
           "configure": "Configure",
           "none": "Nothing configured yet",
+          "integration_not_found": "Integration not found.",
           "config_entry": {
             "settings_button": "Edit settings for {integration}",
             "system_options_button": "System options for {integration}",
@@ -1215,6 +1312,17 @@
             "no_area": "No Area"
           },
           "config_flow": {
+            "aborted": "Aborted",
+            "close": "Close",
+            "finish": "Finish",
+            "submit": "Submit",
+            "not_all_required_fields": "Not all required fields are filled in.",
+            "add_area": "Add Area",
+            "area_picker_label": "Area",
+            "failed_create_area": "Failed to create area.",
+            "error_saving_area": "Error saving area: {error}",
+            "name_new_area": "Name of the new area?",
+            "created_config": "Created config for {name}.",
             "external_step": {
               "description": "This step requires you to visit an external website to be completed.",
               "open_site": "Open website"
@@ -1363,7 +1471,8 @@
       },
       "logbook": {
         "showing_entries": "[%key:ui::panel::history::showing_entries%]",
-        "period": "Period"
+        "period": "Period",
+        "entries_not_found": "No logbook entries found."
       },
       "lovelace": {
         "cards": {
@@ -1388,15 +1497,24 @@
             "more_info": "Show more-info: {name}"
           }
         },
+        "unused_entities": {
+          "title": "Unused entities",
+          "available_entities": "These are the entities that you have available, but are not in your Lovelace UI yet.",
+          "select_to_add": "Select the entities you want to add to a card and then click the add card button.",
+          "entity": "Entity",
+          "entity_id": "Entity ID",
+          "domain": "Domain",
+          "last_changed": "Last Changed"
+        },
         "views": {
           "confirm_delete": "Are you sure you want to delete this view?",
           "existing_cards": "You can't delete a view that has cards in it. Remove the cards first."
         },
         "menu": {
           "configure_ui": "Configure UI",
-          "unused_entities": "Unused entities",
           "help": "Help",
-          "refresh": "Refresh"
+          "refresh": "Refresh",
+          "close": "Close"
         },
         "editor": {
           "header": "Edit UI",
@@ -1408,18 +1526,26 @@
             "header": "Edit Config",
             "save": "Save",
             "unsaved_changes": "Unsaved changes",
-            "saved": "Saved"
+            "saved": "Saved",
+            "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
+            "confirm_unsaved_comments": "Your config contains comment(s), these will not be saved. Do you want to continue?",
+            "error_parse_yaml": "Unable to parse YAML: {error}",
+            "error_invalid_config": "Your config is not valid: {error}",
+            "error_save_yaml": "Unable to save YAML: {error}"
           },
           "edit_lovelace": {
             "header": "Title of your Lovelace UI",
-            "explanation": "This title is shown above all your views in Lovelace."
+            "explanation": "This title is shown above all your views in Lovelace.",
+            "edit_title": "Edit title"
           },
           "edit_view": {
             "header": "View Configuration",
             "header_name": "{name} View Configuration",
             "add": "Add view",
             "edit": "Edit view",
-            "delete": "Delete view"
+            "delete": "Delete view",
+            "move_left": "Move view left",
+            "move_right": "Move view right"
           },
           "edit_card": {
             "header": "Card Configuration",
@@ -1430,8 +1556,8 @@
             "show_code_editor": "Show Code Editor",
             "add": "Add Card",
             "edit": "Edit",
-            "delete": "Delete",
-            "move": "Move",
+            "delete": "Delete Card",
+            "move": "Move to View",
             "options": "More options"
           },
           "save_config": {
@@ -1643,7 +1769,9 @@
         },
         "advanced_mode": {
           "title": "Advanced Mode",
-          "description": "Home Assistant hides advanced features and options by default. You can make these features accessible by checking this toggle. This is a user-specific setting and does not impact other users using Home Assistant."
+          "description": "Home Assistant hides advanced features and options by default. You can make these features accessible by checking this toggle. This is a user-specific setting and does not impact other users using Home Assistant.",
+          "hint_enable": "Missing config options? Enable advanced mode on",
+          "link_profile_page": "your profile page"
         },
         "refresh_tokens": {
           "header": "Refresh Tokens",
@@ -1675,7 +1803,7 @@
       "shopping-list": {
         "clear_completed": "Clear completed",
         "add_item": "Add item",
-        "microphone_tip": "Tap the microphone on the top right and say “Add candy to my shopping list”"
+        "microphone_tip": "Tap the microphone on the top right and say or type “Add candy to my shopping list”"
       },
       "page-authorize": {
         "initializing": "Initializing",
@@ -1951,6 +2079,13 @@
           "intro": "Devices and services are represented in Home Assistant as integrations. You can set them up now, or do it later from the configuration screen.",
           "more_integrations": "More",
           "finish": "Finish"
+        }
+      },
+      "custom": {
+        "external_panel": {
+          "question_trust": "Do you trust the external panel {name} at {link}?",
+          "complete_access": "It will have access to all data in Home Assistant.",
+          "hide_message": "Check docs for the panel_custom component to hide this message"
         }
       }
     }

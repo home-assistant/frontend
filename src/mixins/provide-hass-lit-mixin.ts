@@ -5,14 +5,13 @@ export interface ProvideHassElement {
   provideHass(element: HTMLElement);
 }
 
-/* tslint:disable */
-
+/* tslint:disable-next-line:variable-name */
 export const ProvideHassLitMixin = <T extends Constructor<UpdatingElement>>(
   superClass: T
 ) =>
-  // @ts-ignore
   class extends superClass {
     protected hass!: HomeAssistant;
+    /* tslint:disable-next-line:variable-name */
     private __provideHass: HTMLElement[] = [];
 
     public provideHass(el) {

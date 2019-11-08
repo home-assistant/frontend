@@ -3,13 +3,14 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
+import LocalizeMixin from "../../../mixins/localize-mixin";
 
 import hassAttributeUtil from "../../../util/hass-attributes-util";
 import "./ha-form-customize-attributes";
 
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 
-class HaFormCustomize extends PolymerElement {
+class HaFormCustomize extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
       <style include="iron-flex ha-style ha-form-style">
@@ -26,19 +27,18 @@ class HaFormCustomize extends PolymerElement {
         if="[[computeShowWarning(localConfig, globalConfig)]]"
       >
         <div class="warning">
-          It seems that your configuration.yaml doesn't properly
+          [[localize('ui.panel.config.customize.warning.include_sentence')]]
           <a
             href="https://www.home-assistant.io/docs/configuration/customizing-devices/#customization-using-the-ui"
             target="_blank"
-            >include customize.yaml</a
+            >[[localize('ui.panel.config.customize.warning.include_link')]]</a
           >.<br />
-          Changes made here are written in it, but will not be applied after a
-          configuration reload unless the include is in place.
+          [[localize('ui.panel.config.customize.warning.not_applied')]]
         </div>
       </template>
       <template is="dom-if" if="[[hasLocalAttributes]]">
         <h4 class="attributes-text">
-          The following attributes are already set in customize.yaml<br />
+          [[localize('ui.panel.config.customize.attributes_customize')]]<br />
         </h4>
         <ha-form-customize-attributes
           attributes="{{localAttributes}}"
@@ -46,9 +46,8 @@ class HaFormCustomize extends PolymerElement {
       </template>
       <template is="dom-if" if="[[hasGlobalAttributes]]">
         <h4 class="attributes-text">
-          The following attributes are customized from outside of
-          customize.yaml<br />
-          Possibly via a domain, a glob or a different include.
+          [[localize('ui.panel.config.customize.attributes_outside')]]<br />
+          [[localize('ui.panel.config.customize.different_include')]]
         </h4>
         <ha-form-customize-attributes
           attributes="{{globalAttributes}}"
@@ -56,8 +55,8 @@ class HaFormCustomize extends PolymerElement {
       </template>
       <template is="dom-if" if="[[hasExistingAttributes]]">
         <h4 class="attributes-text">
-          The following attributes of the entity are set programatically.<br />
-          You can override them if you like.
+          [[localize('ui.panel.config.customize.attributes_set')]]<br />
+          [[localize('ui.panel.config.customize.attributes_override')]]
         </h4>
         <ha-form-customize-attributes
           attributes="{{existingAttributes}}"
@@ -65,7 +64,7 @@ class HaFormCustomize extends PolymerElement {
       </template>
       <template is="dom-if" if="[[hasNewAttributes]]">
         <h4 class="attributes-text">
-          The following attributes weren't set. Set them if you like.
+          [[localize('ui.panel.config.customize.attributes_not_set')]]
         </h4>
         <ha-form-customize-attributes
           attributes="{{newAttributes}}"
@@ -73,7 +72,7 @@ class HaFormCustomize extends PolymerElement {
       </template>
       <div class="form-group">
         <paper-dropdown-menu
-          label="Pick an attribute to override"
+          label="[[localize('ui.panel.config.customize.pick_attribute')]]"
           class="flex"
           dynamic-align=""
         >

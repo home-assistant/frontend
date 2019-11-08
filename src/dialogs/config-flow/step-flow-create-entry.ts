@@ -63,7 +63,9 @@ class StepFlowCreateEntry extends LitElement {
                           ${device.model} (${device.manufacturer})
                         </div>
                         <paper-dropdown-menu-light
-                          label="Area"
+                          label="${localize(
+                            "ui.panel.config.integrations.config_flow.area_picker_label"
+                          )}"
                           .device=${device.id}
                           @selected-item-changed=${this._handleAreaChanged}
                         >
@@ -91,11 +93,19 @@ class StepFlowCreateEntry extends LitElement {
       <div class="buttons">
         ${this.devices.length > 0
           ? html`
-              <mwc-button @click="${this._addArea}">Add Area</mwc-button>
+              <mwc-button @click="${this._addArea}"
+                >${localize(
+                  "ui.panel.config.integrations.config_flow.add_area"
+                )}</mwc-button
+              >
             `
           : ""}
 
-        <mwc-button @click="${this._flowDone}">Finish</mwc-button>
+        <mwc-button @click="${this._flowDone}"
+          >${localize(
+            "ui.panel.config.integrations.config_flow.finish"
+          )}</mwc-button
+        >
       </div>
     `;
   }
@@ -105,7 +115,11 @@ class StepFlowCreateEntry extends LitElement {
   }
 
   private async _addArea() {
-    const name = prompt("Name of the new area?");
+    const name = prompt(
+      this.hass.localize(
+        "ui.panel.config.integrations.config_flow.name_new_area"
+      )
+    );
     if (!name) {
       return;
     }
@@ -115,7 +129,11 @@ class StepFlowCreateEntry extends LitElement {
       });
       this.areas = [...this.areas, area];
     } catch (err) {
-      alert("Failed to create area.");
+      alert(
+        this.hass.localize(
+          "ui.panel.config.integrations.config_flow.failed_create_area"
+        )
+      );
     }
   }
 
@@ -134,7 +152,13 @@ class StepFlowCreateEntry extends LitElement {
         area_id: area,
       });
     } catch (err) {
-      alert(`Error saving area: ${err.message}`);
+      alert(
+        this.hass.localize(
+          "ui.panel.config.integrations.config_flow.error_saving_area",
+          "error",
+          "err.message"
+        )
+      );
       dropdown.value = null;
     }
   }

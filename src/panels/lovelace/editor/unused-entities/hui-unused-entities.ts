@@ -57,7 +57,7 @@ export class HuiUnusedEntities extends LitElement {
   private _columns = memoizeOne((narrow: boolean) => {
     const columns: DataTableColumnContainer = {
       entity: {
-        title: "Entity",
+        title: this.hass!.localize("ui.panel.lovelace.unused_entities.entity"),
         sortable: true,
         filterable: true,
         filterKey: "friendly_name",
@@ -79,17 +79,19 @@ export class HuiUnusedEntities extends LitElement {
     }
 
     columns.entity_id = {
-      title: "Entity id",
+      title: this.hass!.localize("ui.panel.lovelace.unused_entities.entity_id"),
       sortable: true,
       filterable: true,
     };
     columns.domain = {
-      title: "Domain",
+      title: this.hass!.localize("ui.panel.lovelace.unused_entities.domain"),
       sortable: true,
       filterable: true,
     };
     columns.last_changed = {
-      title: "Last Changed",
+      title: this.hass!.localize(
+        "ui.panel.lovelace.unused_entities.last_changed"
+      ),
       type: "numeric",
       sortable: true,
       template: (lastChanged: string) => html`
@@ -121,14 +123,20 @@ export class HuiUnusedEntities extends LitElement {
     }
 
     return html`
-      <ha-card header="Unused entities">
+      <ha-card
+        header="${this.hass.localize(
+          "ui.panel.lovelace.unused_entities.title"
+        )}"
+      >
         <div class="card-content">
-          These are the entities that you have available, but are not in your
-          Lovelace UI yet.
+          ${this.hass.localize(
+            "ui.panel.lovelace.unused_entities.available_entities"
+          )}
           ${this.lovelace.mode === "storage"
             ? html`
-                <br />Select the entities you want to add to a card and then
-                click the add card button.
+                <br />${this.hass.localize(
+                  "ui.panel.lovelace.unused_entities.select_to_add"
+                )}
               `
             : ""}
         </div>

@@ -351,7 +351,7 @@
                         "fire_event": "Avfyr hendlese",
                         "event_fired": "Hendelse {name} avfyrt",
                         "available_events": "Tilgjengelige hendelser",
-                        "count_listeners": " ({Count} lyttere)",
+                        "count_listeners": " ({count} lyttere)",
                         "listen_to_events": "Lytt til hendelser",
                         "listening_to": "Lytte til",
                         "subscribe_to": "Hendelse for å abonnere på",
@@ -403,7 +403,7 @@
                     },
                     "logs": {
                         "title": "Logger",
-                        "details": "Loggdetaljer ( {level} )",
+                        "details": "Loggdetaljer ({level})",
                         "load_full_log": "Last inn fullstendig Home Assistant logg",
                         "loading_log": "Laster inn feillogg ...",
                         "no_errors": "Ingen feil er rapportert.",
@@ -489,14 +489,14 @@
                 },
                 "automation": {
                     "caption": "Automatisering",
-                    "description": "Opprett og rediger automatiseringer",
+                    "description": "Opprett og rediger automasjoner",
                     "picker": {
-                        "header": "Automatiseringsredigering",
-                        "introduction": "Automatiseringsredigeringen lar deg lage og redigere automatiseringer. Vennligst les [instruksjonene](https:\/\/home-assistant.io\/docs\/automation\/editor\/) for å forsikre deg om at du har konfigurert Home Assistant riktig.",
-                        "pick_automation": "Velg automatisering for å redigere",
-                        "no_automations": "Vi kunne ikke finne noen redigerbare automatiseringer",
+                        "header": "Automasjonsredigering",
+                        "introduction": "Automasjonsredigeringen lar deg lage og redigere automasjoner. Vennligst les [instruksjonene](https:\/\/home-assistant.io\/docs\/automation\/editor\/) for å forsikre deg om at du har konfigurert Home Assistant riktig.",
+                        "pick_automation": "Velg automasjon for å redigere",
+                        "no_automations": "Vi kunne ikke finne noen redigerbare automasjoner",
                         "add_automation": "Legg til automatisering",
-                        "learn_more": "Lær mer om automatiseringer"
+                        "learn_more": "Lær mer om automatisering"
                     },
                     "editor": {
                         "introduction": "Bruk automatiseringer for å få liv i hjemmet ditt",
@@ -596,7 +596,7 @@
                         },
                         "conditions": {
                             "header": "Betingelser",
-                            "introduction": "Betingelser er en valgfri del av en automatiseringsregel og kan brukes til å forhindre at en handling skjer når den blir aktivert. \nBetingelsene ser veldig ut som utløsere, men er veldig forskjellige. \nEn utløser vil se på hendelser som skjer i systemet, mens en betingelse bare ser på hvordan systemet ser ut akkurat nå. En utløser kan observere at en bryter er slått på. En betingelse kan bare se om en bryter for øyeblikket er på eller av.",
+                            "introduction": "Betingelser er en valgfri del av en automasjonsregel og kan brukes til å forhindre at en handling skjer når den blir aktivert. \nBetingelsene ser veldig ut som utløsere, men er veldig forskjellige. \nEn utløser vil se på hendelser som skjer i systemet, mens en betingelse bare ser på hvordan systemet ser ut akkurat nå. En utløser kan observere at en bryter er slått på. En betingelse kan bare se om en bryter for øyeblikket er på eller av.",
                             "add": "Legg til betingelse",
                             "duplicate": "Dupliser",
                             "delete": "Slett",
@@ -656,7 +656,7 @@
                         },
                         "actions": {
                             "header": "Handlinger",
-                            "introduction": "Handling(ene) er hva Home Assistant vil utføre når en automatisering utløses.",
+                            "introduction": "Handling(ene) er hva Home Assistant vil utføre når en automasjon utløses.",
                             "add": "Legg til handling",
                             "duplicate": "Dupliser",
                             "delete": "Slett",
@@ -698,7 +698,7 @@
                             "learn_more": "Lær mer om handlinger"
                         },
                         "load_error_not_editable": "Kun automatiseringer i automations.yaml kan redigeres.",
-                        "load_error_unknown": "Feil ved lasting av automatisering ( {err_no} ).",
+                        "load_error_unknown": "Feil ved lasting av automasjon ({err_no}).",
                         "description": {
                             "label": "Beskrivelse",
                             "placeholder": "Valgfri beskrivelse"
@@ -866,7 +866,7 @@
                         "account_created": "Konto opprettet! Sjekk e-posten din for instruksjoner om hvordan du aktiverer kontoen din."
                     },
                     "account": {
-                        "thank_you_note": "Takk for at du er en del av Home Assistant Cloud. Det er på grunn av personer som deg at vi er i stand til å lage en flott hjemme automasjon opplevelse for alle. takk!",
+                        "thank_you_note": "Takk for at du er en del av Home Assistant Cloud. Det er på grunn av personer som deg at vi er i stand til å lage en flott hjemmeautomasjon opplevelse for alle. Tusen takk!",
                         "nabu_casa_account": "Nabu Casa konto",
                         "connection_status": "Status for skytilkobling",
                         "manage_account": "Administrer konto",
@@ -923,7 +923,7 @@
                             "no_hooks_yet_link_integration": "webhook-basert integrasjon",
                             "no_hooks_yet2": " eller ved å opprette en ",
                             "no_hooks_yet_link_automation": "webhook automatisering",
-                            "link_learn_more": "Finn ut mer om hvordan du oppretter webhook-drevne automatiseringer.",
+                            "link_learn_more": "Finn ut mer om hvordan du oppretter webhook-drevne automasjoner.",
                             "loading": "Laster inn ...",
                             "manage": "Administrer",
                             "disable_hook_error_msg": "Kan ikke deaktivere webhook:"
@@ -1148,7 +1148,7 @@
                             "introduction": "Noen deler av Home Assistant kan laste inn uten å kreve omstart. Hvis du trykker last på nytt, vil du bytte den nåværende konfigurasjonen med den nye.",
                             "core": "Last inn kjernen på nytt",
                             "group": "Last inn grupper på nytt",
-                            "automation": "Last inn automatiseringer på nytt",
+                            "automation": "Last inn automasjoner på nytt",
                             "script": "Last inn skript på nytt",
                             "scene": "Last inn scener på nytt"
                         },
@@ -1428,7 +1428,8 @@
                         "move": "Flytt",
                         "show_visual_editor": "Vis visuell redigering",
                         "show_code_editor": "Vis koderedigering",
-                        "pick_card_view_title": "Hvilket kort vil du legge til i {name} visningen?"
+                        "pick_card_view_title": "Hvilket kort vil du legge til i {name} visningen?",
+                        "options": "Flere alternativer"
                     },
                     "migrate": {
                         "header": "Inkompatibel Konfigurasjon",
@@ -1452,7 +1453,8 @@
                         "save": "Ta kontroll"
                     },
                     "menu": {
-                        "raw_editor": "Tekstbasert konfigurasjonsredigering"
+                        "raw_editor": "Tekstbasert konfigurasjonsredigering",
+                        "open": "Åpne Lovelace-menyen"
                     },
                     "raw_editor": {
                         "header": "Rediger konfigurasjon",
@@ -1474,7 +1476,8 @@
                         },
                         "entities": {
                             "show_header_toggle": "Vise topptekst veksling?",
-                            "name": "Enheter"
+                            "name": "Enheter",
+                            "toggle": "Aktiver\/deaktiver enheter."
                         },
                         "gauge": {
                             "severity": {
@@ -1659,7 +1662,8 @@
         },
         "sidebar": {
             "log_out": "Logg ut",
-            "external_app_configuration": "Appkonfigurasjon"
+            "external_app_configuration": "Appkonfigurasjon",
+            "sidebar_toggle": "Vis\/Skjul sidepanel"
         },
         "common": {
             "loading": "Laster",
@@ -1815,7 +1819,9 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Oppføring"
+                    "entity": "Oppføring",
+                    "clear": "Tøm",
+                    "show_entities": "Vis enheter"
                 }
             },
             "service-picker": {
@@ -1836,6 +1842,10 @@
             "history_charts": {
                 "loading_history": "Laster statushistorikk...",
                 "no_history_found": "Ingen statushistorikk funnet."
+            },
+            "device-picker": {
+                "clear": "Tøm",
+                "show_devices": "Vis enheter"
             }
         },
         "notification_toast": {

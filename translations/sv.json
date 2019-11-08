@@ -315,7 +315,8 @@
                         "title": "Tjänster"
                     },
                     "states": {
-                        "title": "Tillstånd"
+                        "title": "Tillstånd",
+                        "more_info": "Mer information"
                     },
                     "events": {
                         "title": "Händelser"
@@ -1043,7 +1044,8 @@
                         "add": "Lägg till kort",
                         "edit": "Redigera",
                         "delete": "Ta bort",
-                        "move": "Flytta"
+                        "move": "Flytta",
+                        "options": "Fler alternativ"
                     },
                     "migrate": {
                         "header": "Ogiltig konfiguration",
@@ -1066,7 +1068,8 @@
                         "save": "Ta kontroll"
                     },
                     "menu": {
-                        "raw_editor": "Rå konfigurationseditor"
+                        "raw_editor": "Rå konfigurationseditor",
+                        "open": "Öppna Lovelace-menyn"
                     },
                     "raw_editor": {
                         "header": "Ändra konfigurationen",
@@ -1141,7 +1144,8 @@
         },
         "sidebar": {
             "log_out": "Logga ut",
-            "external_app_configuration": "Appkonfiguration"
+            "external_app_configuration": "Appkonfiguration",
+            "sidebar_toggle": "Växlingsknapp för sidofält"
         },
         "common": {
             "loading": "Läser in",
@@ -1283,7 +1287,8 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Entitet"
+                    "entity": "Entitet",
+                    "clear": "Rensa"
                 }
             },
             "service-picker": {
@@ -1304,6 +1309,10 @@
             "history_charts": {
                 "loading_history": "Laddar historik...",
                 "no_history_found": "Ingen historik hittad."
+            },
+            "device-picker": {
+                "clear": "Rensa",
+                "show_devices": "Visa enheter"
             }
         },
         "notification_toast": {

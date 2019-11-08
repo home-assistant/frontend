@@ -314,8 +314,8 @@
                     "services": {
                         "title": "Servizi",
                         "description": "Lo strumento di sviluppo del servizio consente di chiamare qualsiasi servizio disponibile in Home Assistant.",
-                        "data": "Dati di servizio (YAML, opzionale)",
-                        "call_service": "Chiama il servizio",
+                        "data": "Dati di Servizio (YAML, opzionale)",
+                        "call_service": "Chiama il Servizio",
                         "select_service": "Selezionare un servizio per visualizzare la descrizione",
                         "no_description": "Nessuna descrizione disponibile",
                         "no_parameters": "Questo servizio non richiede parametri.",
@@ -328,7 +328,7 @@
                     "states": {
                         "title": "Stati",
                         "description1": "Impostare la rappresentazione di un dispositivo all'interno di Home Assistant.",
-                        "description2": "Questo non comunicherà con il dispositivo effettivo.",
+                        "description2": "Questo non comunicherà con il dispositivo attuale.",
                         "entity": "Entità",
                         "state": "Stato",
                         "attributes": "Attributi",
@@ -345,15 +345,15 @@
                     "events": {
                         "title": "Eventi",
                         "description": "Attiva un evento sul bus eventi.",
-                        "documentation": "Documentazione degli eventi.",
-                        "type": "Tipo di evento",
-                        "data": "Dati evento (YAML, opzionale)",
+                        "documentation": "Documentazione degli Eventi.",
+                        "type": "Tipo di Evento",
+                        "data": "Dati Evento (YAML, opzionale)",
                         "fire_event": "Scatena Evento",
                         "event_fired": "Evento {name} generato",
                         "available_events": "Eventi disponibili",
                         "count_listeners": "({count} ascoltatori)",
                         "listen_to_events": "Ascoltare gli eventi",
-                        "listening_to": "Ascolto di",
+                        "listening_to": "In ascolto di",
                         "subscribe_to": "Evento a cui iscriversi",
                         "start_listening": "Iniziare ad ascoltare",
                         "stop_listening": "Interrompere l'ascolto",
@@ -377,7 +377,7 @@
                         "description_listen": "Ascoltare un argomento",
                         "listening_to": "Ascolto di",
                         "subscribe_to": "Argomento a cui iscriversi",
-                        "start_listening": "Iniziare ad ascoltare",
+                        "start_listening": "Inizia ad ascoltare",
                         "stop_listening": "Interrompere l'ascolto",
                         "message_received": "Messaggio {id} ricevuto su {topic} alle {time}:"
                     },
@@ -386,10 +386,10 @@
                         "remove": "Rimuovere",
                         "set": "Impostare",
                         "default_ui": "{action} {name} come pagina predefinita su questo dispositivo",
-                        "lovelace_ui": "Vai all'interfaccia utente di Lovelace",
-                        "states_ui": "Vai all'interfaccia utente degli stati",
+                        "lovelace_ui": "Vai all'Interfaccia Utente di Lovelace",
+                        "states_ui": "Vai all'Interfaccia Utente degli Stati",
                         "home_assistant_logo": "Logo Home Assistant",
-                        "path_configuration": "Percorso di configuration.yaml: {path}",
+                        "path_configuration": "Percorso del file configuration.yaml: {path}",
                         "developed_by": "Sviluppato da un gruppo di persone fantastiche.",
                         "license": "Pubblicato sotto la licenza Apache 2.0",
                         "source": "Fonte:",
@@ -397,8 +397,8 @@
                         "frontend": "frontend-ui",
                         "built_using": "Costruito usando",
                         "icons_by": "Icone di",
-                        "frontend_version": "Versione frontend: {version} - {type}",
-                        "custom_uis": "UI personalizzate:",
+                        "frontend_version": "Versione Frontend: {version} - {type}",
+                        "custom_uis": "Interfacce Utente personalizzate:",
                         "system_health_error": "Il componente System Health non è caricato. Aggiungere 'system_health:' a configuration.yaml"
                     },
                     "logs": {
@@ -1428,7 +1428,8 @@
                         "move": "Sposta",
                         "show_visual_editor": "Mostra Editor Visivo",
                         "show_code_editor": "Mostra Editor di Codice",
-                        "pick_card_view_title": "Quale scheda vorresti aggiungere alla tua vista {name}?"
+                        "pick_card_view_title": "Quale scheda vorresti aggiungere alla tua vista {name}?",
+                        "options": "Più opzioni"
                     },
                     "migrate": {
                         "header": "Configurazione incompatibile",
@@ -1452,7 +1453,8 @@
                         "save": "Prendere il controllo"
                     },
                     "menu": {
-                        "raw_editor": "Editor di configurazione grezzo"
+                        "raw_editor": "Editor di configurazione grezzo",
+                        "open": "Apri il menu Lovelace"
                     },
                     "raw_editor": {
                         "header": "Modifica le impostazioni",
@@ -1474,7 +1476,8 @@
                         },
                         "entities": {
                             "show_header_toggle": "Mostrare l'interruttore dell'intestazione?",
-                            "name": "Entità"
+                            "name": "Entità",
+                            "toggle": "Attiva\/disattiva entità."
                         },
                         "gauge": {
                             "severity": {
@@ -1659,7 +1662,8 @@
         },
         "sidebar": {
             "log_out": "Esci",
-            "external_app_configuration": "Configurazione App"
+            "external_app_configuration": "Configurazione App",
+            "sidebar_toggle": "Attiva\/disattiva la barra laterale"
         },
         "common": {
             "loading": "Caricamento",
@@ -1815,7 +1819,9 @@
         "components": {
             "entity": {
                 "entity-picker": {
-                    "entity": "Entità"
+                    "entity": "Entità",
+                    "clear": "Cancella",
+                    "show_entities": "Mostra entità"
                 }
             },
             "service-picker": {
@@ -1836,6 +1842,10 @@
             "history_charts": {
                 "loading_history": "Caricamento storico",
                 "no_history_found": "Nessuno storico trovato"
+            },
+            "device-picker": {
+                "clear": "Cancella",
+                "show_devices": "Mostra dispositivi"
             }
         },
         "notification_toast": {
