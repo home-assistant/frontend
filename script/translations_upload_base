@@ -28,7 +28,7 @@ CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 if [ "${CURRENT_BRANCH-}" != "master" ] && [ "${TRAVIS_BRANCH-}" != "master" ] ; then
   echo "Please only run the translations upload script from a clean checkout of master."
-  # exit 1
+  exit 1
 fi
 
 docker run \
