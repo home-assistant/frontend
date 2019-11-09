@@ -30,6 +30,7 @@ export interface DataEntryFlowStepForm {
   data_schema: FieldSchema[];
   errors: { [key: string]: string };
   description_placeholders: { [key: string]: string };
+  labels: { [key: string]: string };
 }
 
 export interface DataEntryFlowStepExternal {
@@ -39,6 +40,7 @@ export interface DataEntryFlowStepExternal {
   step_id: string;
   url: string;
   description_placeholders: { [key: string]: string };
+  labels: { [key: string]: string };
 }
 
 export interface DataEntryFlowStepCreateEntry {
@@ -51,6 +53,7 @@ export interface DataEntryFlowStepCreateEntry {
   result: string;
   description: string;
   description_placeholders: { [key: string]: string };
+  labels: { [key: string]: string };
 }
 
 export interface DataEntryFlowStepAbort {
