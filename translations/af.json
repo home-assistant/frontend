@@ -1,52 +1,185 @@
 {
-    "panel": {
-        "config": "Opstellings",
-        "states": "Oorsig",
-        "map": "Kaart",
-        "logbook": "Logboek",
-        "history": "Geskiedenis",
+    "attribute": {
+        "weather": {
+            "humidity": "Humiditeit",
+            "visibility": "Sigbaarheid",
+            "wind_speed": "Windspoed"
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Alarm beheer paneel",
+        "automation": "Outomatisering",
+        "binary_sensor": "Binêre sensor",
+        "calendar": "Kalender",
+        "camera": "Kamera",
+        "climate": "Klimaat",
+        "configurator": "Konfigureerder",
+        "conversation": "Konversasie",
+        "cover": "Dekking",
+        "device_tracker": "Toestel opspoorder",
+        "fan": "Waaier",
+        "group": "Groep",
+        "hassio": "Hass.io",
+        "history_graph": "Geskiedenis grafiek",
+        "homeassistant": "Home Assistant",
+        "image_processing": "Beeldverwerking",
+        "input_boolean": "Invoer boole",
+        "input_datetime": "Invoer datum\/tyd",
+        "input_number": "Invoer nommer",
+        "input_select": "Invoer seleksie",
+        "input_text": "Invoer teks",
+        "light": "Lig",
+        "lock": "Slot",
+        "lovelace": "Lovelace",
         "mailbox": "Posbus",
-        "shopping_list": "Inkopielys",
+        "media_player": "Media-speler",
+        "notify": "Stel in kennis",
+        "person": "Persoon",
+        "plant": "Plant",
+        "proximity": "Nabyheid",
+        "remote": "Afgeleë",
+        "scene": "Toneel",
+        "script": "Skrip",
+        "sensor": "Sensor",
+        "sun": "Son",
+        "switch": "Skakelaar",
+        "system_health": "Stelsel Gesondheid",
+        "updater": "Opdateerder",
+        "vacuum": "Vakuum",
+        "weblink": "Web skakel",
+        "zha": "ZHA",
+        "zwave": "Z-Wave"
+    },
+    "groups": {
+        "system-admin": "Administrateurs",
+        "system-read-only": "Leesalleen-gebruikers",
+        "system-users": "Gebruikers"
+    },
+    "panel": {
+        "calendar": "Kalender",
+        "config": "Opstellings",
         "dev-info": "Info",
         "developer_tools": "Ontwikkelaar Hulpmiddels",
-        "calendar": "Kalender",
-        "profile": "Profiel"
+        "history": "Geskiedenis",
+        "logbook": "Logboek",
+        "mailbox": "Posbus",
+        "map": "Kaart",
+        "profile": "Profiel",
+        "shopping_list": "Inkopielys",
+        "states": "Oorsig"
     },
-    "state": {
-        "default": {
-            "off": "Af",
-            "on": "Aan",
-            "unknown": "Onbekend",
-            "unavailable": "Nie beskikbaar nie"
-        },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "auto": "Outomatiese",
+                "off": "Af",
+                "on": "Aan"
+            },
+            "hvac_action": {
+                "cooling": "Koel Af",
+                "drying": "Droog Uit",
+                "fan": "Waaier",
+                "heating": "Verhit",
+                "idle": "Onaktief",
+                "off": "Af"
+            },
+            "preset_mode": {
+                "activity": "Aktiwiteit",
+                "away": "Elders",
+                "boost": "Hupstoot",
+                "comfort": "Gemak",
+                "eco": "Eko",
+                "home": "Tuis",
+                "none": "Geen",
+                "sleep": "Slaap"
+            }
+        }
+    },
+    "state_badge": {
         "alarm_control_panel": {
             "armed": "Gewapen",
-            "disarmed": "Ontwapen",
-            "armed_home": "Gewapend tuis",
-            "armed_away": "Gewapend weg",
-            "armed_night": "Gewapend nag",
-            "pending": "Hangende",
+            "armed_away": "Gewapen",
+            "armed_custom_bypass": "Gewapen",
+            "armed_home": "Gewapen",
+            "armed_night": "Gewapen",
             "arming": "Bewapen Tans",
+            "disarmed": "Ontwapen",
+            "disarming": "Ontwapen",
+            "pending": "Hangend",
+            "triggered": "Aktief"
+        },
+        "default": {
+            "entity_not_found": "Entiteit nie gevind nie",
+            "error": "Fout",
+            "unavailable": "Onbeskik",
+            "unknown": "?"
+        },
+        "device_tracker": {
+            "home": "Tuis",
+            "not_home": "Elders"
+        },
+        "person": {
+            "home": "Tuis",
+            "not_home": "Elders"
+        }
+    },
+    "state": {
+        "alarm_control_panel": {
+            "armed": "Gewapen",
+            "armed_away": "Gewapend weg",
+            "armed_custom_bypass": "Gewapende pasgemaakte omseil",
+            "armed_home": "Gewapend tuis",
+            "armed_night": "Gewapend nag",
+            "arming": "Bewapen Tans",
+            "disarmed": "Ontwapen",
             "disarming": "Ontwapen Tans",
-            "triggered": "Geaktiveer",
-            "armed_custom_bypass": "Gewapende pasgemaakte omseil"
+            "pending": "Hangende",
+            "triggered": "Geaktiveer"
         },
         "automation": {
             "off": "Af",
             "on": "Aan"
         },
         "binary_sensor": {
+            "battery": {
+                "off": "Normaal",
+                "on": "Laag"
+            },
+            "cold": {
+                "off": "Normaal",
+                "on": "Koud"
+            },
+            "connectivity": {
+                "off": "Ontkoppel",
+                "on": "Gekoppel"
+            },
             "default": {
                 "off": "Af",
                 "on": "Aan"
             },
-            "moisture": {
-                "off": "Droog",
-                "on": "Nat"
+            "door": {
+                "off": "Toe",
+                "on": "Oop"
+            },
+            "garage_door": {
+                "off": "Toe",
+                "on": "Oop"
             },
             "gas": {
                 "off": "Ongemerk",
                 "on": "Bespeur"
+            },
+            "heat": {
+                "off": "Normaal",
+                "on": "Warm"
+            },
+            "lock": {
+                "off": "Gesluit",
+                "on": "Oopgesluit"
+            },
+            "moisture": {
+                "off": "Droog",
+                "on": "Nat"
             },
             "motion": {
                 "off": "Ongemerk",
@@ -55,6 +188,22 @@
             "occupancy": {
                 "off": "Ongemerk",
                 "on": "Bespeur"
+            },
+            "opening": {
+                "off": "Toe",
+                "on": "Oop"
+            },
+            "presence": {
+                "off": "Elders",
+                "on": "Tuis"
+            },
+            "problem": {
+                "off": "OK",
+                "on": "Probleem"
+            },
+            "safety": {
+                "off": "Veilige",
+                "on": "Onveilige"
             },
             "smoke": {
                 "off": "Ongemerk",
@@ -68,53 +217,9 @@
                 "off": "Ongemerk",
                 "on": "Bespeur"
             },
-            "opening": {
-                "off": "Toe",
-                "on": "Oop"
-            },
-            "safety": {
-                "off": "Veilige",
-                "on": "Onveilige"
-            },
-            "presence": {
-                "off": "Elders",
-                "on": "Tuis"
-            },
-            "battery": {
-                "off": "Normaal",
-                "on": "Laag"
-            },
-            "problem": {
-                "off": "OK",
-                "on": "Probleem"
-            },
-            "connectivity": {
-                "off": "Ontkoppel",
-                "on": "Gekoppel"
-            },
-            "cold": {
-                "off": "Normaal",
-                "on": "Koud"
-            },
-            "door": {
-                "off": "Toe",
-                "on": "Oop"
-            },
-            "garage_door": {
-                "off": "Toe",
-                "on": "Oop"
-            },
-            "heat": {
-                "off": "Normaal",
-                "on": "Warm"
-            },
             "window": {
                 "off": "Toe",
                 "on": "Oop"
-            },
-            "lock": {
-                "off": "Gesluit",
-                "on": "Oopgesluit"
             }
         },
         "calendar": {
@@ -122,38 +227,44 @@
             "on": "Aan"
         },
         "camera": {
+            "idle": "Ledig",
             "recording": "Opname",
-            "streaming": "Stroming",
-            "idle": "Ledig"
+            "streaming": "Stroming"
         },
         "climate": {
-            "off": "Af",
-            "on": "Aan",
-            "heat": "Hitte",
-            "cool": "Koel",
-            "idle": "Ledig",
             "auto": "Outo",
+            "cool": "Koel",
             "dry": "Droog",
-            "fan_only": "Slegs waaier",
             "eco": "Eko",
             "electric": "Elektries",
-            "performance": "Prestasie",
-            "high_demand": "Hoë aanvraag",
-            "heat_pump": "Hittepomp",
+            "fan_only": "Slegs waaier",
             "gas": "Gas",
+            "heat": "Hitte",
+            "heat_cool": "Verhit\/Verkoel",
+            "heat_pump": "Hittepomp",
+            "high_demand": "Hoë aanvraag",
+            "idle": "Ledig",
             "manual": "Handmatig",
-            "heat_cool": "Verhit\/Verkoel"
+            "off": "Af",
+            "on": "Aan",
+            "performance": "Prestasie"
         },
         "configurator": {
             "configure": "Stel op",
             "configured": "Opgestel"
         },
         "cover": {
-            "open": "Oop",
-            "opening": "Opening",
             "closed": "Toe",
             "closing": "Sluiting",
+            "open": "Oop",
+            "opening": "Opening",
             "stopped": "Gestop"
+        },
+        "default": {
+            "off": "Af",
+            "on": "Aan",
+            "unavailable": "Nie beskikbaar nie",
+            "unknown": "Onbekend"
         },
         "device_tracker": {
             "home": "Tuis",
@@ -164,19 +275,19 @@
             "on": "Aan"
         },
         "group": {
-            "off": "Af",
-            "on": "Aan",
-            "home": "Tuis",
-            "not_home": "Elders",
-            "open": "Oop",
-            "opening": "Opening",
             "closed": "Toe",
             "closing": "Sluiting",
-            "stopped": "Gestop",
+            "home": "Tuis",
             "locked": "Gesluit",
-            "unlocked": "Oopgesluit",
+            "not_home": "Elders",
+            "off": "Af",
             "ok": "OK",
-            "problem": "Probleem"
+            "on": "Aan",
+            "open": "Oop",
+            "opening": "Opening",
+            "problem": "Probleem",
+            "stopped": "Gestop",
+            "unlocked": "Oopgesluit"
         },
         "input_boolean": {
             "off": "Af",
@@ -191,12 +302,16 @@
             "unlocked": "Oopgesluit"
         },
         "media_player": {
+            "idle": "Ledig",
             "off": "Af",
             "on": "Aan",
-            "playing": "Speel Tans",
             "paused": "Onderbreek",
-            "idle": "Ledig",
+            "playing": "Speel Tans",
             "standby": "Gereed"
+        },
+        "person": {
+            "home": "Tuis",
+            "not_home": "Elders"
         },
         "plant": {
             "ok": "OK",
@@ -225,17 +340,20 @@
             "off": "Af",
             "on": "Aan"
         },
-        "zwave": {
-            "default": {
-                "initializing": "Inisialiseer",
-                "dead": "Dood",
-                "sleeping": "Aan die slaap",
-                "ready": "Gereed"
-            },
-            "query_stage": {
-                "initializing": "Inisialiseer ({query_stage})",
-                "dead": "Dood ({query_stage})"
-            }
+        "timer": {
+            "active": "aktief",
+            "idle": "onaktief",
+            "paused": "Onderbreek"
+        },
+        "vacuum": {
+            "cleaning": "Skoonmaak",
+            "docked": "Vasgemeer by hawe",
+            "error": "Fout",
+            "idle": "Ledig",
+            "off": "Af",
+            "on": "Aan",
+            "paused": "Onderbreek",
+            "returning": "Oppad terug hawe toe"
         },
         "weather": {
             "clear-night": "Helder, nag",
@@ -253,853 +371,79 @@
             "windy": "Winderig",
             "windy-variant": "Winderig"
         },
-        "vacuum": {
-            "cleaning": "Skoonmaak",
-            "docked": "Vasgemeer by hawe",
-            "error": "Fout",
-            "idle": "Ledig",
-            "off": "Af",
-            "on": "Aan",
-            "paused": "Onderbreek",
-            "returning": "Oppad terug hawe toe"
-        },
-        "timer": {
-            "active": "aktief",
-            "idle": "onaktief",
-            "paused": "Onderbreek"
-        },
-        "person": {
-            "home": "Tuis",
-            "not_home": "Elders"
-        }
-    },
-    "state_badge": {
-        "default": {
-            "unknown": "?",
-            "unavailable": "Onbeskik",
-            "error": "Fout",
-            "entity_not_found": "Entiteit nie gevind nie"
-        },
-        "alarm_control_panel": {
-            "armed": "Gewapen",
-            "disarmed": "Ontwapen",
-            "armed_home": "Gewapen",
-            "armed_away": "Gewapen",
-            "armed_night": "Gewapen",
-            "pending": "Hangend",
-            "arming": "Bewapen Tans",
-            "disarming": "Ontwapen",
-            "triggered": "Aktief",
-            "armed_custom_bypass": "Gewapen"
-        },
-        "device_tracker": {
-            "home": "Tuis",
-            "not_home": "Elders"
-        },
-        "person": {
-            "home": "Tuis",
-            "not_home": "Elders"
+        "zwave": {
+            "default": {
+                "dead": "Dood",
+                "initializing": "Inisialiseer",
+                "ready": "Gereed",
+                "sleeping": "Aan die slaap"
+            },
+            "query_stage": {
+                "dead": "Dood ({query_stage})",
+                "initializing": "Inisialiseer ({query_stage})"
+            }
         }
     },
     "ui": {
-        "panel": {
-            "shopping-list": {
-                "clear_completed": "Maak voltooide items skoon",
-                "add_item": "Voeg item",
-                "microphone_tip": "Druk die mikrofoon regs bo en sê \"Add candy to my shopping list\""
-            },
-            "developer-tools": {
-                "tabs": {
-                    "services": {
-                        "title": "Dienste"
-                    },
-                    "states": {
-                        "title": "State"
-                    },
-                    "events": {
-                        "title": "Gebeure"
-                    },
-                    "templates": {
-                        "title": "Template"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
-                    },
-                    "info": {
-                        "title": "Inligting"
-                    }
-                }
-            },
-            "history": {
-                "showing_entries": "Wys inskrywings vir",
-                "period": "Tydperk"
-            },
-            "logbook": {
-                "showing_entries": "Wys inskrywings vir",
-                "period": "Tydperk"
-            },
-            "mailbox": {
-                "empty": "U het geen boodskappe nie",
-                "playback_title": "Boodskap terugspeel",
-                "delete_prompt": "Skrap hierdie boodskap?",
-                "delete_button": "Skrap"
-            },
-            "config": {
-                "header": "Stel Home Assistant op",
-                "introduction": "Hier is dit moontlik om u komponente en Home Assistant op te stel. Tans kan alles in verband met die gebruikerskoppelvlak nog nie hier opgestel word nie, maar ons werk daaraan.",
-                "core": {
-                    "caption": "Algemeen",
-                    "description": "Bevestig u opstellingslêer en beheer die bediener",
-                    "section": {
-                        "core": {
-                            "header": "Opstellings en bedienerbeheer",
-                            "introduction": "As u opstellings verander, kan dit 'n vermoeiende proses wees. Ons weet. Hierdie afdeling sal probeer om u lewe 'n bietjie makliker te maak.",
-                            "core_config": {
-                                "edit_requires_storage": "Redakteur is gedeaktiveer omdat konfigurasie gestoor is in configuration.yaml.",
-                                "location_name": "Naam van u Home Assistant installasie",
-                                "latitude": "Breedtegraad",
-                                "longitude": "Lengtegraad",
-                                "elevation": "Hoogte",
-                                "elevation_meters": "Meter",
-                                "time_zone": "Tydsone",
-                                "unit_system": "Eenheidstelsel",
-                                "unit_system_imperial": "Imperial",
-                                "unit_system_metric": "Metrieke",
-                                "imperial_example": "Fahrenheit, pond",
-                                "metric_example": "Celsius, kilogram",
-                                "save_button": "Stoor"
-                            }
-                        },
-                        "server_control": {
-                            "validation": {
-                                "heading": "Opstellings validering",
-                                "introduction": "Verifieer u opstellings as u onlangs 'n paar veranderinge aan u opstellings gemaak het en wil seker maak dat dit alles geldig is",
-                                "check_config": "Verifieer opstellings",
-                                "valid": "Opstellings geldig!",
-                                "invalid": "Opstellings ongeldig!"
-                            },
-                            "reloading": {
-                                "heading": "Opstellings herlaai tans",
-                                "introduction": "Sommige dele van Home Assistant kan herlaai sonder om te herbegin. Deur om herlaai te kliek, sal die huidige opstelling ontlaai en die nuwe een laai.",
-                                "core": "Herlaai kern",
-                                "group": "Herlaai groepe",
-                                "automation": "Herlaai outomatisasies",
-                                "script": "Herlaai skripte"
-                            },
-                            "server_management": {
-                                "heading": "Bediener bestuur",
-                                "introduction": "Beheer u Home Assistant-bediener ... met Home Assistant.",
-                                "restart": "Herbegin",
-                                "stop": "Staak"
-                            }
-                        }
-                    }
-                },
-                "customize": {
-                    "caption": "Pasgemaakte Instellings",
-                    "description": "Pas u entiteite aan",
-                    "picker": {
-                        "header": "Pasgemaakte Instellings",
-                        "introduction": "Verfyn per-entiteit eienskappe. Bygevoegde \/ gewysigde aanpassings sal onmiddellik in werking tree. Verwyderde aanpassings sal in werking tree wanneer die entiteit opgedateer word."
-                    }
-                },
-                "automation": {
-                    "caption": "Outomatisering",
-                    "description": "Skep en wysig outomatisasies",
-                    "picker": {
-                        "header": "Outomatiseringsredakteur",
-                        "introduction": "Die outomatiseringsredakteur stel u in staat om outomatisasies te skep en te wysig. Volg die onderstaande skakel om die instruksies te lees om seker te maak dat u Home Assistant korrek opgestel het.",
-                        "pick_automation": "Kies outomatisasie om te redigeer",
-                        "no_automations": "Ons kon nie redigeerbare outomatisasies vind nie",
-                        "add_automation": "Voeg outomatisering by",
-                        "learn_more": "Kom meer te wete oor outomatisasies"
-                    },
-                    "editor": {
-                        "introduction": "Gebruik outomatisasies om jou huis lewend te maak",
-                        "default_name": "Nuwe outomatisering",
-                        "save": "Stoor",
-                        "unsaved_confirm": "U het ongestoorde veranderinge. Is u seker u wil die blad verlaat?",
-                        "alias": "Naam",
-                        "triggers": {
-                            "header": "Snellers",
-                            "introduction": "Snellers is wat die prosessering van 'n outomatiseringsreël afskop. Dit is moontlik om verskeie snellers vir dieselfde reël te spesifiseer. Sodra 'n sneller begin, sal Home Assistant die voorwaardes, indien enige, bevestig en die aksie roep.",
-                            "add": "Voeg sneller by",
-                            "duplicate": "Dupliseer",
-                            "delete": "Skrap",
-                            "delete_confirm": "Is u seker u wil dit skrap?",
-                            "unsupported_platform": "Ongesteunde platform: {platform}",
-                            "type_select": "Sneller tipe",
-                            "type": {
-                                "event": {
-                                    "label": "Gebeurtenis",
-                                    "event_type": "Gebeurtenis tipe",
-                                    "event_data": "Gebeurtenis data"
-                                },
-                                "state": {
-                                    "label": "Staat",
-                                    "from": "Vanaf",
-                                    "to": "Tot en met",
-                                    "for": "Vir"
-                                },
-                                "homeassistant": {
-                                    "label": "Home Assistant",
-                                    "event": "Gebeurtenis:",
-                                    "start": "Begin",
-                                    "shutdown": "Staak"
-                                },
-                                "mqtt": {
-                                    "label": "MQTT",
-                                    "topic": "Onderwerp",
-                                    "payload": "Loonvrag (opsioneel)"
-                                },
-                                "numeric_state": {
-                                    "label": "Numeriese toestand",
-                                    "above": "Bo",
-                                    "below": "Onder",
-                                    "value_template": "Waarde templaat (opsioneel)"
-                                },
-                                "sun": {
-                                    "label": "Son",
-                                    "event": "Gebeurtenis:",
-                                    "sunrise": "Sonsopkoms",
-                                    "sunset": "Sonsondergang",
-                                    "offset": "Verreken (opsioneel)"
-                                },
-                                "template": {
-                                    "label": "Templaat",
-                                    "value_template": "Waarde templaat"
-                                },
-                                "time": {
-                                    "label": "Tyd",
-                                    "at": "Om"
-                                },
-                                "zone": {
-                                    "label": "Sone",
-                                    "entity": "Entiteit met plek",
-                                    "zone": "Sone",
-                                    "event": "Gebeurtenis:",
-                                    "enter": "Betree",
-                                    "leave": "Verlaat"
-                                },
-                                "webhook": {
-                                    "label": "Webhook",
-                                    "webhook_id": "Webhook ID"
-                                },
-                                "time_pattern": {
-                                    "label": "Tydpatroon",
-                                    "hours": "Ure",
-                                    "minutes": "Minute",
-                                    "seconds": "Sekondes"
-                                },
-                                "geo_location": {
-                                    "label": "Ligginggewing",
-                                    "source": "Bron",
-                                    "zone": "Sone",
-                                    "event": "Gebeurtenis:",
-                                    "enter": "Betree",
-                                    "leave": "Verlaat"
-                                }
-                            },
-                            "learn_more": "Kom meer te wete oor snellers"
-                        },
-                        "conditions": {
-                            "header": "Voorwaardes",
-                            "introduction": "Voorwaardes is 'n opsionele deel van 'n outomatiseringsreël en kan gebruik word om te verhoed dat 'n aksie plaasvind wanneer dit geaktiveer word. Voorwaardes lyk baie soos snellers maar is baie anders. 'n Sneller sal kyk na gebeure wat in die stelsel gebeur terwyl 'n voorwaarde net kyk hoe die stelsel lyk. Byvoorbeeld: 'n Sneller kan sien dat 'n skakelaar aangeskakel word. 'n Voorwaarde kan net sien of 'n skakelaar tans aan of af is.",
-                            "add": "Voeg voorwaarde by",
-                            "duplicate": "Dupliseer",
-                            "delete": "Skrap",
-                            "delete_confirm": "Is u seker u wil dit skrap?",
-                            "unsupported_condition": "Ongesteunde voorwaarde: {condition}",
-                            "type_select": "Voorwaarde tipe",
-                            "type": {
-                                "state": {
-                                    "label": "Staat",
-                                    "state": "Staat"
-                                },
-                                "numeric_state": {
-                                    "label": "Numeriese toestand",
-                                    "above": "Bo",
-                                    "below": "Onder",
-                                    "value_template": "Waarde templaat (opsioneel)"
-                                },
-                                "sun": {
-                                    "label": "Son",
-                                    "before": "Voor:",
-                                    "after": "Na:",
-                                    "before_offset": "Voor verreken (opsioneel)",
-                                    "after_offset": "Na verreken (opsioneel)",
-                                    "sunrise": "Sonsopkoms",
-                                    "sunset": "Sonsondergang"
-                                },
-                                "template": {
-                                    "label": "Templaat",
-                                    "value_template": "Waarde templaat"
-                                },
-                                "time": {
-                                    "label": "Tyd",
-                                    "after": "Na",
-                                    "before": "Voor"
-                                },
-                                "zone": {
-                                    "label": "Sone",
-                                    "entity": "Entiteit met plek",
-                                    "zone": "Sone"
-                                }
-                            },
-                            "learn_more": "Kom meer te wete oor voorwaardes"
-                        },
-                        "actions": {
-                            "header": "Aksies",
-                            "introduction": "Die aksies is wat Home Assistant sal doen wanneer die outomatisering geaktiveer word.",
-                            "add": "Voeg aksie by",
-                            "duplicate": "Dupliseer",
-                            "delete": "Skrap",
-                            "delete_confirm": "Is u seker u wil dit skrap?",
-                            "unsupported_action": "Ongesteunde aksie: {action}",
-                            "type_select": "Aksie tipe",
-                            "type": {
-                                "service": {
-                                    "label": "Roep diens",
-                                    "service_data": "Diens data"
-                                },
-                                "delay": {
-                                    "label": "Vertraging",
-                                    "delay": "Vertraging"
-                                },
-                                "wait_template": {
-                                    "label": "Wag",
-                                    "wait_template": "Wag Templaat",
-                                    "timeout": "Tyd verstreke (opsioneel)"
-                                },
-                                "condition": {
-                                    "label": "Voorwaarde"
-                                },
-                                "event": {
-                                    "label": "Vuur geval",
-                                    "event": "Gebeurtenis:",
-                                    "service_data": "Diens data"
-                                }
-                            },
-                            "learn_more": "Kom meer te wete oor aksies"
-                        },
-                        "load_error_not_editable": "Slegs outomatisasies in automations.yaml kan verander word.",
-                        "load_error_unknown": "Kon nie outomatisering laai nie ({err_no})."
-                    }
-                },
-                "script": {
-                    "caption": "Skrip",
-                    "description": "Skep en wysig skripte"
-                },
-                "zwave": {
-                    "caption": "Z-Wave",
-                    "description": "Bestuur u Z-Wave netwerk",
-                    "network_management": {
-                        "header": "Bestuur Z-Wave Netwerk",
-                        "introduction": "Begin opdragte wat die Z-Wave-netwerk beïnvloed. U sal nie terugvoer kry of meeste opdragte slaag nie, maar u kan die OZW-logboek nagaan om dit uit te vind."
-                    },
-                    "network_status": {
-                        "network_stopped": "Z-Wave Netwerk het Gestop",
-                        "network_starting": "Skakel Tans Z-Wave Netwerk Aan...",
-                        "network_starting_note": "Afhangend van die grootte van u netwerk, kan dit 'n rukkie duur.",
-                        "network_started": "Z-Wave Netwerk is Aangeskakel",
-                        "network_started_note_some_queried": "Aktiewe Knooppunte is nagevra. Slapende Knooppunte sal nagevra word sodra hulle ontwaak.",
-                        "network_started_note_all_queried": "Alle knooppunte is nagevra"
-                    },
-                    "services": {
-                        "start_network": "Skakel Netwerk Aan",
-                        "stop_network": "Stop Netwerk",
-                        "heal_network": "Herstel Netwerk",
-                        "test_network": "Toets Netwerk",
-                        "soft_reset": "Sagte Herstel",
-                        "save_config": "Stoor Instellings",
-                        "add_node_secure": "Voeg Veilige Knooppunt By",
-                        "add_node": "Voeg Knooppunt By",
-                        "remove_node": "Verwyder Knooppunt",
-                        "cancel_command": "Kanselleer Opdrag"
-                    },
-                    "common": {
-                        "value": "Waarde",
-                        "instance": "Aktiwiteit",
-                        "index": "Indeks"
-                    },
-                    "values": {
-                        "header": "Knooppuntwaardes"
-                    },
-                    "node_config": {
-                        "set_config_parameter": "Stel Config-parameter in"
-                    }
-                },
-                "users": {
-                    "caption": "Gebruikers",
-                    "description": "Bestuur gebruikers",
-                    "picker": {
-                        "title": "Gebruikers"
-                    },
-                    "editor": {
-                        "rename_user": "Hernoem gebruiker",
-                        "change_password": "Verander Wagwoord",
-                        "activate_user": "Aktiveer gebruiker",
-                        "deactivate_user": "Deaktiveer gebruiker",
-                        "delete_user": "Skrap gebruiker",
-                        "caption": "Bekyk gebruiker"
-                    },
-                    "add_user": {
-                        "caption": "Voeg gebruiker by",
-                        "name": "Naam",
-                        "username": "Gebruikersnaam",
-                        "password": "Wagwoord",
-                        "create": "Skep"
-                    }
-                },
-                "cloud": {
-                    "caption": "Home Assistant Cloud",
-                    "description_login": "Aangemeld as {email}",
-                    "description_not_login": "Nie aangemeld nie",
-                    "description_features": "Beheer terwyl weg van die huis af is, integreer met Alexa en Google Assistant."
-                },
-                "integrations": {
-                    "caption": "Integrasies",
-                    "description": "Bestuur gekoppelde toestelle en dienste",
-                    "discovered": "Ontdek",
-                    "configured": "Opgestel",
-                    "new": "Stel 'n nuwe integrasie op",
-                    "configure": "Stel op",
-                    "none": "Nog niks is opgestel nie",
-                    "config_entry": {
-                        "no_devices": "Hierdie integrasie het geen toestelle nie.",
-                        "no_device": "Entiteite sonder toestelle",
-                        "delete_confirm": "Is u seker u wil hierdie integrasie skrap?",
-                        "restart_confirm": "Herbegin Home Assistant om hierdie integrasie te voltooi",
-                        "manuf": "deur {manufacturer}",
-                        "via": "Gekonnekteer via",
-                        "firmware": "Fermware: {version}",
-                        "device_unavailable": "toestel nie beskikbaar nie",
-                        "entity_unavailable": "entiteit nie beskikbaar nie",
-                        "no_area": "Geen Gebied",
-                        "hub": "Gekonnekteer via"
-                    },
-                    "config_flow": {
-                        "external_step": {
-                            "description": "Hierdie stap vereis dat u 'n eksterne webwerf besoek om voltooi te word.",
-                            "open_site": "Maak webwerf oop"
-                        }
-                    }
-                },
-                "zha": {
-                    "caption": "ZHA",
-                    "description": "Zigbee Home Automation netwerk bestuur",
-                    "services": {
-                        "reconfigure": "Stel ZHA-toestel weer op (heal device). Gebruik dit as u probleme ondervind met die toestel. As die betrokke toestel 'n battery aangedrewe toestel is, maak asseblief seker dat dit wakker is en bevele aanvaar wanneer u hierdie diens gebruik.",
-                        "updateDeviceName": "Stel 'n persoonlike naam vir hierdie toestel in die toestelregister",
-                        "remove": "Verwyder 'n toestel van die ZigBee-netwerk."
-                    },
-                    "device_card": {
-                        "device_name_placeholder": "Gebruiker se naam",
-                        "area_picker_label": "Gebied",
-                        "update_name_button": "Verander Naam"
-                    },
-                    "add_device_page": {
-                        "header": "Zigbee Home Automation - Voeg Toestelle By",
-                        "spinner": "Opsoek na ZHA Zigbee-toestelle...",
-                        "discovery_text": "Ontdekde toestelle sal hier verskyn. Volg die instruksies vir u toestel(e) en plaas die toestel(e) in die paringsmodus."
-                    }
-                },
-                "area_registry": {
-                    "caption": "Gebiedsregister",
-                    "description": "Oorsig van alle gebiede in u huis.",
-                    "picker": {
-                        "header": "Gebiedsregister",
-                        "introduction": "Gebiede word gebruik om toestelle te organiseer gebaseer op waar hulle is. Hierdie inligting sal regdeur Home Assistant gebruik word om u te help om u koppelvlak, toestemmings en integrasies met ander stelsels te organiseer.",
-                        "introduction2": "Om toestelle in 'n gebied te plaas, gebruik die skakel hieronder om na die integrasies bladsy toe te gaan en klik dan op 'n opgestelde integrasie om na die toestelkaarte toe te gaan.",
-                        "integrations_page": "Integrasies bladsy",
-                        "no_areas": "Dit lyk asof u nog geen gebiede het nie!",
-                        "create_area": "SKEP GEBIED"
-                    },
-                    "no_areas": "Dit lyk asof u nog geen gebiede het nie!",
-                    "create_area": "SKEP GEBIED",
-                    "editor": {
-                        "default_name": "Nuwe Gebied",
-                        "delete": "SKRAP",
-                        "update": "OPDATEER",
-                        "create": "SKEP"
-                    }
-                },
-                "entity_registry": {
-                    "caption": "Entiteit Register",
-                    "description": "Oorsig van alle bekende entiteite.",
-                    "picker": {
-                        "header": "Entiteit Register",
-                        "unavailable": "(nie beskikbaar nie)",
-                        "introduction": "Home Assistant hou 'n register van al die vorige entiteite wat uniek geïdentifiseer kan word. Elk van hierdie entiteite sal 'n entiteit-ID hê wat vir hierdie entiteit gereserveer sal word.",
-                        "introduction2": "Gebruik die entiteitsregister om die naam te oorskryf, die entiteit ID te verander, of die inskrywing van Home Assistant te verwyder. Let wel, die verwydering van die entiteit registerinskrywing sal nie die entiteit verwyder nie. Om dit te doen, volg die skakel hieronder en verwyder dit uit die integrasies bladsy.",
-                        "integrations_page": "Integrasies bladsy"
-                    },
-                    "editor": {
-                        "unavailable": "Hierdie entiteit is tans nie beskikbaar nie.",
-                        "default_name": "Nuwe Gebied",
-                        "delete": "SKRAP",
-                        "update": "OPDATEER"
-                    }
-                },
-                "person": {
-                    "caption": "Persone",
-                    "description": "Bestuur die persone wat Home Assistant op spoor.",
-                    "detail": {
-                        "name": "Naam",
-                        "device_tracker_intro": "Kies die toestelle wat aan hierdie persoon behoort.",
-                        "device_tracker_picked": "Spoor toestel op",
-                        "device_tracker_pick": "Kies toestel om op te spoor"
-                    }
-                }
-            },
-            "profile": {
-                "push_notifications": {
-                    "header": "\"Push\" kennisgewings",
-                    "description": "Stuur kennisgewings na hierdie toestel.",
-                    "error_load_platform": "Stel notify.html5 op.",
-                    "error_use_https": "Vereis dat SSL gedeaktiveer is vir gebruikerskoopelvlak.",
-                    "push_notifications": "\"Push\" kennisgewings",
-                    "link_promo": "Kom meer te wete"
-                },
-                "language": {
-                    "header": "Taal",
-                    "link_promo": "Help om te vertaal",
-                    "dropdown_label": "Taal"
-                },
-                "themes": {
-                    "header": "Tema",
-                    "error_no_theme": "Geen temas beskikbaar nie.",
-                    "link_promo": "Kom meer te wete oor temas",
-                    "dropdown_label": "Tema"
-                },
-                "refresh_tokens": {
-                    "header": "Verfris-tekseenhede",
-                    "description": "Elke verfris-tekseenheid verteenwoordig 'n aanmeldingssessie. Verfris-tekseenhede sal outomaties verwyder word wanneer u op meld af klik. Die volgende verfris-tekseenhede is tans aktief vir u rekening.",
-                    "token_title": "Verfris-tekseenheid vir {clientId}",
-                    "created_at": "Geskep op {date}",
-                    "confirm_delete": "Is u seker u wil die verfris-tekseenheid vir {name} skrap?",
-                    "delete_failed": "Het misluk om die verfris-tekseenheid te skrap.",
-                    "last_used": "Laas gebruik op {date} vanaf {location}",
-                    "not_used": "Is nog nooit gebruik nie",
-                    "current_token_tooltip": "Nie in staat om huidige verfris-tekseenheid te skrap nie"
-                },
-                "long_lived_access_tokens": {
-                    "header": "Langlewende-toegangs-tekseenhede",
-                    "description": "Skep langlewende-toegangs-tekseenhede om u skripte in staat te stel om met u Home Assistant-instansie te kommunikeer. Elke tekseenheid sal geldig wees vir 10 jaar vanaf die skepping. Die volgende langlewende-toegangs-tekseenheid is tans aktief.",
-                    "learn_auth_requests": "Leer hoe om geverifieerde versoeke te maak.",
-                    "created_at": "Geskep op {date}",
-                    "confirm_delete": "Is u seker u wil die toegangs-tekseenheid vir {name} skrap?",
-                    "delete_failed": "Het misluk om die toegangs-tekseenheid te skrap.",
-                    "create": "Skep Tekseenheid",
-                    "create_failed": "Het misluk om die toegangs-tekseenheid te maak.",
-                    "prompt_name": "Naam?",
-                    "prompt_copy_token": "Kopieer u toegangs-tekseenheid. Dit sal nie weer gewys word nie.",
-                    "empty_state": "U het nog geen langlewende-toegangs-tekseenhede nie.",
-                    "last_used": "Laas gebruik op {date} vanaf {location}",
-                    "not_used": "Is nog nooit gebruik nie"
-                },
-                "current_user": "U is tans aangemeld as {fullName} .",
-                "is_owner": "U is 'n eienaar.",
-                "change_password": {
-                    "header": "Verander Wagwoord",
-                    "current_password": "Huidige Wagwoord",
-                    "new_password": "Nuwe Wagwoord",
-                    "confirm_new_password": "Bevestig Nuwe Wagwoord",
-                    "error_required": "Vereis",
-                    "submit": "Dien in"
-                },
-                "mfa": {
-                    "header": "Multi-faktor Verifikasie Modules",
-                    "disable": "Deaktiveer",
-                    "enable": "Aktiveer",
-                    "confirm_disable": "Is u seker u wil {name} deaktiveer?"
-                },
-                "mfa_setup": {
-                    "title_aborted": "Gestaak",
-                    "title_success": "Sukses!",
-                    "step_done": "Opstelling gedoen vir {step}",
-                    "close": "Toe",
-                    "submit": "Dien in"
-                },
-                "logout": "Meld af",
-                "force_narrow": {
-                    "header": "Steek die sybalk altyd weg",
-                    "description": "Dit sal die sybalk by aanvang verberg, soortgelyk aan die mobiele ervaring."
-                }
-            },
-            "page-authorize": {
-                "initializing": "Inisialiseer",
-                "authorizing_client": "U is op die punt om {clientId} toegang te gee tot u Home Assistant instansie.",
-                "logging_in_with": "Meld tans aan met **{authProviderName}**.",
-                "pick_auth_provider": "Of meld aan met",
-                "abort_intro": "Aanmelding gestaak",
-                "form": {
-                    "working": "Wag asseblief",
-                    "unknown_error": "Iets het skeef geloop",
-                    "providers": {
-                        "homeassistant": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "username": "Gebruikersnaam",
-                                        "password": "Wagwoord"
-                                    }
-                                },
-                                "mfa": {
-                                    "data": {
-                                        "code": "Twee-faktor-Verifikasiekode"
-                                    },
-                                    "description": "Maak die ** {mfa_module_name} ** op u toestel oop om u twee-faktor-verifikasiekode te sien en u identiteit te verifieer:"
-                                }
-                            },
-                            "error": {
-                                "invalid_auth": "Ongeldige gebruikersnaam of wagwoord",
-                                "invalid_code": "Ongeldige verifikasiekode"
-                            },
-                            "abort": {
-                                "login_expired": "Sessie verstryk, teken asseblief weer aan."
-                            }
-                        },
-                        "legacy_api_password": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "password": "API wagwoord"
-                                    },
-                                    "description": "Voer asseblief die API-wagwoord in u http-config in:"
-                                },
-                                "mfa": {
-                                    "data": {
-                                        "code": "Twee-faktor-Verifikasiekode"
-                                    },
-                                    "description": "Maak die ** {mfa_module_name} ** op u toestel oop om u twee-faktor-verifikasiekode te sien en u identiteit te verifieer:"
-                                }
-                            },
-                            "error": {
-                                "invalid_auth": "Ongeldige API wagwoord",
-                                "invalid_code": "Ongeldige verifikasiekode"
-                            },
-                            "abort": {
-                                "no_api_password_set": "U het nie 'n API-wagwoord opgestel nie.",
-                                "login_expired": "Sessie verstryk, teken asseblief weer aan."
-                            }
-                        },
-                        "trusted_networks": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "user": "Gebruiker"
-                                    },
-                                    "description": "Kies asseblief die gebruiker as wie U will aanmeld as:"
-                                }
-                            },
-                            "abort": {
-                                "not_whitelisted": "U rekenaar is nie op die witlys nie."
-                            }
-                        },
-                        "command_line": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "username": "Gebruikersnaam",
-                                        "password": "Wagwoord"
-                                    }
-                                },
-                                "mfa": {
-                                    "data": {
-                                        "code": "Twee-faktor-Verifikasiekode"
-                                    },
-                                    "description": "Maak die ** {mfa_module_name} ** op u toestel oop om u twee-faktor-verifikasiekode te sien en u identiteit te verifieer:"
-                                }
-                            },
-                            "error": {
-                                "invalid_auth": "Ongeldige gebruikersnaam of wagwoord",
-                                "invalid_code": "Ongeldige verifikasiekode"
-                            },
-                            "abort": {
-                                "login_expired": "Sessie verstryk, teken asseblief weer aan."
-                            }
-                        }
-                    }
-                }
-            },
-            "page-onboarding": {
-                "intro": "Is u gereed om u huis te ontwaak, u privaatheid te herwin en by 'n wêreldwye gemeenskap van peuters aan te sluit?",
-                "user": {
-                    "intro": "Kom ons begin deur 'n gebruikers rekening te skep.",
-                    "required_field": "Vereis",
-                    "data": {
-                        "name": "Naam",
-                        "username": "Gebruikersnaam",
-                        "password": "Wagwoord",
-                        "password_confirm": "Bevestig Wagwoord"
-                    },
-                    "create_account": "Skep Rekening",
-                    "error": {
-                        "required_fields": "Vul al die vereiste velde in",
-                        "password_not_match": "Wagwoorde stem nie ooreen nie"
-                    }
-                },
-                "integration": {
-                    "intro": "Toestelle en dienste word as integrasies in Home Assistant voorgestel. U kan dit nou opstel, of dit later doen vanaf die instellingskerm.",
-                    "more_integrations": "Meer",
-                    "finish": "Klaar"
-                },
-                "core-config": {
-                    "intro": "Hallo {name}, welkom by Home Assistant. Hoe wil u u huis vernoem?",
-                    "intro_location": "Ons wil graag weet waar u woon. Hierdie inligting sal help met die vertoon van inligting en die opstel van son-gebaseerde outomatisasies. Hierdie data word nooit buite u netwerk gedeel nie.",
-                    "intro_location_detect": "Ons kan u help om hierdie inligting in te vul deur 'n eenmalige versoek aan 'n eksterne diens te rig.",
-                    "location_name_default": "Tuis",
-                    "button_detect": "Ontdek",
-                    "finish": "Volgende"
-                }
-            },
-            "lovelace": {
-                "cards": {
-                    "shopping-list": {
-                        "checked_items": "Gemerkte items",
-                        "clear_items": "Maak die gemerkte items skoon",
-                        "add_item": "Voeg item by"
-                    },
-                    "empty_state": {
-                        "title": "Welkom tuis",
-                        "no_devices": "Hierdie bladsy laat u toe om u toestelle te beheer, maar dit lyk asof u nog nie toestelle opgestel het nie. Gaan na die integrasies bladsy om te begin.",
-                        "go_to_integrations_page": "Gaan na die integrasies bladsy."
-                    },
-                    "picture-elements": {
-                        "hold": "Hou:",
-                        "tap": "Tik:",
-                        "navigate_to": "Navigeer na {location}",
-                        "toggle": "Wissel {name}",
-                        "call_service": "Oproep diens {name}",
-                        "more_info": "Wys meer inligting: {name}"
-                    }
-                },
-                "editor": {
-                    "edit_card": {
-                        "header": "Kaart opstelling",
-                        "save": "Stoor",
-                        "toggle_editor": "Wissel redigeerder",
-                        "pick_card": "Kies die kaart wat u wil byvoeg.",
-                        "add": "Voeg Kaart by",
-                        "edit": "Wysig",
-                        "delete": "Skrap",
-                        "move": "Skuif"
-                    },
-                    "migrate": {
-                        "header": "Opstellings Onversoenbaar",
-                        "para_no_id": "Hierdie element het nie 'n ID nie. Voeg asseblief 'n ID by vir hierdie element in 'ui-lovelace.yaml'.",
-                        "para_migrate": "Druk die 'Migreer konfigurasie' knoppie as u wil hê Home Assistant moet vir u ID's by al u kaarte en aansigte outomaties byvoeg.",
-                        "migrate": "Migreer opstellings"
-                    },
-                    "header": "Wysig gebruikerskoppelvlak",
-                    "edit_view": {
-                        "header": "Bekyk Opstellings",
-                        "add": "Voeg aansig by",
-                        "edit": "Wysig aansig",
-                        "delete": "Skrap aansig"
-                    },
-                    "save_config": {
-                        "header": "Neem beheer van u Lovelace gebruikerskoppelvlak",
-                        "para": "Home Assistant sal outomaties u gebruikerskoppelvlak handhaaf, dit opdateer wanneer nuwe entiteite of Lovelace-komponente beskikbaar raak. Alhoewel, as u beheer neem, sal Home Assistant nie meer outomaties veranderings vir u doen nie.",
-                        "para_sure": "Is u seker u wil beheer neem oor u gebruikerskoppelvlak?",
-                        "cancel": "Toemaar",
-                        "save": "Neem beheer"
-                    },
-                    "menu": {
-                        "raw_editor": "Plat opstellings-redigeerder"
-                    },
-                    "raw_editor": {
-                        "header": "Wysig Instellings",
-                        "save": "Stoor",
-                        "unsaved_changes": "Ongestoorde veranderinge",
-                        "saved": "Gestoor"
-                    }
-                },
-                "menu": {
-                    "configure_ui": "Stel gebruikerskoppelvlak op",
-                    "unused_entities": "Ongebruikte entiteite",
-                    "help": "Help",
-                    "refresh": "Verfris"
-                },
-                "warning": {
-                    "entity_not_found": "Entiteit nie beskikbaar nie: {entity}",
-                    "entity_non_numeric": "Entiteit is nie-numeriese: {entity}"
-                },
-                "changed_toast": {
-                    "message": "Die Lovelace-opstelling is opgedateer, wil u graag herlaai?",
-                    "refresh": "Herlaai"
-                },
-                "reload_lovelace": "Herlaai Lovelace"
-            },
-            "page-demo": {
-                "cards": {
-                    "demo": {
-                        "demo_by": "deur {name}",
-                        "next_demo": "Volgende demonstrasie",
-                        "introduction": "Welkom tuis! U het die Home Assistant demo bereik waar ons die beste UI's vertoon wat deur ons gemeenskap geskep is.",
-                        "learn_more": "Kom meer te wete oor Home Assistant"
-                    }
-                },
-                "config": {
-                    "arsaboo": {
-                        "names": {
-                            "upstairs": "Boontoe",
-                            "family_room": "Sitkamer",
-                            "kitchen": "Kombuis",
-                            "patio": "Stoep",
-                            "hallway": "Gang",
-                            "master_bedroom": "Hoofslaapkamer",
-                            "left": "Links",
-                            "right": "Regs",
-                            "mirror": "Spieël"
-                        },
-                        "labels": {
-                            "lights": "Ligte",
-                            "information": "Inligting",
-                            "morning_commute": "Oggend Pendel",
-                            "commute_home": "Pendel na die huis",
-                            "entertainment": "Vermaak",
-                            "activity": "Aktiwiteit",
-                            "hdmi_input": "HDMI-toevoer",
-                            "hdmi_switcher": "HDMI-omskakelaar",
-                            "volume": "Volume",
-                            "total_tv_time": "Totale Televisie-tyd",
-                            "turn_tv_off": "Skakel televisie af",
-                            "air": "Lug"
-                        },
-                        "unit": {
-                            "watching": "Kyk Tans",
-                            "minutes_abbr": "min"
-                        }
-                    }
-                }
-            }
-        },
-        "sidebar": {
-            "log_out": "Meld af",
-            "external_app_configuration": "App Konfigurasie"
-        },
-        "common": {
-            "loading": "Laai tans",
-            "cancel": "Kanselleer",
-            "save": "Stoor"
-        },
-        "duration": {
-            "day": "{count} {count, plural,\n  one {dag}\n  other {dae}\n}",
-            "week": "{count} {count, plural,\n  one {week}\n  other {weke}\n}",
-            "second": "{count} {count, plural,\n  one {sekonde}\n  other {sekondes}\n}",
-            "minute": "{count} {count, plural,\none {minuut}\nother {minute}\n}",
-            "hour": "{count} {count, plural,\n  one {uur}\n  other {ure}\n}"
-        },
-        "login-form": {
-            "password": "Wagwoord",
-            "remember": "Onthou",
-            "log_in": "Meld aan"
+        "auth_store": {
+            "ask": "Wil u hierdie aanmelding stoor?",
+            "confirm": "Stoor aanmelding",
+            "decline": "Nee dankie"
         },
         "card": {
+            "alarm_control_panel": {
+                "arm_away": "Bewapen weg",
+                "arm_custom_bypass": "Pasgemaakte omseil",
+                "arm_home": "Bewapen Huis",
+                "arm_night": "Nag alarm",
+                "armed_custom_bypass": "Pasgemaakte omseil",
+                "clear_code": "Maak skoon",
+                "code": "Kode",
+                "disarm": "Skakel Af"
+            },
+            "automation": {
+                "last_triggered": "Laas geaktiveer",
+                "trigger": "Sneller"
+            },
             "camera": {
                 "not_available": "Beeld nie beskikbaar nie"
+            },
+            "climate": {
+                "aux_heat": "Aanvullende hitte",
+                "away_mode": "Wegmodus",
+                "currently": "Tans",
+                "fan_mode": "Waaier modus",
+                "on_off": "Aan \/ af",
+                "operation": "Operasie",
+                "preset_mode": "Voorafbepaalde",
+                "swing_mode": "Swaai modus",
+                "target_humidity": "Teiken humiditeit",
+                "target_temperature": "Teiken temperatuur"
+            },
+            "cover": {
+                "position": "Posisie",
+                "tilt_position": "Kantel posisie"
+            },
+            "fan": {
+                "direction": "Rigting",
+                "oscillate": "Ossilleer",
+                "speed": "Spoed"
+            },
+            "light": {
+                "brightness": "Helderheid",
+                "color_temperature": "Kleur temperatuur",
+                "effect": "Effek",
+                "white_value": "Wit ligwaarde"
+            },
+            "lock": {
+                "code": "Kode",
+                "lock": "Sluit toe",
+                "unlock": "Sluit oop"
+            },
+            "media_player": {
+                "sound_mode": "Klank modus",
+                "source": "Bron",
+                "text_to_speak": "Teks na spraak"
             },
             "persistent_notification": {
                 "dismiss": "Ontslaan"
@@ -1109,6 +453,22 @@
             },
             "script": {
                 "execute": "Voer uit"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Hervat stofsuig",
+                    "return_to_base": "Keer terug na die hawe",
+                    "start_cleaning": "Begin stofsuig",
+                    "turn_off": "Skakel af",
+                    "turn_on": "Skakel aan"
+                }
+            },
+            "water_heater": {
+                "away_mode": "Afwesig modus",
+                "currently": "Tans",
+                "on_off": "Aan \/ af",
+                "operation": "Operasie",
+                "target_temperature": "Teiken temperatuur"
             },
             "weather": {
                 "attributes": {
@@ -1125,8 +485,8 @@
                     "n": "N",
                     "ne": "NO",
                     "nne": "NNO",
-                    "nw": "NW",
                     "nnw": "NNW",
+                    "nw": "NW",
                     "s": "S",
                     "se": "SO",
                     "sse": "SSO",
@@ -1137,74 +497,12 @@
                     "wsw": "WSW"
                 },
                 "forecast": "Voorspelling"
-            },
-            "alarm_control_panel": {
-                "code": "Kode",
-                "clear_code": "Maak skoon",
-                "disarm": "Skakel Af",
-                "arm_home": "Bewapen Huis",
-                "arm_away": "Bewapen weg",
-                "arm_night": "Nag alarm",
-                "armed_custom_bypass": "Pasgemaakte omseil",
-                "arm_custom_bypass": "Pasgemaakte omseil"
-            },
-            "automation": {
-                "last_triggered": "Laas geaktiveer",
-                "trigger": "Sneller"
-            },
-            "cover": {
-                "position": "Posisie",
-                "tilt_position": "Kantel posisie"
-            },
-            "fan": {
-                "speed": "Spoed",
-                "oscillate": "Ossilleer",
-                "direction": "Rigting"
-            },
-            "light": {
-                "brightness": "Helderheid",
-                "color_temperature": "Kleur temperatuur",
-                "white_value": "Wit ligwaarde",
-                "effect": "Effek"
-            },
-            "media_player": {
-                "text_to_speak": "Teks na spraak",
-                "source": "Bron",
-                "sound_mode": "Klank modus"
-            },
-            "climate": {
-                "currently": "Tans",
-                "on_off": "Aan \/ af",
-                "target_temperature": "Teiken temperatuur",
-                "target_humidity": "Teiken humiditeit",
-                "operation": "Operasie",
-                "fan_mode": "Waaier modus",
-                "swing_mode": "Swaai modus",
-                "away_mode": "Wegmodus",
-                "aux_heat": "Aanvullende hitte",
-                "preset_mode": "Voorafbepaalde"
-            },
-            "lock": {
-                "code": "Kode",
-                "lock": "Sluit toe",
-                "unlock": "Sluit oop"
-            },
-            "vacuum": {
-                "actions": {
-                    "resume_cleaning": "Hervat stofsuig",
-                    "return_to_base": "Keer terug na die hawe",
-                    "start_cleaning": "Begin stofsuig",
-                    "turn_on": "Skakel aan",
-                    "turn_off": "Skakel af"
-                }
-            },
-            "water_heater": {
-                "currently": "Tans",
-                "on_off": "Aan \/ af",
-                "target_temperature": "Teiken temperatuur",
-                "operation": "Operasie",
-                "away_mode": "Afwesig modus"
             }
+        },
+        "common": {
+            "cancel": "Kanselleer",
+            "loading": "Laai tans",
+            "save": "Stoor"
         },
         "components": {
             "entity": {
@@ -1212,39 +510,27 @@
                     "entity": "Entiteit"
                 }
             },
-            "service-picker": {
-                "service": "Diens"
-            },
-            "relative_time": {
-                "past": "{time} gelede",
-                "future": "In {time}",
-                "never": "Nooit",
-                "duration": {
-                    "second": "{count} {count, plural,\n  one {sekonde}\n  other {sekondes}\n}",
-                    "minute": "{count} {count, plural,\n  one {minuut}\n  other {minute}\n}",
-                    "hour": "{count} {count, plural,\n  one {uur}\n  other {ure}\n}",
-                    "day": "{count} {count, plural,\n  one {dag}\n  other {dae}\n}",
-                    "week": "{count} {count, plural,\n  one {week}\n  other {weke}\n}"
-                }
-            },
             "history_charts": {
                 "loading_history": "Laai tans staatsgeskiedenis ...",
                 "no_history_found": "Geen staatgeskiedenis gevind nie."
+            },
+            "relative_time": {
+                "duration": {
+                    "day": "{count} {count, plural,\\n  one {dag}\\n  other {dae}\\n}",
+                    "hour": "{count} {count, plural,\\n  one {uur}\\n  other {ure}\\n}",
+                    "minute": "{count} {count, plural,\\n  one {minuut}\\n  other {minute}\\n}",
+                    "second": "{count} {count, plural,\\n  one {sekonde}\\n  other {sekondes}\\n}",
+                    "week": "{count} {count, plural,\\n  one {week}\\n  other {weke}\\n}"
+                },
+                "future": "In {time}",
+                "never": "Nooit",
+                "past": "{time} gelede"
+            },
+            "service-picker": {
+                "service": "Diens"
             }
         },
-        "notification_toast": {
-            "entity_turned_on": "{entity} aangeskakel.",
-            "entity_turned_off": "{entity} afgeskakel.",
-            "service_called": "Diens {service} geroep.",
-            "service_call_failed": "Het misluk om diens {service} te roep.",
-            "connection_lost": "Konneksie verlore. Herkoppel tans..."
-        },
         "dialogs": {
-            "more_info_settings": {
-                "save": "Stoor",
-                "name": "Naam Oorheers",
-                "entity_id": "Entiteit ID"
-            },
             "more_info_control": {
                 "script": {
                     "last_action": "Laaste Aksie"
@@ -1257,100 +543,814 @@
                 "updater": {
                     "title": "Opdateringsinstruksies"
                 }
+            },
+            "more_info_settings": {
+                "entity_id": "Entiteit ID",
+                "name": "Naam Oorheers",
+                "save": "Stoor"
             }
         },
-        "auth_store": {
-            "ask": "Wil u hierdie aanmelding stoor?",
-            "decline": "Nee dankie",
-            "confirm": "Stoor aanmelding"
+        "duration": {
+            "day": "{count} {count, plural,\\n  one {dag}\\n  other {dae}\\n}",
+            "hour": "{count} {count, plural,\\n  one {uur}\\n  other {ure}\\n}",
+            "minute": "{count} {count, plural,\\none {minuut}\\nother {minute}\\n}",
+            "second": "{count} {count, plural,\\n  one {sekonde}\\n  other {sekondes}\\n}",
+            "week": "{count} {count, plural,\\n  one {week}\\n  other {weke}\\n}"
+        },
+        "login-form": {
+            "log_in": "Meld aan",
+            "password": "Wagwoord",
+            "remember": "Onthou"
         },
         "notification_drawer": {
             "click_to_configure": "Klik knoppie om {entity} op te stel",
             "empty": "Geen kennisgewings",
             "title": "Kennisgewings"
-        }
-    },
-    "domain": {
-        "alarm_control_panel": "Alarm beheer paneel",
-        "automation": "Outomatisering",
-        "binary_sensor": "Binêre sensor",
-        "calendar": "Kalender",
-        "camera": "Kamera",
-        "climate": "Klimaat",
-        "configurator": "Konfigureerder",
-        "conversation": "Konversasie",
-        "cover": "Dekking",
-        "device_tracker": "Toestel opspoorder",
-        "fan": "Waaier",
-        "history_graph": "Geskiedenis grafiek",
-        "group": "Groep",
-        "image_processing": "Beeldverwerking",
-        "input_boolean": "Invoer boole",
-        "input_datetime": "Invoer datum\/tyd",
-        "input_select": "Invoer seleksie",
-        "input_number": "Invoer nommer",
-        "input_text": "Invoer teks",
-        "light": "Lig",
-        "lock": "Slot",
-        "mailbox": "Posbus",
-        "media_player": "Media-speler",
-        "notify": "Stel in kennis",
-        "plant": "Plant",
-        "proximity": "Nabyheid",
-        "remote": "Afgeleë",
-        "scene": "Toneel",
-        "script": "Skrip",
-        "sensor": "Sensor",
-        "sun": "Son",
-        "switch": "Skakelaar",
-        "updater": "Opdateerder",
-        "weblink": "Web skakel",
-        "zwave": "Z-Wave",
-        "vacuum": "Vakuum",
-        "zha": "ZHA",
-        "hassio": "Hass.io",
-        "homeassistant": "Home Assistant",
-        "lovelace": "Lovelace",
-        "system_health": "Stelsel Gesondheid",
-        "person": "Persoon"
-    },
-    "attribute": {
-        "weather": {
-            "humidity": "Humiditeit",
-            "visibility": "Sigbaarheid",
-            "wind_speed": "Windspoed"
-        }
-    },
-    "state_attributes": {
-        "climate": {
-            "fan_mode": {
-                "off": "Af",
-                "on": "Aan",
-                "auto": "Outomatiese"
+        },
+        "notification_toast": {
+            "connection_lost": "Konneksie verlore. Herkoppel tans...",
+            "entity_turned_off": "{entity} afgeskakel.",
+            "entity_turned_on": "{entity} aangeskakel.",
+            "service_call_failed": "Het misluk om diens {service} te roep.",
+            "service_called": "Diens {service} geroep."
+        },
+        "panel": {
+            "config": {
+                "area_registry": {
+                    "caption": "Gebiedsregister",
+                    "create_area": "SKEP GEBIED",
+                    "description": "Oorsig van alle gebiede in u huis.",
+                    "editor": {
+                        "create": "SKEP",
+                        "default_name": "Nuwe Gebied",
+                        "delete": "SKRAP",
+                        "update": "OPDATEER"
+                    },
+                    "no_areas": "Dit lyk asof u nog geen gebiede het nie!",
+                    "picker": {
+                        "create_area": "SKEP GEBIED",
+                        "header": "Gebiedsregister",
+                        "integrations_page": "Integrasies bladsy",
+                        "introduction": "Gebiede word gebruik om toestelle te organiseer gebaseer op waar hulle is. Hierdie inligting sal regdeur Home Assistant gebruik word om u te help om u koppelvlak, toestemmings en integrasies met ander stelsels te organiseer.",
+                        "introduction2": "Om toestelle in 'n gebied te plaas, gebruik die skakel hieronder om na die integrasies bladsy toe te gaan en klik dan op 'n opgestelde integrasie om na die toestelkaarte toe te gaan.",
+                        "no_areas": "Dit lyk asof u nog geen gebiede het nie!"
+                    }
+                },
+                "automation": {
+                    "caption": "Outomatisering",
+                    "description": "Skep en wysig outomatisasies",
+                    "editor": {
+                        "actions": {
+                            "add": "Voeg aksie by",
+                            "delete": "Skrap",
+                            "delete_confirm": "Is u seker u wil dit skrap?",
+                            "duplicate": "Dupliseer",
+                            "header": "Aksies",
+                            "introduction": "Die aksies is wat Home Assistant sal doen wanneer die outomatisering geaktiveer word.",
+                            "learn_more": "Kom meer te wete oor aksies",
+                            "type_select": "Aksie tipe",
+                            "type": {
+                                "condition": {
+                                    "label": "Voorwaarde"
+                                },
+                                "delay": {
+                                    "delay": "Vertraging",
+                                    "label": "Vertraging"
+                                },
+                                "event": {
+                                    "event": "Gebeurtenis:",
+                                    "label": "Vuur geval",
+                                    "service_data": "Diens data"
+                                },
+                                "service": {
+                                    "label": "Roep diens",
+                                    "service_data": "Diens data"
+                                },
+                                "wait_template": {
+                                    "label": "Wag",
+                                    "timeout": "Tyd verstreke (opsioneel)",
+                                    "wait_template": "Wag Templaat"
+                                }
+                            },
+                            "unsupported_action": "Ongesteunde aksie: {action}"
+                        },
+                        "alias": "Naam",
+                        "conditions": {
+                            "add": "Voeg voorwaarde by",
+                            "delete": "Skrap",
+                            "delete_confirm": "Is u seker u wil dit skrap?",
+                            "duplicate": "Dupliseer",
+                            "header": "Voorwaardes",
+                            "introduction": "Voorwaardes is 'n opsionele deel van 'n outomatiseringsreël en kan gebruik word om te verhoed dat 'n aksie plaasvind wanneer dit geaktiveer word. Voorwaardes lyk baie soos snellers maar is baie anders. 'n Sneller sal kyk na gebeure wat in die stelsel gebeur terwyl 'n voorwaarde net kyk hoe die stelsel lyk. Byvoorbeeld: 'n Sneller kan sien dat 'n skakelaar aangeskakel word. 'n Voorwaarde kan net sien of 'n skakelaar tans aan of af is.",
+                            "learn_more": "Kom meer te wete oor voorwaardes",
+                            "type_select": "Voorwaarde tipe",
+                            "type": {
+                                "numeric_state": {
+                                    "above": "Bo",
+                                    "below": "Onder",
+                                    "label": "Numeriese toestand",
+                                    "value_template": "Waarde templaat (opsioneel)"
+                                },
+                                "state": {
+                                    "label": "Staat",
+                                    "state": "Staat"
+                                },
+                                "sun": {
+                                    "after": "Na:",
+                                    "after_offset": "Na verreken (opsioneel)",
+                                    "before": "Voor:",
+                                    "before_offset": "Voor verreken (opsioneel)",
+                                    "label": "Son",
+                                    "sunrise": "Sonsopkoms",
+                                    "sunset": "Sonsondergang"
+                                },
+                                "template": {
+                                    "label": "Templaat",
+                                    "value_template": "Waarde templaat"
+                                },
+                                "time": {
+                                    "after": "Na",
+                                    "before": "Voor",
+                                    "label": "Tyd"
+                                },
+                                "zone": {
+                                    "entity": "Entiteit met plek",
+                                    "label": "Sone",
+                                    "zone": "Sone"
+                                }
+                            },
+                            "unsupported_condition": "Ongesteunde voorwaarde: {condition}"
+                        },
+                        "default_name": "Nuwe outomatisering",
+                        "introduction": "Gebruik outomatisasies om jou huis lewend te maak",
+                        "load_error_not_editable": "Slegs outomatisasies in automations.yaml kan verander word.",
+                        "load_error_unknown": "Kon nie outomatisering laai nie ({err_no}).",
+                        "save": "Stoor",
+                        "triggers": {
+                            "add": "Voeg sneller by",
+                            "delete": "Skrap",
+                            "delete_confirm": "Is u seker u wil dit skrap?",
+                            "duplicate": "Dupliseer",
+                            "header": "Snellers",
+                            "introduction": "Snellers is wat die prosessering van 'n outomatiseringsreël afskop. Dit is moontlik om verskeie snellers vir dieselfde reël te spesifiseer. Sodra 'n sneller begin, sal Home Assistant die voorwaardes, indien enige, bevestig en die aksie roep.",
+                            "learn_more": "Kom meer te wete oor snellers",
+                            "type_select": "Sneller tipe",
+                            "type": {
+                                "event": {
+                                    "event_data": "Gebeurtenis data",
+                                    "event_type": "Gebeurtenis tipe",
+                                    "label": "Gebeurtenis"
+                                },
+                                "geo_location": {
+                                    "enter": "Betree",
+                                    "event": "Gebeurtenis:",
+                                    "label": "Ligginggewing",
+                                    "leave": "Verlaat",
+                                    "source": "Bron",
+                                    "zone": "Sone"
+                                },
+                                "homeassistant": {
+                                    "event": "Gebeurtenis:",
+                                    "label": "Home Assistant",
+                                    "shutdown": "Staak",
+                                    "start": "Begin"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "payload": "Loonvrag (opsioneel)",
+                                    "topic": "Onderwerp"
+                                },
+                                "numeric_state": {
+                                    "above": "Bo",
+                                    "below": "Onder",
+                                    "label": "Numeriese toestand",
+                                    "value_template": "Waarde templaat (opsioneel)"
+                                },
+                                "state": {
+                                    "for": "Vir",
+                                    "from": "Vanaf",
+                                    "label": "Staat",
+                                    "to": "Tot en met"
+                                },
+                                "sun": {
+                                    "event": "Gebeurtenis:",
+                                    "label": "Son",
+                                    "offset": "Verreken (opsioneel)",
+                                    "sunrise": "Sonsopkoms",
+                                    "sunset": "Sonsondergang"
+                                },
+                                "template": {
+                                    "label": "Templaat",
+                                    "value_template": "Waarde templaat"
+                                },
+                                "time_pattern": {
+                                    "hours": "Ure",
+                                    "label": "Tydpatroon",
+                                    "minutes": "Minute",
+                                    "seconds": "Sekondes"
+                                },
+                                "time": {
+                                    "at": "Om",
+                                    "label": "Tyd"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
+                                },
+                                "zone": {
+                                    "enter": "Betree",
+                                    "entity": "Entiteit met plek",
+                                    "event": "Gebeurtenis:",
+                                    "label": "Sone",
+                                    "leave": "Verlaat",
+                                    "zone": "Sone"
+                                }
+                            },
+                            "unsupported_platform": "Ongesteunde platform: {platform}"
+                        },
+                        "unsaved_confirm": "U het ongestoorde veranderinge. Is u seker u wil die blad verlaat?"
+                    },
+                    "picker": {
+                        "add_automation": "Voeg outomatisering by",
+                        "header": "Outomatiseringsredakteur",
+                        "introduction": "Die outomatiseringsredakteur stel u in staat om outomatisasies te skep en te wysig. Volg die onderstaande skakel om die instruksies te lees om seker te maak dat u Home Assistant korrek opgestel het.",
+                        "learn_more": "Kom meer te wete oor outomatisasies",
+                        "no_automations": "Ons kon nie redigeerbare outomatisasies vind nie",
+                        "pick_automation": "Kies outomatisasie om te redigeer"
+                    }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_features": "Beheer terwyl weg van die huis af is, integreer met Alexa en Google Assistant.",
+                    "description_login": "Aangemeld as {email}",
+                    "description_not_login": "Nie aangemeld nie"
+                },
+                "core": {
+                    "caption": "Algemeen",
+                    "description": "Bevestig u opstellingslêer en beheer die bediener",
+                    "section": {
+                        "core": {
+                            "core_config": {
+                                "edit_requires_storage": "Redakteur is gedeaktiveer omdat konfigurasie gestoor is in configuration.yaml.",
+                                "elevation": "Hoogte",
+                                "elevation_meters": "Meter",
+                                "imperial_example": "Fahrenheit, pond",
+                                "latitude": "Breedtegraad",
+                                "location_name": "Naam van u Home Assistant installasie",
+                                "longitude": "Lengtegraad",
+                                "metric_example": "Celsius, kilogram",
+                                "save_button": "Stoor",
+                                "time_zone": "Tydsone",
+                                "unit_system": "Eenheidstelsel",
+                                "unit_system_imperial": "Imperial",
+                                "unit_system_metric": "Metrieke"
+                            },
+                            "header": "Opstellings en bedienerbeheer",
+                            "introduction": "As u opstellings verander, kan dit 'n vermoeiende proses wees. Ons weet. Hierdie afdeling sal probeer om u lewe 'n bietjie makliker te maak."
+                        },
+                        "server_control": {
+                            "reloading": {
+                                "automation": "Herlaai outomatisasies",
+                                "core": "Herlaai kern",
+                                "group": "Herlaai groepe",
+                                "heading": "Opstellings herlaai tans",
+                                "introduction": "Sommige dele van Home Assistant kan herlaai sonder om te herbegin. Deur om herlaai te kliek, sal die huidige opstelling ontlaai en die nuwe een laai.",
+                                "script": "Herlaai skripte"
+                            },
+                            "server_management": {
+                                "heading": "Bediener bestuur",
+                                "introduction": "Beheer u Home Assistant-bediener ... met Home Assistant.",
+                                "restart": "Herbegin",
+                                "stop": "Staak"
+                            },
+                            "validation": {
+                                "check_config": "Verifieer opstellings",
+                                "heading": "Opstellings validering",
+                                "introduction": "Verifieer u opstellings as u onlangs 'n paar veranderinge aan u opstellings gemaak het en wil seker maak dat dit alles geldig is",
+                                "invalid": "Opstellings ongeldig!",
+                                "valid": "Opstellings geldig!"
+                            }
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Pasgemaakte Instellings",
+                    "description": "Pas u entiteite aan",
+                    "picker": {
+                        "header": "Pasgemaakte Instellings",
+                        "introduction": "Verfyn per-entiteit eienskappe. Bygevoegde \/ gewysigde aanpassings sal onmiddellik in werking tree. Verwyderde aanpassings sal in werking tree wanneer die entiteit opgedateer word."
+                    }
+                },
+                "entity_registry": {
+                    "caption": "Entiteit Register",
+                    "description": "Oorsig van alle bekende entiteite.",
+                    "editor": {
+                        "default_name": "Nuwe Gebied",
+                        "delete": "SKRAP",
+                        "unavailable": "Hierdie entiteit is tans nie beskikbaar nie.",
+                        "update": "OPDATEER"
+                    },
+                    "picker": {
+                        "header": "Entiteit Register",
+                        "integrations_page": "Integrasies bladsy",
+                        "introduction": "Home Assistant hou 'n register van al die vorige entiteite wat uniek geïdentifiseer kan word. Elk van hierdie entiteite sal 'n entiteit-ID hê wat vir hierdie entiteit gereserveer sal word.",
+                        "introduction2": "Gebruik die entiteitsregister om die naam te oorskryf, die entiteit ID te verander, of die inskrywing van Home Assistant te verwyder. Let wel, die verwydering van die entiteit registerinskrywing sal nie die entiteit verwyder nie. Om dit te doen, volg die skakel hieronder en verwyder dit uit die integrasies bladsy.",
+                        "unavailable": "(nie beskikbaar nie)"
+                    }
+                },
+                "header": "Stel Home Assistant op",
+                "integrations": {
+                    "caption": "Integrasies",
+                    "config_entry": {
+                        "delete_confirm": "Is u seker u wil hierdie integrasie skrap?",
+                        "device_unavailable": "toestel nie beskikbaar nie",
+                        "entity_unavailable": "entiteit nie beskikbaar nie",
+                        "firmware": "Fermware: {version}",
+                        "hub": "Gekonnekteer via",
+                        "manuf": "deur {manufacturer}",
+                        "no_area": "Geen Gebied",
+                        "no_device": "Entiteite sonder toestelle",
+                        "no_devices": "Hierdie integrasie het geen toestelle nie.",
+                        "restart_confirm": "Herbegin Home Assistant om hierdie integrasie te voltooi",
+                        "via": "Gekonnekteer via"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Hierdie stap vereis dat u 'n eksterne webwerf besoek om voltooi te word.",
+                            "open_site": "Maak webwerf oop"
+                        }
+                    },
+                    "configure": "Stel op",
+                    "configured": "Opgestel",
+                    "description": "Bestuur gekoppelde toestelle en dienste",
+                    "discovered": "Ontdek",
+                    "new": "Stel 'n nuwe integrasie op",
+                    "none": "Nog niks is opgestel nie"
+                },
+                "introduction": "Hier is dit moontlik om u komponente en Home Assistant op te stel. Tans kan alles in verband met die gebruikerskoppelvlak nog nie hier opgestel word nie, maar ons werk daaraan.",
+                "person": {
+                    "caption": "Persone",
+                    "description": "Bestuur die persone wat Home Assistant op spoor.",
+                    "detail": {
+                        "device_tracker_intro": "Kies die toestelle wat aan hierdie persoon behoort.",
+                        "device_tracker_pick": "Kies toestel om op te spoor",
+                        "device_tracker_picked": "Spoor toestel op",
+                        "name": "Naam"
+                    }
+                },
+                "script": {
+                    "caption": "Skrip",
+                    "description": "Skep en wysig skripte"
+                },
+                "users": {
+                    "add_user": {
+                        "caption": "Voeg gebruiker by",
+                        "create": "Skep",
+                        "name": "Naam",
+                        "password": "Wagwoord",
+                        "username": "Gebruikersnaam"
+                    },
+                    "caption": "Gebruikers",
+                    "description": "Bestuur gebruikers",
+                    "editor": {
+                        "activate_user": "Aktiveer gebruiker",
+                        "caption": "Bekyk gebruiker",
+                        "change_password": "Verander Wagwoord",
+                        "deactivate_user": "Deaktiveer gebruiker",
+                        "delete_user": "Skrap gebruiker",
+                        "rename_user": "Hernoem gebruiker"
+                    },
+                    "picker": {
+                        "title": "Gebruikers"
+                    }
+                },
+                "zha": {
+                    "add_device_page": {
+                        "discovery_text": "Ontdekde toestelle sal hier verskyn. Volg die instruksies vir u toestel(e) en plaas die toestel(e) in die paringsmodus.",
+                        "header": "Zigbee Home Automation - Voeg Toestelle By",
+                        "spinner": "Opsoek na ZHA Zigbee-toestelle..."
+                    },
+                    "caption": "ZHA",
+                    "description": "Zigbee Home Automation netwerk bestuur",
+                    "device_card": {
+                        "area_picker_label": "Gebied",
+                        "device_name_placeholder": "Gebruiker se naam",
+                        "update_name_button": "Verander Naam"
+                    },
+                    "services": {
+                        "reconfigure": "Stel ZHA-toestel weer op (heal device). Gebruik dit as u probleme ondervind met die toestel. As die betrokke toestel 'n battery aangedrewe toestel is, maak asseblief seker dat dit wakker is en bevele aanvaar wanneer u hierdie diens gebruik.",
+                        "remove": "Verwyder 'n toestel van die ZigBee-netwerk.",
+                        "updateDeviceName": "Stel 'n persoonlike naam vir hierdie toestel in die toestelregister"
+                    }
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "common": {
+                        "index": "Indeks",
+                        "instance": "Aktiwiteit",
+                        "value": "Waarde"
+                    },
+                    "description": "Bestuur u Z-Wave netwerk",
+                    "network_management": {
+                        "header": "Bestuur Z-Wave Netwerk",
+                        "introduction": "Begin opdragte wat die Z-Wave-netwerk beïnvloed. U sal nie terugvoer kry of meeste opdragte slaag nie, maar u kan die OZW-logboek nagaan om dit uit te vind."
+                    },
+                    "network_status": {
+                        "network_started": "Z-Wave Netwerk is Aangeskakel",
+                        "network_started_note_all_queried": "Alle knooppunte is nagevra",
+                        "network_started_note_some_queried": "Aktiewe Knooppunte is nagevra. Slapende Knooppunte sal nagevra word sodra hulle ontwaak.",
+                        "network_starting": "Skakel Tans Z-Wave Netwerk Aan...",
+                        "network_starting_note": "Afhangend van die grootte van u netwerk, kan dit 'n rukkie duur.",
+                        "network_stopped": "Z-Wave Netwerk het Gestop"
+                    },
+                    "node_config": {
+                        "set_config_parameter": "Stel Config-parameter in"
+                    },
+                    "services": {
+                        "add_node": "Voeg Knooppunt By",
+                        "add_node_secure": "Voeg Veilige Knooppunt By",
+                        "cancel_command": "Kanselleer Opdrag",
+                        "heal_network": "Herstel Netwerk",
+                        "remove_node": "Verwyder Knooppunt",
+                        "save_config": "Stoor Instellings",
+                        "soft_reset": "Sagte Herstel",
+                        "start_network": "Skakel Netwerk Aan",
+                        "stop_network": "Stop Netwerk",
+                        "test_network": "Toets Netwerk"
+                    },
+                    "values": {
+                        "header": "Knooppuntwaardes"
+                    }
+                }
             },
-            "preset_mode": {
-                "none": "Geen",
-                "eco": "Eko",
-                "away": "Elders",
-                "boost": "Hupstoot",
-                "comfort": "Gemak",
-                "home": "Tuis",
-                "sleep": "Slaap",
-                "activity": "Aktiwiteit"
+            "developer-tools": {
+                "tabs": {
+                    "events": {
+                        "title": "Gebeure"
+                    },
+                    "info": {
+                        "title": "Inligting"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    },
+                    "services": {
+                        "title": "Dienste"
+                    },
+                    "states": {
+                        "title": "State"
+                    },
+                    "templates": {
+                        "title": "Template"
+                    }
+                }
             },
-            "hvac_action": {
-                "off": "Af",
-                "heating": "Verhit",
-                "cooling": "Koel Af",
-                "drying": "Droog Uit",
-                "idle": "Onaktief",
-                "fan": "Waaier"
+            "history": {
+                "period": "Tydperk",
+                "showing_entries": "Wys inskrywings vir"
+            },
+            "logbook": {
+                "period": "Tydperk",
+                "showing_entries": "Wys inskrywings vir"
+            },
+            "lovelace": {
+                "cards": {
+                    "empty_state": {
+                        "go_to_integrations_page": "Gaan na die integrasies bladsy.",
+                        "no_devices": "Hierdie bladsy laat u toe om u toestelle te beheer, maar dit lyk asof u nog nie toestelle opgestel het nie. Gaan na die integrasies bladsy om te begin.",
+                        "title": "Welkom tuis"
+                    },
+                    "picture-elements": {
+                        "call_service": "Oproep diens {name}",
+                        "hold": "Hou:",
+                        "more_info": "Wys meer inligting: {name}",
+                        "navigate_to": "Navigeer na {location}",
+                        "tap": "Tik:",
+                        "toggle": "Wissel {name}"
+                    },
+                    "shopping-list": {
+                        "add_item": "Voeg item by",
+                        "checked_items": "Gemerkte items",
+                        "clear_items": "Maak die gemerkte items skoon"
+                    }
+                },
+                "changed_toast": {
+                    "message": "Die Lovelace-opstelling is opgedateer, wil u graag herlaai?",
+                    "refresh": "Herlaai"
+                },
+                "editor": {
+                    "edit_card": {
+                        "add": "Voeg Kaart by",
+                        "delete": "Skrap",
+                        "edit": "Wysig",
+                        "header": "Kaart opstelling",
+                        "move": "Skuif",
+                        "pick_card": "Kies die kaart wat u wil byvoeg.",
+                        "save": "Stoor",
+                        "toggle_editor": "Wissel redigeerder"
+                    },
+                    "edit_view": {
+                        "add": "Voeg aansig by",
+                        "delete": "Skrap aansig",
+                        "edit": "Wysig aansig",
+                        "header": "Bekyk Opstellings"
+                    },
+                    "header": "Wysig gebruikerskoppelvlak",
+                    "menu": {
+                        "raw_editor": "Plat opstellings-redigeerder"
+                    },
+                    "migrate": {
+                        "header": "Opstellings Onversoenbaar",
+                        "migrate": "Migreer opstellings",
+                        "para_migrate": "Druk die 'Migreer konfigurasie' knoppie as u wil hê Home Assistant moet vir u ID's by al u kaarte en aansigte outomaties byvoeg.",
+                        "para_no_id": "Hierdie element het nie 'n ID nie. Voeg asseblief 'n ID by vir hierdie element in 'ui-lovelace.yaml'."
+                    },
+                    "raw_editor": {
+                        "header": "Wysig Instellings",
+                        "save": "Stoor",
+                        "saved": "Gestoor",
+                        "unsaved_changes": "Ongestoorde veranderinge"
+                    },
+                    "save_config": {
+                        "cancel": "Toemaar",
+                        "header": "Neem beheer van u Lovelace gebruikerskoppelvlak",
+                        "para": "Home Assistant sal outomaties u gebruikerskoppelvlak handhaaf, dit opdateer wanneer nuwe entiteite of Lovelace-komponente beskikbaar raak. Alhoewel, as u beheer neem, sal Home Assistant nie meer outomaties veranderings vir u doen nie.",
+                        "para_sure": "Is u seker u wil beheer neem oor u gebruikerskoppelvlak?",
+                        "save": "Neem beheer"
+                    }
+                },
+                "menu": {
+                    "configure_ui": "Stel gebruikerskoppelvlak op",
+                    "help": "Help",
+                    "refresh": "Verfris",
+                    "unused_entities": "Ongebruikte entiteite"
+                },
+                "reload_lovelace": "Herlaai Lovelace",
+                "warning": {
+                    "entity_non_numeric": "Entiteit is nie-numeriese: {entity}",
+                    "entity_not_found": "Entiteit nie beskikbaar nie: {entity}"
+                }
+            },
+            "mailbox": {
+                "delete_button": "Skrap",
+                "delete_prompt": "Skrap hierdie boodskap?",
+                "empty": "U het geen boodskappe nie",
+                "playback_title": "Boodskap terugspeel"
+            },
+            "page-authorize": {
+                "abort_intro": "Aanmelding gestaak",
+                "authorizing_client": "U is op die punt om {clientId} toegang te gee tot u Home Assistant instansie.",
+                "form": {
+                    "providers": {
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "Sessie verstryk, teken asseblief weer aan."
+                            },
+                            "error": {
+                                "invalid_auth": "Ongeldige gebruikersnaam of wagwoord",
+                                "invalid_code": "Ongeldige verifikasiekode"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Wagwoord",
+                                        "username": "Gebruikersnaam"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Twee-faktor-Verifikasiekode"
+                                    },
+                                    "description": "Maak die ** {mfa_module_name} ** op u toestel oop om u twee-faktor-verifikasiekode te sien en u identiteit te verifieer:"
+                                }
+                            }
+                        },
+                        "homeassistant": {
+                            "abort": {
+                                "login_expired": "Sessie verstryk, teken asseblief weer aan."
+                            },
+                            "error": {
+                                "invalid_auth": "Ongeldige gebruikersnaam of wagwoord",
+                                "invalid_code": "Ongeldige verifikasiekode"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Wagwoord",
+                                        "username": "Gebruikersnaam"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Twee-faktor-Verifikasiekode"
+                                    },
+                                    "description": "Maak die ** {mfa_module_name} ** op u toestel oop om u twee-faktor-verifikasiekode te sien en u identiteit te verifieer:"
+                                }
+                            }
+                        },
+                        "legacy_api_password": {
+                            "abort": {
+                                "login_expired": "Sessie verstryk, teken asseblief weer aan.",
+                                "no_api_password_set": "U het nie 'n API-wagwoord opgestel nie."
+                            },
+                            "error": {
+                                "invalid_auth": "Ongeldige API wagwoord",
+                                "invalid_code": "Ongeldige verifikasiekode"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API wagwoord"
+                                    },
+                                    "description": "Voer asseblief die API-wagwoord in u http-config in:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Twee-faktor-Verifikasiekode"
+                                    },
+                                    "description": "Maak die ** {mfa_module_name} ** op u toestel oop om u twee-faktor-verifikasiekode te sien en u identiteit te verifieer:"
+                                }
+                            }
+                        },
+                        "trusted_networks": {
+                            "abort": {
+                                "not_whitelisted": "U rekenaar is nie op die witlys nie."
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Gebruiker"
+                                    },
+                                    "description": "Kies asseblief die gebruiker as wie U will aanmeld as:"
+                                }
+                            }
+                        }
+                    },
+                    "unknown_error": "Iets het skeef geloop",
+                    "working": "Wag asseblief"
+                },
+                "initializing": "Inisialiseer",
+                "logging_in_with": "Meld tans aan met **{authProviderName}**.",
+                "pick_auth_provider": "Of meld aan met"
+            },
+            "page-demo": {
+                "cards": {
+                    "demo": {
+                        "demo_by": "deur {name}",
+                        "introduction": "Welkom tuis! U het die Home Assistant demo bereik waar ons die beste UI's vertoon wat deur ons gemeenskap geskep is.",
+                        "learn_more": "Kom meer te wete oor Home Assistant",
+                        "next_demo": "Volgende demonstrasie"
+                    }
+                },
+                "config": {
+                    "arsaboo": {
+                        "labels": {
+                            "activity": "Aktiwiteit",
+                            "air": "Lug",
+                            "commute_home": "Pendel na die huis",
+                            "entertainment": "Vermaak",
+                            "hdmi_input": "HDMI-toevoer",
+                            "hdmi_switcher": "HDMI-omskakelaar",
+                            "information": "Inligting",
+                            "lights": "Ligte",
+                            "morning_commute": "Oggend Pendel",
+                            "total_tv_time": "Totale Televisie-tyd",
+                            "turn_tv_off": "Skakel televisie af",
+                            "volume": "Volume"
+                        },
+                        "names": {
+                            "family_room": "Sitkamer",
+                            "hallway": "Gang",
+                            "kitchen": "Kombuis",
+                            "left": "Links",
+                            "master_bedroom": "Hoofslaapkamer",
+                            "mirror": "Spieël",
+                            "patio": "Stoep",
+                            "right": "Regs",
+                            "upstairs": "Boontoe"
+                        },
+                        "unit": {
+                            "minutes_abbr": "min",
+                            "watching": "Kyk Tans"
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "core-config": {
+                    "button_detect": "Ontdek",
+                    "finish": "Volgende",
+                    "intro": "Hallo {name}, welkom by Home Assistant. Hoe wil u u huis vernoem?",
+                    "intro_location": "Ons wil graag weet waar u woon. Hierdie inligting sal help met die vertoon van inligting en die opstel van son-gebaseerde outomatisasies. Hierdie data word nooit buite u netwerk gedeel nie.",
+                    "intro_location_detect": "Ons kan u help om hierdie inligting in te vul deur 'n eenmalige versoek aan 'n eksterne diens te rig.",
+                    "location_name_default": "Tuis"
+                },
+                "integration": {
+                    "finish": "Klaar",
+                    "intro": "Toestelle en dienste word as integrasies in Home Assistant voorgestel. U kan dit nou opstel, of dit later doen vanaf die instellingskerm.",
+                    "more_integrations": "Meer"
+                },
+                "intro": "Is u gereed om u huis te ontwaak, u privaatheid te herwin en by 'n wêreldwye gemeenskap van peuters aan te sluit?",
+                "user": {
+                    "create_account": "Skep Rekening",
+                    "data": {
+                        "name": "Naam",
+                        "password": "Wagwoord",
+                        "password_confirm": "Bevestig Wagwoord",
+                        "username": "Gebruikersnaam"
+                    },
+                    "error": {
+                        "password_not_match": "Wagwoorde stem nie ooreen nie",
+                        "required_fields": "Vul al die vereiste velde in"
+                    },
+                    "intro": "Kom ons begin deur 'n gebruikers rekening te skep.",
+                    "required_field": "Vereis"
+                }
+            },
+            "profile": {
+                "change_password": {
+                    "confirm_new_password": "Bevestig Nuwe Wagwoord",
+                    "current_password": "Huidige Wagwoord",
+                    "error_required": "Vereis",
+                    "header": "Verander Wagwoord",
+                    "new_password": "Nuwe Wagwoord",
+                    "submit": "Dien in"
+                },
+                "current_user": "U is tans aangemeld as {fullName} .",
+                "force_narrow": {
+                    "description": "Dit sal die sybalk by aanvang verberg, soortgelyk aan die mobiele ervaring.",
+                    "header": "Steek die sybalk altyd weg"
+                },
+                "is_owner": "U is 'n eienaar.",
+                "language": {
+                    "dropdown_label": "Taal",
+                    "header": "Taal",
+                    "link_promo": "Help om te vertaal"
+                },
+                "logout": "Meld af",
+                "long_lived_access_tokens": {
+                    "confirm_delete": "Is u seker u wil die toegangs-tekseenheid vir {name} skrap?",
+                    "create": "Skep Tekseenheid",
+                    "create_failed": "Het misluk om die toegangs-tekseenheid te maak.",
+                    "created_at": "Geskep op {date}",
+                    "delete_failed": "Het misluk om die toegangs-tekseenheid te skrap.",
+                    "description": "Skep langlewende-toegangs-tekseenhede om u skripte in staat te stel om met u Home Assistant-instansie te kommunikeer. Elke tekseenheid sal geldig wees vir 10 jaar vanaf die skepping. Die volgende langlewende-toegangs-tekseenheid is tans aktief.",
+                    "empty_state": "U het nog geen langlewende-toegangs-tekseenhede nie.",
+                    "header": "Langlewende-toegangs-tekseenhede",
+                    "last_used": "Laas gebruik op {date} vanaf {location}",
+                    "learn_auth_requests": "Leer hoe om geverifieerde versoeke te maak.",
+                    "not_used": "Is nog nooit gebruik nie",
+                    "prompt_copy_token": "Kopieer u toegangs-tekseenheid. Dit sal nie weer gewys word nie.",
+                    "prompt_name": "Naam?"
+                },
+                "mfa_setup": {
+                    "close": "Toe",
+                    "step_done": "Opstelling gedoen vir {step}",
+                    "submit": "Dien in",
+                    "title_aborted": "Gestaak",
+                    "title_success": "Sukses!"
+                },
+                "mfa": {
+                    "confirm_disable": "Is u seker u wil {name} deaktiveer?",
+                    "disable": "Deaktiveer",
+                    "enable": "Aktiveer",
+                    "header": "Multi-faktor Verifikasie Modules"
+                },
+                "push_notifications": {
+                    "description": "Stuur kennisgewings na hierdie toestel.",
+                    "error_load_platform": "Stel notify.html5 op.",
+                    "error_use_https": "Vereis dat SSL gedeaktiveer is vir gebruikerskoopelvlak.",
+                    "header": "\"Push\" kennisgewings",
+                    "link_promo": "Kom meer te wete",
+                    "push_notifications": "\"Push\" kennisgewings"
+                },
+                "refresh_tokens": {
+                    "confirm_delete": "Is u seker u wil die verfris-tekseenheid vir {name} skrap?",
+                    "created_at": "Geskep op {date}",
+                    "current_token_tooltip": "Nie in staat om huidige verfris-tekseenheid te skrap nie",
+                    "delete_failed": "Het misluk om die verfris-tekseenheid te skrap.",
+                    "description": "Elke verfris-tekseenheid verteenwoordig 'n aanmeldingssessie. Verfris-tekseenhede sal outomaties verwyder word wanneer u op meld af klik. Die volgende verfris-tekseenhede is tans aktief vir u rekening.",
+                    "header": "Verfris-tekseenhede",
+                    "last_used": "Laas gebruik op {date} vanaf {location}",
+                    "not_used": "Is nog nooit gebruik nie",
+                    "token_title": "Verfris-tekseenheid vir {clientId}"
+                },
+                "themes": {
+                    "dropdown_label": "Tema",
+                    "error_no_theme": "Geen temas beskikbaar nie.",
+                    "header": "Tema",
+                    "link_promo": "Kom meer te wete oor temas"
+                }
+            },
+            "shopping-list": {
+                "add_item": "Voeg item",
+                "clear_completed": "Maak voltooide items skoon",
+                "microphone_tip": "Druk die mikrofoon regs bo en sê \"Add candy to my shopping list\""
             }
+        },
+        "sidebar": {
+            "external_app_configuration": "App Konfigurasie",
+            "log_out": "Meld af"
         }
-    },
-    "groups": {
-        "system-admin": "Administrateurs",
-        "system-users": "Gebruikers",
-        "system-read-only": "Leesalleen-gebruikers"
     }
 }

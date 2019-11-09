@@ -1,7 +1,51 @@
 {
     "ui": {
+        "card": {
+            "fan": {
+                "forward": "آگے",
+                "reverse": "پیچھے کی جانب"
+            },
+            "timer": {
+                "actions": {
+                    "finish": "ختم",
+                    "pause": "توقف"
+                }
+            }
+        },
+        "dialogs": {
+            "zha_device_info": {
+                "services": {
+                    "remove": "زاگبی نیٹ ورک سے ایک آلہ ہٹائیں ۔"
+                },
+                "zha_device_card": {
+                    "area_picker_label": "جگہ"
+                }
+            }
+        },
         "panel": {
             "config": {
+                "automation": {
+                    "editor": {
+                        "actions": {
+                            "type": {
+                                "device_id": {
+                                    "label": "آلہ"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "type": {
+                                "device": {
+                                    "label": "آلہ"
+                                }
+                            }
+                        }
+                    }
+                },
+                "devices": {
+                    "caption": "آلات",
+                    "description": "منسلک آلات کا نظم کریں۔"
+                },
                 "server_control": {
                     "caption": "سرور کنٹرول۔",
                     "section": {
@@ -15,28 +59,6 @@
                     "node_config": {
                         "seconds": "سیکنڈ"
                     }
-                },
-                "automation": {
-                    "editor": {
-                        "conditions": {
-                            "type": {
-                                "device": {
-                                    "label": "آلہ"
-                                }
-                            }
-                        },
-                        "actions": {
-                            "type": {
-                                "device_id": {
-                                    "label": "آلہ"
-                                }
-                            }
-                        }
-                    }
-                },
-                "devices": {
-                    "caption": "آلات",
-                    "description": "منسلک آلات کا نظم کریں۔"
                 }
             },
             "developer-tools": {
@@ -44,28 +66,6 @@
                     "logs": {
                         "title": "نوشتہ جات"
                     }
-                }
-            }
-        },
-        "card": {
-            "fan": {
-                "forward": "آگے",
-                "reverse": "پیچھے کی جانب"
-            },
-            "timer": {
-                "actions": {
-                    "pause": "توقف",
-                    "finish": "ختم"
-                }
-            }
-        },
-        "dialogs": {
-            "zha_device_info": {
-                "services": {
-                    "remove": "زاگبی نیٹ ورک سے ایک آلہ ہٹائیں ۔"
-                },
-                "zha_device_card": {
-                    "area_picker_label": "جگہ"
                 }
             }
         }
