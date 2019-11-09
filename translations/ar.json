@@ -1,52 +1,160 @@
 {
-    "panel": {
-        "config": "الإعدادات",
-        "states": "نظرة عامة",
-        "map": "خريطة",
-        "logbook": "سجل",
-        "history": "التاريخ",
+    "attribute": {
+        "weather": {
+            "humidity": "الرطوبة",
+            "visibility": "الرؤية",
+            "wind_speed": "سرعة الرياح"
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "لوحة تحكم الإنذار",
+        "automation": "التشغيل التلقائي",
+        "binary_sensor": "جهاز استشعار ثنائي",
+        "calendar": "التقويم",
+        "camera": "كاميرا",
+        "climate": "الطقس",
+        "configurator": "الإعدادات",
+        "conversation": "محادثة",
+        "cover": "ستار",
+        "device_tracker": "تعقب الجهاز",
+        "fan": "مروحة",
+        "group": "مجموعة",
+        "history_graph": "رسم بياني",
+        "image_processing": "معالجة الصور",
+        "input_boolean": "مدخل بوليني",
+        "input_datetime": "خانة التاريخ والوقت",
+        "input_number": "خانة الأرقام",
+        "input_select": "لائحة إختيار",
+        "input_text": "خانة بيانات",
+        "light": "الضوء",
+        "lock": "قفل",
         "mailbox": "البريد",
-        "shopping_list": "قائمة التسوق",
+        "media_player": "مشغل الموسيقى",
+        "notify": "إشعار",
+        "person": "شخص",
+        "plant": "نبتة",
+        "proximity": "قرب",
+        "remote": "تحكم عن بعد",
+        "scene": "مشهد",
+        "script": "نص آلي",
+        "sensor": "أجهزة الاستشعار",
+        "sun": "الشمس",
+        "switch": "مفتاح",
+        "updater": "تحديث",
+        "vacuum": "مكنسة كهرباء",
+        "weblink": "Weblink",
+        "zwave": "Z-Wave"
+    },
+    "groups": {
+        "system-admin": "مسؤولين",
+        "system-read-only": "مستخدمين للعرض فقط",
+        "system-users": "مستخدمين"
+    },
+    "panel": {
+        "calendar": "التقويم",
+        "config": "الإعدادات",
         "dev-info": "معلومات",
         "developer_tools": "ادوات المطورين",
-        "calendar": "التقويم",
-        "profile": "الملف الشخصي"
+        "history": "التاريخ",
+        "logbook": "سجل",
+        "mailbox": "البريد",
+        "map": "خريطة",
+        "profile": "الملف الشخصي",
+        "shopping_list": "قائمة التسوق",
+        "states": "نظرة عامة"
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "auto": "آلي",
+                "off": "مطفأ",
+                "on": "مفعل"
+            }
+        }
+    },
+    "state_badge": {
+        "alarm_control_panel": {
+            "armed": "مفعل",
+            "armed_away": "مفعّل",
+            "armed_custom_bypass": "مفعّل",
+            "armed_home": "مفعّل",
+            "armed_night": "مفعل",
+            "arming": "جاري التفعيل ",
+            "disarmed": "غير مفعّل",
+            "disarming": "إيقاف الإنذار",
+            "pending": "إنتظار",
+            "triggered": "مفعّل"
+        },
+        "default": {
+            "unavailable": "غير متوفر",
+            "unknown": "غير معروف"
+        },
+        "device_tracker": {
+            "home": "في المنزل",
+            "not_home": "خارج المنزل"
+        },
+        "person": {
+            "home": "في المنزل",
+            "not_home": "خارج المنزل"
+        }
     },
     "state": {
-        "default": {
-            "off": "إيقاف",
-            "on": "تشغيل",
-            "unknown": "غير معروف",
-            "unavailable": "غير متوفر"
-        },
         "alarm_control_panel": {
             "armed": "مسلح",
-            "disarmed": "غير مفعّل",
-            "armed_home": "مفعّل في المنزل",
             "armed_away": "مفعّل في الخارج",
+            "armed_custom_bypass": "تجاوز التفعيل",
+            "armed_home": "مفعّل في المنزل",
             "armed_night": "مفعّل ليل",
-            "pending": "قيد الإنتظار",
             "arming": "جاري التفعيل",
+            "disarmed": "غير مفعّل",
             "disarming": "إيقاف الإنذار",
-            "triggered": "مفعّل",
-            "armed_custom_bypass": "تجاوز التفعيل"
+            "pending": "قيد الإنتظار",
+            "triggered": "مفعّل"
         },
         "automation": {
             "off": "إيقاف",
             "on": "تشغيل"
         },
         "binary_sensor": {
+            "battery": {
+                "off": "طبيعي",
+                "on": "منخفض"
+            },
+            "cold": {
+                "off": "طبيعي",
+                "on": "بارد"
+            },
+            "connectivity": {
+                "off": "مفصول",
+                "on": "متصل"
+            },
             "default": {
                 "off": "إيقاف",
                 "on": "تشغيل"
             },
-            "moisture": {
-                "off": "جاف",
-                "on": "مبلل"
+            "door": {
+                "off": "مغلق",
+                "on": "مفتوح"
+            },
+            "garage_door": {
+                "off": "مغلق",
+                "on": "مفتوح"
             },
             "gas": {
                 "off": "لم يتم الكشف",
                 "on": "تم الكشف"
+            },
+            "heat": {
+                "off": "طبيعي",
+                "on": "حار"
+            },
+            "lock": {
+                "off": "مقفل",
+                "on": "غير مقفل"
+            },
+            "moisture": {
+                "off": "جاف",
+                "on": "مبلل"
             },
             "motion": {
                 "off": "لم يتم الكشف",
@@ -55,6 +163,22 @@
             "occupancy": {
                 "off": "لم يتم الكشف",
                 "on": "تم الكشف"
+            },
+            "opening": {
+                "off": "مقفل",
+                "on": "مفتوح"
+            },
+            "presence": {
+                "off": "خارج المنزل",
+                "on": "في المنزل"
+            },
+            "problem": {
+                "off": "موافق",
+                "on": "عطل"
+            },
+            "safety": {
+                "off": "أمن",
+                "on": "غير أمن"
             },
             "smoke": {
                 "off": "لم يتم الكشف",
@@ -68,53 +192,9 @@
                 "off": "لم يتم الكشف",
                 "on": "تم الكشف"
             },
-            "opening": {
-                "off": "مقفل",
-                "on": "مفتوح"
-            },
-            "safety": {
-                "off": "أمن",
-                "on": "غير أمن"
-            },
-            "presence": {
-                "off": "خارج المنزل",
-                "on": "في المنزل"
-            },
-            "battery": {
-                "off": "طبيعي",
-                "on": "منخفض"
-            },
-            "problem": {
-                "off": "موافق",
-                "on": "عطل"
-            },
-            "connectivity": {
-                "off": "مفصول",
-                "on": "متصل"
-            },
-            "cold": {
-                "off": "طبيعي",
-                "on": "بارد"
-            },
-            "door": {
-                "off": "مغلق",
-                "on": "مفتوح"
-            },
-            "garage_door": {
-                "off": "مغلق",
-                "on": "مفتوح"
-            },
-            "heat": {
-                "off": "طبيعي",
-                "on": "حار"
-            },
             "window": {
                 "off": "مغلق",
                 "on": "مفتوح"
-            },
-            "lock": {
-                "off": "مقفل",
-                "on": "غير مقفل"
             }
         },
         "calendar": {
@@ -122,36 +202,42 @@
             "on": "تشغيل"
         },
         "camera": {
+            "idle": "خامل",
             "recording": "جاري التسجيل",
-            "streaming": "جاري البث",
-            "idle": "خامل"
+            "streaming": "جاري البث"
         },
         "climate": {
-            "off": "إيقاف",
-            "on": "تشغيل",
-            "heat": "تدفئة",
-            "cool": "تبريد",
-            "idle": "خامل",
             "auto": "تلقائي",
+            "cool": "تبريد",
             "dry": "جاف",
-            "fan_only": "المروحة فقط",
             "eco": "اقتصادي",
             "electric": "كهربائي",
-            "performance": "الأداء",
-            "high_demand": "تحت ضغط عالي",
+            "fan_only": "المروحة فقط",
+            "gas": "غاز",
+            "heat": "تدفئة",
             "heat_pump": "مضخة سخان",
-            "gas": "غاز"
+            "high_demand": "تحت ضغط عالي",
+            "idle": "خامل",
+            "off": "إيقاف",
+            "on": "تشغيل",
+            "performance": "الأداء"
         },
         "configurator": {
             "configure": "إعداد",
             "configured": "تم الإعداد"
         },
         "cover": {
-            "open": "مفتوح",
-            "opening": "جاري الفتح",
             "closed": "مغلق",
             "closing": "جاري الاغلاق",
+            "open": "مفتوح",
+            "opening": "جاري الفتح",
             "stopped": "موقف"
+        },
+        "default": {
+            "off": "إيقاف",
+            "on": "تشغيل",
+            "unavailable": "غير متوفر",
+            "unknown": "غير معروف"
         },
         "device_tracker": {
             "home": "في المنزل",
@@ -162,19 +248,19 @@
             "on": "قيد التشغيل"
         },
         "group": {
-            "off": "إيقاف",
-            "on": "قيد التشغيل",
-            "home": "في المنزل",
-            "not_home": "في الخارج",
-            "open": "مفتوح ",
-            "opening": "جاري الفتح ",
             "closed": "مغلق ",
             "closing": "جاري الاغلاق ",
-            "stopped": "موقف ",
+            "home": "في المنزل",
             "locked": "مقفل ",
-            "unlocked": "غير مقفل ",
+            "not_home": "في الخارج",
+            "off": "إيقاف",
             "ok": "أوكي",
-            "problem": "مشكلة"
+            "on": "قيد التشغيل",
+            "open": "مفتوح ",
+            "opening": "جاري الفتح ",
+            "problem": "مشكلة",
+            "stopped": "موقف ",
+            "unlocked": "غير مقفل "
         },
         "input_boolean": {
             "off": "إيقاف",
@@ -189,12 +275,16 @@
             "unlocked": "مفتوح"
         },
         "media_player": {
+            "idle": "خامل",
             "off": "إيقاف",
             "on": "قيد التشغيل",
-            "playing": "جاري التشغيل",
             "paused": "موقّف مؤقتا",
-            "idle": "خامل",
+            "playing": "جاري التشغيل",
             "standby": "وضع الإنتظار"
+        },
+        "person": {
+            "home": "في المنزل",
+            "not_home": "خارج المنزل"
         },
         "plant": {
             "ok": "أوكي",
@@ -223,21 +313,10 @@
             "off": "إيقاف",
             "on": "مُشَغّل"
         },
-        "zwave": {
-            "default": {
-                "initializing": "قيد الإنشاء",
-                "dead": "مفصول",
-                "sleeping": "نائم",
-                "ready": "جاهز"
-            },
-            "query_stage": {
-                "initializing": "قيد الإنشاء ( {query_stage} )",
-                "dead": "مفصول ({query_stage})"
-            }
-        },
-        "weather": {
-            "cloudy": "Bewolkt",
-            "fog": "Mist"
+        "timer": {
+            "active": "مفعل",
+            "idle": "خامل",
+            "paused": "موقّف مؤقتا"
         },
         "vacuum": {
             "cleaning": "تنظيف",
@@ -247,84 +326,302 @@
             "paused": "موقّف مؤقتا",
             "returning": "العودة"
         },
-        "timer": {
-            "active": "مفعل",
-            "idle": "خامل",
-            "paused": "موقّف مؤقتا"
+        "weather": {
+            "cloudy": "Bewolkt",
+            "fog": "Mist"
         },
-        "person": {
-            "home": "في المنزل",
-            "not_home": "خارج المنزل"
-        }
-    },
-    "state_badge": {
-        "default": {
-            "unknown": "غير معروف",
-            "unavailable": "غير متوفر"
-        },
-        "alarm_control_panel": {
-            "armed": "مفعل",
-            "disarmed": "غير مفعّل",
-            "armed_home": "مفعّل",
-            "armed_away": "مفعّل",
-            "armed_night": "مفعل",
-            "pending": "إنتظار",
-            "arming": "جاري التفعيل ",
-            "disarming": "إيقاف الإنذار",
-            "triggered": "مفعّل",
-            "armed_custom_bypass": "مفعّل"
-        },
-        "device_tracker": {
-            "home": "في المنزل",
-            "not_home": "خارج المنزل"
-        },
-        "person": {
-            "home": "في المنزل",
-            "not_home": "خارج المنزل"
+        "zwave": {
+            "default": {
+                "dead": "مفصول",
+                "initializing": "قيد الإنشاء",
+                "ready": "جاهز",
+                "sleeping": "نائم"
+            },
+            "query_stage": {
+                "dead": "مفصول ({query_stage})",
+                "initializing": "قيد الإنشاء ( {query_stage} )"
+            }
         }
     },
     "ui": {
-        "panel": {
-            "shopping-list": {
-                "clear_completed": "تم المسح",
-                "add_item": "أضف عنصر",
-                "microphone_tip": "اضغط على الميكروفون في أعلى اليمين وقل \"Add candy to my shopping list\""
+        "auth_store": {
+            "ask": "هل تريد حفظ هذا الدخول؟",
+            "confirm": "حفظ الدخول",
+            "decline": "لا شكرا"
+        },
+        "card": {
+            "alarm_control_panel": {
+                "arm_custom_bypass": "تجاوز مخصص"
             },
-            "developer-tools": {
-                "tabs": {
-                    "services": {
-                        "title": "الخدمات"
-                    },
-                    "states": {
-                        "title": "الحالات"
-                    },
-                    "events": {
-                        "title": "أحداث"
-                    },
-                    "templates": {
-                        "title": "نماذج"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
-                    }
+            "camera": {
+                "not_available": "الصورة غير متاحة"
+            },
+            "climate": {
+                "away_mode": "خارج المنزل",
+                "currently": "حاليا",
+                "fan_mode": "وضع المروحة",
+                "on_off": "إيقاف\/تشغيل",
+                "target_humidity": "Doelluchtvochtigheid",
+                "target_temperature": "درجة الحرارة المستهدفة"
+            },
+            "fan": {
+                "direction": "Richting",
+                "speed": "Snelheid"
+            },
+            "light": {
+                "brightness": "Helderheid",
+                "color_temperature": "Kleurtemperatuur",
+                "white_value": "Witwaarde"
+            },
+            "lock": {
+                "lock": "قفل",
+                "unlock": "فتح"
+            },
+            "media_player": {
+                "sound_mode": "وضع الصوت",
+                "source": "المصدر",
+                "text_to_speak": "النص للتحدث"
+            },
+            "persistent_notification": {
+                "dismiss": "رفض"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "استئناف التنظيف",
+                    "return_to_base": "العودة",
+                    "start_cleaning": "بدء تنظيف",
+                    "turn_off": "إيقاف",
+                    "turn_on": "تشغيل"
                 }
             },
-            "history": {
-                "showing_entries": "عرض الأحداث لـ",
-                "period": "المدة"
+            "water_heater": {
+                "away_mode": "حالة خارج المنزل",
+                "currently": "حاليا",
+                "on_off": "إيقاف\/تشغيل",
+                "operation": "تشغيل",
+                "target_temperature": "درجة الحرارة المستهدفة"
+            }
+        },
+        "common": {
+            "cancel": "إلغاء",
+            "loading": "جار التحميل"
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "الجهاز"
+                }
             },
-            "logbook": {
-                "showing_entries": "عرض الأحداث لـ"
+            "relative_time": {
+                "never": "Nooit"
             },
-            "mailbox": {
-                "empty": "ليس لديك رسائل",
-                "playback_title": "تشغيل الرسالة",
-                "delete_prompt": "هل تريد حذف هذه الرسالة؟",
-                "delete_button": "حذف"
+            "service-picker": {
+                "service": "خدمة"
+            }
+        },
+        "dialogs": {
+            "more_info_control": {
+                "sun": {
+                    "setting": "ضبط"
+                }
             },
+            "more_info_settings": {
+                "entity_id": "الكيان ID",
+                "name": "الاسم",
+                "save": "حفظ"
+            }
+        },
+        "duration": {
+            "day": "{count} {count, plural,\\none {يوم}\\nother {أيام}\\n}",
+            "second": "{count} {count, plural,\\none {ثانية}\\nother {ثواني}\\n}",
+            "week": "{count} {count, plural,\\none {أسبوع}\\nother {أسابيع}\\n}"
+        },
+        "login-form": {
+            "log_in": "تسجيل الدخول",
+            "password": "كلمه السر",
+            "remember": "تذكر"
+        },
+        "panel": {
             "config": {
-                "header": "برمجة نظام مساعد البيت",
-                "introduction": "يمكنك هنا برمجة المكونات الخاصة بك و إعداد نظام مساعد البيت. ليس كل شيء متاح للبرمجة من خلال واجهة المستخدم حتى الآن، ولكننا نعمل على ذلك.",
+                "area_registry": {
+                    "picker": {
+                        "create_area": "إنشاء منطقة",
+                        "no_areas": "يبدو أنه لا توجد أي مناطق معرفة!"
+                    }
+                },
+                "automation": {
+                    "caption": "التشغيل التلقائي",
+                    "description": "إنشاء وتحرير التشغيل الألي",
+                    "editor": {
+                        "actions": {
+                            "add": "أضف إجراء",
+                            "delete": "حذف",
+                            "delete_confirm": "هل تريد الحذف فعلا؟",
+                            "duplicate": "تكرار",
+                            "header": "الإجراءات",
+                            "introduction": "الإجراءات هي ما سيفعله Home Assistant عندما يتفعّل الجهاز المُتحَكم به.\\n\\n [مزيد من المعلومات حول الإجراءات.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "learn_more": "معرفة المزيد عن الإجراءات",
+                            "type_select": "نوع الإجراء",
+                            "type": {
+                                "condition": {
+                                    "label": "الشرط"
+                                },
+                                "delay": {
+                                    "delay": "تأخير",
+                                    "label": "التأخير"
+                                },
+                                "event": {
+                                    "event": "الحدث",
+                                    "label": "إجراء الحريق",
+                                    "service_data": "بيانات الخدمة"
+                                },
+                                "service": {
+                                    "label": "طلب خدمة",
+                                    "service_data": "بيانات الخدمة"
+                                },
+                                "wait_template": {
+                                    "label": "الإنتظار",
+                                    "timeout": "الحد الأقصى (إختياري)",
+                                    "wait_template": "نموذج الانتظار"
+                                }
+                            },
+                            "unsupported_action": "إجراء غير مدعوم: {action}"
+                        },
+                        "alias": "الاسم",
+                        "conditions": {
+                            "add": "إضافة شرط",
+                            "delete": "حذف",
+                            "delete_confirm": "هل تريد الحذف فعلا؟",
+                            "duplicate": "تكرار",
+                            "header": "الشروط",
+                            "introduction": "الشروط هي جزء اختياري من قواعد المتحكم الآلي ويمكن استخدامها لمنع تفعّل الإجراء بالمشغل. الشروط تبدو متشابهة جدًا مع المشغلات ولكنها مختلفة جدًا. سينظر المشغل في الأحداث التي تحدث في النظام بينما ينظر الشرط فقط إلى كيفية ظهور النظام الآن. يستطيع المشغل ملاحظة أن مفتاح التشغيل تم تشغيله. بينما الشرط يرى فقط ما إذا كان أحد المفاتيح هل هو قيد التشغيل أو الإيقاف حاليًا. \\n\\n [مزيد من المعلومات حول الشروط.] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "learn_more": "معرفة المزيد عن الشروط",
+                            "type_select": "نوع الشرط",
+                            "type": {
+                                "numeric_state": {
+                                    "above": "فوق",
+                                    "below": "تحت",
+                                    "label": "حالة القيمة الرقمية",
+                                    "value_template": "نموذج القيمة (إختياري)"
+                                },
+                                "state": {
+                                    "label": "الحالة",
+                                    "state": "الحالة"
+                                },
+                                "sun": {
+                                    "after": "بعد",
+                                    "after_offset": "تقديم الوقت (اختياري)",
+                                    "before": "قبل",
+                                    "before_offset": "تأخير الوقت (اختياري)",
+                                    "label": "الشمس",
+                                    "sunrise": "شروق الشمس",
+                                    "sunset": "غروب الشمس"
+                                },
+                                "template": {
+                                    "label": "النموذج",
+                                    "value_template": "نموذج القيمة"
+                                },
+                                "time": {
+                                    "after": "بعد",
+                                    "before": "قبل",
+                                    "label": "وقت"
+                                },
+                                "zone": {
+                                    "entity": "الجهاز في المنطقة",
+                                    "label": "المنطقة",
+                                    "zone": "المنطقة"
+                                }
+                            },
+                            "unsupported_condition": "شرط غير مدعوم: {condition}"
+                        },
+                        "default_name": "متحكم آلي جديد",
+                        "introduction": "استخدم المتحكمات الآلية لتجعل منزلك ينبض بالحياة",
+                        "save": "حفظ",
+                        "triggers": {
+                            "add": "أضف مشغل",
+                            "delete": "حذف",
+                            "delete_confirm": "هل تريد الحذف فعلا؟",
+                            "duplicate": "تكرار",
+                            "header": "المشغلات",
+                            "introduction": "المشغلات هي ما يبدأ تشغيل قاعدة المتحكم الآلي. من الممكن تحديد مشغلات متعددة لنفس القاعدة. بمجرد بدء المشغل ، سيقوم Home Assistant بالتحقق من الشروط ، إن وجدت ، واستدعاء الإجراء. \\n\\n [مزيد من المعلومات حول المشغلات.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "learn_more": "معرفة المزيد عن المشغلات",
+                            "type_select": "نوع المشغل",
+                            "type": {
+                                "event": {
+                                    "event_data": "بيانات الحدث",
+                                    "event_type": "نوع الحدث",
+                                    "label": "الحدث"
+                                },
+                                "homeassistant": {
+                                    "event": "الحدث:",
+                                    "label": "Home Assistant",
+                                    "shutdown": "إيقاف التشغيل",
+                                    "start": "بدء"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "payload": "المحتوى (إختياري)",
+                                    "topic": "الموضوع"
+                                },
+                                "numeric_state": {
+                                    "above": "فوق",
+                                    "below": "تحت",
+                                    "label": "القيمة الرقمية",
+                                    "value_template": "نموذج القيمة (اختياري)"
+                                },
+                                "state": {
+                                    "for": "لـ",
+                                    "from": "من",
+                                    "label": "الحالة",
+                                    "to": "إلى"
+                                },
+                                "sun": {
+                                    "event": "الحدث",
+                                    "label": "الشمس",
+                                    "offset": "إزاحة (اختياري)",
+                                    "sunrise": "شروق الشمس",
+                                    "sunset": "غروب الشمس"
+                                },
+                                "template": {
+                                    "label": "نموذج",
+                                    "value_template": "نموذج القيمة"
+                                },
+                                "time_pattern": {
+                                    "hours": "ساعات",
+                                    "minutes": "الدقائق",
+                                    "seconds": "ثواني"
+                                },
+                                "time": {
+                                    "at": "عند",
+                                    "label": "الوقت"
+                                },
+                                "zone": {
+                                    "enter": "دخول",
+                                    "entity": "اسم الجهاز مع المنطقة",
+                                    "event": "الحدث",
+                                    "label": "المنطقة",
+                                    "leave": "مغادرة",
+                                    "zone": "المنطقة"
+                                }
+                            },
+                            "unsupported_platform": "منصة غير مدعومة: {platform}"
+                        },
+                        "unsaved_confirm": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد أن تغادر ؟"
+                    },
+                    "picker": {
+                        "add_automation": "أضف متحكم آلي",
+                        "header": "محرر المتحكم الآلي",
+                        "introduction": "محرر المتحكم الآلي يسمح لك بإنشاء وتحرير المتحكمات الآلية. يرجى قراءة [الإرشادات] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) للتأكد من إعدادك Home Assistant بشكل صحيح.",
+                        "learn_more": "معرفة المزيد عن التحكم الآلي",
+                        "no_automations": "لم تعثر على أي متحكم آلي قابل للتعديل",
+                        "pick_automation": "أختر متحكم آلي للتعديل"
+                    }
+                },
+                "cloud": {
+                    "caption": "كلاود هوم اسيستينت",
+                    "description_login": "تم تسجيل الدخول كـ {email}",
+                    "description_not_login": "لم يتم تسجيل الدخول"
+                },
                 "core": {
                     "caption": "عام",
                     "description": "التحقق من صحة ملف الإعدادات والتحكم بالخادم",
@@ -334,19 +631,12 @@
                             "introduction": "تغيير الإعدادات يعتبر عملية مزرية. نحن نعلم ذلك . لذا، سيحاول هذا القسم جعل حياتك أكثر سهولة."
                         },
                         "server_control": {
-                            "validation": {
-                                "heading": "تآكيد صلاحية الإعدادات",
-                                "introduction": "التحقق من صحة الإعدادات الخاصة بك إذا قمت مؤخرا بإجراء بعض التغييرات وتريد التأكد من أن كل شيء على ما يرام",
-                                "check_config": "تحقق من الإعدادات",
-                                "valid": "الإعدادات صالحة",
-                                "invalid": "الإعدادات غير صالحة"
-                            },
                             "reloading": {
-                                "heading": "إعادة تحديث الإعدادات",
-                                "introduction": "يمكن تفعيل بعض الأجزاء الرئيسية لمساعد البيت دون الحاجة إلى إعادة تشغيل. الظغط على تحديث سيتم إزالة الإعدادات الحالية الخاصة وتحميل الإعدادات الجديدة.",
+                                "automation": "إعادة تحديث التشغيل الألي",
                                 "core": "إعادة تحديث النظام الأساسي",
                                 "group": "إعادة تحديث المجموعات",
-                                "automation": "إعادة تحديث التشغيل الألي",
+                                "heading": "إعادة تحديث الإعدادات",
+                                "introduction": "يمكن تفعيل بعض الأجزاء الرئيسية لمساعد البيت دون الحاجة إلى إعادة تشغيل. الظغط على تحديث سيتم إزالة الإعدادات الحالية الخاصة وتحميل الإعدادات الجديدة.",
                                 "script": "إعادة تحديث السكريبتات"
                             },
                             "server_management": {
@@ -354,6 +644,13 @@
                                 "introduction": "تحكم بسيرفر Home Assistant ... من Home Assistant.",
                                 "restart": "إعادة تشغيل",
                                 "stop": "إيقاف"
+                            },
+                            "validation": {
+                                "check_config": "تحقق من الإعدادات",
+                                "heading": "تآكيد صلاحية الإعدادات",
+                                "introduction": "التحقق من صحة الإعدادات الخاصة بك إذا قمت مؤخرا بإجراء بعض التغييرات وتريد التأكد من أن كل شيء على ما يرام",
+                                "invalid": "الإعدادات غير صالحة",
+                                "valid": "الإعدادات صالحة"
                             }
                         }
                     }
@@ -362,177 +659,64 @@
                     "caption": "التخصيص",
                     "description": "تخصيص الكيانات الخاصة بك"
                 },
-                "automation": {
-                    "caption": "التشغيل التلقائي",
-                    "description": "إنشاء وتحرير التشغيل الألي",
-                    "picker": {
-                        "header": "محرر المتحكم الآلي",
-                        "introduction": "محرر المتحكم الآلي يسمح لك بإنشاء وتحرير المتحكمات الآلية. يرجى قراءة [الإرشادات] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) للتأكد من إعدادك Home Assistant بشكل صحيح.",
-                        "pick_automation": "أختر متحكم آلي للتعديل",
-                        "no_automations": "لم تعثر على أي متحكم آلي قابل للتعديل",
-                        "add_automation": "أضف متحكم آلي",
-                        "learn_more": "معرفة المزيد عن التحكم الآلي"
+                "header": "برمجة نظام مساعد البيت",
+                "integrations": {
+                    "caption": "تكاملات",
+                    "config_entry": {
+                        "delete_confirm": "هل تريد حقا حذف هذا التكامل؟",
+                        "device_unavailable": "الجهاز غير متوفر",
+                        "entity_unavailable": "العنصر غير متوفر",
+                        "firmware": "نظام التشغيل {version}",
+                        "manuf": "بواسطة {manufacturer}",
+                        "no_area": "لا توجد منطقة",
+                        "no_device": "عناصر بدون أجهزة",
+                        "no_devices": "هذا التكامل لا يوجد لديه الأجهزة.",
+                        "restart_confirm": "اعادة تشغيل هوم اسيستينت لإنهاء حذف هذه التكامل",
+                        "via": "متصل من خلال"
                     },
-                    "editor": {
-                        "introduction": "استخدم المتحكمات الآلية لتجعل منزلك ينبض بالحياة",
-                        "default_name": "متحكم آلي جديد",
-                        "save": "حفظ",
-                        "unsaved_confirm": "لديك تغييرات غير محفوظة. هل أنت متأكد من أنك تريد أن تغادر ؟",
-                        "alias": "الاسم",
-                        "triggers": {
-                            "header": "المشغلات",
-                            "introduction": "المشغلات هي ما يبدأ تشغيل قاعدة المتحكم الآلي. من الممكن تحديد مشغلات متعددة لنفس القاعدة. بمجرد بدء المشغل ، سيقوم Home Assistant بالتحقق من الشروط ، إن وجدت ، واستدعاء الإجراء. \n\n [مزيد من المعلومات حول المشغلات.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
-                            "add": "أضف مشغل",
-                            "duplicate": "تكرار",
-                            "delete": "حذف",
-                            "delete_confirm": "هل تريد الحذف فعلا؟",
-                            "unsupported_platform": "منصة غير مدعومة: {platform}",
-                            "type_select": "نوع المشغل",
-                            "type": {
-                                "event": {
-                                    "label": "الحدث",
-                                    "event_type": "نوع الحدث",
-                                    "event_data": "بيانات الحدث"
-                                },
-                                "state": {
-                                    "label": "الحالة",
-                                    "from": "من",
-                                    "to": "إلى",
-                                    "for": "لـ"
-                                },
-                                "homeassistant": {
-                                    "label": "Home Assistant",
-                                    "event": "الحدث:",
-                                    "start": "بدء",
-                                    "shutdown": "إيقاف التشغيل"
-                                },
-                                "mqtt": {
-                                    "label": "MQTT",
-                                    "topic": "الموضوع",
-                                    "payload": "المحتوى (إختياري)"
-                                },
-                                "numeric_state": {
-                                    "label": "القيمة الرقمية",
-                                    "above": "فوق",
-                                    "below": "تحت",
-                                    "value_template": "نموذج القيمة (اختياري)"
-                                },
-                                "sun": {
-                                    "label": "الشمس",
-                                    "event": "الحدث",
-                                    "sunrise": "شروق الشمس",
-                                    "sunset": "غروب الشمس",
-                                    "offset": "إزاحة (اختياري)"
-                                },
-                                "template": {
-                                    "label": "نموذج",
-                                    "value_template": "نموذج القيمة"
-                                },
-                                "time": {
-                                    "label": "الوقت",
-                                    "at": "عند"
-                                },
-                                "zone": {
-                                    "label": "المنطقة",
-                                    "entity": "اسم الجهاز مع المنطقة",
-                                    "zone": "المنطقة",
-                                    "event": "الحدث",
-                                    "enter": "دخول",
-                                    "leave": "مغادرة"
-                                },
-                                "time_pattern": {
-                                    "hours": "ساعات",
-                                    "minutes": "الدقائق",
-                                    "seconds": "ثواني"
-                                }
-                            },
-                            "learn_more": "معرفة المزيد عن المشغلات"
-                        },
-                        "conditions": {
-                            "header": "الشروط",
-                            "introduction": "الشروط هي جزء اختياري من قواعد المتحكم الآلي ويمكن استخدامها لمنع تفعّل الإجراء بالمشغل. الشروط تبدو متشابهة جدًا مع المشغلات ولكنها مختلفة جدًا. سينظر المشغل في الأحداث التي تحدث في النظام بينما ينظر الشرط فقط إلى كيفية ظهور النظام الآن. يستطيع المشغل ملاحظة أن مفتاح التشغيل تم تشغيله. بينما الشرط يرى فقط ما إذا كان أحد المفاتيح هل هو قيد التشغيل أو الإيقاف حاليًا. \n\n [مزيد من المعلومات حول الشروط.] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
-                            "add": "إضافة شرط",
-                            "duplicate": "تكرار",
-                            "delete": "حذف",
-                            "delete_confirm": "هل تريد الحذف فعلا؟",
-                            "unsupported_condition": "شرط غير مدعوم: {condition}",
-                            "type_select": "نوع الشرط",
-                            "type": {
-                                "state": {
-                                    "label": "الحالة",
-                                    "state": "الحالة"
-                                },
-                                "numeric_state": {
-                                    "label": "حالة القيمة الرقمية",
-                                    "above": "فوق",
-                                    "below": "تحت",
-                                    "value_template": "نموذج القيمة (إختياري)"
-                                },
-                                "sun": {
-                                    "label": "الشمس",
-                                    "before": "قبل",
-                                    "after": "بعد",
-                                    "before_offset": "تأخير الوقت (اختياري)",
-                                    "after_offset": "تقديم الوقت (اختياري)",
-                                    "sunrise": "شروق الشمس",
-                                    "sunset": "غروب الشمس"
-                                },
-                                "template": {
-                                    "label": "النموذج",
-                                    "value_template": "نموذج القيمة"
-                                },
-                                "time": {
-                                    "label": "وقت",
-                                    "after": "بعد",
-                                    "before": "قبل"
-                                },
-                                "zone": {
-                                    "label": "المنطقة",
-                                    "entity": "الجهاز في المنطقة",
-                                    "zone": "المنطقة"
-                                }
-                            },
-                            "learn_more": "معرفة المزيد عن الشروط"
-                        },
-                        "actions": {
-                            "header": "الإجراءات",
-                            "introduction": "الإجراءات هي ما سيفعله Home Assistant عندما يتفعّل الجهاز المُتحَكم به.\n\n [مزيد من المعلومات حول الإجراءات.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
-                            "add": "أضف إجراء",
-                            "duplicate": "تكرار",
-                            "delete": "حذف",
-                            "delete_confirm": "هل تريد الحذف فعلا؟",
-                            "unsupported_action": "إجراء غير مدعوم: {action}",
-                            "type_select": "نوع الإجراء",
-                            "type": {
-                                "service": {
-                                    "label": "طلب خدمة",
-                                    "service_data": "بيانات الخدمة"
-                                },
-                                "delay": {
-                                    "label": "التأخير",
-                                    "delay": "تأخير"
-                                },
-                                "wait_template": {
-                                    "label": "الإنتظار",
-                                    "wait_template": "نموذج الانتظار",
-                                    "timeout": "الحد الأقصى (إختياري)"
-                                },
-                                "condition": {
-                                    "label": "الشرط"
-                                },
-                                "event": {
-                                    "label": "إجراء الحريق",
-                                    "event": "الحدث",
-                                    "service_data": "بيانات الخدمة"
-                                }
-                            },
-                            "learn_more": "معرفة المزيد عن الإجراءات"
-                        }
+                    "configure": "إعداد",
+                    "configured": "تم الإعداد",
+                    "description": "إدارة الأجهزة والخدمات المتصلة",
+                    "discovered": "مكتشف",
+                    "new": "إعداد تكامل جديد",
+                    "none": "لم يتم الإعداد بعد"
+                },
+                "introduction": "يمكنك هنا برمجة المكونات الخاصة بك و إعداد نظام مساعد البيت. ليس كل شيء متاح للبرمجة من خلال واجهة المستخدم حتى الآن، ولكننا نعمل على ذلك.",
+                "person": {
+                    "detail": {
+                        "device_tracker_pick": "اختر جهاز لتتبع"
                     }
                 },
                 "script": {
                     "caption": "السكريبت",
                     "description": "إنشاء و تحرير السكريبت"
+                },
+                "users": {
+                    "add_user": {
+                        "caption": "أضف مستخدم",
+                        "create": "إنشاء",
+                        "name": "الاسم",
+                        "password": "كلمه السر",
+                        "username": "اسم المستخدم"
+                    },
+                    "caption": "المستخدمين",
+                    "description": "ادارة المستخدمين",
+                    "editor": {
+                        "activate_user": "تفعيل المستخدم",
+                        "caption": "عرض المستخدم",
+                        "change_password": "تغيير كلمة السر",
+                        "deactivate_user": "إلغاء تنشيط المستخدم",
+                        "delete_user": "حذف المستخدم",
+                        "rename_user": "إعادة تسمية المستخدم"
+                    },
+                    "picker": {
+                        "title": "المستخدمين"
+                    }
+                },
+                "zha": {
+                    "services": {
+                        "updateDeviceName": "تعيين اسم مخصص لهذا الجهاز في سجل الأجهزة."
+                    }
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -540,154 +724,60 @@
                     "node_config": {
                         "set_config_parameter": "تعيين معلمة التكوين"
                     }
-                },
-                "users": {
-                    "caption": "المستخدمين",
-                    "description": "ادارة المستخدمين",
-                    "picker": {
-                        "title": "المستخدمين"
+                }
+            },
+            "developer-tools": {
+                "tabs": {
+                    "events": {
+                        "title": "أحداث"
                     },
-                    "editor": {
-                        "rename_user": "إعادة تسمية المستخدم",
-                        "change_password": "تغيير كلمة السر",
-                        "activate_user": "تفعيل المستخدم",
-                        "deactivate_user": "إلغاء تنشيط المستخدم",
-                        "delete_user": "حذف المستخدم",
-                        "caption": "عرض المستخدم"
+                    "mqtt": {
+                        "title": "MQTT"
                     },
-                    "add_user": {
-                        "caption": "أضف مستخدم",
-                        "name": "الاسم",
-                        "username": "اسم المستخدم",
-                        "password": "كلمه السر",
-                        "create": "إنشاء"
-                    }
-                },
-                "cloud": {
-                    "caption": "كلاود هوم اسيستينت",
-                    "description_login": "تم تسجيل الدخول كـ {email}",
-                    "description_not_login": "لم يتم تسجيل الدخول"
-                },
-                "integrations": {
-                    "caption": "تكاملات",
-                    "description": "إدارة الأجهزة والخدمات المتصلة",
-                    "discovered": "مكتشف",
-                    "configured": "تم الإعداد",
-                    "new": "إعداد تكامل جديد",
-                    "configure": "إعداد",
-                    "none": "لم يتم الإعداد بعد",
-                    "config_entry": {
-                        "no_devices": "هذا التكامل لا يوجد لديه الأجهزة.",
-                        "no_device": "عناصر بدون أجهزة",
-                        "delete_confirm": "هل تريد حقا حذف هذا التكامل؟",
-                        "restart_confirm": "اعادة تشغيل هوم اسيستينت لإنهاء حذف هذه التكامل",
-                        "manuf": "بواسطة {manufacturer}",
-                        "via": "متصل من خلال",
-                        "firmware": "نظام التشغيل {version}",
-                        "device_unavailable": "الجهاز غير متوفر",
-                        "entity_unavailable": "العنصر غير متوفر",
-                        "no_area": "لا توجد منطقة"
-                    }
-                },
-                "person": {
-                    "detail": {
-                        "device_tracker_pick": "اختر جهاز لتتبع"
-                    }
-                },
-                "area_registry": {
-                    "picker": {
-                        "no_areas": "يبدو أنه لا توجد أي مناطق معرفة!",
-                        "create_area": "إنشاء منطقة"
-                    }
-                },
-                "zha": {
                     "services": {
-                        "updateDeviceName": "تعيين اسم مخصص لهذا الجهاز في سجل الأجهزة."
-                    }
-                }
-            },
-            "profile": {
-                "push_notifications": {
-                    "header": "التنبيهات",
-                    "description": "إرسال الإشعارات إلى هذا الجهاز",
-                    "error_use_https": "يتطلب تمكين SSL للواجهة الأمامية.",
-                    "push_notifications": "التنبيهات",
-                    "link_promo": "معرفة المزيد"
-                },
-                "language": {
-                    "header": "اللغة",
-                    "link_promo": "المساعدة في ترجمة",
-                    "dropdown_label": "اللغة"
-                },
-                "themes": {
-                    "header": "التصميم",
-                    "error_no_theme": "لا توجد تصاميم متاحة.",
-                    "link_promo": "تعرف على التصاميم",
-                    "dropdown_label": "التصميم"
-                },
-                "refresh_tokens": {
-                    "last_used": "آخر استخدام بتاريخ {date} من {location}",
-                    "not_used": "لم يتم استخدامها ابدأ"
-                },
-                "long_lived_access_tokens": {
-                    "last_used": "آخر استخدام بتاريخ {date} من {location}",
-                    "not_used": "لم يتم استخدامها ابدأ"
-                },
-                "current_user": "أنت مسجّل الدخول حاليًا كـ {fullName} .",
-                "is_owner": "أنت مالك",
-                "change_password": {
-                    "header": "تغيير كلمة السر",
-                    "current_password": "كلمة السر الحالية",
-                    "new_password": "كلمة السر الجديدة",
-                    "confirm_new_password": "تأكيد كلمة السر الجديدة",
-                    "error_required": "مطلوب",
-                    "submit": "إرسال"
-                },
-                "mfa": {
-                    "header": "وحدات التحقق متعددة العوامل",
-                    "disable": "تعطيل",
-                    "enable": "تفعيل",
-                    "confirm_disable": "هل تريد حقا الغاء تفعيل {name}؟"
-                },
-                "mfa_setup": {
-                    "title_aborted": "تم الإلغاء",
-                    "title_success": "تم بنجاح",
-                    "step_done": "تم التنصيب لـ {step}",
-                    "close": "إغلاق",
-                    "submit": "إرسال"
-                }
-            },
-            "page-onboarding": {
-                "user": {
-                    "error": {
-                        "required_fields": "املأ جميع الحقول المطلوبة",
-                        "password_not_match": "كلمة السر غير مطابقة"
+                        "title": "الخدمات"
                     },
-                    "data": {
-                        "password_confirm": "تأكيد كلمة السر"
+                    "states": {
+                        "title": "الحالات"
+                    },
+                    "templates": {
+                        "title": "نماذج"
                     }
                 }
+            },
+            "history": {
+                "period": "المدة",
+                "showing_entries": "عرض الأحداث لـ"
+            },
+            "logbook": {
+                "showing_entries": "عرض الأحداث لـ"
             },
             "lovelace": {
                 "editor": {
                     "edit_card": {
-                        "edit": "تصحيح",
                         "delete": "حذف",
+                        "edit": "تصحيح",
                         "move": "نقل"
-                    },
-                    "save_config": {
-                        "cancel": "لا يهم"
                     },
                     "raw_editor": {
                         "header": "تعديل",
                         "save": "حفظ",
-                        "unsaved_changes": "التغييرات غير محفوظة",
-                        "saved": "تم الحفظ"
+                        "saved": "تم الحفظ",
+                        "unsaved_changes": "التغييرات غير محفوظة"
+                    },
+                    "save_config": {
+                        "cancel": "لا يهم"
                     }
                 },
                 "warning": {
                     "entity_not_found": "الجهاز غير متوفر: {entity}"
                 }
+            },
+            "mailbox": {
+                "delete_button": "حذف",
+                "delete_prompt": "هل تريد حذف هذه الرسالة؟",
+                "empty": "ليس لديك رسائل",
+                "playback_title": "تشغيل الرسالة"
             },
             "page-authorize": {
                 "form": {
@@ -696,175 +786,85 @@
                             "step": {
                                 "init": {
                                     "data": {
-                                        "username": "اسم المستخدم",
-                                        "password": "كلمة السر"
+                                        "password": "كلمة السر",
+                                        "username": "اسم المستخدم"
                                     }
                                 }
                             }
                         }
                     }
                 }
+            },
+            "page-onboarding": {
+                "user": {
+                    "data": {
+                        "password_confirm": "تأكيد كلمة السر"
+                    },
+                    "error": {
+                        "password_not_match": "كلمة السر غير مطابقة",
+                        "required_fields": "املأ جميع الحقول المطلوبة"
+                    }
+                }
+            },
+            "profile": {
+                "change_password": {
+                    "confirm_new_password": "تأكيد كلمة السر الجديدة",
+                    "current_password": "كلمة السر الحالية",
+                    "error_required": "مطلوب",
+                    "header": "تغيير كلمة السر",
+                    "new_password": "كلمة السر الجديدة",
+                    "submit": "إرسال"
+                },
+                "current_user": "أنت مسجّل الدخول حاليًا كـ {fullName} .",
+                "is_owner": "أنت مالك",
+                "language": {
+                    "dropdown_label": "اللغة",
+                    "header": "اللغة",
+                    "link_promo": "المساعدة في ترجمة"
+                },
+                "long_lived_access_tokens": {
+                    "last_used": "آخر استخدام بتاريخ {date} من {location}",
+                    "not_used": "لم يتم استخدامها ابدأ"
+                },
+                "mfa_setup": {
+                    "close": "إغلاق",
+                    "step_done": "تم التنصيب لـ {step}",
+                    "submit": "إرسال",
+                    "title_aborted": "تم الإلغاء",
+                    "title_success": "تم بنجاح"
+                },
+                "mfa": {
+                    "confirm_disable": "هل تريد حقا الغاء تفعيل {name}؟",
+                    "disable": "تعطيل",
+                    "enable": "تفعيل",
+                    "header": "وحدات التحقق متعددة العوامل"
+                },
+                "push_notifications": {
+                    "description": "إرسال الإشعارات إلى هذا الجهاز",
+                    "error_use_https": "يتطلب تمكين SSL للواجهة الأمامية.",
+                    "header": "التنبيهات",
+                    "link_promo": "معرفة المزيد",
+                    "push_notifications": "التنبيهات"
+                },
+                "refresh_tokens": {
+                    "last_used": "آخر استخدام بتاريخ {date} من {location}",
+                    "not_used": "لم يتم استخدامها ابدأ"
+                },
+                "themes": {
+                    "dropdown_label": "التصميم",
+                    "error_no_theme": "لا توجد تصاميم متاحة.",
+                    "header": "التصميم",
+                    "link_promo": "تعرف على التصاميم"
+                }
+            },
+            "shopping-list": {
+                "add_item": "أضف عنصر",
+                "clear_completed": "تم المسح",
+                "microphone_tip": "اضغط على الميكروفون في أعلى اليمين وقل \"Add candy to my shopping list\""
             }
         },
         "sidebar": {
             "log_out": "تسجيل الخروج"
-        },
-        "common": {
-            "loading": "جار التحميل",
-            "cancel": "إلغاء"
-        },
-        "duration": {
-            "day": "{count} {count, plural,\none {يوم}\nother {أيام}\n}",
-            "week": "{count} {count, plural,\none {أسبوع}\nother {أسابيع}\n}",
-            "second": "{count} {count, plural,\none {ثانية}\nother {ثواني}\n}"
-        },
-        "login-form": {
-            "password": "كلمه السر",
-            "remember": "تذكر",
-            "log_in": "تسجيل الدخول"
-        },
-        "card": {
-            "camera": {
-                "not_available": "الصورة غير متاحة"
-            },
-            "persistent_notification": {
-                "dismiss": "رفض"
-            },
-            "fan": {
-                "speed": "Snelheid",
-                "direction": "Richting"
-            },
-            "light": {
-                "brightness": "Helderheid",
-                "color_temperature": "Kleurtemperatuur",
-                "white_value": "Witwaarde"
-            },
-            "media_player": {
-                "text_to_speak": "النص للتحدث",
-                "source": "المصدر",
-                "sound_mode": "وضع الصوت"
-            },
-            "climate": {
-                "currently": "حاليا",
-                "on_off": "إيقاف\/تشغيل",
-                "target_temperature": "درجة الحرارة المستهدفة",
-                "target_humidity": "Doelluchtvochtigheid",
-                "fan_mode": "وضع المروحة",
-                "away_mode": "خارج المنزل"
-            },
-            "lock": {
-                "lock": "قفل",
-                "unlock": "فتح"
-            },
-            "vacuum": {
-                "actions": {
-                    "resume_cleaning": "استئناف التنظيف",
-                    "return_to_base": "العودة",
-                    "start_cleaning": "بدء تنظيف",
-                    "turn_on": "تشغيل",
-                    "turn_off": "إيقاف"
-                }
-            },
-            "water_heater": {
-                "currently": "حاليا",
-                "on_off": "إيقاف\/تشغيل",
-                "target_temperature": "درجة الحرارة المستهدفة",
-                "operation": "تشغيل",
-                "away_mode": "حالة خارج المنزل"
-            },
-            "alarm_control_panel": {
-                "arm_custom_bypass": "تجاوز مخصص"
-            }
-        },
-        "components": {
-            "entity": {
-                "entity-picker": {
-                    "entity": "الجهاز"
-                }
-            },
-            "service-picker": {
-                "service": "خدمة"
-            },
-            "relative_time": {
-                "never": "Nooit"
-            }
-        },
-        "dialogs": {
-            "more_info_settings": {
-                "save": "حفظ",
-                "name": "الاسم",
-                "entity_id": "الكيان ID"
-            },
-            "more_info_control": {
-                "sun": {
-                    "setting": "ضبط"
-                }
-            }
-        },
-        "auth_store": {
-            "ask": "هل تريد حفظ هذا الدخول؟",
-            "decline": "لا شكرا",
-            "confirm": "حفظ الدخول"
         }
-    },
-    "domain": {
-        "alarm_control_panel": "لوحة تحكم الإنذار",
-        "automation": "التشغيل التلقائي",
-        "binary_sensor": "جهاز استشعار ثنائي",
-        "calendar": "التقويم",
-        "camera": "كاميرا",
-        "climate": "الطقس",
-        "configurator": "الإعدادات",
-        "conversation": "محادثة",
-        "cover": "ستار",
-        "device_tracker": "تعقب الجهاز",
-        "fan": "مروحة",
-        "history_graph": "رسم بياني",
-        "group": "مجموعة",
-        "image_processing": "معالجة الصور",
-        "input_boolean": "مدخل بوليني",
-        "input_datetime": "خانة التاريخ والوقت",
-        "input_select": "لائحة إختيار",
-        "input_number": "خانة الأرقام",
-        "input_text": "خانة بيانات",
-        "light": "الضوء",
-        "lock": "قفل",
-        "mailbox": "البريد",
-        "media_player": "مشغل الموسيقى",
-        "notify": "إشعار",
-        "plant": "نبتة",
-        "proximity": "قرب",
-        "remote": "تحكم عن بعد",
-        "scene": "مشهد",
-        "script": "نص آلي",
-        "sensor": "أجهزة الاستشعار",
-        "sun": "الشمس",
-        "switch": "مفتاح",
-        "updater": "تحديث",
-        "weblink": "Weblink",
-        "zwave": "Z-Wave",
-        "vacuum": "مكنسة كهرباء",
-        "person": "شخص"
-    },
-    "attribute": {
-        "weather": {
-            "humidity": "الرطوبة",
-            "visibility": "الرؤية",
-            "wind_speed": "سرعة الرياح"
-        }
-    },
-    "state_attributes": {
-        "climate": {
-            "fan_mode": {
-                "off": "مطفأ",
-                "on": "مفعل",
-                "auto": "آلي"
-            }
-        }
-    },
-    "groups": {
-        "system-admin": "مسؤولين",
-        "system-users": "مستخدمين",
-        "system-read-only": "مستخدمين للعرض فقط"
     }
 }

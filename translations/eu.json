@@ -1,24 +1,89 @@
 {
-    "panel": {
-        "config": "Konfigurazioa",
-        "states": "Laburpena",
-        "map": "Mapa",
-        "logbook": "Erregistroa",
-        "history": "Historia",
+    "attribute": {
+        "weather": {
+            "humidity": "Hezetasuna",
+            "visibility": "Ikusgarritasuna",
+            "wind_speed": "Haizearen abiadura"
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Alarmen kontrol panela",
+        "automation": "Automatizazioa",
+        "binary_sensor": "Sentsore bitarra",
+        "calendar": "Egutegia",
+        "camera": "Kamera",
+        "climate": "Klimatizazioa",
+        "configurator": "Konfiguratzailea",
+        "conversation": "Elkarrizketa",
+        "fan": "Haizagailua",
+        "group": "Taldea",
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "input_boolean": "Sarrera boolearra",
+        "input_datetime": "Data sarrera",
+        "input_number": "Zenbaki sarrera",
+        "input_select": "Aukeraketa sarrera",
+        "input_text": "Testu sarrera",
+        "light": "Argia",
+        "lock": "Sarraila",
+        "lovelace": "Lovelace",
         "mailbox": "Postontzia",
-        "shopping_list": "Erosketa zerrenda",
+        "notify": "Jakinarazi",
+        "person": "Pertsona",
+        "plant": "Landarea",
+        "proximity": "Gertutasuna",
+        "remote": "Urrunekoa",
+        "scene": "Eszena",
+        "script": "Script",
+        "sensor": "Sentsorea",
+        "sun": "Eguzkia",
+        "system_health": "Sistemaren Osasuna",
+        "updater": "Eguneratzailea",
+        "vacuum": "Xurgagailua",
+        "zha": "ZHA"
+    },
+    "groups": {
+        "system-admin": "Administratzaileak",
+        "system-read-only": "Soilik irakurtzeko erabiltzaileak",
+        "system-users": "Erabiltzaileak"
+    },
+    "panel": {
+        "calendar": "Egutegia",
+        "config": "Konfigurazioa",
         "dev-info": "Informazioa",
         "developer_tools": "Garatzaileentzako tresnak",
-        "calendar": "Egutegia",
-        "profile": "Profila"
+        "history": "Historia",
+        "logbook": "Erregistroa",
+        "mailbox": "Postontzia",
+        "map": "Mapa",
+        "profile": "Profila",
+        "shopping_list": "Erosketa zerrenda",
+        "states": "Laburpena"
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "auto": "Auto",
+                "off": "Itzalita",
+                "on": "Piztuta"
+            }
+        }
+    },
+    "state_badge": {
+        "default": {
+            "entity_not_found": "Ez da Entitatea Aurkitu",
+            "error": "Errorea"
+        },
+        "device_tracker": {
+            "home": "Etxean",
+            "not_home": "Kanpoan"
+        },
+        "person": {
+            "home": "Etxean",
+            "not_home": "Kanpoan"
+        }
     },
     "state": {
-        "default": {
-            "off": "Itzalita",
-            "on": "Piztuta",
-            "unknown": "Ezezaguna",
-            "unavailable": "Ez dago erabilgarri"
-        },
         "alarm_control_panel": {
             "pending": "Zain",
             "triggered": "Abiarazita"
@@ -28,40 +93,21 @@
             "on": "Piztuta"
         },
         "binary_sensor": {
-            "default": {
-                "off": "Itzalita",
-                "on": "Piztuta"
-            },
-            "moisture": {
-                "off": "Lehorra",
-                "on": "Buztita"
-            },
-            "opening": {
-                "off": "Itxita",
-                "on": "Ireki"
-            },
-            "safety": {
-                "off": "Babestuta"
-            },
-            "presence": {
-                "off": "Kanpoan",
-                "on": "Etxean"
-            },
             "battery": {
                 "off": "Normala",
                 "on": "Baxua"
             },
-            "problem": {
-                "off": "Ondo",
-                "on": "Arazoa"
+            "cold": {
+                "off": "Normala",
+                "on": "Hotza"
             },
             "connectivity": {
                 "off": "Deskonektatuta",
                 "on": "Konektatuta"
             },
-            "cold": {
-                "off": "Normala",
-                "on": "Hotza"
+            "default": {
+                "off": "Itzalita",
+                "on": "Piztuta"
             },
             "door": {
                 "off": "Itxita",
@@ -75,13 +121,32 @@
                 "off": "Normala",
                 "on": "Beroa"
             },
-            "window": {
-                "off": "Itxita",
-                "on": "Ireki"
-            },
             "lock": {
                 "off": "Itxita",
                 "on": "Irekita"
+            },
+            "moisture": {
+                "off": "Lehorra",
+                "on": "Buztita"
+            },
+            "opening": {
+                "off": "Itxita",
+                "on": "Ireki"
+            },
+            "presence": {
+                "off": "Kanpoan",
+                "on": "Etxean"
+            },
+            "problem": {
+                "off": "Ondo",
+                "on": "Arazoa"
+            },
+            "safety": {
+                "off": "Babestuta"
+            },
+            "window": {
+                "off": "Itxita",
+                "on": "Ireki"
             }
         },
         "calendar": {
@@ -92,30 +157,36 @@
             "recording": "Grabatzen"
         },
         "climate": {
-            "off": "Itzalita",
-            "on": "Piztuta",
-            "heat": "Beroa",
-            "cool": "Hotza",
             "auto": "Automatikoa",
+            "cool": "Hotza",
             "dry": "Lehorra",
-            "fan_only": "Haizagailua bakarrik",
             "eco": "Eko",
             "electric": "Elektrikoa",
-            "performance": "Errendimendua",
-            "high_demand": "Eskari handia",
+            "fan_only": "Haizagailua bakarrik",
+            "gas": "Gasa",
+            "heat": "Beroa",
             "heat_pump": "Bero-ponpa",
-            "gas": "Gasa"
+            "high_demand": "Eskari handia",
+            "off": "Itzalita",
+            "on": "Piztuta",
+            "performance": "Errendimendua"
         },
         "configurator": {
             "configure": "Konfiguratu",
             "configured": "Konfiguratuta"
         },
         "cover": {
-            "open": "Irekita",
-            "opening": "Irekitzen",
             "closed": "Itxita",
             "closing": "Ixten",
+            "open": "Irekita",
+            "opening": "Irekitzen",
             "stopped": "Geldituta"
+        },
+        "default": {
+            "off": "Itzalita",
+            "on": "Piztuta",
+            "unavailable": "Ez dago erabilgarri",
+            "unknown": "Ezezaguna"
         },
         "device_tracker": {
             "home": "Etxean",
@@ -126,17 +197,17 @@
             "on": "Piztuta"
         },
         "group": {
-            "off": "Itzalita",
-            "on": "Piztuta",
-            "home": "Etxean",
-            "not_home": "Kanpoan",
-            "open": "Ireki",
-            "opening": "Irekitzen",
             "closed": "Itxita",
             "closing": "Ixten",
-            "stopped": "Geldirik",
+            "home": "Etxean",
+            "not_home": "Kanpoan",
+            "off": "Itzalita",
             "ok": "Itzalita",
-            "problem": "Arazoa"
+            "on": "Piztuta",
+            "open": "Ireki",
+            "opening": "Irekitzen",
+            "problem": "Arazoa",
+            "stopped": "Geldirik"
         },
         "input_boolean": {
             "off": "Itzalita",
@@ -149,6 +220,10 @@
         "media_player": {
             "off": "Itzalita",
             "on": "Piztuta"
+        },
+        "person": {
+            "home": "Etxean",
+            "not_home": "Kanpoan"
         },
         "plant": {
             "ok": "Itzalita",
@@ -174,17 +249,13 @@
             "off": "Itzalita",
             "on": "Piztuta"
         },
-        "zwave": {
-            "default": {
-                "initializing": "Hasieratzen",
-                "dead": "Hilda",
-                "sleeping": "Lotan",
-                "ready": "Prest"
-            },
-            "query_stage": {
-                "initializing": "Hasieratzen ({query_stage})",
-                "dead": "Ez du erantzuten ({query_stage})"
-            }
+        "vacuum": {
+            "cleaning": "Garbitzen",
+            "docked": "Basean",
+            "error": "Errorea",
+            "off": "Itzalita",
+            "on": "Piztuta",
+            "returning": "Basera itzultzen"
         },
         "weather": {
             "clear-night": "Garbia, gaua",
@@ -202,188 +273,222 @@
             "windy": "Haizetsua",
             "windy-variant": "Haizetsua"
         },
-        "vacuum": {
-            "cleaning": "Garbitzen",
-            "docked": "Basean",
-            "error": "Errorea",
-            "off": "Itzalita",
-            "on": "Piztuta",
-            "returning": "Basera itzultzen"
-        },
-        "person": {
-            "home": "Etxean",
-            "not_home": "Kanpoan"
-        }
-    },
-    "state_badge": {
-        "device_tracker": {
-            "home": "Etxean",
-            "not_home": "Kanpoan"
-        },
-        "person": {
-            "home": "Etxean",
-            "not_home": "Kanpoan"
-        },
-        "default": {
-            "error": "Errorea",
-            "entity_not_found": "Ez da Entitatea Aurkitu"
+        "zwave": {
+            "default": {
+                "dead": "Hilda",
+                "initializing": "Hasieratzen",
+                "ready": "Prest",
+                "sleeping": "Lotan"
+            },
+            "query_stage": {
+                "dead": "Ez du erantzuten ({query_stage})",
+                "initializing": "Hasieratzen ({query_stage})"
+            }
         }
     },
     "ui": {
-        "panel": {
-            "shopping-list": {
-                "clear_completed": "Osatutakoak ezabatu",
-                "add_item": "Artikulua gehitu"
+        "auth_store": {
+            "ask": "Saio hau gorde nahi duzu?",
+            "confirm": "Erabiltzailea gorde",
+            "decline": "Ez, eskerrik asko"
+        },
+        "card": {
+            "alarm_control_panel": {
+                "clear_code": "Garbitu",
+                "code": "Kodea"
             },
-            "developer-tools": {
-                "tabs": {
-                    "services": {
-                        "title": "Zerbitzuak"
-                    },
-                    "states": {
-                        "title": "Egoerak"
-                    },
-                    "events": {
-                        "title": "Gertaerak"
-                    },
-                    "templates": {
-                        "title": "Txantiloiak"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
-                    }
+            "camera": {
+                "not_available": "Irudia ez dago eskuragarri"
+            },
+            "climate": {
+                "away_mode": "Etxetik kanpo",
+                "currently": "Orain",
+                "fan_mode": "Haizagailuaren modua",
+                "on_off": "Piztuta \/ itzalita",
+                "operation": "Modua"
+            },
+            "cover": {
+                "position": "Posizioa"
+            },
+            "fan": {
+                "speed": "Abiadura"
+            },
+            "light": {
+                "brightness": "Distira",
+                "color_temperature": "Kolore tenperatura",
+                "effect": "Efektua"
+            },
+            "lock": {
+                "code": "Kodea"
+            },
+            "media_player": {
+                "sound_mode": "Soinu modua",
+                "source": "Iturria",
+                "text_to_speak": "Esateko testua"
+            },
+            "scene": {
+                "activate": "Aktibatu"
+            },
+            "script": {
+                "execute": "Exekutatu"
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Garbitzen jarraitu",
+                    "return_to_base": "Basera itzuli",
+                    "start_cleaning": "Garbitzen hasi",
+                    "turn_off": "Itzali",
+                    "turn_on": "Piztu"
                 }
             },
-            "mailbox": {
-                "empty": "Ez duzu mezurik",
-                "delete_prompt": "Mezu hau ezabatu?",
-                "delete_button": "Ezabatu"
+            "water_heater": {
+                "currently": "Orain",
+                "on_off": "Piztuta \/ itzalita",
+                "operation": "Operazioa"
             },
-            "config": {
-                "core": {
-                    "caption": "Orokorra",
-                    "section": {
-                        "server_control": {
-                            "reloading": {
-                                "core": "Nukleoa birkargatu",
-                                "group": "Taldeak birkargatu",
-                                "automation": "Automatizazioak birkargatu",
-                                "script": "Scriptak birkargatu"
-                            },
-                            "server_management": {
-                                "heading": "Zerbitzariaren kudeaketa",
-                                "introduction": "Zure Home Assistant zerbitzaria... Home Assistantetik kontrolatu",
-                                "restart": "Berrabiarazi",
-                                "stop": "Gelditu"
-                            }
-                        },
-                        "core": {
-                            "core_config": {
-                                "location_name": "Zure Home Assistant instalazioaren izena",
-                                "latitude": "Latitudea",
-                                "longitude": "Longitudea",
-                                "elevation_meters": "metro",
-                                "time_zone": "Ordu-eremua",
-                                "unit_system": "Unitate Sistema",
-                                "unit_system_imperial": "Inperiala",
-                                "unit_system_metric": "Metrikoa",
-                                "imperial_example": "Fahrenheit, librak",
-                                "metric_example": "Celsius, kilogramoak",
-                                "save_button": "Gorde"
-                            }
-                        }
-                    }
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Aire presioa",
+                    "humidity": "Hezetasuna",
+                    "temperature": "Tenperatura",
+                    "visibility": "Ikusgarritasuna",
+                    "wind_speed": "Haizearen abiadura"
                 },
+                "cardinal_direction": {
+                    "e": "E",
+                    "ene": "EIE",
+                    "ese": "EHE",
+                    "n": "I",
+                    "ne": "IE",
+                    "nne": "IIE",
+                    "nnw": "IIM",
+                    "nw": "IM",
+                    "s": "H",
+                    "se": "HE",
+                    "sse": "HHE",
+                    "ssw": "HHM",
+                    "sw": "HM",
+                    "w": "M",
+                    "wnw": "MIM",
+                    "wsw": "MHM"
+                },
+                "forecast": "Iragarpena"
+            }
+        },
+        "common": {
+            "loading": "Kargatzen",
+            "save": "Gorde"
+        },
+        "components": {
+            "relative_time": {
+                "duration": {
+                    "day": "{count} {count, plural,\\n  one {egun}\\n  other {egun}\\n}",
+                    "hour": "{count} {count, plural,\\n  one {ordu}\\n  other {ordu}\\n}",
+                    "minute": "{count} {count, plural,\\n  one {minutu}\\n  other {minutu}\\n}",
+                    "second": "{count} {count, plural,\\n  one {segundo}\\n  other {segundo}\\n}",
+                    "week": "{count} {count, plural,\\n  one {aste}\\n  other {aste}\\n}"
+                },
+                "future": "{time} barru",
+                "never": "Inoiz",
+                "past": "Orain dela {time}"
+            },
+            "service-picker": {
+                "service": "Zerbitzua"
+            }
+        },
+        "dialogs": {
+            "more_info_control": {
                 "script": {
-                    "caption": "Script",
-                    "description": "Scriptak sortu eta editatu"
+                    "last_action": "Azken ekintza"
                 },
-                "zwave": {
-                    "caption": "Z-Wave",
-                    "node_config": {
-                        "set_config_parameter": "Ezarri konfigurazio-parametroa"
+                "sun": {
+                    "rising": "Igotzen",
+                    "setting": "Ezarpena"
+                },
+                "updater": {
+                    "title": "Argibideak Eguneratu"
+                }
+            },
+            "more_info_settings": {
+                "name": "Izena",
+                "save": "Gorde"
+            }
+        },
+        "duration": {
+            "day": "{count} {count, plural,\\n  one {egun}\\n  other {egun}\\n}",
+            "hour": "{count} {count, plural,\\n  one {ordu}\\n  other {ordu}\\n}",
+            "minute": "{count} {count, plural,\\n  one {minutu}\\n  other {minutu}\\n}",
+            "second": "{count} {count, plural,\\n  one {segundo}\\n  other {segundo}\\n}",
+            "week": "{count} {count, plural,\\n  one {aste}\\n  other {aste}\\n}"
+        },
+        "login-form": {
+            "log_in": "Saioa hasi",
+            "password": "Pasahitza",
+            "remember": "Gogoratu"
+        },
+        "notification_drawer": {
+            "empty": "Jakinarazpenik ez",
+            "title": "Jakinarazpenak"
+        },
+        "notification_toast": {
+            "connection_lost": "Konexioa galdu da. Berriro konektatzen...",
+            "entity_turned_off": "{entity} itzalita.",
+            "entity_turned_on": "{entity} piztuta.",
+            "service_called": "{service} zerbitzua deitu da."
+        },
+        "panel": {
+            "config": {
+                "area_registry": {
+                    "caption": "Gune Erregistroa",
+                    "create_area": "GUNEA SORTU",
+                    "description": "Zure etxeko gune guztien ikuspegi orokorra.",
+                    "editor": {
+                        "create": "SORTU",
+                        "default_name": "Gune berria",
+                        "delete": "EZABATU",
+                        "update": "EGUNERATU"
+                    },
+                    "picker": {
+                        "create_area": "GUNEA SORTU",
+                        "header": "Gune Erregistroa",
+                        "integrations_page": "Integrazioen orria",
+                        "no_areas": "Oraindik gunerik ez duzula dirudi!"
                     }
                 },
                 "automation": {
-                    "picker": {
-                        "add_automation": "Automatizazioa gehitu",
-                        "learn_more": "Automatizazioei buruz gehiago ikasi"
-                    },
                     "editor": {
-                        "default_name": "Automatizazio berria",
-                        "save": "Gorde",
-                        "alias": "Izena",
-                        "triggers": {
-                            "header": "Abiarazleak",
-                            "add": "Abiarazlea gehitu",
-                            "duplicate": "Bikoiztu",
+                        "actions": {
+                            "add": "Ekintza gehitu",
                             "delete": "Ezabatu",
-                            "type_select": "Abiarazle mota",
+                            "duplicate": "Bikoiztu",
+                            "header": "Ekintzak",
+                            "learn_more": "Ekintzei buruz gehiago ikasi",
+                            "type_select": "Ekintza mota",
                             "type": {
-                                "event": {
-                                    "label": "Gertaera",
-                                    "event_type": "Gertaera mota"
+                                "condition": {
+                                    "label": "Baldintza"
                                 },
-                                "state": {
-                                    "label": "Egoera"
+                                "delay": {
+                                    "delay": "Atzerapena",
+                                    "label": "Atzerapena"
                                 },
-                                "homeassistant": {
-                                    "label": "Home Assistant",
-                                    "event": "Gertaera:",
-                                    "start": "Hasi",
-                                    "shutdown": "Itzali"
+                                "service": {
+                                    "label": "Zerbitzua deitu"
                                 },
-                                "mqtt": {
-                                    "label": "MQTT",
-                                    "topic": "Gaia"
-                                },
-                                "numeric_state": {
-                                    "above": "Honen gainetik",
-                                    "below": "Honen azpitik"
-                                },
-                                "sun": {
-                                    "label": "Eguzkia",
-                                    "event": "Gertaera:",
-                                    "sunrise": "Egunsentia",
-                                    "sunset": "Ilunabarra"
-                                },
-                                "template": {
-                                    "label": "Txantiloia",
-                                    "value_template": "Balio txantiloia"
-                                },
-                                "time": {
-                                    "label": "Ordua",
-                                    "at": "Noiz"
-                                },
-                                "zone": {
-                                    "enter": "Sartu",
-                                    "leave": "Utzi"
-                                },
-                                "webhook": {
-                                    "label": "Webhook",
-                                    "webhook_id": "Webhook IDa"
-                                },
-                                "time_pattern": {
-                                    "label": "Denbora Eredua",
-                                    "hours": "Orduak",
-                                    "minutes": "Minutuak",
-                                    "seconds": "Segunduak"
-                                },
-                                "geo_location": {
-                                    "label": "Geokokapena",
-                                    "source": "Iturria",
-                                    "event": "Gertaera:",
-                                    "enter": "Sartu",
-                                    "leave": "Utzi"
+                                "wait_template": {
+                                    "label": "Itxaron",
+                                    "wait_template": "Itxaron txantiloia"
                                 }
                             },
-                            "learn_more": "Abiarazleei buruz gehiago ikasi"
+                            "unsupported_action": "Ekintza ez onartua: {action}"
                         },
+                        "alias": "Izena",
                         "conditions": {
-                            "header": "Baldintzak",
                             "add": "Baldintza gehitu",
-                            "duplicate": "Bikoiztu",
                             "delete": "Ezabatu",
+                            "duplicate": "Bikoiztu",
+                            "header": "Baldintzak",
+                            "learn_more": "Baldintzei buruz gehiago ikasi",
                             "type_select": "Baldintza mota",
                             "type": {
                                 "state": {
@@ -402,58 +507,82 @@
                                 "time": {
                                     "label": "Denbora"
                                 }
-                            },
-                            "learn_more": "Baldintzei buruz gehiago ikasi"
+                            }
                         },
-                        "actions": {
-                            "header": "Ekintzak",
-                            "add": "Ekintza gehitu",
-                            "duplicate": "Bikoiztu",
-                            "delete": "Ezabatu",
-                            "unsupported_action": "Ekintza ez onartua: {action}",
-                            "type_select": "Ekintza mota",
-                            "type": {
-                                "service": {
-                                    "label": "Zerbitzua deitu"
-                                },
-                                "delay": {
-                                    "label": "Atzerapena",
-                                    "delay": "Atzerapena"
-                                },
-                                "wait_template": {
-                                    "label": "Itxaron",
-                                    "wait_template": "Itxaron txantiloia"
-                                },
-                                "condition": {
-                                    "label": "Baldintza"
-                                }
-                            },
-                            "learn_more": "Ekintzei buruz gehiago ikasi"
-                        },
+                        "default_name": "Automatizazio berria",
                         "load_error_not_editable": "Soilik automations.yaml fitxategian dauden automatizazioak dira editagarriak.",
-                        "load_error_unknown": "Errorea automatizazioa kargatzean ({err_no})."
-                    }
-                },
-                "users": {
-                    "caption": "Erabiltzaileak",
-                    "description": "Erabiltzaileak kudeatu",
+                        "load_error_unknown": "Errorea automatizazioa kargatzean ({err_no}).",
+                        "save": "Gorde",
+                        "triggers": {
+                            "add": "Abiarazlea gehitu",
+                            "delete": "Ezabatu",
+                            "duplicate": "Bikoiztu",
+                            "header": "Abiarazleak",
+                            "learn_more": "Abiarazleei buruz gehiago ikasi",
+                            "type_select": "Abiarazle mota",
+                            "type": {
+                                "event": {
+                                    "event_type": "Gertaera mota",
+                                    "label": "Gertaera"
+                                },
+                                "geo_location": {
+                                    "enter": "Sartu",
+                                    "event": "Gertaera:",
+                                    "label": "Geokokapena",
+                                    "leave": "Utzi",
+                                    "source": "Iturria"
+                                },
+                                "homeassistant": {
+                                    "event": "Gertaera:",
+                                    "label": "Home Assistant",
+                                    "shutdown": "Itzali",
+                                    "start": "Hasi"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "topic": "Gaia"
+                                },
+                                "numeric_state": {
+                                    "above": "Honen gainetik",
+                                    "below": "Honen azpitik"
+                                },
+                                "state": {
+                                    "label": "Egoera"
+                                },
+                                "sun": {
+                                    "event": "Gertaera:",
+                                    "label": "Eguzkia",
+                                    "sunrise": "Egunsentia",
+                                    "sunset": "Ilunabarra"
+                                },
+                                "template": {
+                                    "label": "Txantiloia",
+                                    "value_template": "Balio txantiloia"
+                                },
+                                "time_pattern": {
+                                    "hours": "Orduak",
+                                    "label": "Denbora Eredua",
+                                    "minutes": "Minutuak",
+                                    "seconds": "Segunduak"
+                                },
+                                "time": {
+                                    "at": "Noiz",
+                                    "label": "Ordua"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook IDa"
+                                },
+                                "zone": {
+                                    "enter": "Sartu",
+                                    "leave": "Utzi"
+                                }
+                            }
+                        }
+                    },
                     "picker": {
-                        "title": "Erabiltzaileak"
-                    },
-                    "editor": {
-                        "rename_user": "Erabiltzailea berrizendatu",
-                        "change_password": "Pasahitza aldatu",
-                        "activate_user": "Erabiltzailea aktibatu",
-                        "deactivate_user": "Erabiltzailea desaktibatu",
-                        "delete_user": "Erabiltzailea ezabatu",
-                        "caption": "Erabiltzailea ikusi"
-                    },
-                    "add_user": {
-                        "caption": "Erabiltzailea gehitu",
-                        "name": "Izena",
-                        "username": "Erabiltzaile izena",
-                        "password": "Pasahitza",
-                        "create": "Sortu"
+                        "add_automation": "Automatizazioa gehitu",
+                        "learn_more": "Automatizazioei buruz gehiago ikasi"
                     }
                 },
                 "cloud": {
@@ -461,148 +590,243 @@
                     "description_login": "{email} bezala hasi duzu saioa",
                     "description_not_login": "Ez da saioa hasi"
                 },
+                "core": {
+                    "caption": "Orokorra",
+                    "section": {
+                        "core": {
+                            "core_config": {
+                                "elevation_meters": "metro",
+                                "imperial_example": "Fahrenheit, librak",
+                                "latitude": "Latitudea",
+                                "location_name": "Zure Home Assistant instalazioaren izena",
+                                "longitude": "Longitudea",
+                                "metric_example": "Celsius, kilogramoak",
+                                "save_button": "Gorde",
+                                "time_zone": "Ordu-eremua",
+                                "unit_system": "Unitate Sistema",
+                                "unit_system_imperial": "Inperiala",
+                                "unit_system_metric": "Metrikoa"
+                            }
+                        },
+                        "server_control": {
+                            "reloading": {
+                                "automation": "Automatizazioak birkargatu",
+                                "core": "Nukleoa birkargatu",
+                                "group": "Taldeak birkargatu",
+                                "script": "Scriptak birkargatu"
+                            },
+                            "server_management": {
+                                "heading": "Zerbitzariaren kudeaketa",
+                                "introduction": "Zure Home Assistant zerbitzaria... Home Assistantetik kontrolatu",
+                                "restart": "Berrabiarazi",
+                                "stop": "Gelditu"
+                            }
+                        }
+                    }
+                },
+                "entity_registry": {
+                    "caption": "Entitate Erregistroa",
+                    "editor": {
+                        "default_name": "Gune berria",
+                        "delete": "EZABATU",
+                        "unavailable": "Entitate hau ez dago eskuragarri une honetan.",
+                        "update": "EGUNERATU"
+                    },
+                    "picker": {
+                        "header": "Entitate Erregistroa",
+                        "integrations_page": "Integrazioak",
+                        "unavailable": "(ez dago eskuragarri)"
+                    }
+                },
                 "integrations": {
                     "caption": "Integrazioak",
-                    "configured": "Konfiguratuta",
-                    "new": "Integrazio berri bat konfiguratu",
-                    "configure": "Konfiguratu",
-                    "none": "Ez dago ezer konfiguratuta",
                     "config_entry": {
-                        "no_devices": "Integrazio honek ez du gailurik.",
-                        "no_device": "Gailurik gabeko entitateak",
                         "firmware": "Firmware: {version}",
-                        "no_area": "Ez dago gunerik"
+                        "no_area": "Ez dago gunerik",
+                        "no_device": "Gailurik gabeko entitateak",
+                        "no_devices": "Integrazio honek ez du gailurik."
                     },
                     "config_flow": {
                         "external_step": {
                             "description": "Urrats hau betetzeko kanpoko webgune bat bisitatu beharko duzu.",
                             "open_site": "Webgunea ireki"
                         }
-                    }
-                },
-                "zha": {
-                    "caption": "ZHA",
-                    "services": {
-                        "updateDeviceName": "Gailu honentzako izen pertsonalizatua ezarri gailuen erregistroan.",
-                        "remove": "ZigBee saretik gailu guztiak kendu"
                     },
-                    "device_card": {
-                        "device_name_placeholder": "Erabiltzaileak emandako izena",
-                        "area_picker_label": "Gunea",
-                        "update_name_button": "Izena Eguneratu"
-                    },
-                    "add_device_page": {
-                        "header": "Zigbee Home Automation - Gailuak Gehitu",
-                        "spinner": "ZHA Zigbee gailuak bilatzen..."
-                    }
-                },
-                "area_registry": {
-                    "caption": "Gune Erregistroa",
-                    "description": "Zure etxeko gune guztien ikuspegi orokorra.",
-                    "picker": {
-                        "header": "Gune Erregistroa",
-                        "integrations_page": "Integrazioen orria",
-                        "no_areas": "Oraindik gunerik ez duzula dirudi!",
-                        "create_area": "GUNEA SORTU"
-                    },
-                    "create_area": "GUNEA SORTU",
-                    "editor": {
-                        "default_name": "Gune berria",
-                        "delete": "EZABATU",
-                        "update": "EGUNERATU",
-                        "create": "SORTU"
-                    }
-                },
-                "entity_registry": {
-                    "caption": "Entitate Erregistroa",
-                    "picker": {
-                        "header": "Entitate Erregistroa",
-                        "unavailable": "(ez dago eskuragarri)",
-                        "integrations_page": "Integrazioak"
-                    },
-                    "editor": {
-                        "unavailable": "Entitate hau ez dago eskuragarri une honetan.",
-                        "default_name": "Gune berria",
-                        "delete": "EZABATU",
-                        "update": "EGUNERATU"
-                    }
+                    "configure": "Konfiguratu",
+                    "configured": "Konfiguratuta",
+                    "new": "Integrazio berri bat konfiguratu",
+                    "none": "Ez dago ezer konfiguratuta"
                 },
                 "person": {
                     "caption": "Pertsonak",
                     "description": "Kudeatu Home Assistantek jarraituko dituen pertsonak.",
                     "detail": {
-                        "name": "Izena",
                         "device_tracker_intro": "Hautatu pertsona horri dagozkion gailuak.",
+                        "device_tracker_pick": "Jarraituko diren gailua aukeratu",
                         "device_tracker_picked": "Gailua jarraitu",
-                        "device_tracker_pick": "Jarraituko diren gailua aukeratu"
+                        "name": "Izena"
+                    }
+                },
+                "script": {
+                    "caption": "Script",
+                    "description": "Scriptak sortu eta editatu"
+                },
+                "users": {
+                    "add_user": {
+                        "caption": "Erabiltzailea gehitu",
+                        "create": "Sortu",
+                        "name": "Izena",
+                        "password": "Pasahitza",
+                        "username": "Erabiltzaile izena"
+                    },
+                    "caption": "Erabiltzaileak",
+                    "description": "Erabiltzaileak kudeatu",
+                    "editor": {
+                        "activate_user": "Erabiltzailea aktibatu",
+                        "caption": "Erabiltzailea ikusi",
+                        "change_password": "Pasahitza aldatu",
+                        "deactivate_user": "Erabiltzailea desaktibatu",
+                        "delete_user": "Erabiltzailea ezabatu",
+                        "rename_user": "Erabiltzailea berrizendatu"
+                    },
+                    "picker": {
+                        "title": "Erabiltzaileak"
+                    }
+                },
+                "zha": {
+                    "add_device_page": {
+                        "header": "Zigbee Home Automation - Gailuak Gehitu",
+                        "spinner": "ZHA Zigbee gailuak bilatzen..."
+                    },
+                    "caption": "ZHA",
+                    "device_card": {
+                        "area_picker_label": "Gunea",
+                        "device_name_placeholder": "Erabiltzaileak emandako izena",
+                        "update_name_button": "Izena Eguneratu"
+                    },
+                    "services": {
+                        "remove": "ZigBee saretik gailu guztiak kendu",
+                        "updateDeviceName": "Gailu honentzako izen pertsonalizatua ezarri gailuen erregistroan."
+                    }
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "node_config": {
+                        "set_config_parameter": "Ezarri konfigurazio-parametroa"
                     }
                 }
             },
-            "profile": {
-                "push_notifications": {
-                    "header": "Push jakinarazpenak",
-                    "error_load_platform": "notify.html5 konfiguratu.",
-                    "push_notifications": "Push jakinarazpenak",
-                    "link_promo": "Gehiago ikasi"
-                },
-                "language": {
-                    "header": "Hizkuntza",
-                    "link_promo": "Itzultzen lagundu",
-                    "dropdown_label": "Hizkuntza"
-                },
-                "themes": {
-                    "header": "Gaia",
-                    "error_no_theme": "Ez dago gairik eskuragarri",
-                    "link_promo": "Gaiei buruz gehiago ikasi",
-                    "dropdown_label": "Gaia"
-                },
-                "refresh_tokens": {
-                    "header": "Tokenak eguneratu",
-                    "delete_failed": "Errorea sortu da sarbide tokena ezabatzerakoan.",
-                    "not_used": "Ez da inoiz erabili",
-                    "current_token_tooltip": "Ezin da uneko tokena ezabatu"
-                },
-                "long_lived_access_tokens": {
-                    "header": "Iraupen luzeko sarbide tokenak",
-                    "delete_failed": "Errorea sortu da sarbide tokena ezabatzerakoan.",
-                    "create": "Tokena Sortu",
-                    "create_failed": "Ezin izan da sarbide token sortu.",
-                    "prompt_name": "Izena?",
-                    "prompt_copy_token": "Zure sarbide tokena kopiatu. Ez da berriro erakutsiko.",
-                    "not_used": "Ez da inoiz erabili"
-                },
-                "current_user": "{fullName} moduan hasi duzu saioa.",
-                "is_owner": "Jabea zara",
-                "change_password": {
-                    "header": "Pasahitza aldatu",
-                    "current_password": "Egungo pasahitza",
-                    "new_password": "Pasahitz berria",
-                    "confirm_new_password": "Pasahitz berria baieztatu",
-                    "error_required": "Beharrezkoa",
-                    "submit": "Bidali"
-                },
-                "mfa": {
-                    "enable": "Gaitu",
-                    "confirm_disable": "{name} desgaitu nahi duzula ziur zaude?"
-                },
-                "mfa_setup": {
-                    "title_success": "Arrakasta!",
-                    "close": "Itxi",
-                    "submit": "Bidali"
+            "developer-tools": {
+                "tabs": {
+                    "events": {
+                        "title": "Gertaerak"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    },
+                    "services": {
+                        "title": "Zerbitzuak"
+                    },
+                    "states": {
+                        "title": "Egoerak"
+                    },
+                    "templates": {
+                        "title": "Txantiloiak"
+                    }
                 }
             },
+            "logbook": {
+                "period": "Epea"
+            },
+            "lovelace": {
+                "cards": {
+                    "empty_state": {
+                        "go_to_integrations_page": "Integrazioen orrira joan.",
+                        "title": "Ongi etorri Etxera"
+                    },
+                    "picture-elements": {
+                        "call_service": "{name} zerbitzua deitu",
+                        "hold": "Eutsi:",
+                        "more_info": "Informazio gehiago erakutsi: {name}",
+                        "navigate_to": "{location}-ra nabigatu",
+                        "tap": "Ukitu:"
+                    },
+                    "shopping-list": {
+                        "add_item": "Elementua gehitu",
+                        "checked_items": "Aukeratutako elementuak"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "add": "Txartela gehitu",
+                        "delete": "Ezabatu",
+                        "edit": "Editatu",
+                        "header": "Txartelaren konfigurazioa",
+                        "move": "Mugitu",
+                        "pick_card": "Gehitu nahi duzun txartela aukeratu.",
+                        "save": "Gorde"
+                    },
+                    "edit_view": {
+                        "add": "Bista gehitu",
+                        "delete": "Bista ezabatu",
+                        "edit": "Bista editatu",
+                        "header": "Konfigurazioa ikusi"
+                    },
+                    "header": "Erabiltzaile interfazea editatu",
+                    "migrate": {
+                        "header": "Konfigurazio Bateraezina",
+                        "migrate": "Konfigurazioa migratu"
+                    },
+                    "raw_editor": {
+                        "header": "Ezarpenak aldatu",
+                        "save": "Gorde",
+                        "saved": "Gordeta",
+                        "unsaved_changes": "Gorde gabeko aldaketak"
+                    },
+                    "save_config": {
+                        "cancel": "Berdin dio",
+                        "header": "Hartu zure Lovelace UI-aren kontrola",
+                        "save": "Kontrola hartu"
+                    }
+                },
+                "menu": {
+                    "configure_ui": "Erabiltzaile interfazea konfiguratu",
+                    "help": "Laguntza",
+                    "refresh": "Freskatu",
+                    "unused_entities": "Erabili gabeko entitateak"
+                },
+                "warning": {
+                    "entity_non_numeric": "Entitatea ez da zenbakizkoa: {entity}",
+                    "entity_not_found": "Entitatea ez dago eskuragarri: {entity}"
+                }
+            },
+            "mailbox": {
+                "delete_button": "Ezabatu",
+                "delete_prompt": "Mezu hau ezabatu?",
+                "empty": "Ez duzu mezurik"
+            },
             "page-authorize": {
-                "initializing": "Hasieratzen",
                 "form": {
-                    "working": "Mesedez, itxaron",
-                    "unknown_error": "Zerbait gaizki joan da",
                     "providers": {
-                        "homeassistant": {
+                        "command_line": {
                             "step": {
                                 "init": {
                                     "data": {
-                                        "username": "Erabiltzaile izena",
-                                        "password": "Pasahitza"
+                                        "password": "Pasahitza",
+                                        "username": "Erabiltzaile izena"
+                                    }
+                                }
+                            }
+                        },
+                        "homeassistant": {
+                            "error": {
+                                "invalid_auth": "Erabiltzaile edo pasahitz okerra"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Pasahitza",
+                                        "username": "Erabiltzaile izena"
                                     }
                                 },
                                 "mfa": {
@@ -610,9 +834,6 @@
                                         "code": "Bi faktoreko autentifikazio kodea"
                                     }
                                 }
-                            },
-                            "error": {
-                                "invalid_auth": "Erabiltzaile edo pasahitz okerra"
                             }
                         },
                         "legacy_api_password": {
@@ -625,333 +846,112 @@
                             }
                         },
                         "trusted_networks": {
+                            "abort": {
+                                "not_whitelisted": "Zure ordenagailua ez dago baimenduta."
+                            },
                             "step": {
                                 "init": {
                                     "data": {
                                         "user": "Erabiltzailea"
                                     }
                                 }
-                            },
-                            "abort": {
-                                "not_whitelisted": "Zure ordenagailua ez dago baimenduta."
-                            }
-                        },
-                        "command_line": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "username": "Erabiltzaile izena",
-                                        "password": "Pasahitza"
-                                    }
-                                }
                             }
                         }
-                    }
-                }
+                    },
+                    "unknown_error": "Zerbait gaizki joan da",
+                    "working": "Mesedez, itxaron"
+                },
+                "initializing": "Hasieratzen"
             },
             "page-onboarding": {
-                "user": {
-                    "intro": "Erabiltzaile kontu bat sortuz has gaitezen.",
-                    "required_field": "Beharrezkoa",
-                    "data": {
-                        "name": "Izena",
-                        "username": "Erabiltzaile izena",
-                        "password": "Pasahitza",
-                        "password_confirm": "Pasahitza baieztatu"
-                    },
-                    "create_account": "Kontua sortu",
-                    "error": {
-                        "required_fields": "Beharrezkoak diren eremu guztiak bete",
-                        "password_not_match": "Pasahitzak ez datoz bat"
-                    }
-                },
-                "integration": {
-                    "more_integrations": "Gehiago",
-                    "finish": "Amaitu"
-                },
                 "core-config": {
+                    "button_detect": "Detektatu",
+                    "finish": "Hurregoa",
                     "intro": "Kaixo {name}, ongi etorri Home Assistantera. Nola izendatu nahi duzu zure etxea?",
                     "intro_location_detect": "Informazio hau betetzen lagundu diezazukegu kanpoko zerbitzu batera esakera bakarra eginez.",
-                    "location_name_default": "Etxea",
-                    "button_detect": "Detektatu",
-                    "finish": "Hurregoa"
+                    "location_name_default": "Etxea"
+                },
+                "integration": {
+                    "finish": "Amaitu",
+                    "more_integrations": "Gehiago"
+                },
+                "user": {
+                    "create_account": "Kontua sortu",
+                    "data": {
+                        "name": "Izena",
+                        "password": "Pasahitza",
+                        "password_confirm": "Pasahitza baieztatu",
+                        "username": "Erabiltzaile izena"
+                    },
+                    "error": {
+                        "password_not_match": "Pasahitzak ez datoz bat",
+                        "required_fields": "Beharrezkoak diren eremu guztiak bete"
+                    },
+                    "intro": "Erabiltzaile kontu bat sortuz has gaitezen.",
+                    "required_field": "Beharrezkoa"
                 }
             },
-            "lovelace": {
-                "cards": {
-                    "shopping-list": {
-                        "checked_items": "Aukeratutako elementuak",
-                        "add_item": "Elementua gehitu"
-                    },
-                    "empty_state": {
-                        "title": "Ongi etorri Etxera",
-                        "go_to_integrations_page": "Integrazioen orrira joan."
-                    },
-                    "picture-elements": {
-                        "hold": "Eutsi:",
-                        "tap": "Ukitu:",
-                        "navigate_to": "{location}-ra nabigatu",
-                        "call_service": "{name} zerbitzua deitu",
-                        "more_info": "Informazio gehiago erakutsi: {name}"
-                    }
+            "profile": {
+                "change_password": {
+                    "confirm_new_password": "Pasahitz berria baieztatu",
+                    "current_password": "Egungo pasahitza",
+                    "error_required": "Beharrezkoa",
+                    "header": "Pasahitza aldatu",
+                    "new_password": "Pasahitz berria",
+                    "submit": "Bidali"
                 },
-                "editor": {
-                    "edit_card": {
-                        "header": "Txartelaren konfigurazioa",
-                        "save": "Gorde",
-                        "pick_card": "Gehitu nahi duzun txartela aukeratu.",
-                        "add": "Txartela gehitu",
-                        "edit": "Editatu",
-                        "delete": "Ezabatu",
-                        "move": "Mugitu"
-                    },
-                    "migrate": {
-                        "header": "Konfigurazio Bateraezina",
-                        "migrate": "Konfigurazioa migratu"
-                    },
-                    "header": "Erabiltzaile interfazea editatu",
-                    "edit_view": {
-                        "header": "Konfigurazioa ikusi",
-                        "add": "Bista gehitu",
-                        "edit": "Bista editatu",
-                        "delete": "Bista ezabatu"
-                    },
-                    "save_config": {
-                        "header": "Hartu zure Lovelace UI-aren kontrola",
-                        "cancel": "Berdin dio",
-                        "save": "Kontrola hartu"
-                    },
-                    "raw_editor": {
-                        "header": "Ezarpenak aldatu",
-                        "save": "Gorde",
-                        "unsaved_changes": "Gorde gabeko aldaketak",
-                        "saved": "Gordeta"
-                    }
+                "current_user": "{fullName} moduan hasi duzu saioa.",
+                "is_owner": "Jabea zara",
+                "language": {
+                    "dropdown_label": "Hizkuntza",
+                    "header": "Hizkuntza",
+                    "link_promo": "Itzultzen lagundu"
                 },
-                "menu": {
-                    "configure_ui": "Erabiltzaile interfazea konfiguratu",
-                    "unused_entities": "Erabili gabeko entitateak",
-                    "help": "Laguntza",
-                    "refresh": "Freskatu"
+                "long_lived_access_tokens": {
+                    "create": "Tokena Sortu",
+                    "create_failed": "Ezin izan da sarbide token sortu.",
+                    "delete_failed": "Errorea sortu da sarbide tokena ezabatzerakoan.",
+                    "header": "Iraupen luzeko sarbide tokenak",
+                    "not_used": "Ez da inoiz erabili",
+                    "prompt_copy_token": "Zure sarbide tokena kopiatu. Ez da berriro erakutsiko.",
+                    "prompt_name": "Izena?"
                 },
-                "warning": {
-                    "entity_not_found": "Entitatea ez dago eskuragarri: {entity}",
-                    "entity_non_numeric": "Entitatea ez da zenbakizkoa: {entity}"
+                "mfa_setup": {
+                    "close": "Itxi",
+                    "submit": "Bidali",
+                    "title_success": "Arrakasta!"
+                },
+                "mfa": {
+                    "confirm_disable": "{name} desgaitu nahi duzula ziur zaude?",
+                    "enable": "Gaitu"
+                },
+                "push_notifications": {
+                    "error_load_platform": "notify.html5 konfiguratu.",
+                    "header": "Push jakinarazpenak",
+                    "link_promo": "Gehiago ikasi",
+                    "push_notifications": "Push jakinarazpenak"
+                },
+                "refresh_tokens": {
+                    "current_token_tooltip": "Ezin da uneko tokena ezabatu",
+                    "delete_failed": "Errorea sortu da sarbide tokena ezabatzerakoan.",
+                    "header": "Tokenak eguneratu",
+                    "not_used": "Ez da inoiz erabili"
+                },
+                "themes": {
+                    "dropdown_label": "Gaia",
+                    "error_no_theme": "Ez dago gairik eskuragarri",
+                    "header": "Gaia",
+                    "link_promo": "Gaiei buruz gehiago ikasi"
                 }
             },
-            "logbook": {
-                "period": "Epea"
+            "shopping-list": {
+                "add_item": "Artikulua gehitu",
+                "clear_completed": "Osatutakoak ezabatu"
             }
         },
         "sidebar": {
-            "log_out": "Saioa itxi",
-            "external_app_configuration": "Aplikazioaren Konfigurazioa"
-        },
-        "common": {
-            "loading": "Kargatzen",
-            "save": "Gorde"
-        },
-        "duration": {
-            "day": "{count} {count, plural,\n  one {egun}\n  other {egun}\n}",
-            "week": "{count} {count, plural,\n  one {aste}\n  other {aste}\n}",
-            "second": "{count} {count, plural,\n  one {segundo}\n  other {segundo}\n}",
-            "minute": "{count} {count, plural,\n  one {minutu}\n  other {minutu}\n}",
-            "hour": "{count} {count, plural,\n  one {ordu}\n  other {ordu}\n}"
-        },
-        "login-form": {
-            "password": "Pasahitza",
-            "remember": "Gogoratu",
-            "log_in": "Saioa hasi"
-        },
-        "card": {
-            "camera": {
-                "not_available": "Irudia ez dago eskuragarri"
-            },
-            "scene": {
-                "activate": "Aktibatu"
-            },
-            "script": {
-                "execute": "Exekutatu"
-            },
-            "weather": {
-                "attributes": {
-                    "air_pressure": "Aire presioa",
-                    "humidity": "Hezetasuna",
-                    "temperature": "Tenperatura",
-                    "visibility": "Ikusgarritasuna",
-                    "wind_speed": "Haizearen abiadura"
-                },
-                "cardinal_direction": {
-                    "e": "E",
-                    "ene": "EIE",
-                    "ese": "EHE",
-                    "n": "I",
-                    "ne": "IE",
-                    "nne": "IIE",
-                    "nw": "IM",
-                    "nnw": "IIM",
-                    "s": "H",
-                    "se": "HE",
-                    "sse": "HHE",
-                    "ssw": "HHM",
-                    "sw": "HM",
-                    "w": "M",
-                    "wnw": "MIM",
-                    "wsw": "MHM"
-                },
-                "forecast": "Iragarpena"
-            },
-            "alarm_control_panel": {
-                "code": "Kodea",
-                "clear_code": "Garbitu"
-            },
-            "cover": {
-                "position": "Posizioa"
-            },
-            "fan": {
-                "speed": "Abiadura"
-            },
-            "light": {
-                "brightness": "Distira",
-                "color_temperature": "Kolore tenperatura",
-                "effect": "Efektua"
-            },
-            "media_player": {
-                "text_to_speak": "Esateko testua",
-                "source": "Iturria",
-                "sound_mode": "Soinu modua"
-            },
-            "climate": {
-                "currently": "Orain",
-                "on_off": "Piztuta \/ itzalita",
-                "operation": "Modua",
-                "fan_mode": "Haizagailuaren modua",
-                "away_mode": "Etxetik kanpo"
-            },
-            "lock": {
-                "code": "Kodea"
-            },
-            "vacuum": {
-                "actions": {
-                    "resume_cleaning": "Garbitzen jarraitu",
-                    "return_to_base": "Basera itzuli",
-                    "start_cleaning": "Garbitzen hasi",
-                    "turn_on": "Piztu",
-                    "turn_off": "Itzali"
-                }
-            },
-            "water_heater": {
-                "currently": "Orain",
-                "on_off": "Piztuta \/ itzalita",
-                "operation": "Operazioa"
-            }
-        },
-        "components": {
-            "service-picker": {
-                "service": "Zerbitzua"
-            },
-            "relative_time": {
-                "past": "Orain dela {time}",
-                "future": "{time} barru",
-                "never": "Inoiz",
-                "duration": {
-                    "second": "{count} {count, plural,\n  one {segundo}\n  other {segundo}\n}",
-                    "minute": "{count} {count, plural,\n  one {minutu}\n  other {minutu}\n}",
-                    "hour": "{count} {count, plural,\n  one {ordu}\n  other {ordu}\n}",
-                    "day": "{count} {count, plural,\n  one {egun}\n  other {egun}\n}",
-                    "week": "{count} {count, plural,\n  one {aste}\n  other {aste}\n}"
-                }
-            }
-        },
-        "notification_toast": {
-            "entity_turned_on": "{entity} piztuta.",
-            "entity_turned_off": "{entity} itzalita.",
-            "service_called": "{service} zerbitzua deitu da.",
-            "connection_lost": "Konexioa galdu da. Berriro konektatzen..."
-        },
-        "dialogs": {
-            "more_info_settings": {
-                "save": "Gorde",
-                "name": "Izena"
-            },
-            "more_info_control": {
-                "script": {
-                    "last_action": "Azken ekintza"
-                },
-                "sun": {
-                    "rising": "Igotzen",
-                    "setting": "Ezarpena"
-                },
-                "updater": {
-                    "title": "Argibideak Eguneratu"
-                }
-            }
-        },
-        "auth_store": {
-            "ask": "Saio hau gorde nahi duzu?",
-            "decline": "Ez, eskerrik asko",
-            "confirm": "Erabiltzailea gorde"
-        },
-        "notification_drawer": {
-            "empty": "Jakinarazpenik ez",
-            "title": "Jakinarazpenak"
+            "external_app_configuration": "Aplikazioaren Konfigurazioa",
+            "log_out": "Saioa itxi"
         }
-    },
-    "domain": {
-        "alarm_control_panel": "Alarmen kontrol panela",
-        "automation": "Automatizazioa",
-        "binary_sensor": "Sentsore bitarra",
-        "calendar": "Egutegia",
-        "camera": "Kamera",
-        "climate": "Klimatizazioa",
-        "configurator": "Konfiguratzailea",
-        "conversation": "Elkarrizketa",
-        "fan": "Haizagailua",
-        "group": "Taldea",
-        "input_boolean": "Sarrera boolearra",
-        "input_datetime": "Data sarrera",
-        "input_select": "Aukeraketa sarrera",
-        "input_number": "Zenbaki sarrera",
-        "input_text": "Testu sarrera",
-        "light": "Argia",
-        "lock": "Sarraila",
-        "mailbox": "Postontzia",
-        "notify": "Jakinarazi",
-        "plant": "Landarea",
-        "proximity": "Gertutasuna",
-        "remote": "Urrunekoa",
-        "scene": "Eszena",
-        "script": "Script",
-        "sensor": "Sentsorea",
-        "sun": "Eguzkia",
-        "updater": "Eguneratzailea",
-        "vacuum": "Xurgagailua",
-        "zha": "ZHA",
-        "hassio": "Hass.io",
-        "homeassistant": "Home Assistant",
-        "lovelace": "Lovelace",
-        "system_health": "Sistemaren Osasuna",
-        "person": "Pertsona"
-    },
-    "attribute": {
-        "weather": {
-            "humidity": "Hezetasuna",
-            "visibility": "Ikusgarritasuna",
-            "wind_speed": "Haizearen abiadura"
-        }
-    },
-    "state_attributes": {
-        "climate": {
-            "fan_mode": {
-                "off": "Itzalita",
-                "on": "Piztuta",
-                "auto": "Auto"
-            }
-        }
-    },
-    "groups": {
-        "system-admin": "Administratzaileak",
-        "system-users": "Erabiltzaileak",
-        "system-read-only": "Soilik irakurtzeko erabiltzaileak"
     }
 }
