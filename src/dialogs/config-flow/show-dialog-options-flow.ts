@@ -53,18 +53,18 @@ export const showOptionsFlowDialog = (
       },
 
       renderShowFormStepFieldLabel(hass, step, field) {
-        if( step.labels != null ) {
-          if( step.labels[field.name] != null ) {     
+        if (step.labels != null) {
+          if (step.labels[field.name] != null) {
             return step.labels[field.name];
           }
         }
         return hass.localize(
-          `component.${step.handler}.config.step.${step.step_id}.data.${
+          `component.${configEntry.domain}.options.step.${step.step_id}.data.${
             field.name
           }`
         );
-      },	      
-         
+      },
+
       renderShowFormStepFieldError(hass, _step, error) {
         return hass.localize(
           `component.${configEntry.domain}.options.error.${error}`
