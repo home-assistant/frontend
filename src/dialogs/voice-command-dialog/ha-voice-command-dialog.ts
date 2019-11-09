@@ -63,6 +63,7 @@ export class HaVoiceCommandDialog extends LitElement {
       this._startListening();
     }
     this._agentInfo = await getAgentInfo(this.hass);
+    setConversationOnboarding(this.hass, false);
   }
 
   protected render(): TemplateResult {
@@ -104,9 +105,9 @@ export class HaVoiceCommandDialog extends LitElement {
         .opened=${this._opened}
         @opened-changed=${this._openedChanged}
       >
-        <paper-dialog-scrollable id="messages">
-          ${this._agentInfo && this._agentInfo.onboarding
-            ? html`
+        ${this._agentInfo && this._agentInfo.onboarding
+          ? html`
+              <div class="onboarding">
                 ${this._agentInfo.onboarding.text}
                 <div class="side-by-side" @click=${this._completeOnboarding}>
                   <a
@@ -117,8 +118,17 @@ export class HaVoiceCommandDialog extends LitElement {
                   >
                   <mwc-button outlined>No</mwc-button>
                 </div>
-              `
-            : ""}
+              </div>
+            `
+          : ""}
+        <paper-dialog-scrollable
+          id="messages"
+          class=${classMap({
+            "top-border": Boolean(
+              this._agentInfo && this._agentInfo.onboarding
+            ),
+          })}
+        >
           ${this._conversation.map(
             (message) => html`
               <div class="${this._computeMessageClasses(message)}">
@@ -371,6 +381,18 @@ export class HaVoiceCommandDialog extends LitElement {
         }
         a.button > mwc-button {
           width: 100%;
+        }
+        .onboarding {
+          padding: 0 24px;
+        }
+        paper-dialog-scrollable.top-border::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 1px;
+          background: var(--divider-color);
         }
         .side-by-side {
           display: flex;
