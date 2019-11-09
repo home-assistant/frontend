@@ -28,15 +28,16 @@ CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 if [ "${CURRENT_BRANCH-}" != "master" ] && [ "${TRAVIS_BRANCH-}" != "master" ] ; then
   echo "Please only run the translations upload script from a clean checkout of master."
-  exit 1
+  # exit 1
 fi
 
 docker run \
     -v ${LOCAL_FILE}:/opt/src/${LOCAL_FILE} \
-    lokalise/lokalise-cli@sha256:2198814ebddfda56ee041a4b427521757dd57f75415ea9693696a64c550cef21 lokalise \
+     lokalise/lokalise-cli-2@sha256:f1860b26be22fa73b8c93bc5f8690f2afc867610a42de6fc27adc790e5d4425d lokalise2 \
     --token ${LOKALISE_TOKEN} \
-    import ${PROJECT_ID} \
+    --project-id ${PROJECT_ID} \
+    file upload \
     --file /opt/src/${LOCAL_FILE} \
-    --lang_iso ${LANG_ISO} \
-    --convert_placeholders 0 \
-    --replace 1
+    --lang-iso ${LANG_ISO} \
+    --convert-placeholders=false \
+    --replace-modified=true
