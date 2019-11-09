@@ -72,7 +72,7 @@ export const showConfigFlowDialog = (
     renderShowFormStepFieldLabel(hass, step, field) {
       if (step.labels != null) {
         if (step.labels[field.name] != null) {
-	  return step.labels[field.name];
+          return step.labels[field.name];
         }
       }
       return hass.localize(
