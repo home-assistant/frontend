@@ -63,7 +63,6 @@ export class HaVoiceCommandDialog extends LitElement {
       this._startListening();
     }
     this._agentInfo = await getAgentInfo(this.hass);
-    setConversationOnboarding(this.hass, false);
   }
 
   protected render(): TemplateResult {
