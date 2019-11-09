@@ -717,7 +717,7 @@
             "reloading": {
               "heading": "Configuration reloading",
               "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.",
-              "core": "Reload core",
+              "core": "Reload location & customizations",
               "group": "Reload groups",
               "automation": "Reload automations",
               "script": "Reload scripts",
