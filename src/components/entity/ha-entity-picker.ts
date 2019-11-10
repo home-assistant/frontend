@@ -192,7 +192,8 @@ class HaEntityPicker extends LitElement {
     `;
   }
 
-  private _clearValue() {
+  private _clearValue(ev: Event) {
+    ev.stopPropagation();
     this._setValue("");
   }
 
