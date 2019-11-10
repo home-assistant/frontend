@@ -16,15 +16,18 @@ import {
   css,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
+
+export interface ConfigPageNavigation {
+  page: string;
+  core?: boolean;
+  advanced?: boolean;
+}
+
 @customElement("ha-config-navigation")
 class HaConfigNavigation extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public showAdvanced!: boolean;
-  @property() public pages!: Array<{
-    page: string;
-    core?: boolean;
-    advanced?: boolean;
-  }>;
+  @property() public pages!: ConfigPageNavigation[];
 
   protected render(): TemplateResult | void {
     return html`
