@@ -27,7 +27,6 @@ import "./ha-config-navigation";
 class HaConfigDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
-  @property() public isWide!: boolean;
   @property() public cloudStatus!: CloudStatusLoggedIn;
   @property() public showAdvanced!: boolean;
 
@@ -44,17 +43,17 @@ class HaConfigDashboard extends LitElement {
           </app-toolbar>
         </app-header>
 
-        <div class="content">
-          <ha-config-section .is-wide=${!this.narrow}>
-            <div slot="header">
-              ${this.hass.localize("ui.panel.config.header")}
-            </div>
-            <div slot="introduction">
-              ${this.hass.localize("ui.panel.config.introduction")}
-            </div>
+        <ha-config-section .is-wide=${!this.narrow}>
+          <div slot="header">
+            ${this.hass.localize("ui.panel.config.header")}
+          </div>
 
-            ${isComponentLoaded(this.hass, "cloud")
-              ? html`
+          <div slot="introduction">
+            ${this.hass.localize("ui.panel.config.introduction")}
+          </div>
+
+          ${isComponentLoaded(this.hass, "cloud")
+            ? html`
           <ha-card>
             <a href='/config/cloud' tabindex="-1">
               <paper-item>
@@ -85,51 +84,51 @@ class HaConfigDashboard extends LitElement {
             </ha-card>
           </a>
         `
-              : ""}
+            : ""}
 
-            <ha-config-navigation
-              .hass=${this.hass}
-              .show-advanced=${this.showAdvanced}
-              .pages=${[
-                { page: "integrations", postpath: "/dashboard", core: true },
-                { page: "devices", postpath: "/dashboard", core: true },
-                { page: "script" },
-                { page: "scene" },
-              ]}
-            ></ha-config-navigation>
+          <ha-config-navigation
+            .hass=${this.hass}
+            .show-advanced=${this.showAdvanced}
+            .pages=${[
+              { page: "integrations", core: true },
+              { page: "devices", core: true },
+              { page: "automation" },
+              { page: "script" },
+              { page: "scene" },
+            ]}
+          ></ha-config-navigation>
 
-            <ha-config-navigation
-              .hass=${this.hass}
-              .show-advanced=${this.showAdvanced}
-              .pages=${[
-                { page: "core", core: true },
-                { page: "server_control", core: true },
-                { page: "entity_registry", core: true },
-                { page: "area_registry", core: true },
-                { page: "person" },
-                { page: "users", core: true },
-                { page: "zha" },
-                { page: "zwave" },
-                { page: "customize", core: true, advanced: true },
-              ]}
-            ></ha-config-navigation>
+          <ha-config-navigation
+            .hass=${this.hass}
+            .show-advanced=${this.showAdvanced}
+            .pages=${[
+              { page: "core", core: true },
+              { page: "server_control", core: true },
+              { page: "entity_registry", core: true },
+              { page: "area_registry", core: true },
+              { page: "person" },
+              { page: "users", core: true },
+              { page: "zha" },
+              { page: "zwave" },
+              { page: "customize", core: true, advanced: true },
+            ]}
+          ></ha-config-navigation>
 
-            ${!this.showAdvanced
-              ? html`
-                  <div class="promo-advanced">
-                    ${this.hass.localize(
-                      "ui.panel.profile.advanced_mode.hint_enable"
-                    )}
-                    <a href="/profile"
-                      >${this.hass.localize(
-                        "ui.panel.profile.advanced_mode.link_profile_page"
-                      )}</a
-                    >.
-                  </div>
-                `
-              : ""}
-          </ha-config-section>
-        </div>
+          ${!this.showAdvanced
+            ? html`
+                <div class="promo-advanced">
+                  ${this.hass.localize(
+                    "ui.panel.profile.advanced_mode.hint_enable"
+                  )}
+                  <a href="/profile"
+                    >${this.hass.localize(
+                      "ui.panel.profile.advanced_mode.link_profile_page"
+                    )}</a
+                  >.
+                </div>
+              `
+            : ""}
+        </ha-config-section>
       </app-header-layout>
     `;
   }
@@ -140,9 +139,6 @@ class HaConfigDashboard extends LitElement {
       css`
         ha-card {
           overflow: hidden;
-        }
-        .content {
-          padding-bottom: 32px;
         }
         ha-card a {
           text-decoration: none;
