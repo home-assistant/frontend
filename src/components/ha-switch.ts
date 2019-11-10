@@ -15,7 +15,7 @@ export class HaSwitch extends MwcSwitch {
     super.firstUpdated();
     this.style.setProperty(
       "--mdc-theme-secondary",
-      "var(--switch-checked-color)"
+      "var(--switch-checked-button-color)"
     );
     this.classList.toggle(
       "slotted",
@@ -31,6 +31,14 @@ export class HaSwitch extends MwcSwitch {
           display: flex;
           flex-direction: row;
           align-items: center;
+        }
+        .mdc-switch.mdc-switch--checked .mdc-switch__thumb {
+          background-color: var(--switch-checked-button-color);
+          border-color: var(--switch-checked-button-color);
+        }
+        .mdc-switch.mdc-switch--checked .mdc-switch__track {
+          background-color: var(--switch-checked-track-color);
+          border-color: var(--switch-checked-track-color);
         }
         .mdc-switch:not(.mdc-switch--checked) .mdc-switch__thumb {
           background-color: var(--switch-unchecked-button-color);
