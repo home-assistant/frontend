@@ -67,7 +67,7 @@ class HaConfigDashboard extends LitElement {
                             ${this.hass.localize(
                               "ui.panel.config.cloud.description_login",
                               "email",
-                              this.cloudStatus.email
+                              (this.cloudStatus as CloudStatusLoggedIn).email
                             )}
                           </div>
                         `
