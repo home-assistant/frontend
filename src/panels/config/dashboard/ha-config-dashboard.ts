@@ -27,6 +27,7 @@ import "./ha-config-navigation";
 class HaConfigDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
+  @property() public isWide!: boolean;
   @property() public cloudStatus!: CloudStatusLoggedIn;
   @property() public showAdvanced!: boolean;
 
@@ -43,7 +44,7 @@ class HaConfigDashboard extends LitElement {
           </app-toolbar>
         </app-header>
 
-        <ha-config-section .is-wide=${!this.narrow}>
+        <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
           <div slot="header">
             ${this.hass.localize("ui.panel.config.header")}
           </div>
@@ -88,7 +89,7 @@ class HaConfigDashboard extends LitElement {
 
           <ha-config-navigation
             .hass=${this.hass}
-            .show-advanced=${this.showAdvanced}
+            .showAdvanced=${this.showAdvanced}
             .pages=${[
               { page: "integrations", core: true },
               { page: "devices", core: true },
@@ -100,7 +101,7 @@ class HaConfigDashboard extends LitElement {
 
           <ha-config-navigation
             .hass=${this.hass}
-            .show-advanced=${this.showAdvanced}
+            .showAdvanced=${this.showAdvanced}
             .pages=${[
               { page: "core", core: true },
               { page: "server_control", core: true },
