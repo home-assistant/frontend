@@ -661,10 +661,10 @@
           }
         },
         "area_registry": {
-          "caption": "Area Registry",
+          "caption": "Areas",
           "description": "Overview of all areas in your home.",
           "picker": {
-            "header": "Area Registry",
+            "header": "Areas",
             "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
             "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards.",
             "integrations_page": "Integrations page",
@@ -704,7 +704,7 @@
           }
         },
         "server_control": {
-          "caption": "Server Control",
+          "caption": "Server Controls",
           "description": "Restart and stop the Home Assistant server",
           "section": {
             "validation": {
@@ -734,10 +734,10 @@
           }
         },
         "customize": {
-          "caption": "Customization",
+          "caption": "Customizations",
           "description": "Customize your entities",
           "picker": {
-            "header": "Customization",
+            "header": "Customizations",
             "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated."
           },
           "warning": {
@@ -754,7 +754,7 @@
           "pick_attribute": "Pick an attribute to override"
         },
         "automation": {
-          "caption": "Automation",
+          "caption": "Automations",
           "description": "Create and edit automations",
           "picker": {
             "header": "Automation Editor",
@@ -977,7 +977,7 @@
           }
         },
         "script": {
-          "caption": "Script",
+          "caption": "Scripts",
           "description": "Create and edit scripts",
           "picker": {
             "header": "Script Editor",
@@ -1229,10 +1229,10 @@
           }
         },
         "entity_registry": {
-          "caption": "Entity Registry",
+          "caption": "Entities",
           "description": "Overview of all known entities.",
           "picker": {
-            "header": "Entity Registry",
+            "header": "Entities",
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant. Note, removing the entity registry entry won't remove the entity. To do that, follow the link below and remove it from the integrations page.",
             "integrations_page": "Integrations page",
