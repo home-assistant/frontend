@@ -1,52 +1,141 @@
 {
-    "panel": {
-        "config": "Ayarlar",
-        "states": "Genel durum",
-        "map": "Harita",
-        "logbook": "Kayıt defteri",
-        "history": "Geçmiş",
+    "attribute": {
+        "weather": {
+            "humidity": "Nem",
+            "visibility": "Görünürlük",
+            "wind_speed": "Rüzgar hızı"
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Alarm kontrol paneli",
+        "automation": "Otomasyon",
+        "binary_sensor": "İkili sensör",
+        "calendar": "Takvim",
+        "camera": "Kamera",
+        "climate": "İklim",
+        "configurator": "Yapılandırıcı",
+        "conversation": "Konuşma",
+        "cover": "Panjur",
+        "device_tracker": "Cihaz izleyici",
+        "fan": "Fan",
+        "group": "Grup",
+        "history_graph": "Geçmiş grafiği",
+        "image_processing": "Görüntü işleme",
+        "input_boolean": "Doğru\/Yanlış giriniz",
+        "input_datetime": "Giriş Tarih\/Saat",
+        "input_number": "Numara giriniz",
+        "input_select": "Girdi seçiniz",
+        "input_text": "Metin giriniz",
+        "light": "Işık",
+        "lock": "Kilit",
         "mailbox": "Posta kutusu",
-        "shopping_list": "Alışveriş listesi",
+        "media_player": "Medya oynatıcı",
+        "notify": "Bildir",
+        "plant": "Bitki",
+        "proximity": "Yakınlık",
+        "remote": "Uzaktan Kumanda",
+        "scene": "Senaryo",
+        "script": "Senaryo",
+        "sensor": "Sensör",
+        "sun": "Güneş",
+        "switch": "Anahtar",
+        "updater": "Güncelleyici",
+        "weblink": "Web bağlantısı",
+        "zha": "ZHA",
+        "zwave": "Z-Wave"
+    },
+    "panel": {
+        "calendar": "Takvim",
+        "config": "Ayarlar",
         "dev-info": "Bilgi",
         "developer_tools": "Geliştirici araçları",
-        "calendar": "Takvim",
-        "profile": "Profil"
+        "history": "Geçmiş",
+        "logbook": "Kayıt defteri",
+        "mailbox": "Posta kutusu",
+        "map": "Harita",
+        "profile": "Profil",
+        "shopping_list": "Alışveriş listesi",
+        "states": "Genel durum"
     },
-    "state": {
-        "default": {
-            "off": "Kapalı",
-            "on": "Açık",
-            "unknown": "Bilinmeyen",
-            "unavailable": "Mevcut değil"
-        },
+    "state_badge": {
         "alarm_control_panel": {
             "armed": "Etkin",
+            "armed_away": "Etkin",
+            "armed_custom_bypass": "Etkin",
+            "armed_home": "Etkin",
+            "armed_night": "Etkin",
+            "arming": "Etkinleştir",
             "disarmed": "Etkisiz",
-            "armed_home": "Etkin evde",
+            "disarming": "Etkisiz",
+            "pending": "Askıda",
+            "triggered": "Tetiklendi"
+        },
+        "default": {
+            "unavailable": "Namüsait",
+            "unknown": "Bilinmiyor"
+        },
+        "device_tracker": {
+            "home": "Evde",
+            "not_home": "Dışarıda"
+        }
+    },
+    "state": {
+        "alarm_control_panel": {
+            "armed": "Etkin",
             "armed_away": "Etkin dışarıda",
+            "armed_custom_bypass": "Özel alarm atlatması",
+            "armed_home": "Etkin evde",
             "armed_night": "Etkin gece",
-            "pending": "Beklemede",
             "arming": "Etkinleşiyor",
+            "disarmed": "Etkisiz",
             "disarming": "Etkisizleştiriliyor",
-            "triggered": "Tetiklendi",
-            "armed_custom_bypass": "Özel alarm atlatması"
+            "pending": "Beklemede",
+            "triggered": "Tetiklendi"
         },
         "automation": {
             "off": "Kapalı",
             "on": "Açık"
         },
         "binary_sensor": {
+            "battery": {
+                "off": "Normal",
+                "on": "Düşük"
+            },
+            "cold": {
+                "off": "Normal",
+                "on": "Soğuk"
+            },
+            "connectivity": {
+                "off": "Bağlantı kesildi",
+                "on": "Bağlı"
+            },
             "default": {
                 "off": "Kapalı",
                 "on": "Açık"
             },
-            "moisture": {
-                "off": "Kuru",
-                "on": "Islak"
+            "door": {
+                "off": "Kapalı",
+                "on": "Açık"
+            },
+            "garage_door": {
+                "off": "Kapalı",
+                "on": "Açık"
             },
             "gas": {
                 "off": "Temiz",
                 "on": "Algılandı"
+            },
+            "heat": {
+                "off": "Normal",
+                "on": "Sıcak"
+            },
+            "lock": {
+                "off": "Kilit kapalı",
+                "on": "Kilit açık"
+            },
+            "moisture": {
+                "off": "Kuru",
+                "on": "Islak"
             },
             "motion": {
                 "off": "Temiz",
@@ -55,6 +144,22 @@
             "occupancy": {
                 "off": "Temiz",
                 "on": "Algılandı"
+            },
+            "opening": {
+                "off": "Kapalı",
+                "on": "Açık"
+            },
+            "presence": {
+                "off": "Dışarda",
+                "on": "Evde"
+            },
+            "problem": {
+                "off": "Tamam",
+                "on": "Sorun"
+            },
+            "safety": {
+                "off": "Güvenli",
+                "on": "Güvensiz"
             },
             "smoke": {
                 "off": "Temiz",
@@ -68,53 +173,9 @@
                 "off": "Temiz",
                 "on": "Algılandı"
             },
-            "opening": {
+            "window": {
                 "off": "Kapalı",
                 "on": "Açık"
-            },
-            "safety": {
-                "off": "Güvenli",
-                "on": "Güvensiz"
-            },
-            "presence": {
-                "off": "Dışarda",
-                "on": "Evde"
-            },
-            "battery": {
-                "off": "Normal",
-                "on": "Düşük"
-            },
-            "problem": {
-                "off": "Tamam",
-                "on": "Sorun"
-            },
-            "connectivity": {
-                "off": "Bağlantı kesildi",
-                "on": "Bağlı"
-            },
-            "cold": {
-                "off": "Normal",
-                "on": "Soğuk"
-            },
-            "door": {
-                "off": "[%key:state::cover::kapalı%]",
-                "on": "Açık"
-            },
-            "garage_door": {
-                "off": "[%key:state::cover::kapalı%]",
-                "on": "Açık"
-            },
-            "heat": {
-                "off": "Normal",
-                "on": "Sıcak"
-            },
-            "window": {
-                "off": "[%key:state::cover::kapalı%]",
-                "on": "Açık"
-            },
-            "lock": {
-                "off": "Kilit kapalı",
-                "on": "Kilit açık"
             }
         },
         "calendar": {
@@ -122,37 +183,43 @@
             "on": "Açık"
         },
         "camera": {
+            "idle": "Boşta",
             "recording": "Kaydediliyor",
-            "streaming": "Yayın akışı",
-            "idle": "Boşta"
+            "streaming": "Yayın akışı"
         },
         "climate": {
-            "off": "Kapalı",
-            "on": "Açık",
-            "heat": "Sıcak",
-            "cool": "Serin",
-            "idle": "Boşta",
             "auto": "Otomatik",
+            "cool": "Serin",
             "dry": "Kuru",
-            "fan_only": "Sadece fan",
             "eco": "Eko",
             "electric": "Elektrikli",
-            "performance": "Performans",
-            "high_demand": "Yüksek talep",
-            "heat_pump": "Isı pompası",
+            "fan_only": "Sadece fan",
             "gas": "Gaz",
-            "manual": "Kılavuz"
+            "heat": "Sıcak",
+            "heat_pump": "Isı pompası",
+            "high_demand": "Yüksek talep",
+            "idle": "Boşta",
+            "manual": "Kılavuz",
+            "off": "Kapalı",
+            "on": "Açık",
+            "performance": "Performans"
         },
         "configurator": {
             "configure": "Ayarla",
             "configured": "Ayarlandı"
         },
         "cover": {
-            "open": "Açık",
-            "opening": "Açılıyor",
             "closed": "Kapalı",
             "closing": "Kapanıyor",
+            "open": "Açık",
+            "opening": "Açılıyor",
             "stopped": "Durduruldu"
+        },
+        "default": {
+            "off": "Kapalı",
+            "on": "Açık",
+            "unavailable": "Mevcut değil",
+            "unknown": "Bilinmeyen"
         },
         "device_tracker": {
             "home": "Evde",
@@ -163,19 +230,19 @@
             "on": "Açık"
         },
         "group": {
-            "off": "Kapalı",
-            "on": "Açık",
-            "home": "Evde",
-            "not_home": "Dışarıda",
-            "open": "Açık",
-            "opening": "Açılıyor",
             "closed": "Kapandı",
             "closing": "Kapanıyor",
-            "stopped": "Durduruldu",
+            "home": "Evde",
             "locked": "Kilitli",
-            "unlocked": "Kilitli değil",
+            "not_home": "Dışarıda",
+            "off": "Kapalı",
             "ok": "Tamam",
-            "problem": "Problem"
+            "on": "Açık",
+            "open": "Açık",
+            "opening": "Açılıyor",
+            "problem": "Problem",
+            "stopped": "Durduruldu",
+            "unlocked": "Kilitli değil"
         },
         "input_boolean": {
             "off": "Kapalı",
@@ -190,11 +257,11 @@
             "unlocked": "Kilitli değil"
         },
         "media_player": {
+            "idle": "Boşta",
             "off": "Kapalı",
             "on": "Açık",
-            "playing": "Oynuyor",
             "paused": "Durduruldu",
-            "idle": "Boşta",
+            "playing": "Oynuyor",
             "standby": "Bekleme modu"
         },
         "plant": {
@@ -224,17 +291,11 @@
             "off": "Kapalı",
             "on": "Açık"
         },
-        "zwave": {
-            "default": {
-                "initializing": "Başlatılıyor",
-                "dead": "Ölü",
-                "sleeping": "Uyuyor",
-                "ready": "Hazır"
-            },
-            "query_stage": {
-                "initializing": "Başlatılıyor ( {query_stage} )",
-                "dead": "Ölü ({query_stage})"
-            }
+        "vacuum": {
+            "error": "Hata",
+            "idle": "Boşta",
+            "off": "Kapalı",
+            "on": "Açık"
         },
         "weather": {
             "clear-night": "Açık, gece",
@@ -250,504 +311,78 @@
             "windy": "Rüzgarlı",
             "windy-variant": "Rüzgarlı"
         },
-        "vacuum": {
-            "error": "Hata",
-            "idle": "Boşta",
-            "off": "Kapalı",
-            "on": "Açık"
-        }
-    },
-    "state_badge": {
-        "default": {
-            "unknown": "Bilinmiyor",
-            "unavailable": "Namüsait"
-        },
-        "alarm_control_panel": {
-            "armed": "Etkin",
-            "disarmed": "Etkisiz",
-            "armed_home": "Etkin",
-            "armed_away": "Etkin",
-            "armed_night": "Etkin",
-            "pending": "Askıda",
-            "arming": "Etkinleştir",
-            "disarming": "Etkisiz",
-            "triggered": "Tetiklendi",
-            "armed_custom_bypass": "Etkin"
-        },
-        "device_tracker": {
-            "home": "Evde",
-            "not_home": "Dışarıda"
+        "zwave": {
+            "default": {
+                "dead": "Ölü",
+                "initializing": "Başlatılıyor",
+                "ready": "Hazır",
+                "sleeping": "Uyuyor"
+            },
+            "query_stage": {
+                "dead": "Ölü ({query_stage})",
+                "initializing": "Başlatılıyor ( {query_stage} )"
+            }
         }
     },
     "ui": {
-        "panel": {
-            "shopping-list": {
-                "clear_completed": "Tamamlananları Temizle",
-                "add_item": "Öge Ekle",
-                "microphone_tip": "Sağ üstteki mikrofona dokunun ve \"alışveriş listeme şeker ekle\" deyin"
-            },
-            "developer-tools": {
-                "tabs": {
-                    "services": {
-                        "title": "Servisler"
-                    },
-                    "states": {
-                        "title": "Durumlar"
-                    },
-                    "events": {
-                        "title": "Olaylar"
-                    },
-                    "templates": {
-                        "title": "Taslaklar"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
-                    }
-                }
-            },
-            "history": {
-                "showing_entries": "Gösterilen girişler",
-                "period": "Dönem"
-            },
-            "logbook": {
-                "showing_entries": "Gösterilen girişler"
-            },
-            "mailbox": {
-                "empty": "Herhangi bir mesaj yok",
-                "playback_title": "Mesajı dinleme",
-                "delete_prompt": "Bu mesajı sil?",
-                "delete_button": "Sil"
-            },
-            "config": {
-                "header": "Home Assistant'ı yapılandır",
-                "introduction": "Buradan bileşenlerinizi ve Home Assistant'ınızı yapılandırabilirsiniz. Herşeyi kullanıcı arayüzü ile ayarlamak henüz mümkün değil fakat üzerinde çalışıyoruz",
-                "core": {
-                    "caption": "Genel",
-                    "description": "Yapılandırma dosyanızı doğrulayın ve sunucuyu kontrol edin",
-                    "section": {
-                        "core": {
-                            "header": "Yapılandırma ve sunucu kontrolü",
-                            "introduction": "Yapılandırmanızı değiştirmek, yorucu bir işlem olabilir. Biliyoruz. Bu bölüm hayatınızı biraz daha kolay hale getirmeye çalışacaktır."
-                        },
-                        "server_control": {
-                            "validation": {
-                                "heading": "Yapılandırma doğrulaması",
-                                "introduction": "Yapılandırmanızda yakın bir zamanda değişiklikler yaptıysanız ve tümünün geçerli olduğundan emin olmak istiyorsanız yapılandırmanızı doğrulayın",
-                                "check_config": "Yapılandırmayı kontrol et",
-                                "valid": "Yapılandırma geçerli!",
-                                "invalid": "Yapılandırma geçersiz"
-                            },
-                            "reloading": {
-                                "heading": "Yapılandırma yeniden yükleniyor",
-                                "introduction": "Bazı Home Assistant bileşenleri yeniden başlatmadan yenilenebilinir. Yeniden yükle tuşuna basarak güncel yapılandırmayı bırakarak yenisinin yüklenmesini sağlayabilirsiniz.",
-                                "core": "Çekirdeği yeniden yükle",
-                                "group": "Grupları yeniden yükle",
-                                "automation": "Otomasyonları yeniden yükle",
-                                "script": "Senaryoları yeniden yükle"
-                            },
-                            "server_management": {
-                                "heading": "Sunucu yönetimi",
-                                "introduction": "Home Assistant sunucunuzu kontrol edin.. Home Assistant üzerinden",
-                                "restart": "Yeniden başlat",
-                                "stop": "Durdur"
-                            }
-                        }
-                    }
-                },
-                "customize": {
-                    "caption": "Özelleştirme",
-                    "description": "Varlıklarınızı kişiselleştirin"
-                },
-                "automation": {
-                    "caption": "Otomasyon",
-                    "description": "Otomasyonları oluşturun ve düzenleyin",
-                    "picker": {
-                        "header": "Otomasyon Düzenleyici"
-                    },
-                    "editor": {
-                        "save": "Kaydet",
-                        "unsaved_confirm": "Kaydedilmemiş değişiklikleriniz var. Çıkmak istediğinize emin misiniz?",
-                        "alias": "İsim",
-                        "triggers": {
-                            "delete": "Sil",
-                            "unsupported_platform": "Desteklenmeyen platform: {platform}",
-                            "type": {
-                                "sun": {
-                                    "event": "Olay:"
-                                },
-                                "zone": {
-                                    "zone": "Bölge",
-                                    "event": "Olay:",
-                                    "enter": "Girince",
-                                    "leave": "Çıkınca"
-                                },
-                                "state": {
-                                    "for": "Süre"
-                                },
-                                "webhook": {
-                                    "label": "Webhook",
-                                    "webhook_id": "Webhook Kimliği"
-                                },
-                                "time_pattern": {
-                                    "label": "Zaman Deseni",
-                                    "hours": "Saat",
-                                    "minutes": "Dakika",
-                                    "seconds": "Saniye"
-                                }
-                            }
-                        },
-                        "conditions": {
-                            "duplicate": "Kopya",
-                            "delete": "Sil",
-                            "delete_confirm": "Silmek istediğinizden emin misiniz?",
-                            "unsupported_condition": "Desteklenmeyen durum: {condition}",
-                            "type": {
-                                "state": {
-                                    "label": "Durum",
-                                    "state": "Durum"
-                                },
-                                "numeric_state": {
-                                    "label": "Sayısal durum",
-                                    "above": "Üzerinde",
-                                    "below": "Altında",
-                                    "value_template": "Değer şablonu (isteğe bağlı)"
-                                },
-                                "sun": {
-                                    "label": "Güneş",
-                                    "before": "Önce:",
-                                    "after": "Sonra:",
-                                    "sunrise": "Gün Doğumu",
-                                    "sunset": "Gün Batımı"
-                                },
-                                "template": {
-                                    "label": "Şablon",
-                                    "value_template": "Değer şablonu"
-                                },
-                                "time": {
-                                    "label": "Zaman",
-                                    "after": "Sonra",
-                                    "before": "Önce"
-                                },
-                                "zone": {
-                                    "label": "Bölge",
-                                    "entity": "Konumlu girdi",
-                                    "zone": "Bölge"
-                                }
-                            }
-                        },
-                        "actions": {
-                            "duplicate": "Kopya",
-                            "delete": "Sil",
-                            "delete_confirm": "Silmek istediğinize emin misiniz?",
-                            "unsupported_action": "Desteklenmeyen eylem: {action}",
-                            "type": {
-                                "delay": {
-                                    "delay": "Gecikme"
-                                },
-                                "condition": {
-                                    "label": "Durum"
-                                },
-                                "event": {
-                                    "event": "Olay:",
-                                    "service_data": "Hizmet verisi"
-                                }
-                            }
-                        }
-                    }
-                },
-                "script": {
-                    "caption": "Senaryo",
-                    "description": "Senaryoları oluşturun ve düzenleyin"
-                },
-                "zwave": {
-                    "caption": "Z-Wave",
-                    "description": "Z-Wave ağınızı yönetin",
-                    "node_config": {
-                        "seconds": "Saniye",
-                        "set_wakeup": "Uyandırma Aralığı Ayarla",
-                        "config_parameter": "Yapılandırma Parametresi",
-                        "config_value": "Yapılandırma Değeri",
-                        "true": "Doğru",
-                        "false": "Yanlış",
-                        "set_config_parameter": "Yapılandırma parametresini belirle"
-                    }
-                },
-                "users": {
-                    "caption": "Kullanıcılar",
-                    "description": "Kullanıcıları yönet",
-                    "picker": {
-                        "title": "Kullanıcılar"
-                    },
-                    "editor": {
-                        "rename_user": "Kullanıcıyı yeniden adlandır",
-                        "change_password": "Parolayı değiştir",
-                        "activate_user": "Kullanıcıyı etkinleştir",
-                        "delete_user": "Kullanıcıyı sil"
-                    }
-                },
-                "cloud": {
-                    "caption": "Home Assistant Cloud",
-                    "description_login": "{email} olarak oturum açtınız",
-                    "description_not_login": "Oturum açmadınız"
-                },
-                "integrations": {
-                    "caption": "Entegrasyonlar",
-                    "description": "Bağlı aygıtları ve hizmetleri yönetin",
-                    "discovered": "Bulundu",
-                    "configured": "Yapılandırıldı",
-                    "new": "Yeni bir entegrasyon kur",
-                    "configure": "Yapılandır",
-                    "none": "Henüz hiçbir şey yapılandırılmamış",
-                    "config_entry": {
-                        "no_devices": "Bu entegrasyona ait hiçbir aygıt yok",
-                        "no_device": "Aygıtsız varlıklar",
-                        "delete_confirm": "Bu entegrasyonu silmek istediğinizden emin misiniz?",
-                        "restart_confirm": "Bu entegrasyonu kaldırmaya devam etmek için Home Assistant'ı yeniden başlatın",
-                        "manuf": "üretici: {manufacturer}",
-                        "via": "Şununla bağlı:",
-                        "firmware": "Aygıt yazılımı: {version}",
-                        "device_unavailable": "aygıt kullanılamıyor",
-                        "entity_unavailable": "varlık kullanılamıyor"
-                    }
-                },
-                "zha": {
-                    "caption": "ZHA",
-                    "description": "Zigbee Ev Otomasyonu ağ yönetimi"
-                },
-                "server_control": {
-                    "section": {
-                        "server_management": {
-                            "restart": "Yeniden başlat"
-                        }
-                    }
-                }
-            },
-            "profile": {
-                "push_notifications": {
-                    "description": "Bu cihaza bildirimler gönder",
-                    "link_promo": "Daha fazla bilgi edinin"
-                },
-                "language": {
-                    "header": "Dil",
-                    "dropdown_label": "Dil"
-                },
-                "themes": {
-                    "header": "Tema",
-                    "error_no_theme": "Tema yok.",
-                    "link_promo": "Temalar hakkında bilgi edinin",
-                    "dropdown_label": "Tema"
-                },
-                "refresh_tokens": {
-                    "header": "Yenileme Anahtarları",
-                    "description": "Her yenileme jetonu bir oturum açma oturumunu temsil eder. Yenileme jetonları, çıkış yapmak istediğinizde otomatik olarak kaldırılacaktır. Aşağıdaki yenileme jetonları hesabınız için şu anda aktif.",
-                    "token_title": "{clientId} için yenileme anahtarı",
-                    "created_at": "{date} tarihinde oluşturuldu",
-                    "confirm_delete": "{name} için yenileme anahtarını silmek istediğinizden emin misiniz?",
-                    "last_used": "En son {date} tarihinde {location} konumundan kullanıldı",
-                    "not_used": "Hiç kullanılmadı",
-                    "current_token_tooltip": "Geçerli yenileme anahtarı silinemedi"
-                },
-                "long_lived_access_tokens": {
-                    "learn_auth_requests": "Yetkilendirilmiş istekleri nasıl yapacağınızı öğrenin.",
-                    "created_at": "{date} tarihinde oluşturuldu",
-                    "confirm_delete": "{name} için erişim anahtarını silmek istediğinizden emin misiniz?",
-                    "delete_failed": "Erişim anahtarı silinemedi.",
-                    "create": "Anahtar oluştur.",
-                    "create_failed": "Erişim anahtarı oluşturulamadı.",
-                    "prompt_name": "Ad?",
-                    "prompt_copy_token": "Erişim anahtarınızı kopyalayın. Bu anahtar bir daha görüntülenmeyecektir.",
-                    "empty_state": "Henüz uzun ömürlü erişim anahtarınız yok.",
-                    "last_used": "En son {date} tarihinde {location} konumundan kullanıldı",
-                    "not_used": "Hiç kullanılmamış"
-                },
-                "current_user": "{fullName} olarak giriş yaptınız.",
-                "is_owner": "Sahipsiniz.",
-                "change_password": {
-                    "header": "Parolayı Değiştir",
-                    "current_password": "Güncel Parola",
-                    "new_password": "Yeni Parola",
-                    "confirm_new_password": "Yeni Parolayı Onaylayın",
-                    "error_required": "Gerekli",
-                    "submit": "Gönder"
-                },
-                "mfa": {
-                    "header": "Çoklu-faktör Kimlik Doğrulama Modülleri",
-                    "disable": "Devre dışı bırak",
-                    "enable": "Etkinleştir",
-                    "confirm_disable": "{name} adlı öğeyi devre dışı bırakmak istediğinizden emin misiniz?"
-                },
-                "mfa_setup": {
-                    "title_aborted": "İptal edildi",
-                    "title_success": "Başarılı!",
-                    "step_done": "Kurulumun {step} adımı tamamlandı",
-                    "close": "Kapat",
-                    "submit": "Gönder"
-                }
-            },
-            "page-authorize": {
-                "initializing": "Başlatılıyor",
-                "abort_intro": "Giriş iptal edildi",
-                "form": {
-                    "working": "Lütfen bekleyin",
-                    "unknown_error": "Bir şeyler ters gitti",
-                    "providers": {
-                        "homeassistant": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "username": "Kullanıcı Adı",
-                                        "password": "Parola"
-                                    }
-                                },
-                                "mfa": {
-                                    "data": {
-                                        "code": "İki adımlı kimlik doğrulama kodu"
-                                    }
-                                }
-                            },
-                            "error": {
-                                "invalid_auth": "Geçersiz kullanıcı adı ya da parola",
-                                "invalid_code": "Geçersiz kimlik doğrulama kodu"
-                            },
-                            "abort": {
-                                "login_expired": "Oturum süresi doldu, lütfen tekrar giriş yapın."
-                            }
-                        },
-                        "legacy_api_password": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "password": "API Parolası"
-                                    }
-                                },
-                                "mfa": {
-                                    "data": {
-                                        "code": "İki adımlı kimlik doğrulama kodu"
-                                    }
-                                }
-                            },
-                            "error": {
-                                "invalid_auth": "Geçersiz API parolası",
-                                "invalid_code": "Geçersiz doğrulama kodu"
-                            },
-                            "abort": {
-                                "login_expired": "Oturum sonlandı, lütfen tekrar giriş yapın."
-                            }
-                        },
-                        "trusted_networks": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "user": "Kullanıcı"
-                                    },
-                                    "description": "Lütfen giriş yapmak istediğiniz bir kullanıcı seçin:"
-                                }
-                            }
-                        },
-                        "command_line": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "username": "Kullanıcı Adı"
-                                    }
-                                }
-                            },
-                            "error": {
-                                "invalid_auth": "Geçersiz kullanıcı adı ya da parola"
-                            },
-                            "abort": {
-                                "login_expired": "Oturum süresi doldu, lütfen tekrar giriş yapın."
-                            }
-                        }
-                    }
-                }
-            },
-            "page-onboarding": {
-                "user": {
-                    "intro": "Bir kullanıcı hesabı oluşturarak başlayalım.",
-                    "required_field": "Gerekli",
-                    "data": {
-                        "name": "Ad",
-                        "username": "Kullanıcı Adı",
-                        "password": "Parola"
-                    },
-                    "create_account": "Hesap Oluştur",
-                    "error": {
-                        "required_fields": "Gerekli tüm alanları doldurun"
-                    }
-                }
-            },
-            "lovelace": {
-                "cards": {
-                    "shopping-list": {
-                        "checked_items": "Seçili öğeler",
-                        "clear_items": "Seçili ögeleri temizle",
-                        "add_item": "Öge Ekle"
-                    }
-                },
-                "editor": {
-                    "edit_card": {
-                        "header": "Kart Ayarları",
-                        "save": "Kaydet",
-                        "toggle_editor": "Düzenleyiciye Geçiş",
-                        "pick_card": "Eklemek istediğiniz kartı seçin.",
-                        "add": "Kart Ekle",
-                        "edit": "Düzenle",
-                        "delete": "Sil"
-                    },
-                    "migrate": {
-                        "header": "Yapılandırma Geçersiz",
-                        "para_no_id": "Bu öğenin bir kimliği yok. Lütfen 'ui-lovelace.yaml' dosyasında bu elemente bir kimlik ekleyin.",
-                        "para_migrate": "'Ayarları aktar' düğmesine bastığınız zaman Home Assistant tüm kartlarınıza ve görünümlerinize otomatik olarak kimlik atayabilir.",
-                        "migrate": "Ayarları aktar"
-                    },
-                    "header": "Kullanıcı arayüzünü düzenle",
-                    "edit_view": {
-                        "header": "Ayarları görüntüle",
-                        "add": "Görünüm ekle",
-                        "edit": "Görünümü düzenle",
-                        "delete": "Görünümü sil"
-                    },
-                    "save_config": {
-                        "header": "Lovelace kullanıcı arayüzünü kontrolünüz altına alın",
-                        "para": "Home Assistant varsayılan olarak kullanıcı arayüzünüzü yönetecek, yeni Lovelace bileşenleri ya da varlıklar kullanıma sunulduğunda onu güncelleyecektir. Eğer bunu kontrolünüz altına almak istiyorsanız daha sonra biz sizin için bu değişiklikleri otomatik olarak gerçekleştiremeyeceğiz.",
-                        "para_sure": "Kullanıcı arayüzünüzü kontrol altına almak istediğinize emin misiniz?",
-                        "cancel": "Boşver",
-                        "save": "Kontrol altına al"
-                    }
-                },
-                "menu": {
-                    "configure_ui": "Kullanıcı arayüzünü ayarla"
-                }
-            }
-        },
-        "sidebar": {
-            "log_out": "Çıkış yap"
-        },
-        "common": {
-            "loading": "Yükleniyor",
-            "cancel": "İptal",
-            "save": "Kaydet"
-        },
-        "duration": {
-            "day": "{count}{count, plural,\n  one { gün }\n  other { gün }\n}",
-            "week": "{count}{count, plural,\n  one { hafta }\n  other { hafta }\n}",
-            "second": "{count}{count, plural,\n  one { saniye }\n  other { saniye }\n}"
-        },
-        "login-form": {
-            "password": "Şifre",
-            "remember": "Hatırla",
-            "log_in": "Oturum aç"
+        "auth_store": {
+            "ask": "Bu girişi kaydetmek istiyor musunuz?",
+            "confirm": "Girişi kaydet",
+            "decline": "Hayır teşekkürler"
         },
         "card": {
+            "alarm_control_panel": {
+                "arm_night": "Geceyi etkinleştir",
+                "armed_custom_bypass": "Özel atlatma",
+                "code": "kod"
+            },
             "camera": {
                 "not_available": "Resim mevcut değil"
+            },
+            "climate": {
+                "away_mode": "Dışarıda modu",
+                "fan_mode": "Fan modu",
+                "on_off": "Açık \/ kapalı",
+                "swing_mode": "Salınım modu",
+                "target_humidity": "Hedef nem",
+                "target_temperature": "Hedef sıcaklık"
+            },
+            "fan": {
+                "direction": "Yön",
+                "oscillate": "Salınım",
+                "speed": "Hız"
+            },
+            "light": {
+                "brightness": "Parlaklık",
+                "effect": "Efekt"
+            },
+            "lock": {
+                "code": "Kod",
+                "lock": "Kilitle",
+                "unlock": "Kilidi aç"
+            },
+            "media_player": {
+                "source": "Kaynak"
             },
             "persistent_notification": {
                 "dismiss": "Kapat"
             },
             "scene": {
                 "activate": "Etkinleştir"
+            },
+            "vacuum": {
+                "actions": {
+                    "start_cleaning": "Temizlemeye başla",
+                    "turn_off": "Kapat",
+                    "turn_on": "Aç"
+                }
+            },
+            "water_heater": {
+                "away_mode": "Dışarıda modu",
+                "currently": "Şu an",
+                "on_off": "Açık \/ kapalı",
+                "operation": "İşlem",
+                "target_temperature": "Hedef sıcaklık"
             },
             "weather": {
                 "attributes": {
@@ -758,57 +393,14 @@
                     "wind_speed": "Rüzgar hızı"
                 },
                 "forecast": "Tahmin"
-            },
-            "alarm_control_panel": {
-                "code": "kod",
-                "arm_night": "Geceyi etkinleştir",
-                "armed_custom_bypass": "Özel atlatma"
-            },
-            "fan": {
-                "speed": "Hız",
-                "oscillate": "Salınım",
-                "direction": "Yön"
-            },
-            "light": {
-                "brightness": "Parlaklık",
-                "effect": "Efekt"
-            },
-            "climate": {
-                "on_off": "Açık \/ kapalı",
-                "target_temperature": "Hedef sıcaklık",
-                "target_humidity": "Hedef nem",
-                "fan_mode": "Fan modu",
-                "swing_mode": "Salınım modu",
-                "away_mode": "Dışarıda modu"
-            },
-            "lock": {
-                "code": "Kod",
-                "lock": "Kilitle",
-                "unlock": "Kilidi aç"
-            },
-            "media_player": {
-                "source": "Kaynak"
-            },
-            "vacuum": {
-                "actions": {
-                    "start_cleaning": "Temizlemeye başla",
-                    "turn_on": "Aç",
-                    "turn_off": "Kapat"
-                }
-            },
-            "water_heater": {
-                "currently": "Şu an",
-                "on_off": "Açık \/ kapalı",
-                "target_temperature": "Hedef sıcaklık",
-                "operation": "İşlem",
-                "away_mode": "Dışarıda modu"
             }
         },
+        "common": {
+            "cancel": "İptal",
+            "loading": "Yükleniyor",
+            "save": "Kaydet"
+        },
         "dialogs": {
-            "more_info_settings": {
-                "save": "Kaydet",
-                "name": "Ad"
-            },
             "more_info_control": {
                 "script": {
                     "last_action": "Son Eylem"
@@ -821,61 +413,469 @@
                 "updater": {
                     "title": "Talimatları Güncelle"
                 }
+            },
+            "more_info_settings": {
+                "name": "Ad",
+                "save": "Kaydet"
             }
         },
-        "auth_store": {
-            "ask": "Bu girişi kaydetmek istiyor musunuz?",
-            "decline": "Hayır teşekkürler",
-            "confirm": "Girişi kaydet"
+        "duration": {
+            "day": "{count}{count, plural,\\n  one { gün }\\n  other { gün }\\n}",
+            "second": "{count}{count, plural,\\n  one { saniye }\\n  other { saniye }\\n}",
+            "week": "{count}{count, plural,\\n  one { hafta }\\n  other { hafta }\\n}"
+        },
+        "login-form": {
+            "log_in": "Oturum aç",
+            "password": "Şifre",
+            "remember": "Hatırla"
         },
         "notification_drawer": {
             "empty": "Bildirim bulunmamakta",
             "title": "Bildirimler"
-        }
-    },
-    "domain": {
-        "alarm_control_panel": "Alarm kontrol paneli",
-        "automation": "Otomasyon",
-        "binary_sensor": "İkili sensör",
-        "calendar": "Takvim",
-        "camera": "Kamera",
-        "climate": "İklim",
-        "configurator": "Yapılandırıcı",
-        "conversation": "Konuşma",
-        "cover": "Panjur",
-        "device_tracker": "Cihaz izleyici",
-        "fan": "Fan",
-        "history_graph": "Geçmiş grafiği",
-        "group": "Grup",
-        "image_processing": "Görüntü işleme",
-        "input_boolean": "Doğru\/Yanlış giriniz",
-        "input_datetime": "Giriş Tarih\/Saat",
-        "input_select": "Girdi seçiniz",
-        "input_number": "Numara giriniz",
-        "input_text": "Metin giriniz",
-        "light": "Işık",
-        "lock": "Kilit",
-        "mailbox": "Posta kutusu",
-        "media_player": "Medya oynatıcı",
-        "notify": "Bildir",
-        "plant": "Bitki",
-        "proximity": "Yakınlık",
-        "remote": "Uzaktan Kumanda",
-        "scene": "Senaryo",
-        "script": "Senaryo",
-        "sensor": "Sensör",
-        "sun": "Güneş",
-        "switch": "Anahtar",
-        "updater": "Güncelleyici",
-        "weblink": "Web bağlantısı",
-        "zwave": "Z-Wave",
-        "zha": "ZHA"
-    },
-    "attribute": {
-        "weather": {
-            "humidity": "Nem",
-            "visibility": "Görünürlük",
-            "wind_speed": "Rüzgar hızı"
+        },
+        "panel": {
+            "config": {
+                "automation": {
+                    "caption": "Otomasyon",
+                    "description": "Otomasyonları oluşturun ve düzenleyin",
+                    "editor": {
+                        "actions": {
+                            "delete": "Sil",
+                            "delete_confirm": "Silmek istediğinize emin misiniz?",
+                            "duplicate": "Kopya",
+                            "type": {
+                                "condition": {
+                                    "label": "Durum"
+                                },
+                                "delay": {
+                                    "delay": "Gecikme"
+                                },
+                                "event": {
+                                    "event": "Olay:",
+                                    "service_data": "Hizmet verisi"
+                                }
+                            },
+                            "unsupported_action": "Desteklenmeyen eylem: {action}"
+                        },
+                        "alias": "İsim",
+                        "conditions": {
+                            "delete": "Sil",
+                            "delete_confirm": "Silmek istediğinizden emin misiniz?",
+                            "duplicate": "Kopya",
+                            "type": {
+                                "numeric_state": {
+                                    "above": "Üzerinde",
+                                    "below": "Altında",
+                                    "label": "Sayısal durum",
+                                    "value_template": "Değer şablonu (isteğe bağlı)"
+                                },
+                                "state": {
+                                    "label": "Durum",
+                                    "state": "Durum"
+                                },
+                                "sun": {
+                                    "after": "Sonra:",
+                                    "before": "Önce:",
+                                    "label": "Güneş",
+                                    "sunrise": "Gün Doğumu",
+                                    "sunset": "Gün Batımı"
+                                },
+                                "template": {
+                                    "label": "Şablon",
+                                    "value_template": "Değer şablonu"
+                                },
+                                "time": {
+                                    "after": "Sonra",
+                                    "before": "Önce",
+                                    "label": "Zaman"
+                                },
+                                "zone": {
+                                    "entity": "Konumlu girdi",
+                                    "label": "Bölge",
+                                    "zone": "Bölge"
+                                }
+                            },
+                            "unsupported_condition": "Desteklenmeyen durum: {condition}"
+                        },
+                        "save": "Kaydet",
+                        "triggers": {
+                            "delete": "Sil",
+                            "type": {
+                                "state": {
+                                    "for": "Süre"
+                                },
+                                "sun": {
+                                    "event": "Olay:"
+                                },
+                                "time_pattern": {
+                                    "hours": "Saat",
+                                    "label": "Zaman Deseni",
+                                    "minutes": "Dakika",
+                                    "seconds": "Saniye"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook Kimliği"
+                                },
+                                "zone": {
+                                    "enter": "Girince",
+                                    "event": "Olay:",
+                                    "leave": "Çıkınca",
+                                    "zone": "Bölge"
+                                }
+                            },
+                            "unsupported_platform": "Desteklenmeyen platform: {platform}"
+                        },
+                        "unsaved_confirm": "Kaydedilmemiş değişiklikleriniz var. Çıkmak istediğinize emin misiniz?"
+                    },
+                    "picker": {
+                        "header": "Otomasyon Düzenleyici"
+                    }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud",
+                    "description_login": "{email} olarak oturum açtınız",
+                    "description_not_login": "Oturum açmadınız"
+                },
+                "core": {
+                    "caption": "Genel",
+                    "description": "Yapılandırma dosyanızı doğrulayın ve sunucuyu kontrol edin",
+                    "section": {
+                        "core": {
+                            "header": "Yapılandırma ve sunucu kontrolü",
+                            "introduction": "Yapılandırmanızı değiştirmek, yorucu bir işlem olabilir. Biliyoruz. Bu bölüm hayatınızı biraz daha kolay hale getirmeye çalışacaktır."
+                        },
+                        "server_control": {
+                            "reloading": {
+                                "automation": "Otomasyonları yeniden yükle",
+                                "core": "Çekirdeği yeniden yükle",
+                                "group": "Grupları yeniden yükle",
+                                "heading": "Yapılandırma yeniden yükleniyor",
+                                "introduction": "Bazı Home Assistant bileşenleri yeniden başlatmadan yenilenebilinir. Yeniden yükle tuşuna basarak güncel yapılandırmayı bırakarak yenisinin yüklenmesini sağlayabilirsiniz.",
+                                "script": "Senaryoları yeniden yükle"
+                            },
+                            "server_management": {
+                                "heading": "Sunucu yönetimi",
+                                "introduction": "Home Assistant sunucunuzu kontrol edin.. Home Assistant üzerinden",
+                                "restart": "Yeniden başlat",
+                                "stop": "Durdur"
+                            },
+                            "validation": {
+                                "check_config": "Yapılandırmayı kontrol et",
+                                "heading": "Yapılandırma doğrulaması",
+                                "introduction": "Yapılandırmanızda yakın bir zamanda değişiklikler yaptıysanız ve tümünün geçerli olduğundan emin olmak istiyorsanız yapılandırmanızı doğrulayın",
+                                "invalid": "Yapılandırma geçersiz",
+                                "valid": "Yapılandırma geçerli!"
+                            }
+                        }
+                    }
+                },
+                "customize": {
+                    "caption": "Özelleştirme",
+                    "description": "Varlıklarınızı kişiselleştirin"
+                },
+                "header": "Home Assistant'ı yapılandır",
+                "integrations": {
+                    "caption": "Entegrasyonlar",
+                    "config_entry": {
+                        "delete_confirm": "Bu entegrasyonu silmek istediğinizden emin misiniz?",
+                        "device_unavailable": "aygıt kullanılamıyor",
+                        "entity_unavailable": "varlık kullanılamıyor",
+                        "firmware": "Aygıt yazılımı: {version}",
+                        "manuf": "üretici: {manufacturer}",
+                        "no_device": "Aygıtsız varlıklar",
+                        "no_devices": "Bu entegrasyona ait hiçbir aygıt yok",
+                        "restart_confirm": "Bu entegrasyonu kaldırmaya devam etmek için Home Assistant'ı yeniden başlatın",
+                        "via": "Şununla bağlı:"
+                    },
+                    "configure": "Yapılandır",
+                    "configured": "Yapılandırıldı",
+                    "description": "Bağlı aygıtları ve hizmetleri yönetin",
+                    "discovered": "Bulundu",
+                    "new": "Yeni bir entegrasyon kur",
+                    "none": "Henüz hiçbir şey yapılandırılmamış"
+                },
+                "introduction": "Buradan bileşenlerinizi ve Home Assistant'ınızı yapılandırabilirsiniz. Herşeyi kullanıcı arayüzü ile ayarlamak henüz mümkün değil fakat üzerinde çalışıyoruz",
+                "script": {
+                    "caption": "Senaryo",
+                    "description": "Senaryoları oluşturun ve düzenleyin"
+                },
+                "server_control": {
+                    "section": {
+                        "server_management": {
+                            "restart": "Yeniden başlat"
+                        }
+                    }
+                },
+                "users": {
+                    "caption": "Kullanıcılar",
+                    "description": "Kullanıcıları yönet",
+                    "editor": {
+                        "activate_user": "Kullanıcıyı etkinleştir",
+                        "change_password": "Parolayı değiştir",
+                        "delete_user": "Kullanıcıyı sil",
+                        "rename_user": "Kullanıcıyı yeniden adlandır"
+                    },
+                    "picker": {
+                        "title": "Kullanıcılar"
+                    }
+                },
+                "zha": {
+                    "caption": "ZHA",
+                    "description": "Zigbee Ev Otomasyonu ağ yönetimi"
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "description": "Z-Wave ağınızı yönetin",
+                    "node_config": {
+                        "config_parameter": "Yapılandırma Parametresi",
+                        "config_value": "Yapılandırma Değeri",
+                        "false": "Yanlış",
+                        "seconds": "Saniye",
+                        "set_config_parameter": "Yapılandırma parametresini belirle",
+                        "set_wakeup": "Uyandırma Aralığı Ayarla",
+                        "true": "Doğru"
+                    }
+                }
+            },
+            "developer-tools": {
+                "tabs": {
+                    "events": {
+                        "title": "Olaylar"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    },
+                    "services": {
+                        "title": "Servisler"
+                    },
+                    "states": {
+                        "title": "Durumlar"
+                    },
+                    "templates": {
+                        "title": "Taslaklar"
+                    }
+                }
+            },
+            "history": {
+                "period": "Dönem",
+                "showing_entries": "Gösterilen girişler"
+            },
+            "logbook": {
+                "showing_entries": "Gösterilen girişler"
+            },
+            "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "add_item": "Öge Ekle",
+                        "checked_items": "Seçili öğeler",
+                        "clear_items": "Seçili ögeleri temizle"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "add": "Kart Ekle",
+                        "delete": "Sil",
+                        "edit": "Düzenle",
+                        "header": "Kart Ayarları",
+                        "pick_card": "Eklemek istediğiniz kartı seçin.",
+                        "save": "Kaydet",
+                        "toggle_editor": "Düzenleyiciye Geçiş"
+                    },
+                    "edit_view": {
+                        "add": "Görünüm ekle",
+                        "delete": "Görünümü sil",
+                        "edit": "Görünümü düzenle",
+                        "header": "Ayarları görüntüle"
+                    },
+                    "header": "Kullanıcı arayüzünü düzenle",
+                    "migrate": {
+                        "header": "Yapılandırma Geçersiz",
+                        "migrate": "Ayarları aktar",
+                        "para_migrate": "'Ayarları aktar' düğmesine bastığınız zaman Home Assistant tüm kartlarınıza ve görünümlerinize otomatik olarak kimlik atayabilir.",
+                        "para_no_id": "Bu öğenin bir kimliği yok. Lütfen 'ui-lovelace.yaml' dosyasında bu elemente bir kimlik ekleyin."
+                    },
+                    "save_config": {
+                        "cancel": "Boşver",
+                        "header": "Lovelace kullanıcı arayüzünü kontrolünüz altına alın",
+                        "para": "Home Assistant varsayılan olarak kullanıcı arayüzünüzü yönetecek, yeni Lovelace bileşenleri ya da varlıklar kullanıma sunulduğunda onu güncelleyecektir. Eğer bunu kontrolünüz altına almak istiyorsanız daha sonra biz sizin için bu değişiklikleri otomatik olarak gerçekleştiremeyeceğiz.",
+                        "para_sure": "Kullanıcı arayüzünüzü kontrol altına almak istediğinize emin misiniz?",
+                        "save": "Kontrol altına al"
+                    }
+                },
+                "menu": {
+                    "configure_ui": "Kullanıcı arayüzünü ayarla"
+                }
+            },
+            "mailbox": {
+                "delete_button": "Sil",
+                "delete_prompt": "Bu mesajı sil?",
+                "empty": "Herhangi bir mesaj yok",
+                "playback_title": "Mesajı dinleme"
+            },
+            "page-authorize": {
+                "abort_intro": "Giriş iptal edildi",
+                "form": {
+                    "providers": {
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "Oturum süresi doldu, lütfen tekrar giriş yapın."
+                            },
+                            "error": {
+                                "invalid_auth": "Geçersiz kullanıcı adı ya da parola"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "username": "Kullanıcı Adı"
+                                    }
+                                }
+                            }
+                        },
+                        "homeassistant": {
+                            "abort": {
+                                "login_expired": "Oturum süresi doldu, lütfen tekrar giriş yapın."
+                            },
+                            "error": {
+                                "invalid_auth": "Geçersiz kullanıcı adı ya da parola",
+                                "invalid_code": "Geçersiz kimlik doğrulama kodu"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Parola",
+                                        "username": "Kullanıcı Adı"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "İki adımlı kimlik doğrulama kodu"
+                                    }
+                                }
+                            }
+                        },
+                        "legacy_api_password": {
+                            "abort": {
+                                "login_expired": "Oturum sonlandı, lütfen tekrar giriş yapın."
+                            },
+                            "error": {
+                                "invalid_auth": "Geçersiz API parolası",
+                                "invalid_code": "Geçersiz doğrulama kodu"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API Parolası"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "İki adımlı kimlik doğrulama kodu"
+                                    }
+                                }
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Kullanıcı"
+                                    },
+                                    "description": "Lütfen giriş yapmak istediğiniz bir kullanıcı seçin:"
+                                }
+                            }
+                        }
+                    },
+                    "unknown_error": "Bir şeyler ters gitti",
+                    "working": "Lütfen bekleyin"
+                },
+                "initializing": "Başlatılıyor"
+            },
+            "page-onboarding": {
+                "user": {
+                    "create_account": "Hesap Oluştur",
+                    "data": {
+                        "name": "Ad",
+                        "password": "Parola",
+                        "username": "Kullanıcı Adı"
+                    },
+                    "error": {
+                        "required_fields": "Gerekli tüm alanları doldurun"
+                    },
+                    "intro": "Bir kullanıcı hesabı oluşturarak başlayalım.",
+                    "required_field": "Gerekli"
+                }
+            },
+            "profile": {
+                "change_password": {
+                    "confirm_new_password": "Yeni Parolayı Onaylayın",
+                    "current_password": "Güncel Parola",
+                    "error_required": "Gerekli",
+                    "header": "Parolayı Değiştir",
+                    "new_password": "Yeni Parola",
+                    "submit": "Gönder"
+                },
+                "current_user": "{fullName} olarak giriş yaptınız.",
+                "is_owner": "Sahipsiniz.",
+                "language": {
+                    "dropdown_label": "Dil",
+                    "header": "Dil"
+                },
+                "long_lived_access_tokens": {
+                    "confirm_delete": "{name} için erişim anahtarını silmek istediğinizden emin misiniz?",
+                    "create": "Anahtar oluştur.",
+                    "create_failed": "Erişim anahtarı oluşturulamadı.",
+                    "created_at": "{date} tarihinde oluşturuldu",
+                    "delete_failed": "Erişim anahtarı silinemedi.",
+                    "empty_state": "Henüz uzun ömürlü erişim anahtarınız yok.",
+                    "last_used": "En son {date} tarihinde {location} konumundan kullanıldı",
+                    "learn_auth_requests": "Yetkilendirilmiş istekleri nasıl yapacağınızı öğrenin.",
+                    "not_used": "Hiç kullanılmamış",
+                    "prompt_copy_token": "Erişim anahtarınızı kopyalayın. Bu anahtar bir daha görüntülenmeyecektir.",
+                    "prompt_name": "Ad?"
+                },
+                "mfa_setup": {
+                    "close": "Kapat",
+                    "step_done": "Kurulumun {step} adımı tamamlandı",
+                    "submit": "Gönder",
+                    "title_aborted": "İptal edildi",
+                    "title_success": "Başarılı!"
+                },
+                "mfa": {
+                    "confirm_disable": "{name} adlı öğeyi devre dışı bırakmak istediğinizden emin misiniz?",
+                    "disable": "Devre dışı bırak",
+                    "enable": "Etkinleştir",
+                    "header": "Çoklu-faktör Kimlik Doğrulama Modülleri"
+                },
+                "push_notifications": {
+                    "description": "Bu cihaza bildirimler gönder",
+                    "link_promo": "Daha fazla bilgi edinin"
+                },
+                "refresh_tokens": {
+                    "confirm_delete": "{name} için yenileme anahtarını silmek istediğinizden emin misiniz?",
+                    "created_at": "{date} tarihinde oluşturuldu",
+                    "current_token_tooltip": "Geçerli yenileme anahtarı silinemedi",
+                    "description": "Her yenileme jetonu bir oturum açma oturumunu temsil eder. Yenileme jetonları, çıkış yapmak istediğinizde otomatik olarak kaldırılacaktır. Aşağıdaki yenileme jetonları hesabınız için şu anda aktif.",
+                    "header": "Yenileme Anahtarları",
+                    "last_used": "En son {date} tarihinde {location} konumundan kullanıldı",
+                    "not_used": "Hiç kullanılmadı",
+                    "token_title": "{clientId} için yenileme anahtarı"
+                },
+                "themes": {
+                    "dropdown_label": "Tema",
+                    "error_no_theme": "Tema yok.",
+                    "header": "Tema",
+                    "link_promo": "Temalar hakkında bilgi edinin"
+                }
+            },
+            "shopping-list": {
+                "add_item": "Öge Ekle",
+                "clear_completed": "Tamamlananları Temizle",
+                "microphone_tip": "Sağ üstteki mikrofona dokunun ve \"alışveriş listeme şeker ekle\" deyin"
+            }
+        },
+        "sidebar": {
+            "log_out": "Çıkış yap"
         }
     }
 }

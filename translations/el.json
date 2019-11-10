@@ -1,52 +1,192 @@
 {
-    "panel": {
-        "config": "Ρυθμίσεις",
-        "states": "Επισκόπηση",
-        "map": "Χάρτης",
-        "logbook": "Αρχείο Συμβάντων",
-        "history": "Ιστορικό",
+    "attribute": {
+        "weather": {
+            "humidity": "Υγρασία",
+            "visibility": "Ορατότητα",
+            "wind_speed": "Ταχύτητα ανέμου"
+        }
+    },
+    "config_entry": {
+        "disabled_by": {
+            "config_entry": "Παράμετρος διαμόρφωσης",
+            "integration": "Ενσωμάτωση",
+            "user": "Χρήστης"
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Πίνακας ελέγχου ειδοποιήσεων",
+        "automation": "Αυτοματισμός",
+        "binary_sensor": "Δυαδικός αισθητήρας",
+        "calendar": "Ημερολόγιο",
+        "camera": "Κάμερα",
+        "climate": "Το κλίμα",
+        "configurator": "Διαμορφωτής",
+        "conversation": "Συνομιλία",
+        "cover": "Κάλυψη",
+        "device_tracker": "Συσκευή ανιχνευτή",
+        "fan": "Ανεμιστήρας",
+        "group": "Ομάδα",
+        "hassio": "Hass.io",
+        "history_graph": "Γράφημα του ιστορικού",
+        "homeassistant": "Home Assistant",
+        "image_processing": "Επεξεργασία εικόνας",
+        "input_boolean": "Εισαγωγή λογικής πράξης",
+        "input_datetime": "Εισαγωγή ημερομηνίας",
+        "input_number": "Αριθμός εισόδου",
+        "input_select": "Επιλογή εισόδου",
+        "input_text": "Εισαγωγή κειμένου",
+        "light": "Φωτιστικά",
+        "lock": "Κλείδωμα",
+        "lovelace": "Lovelace",
         "mailbox": "Γραμματοκιβώτιο",
-        "shopping_list": "Λίστα αγορών",
+        "media_player": "Συσκευή αναπαραγωγής πολυμέσων",
+        "notify": "Κοινοποίηση",
+        "person": "Άτομο",
+        "plant": "Χλωρίδα",
+        "proximity": "Εγγύτητα",
+        "remote": "Τηλεχειρισμός",
+        "scene": "Σκηνή",
+        "script": "Δέσμη ενεργειών",
+        "sensor": "Αισθητήρας",
+        "sun": "Ήλιος",
+        "switch": "Διακόπτης",
+        "system_health": "Υγεία Συστήματος",
+        "updater": "Επικαιροποιητής",
+        "vacuum": "Εκκένωση",
+        "weblink": "Σύνδεσμος",
+        "zha": "ΖΗΑ",
+        "zwave": "Z-Wave"
+    },
+    "groups": {
+        "system-admin": "Διαχειριστές",
+        "system-read-only": "Χρήστες μόνο για ανάγνωση",
+        "system-users": "Χρήστες"
+    },
+    "panel": {
+        "calendar": "Ημερολόγιο",
+        "config": "Ρυθμίσεις",
         "dev-info": "Πληροφορίες",
         "developer_tools": "Εργαλεία προγραμματιστή",
-        "calendar": "Ημερολόγιο",
-        "profile": "Προφίλ"
+        "history": "Ιστορικό",
+        "logbook": "Αρχείο Συμβάντων",
+        "mailbox": "Γραμματοκιβώτιο",
+        "map": "Χάρτης",
+        "profile": "Προφίλ",
+        "shopping_list": "Λίστα αγορών",
+        "states": "Επισκόπηση"
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "auto": "Αυτόματο",
+                "off": "Κλειστό",
+                "on": "Ενεργό"
+            },
+            "hvac_action": {
+                "cooling": "Ψύξη",
+                "drying": "Αφύγρανση",
+                "fan": "Ανεμιστήρας",
+                "heating": "Θέρμανση",
+                "idle": "Σε αδράνεια",
+                "off": "Κλειστό"
+            },
+            "preset_mode": {
+                "activity": "Δραστηριότητα",
+                "away": "Εκτός Σπιτιού",
+                "boost": "Ενίσχυση",
+                "comfort": "Άνεση",
+                "eco": "Οικονομικό",
+                "home": "Σπίτι",
+                "none": "Κανένας",
+                "sleep": "Ύπνος"
+            }
+        }
+    },
+    "state_badge": {
+        "alarm_control_panel": {
+            "armed": "Οπλισμένο",
+            "armed_away": "Οπλισμένο",
+            "armed_custom_bypass": "Οπλισμένο",
+            "armed_home": "Οπλισμένο",
+            "armed_night": "Οπλισμένο",
+            "arming": "Όπλιση",
+            "disarmed": "Αφόπλιση",
+            "disarming": "Αφόπλιση",
+            "pending": "Εκκρεμής",
+            "triggered": "Ενεργ"
+        },
+        "default": {
+            "entity_not_found": "Η οντότητα δεν βρέθηκε",
+            "error": "Σφάλμα",
+            "unavailable": "Μη Διαθ",
+            "unknown": "Άγνωστο"
+        },
+        "device_tracker": {
+            "home": "Σπίτι",
+            "not_home": "Εκτός Σπιτιού"
+        },
+        "person": {
+            "home": "Σπίτι",
+            "not_home": "Εκτός"
+        }
     },
     "state": {
-        "default": {
-            "off": "Κλειστό",
-            "on": "Ανοιχτό",
-            "unknown": "Άγνωστη",
-            "unavailable": "Μη Διαθέσιμο"
-        },
         "alarm_control_panel": {
             "armed": "Οπλισμένος",
-            "disarmed": "Αφοπλισμένος",
-            "armed_home": "Σπίτι Οπλισμένο",
             "armed_away": "Οπλισμένος μακριά",
+            "armed_custom_bypass": "Προσαρμοσμένη παράκαμψη ενεργή",
+            "armed_home": "Σπίτι Οπλισμένο",
             "armed_night": "Οπλισμένο βράδυ",
-            "pending": "Εκκρεμής",
             "arming": "Όπλιση",
+            "disarmed": "Αφοπλισμένος",
             "disarming": "Αφόπλιση",
-            "triggered": "Παραβίαση",
-            "armed_custom_bypass": "Προσαρμοσμένη παράκαμψη ενεργή"
+            "pending": "Εκκρεμής",
+            "triggered": "Παραβίαση"
         },
         "automation": {
             "off": "Κλειστό",
             "on": "Ανοιχτό"
         },
         "binary_sensor": {
+            "battery": {
+                "off": "Κανονικός",
+                "on": "Χαμηλός"
+            },
+            "cold": {
+                "off": "Φυσιολογικό",
+                "on": "Κρύο"
+            },
+            "connectivity": {
+                "off": "Αποσύνδεση",
+                "on": "Συνδεδεμένος"
+            },
             "default": {
                 "off": "Ανενεργός",
                 "on": "Ενεργός "
             },
-            "moisture": {
-                "off": "Ξηρό",
-                "on": "Υγρό"
+            "door": {
+                "off": "Κλειστή",
+                "on": "Ανοιχτή"
+            },
+            "garage_door": {
+                "off": "Κλειστό",
+                "on": "Άνοιγμα"
             },
             "gas": {
                 "off": "Δεν Εντοπίστηκε",
                 "on": "Εντοπίστηκε"
+            },
+            "heat": {
+                "off": "Φυσιολογικό",
+                "on": "Καυτό"
+            },
+            "lock": {
+                "off": "Κλειδωμένο",
+                "on": "Ξεκλείδωτο"
+            },
+            "moisture": {
+                "off": "Ξηρό",
+                "on": "Υγρό"
             },
             "motion": {
                 "off": "Δεν Εντοπίστηκε",
@@ -55,6 +195,22 @@
             "occupancy": {
                 "off": "Δεν Εντοπίστηκε",
                 "on": "Εντοπίστηκε"
+            },
+            "opening": {
+                "off": "Κλειστό",
+                "on": "Ανοιχτό"
+            },
+            "presence": {
+                "off": "Εκτός",
+                "on": "Σπίτι"
+            },
+            "problem": {
+                "off": "Εντάξει",
+                "on": "Πρόβλημα"
+            },
+            "safety": {
+                "off": "Ασφαλής",
+                "on": "Ανασφαλής"
             },
             "smoke": {
                 "off": "Δεν Εντοπίστηκε",
@@ -68,53 +224,9 @@
                 "off": "Δεν Εντοπίστηκε",
                 "on": "Εντοπίστηκε"
             },
-            "opening": {
-                "off": "Κλειστό",
-                "on": "Ανοιχτό"
-            },
-            "safety": {
-                "off": "Ασφαλής",
-                "on": "Ανασφαλής"
-            },
-            "presence": {
-                "off": "Εκτός",
-                "on": "Σπίτι"
-            },
-            "battery": {
-                "off": "Κανονικός",
-                "on": "Χαμηλός"
-            },
-            "problem": {
-                "off": "Εντάξει",
-                "on": "Πρόβλημα"
-            },
-            "connectivity": {
-                "off": "Αποσύνδεση",
-                "on": "Συνδεδεμένος"
-            },
-            "cold": {
-                "off": "Φυσιολογικό",
-                "on": "Κρύο"
-            },
-            "door": {
-                "off": "Κλειστή",
-                "on": "Ανοιχτή"
-            },
-            "garage_door": {
-                "off": "Κλειστό",
-                "on": "Άνοιγμα"
-            },
-            "heat": {
-                "off": "Φυσιολογικό",
-                "on": "Καυτό"
-            },
             "window": {
                 "off": "Κλειστό",
                 "on": "Ανοιχτό"
-            },
-            "lock": {
-                "off": "Κλειδωμένο",
-                "on": "Ξεκλείδωτο"
             }
         },
         "calendar": {
@@ -122,38 +234,44 @@
             "on": "Ενεργοποιημένο"
         },
         "camera": {
+            "idle": "Αδρανές",
             "recording": "Καταγράφει",
-            "streaming": "Μετάδοση Ροής",
-            "idle": "Αδρανές"
+            "streaming": "Μετάδοση Ροής"
         },
         "climate": {
-            "off": "Ανενεργό",
-            "on": "Ενεργό",
-            "heat": "Θερμό",
-            "cool": "Δροσερό",
-            "idle": "Αδρανές",
             "auto": "Αυτόματο",
+            "cool": "Δροσερό",
             "dry": "Ξηρό",
-            "fan_only": "Ανεμιστήρας μόνο",
             "eco": "Eco",
             "electric": "Ηλεκτρικό",
-            "performance": "Απόδοση",
-            "high_demand": "Υψηλή ζήτηση",
-            "heat_pump": "Αντλία θερμότητας",
+            "fan_only": "Ανεμιστήρας μόνο",
             "gas": "Αέριο",
+            "heat": "Θερμό",
+            "heat_cool": "Θέρμανση \/ Ψύξη",
+            "heat_pump": "Αντλία θερμότητας",
+            "high_demand": "Υψηλή ζήτηση",
+            "idle": "Αδρανές",
             "manual": "Εγχειρίδιο",
-            "heat_cool": "Θέρμανση \/ Ψύξη"
+            "off": "Ανενεργό",
+            "on": "Ενεργό",
+            "performance": "Απόδοση"
         },
         "configurator": {
             "configure": "Διαμορφώστε",
             "configured": "Διαμορφώθηκε"
         },
         "cover": {
-            "open": "Ανοιχτό",
-            "opening": "Άνοιγμα",
             "closed": "Κλειστό",
             "closing": "Κλείσιμο",
+            "open": "Ανοιχτό",
+            "opening": "Άνοιγμα",
             "stopped": "Σταμάτησε"
+        },
+        "default": {
+            "off": "Κλειστό",
+            "on": "Ανοιχτό",
+            "unavailable": "Μη Διαθέσιμο",
+            "unknown": "Άγνωστη"
         },
         "device_tracker": {
             "home": "Σπίτι",
@@ -164,19 +282,19 @@
             "on": "Ανοιχτό"
         },
         "group": {
-            "off": "Ανενεργό",
-            "on": "Ενεργό ",
-            "home": "Σπίτι",
-            "not_home": "Εκτός Σπιτιού",
-            "open": "Ενεργό",
-            "opening": "Ανοίγει",
             "closed": "Ανενεργό",
             "closing": "Κλείνει",
-            "stopped": "Σταμάτησε",
+            "home": "Σπίτι",
             "locked": "Κλειδωμένο",
-            "unlocked": "Ξεκλείδωτο",
+            "not_home": "Εκτός Σπιτιού",
+            "off": "Ανενεργό",
             "ok": "Εντάξει",
-            "problem": "Πρόβλημα"
+            "on": "Ενεργό ",
+            "open": "Ενεργό",
+            "opening": "Ανοίγει",
+            "problem": "Πρόβλημα",
+            "stopped": "Σταμάτησε",
+            "unlocked": "Ξεκλείδωτο"
         },
         "input_boolean": {
             "off": "Κλειστό",
@@ -191,12 +309,16 @@
             "unlocked": "Ξεκλείδωτη"
         },
         "media_player": {
+            "idle": "Σε αδράνεια",
             "off": "Απενεργοποίηση",
             "on": "Ενεργοποίηση",
-            "playing": "Κατάσταση Αναπαραγωγής",
             "paused": "Σε Παύση",
-            "idle": "Σε αδράνεια",
+            "playing": "Κατάσταση Αναπαραγωγής",
             "standby": "Κατάσταση αναμονής"
+        },
+        "person": {
+            "home": "Σπίτι",
+            "not_home": "Εκτός"
         },
         "plant": {
             "ok": "Εντάξει",
@@ -225,34 +347,10 @@
             "off": "Κλειστό",
             "on": "Ανοιχτό"
         },
-        "zwave": {
-            "default": {
-                "initializing": "Αρχικοποίηση",
-                "dead": "Νεκρό",
-                "sleeping": "Κοιμάται",
-                "ready": "Έτοιμο"
-            },
-            "query_stage": {
-                "initializing": "Αρχικοποίηση ( {query_stage} )",
-                "dead": "Νεκρό ( {query_stage} )"
-            }
-        },
-        "weather": {
-            "clear-night": "Ξαστεριά, νύχτα",
-            "cloudy": "Νεφελώδης",
-            "fog": "Ομίχλη",
-            "hail": "Χαλάζι",
-            "lightning": "Αστραπή",
-            "lightning-rainy": "Καταιγίδα, βροχερό",
-            "partlycloudy": "Μερικώς νεφελώδης",
-            "pouring": "Ψιχαλίζει",
-            "rainy": "Βροχερή",
-            "snowy": "Χιονώδης",
-            "snowy-rainy": "Χιονισμένο, βροχερό",
-            "sunny": "Ηλιόλουστο",
-            "windy": "Θυελλώδεις",
-            "windy-variant": "Θυελλώδεις",
-            "exceptional": "Εξαιρετικό"
+        "timer": {
+            "active": "ενεργό",
+            "idle": "Σε αδράνεια",
+            "paused": "σε παύση"
         },
         "vacuum": {
             "cleaning": "Καθαρισμός",
@@ -264,130 +362,582 @@
             "paused": "Παύση",
             "returning": "Επιστροφή στο dock"
         },
-        "timer": {
-            "active": "ενεργό",
-            "idle": "Σε αδράνεια",
-            "paused": "σε παύση"
+        "weather": {
+            "clear-night": "Ξαστεριά, νύχτα",
+            "cloudy": "Νεφελώδης",
+            "exceptional": "Εξαιρετικό",
+            "fog": "Ομίχλη",
+            "hail": "Χαλάζι",
+            "lightning": "Αστραπή",
+            "lightning-rainy": "Καταιγίδα, βροχερό",
+            "partlycloudy": "Μερικώς νεφελώδης",
+            "pouring": "Ψιχαλίζει",
+            "rainy": "Βροχερή",
+            "snowy": "Χιονώδης",
+            "snowy-rainy": "Χιονισμένο, βροχερό",
+            "sunny": "Ηλιόλουστο",
+            "windy": "Θυελλώδεις",
+            "windy-variant": "Θυελλώδεις"
         },
-        "person": {
-            "home": "Σπίτι",
-            "not_home": "Εκτός"
-        }
-    },
-    "state_badge": {
-        "default": {
-            "unknown": "Άγνωστο",
-            "unavailable": "Μη Διαθ",
-            "error": "Σφάλμα",
-            "entity_not_found": "Η οντότητα δεν βρέθηκε"
-        },
-        "alarm_control_panel": {
-            "armed": "Οπλισμένο",
-            "disarmed": "Αφόπλιση",
-            "armed_home": "Οπλισμένο",
-            "armed_away": "Οπλισμένο",
-            "armed_night": "Οπλισμένο",
-            "pending": "Εκκρεμής",
-            "arming": "Όπλιση",
-            "disarming": "Αφόπλιση",
-            "triggered": "Ενεργ",
-            "armed_custom_bypass": "Οπλισμένο"
-        },
-        "device_tracker": {
-            "home": "Σπίτι",
-            "not_home": "Εκτός Σπιτιού"
-        },
-        "person": {
-            "home": "Σπίτι",
-            "not_home": "Εκτός"
+        "zwave": {
+            "default": {
+                "dead": "Νεκρό",
+                "initializing": "Αρχικοποίηση",
+                "ready": "Έτοιμο",
+                "sleeping": "Κοιμάται"
+            },
+            "query_stage": {
+                "dead": "Νεκρό ( {query_stage} )",
+                "initializing": "Αρχικοποίηση ( {query_stage} )"
+            }
         }
     },
     "ui": {
-        "panel": {
-            "shopping-list": {
-                "clear_completed": "Καθαρισμός Ολοκληρώθηκε",
-                "add_item": "Προσθήκη στοιχείου",
-                "microphone_tip": "Πατήστε το μικρόφωνο στην επάνω δεξιά γωνία και πείτε \"Προσθήκη καραμελών στη λίστα αγορών μου\""
+        "auth_store": {
+            "ask": "Θέλετε να αποθηκεύσετε αυτή την σύνδεση;",
+            "confirm": "Αποθήκευση σύνδεσης",
+            "decline": "Όχι, ευχαριστώ"
+        },
+        "card": {
+            "alarm_control_panel": {
+                "arm_away": "Οπλισμός εκτός",
+                "arm_custom_bypass": "Προσαρμοσμένη παράκαμψη",
+                "arm_home": "Οπλισμός εντός",
+                "arm_night": "Οπλισμός νυκτός",
+                "armed_custom_bypass": "Προσαρμοσμένη παράκαμψη",
+                "clear_code": "Καθαρισμός",
+                "code": "Κωδικός",
+                "disarm": "Αφοπλισμός"
             },
-            "developer-tools": {
-                "tabs": {
-                    "services": {
-                        "title": "Υπηρεσίες"
-                    },
-                    "states": {
-                        "title": "Καταστάσεις"
-                    },
-                    "events": {
-                        "title": "Γεγονότα"
-                    },
-                    "templates": {
-                        "title": "Πρότυπα"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
-                    },
-                    "info": {
-                        "title": "Πληροφορίες"
-                    },
-                    "logs": {
-                        "title": "Αρχεία καταγραφής"
-                    }
+            "automation": {
+                "last_triggered": "Τελευταίο έναυσμα",
+                "trigger": "Έναυσμα"
+            },
+            "camera": {
+                "not_available": "Μη διαθέσιμη εικόνα"
+            },
+            "climate": {
+                "aux_heat": "Θερμοκρασία Aux",
+                "away_mode": "Λειτουργία εκτός σπιτιού",
+                "currently": "Αυτή τη στιγμή",
+                "fan_mode": "Λειτουργία ανεμιστήρα",
+                "on_off": "Ενεργοποίηση \/ απενεργοποίηση",
+                "operation": "Λειτουργία",
+                "preset_mode": "Προκαθορισμένο",
+                "swing_mode": "Λειτουργία ανεμιστήρα",
+                "target_humidity": "Επιθυμητή υγρασία",
+                "target_temperature": "Επιθυμητή θερμοκρασία"
+            },
+            "cover": {
+                "position": "Θέση",
+                "tilt_position": "Θέση ανάκλισης"
+            },
+            "fan": {
+                "direction": "Κατεύθυνση",
+                "forward": "Εμπρός",
+                "oscillate": "Περιστροφή",
+                "reverse": "Αντιστροφή",
+                "speed": "Ταχύτητα"
+            },
+            "light": {
+                "brightness": "Φωτεινότητα",
+                "color_temperature": "Θερμοκρασία χρώματος",
+                "effect": "Εφέ",
+                "white_value": "Τιμή λευκού"
+            },
+            "lock": {
+                "code": "Κώδικας",
+                "lock": "Κλείδωμα",
+                "unlock": "Ξεκλείδωμα"
+            },
+            "media_player": {
+                "sound_mode": "Λειτουργία ήχου",
+                "source": "Πηγή",
+                "text_to_speak": "Κείμενο προς εκφώνηση"
+            },
+            "persistent_notification": {
+                "dismiss": "Απόρριψη"
+            },
+            "scene": {
+                "activate": "Ενεργοποίηση"
+            },
+            "script": {
+                "execute": "Εκτέλεση"
+            },
+            "timer": {
+                "actions": {
+                    "cancel": "Ακύρωση",
+                    "finish": "Ολοκληρώθηκαν",
+                    "pause": "Παύση",
+                    "start": "Εκκίνηση"
                 }
             },
-            "history": {
-                "showing_entries": "Εμφανίζονται καταχωρήσεις για",
-                "period": "Περίοδος"
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Συνέχιση καθαρισμού",
+                    "return_to_base": "Επιστροφή στο dock",
+                    "start_cleaning": "Έναρξη καθαρισμού",
+                    "turn_off": "Απενεργοποίηση",
+                    "turn_on": "Ενεργοποίηση"
+                }
             },
-            "logbook": {
-                "showing_entries": "Εμφανίζοντα καταχωρήσεις για",
-                "period": "Περίοδος"
+            "water_heater": {
+                "away_mode": "Λειτουργία 'Είμαι εκτός'",
+                "currently": "Αυτή τη στιγμή",
+                "on_off": "Ενεργοποίηση \/ απενεργοποίηση",
+                "operation": "Λειτουργία",
+                "target_temperature": "Επιθυμητή θερμοκρασία"
             },
-            "mailbox": {
-                "empty": "Δεν έχετε μηνύματα",
-                "playback_title": "Αναπαραγωγή μηνύματος",
-                "delete_prompt": "Διαγραφή αυτού του μηνύματος;",
-                "delete_button": "Διαγραφή"
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Πίεση αέρα",
+                    "humidity": "Υγρασία",
+                    "temperature": "Θερμοκρασία",
+                    "visibility": "Ορατότητα",
+                    "wind_speed": "Ταχύτητα ανέμου"
+                },
+                "cardinal_direction": {
+                    "e": "Α",
+                    "ene": "ΑΒΑ",
+                    "ese": "ΑΝΑ",
+                    "n": "Β",
+                    "ne": "ΒΑ",
+                    "nne": "ΒΒΑ",
+                    "nnw": "ΒΒΔ",
+                    "nw": "ΒΔ",
+                    "s": "Ν",
+                    "se": "ΝΑ",
+                    "sse": "ΝΝΑ",
+                    "ssw": "ΝΝΔ",
+                    "sw": "ΝΔ",
+                    "w": "Δ",
+                    "wnw": "ΔΒΔ",
+                    "wsw": "ΔΝΔ"
+                },
+                "forecast": "Πρόγνωση"
+            }
+        },
+        "common": {
+            "cancel": "Ακύρωση",
+            "loading": "Φόρτωση",
+            "save": "Αποθήκευση",
+            "successfully_saved": "Αποθηκεύτηκε με επιτυχία"
+        },
+        "components": {
+            "entity": {
+                "entity-picker": {
+                    "entity": "Οντότητα"
+                }
             },
+            "history_charts": {
+                "loading_history": "Φόρτωση ιστορικού κατάστασης …",
+                "no_history_found": "Δεν έχει βρεθεί ιστορικό κατάστασης."
+            },
+            "relative_time": {
+                "duration": {
+                    "day": "{count} {count, plural,\\n  one {μέρα}\\n  other {μέρες}\\n}",
+                    "hour": "{count} {count, plural,\\n  one {ώρα}\\n  other {ώρες}\\n}",
+                    "minute": "{count} {count, plural,\\n  one {λεπτό}\\n  other {λεπτά}\\n}",
+                    "second": "{count} {count, plural,\\n  one {δευτερόλεπτο}\\n  other {δευτερόλεπτα}\\n}",
+                    "week": "{count} {count, plural,\\n  one {εβδομάδα}\\n  other {εβδομάδες}\\n}"
+                },
+                "future": "Σε {time}",
+                "never": "Ποτέ",
+                "past": "{time} πριν"
+            },
+            "service-picker": {
+                "service": "Υπηρεσία"
+            }
+        },
+        "dialogs": {
+            "config_entry_system_options": {
+                "enable_new_entities_description": "Αν απενεργοποιηθεί, οι πρόσφατα ανακαλυφθείσες οντότητες δεν θα προστεθούν αυτόματα στον Home Assistant.",
+                "enable_new_entities_label": "Ενεργοποίηση οντοτήτων που προστέθηκαν πρόσφατα.",
+                "title": "Επιλογές συστήματος"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Τελευταία Ενέργεια"
+                },
+                "sun": {
+                    "elevation": "Υψόμετρο",
+                    "rising": "Αύξηση",
+                    "setting": "Ρύθμιση"
+                },
+                "updater": {
+                    "title": "Οδηγίες Ενημέρωσης"
+                }
+            },
+            "more_info_settings": {
+                "entity_id": "Αναγνωριστικό οντότητας",
+                "name": "Επιβολή Ονόματος",
+                "save": "Αποθήκευση"
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Επιλογές"
+                },
+                "success": {
+                    "description": "Οι επιλογές αποθηκεύτηκαν με επιτυχία."
+                }
+            },
+            "zha_device_info": {
+                "buttons": {
+                    "add": "Προσθήκη συσκευών",
+                    "reconfigure": "Ρυθμίστε Ξανά Τη Συσκευή",
+                    "remove": "Κατάργηση συσκευής"
+                },
+                "manuf": "από τον {manufacturer}",
+                "no_area": "Καμία περιοχή",
+                "power_source": "Πηγή ενέργειας",
+                "quirk": "Ιδιοτροπία",
+                "services": {
+                    "reconfigure": "Ρυθμίστε ξανά τη συσκευή ZHA (θεραπεία συσκευής). Χρησιμοποιήστε αυτήν την επιλογή εάν αντιμετωπίζετε προβλήματα με τη συσκευή. Εάν η συγκεκριμένη συσκευή τροφοδοτείται από μπαταρία παρακαλώ βεβαιωθείτε ότι είναι ενεργοποιημένη και δέχεται εντολές όταν χρησιμοποιείτε αυτή την υπηρεσία.",
+                    "remove": "Καταργήστε μια συσκευή από το δίκτυο Zigbee.",
+                    "updateDeviceName": "Ορίστε ένα προσαρμοσμένο όνομα γι αυτήν τη συσκευή στο μητρώο συσκευών."
+                },
+                "unknown": "Άγνωστη",
+                "zha_device_card": {
+                    "area_picker_label": "Περιοχή",
+                    "device_name_placeholder": "Όνομα δοσμένο από τον χρήστη",
+                    "update_name_button": "Ενημέρωση ονόματος"
+                }
+            }
+        },
+        "duration": {
+            "day": "{count} {count, plural,\\n  one {μέρα}\\n  other {μέρες}\\n}",
+            "hour": "{count} {count, plural,\\n  one {ώρα}\\n  other {ώρες}\\n}",
+            "minute": "{count} {count, plural,\\n  one {λεπτό}\\n  other {λεπτά}\\n}",
+            "second": "{count} {count, plural,\\n  one {δευτερόλεπτο}\\n  other {δευτερόλεπτα}\\n}",
+            "week": "{count} {count, plural,\\n  one {εβδομάδα}\\n  other {εβδομάδες}\\n}"
+        },
+        "login-form": {
+            "log_in": "Σύνδεση",
+            "password": "Κωδικός",
+            "remember": "Να θυμάμαι"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Πατήστε το κουμπί για να διαμορφώσετε το {entity}",
+            "empty": "Καμία ειδοποίηση",
+            "title": "Ειδοποιήσεις"
+        },
+        "notification_toast": {
+            "connection_lost": "Η σύνδεση χάθηκε. Επανασύνδεση…",
+            "entity_turned_off": "Απενεργοποίηση {entity}.",
+            "entity_turned_on": "Ενεργοποιημένο στο {entity}.",
+            "service_call_failed": "Απέτυχε η κλήση στην υπηρεσία {service}.",
+            "service_called": "Επιτυχής κλήση στην υπηρεσία {service}"
+        },
+        "panel": {
             "config": {
-                "header": "Διαμόρφωση του Home Assistant",
-                "introduction": "Εδώ είναι δυνατή η διαμόρφωση του Home Assistant και των εξαρτημάτων. Δεν είναι δυνατή η διαμόρφωση όλων από την διεπαφή χρήστη (UI) αλλά εργαζόμαστε πάνω σε αυτό.",
+                "area_registry": {
+                    "caption": "Περιοχή Μητρώου",
+                    "create_area": "ΔΗΜΙΟΥΡΓΙΑ ΠΕΡΙΟΧΗΣ",
+                    "description": "Επισκόπηση όλων των περιοχών στο σπίτι σας.",
+                    "editor": {
+                        "create": "ΔΗΜΙΟΥΡΓΙΑ",
+                        "default_name": "Νέα περιοχή",
+                        "delete": "ΔΙΑΓΡΑΦΗ",
+                        "update": "ΕΝΗΜΕΡΩΣΗ"
+                    },
+                    "no_areas": "Φαίνεται ότι δεν έχετε ορίσει ακόμα κάποια περιοχή!",
+                    "picker": {
+                        "create_area": "ΔΗΜΙΟΥΡΓΙΑ ΠΕΡΙΟΧΗΣ",
+                        "header": "Περιοχή Μητρώου",
+                        "integrations_page": "Σελίδα ενσωματώσεων",
+                        "introduction": "Οι περιοχές χρησιμοποιούνται για την οργάνωση της τοποθεσίας των συσκευών. Αυτές οι πληροφορίες θα χρησιμοποιηθούν σε όλο το Home Assistant για να σας βοηθήσουν στην οργάνωση της διασύνδεσης, των αδειών και των ενσωματώσεων σας σε άλλα συστήματα.",
+                        "introduction2": "Για να τοποθετήσετε συσκευές σε μια περιοχή, χρησιμοποιήστε τον παρακάτω σύνδεσμο για να μεταβείτε στη σελίδα ενοποιήσεων και στη συνέχεια κάντε κλικ στην ρυθμισμένη ενοποίηση για να μεταβείτε στις κάρτες της συσκευής.",
+                        "no_areas": "Φαίνεται ότι δεν έχετε ορίσει ακόμα κάποια περιοχή!"
+                    }
+                },
+                "automation": {
+                    "caption": "Αυτοματισμός",
+                    "description": "Δημιουργία και επεξεργασία αυτοματισμών",
+                    "editor": {
+                        "actions": {
+                            "add": "Προσθήκη ενέργειας",
+                            "delete": "Διαγραφή",
+                            "delete_confirm": "Επιθυμείτε την διαγραφή σίγουρα;",
+                            "duplicate": "Διπλότυπο",
+                            "header": "Ενέργειες",
+                            "introduction": "Οι ενέργειες είναι ό,τι θα κάνει το Home Assistant όταν ενεργοποιηθεί ο αυτοματισμός. \\n\\n [Μάθετε περισσότερα για τις ενέργειες.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "learn_more": "Μάθετε περισσότερα σχετικά με τις ενέργειες",
+                            "type_select": "Τύπος ενέργειας",
+                            "type": {
+                                "condition": {
+                                    "label": "Προϋπόθεση"
+                                },
+                                "delay": {
+                                    "delay": "Καθυστέρηση",
+                                    "label": "Καθυστέρηση"
+                                },
+                                "device_id": {
+                                    "label": "Συσκευή"
+                                },
+                                "event": {
+                                    "event": "Γεγονός:",
+                                    "label": "Εκκίνηση συμβάντος",
+                                    "service_data": "Δεδομένα υπηρεσίας"
+                                },
+                                "scene": {
+                                    "label": "Ενεργοποίηση σκηνής"
+                                },
+                                "service": {
+                                    "label": "Κάλεσμα υπηρεσίας",
+                                    "service_data": "Δεδομένα υπηρεσίας"
+                                },
+                                "wait_template": {
+                                    "label": "Αναμονή",
+                                    "timeout": "Λήξη χρόνου (προαιρετικό)",
+                                    "wait_template": "Πρότυπο Αναμονής"
+                                }
+                            },
+                            "unsupported_action": "Μη υποστηριζόμενη ενέργεια: {action}"
+                        },
+                        "alias": "Όνομα",
+                        "conditions": {
+                            "add": "Προσθήκη όρου",
+                            "delete": "Διαγραφή",
+                            "delete_confirm": "Να γίνει η διαγραφή σίγουρα;",
+                            "duplicate": "Διπλότυπο",
+                            "header": "Συνθήκες",
+                            "introduction": "Οι συνθήκες είναι ένα προαιρετικό μέρος ενός κανόνα αυτοματισμού και μπορούν να χρησιμοποιηθούν για να αποτρέψουν μια ενέργεια να συμβεί όταν ενεργοποιηθεί. Οι συνθήκες μοιάζουν πολύ με τα εναύσματα, αλλά είναι πολύ διαφορετικές. Ένα έναυσμα θα εξετάσει τα γεγονότα που συμβαίνουν στο σύστημα, ενώ μια κατάσταση εξετάζει μόνο το πώς φαίνεται το σύστημα τώρα. Ένα έναυσμα μπορεί να παρατηρήσει ότι ένας διακόπτης είναι ενεργοποιημένος. Μια κατάσταση μπορεί να δει μόνο εάν ένας διακόπτης είναι ενεργοποιημένος ή απενεργοποιημένος. \\n\\n [Μάθετε περισσότερα σχετικά με τις συνθήκες.] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "learn_more": "Μάθετε περισσότερα σχετικά με τις συνθήκες",
+                            "type_select": "Τύπος συνθήκης",
+                            "type": {
+                                "and": {
+                                    "label": "Και"
+                                },
+                                "device": {
+                                    "extra_fields": {
+                                        "above": "Πάνω από",
+                                        "below": "Κάτω από",
+                                        "for": "Διάρκεια"
+                                    },
+                                    "label": "Συσκευή"
+                                },
+                                "numeric_state": {
+                                    "above": "Πάνω από",
+                                    "below": "Κάτω από",
+                                    "label": "Αριθμητική κατάσταση",
+                                    "value_template": "Τιμή πρότυπου (προαιρετικό)"
+                                },
+                                "or": {
+                                    "label": "Ή"
+                                },
+                                "state": {
+                                    "label": "Κατάσταση",
+                                    "state": "Κατάσταση"
+                                },
+                                "sun": {
+                                    "after": "Μετά:",
+                                    "after_offset": "Μετά την μετατόπιση (προαιρετικά)",
+                                    "before": "Πριν:",
+                                    "before_offset": "Πριν τη μετατόπιση (προαιρετικά)",
+                                    "label": "Ήλιος",
+                                    "sunrise": "Ανατολή ηλίου",
+                                    "sunset": "Δύση ηλίου"
+                                },
+                                "template": {
+                                    "label": "Πρότυπο",
+                                    "value_template": "Τιμή πρότυπου"
+                                },
+                                "time": {
+                                    "after": "Μετά",
+                                    "before": "Πριν",
+                                    "label": "Χρόνος"
+                                },
+                                "zone": {
+                                    "entity": "Οντότητα με τοποθεσία",
+                                    "label": "Ζώνη",
+                                    "zone": "Ζώνη"
+                                }
+                            },
+                            "unsupported_condition": "Μη υποστηριζόμενη κατάσταση: {condition}"
+                        },
+                        "default_name": "Νέος αυτοματισμός",
+                        "description": {
+                            "label": "Περιγραφή",
+                            "placeholder": "Προαιρετική περιγραφή"
+                        },
+                        "introduction": "Χρησιμοποιήστε αυτοματισμούς για να ζωντανέψουν το σπίτι σας",
+                        "load_error_not_editable": "Μόνο οι αυτοματισμοί στο automations.yaml είναι επεξεργάσιμοι.",
+                        "load_error_unknown": "Σφάλμα κατά τη φόρτωση αυτοματισμού ({err_no}).",
+                        "save": "Αποθήκευση",
+                        "triggers": {
+                            "add": "Προσθήκη εναύσματος",
+                            "delete": "Διαγραφή",
+                            "delete_confirm": "Σίγουρα επιθυμείτε την διαγραφή;",
+                            "duplicate": "Διπλότυπο",
+                            "header": "Εναύσματα",
+                            "introduction": "Τα εναύσματα ενεργοποιούν τους κανόνες αυτοματισμού. Είναι δυνατός ο καθορισμός πολλαπλών εναυσμάτων για τον ίδιο κανόνα. Με την ενεργοποίηση ενός εναύσματος το Home Assistant θα εκτελέσει τους κανόνες, εάν υπάρχουν, και θα καλέσει την ενέργεια.\\n\\n[Μάθετε περισσότερα για τις ενέργειες.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "learn_more": "Μάθετε περισσότερα σχετικά με τα εναύσματα",
+                            "type_select": "Τύπος εναύσματος",
+                            "type": {
+                                "device": {
+                                    "extra_fields": {
+                                        "above": "Πάνω από",
+                                        "below": "Κάτω από",
+                                        "for": "Διάρκεια"
+                                    },
+                                    "label": "Συσκευή"
+                                },
+                                "event": {
+                                    "event_data": "Δεδομένα συμβάντος",
+                                    "event_type": "Τύπος συμβάντος",
+                                    "label": "Συμβάν"
+                                },
+                                "geo_location": {
+                                    "enter": "Είσοδος",
+                                    "event": "Γεγονός:",
+                                    "label": "Γεωγραφική θέση",
+                                    "leave": "Αποχώρηση",
+                                    "source": "Πηγή",
+                                    "zone": "Ζώνη"
+                                },
+                                "homeassistant": {
+                                    "event": "Γεγονός:",
+                                    "label": "Home Assistant",
+                                    "shutdown": "Τερματισμός λειτουργίας",
+                                    "start": "Έναρξη"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "payload": "Φορτίο (προαιρετικό)",
+                                    "topic": "Θέμα"
+                                },
+                                "numeric_state": {
+                                    "above": "Πάνω από",
+                                    "below": "Κάτω από",
+                                    "label": "Αριθμητική κατάσταση",
+                                    "value_template": "Τιμή πρότυπου (προαιρετικό)"
+                                },
+                                "state": {
+                                    "for": "Για",
+                                    "from": "Από",
+                                    "label": "Κατάσταση",
+                                    "to": "Προς"
+                                },
+                                "sun": {
+                                    "event": "Γεγονός:",
+                                    "label": "Ήλιος",
+                                    "offset": "Μετατόπιση (προαιρετικό)",
+                                    "sunrise": "Ανατολή ηλίου",
+                                    "sunset": "Δύση ηλίου"
+                                },
+                                "template": {
+                                    "label": "Πρότυπο",
+                                    "value_template": "Τιμή πρότυπου"
+                                },
+                                "time_pattern": {
+                                    "hours": "Ώρες",
+                                    "label": "Χρονικό μοτίβο",
+                                    "minutes": "Λεπτά",
+                                    "seconds": "Δευτερόλεπτα"
+                                },
+                                "time": {
+                                    "at": "Στις",
+                                    "label": "Ώρα"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Αναγνωριστικό Webhook"
+                                },
+                                "zone": {
+                                    "enter": "Είσοδος",
+                                    "entity": "Οντότητα με τοποθεσία",
+                                    "event": "Γεγονός:",
+                                    "label": "Ζώνη",
+                                    "leave": "Αποχώρηση",
+                                    "zone": "Ζώνη"
+                                }
+                            },
+                            "unsupported_platform": "Μη υποστηριζόμενη πλατφόρμα: {platform}"
+                        },
+                        "unsaved_confirm": "Δεν αποθηκεύσατε τις αλλαγές. Είστε βέβαιοι ότι θέλετε να φύγετε;"
+                    },
+                    "picker": {
+                        "add_automation": "Προσθήκη αυτοματισμού",
+                        "header": "Επεξεργαστής αυτοματισμού",
+                        "introduction": "Ο επεξεργαστής αυτοματισμού σας επιτρέπει να δημιουργείτε και να επεξεργάζεστε αυτοματισμούς. Διαβάστε τις [οδηγίες] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) για να βεβαιωθείτε ότι έχετε ρυθμίσει σωστά το Home Assistant.",
+                        "learn_more": "Μάθετε περισσότερα σχετικά με τους αυτοματισμούς",
+                        "no_automations": "Δεν ήταν δυνατή η εύρεση επεξεργάσιμων αυτοματισμών",
+                        "pick_automation": "Επιλέξτε αυτοματισμό για επεξεργασία"
+                    }
+                },
+                "cloud": {
+                    "account": {
+                        "google": {
+                            "manage_entities": "Διαχείριση Οντοτήτων",
+                            "sync_entities": "Συγχρονισμός οντοτήτων στο Google"
+                        },
+                        "webhooks": {
+                            "loading": "Φόρτωση …",
+                            "title": "Webhooks"
+                        }
+                    },
+                    "alexa": {
+                        "title": "Alexa"
+                    },
+                    "caption": "Σύννεφο Home Assistant",
+                    "description_features": "Έλεγχος εκτός σπιτιού, ενσωμάτωση με τα Alexa και Google Assistant",
+                    "description_login": "Συνδεδεμένος ως {email}",
+                    "description_not_login": "Μη συνδεδεμένος",
+                    "dialog_certificate": {
+                        "certificate_expiration_date": "Ημερομηνία λήξης πιστοποιητικού",
+                        "certificate_information": "Πληροφορίες Πιστοποιητικού",
+                        "fingerprint": "Αποτύπωμα πιστοποιητικού:",
+                        "will_be_auto_renewed": "Θα ανανεωθεί αυτόματα"
+                    },
+                    "dialog_cloudhook": {
+                        "available_at": "Το webhook είναι διαθέσιμο στον ακόλουθο σύνδεσμο:",
+                        "close": "Κλείστε",
+                        "confirm_disable": "Είστε σίγουροι ότι θέλετε να απενεργοποιήσετε αυτό το webhook;",
+                        "copied_to_clipboard": "Αντιγράφηκε στο πρόχειρο",
+                        "info_disable_webhook": "Αν δεν θέλετε πλέον να χρησιμοποιείτε αυτό το webhook, μπορείτε να",
+                        "link_disable_webhook": "απενεργοποιήστε το",
+                        "view_documentation": "Δείτε τα έγγραφα",
+                        "webhook_for": "Webhook για {name}"
+                    },
+                    "google": {
+                        "title": "Google Assistant"
+                    }
+                },
+                "common": {
+                    "editor": {
+                        "confirm_unsaved": "Δεν αποθηκεύσατε τις αλλαγές. Είστε βέβαιοι ότι θέλετε να φύγετε;"
+                    }
+                },
                 "core": {
                     "caption": "Γενικά",
                     "description": "Αλλάξτε τη γενική διαμόρφωση του Home Assistant",
                     "section": {
                         "core": {
-                            "header": "Γενική ρύθμιση παραμέτρων",
-                            "introduction": "Αλλάζοντας τις ρυθμίσεις σας μπορεί να είναι μια κουραστική διαδικασία. Το γνωρίζουμε. Σε αυτή την ενότητα θα προσπαθήσουμε να κάνουμε τη ζωή σας λίγο πιο εύκολη.",
                             "core_config": {
                                 "edit_requires_storage": "Ο επεξεργαστής απενεργοποιήθηκε επειδή οι ρυθμίσεις παραμέτρων αποθηκεύτηκαν στο αρχείο configuration.yaml.",
-                                "location_name": "Όνομα της εγκατάστασης του Home Assistant",
-                                "latitude": "Γεωγραφικό πλάτος",
-                                "longitude": "Γεωγραφικό μήκος",
                                 "elevation": "Ανύψωση",
                                 "elevation_meters": "μέτρα",
+                                "imperial_example": "Φαρενάιτ, λίρες",
+                                "latitude": "Γεωγραφικό πλάτος",
+                                "location_name": "Όνομα της εγκατάστασης του Home Assistant",
+                                "longitude": "Γεωγραφικό μήκος",
+                                "metric_example": "Κελσίου, κιλά",
+                                "save_button": "Αποθήκευση",
                                 "time_zone": "Ζώνη Ώρας",
                                 "unit_system": "Μονάδα Συστήματος",
                                 "unit_system_imperial": "Αυτοκρατορικός",
-                                "unit_system_metric": "Μετρικό",
-                                "imperial_example": "Φαρενάιτ, λίρες",
-                                "metric_example": "Κελσίου, κιλά",
-                                "save_button": "Αποθήκευση"
-                            }
+                                "unit_system_metric": "Μετρικό"
+                            },
+                            "header": "Γενική ρύθμιση παραμέτρων",
+                            "introduction": "Αλλάζοντας τις ρυθμίσεις σας μπορεί να είναι μια κουραστική διαδικασία. Το γνωρίζουμε. Σε αυτή την ενότητα θα προσπαθήσουμε να κάνουμε τη ζωή σας λίγο πιο εύκολη."
                         },
                         "server_control": {
-                            "validation": {
-                                "heading": "Επαλήθευση ρυθμίσεων",
-                                "introduction": "Επαληθεύστε τις ρυθμίσεις σας εάν κάνατε πρόσφατα κάποιες αλλαγές και θέλετε να βεβαιωθείτε ότι είναι όλες έγκυρες",
-                                "check_config": "Ελέγξτε το config",
-                                "valid": "Έγκυρη ρύθμιση",
-                                "invalid": "Μη έγκυρη ρύθμιση"
-                            },
                             "reloading": {
-                                "heading": "Επαναφόρτωση ρυθμίσεων",
-                                "introduction": "Ορισμένα τμήματα του Home Assistant μπορούν να φορτωθούν ξανά χωρίς να απαιτείται επανεκκίνηση. Ξεκινώντας την φόρτωση θα ξεφορτωθεί η τρέχουσα διαμόρφωση και θα φορτωθεί η νέα.",
+                                "automation": "Επαναφόρτωση αυτοματισμών",
                                 "core": "Επαναφόρτιση πυρήνα",
                                 "group": "Επαναφόρτωση ομάδων",
-                                "automation": "Επαναφόρτωση αυτοματισμών",
+                                "heading": "Επαναφόρτωση ρυθμίσεων",
+                                "introduction": "Ορισμένα τμήματα του Home Assistant μπορούν να φορτωθούν ξανά χωρίς να απαιτείται επανεκκίνηση. Ξεκινώντας την φόρτωση θα ξεφορτωθεί η τρέχουσα διαμόρφωση και θα φορτωθεί η νέα.",
                                 "script": "Επαναφόρτωση δέσμης εντολών"
                             },
                             "server_management": {
@@ -395,6 +945,13 @@
                                 "introduction": "Έλεγχος του διακομιστή Home Assistant… από τον Home Assistant",
                                 "restart": "Επανεκκίνηση",
                                 "stop": "Στοπ"
+                            },
+                            "validation": {
+                                "check_config": "Ελέγξτε το config",
+                                "heading": "Επαλήθευση ρυθμίσεων",
+                                "introduction": "Επαληθεύστε τις ρυθμίσεις σας εάν κάνατε πρόσφατα κάποιες αλλαγές και θέλετε να βεβαιωθείτε ότι είναι όλες έγκυρες",
+                                "invalid": "Μη έγκυρη ρύθμιση",
+                                "valid": "Έγκυρη ρύθμιση"
                             }
                         }
                     }
@@ -407,220 +964,98 @@
                         "introduction": "Αλλαγή ρυθμίσεων ανά οντότητα. Οι προσαρμοσμένες προσθήκες \/ επεξεργασίες θα τεθούν αμέσως σε ισχύ. Οι αφαιρεθείσες προσαρμογές θα ισχύσουν όταν ενημερωθεί η οντότητα."
                     }
                 },
-                "automation": {
-                    "caption": "Αυτοματισμός",
-                    "description": "Δημιουργία και επεξεργασία αυτοματισμών",
-                    "picker": {
-                        "header": "Επεξεργαστής αυτοματισμού",
-                        "introduction": "Ο επεξεργαστής αυτοματισμού σας επιτρέπει να δημιουργείτε και να επεξεργάζεστε αυτοματισμούς. Διαβάστε τις [οδηγίες] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) για να βεβαιωθείτε ότι έχετε ρυθμίσει σωστά το Home Assistant.",
-                        "pick_automation": "Επιλέξτε αυτοματισμό για επεξεργασία",
-                        "no_automations": "Δεν ήταν δυνατή η εύρεση επεξεργάσιμων αυτοματισμών",
-                        "add_automation": "Προσθήκη αυτοματισμού",
-                        "learn_more": "Μάθετε περισσότερα σχετικά με τους αυτοματισμούς"
-                    },
-                    "editor": {
-                        "introduction": "Χρησιμοποιήστε αυτοματισμούς για να ζωντανέψουν το σπίτι σας",
-                        "default_name": "Νέος αυτοματισμός",
-                        "save": "Αποθήκευση",
-                        "unsaved_confirm": "Δεν αποθηκεύσατε τις αλλαγές. Είστε βέβαιοι ότι θέλετε να φύγετε;",
-                        "alias": "Όνομα",
-                        "triggers": {
-                            "header": "Εναύσματα",
-                            "introduction": "Τα εναύσματα ενεργοποιούν τους κανόνες αυτοματισμού. Είναι δυνατός ο καθορισμός πολλαπλών εναυσμάτων για τον ίδιο κανόνα. Με την ενεργοποίηση ενός εναύσματος το Home Assistant θα εκτελέσει τους κανόνες, εάν υπάρχουν, και θα καλέσει την ενέργεια.\n\n[Μάθετε περισσότερα για τις ενέργειες.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
-                            "add": "Προσθήκη εναύσματος",
-                            "duplicate": "Διπλότυπο",
-                            "delete": "Διαγραφή",
-                            "delete_confirm": "Σίγουρα επιθυμείτε την διαγραφή;",
-                            "unsupported_platform": "Μη υποστηριζόμενη πλατφόρμα: {platform}",
-                            "type_select": "Τύπος εναύσματος",
-                            "type": {
-                                "event": {
-                                    "label": "Συμβάν",
-                                    "event_type": "Τύπος συμβάντος",
-                                    "event_data": "Δεδομένα συμβάντος"
-                                },
-                                "state": {
-                                    "label": "Κατάσταση",
-                                    "from": "Από",
-                                    "to": "Προς",
-                                    "for": "Για"
-                                },
-                                "homeassistant": {
-                                    "label": "Home Assistant",
-                                    "event": "Γεγονός:",
-                                    "start": "Έναρξη",
-                                    "shutdown": "Τερματισμός λειτουργίας"
-                                },
-                                "mqtt": {
-                                    "label": "MQTT",
-                                    "topic": "Θέμα",
-                                    "payload": "Φορτίο (προαιρετικό)"
-                                },
-                                "numeric_state": {
-                                    "label": "Αριθμητική κατάσταση",
-                                    "above": "Πάνω από",
-                                    "below": "Κάτω από",
-                                    "value_template": "Τιμή πρότυπου (προαιρετικό)"
-                                },
-                                "sun": {
-                                    "label": "Ήλιος",
-                                    "event": "Γεγονός:",
-                                    "sunrise": "Ανατολή ηλίου",
-                                    "sunset": "Δύση ηλίου",
-                                    "offset": "Μετατόπιση (προαιρετικό)"
-                                },
-                                "template": {
-                                    "label": "Πρότυπο",
-                                    "value_template": "Τιμή πρότυπου"
-                                },
-                                "time": {
-                                    "label": "Ώρα",
-                                    "at": "Στις"
-                                },
-                                "zone": {
-                                    "label": "Ζώνη",
-                                    "entity": "Οντότητα με τοποθεσία",
-                                    "zone": "Ζώνη",
-                                    "event": "Γεγονός:",
-                                    "enter": "Είσοδος",
-                                    "leave": "Αποχώρηση"
-                                },
-                                "webhook": {
-                                    "label": "Webhook",
-                                    "webhook_id": "Αναγνωριστικό Webhook"
-                                },
-                                "time_pattern": {
-                                    "label": "Χρονικό μοτίβο",
-                                    "hours": "Ώρες",
-                                    "minutes": "Λεπτά",
-                                    "seconds": "Δευτερόλεπτα"
-                                },
-                                "geo_location": {
-                                    "label": "Γεωγραφική θέση",
-                                    "source": "Πηγή",
-                                    "zone": "Ζώνη",
-                                    "event": "Γεγονός:",
-                                    "enter": "Είσοδος",
-                                    "leave": "Αποχώρηση"
-                                },
-                                "device": {
-                                    "label": "Συσκευή",
-                                    "extra_fields": {
-                                        "above": "Πάνω από",
-                                        "below": "Κάτω από",
-                                        "for": "Διάρκεια"
-                                    }
-                                }
-                            },
-                            "learn_more": "Μάθετε περισσότερα σχετικά με τα εναύσματα"
+                "devices": {
+                    "automation": {
+                        "actions": {
+                            "caption": "Όταν ενεργοποιείται κάτι ..."
                         },
                         "conditions": {
-                            "header": "Συνθήκες",
-                            "introduction": "Οι συνθήκες είναι ένα προαιρετικό μέρος ενός κανόνα αυτοματισμού και μπορούν να χρησιμοποιηθούν για να αποτρέψουν μια ενέργεια να συμβεί όταν ενεργοποιηθεί. Οι συνθήκες μοιάζουν πολύ με τα εναύσματα, αλλά είναι πολύ διαφορετικές. Ένα έναυσμα θα εξετάσει τα γεγονότα που συμβαίνουν στο σύστημα, ενώ μια κατάσταση εξετάζει μόνο το πώς φαίνεται το σύστημα τώρα. Ένα έναυσμα μπορεί να παρατηρήσει ότι ένας διακόπτης είναι ενεργοποιημένος. Μια κατάσταση μπορεί να δει μόνο εάν ένας διακόπτης είναι ενεργοποιημένος ή απενεργοποιημένος. \n\n [Μάθετε περισσότερα σχετικά με τις συνθήκες.] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
-                            "add": "Προσθήκη όρου",
-                            "duplicate": "Διπλότυπο",
-                            "delete": "Διαγραφή",
-                            "delete_confirm": "Να γίνει η διαγραφή σίγουρα;",
-                            "unsupported_condition": "Μη υποστηριζόμενη κατάσταση: {condition}",
-                            "type_select": "Τύπος συνθήκης",
-                            "type": {
-                                "state": {
-                                    "label": "Κατάσταση",
-                                    "state": "Κατάσταση"
-                                },
-                                "numeric_state": {
-                                    "label": "Αριθμητική κατάσταση",
-                                    "above": "Πάνω από",
-                                    "below": "Κάτω από",
-                                    "value_template": "Τιμή πρότυπου (προαιρετικό)"
-                                },
-                                "sun": {
-                                    "label": "Ήλιος",
-                                    "before": "Πριν:",
-                                    "after": "Μετά:",
-                                    "before_offset": "Πριν τη μετατόπιση (προαιρετικά)",
-                                    "after_offset": "Μετά την μετατόπιση (προαιρετικά)",
-                                    "sunrise": "Ανατολή ηλίου",
-                                    "sunset": "Δύση ηλίου"
-                                },
-                                "template": {
-                                    "label": "Πρότυπο",
-                                    "value_template": "Τιμή πρότυπου"
-                                },
-                                "time": {
-                                    "label": "Χρόνος",
-                                    "after": "Μετά",
-                                    "before": "Πριν"
-                                },
-                                "zone": {
-                                    "label": "Ζώνη",
-                                    "entity": "Οντότητα με τοποθεσία",
-                                    "zone": "Ζώνη"
-                                },
-                                "device": {
-                                    "label": "Συσκευή",
-                                    "extra_fields": {
-                                        "above": "Πάνω από",
-                                        "below": "Κάτω από",
-                                        "for": "Διάρκεια"
-                                    }
-                                },
-                                "and": {
-                                    "label": "Και"
-                                },
-                                "or": {
-                                    "label": "Ή"
-                                }
-                            },
-                            "learn_more": "Μάθετε περισσότερα σχετικά με τις συνθήκες"
+                            "caption": "Κάνε κάτι μόνο αν ..."
                         },
-                        "actions": {
-                            "header": "Ενέργειες",
-                            "introduction": "Οι ενέργειες είναι ό,τι θα κάνει το Home Assistant όταν ενεργοποιηθεί ο αυτοματισμός. \n\n [Μάθετε περισσότερα για τις ενέργειες.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
-                            "add": "Προσθήκη ενέργειας",
-                            "duplicate": "Διπλότυπο",
-                            "delete": "Διαγραφή",
-                            "delete_confirm": "Επιθυμείτε την διαγραφή σίγουρα;",
-                            "unsupported_action": "Μη υποστηριζόμενη ενέργεια: {action}",
-                            "type_select": "Τύπος ενέργειας",
-                            "type": {
-                                "service": {
-                                    "label": "Κάλεσμα υπηρεσίας",
-                                    "service_data": "Δεδομένα υπηρεσίας"
-                                },
-                                "delay": {
-                                    "label": "Καθυστέρηση",
-                                    "delay": "Καθυστέρηση"
-                                },
-                                "wait_template": {
-                                    "label": "Αναμονή",
-                                    "wait_template": "Πρότυπο Αναμονής",
-                                    "timeout": "Λήξη χρόνου (προαιρετικό)"
-                                },
-                                "condition": {
-                                    "label": "Προϋπόθεση"
-                                },
-                                "event": {
-                                    "label": "Εκκίνηση συμβάντος",
-                                    "event": "Γεγονός:",
-                                    "service_data": "Δεδομένα υπηρεσίας"
-                                },
-                                "device_id": {
-                                    "label": "Συσκευή"
-                                },
-                                "scene": {
-                                    "label": "Ενεργοποίηση σκηνής"
-                                }
-                            },
-                            "learn_more": "Μάθετε περισσότερα σχετικά με τις ενέργειες"
-                        },
-                        "load_error_not_editable": "Μόνο οι αυτοματισμοί στο automations.yaml είναι επεξεργάσιμοι.",
-                        "load_error_unknown": "Σφάλμα κατά τη φόρτωση αυτοματισμού ({err_no}).",
-                        "description": {
-                            "label": "Περιγραφή",
-                            "placeholder": "Προαιρετική περιγραφή"
+                        "triggers": {
+                            "caption": "Κάνε κάτι όταν ..."
                         }
+                    },
+                    "caption": "Συσκευές",
+                    "description": "Διαχείριση συνδεδεμένων συσκευών"
+                },
+                "entity_registry": {
+                    "caption": "Μητρώο οντοτήτων",
+                    "description": "Επισκόπηση όλων των γνωστών οντοτήτων.",
+                    "editor": {
+                        "confirm_delete": "Είστε σίγουρος ότι θέλετε να διαγραφεί αυτή η ενοποίηση;",
+                        "confirm_delete2": "Η διαγραφή μιας καταχώρησης δεν θα καταργήσει την οντότητα από το Home Assistant. Για να γίνει αυτό, θα πρέπει να καταργήσετε την ενσωμάτωση '{platform}' από το Home Assistant.",
+                        "default_name": "Νέα περιοχή",
+                        "delete": "ΔΙΑΓΡΑΦΗ",
+                        "enabled_cause": "Απενεργοποιήθηκε από τo {cause}.",
+                        "enabled_description": "Απενεργοποιημένες οντότητες δεν θα προστεθούν στον Home Assistant",
+                        "enabled_label": "Ενεργοποίηση οντότητας",
+                        "unavailable": "Αυτή η οντότητα δεν είναι προς το παρόν διαθέσιμη.",
+                        "update": "ΕΝΗΜΕΡΩΣΗ"
+                    },
+                    "picker": {
+                        "header": "Μητρώο οντοτήτων",
+                        "headers": {
+                            "name": "Όνομα"
+                        },
+                        "integrations_page": "Σελίδα ενσωματώσεων",
+                        "introduction": "Ο Home Assistant διατηρεί μητρώο από κάθε μοναδική οντότητα που ανιχνεύει. Αυτές οι οντότητες έχουν το δικό τους μοναδικό αναγνωριστικό ID.",
+                        "introduction2": "Χρησιμοποιήστε το μητρώο οντοτήτων για να παρακάμψετε το όνομα, να αλλάξετε το αναγνωριστικό οντότητας ή να καταργήσετε την καταχώρηση από το Home Assistant. Σημειώστε ότι η κατάργηση της καταχώρησης δεν θα καταργήσει την οντότητα. Για να το κάνετε αυτό, ακολουθήστε τον παρακάτω σύνδεσμο και αφαιρέστε την από τη σελίδα ενοποίησης.",
+                        "show_disabled": "Προβολή απενεργοποιημένων οντότητων",
+                        "unavailable": "(μη διαθέσιμο)"
                     }
+                },
+                "header": "Διαμόρφωση του Home Assistant",
+                "integrations": {
+                    "caption": "Ενσωματώσεις",
+                    "config_entry": {
+                        "delete_confirm": "Είστε σίγουρος ότι θέλετε να διαγραφεί αυτή η ενοποίηση;",
+                        "device_unavailable": "συσκευή μη διαθέσιμη",
+                        "entity_unavailable": "οντότητα μη διαθέσιμη",
+                        "firmware": "Υλικολογισμικό: {version}",
+                        "hub": "Συνδεδεμένο μέσω",
+                        "manuf": "από {manufacturer}",
+                        "no_area": "Καμία περιοχή",
+                        "no_device": "Οντότητες χωρίς συσκευές",
+                        "no_devices": "Αυτή η ενοποίηση δεν έχει συσκευές.",
+                        "restart_confirm": "Επανεκκινήστε το Home Assistant για να ολοκληρώσετε την κατάργηση αυτής της ενοποίησης",
+                        "via": "Συνδεδεμένο μέσω"
+                    },
+                    "config_flow": {
+                        "external_step": {
+                            "description": "Αυτό το βήμα απαιτεί να επισκεφτείτε μια εξωτερική ιστοσελίδα για να ολοκληρωθεί.",
+                            "open_site": "Άνοιγμα ιστότοπου"
+                        }
+                    },
+                    "configure": "Διαμόρφωση",
+                    "configured": "Διαμορφώθηκε",
+                    "description": "Διαχείριση συνδεδεμένων συσκευών και υπηρεσιών",
+                    "discovered": "Ανακαλύφθηκε",
+                    "new": "Ρυθμίστε νέα ενοποίηση",
+                    "none": "Δεν υπάρχει διαμόρφωση ακόμα",
+                    "note_about_integrations": "Δε μπορούν όλες οι ενσωματώσεις να διαμορφωθούν από το UI ακόμη."
+                },
+                "introduction": "Εδώ είναι δυνατή η διαμόρφωση του Home Assistant και των εξαρτημάτων. Δεν είναι δυνατή η διαμόρφωση όλων από την διεπαφή χρήστη (UI) αλλά εργαζόμαστε πάνω σε αυτό.",
+                "person": {
+                    "add_person": "Προσθέστε Άτομο",
+                    "caption": "Άτομα",
+                    "confirm_delete": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το άτομο;",
+                    "create_person": "Δημιουργία ατόμου",
+                    "description": "Διαχειριστείτε τα άτομα που παρακολουθεί το Home Assistant.",
+                    "detail": {
+                        "create": "Δημιουργία",
+                        "delete": "Διαγραφή",
+                        "device_tracker_intro": "Επιλέξτε τις συσκευές που ανήκουν σε αυτό το άτομο.",
+                        "device_tracker_pick": "Επιλέξτε συσκευή για παρακολούθηση",
+                        "device_tracker_picked": "Παρακολούθηση συσκευής",
+                        "linked_user": "Συνδεδεμένος χρήστης",
+                        "name": "Όνομα",
+                        "name_error_msg": "Απαιτείται όνομα",
+                        "new_person": "Νέο άτομο",
+                        "update": "Ενημέρωση"
+                    },
+                    "no_persons_created_yet": "Φαίνεται ότι δεν έχετε δημιουργήσει ακόμα κανένα άτομο.",
+                    "note_about_persons_configured_in_yaml": "Σημείωση: τα άτομα που έχουν ρυθμιστεί από το αρχείο configuration.yaml δε μπορούν να παραμετροποιηθούν από το UI."
                 },
                 "script": {
                     "caption": "Δέσμη ενεργειών",
@@ -629,597 +1064,236 @@
                         "learn_more": "Μάθετε περισσότερα σχετικά με τα σενάρια"
                     }
                 },
-                "zwave": {
-                    "caption": "Z-Wave",
-                    "description": "Διαχειριστείτε το δίκτυο Z-Wave",
-                    "network_management": {
-                        "header": "Διαχείριση δικτύου Z-Wave",
-                        "introduction": "Εκτελέστε εντολές που επηρεάζουν το δίκτυο Z-Wave. Δεν θα λάβετε πληροφόριση σχετικά με το εάν οι περισσότερες εντολές επιτύχουν, αλλά μπορείτε να ελέγξετε το αρχείο καταγραφής OZW για να προσπαθήσετε να το μάθετε."
-                    },
-                    "network_status": {
-                        "network_stopped": "Το δίκτυο Z-Wave σταμάτησε",
-                        "network_starting": "Εκκίνηση δικτύου Z-Wave…",
-                        "network_starting_note": "Αυτό μπορεί να διαρκέσει λίγο, ανάλογα με το μέγεθος του δικτύου σας.",
-                        "network_started": "Το δίκτυο Z-Wave ξεκίνησε",
-                        "network_started_note_some_queried": "Οι ενεργοποιημένοι κόμβοι έχουν ερωτηθεί. Οι απενεργοποιημένοι κόμβοι θα ερωτηθούν όταν ενεργοποιηθούν.",
-                        "network_started_note_all_queried": "Όλοι οι κόμβοι έχουν ερωτηθεί."
-                    },
-                    "services": {
-                        "start_network": "Έναρξη δικτύου",
-                        "stop_network": "Διακοπή δικτύου",
-                        "heal_network": "Θεραπεία δικτύου",
-                        "test_network": "Δοκιμή δικτύου",
-                        "soft_reset": "Επαναφορά μέσω λογισμικού",
-                        "save_config": "Αποθήκευση ρύθμισης παραμέτρων",
-                        "add_node_secure": "Ασφαλής προσθήκη κόμβου",
-                        "add_node": "Προσθήκη κόμβου",
-                        "remove_node": "Κατάργηση κόμβου",
-                        "cancel_command": "Ακύρωση εντολής"
-                    },
-                    "common": {
-                        "value": "Τιμή",
-                        "instance": "Περίπτωση",
-                        "index": "Δείκτης",
-                        "unknown": "Άγνωστο",
-                        "wakeup_interval": "Διάστημα αφύπνισης"
-                    },
-                    "values": {
-                        "header": "Τιμές κόμβου"
-                    },
-                    "node_config": {
-                        "header": "Επιλογές ρύθμισης παραμέτρων κόμβου",
-                        "seconds": "Δευτερόλεπτα",
-                        "set_wakeup": "Ορισμός διαστήματος αφύπνισης",
-                        "config_parameter": "Παράμετρος διαμόρφωσης",
-                        "config_value": "Τιμή διαμόρφωσης",
-                        "true": "Αληθής",
-                        "false": "Ψευδής",
-                        "set_config_parameter": "Ορίστε την παράμετρο διαμόρφωσης"
-                    },
-                    "learn_more": "Μάθετε περισσότερα σχετικά με το Z-wave"
+                "server_control": {
+                    "caption": "Έλεγχος διακομιστή",
+                    "description": "Επανεκκινήστε και σταματήστε το διακομιστή του Home Assistant",
+                    "section": {
+                        "reloading": {
+                            "automation": "Επαναφόρτωση αυτοματισμών",
+                            "core": "Επαναφόρτωση πυρήνα",
+                            "group": "Επαναφόρτωση ομάδων",
+                            "heading": "Επαναφόρτωση ρυθμίσεων",
+                            "introduction": "Ορισμένα τμήματα του Home Assistant μπορούν να φορτωθούν ξανά χωρίς να απαιτείται επανεκκίνηση. Το πάτημα της φόρτωσης θα ξεφορτώσει την τρέχουσα διαμόρφωση και θα φορτώσει τη νέα.",
+                            "scene": "Επαναφόρτωση σκηνών",
+                            "script": "Επαναφόρτωση δέσμης εντολών"
+                        },
+                        "server_management": {
+                            "confirm_restart": "Είστε βέβαιος ότι θέλετε να επανεκκινήσετε το Home Assistant;",
+                            "confirm_stop": "Είστε βέβαιος ότι θέλετε να σταματήσετε το Home Assistant;",
+                            "heading": "Διαχείριση διακομιστή",
+                            "introduction": "Έλεγχος του διακομιστή Home Assistant… από το Home Assistant",
+                            "restart": "Επανεκκίνηση",
+                            "stop": "Στοπ"
+                        },
+                        "validation": {
+                            "check_config": "Έλεγχος παραμετροποίησης",
+                            "heading": "Επαλήθευση ρυθμίσεων",
+                            "introduction": "Επαληθεύστε τις ρυθμίσεις σας εάν κάνατε πρόσφατα κάποιες αλλαγές και θέλετε να βεβαιωθείτε ότι είναι όλες έγκυρες",
+                            "invalid": "Μη έγκυρη ρύθμιση",
+                            "valid": "Έγκυρη ρύθμιση"
+                        }
+                    }
                 },
                 "users": {
+                    "add_user": {
+                        "caption": "Προσθήκη χρήστη",
+                        "create": "Δημιουργία",
+                        "name": "Όνομα",
+                        "password": "Κωδικός",
+                        "username": "Όνομα χρήστη"
+                    },
                     "caption": "Χρήστες",
                     "description": "Διαχείριση χρηστών",
-                    "picker": {
-                        "title": "Χρήστες",
-                        "system_generated": "Δημιουργήθηκε από το σύστημα"
-                    },
                     "editor": {
-                        "rename_user": "Μετονομασία χρήστη",
-                        "change_password": "Αλλαγή Κωδικού",
                         "activate_user": "Ενεργοποίηση χρήστη",
+                        "active": "Ενεργό",
+                        "caption": "Προβολή χρήστη",
+                        "change_password": "Αλλαγή Κωδικού",
+                        "confirm_user_deletion": "Είστε σίγουροι ότι θέλετε να διαγράψετε το χρήστη {name};",
                         "deactivate_user": "Απενεργοποίηση χρήστη",
                         "delete_user": "Διαγραφή χρήστη",
-                        "caption": "Προβολή χρήστη",
+                        "enter_new_name": "Εισαγάγετε ένα νέο όνομα",
+                        "group": "Ομάδα",
+                        "group_update_failed": "Η ενημέρωση της ομάδας απέτυχε:",
                         "id": "Αναγνωριστικό",
                         "owner": "Ιδιοκτήτης",
-                        "group": "Ομάδα",
-                        "active": "Ενεργό",
+                        "rename_user": "Μετονομασία χρήστη",
                         "system_generated": "Δημιουργήθηκε από το σύστημα",
                         "system_generated_users_not_removable": "Δεν είναι δυνατή η διαγραφή χρηστών που δημιουργήθηκαν από το σύστημα",
                         "unnamed_user": "Χρήστης χωρίς όνομα",
-                        "enter_new_name": "Εισαγάγετε ένα νέο όνομα",
-                        "user_rename_failed": "Η μετονομασία του χρήστη απέτυχε:",
-                        "group_update_failed": "Η ενημέρωση της ομάδας απέτυχε:",
-                        "confirm_user_deletion": "Είστε σίγουροι ότι θέλετε να διαγράψετε το χρήστη {name};"
+                        "user_rename_failed": "Η μετονομασία του χρήστη απέτυχε:"
                     },
-                    "add_user": {
-                        "caption": "Προσθήκη χρήστη",
-                        "name": "Όνομα",
-                        "username": "Όνομα χρήστη",
-                        "password": "Κωδικός",
-                        "create": "Δημιουργία"
+                    "picker": {
+                        "system_generated": "Δημιουργήθηκε από το σύστημα",
+                        "title": "Χρήστες"
                     }
-                },
-                "cloud": {
-                    "caption": "Σύννεφο Home Assistant",
-                    "description_login": "Συνδεδεμένος ως {email}",
-                    "description_not_login": "Μη συνδεδεμένος",
-                    "description_features": "Έλεγχος εκτός σπιτιού, ενσωμάτωση με τα Alexa και Google Assistant",
-                    "account": {
-                        "google": {
-                            "sync_entities": "Συγχρονισμός οντοτήτων στο Google",
-                            "manage_entities": "Διαχείριση Οντοτήτων"
-                        },
-                        "webhooks": {
-                            "title": "Webhooks",
-                            "loading": "Φόρτωση …"
-                        }
-                    },
-                    "alexa": {
-                        "title": "Alexa"
-                    },
-                    "dialog_certificate": {
-                        "certificate_information": "Πληροφορίες Πιστοποιητικού",
-                        "certificate_expiration_date": "Ημερομηνία λήξης πιστοποιητικού",
-                        "will_be_auto_renewed": "Θα ανανεωθεί αυτόματα",
-                        "fingerprint": "Αποτύπωμα πιστοποιητικού:"
-                    },
-                    "google": {
-                        "title": "Google Assistant"
-                    },
-                    "dialog_cloudhook": {
-                        "webhook_for": "Webhook για {name}",
-                        "available_at": "Το webhook είναι διαθέσιμο στον ακόλουθο σύνδεσμο:",
-                        "info_disable_webhook": "Αν δεν θέλετε πλέον να χρησιμοποιείτε αυτό το webhook, μπορείτε να",
-                        "link_disable_webhook": "απενεργοποιήστε το",
-                        "view_documentation": "Δείτε τα έγγραφα",
-                        "close": "Κλείστε",
-                        "confirm_disable": "Είστε σίγουροι ότι θέλετε να απενεργοποιήσετε αυτό το webhook;",
-                        "copied_to_clipboard": "Αντιγράφηκε στο πρόχειρο"
-                    }
-                },
-                "integrations": {
-                    "caption": "Ενσωματώσεις",
-                    "description": "Διαχείριση συνδεδεμένων συσκευών και υπηρεσιών",
-                    "discovered": "Ανακαλύφθηκε",
-                    "configured": "Διαμορφώθηκε",
-                    "new": "Ρυθμίστε νέα ενοποίηση",
-                    "configure": "Διαμόρφωση",
-                    "none": "Δεν υπάρχει διαμόρφωση ακόμα",
-                    "config_entry": {
-                        "no_devices": "Αυτή η ενοποίηση δεν έχει συσκευές.",
-                        "no_device": "Οντότητες χωρίς συσκευές",
-                        "delete_confirm": "Είστε σίγουρος ότι θέλετε να διαγραφεί αυτή η ενοποίηση;",
-                        "restart_confirm": "Επανεκκινήστε το Home Assistant για να ολοκληρώσετε την κατάργηση αυτής της ενοποίησης",
-                        "manuf": "από {manufacturer}",
-                        "via": "Συνδεδεμένο μέσω",
-                        "firmware": "Υλικολογισμικό: {version}",
-                        "device_unavailable": "συσκευή μη διαθέσιμη",
-                        "entity_unavailable": "οντότητα μη διαθέσιμη",
-                        "no_area": "Καμία περιοχή",
-                        "hub": "Συνδεδεμένο μέσω"
-                    },
-                    "config_flow": {
-                        "external_step": {
-                            "description": "Αυτό το βήμα απαιτεί να επισκεφτείτε μια εξωτερική ιστοσελίδα για να ολοκληρωθεί.",
-                            "open_site": "Άνοιγμα ιστότοπου"
-                        }
-                    },
-                    "note_about_integrations": "Δε μπορούν όλες οι ενσωματώσεις να διαμορφωθούν από το UI ακόμη."
                 },
                 "zha": {
-                    "caption": "ZHA",
-                    "description": "Διαχείριση του δικτύου Zigbee Home Automation",
-                    "services": {
-                        "reconfigure": "Ρυθμίστε ξανά τη συσκευή ZHA (heal συσκευή). Χρησιμοποιήστε αυτήν την επιλογή εάν αντιμετωπίζετε ζητήματα με τη συσκευή. Εάν η συγκεκριμένη συσκευή τροφοδοτείται από μπαταρία βεβαιωθείτε ότι είναι ενεργοποιημένη και δέχεται εντολές όταν χρησιμοποιείτε αυτή την υπηρεσία.",
-                        "updateDeviceName": "Ορίστε ένα προσαρμοσμένο όνομα γι αυτήν τη συσκευή στο μητρώο συσκευών.",
-                        "remove": "Καταργήστε μια συσκευή από το δίκτυο ZigΒee."
-                    },
-                    "device_card": {
-                        "device_name_placeholder": "Όνομα χρήστη",
-                        "area_picker_label": "Περιοχή",
-                        "update_name_button": "Ενημέρωση ονόματος"
-                    },
                     "add_device_page": {
-                        "header": "Zigbee Home Automation - Προσθήκη Συσκευών",
-                        "spinner": "Αναζήτηση συσκευών ZHA Zigbee…",
                         "discovery_text": "Οι ανακαλυφθείσες συσκευές θα εμφανιστούν εδώ. Ακολουθήστε τις οδηγίες για τις συσκευές σας και τοποθετήστε τις συσκευές στη λειτουργία αντιστοίχισης.",
-                        "search_again": "Αναζήτηση ξανά"
+                        "header": "Zigbee Home Automation - Προσθήκη Συσκευών",
+                        "search_again": "Αναζήτηση ξανά",
+                        "spinner": "Αναζήτηση συσκευών ZHA Zigbee…"
+                    },
+                    "caption": "ZHA",
+                    "cluster_commands": {
+                        "help_command_dropdown": "Επιλέξτε μια εντολή για αλληλεπίδραση με."
                     },
                     "common": {
                         "add_devices": "Προσθήκη συσκευών",
                         "devices": "Συσκευές",
                         "value": "Τιμή"
                     },
-                    "cluster_commands": {
-                        "help_command_dropdown": "Επιλέξτε μια εντολή για αλληλεπίδραση με."
-                    }
-                },
-                "area_registry": {
-                    "caption": "Περιοχή Μητρώου",
-                    "description": "Επισκόπηση όλων των περιοχών στο σπίτι σας.",
-                    "picker": {
-                        "header": "Περιοχή Μητρώου",
-                        "introduction": "Οι περιοχές χρησιμοποιούνται για την οργάνωση της τοποθεσίας των συσκευών. Αυτές οι πληροφορίες θα χρησιμοποιηθούν σε όλο το Home Assistant για να σας βοηθήσουν στην οργάνωση της διασύνδεσης, των αδειών και των ενσωματώσεων σας σε άλλα συστήματα.",
-                        "introduction2": "Για να τοποθετήσετε συσκευές σε μια περιοχή, χρησιμοποιήστε τον παρακάτω σύνδεσμο για να μεταβείτε στη σελίδα ενοποιήσεων και στη συνέχεια κάντε κλικ στην ρυθμισμένη ενοποίηση για να μεταβείτε στις κάρτες της συσκευής.",
-                        "integrations_page": "Σελίδα ενσωματώσεων",
-                        "no_areas": "Φαίνεται ότι δεν έχετε ορίσει ακόμα κάποια περιοχή!",
-                        "create_area": "ΔΗΜΙΟΥΡΓΙΑ ΠΕΡΙΟΧΗΣ"
+                    "description": "Διαχείριση του δικτύου Zigbee Home Automation",
+                    "device_card": {
+                        "area_picker_label": "Περιοχή",
+                        "device_name_placeholder": "Όνομα χρήστη",
+                        "update_name_button": "Ενημέρωση ονόματος"
                     },
-                    "no_areas": "Φαίνεται ότι δεν έχετε ορίσει ακόμα κάποια περιοχή!",
-                    "create_area": "ΔΗΜΙΟΥΡΓΙΑ ΠΕΡΙΟΧΗΣ",
-                    "editor": {
-                        "default_name": "Νέα περιοχή",
-                        "delete": "ΔΙΑΓΡΑΦΗ",
-                        "update": "ΕΝΗΜΕΡΩΣΗ",
-                        "create": "ΔΗΜΙΟΥΡΓΙΑ"
+                    "services": {
+                        "reconfigure": "Ρυθμίστε ξανά τη συσκευή ZHA (heal συσκευή). Χρησιμοποιήστε αυτήν την επιλογή εάν αντιμετωπίζετε ζητήματα με τη συσκευή. Εάν η συγκεκριμένη συσκευή τροφοδοτείται από μπαταρία βεβαιωθείτε ότι είναι ενεργοποιημένη και δέχεται εντολές όταν χρησιμοποιείτε αυτή την υπηρεσία.",
+                        "remove": "Καταργήστε μια συσκευή από το δίκτυο ZigΒee.",
+                        "updateDeviceName": "Ορίστε ένα προσαρμοσμένο όνομα γι αυτήν τη συσκευή στο μητρώο συσκευών."
                     }
                 },
-                "entity_registry": {
-                    "caption": "Μητρώο οντοτήτων",
-                    "description": "Επισκόπηση όλων των γνωστών οντοτήτων.",
-                    "picker": {
-                        "header": "Μητρώο οντοτήτων",
-                        "unavailable": "(μη διαθέσιμο)",
-                        "introduction": "Ο Home Assistant διατηρεί μητρώο από κάθε μοναδική οντότητα που ανιχνεύει. Αυτές οι οντότητες έχουν το δικό τους μοναδικό αναγνωριστικό ID.",
-                        "introduction2": "Χρησιμοποιήστε το μητρώο οντοτήτων για να παρακάμψετε το όνομα, να αλλάξετε το αναγνωριστικό οντότητας ή να καταργήσετε την καταχώρηση από το Home Assistant. Σημειώστε ότι η κατάργηση της καταχώρησης δεν θα καταργήσει την οντότητα. Για να το κάνετε αυτό, ακολουθήστε τον παρακάτω σύνδεσμο και αφαιρέστε την από τη σελίδα ενοποίησης.",
-                        "integrations_page": "Σελίδα ενσωματώσεων",
-                        "show_disabled": "Προβολή απενεργοποιημένων οντότητων",
-                        "headers": {
-                            "name": "Όνομα"
-                        }
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "common": {
+                        "index": "Δείκτης",
+                        "instance": "Περίπτωση",
+                        "unknown": "Άγνωστο",
+                        "value": "Τιμή",
+                        "wakeup_interval": "Διάστημα αφύπνισης"
                     },
-                    "editor": {
-                        "unavailable": "Αυτή η οντότητα δεν είναι προς το παρόν διαθέσιμη.",
-                        "default_name": "Νέα περιοχή",
-                        "delete": "ΔΙΑΓΡΑΦΗ",
-                        "update": "ΕΝΗΜΕΡΩΣΗ",
-                        "enabled_label": "Ενεργοποίηση οντότητας",
-                        "enabled_cause": "Απενεργοποιήθηκε από τo {cause}.",
-                        "enabled_description": "Απενεργοποιημένες οντότητες δεν θα προστεθούν στον Home Assistant",
-                        "confirm_delete": "Είστε σίγουρος ότι θέλετε να διαγραφεί αυτή η ενοποίηση;",
-                        "confirm_delete2": "Η διαγραφή μιας καταχώρησης δεν θα καταργήσει την οντότητα από το Home Assistant. Για να γίνει αυτό, θα πρέπει να καταργήσετε την ενσωμάτωση '{platform}' από το Home Assistant."
-                    }
-                },
-                "person": {
-                    "caption": "Άτομα",
-                    "description": "Διαχειριστείτε τα άτομα που παρακολουθεί το Home Assistant.",
-                    "detail": {
-                        "name": "Όνομα",
-                        "device_tracker_intro": "Επιλέξτε τις συσκευές που ανήκουν σε αυτό το άτομο.",
-                        "device_tracker_picked": "Παρακολούθηση συσκευής",
-                        "device_tracker_pick": "Επιλέξτε συσκευή για παρακολούθηση",
-                        "new_person": "Νέο άτομο",
-                        "name_error_msg": "Απαιτείται όνομα",
-                        "linked_user": "Συνδεδεμένος χρήστης",
-                        "delete": "Διαγραφή",
-                        "create": "Δημιουργία",
-                        "update": "Ενημέρωση"
+                    "description": "Διαχειριστείτε το δίκτυο Z-Wave",
+                    "learn_more": "Μάθετε περισσότερα σχετικά με το Z-wave",
+                    "network_management": {
+                        "header": "Διαχείριση δικτύου Z-Wave",
+                        "introduction": "Εκτελέστε εντολές που επηρεάζουν το δίκτυο Z-Wave. Δεν θα λάβετε πληροφόριση σχετικά με το εάν οι περισσότερες εντολές επιτύχουν, αλλά μπορείτε να ελέγξετε το αρχείο καταγραφής OZW για να προσπαθήσετε να το μάθετε."
                     },
-                    "note_about_persons_configured_in_yaml": "Σημείωση: τα άτομα που έχουν ρυθμιστεί από το αρχείο configuration.yaml δε μπορούν να παραμετροποιηθούν από το UI.",
-                    "no_persons_created_yet": "Φαίνεται ότι δεν έχετε δημιουργήσει ακόμα κανένα άτομο.",
-                    "create_person": "Δημιουργία ατόμου",
-                    "add_person": "Προσθέστε Άτομο",
-                    "confirm_delete": "Είστε σίγουροι ότι θέλετε να διαγράψετε αυτό το άτομο;"
-                },
-                "server_control": {
-                    "caption": "Έλεγχος διακομιστή",
-                    "description": "Επανεκκινήστε και σταματήστε το διακομιστή του Home Assistant",
-                    "section": {
-                        "validation": {
-                            "heading": "Επαλήθευση ρυθμίσεων",
-                            "introduction": "Επαληθεύστε τις ρυθμίσεις σας εάν κάνατε πρόσφατα κάποιες αλλαγές και θέλετε να βεβαιωθείτε ότι είναι όλες έγκυρες",
-                            "check_config": "Έλεγχος παραμετροποίησης",
-                            "valid": "Έγκυρη ρύθμιση",
-                            "invalid": "Μη έγκυρη ρύθμιση"
-                        },
-                        "reloading": {
-                            "heading": "Επαναφόρτωση ρυθμίσεων",
-                            "introduction": "Ορισμένα τμήματα του Home Assistant μπορούν να φορτωθούν ξανά χωρίς να απαιτείται επανεκκίνηση. Το πάτημα της φόρτωσης θα ξεφορτώσει την τρέχουσα διαμόρφωση και θα φορτώσει τη νέα.",
-                            "core": "Επαναφόρτωση πυρήνα",
-                            "group": "Επαναφόρτωση ομάδων",
-                            "automation": "Επαναφόρτωση αυτοματισμών",
-                            "script": "Επαναφόρτωση δέσμης εντολών",
-                            "scene": "Επαναφόρτωση σκηνών"
-                        },
-                        "server_management": {
-                            "heading": "Διαχείριση διακομιστή",
-                            "introduction": "Έλεγχος του διακομιστή Home Assistant… από το Home Assistant",
-                            "restart": "Επανεκκίνηση",
-                            "stop": "Στοπ",
-                            "confirm_restart": "Είστε βέβαιος ότι θέλετε να επανεκκινήσετε το Home Assistant;",
-                            "confirm_stop": "Είστε βέβαιος ότι θέλετε να σταματήσετε το Home Assistant;"
-                        }
-                    }
-                },
-                "devices": {
-                    "caption": "Συσκευές",
-                    "description": "Διαχείριση συνδεδεμένων συσκευών",
-                    "automation": {
-                        "triggers": {
-                            "caption": "Κάνε κάτι όταν ..."
-                        },
-                        "conditions": {
-                            "caption": "Κάνε κάτι μόνο αν ..."
-                        },
-                        "actions": {
-                            "caption": "Όταν ενεργοποιείται κάτι ..."
-                        }
-                    }
-                },
-                "common": {
-                    "editor": {
-                        "confirm_unsaved": "Δεν αποθηκεύσατε τις αλλαγές. Είστε βέβαιοι ότι θέλετε να φύγετε;"
+                    "network_status": {
+                        "network_started": "Το δίκτυο Z-Wave ξεκίνησε",
+                        "network_started_note_all_queried": "Όλοι οι κόμβοι έχουν ερωτηθεί.",
+                        "network_started_note_some_queried": "Οι ενεργοποιημένοι κόμβοι έχουν ερωτηθεί. Οι απενεργοποιημένοι κόμβοι θα ερωτηθούν όταν ενεργοποιηθούν.",
+                        "network_starting": "Εκκίνηση δικτύου Z-Wave…",
+                        "network_starting_note": "Αυτό μπορεί να διαρκέσει λίγο, ανάλογα με το μέγεθος του δικτύου σας.",
+                        "network_stopped": "Το δίκτυο Z-Wave σταμάτησε"
+                    },
+                    "node_config": {
+                        "config_parameter": "Παράμετρος διαμόρφωσης",
+                        "config_value": "Τιμή διαμόρφωσης",
+                        "false": "Ψευδής",
+                        "header": "Επιλογές ρύθμισης παραμέτρων κόμβου",
+                        "seconds": "Δευτερόλεπτα",
+                        "set_config_parameter": "Ορίστε την παράμετρο διαμόρφωσης",
+                        "set_wakeup": "Ορισμός διαστήματος αφύπνισης",
+                        "true": "Αληθής"
+                    },
+                    "services": {
+                        "add_node": "Προσθήκη κόμβου",
+                        "add_node_secure": "Ασφαλής προσθήκη κόμβου",
+                        "cancel_command": "Ακύρωση εντολής",
+                        "heal_network": "Θεραπεία δικτύου",
+                        "remove_node": "Κατάργηση κόμβου",
+                        "save_config": "Αποθήκευση ρύθμισης παραμέτρων",
+                        "soft_reset": "Επαναφορά μέσω λογισμικού",
+                        "start_network": "Έναρξη δικτύου",
+                        "stop_network": "Διακοπή δικτύου",
+                        "test_network": "Δοκιμή δικτύου"
+                    },
+                    "values": {
+                        "header": "Τιμές κόμβου"
                     }
                 }
             },
-            "profile": {
-                "push_notifications": {
-                    "header": "Ειδοποιήσεις Push",
-                    "description": "Αποστολή ειδοποιήσεων σε αυτήν τη συσκευή.",
-                    "error_load_platform": "Ρυθμίστε το notify.html5.",
-                    "error_use_https": "Απαιτείται η ενεργοποίηση του SSL για το προσκήνιο.",
-                    "push_notifications": "Ειδοποιήσεις push",
-                    "link_promo": "Μάθετε περισσότερα"
-                },
-                "language": {
-                    "header": "Γλώσσα",
-                    "link_promo": "Βοηθήστε στη μετάφραση",
-                    "dropdown_label": "Γλώσσα"
-                },
-                "themes": {
-                    "header": "Θέμα",
-                    "error_no_theme": "Δεν υπάρχουν διαθέσιμα θέματα.",
-                    "link_promo": "Μάθετε σχετικά με τα θέματα",
-                    "dropdown_label": "Θέμα"
-                },
-                "refresh_tokens": {
-                    "header": "Ανανέωση διακριτικών",
-                    "description": "Κάθε διακριτικό ανανέωσης αντιπροσωπεύει μια περίοδο σύνδεσης. Τα ανανεωμένα tokens θα καταργηθούν αυτόματα όταν αποσυνδεθείτε. Τα παρακάτω διακριτικά ανανέωσης είναι ενεργά για το λογαριασμό σας.",
-                    "token_title": "Ανανέωση διακριτικού για το {clientId}",
-                    "created_at": "Δημιουργήθηκε στις {date}",
-                    "confirm_delete": "Είστε σίγουρος ότι θέλετε να διαγράψετε το διακριτικό πρόσβασης για το {name};",
-                    "delete_failed": "Αδύνατη η διαγραφή του τρέχοντος διακριτικού.",
-                    "last_used": "Τελευταία χρήση στις {date} από {location}",
-                    "not_used": "Δεν έχει χρησιμοποιηθεί ποτέ",
-                    "current_token_tooltip": "Αδύνατη η διαγραφή του τρέχοντος διακριτικού"
-                },
-                "long_lived_access_tokens": {
-                    "header": "Διακριτικά πρόσβασης μακράς διάρκειας",
-                    "description": "Δημιουργήστε διακριτικά πρόσβασης μακράς διάρκειας για να επιτρέψετε στα σενάρια σας να αλληλεπιδρούν με το Home Assistant. Κάθε διακριτικό θα ισχύει για 10 χρόνια. Τα παρακάτω διακριτικά πρόσβασης μακράς διαρκείας είναι ενεργά.",
-                    "learn_auth_requests": "Μάθετε πώς να κάνετε πιστοποιημένα αιτήματα.",
-                    "created_at": "Δημιουργήθηκε στις {date}",
-                    "confirm_delete": "Είστε σίγουρος ότι θέλετε να διαγράψετε το διακριτικό πρόσβασης για το {name};",
-                    "delete_failed": "Αδύνατη η διαγραφή του τρέχοντος διακριτικού.",
-                    "create": "Δημιουργία Διακριτικού",
-                    "create_failed": "Αδύνατη η δημιουργία του τρέχοντος διακριτικού.",
-                    "prompt_name": "Όνομα;",
-                    "prompt_copy_token": "Αντιγράψτε το διακριτικό πρόσβασης. Δεν θα εμφανιστεί ξανά.",
-                    "empty_state": "Δεν έχετε ακόμη αναγνωριστικά πρόσβασης μεγάλης διάρκειας.",
-                    "last_used": "Τελευταία χρήση στις {date} από {location}",
-                    "not_used": "Δεν έχει χρησιμοποιηθεί ποτέ"
-                },
-                "current_user": "Αυτήν τη στιγμή είστε συνδεδεμένος ως {fullName}.",
-                "is_owner": "Είστε ιδιοκτήτης.",
-                "change_password": {
-                    "header": "Αλλαγή Κωδικού",
-                    "current_password": "Τρέχων κωδικός",
-                    "new_password": "Νέος κωδικός",
-                    "confirm_new_password": "Επιβεβαιώστε τον καινούριο κωδικό",
-                    "error_required": "Απαιτείται",
-                    "submit": "Υποβολή"
-                },
-                "mfa": {
-                    "header": "Πολυπαραγοντικά Αρθρώματα Ταυτοποίησης",
-                    "disable": "Απενεργοποίηση",
-                    "enable": "Ενεργοποίηση",
-                    "confirm_disable": "Είστε βέβαιος ότι θέλετε να απενεργοποιήσετε το {name} ;"
-                },
-                "mfa_setup": {
-                    "title_aborted": "Ματαιώθηκε",
-                    "title_success": "Επιτυχία!",
-                    "step_done": "Η εγκατάσταση έγινε για {step}",
-                    "close": "Κλείστε",
-                    "submit": "Υποβολή"
-                },
-                "logout": "Αποσύνδεση",
-                "force_narrow": {
-                    "header": "Να αποκρύπτεται πάντα η πλαϊνή μπάρα",
-                    "description": "Αυτό θα κρύψει την πλαϊνή μπάρα από προεπιλογή, παρόμοια με την εμπειρία κινητού."
-                },
-                "vibrate": {
-                    "header": "Δόνηση",
-                    "description": "Ενεργοποιήστε ή απενεργοποιήστε τις δονήσεις σε αυτήν τη συσκευή κατά τον έλεγχο συσκευών."
-                },
-                "advanced_mode": {
-                    "title": "εξειδικευμένη λειτουργία",
-                    "description": "εξειδικευμένη λειτουργία"
-                }
-            },
-            "page-authorize": {
-                "initializing": "Αρχικοποίηση",
-                "authorizing_client": "Πρόκειται να δώσετε στο {clientId} πρόσβαση στο Home Assistant.",
-                "logging_in_with": "Σύνδεση με **{authProviderName}**.",
-                "pick_auth_provider": "Ή συνδεθείτε με",
-                "abort_intro": "Σύνδεση ματαιώθηκε",
-                "form": {
-                    "working": "Παρακαλώ περιμένετε",
-                    "unknown_error": "Κάτι πήγε στραβά",
-                    "providers": {
-                        "homeassistant": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "username": "Όνομα χρήστη",
-                                        "password": "Κωδικός"
-                                    }
-                                },
-                                "mfa": {
-                                    "data": {
-                                        "code": "Κωδικός ταυτοποίησης δυο παραγόντων"
-                                    },
-                                    "description": "Ανοίξτε το **{mfa_module_name}** στην συσκευή σας για να δείτε τον κωδικό ταυτοποίησης δυο-παραγόντων και να επιβεβαιώσετε την ταυτότητα:"
-                                }
-                            },
-                            "error": {
-                                "invalid_auth": "Μη έγκυρο όνομα χρήστη ή κωδικός πρόσβασης",
-                                "invalid_code": "Μη έγκυρος κωδικός ταυτοποίησης"
-                            },
-                            "abort": {
-                                "login_expired": "Η περίοδος σύνδεσης έληξε, συνδεθείτε ξανά."
-                            }
-                        },
-                        "legacy_api_password": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "password": "Κωδικός API"
-                                    },
-                                    "description": "Εισαγάγετε τον κωδικό API στο http config:"
-                                },
-                                "mfa": {
-                                    "data": {
-                                        "code": "Κωδικός ταυτοποίησης δυο παραγόντων"
-                                    },
-                                    "description": "Ανοίξτε το **{mfa_module_name}** στην συσκευή σας για να δείτε τον κωδικό ταυτοποίησης δυο-παραγόντων και να επιβεβαιώσετε την ταυτότητα:"
-                                }
-                            },
-                            "error": {
-                                "invalid_auth": "Άκυρος κωδικός ΑPI",
-                                "invalid_code": "Μη έγκυρος κωδικός ταυτοποίησης"
-                            },
-                            "abort": {
-                                "no_api_password_set": "Δεν έχετε διαμορφώσει έναν κωδικό πρόσβασης API.",
-                                "login_expired": "Έληξε η περίοδος σύνδεσης, παρακαλώ ξανά συνδεθείτε."
-                            }
-                        },
-                        "trusted_networks": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "user": "Χρήστης"
-                                    },
-                                    "description": "Παρακαλούμε επιλέξτε ένα χρήστη που θέλετε να συνδεθείτε ως:"
-                                }
-                            },
-                            "abort": {
-                                "not_whitelisted": "Ο υπολογιστής σας δεν είναι στη λίστα επιτρεπόμενων."
-                            }
-                        },
-                        "command_line": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "username": "Όνομα χρήστη",
-                                        "password": "Κωδικός"
-                                    }
-                                },
-                                "mfa": {
-                                    "data": {
-                                        "code": "Κωδικός ταυτοποίησης δυο παραγόντων"
-                                    },
-                                    "description": "Ανοίξτε το **{mfa_module_name}** στην συσκευή σας για να δείτε τον κωδικό ταυτοποίησης δυο-παραγόντων και να επιβεβαιώσετε την ταυτότητα:"
-                                }
-                            },
-                            "error": {
-                                "invalid_auth": "Μη έγκυρο όνομα χρήστη ή κωδικός πρόσβασης",
-                                "invalid_code": "Λανθασμένος κώδικας ταυτοποίησης"
-                            },
-                            "abort": {
-                                "login_expired": "Η περίοδος σύνδεσης έληξε, συνδεθείτε ξανά."
-                            }
-                        }
-                    }
-                }
-            },
-            "page-onboarding": {
-                "intro": "Είστε έτοιμοι να ξυπνήσετε το σπίτι σας, να διεκδικήσετε την ιδιωτικότητά σας και να συμμετάσχετε σε μια παγκόσμια κοινότητα μαστροχαλαστών;",
-                "user": {
-                    "intro": "Ας ξεκινήσουμε δημιουργώντας ένα λογαριασμό χρήστη.",
-                    "required_field": "Υποχρεωτικό",
-                    "data": {
-                        "name": "Όνομα",
-                        "username": "Όνομα χρήστη",
-                        "password": "Κωδικός",
-                        "password_confirm": "Επιβεβαίωση Κωδικού"
+            "developer-tools": {
+                "tabs": {
+                    "events": {
+                        "title": "Γεγονότα"
                     },
-                    "create_account": "Δημιουργία Λογαριασμού",
-                    "error": {
-                        "required_fields": "Συμπληρώστε όλα τα υποχρεωτικά πεδία",
-                        "password_not_match": "Οι κωδικοί πρόσβασης δεν ταιριάζουν"
+                    "info": {
+                        "title": "Πληροφορίες"
+                    },
+                    "logs": {
+                        "title": "Αρχεία καταγραφής"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    },
+                    "services": {
+                        "title": "Υπηρεσίες"
+                    },
+                    "states": {
+                        "title": "Καταστάσεις"
+                    },
+                    "templates": {
+                        "title": "Πρότυπα"
                     }
-                },
-                "integration": {
-                    "intro": "Οι συσκευές και οι υπηρεσίες εκπροσωπούνται στο Home Assistant ως ενσωματώσεις. Μπορείτε να τα ρυθμίσετε τώρα ή αργότερα από την οθόνη διαμόρφωσης.",
-                    "more_integrations": "Περισσότερα",
-                    "finish": "Τέλος"
-                },
-                "core-config": {
-                    "intro": "Γεια σου {name}, καλώς ήρθες στο Home Assistant. Πώς θα ήθελες να αναφέρεσαι στο σπίτι σου;",
-                    "intro_location": "Θα θέλαμε να μάθουμε πού ζεις. Αυτές οι πληροφορίες θα βοηθήσουν στην προβολή πληροφοριών και στη ρύθμιση αυτοματισμών που βασίζονται στον ήλιο. Αυτά τα δεδομένα δεν μοιράζονται ποτέ εκτός του δικτύου σας.",
-                    "intro_location_detect": "Μπορούμε να σε βοηθήσουμε να συμπληρώσεις αυτές τις πληροφορίες, κάνοντας μια εφάπαξ αίτηση σε μια εξωτερική υπηρεσία.",
-                    "location_name_default": "Σπίτι",
-                    "button_detect": "Ανίχνευση",
-                    "finish": "Επόμενο"
                 }
+            },
+            "history": {
+                "period": "Περίοδος",
+                "showing_entries": "Εμφανίζονται καταχωρήσεις για"
+            },
+            "logbook": {
+                "period": "Περίοδος",
+                "showing_entries": "Εμφανίζοντα καταχωρήσεις για"
             },
             "lovelace": {
                 "cards": {
-                    "shopping-list": {
-                        "checked_items": "Επιλεγμένα στοιχεία",
-                        "clear_items": "Εκκαθάριση επιλεγμένων στοιχείων",
-                        "add_item": "Προσθήκη στοιχείου"
-                    },
                     "empty_state": {
-                        "title": "Καλωσορίσατε στην αρχική σελίδα",
+                        "go_to_integrations_page": "Μεταβείτε στη σελίδα ενοποίησης.",
                         "no_devices": "Αυτή η σελίδα σάς επιτρέπει να ελέγχετε τις συσκευές σας, ωστόσο φαίνεται ότι δεν έχετε ακόμα ρυθμίσει συσκευές. Μεταβείτε στη σελίδα ενοποίησης για να ξεκινήσετε.",
-                        "go_to_integrations_page": "Μεταβείτε στη σελίδα ενοποίησης."
+                        "title": "Καλωσορίσατε στην αρχική σελίδα"
                     },
                     "picture-elements": {
-                        "hold": "Αναστολή:",
-                        "tap": "Ταπ:",
-                        "navigate_to": "Μεταβείτε στην {location}",
-                        "toggle": "Εναλλαγή {name}",
                         "call_service": "Κλήση υπηρεσίας {name}",
+                        "hold": "Αναστολή:",
                         "more_info": "Εμφάνιση περισσότερων πληροφοριών: {name}",
+                        "navigate_to": "Μεταβείτε στην {location}",
+                        "tap": "Ταπ:",
+                        "toggle": "Εναλλαγή {name}",
                         "url": "Ανοίξτε το παράθυρο στο {url_path}"
+                    },
+                    "shopping-list": {
+                        "add_item": "Προσθήκη στοιχείου",
+                        "checked_items": "Επιλεγμένα στοιχεία",
+                        "clear_items": "Εκκαθάριση επιλεγμένων στοιχείων"
                     }
                 },
+                "changed_toast": {
+                    "message": "Οι ρυθμίσεις Lovelace άλλαξαν, θέλεις να ανανεώσεις;",
+                    "refresh": "Ανανέωση"
+                },
                 "editor": {
-                    "edit_card": {
-                        "header": "Διαμόρφωση κάρτας",
-                        "save": "Αποθήκευση",
-                        "toggle_editor": "Εναλλαγή κειμενογράφου",
-                        "pick_card": "Επιλέξτε την κάρτα που θέλετε να προσθέσετε.",
-                        "add": "Προσθήκη κάρτας",
-                        "edit": "Επεξεργασία",
-                        "delete": "Διαγραφή",
-                        "move": "Μετακίνηση",
-                        "show_code_editor": "Εμφάνιση επεξεργαστή κώδικα"
-                    },
-                    "migrate": {
-                        "header": "Μη συμβατή διαμόρφωση",
-                        "para_no_id": "Αυτό το στοιχείο δεν έχει αναγνωριστικό. Προσθέστε ένα αναγνωριστικό σε αυτό το στοιχείο στο 'ui-lovelace.yaml'.",
-                        "para_migrate": "Ο Home Assistant μπορεί να προσθέσει αυτόματα όλα τα αναγνωριστικά από τις κάρτες και τις προβολές σας πατώντας το πλήκτρο 'Ρυθμίσεις μετεγκατάστασης'.",
-                        "migrate": "Ρυθμίσεις μετεγκατάστασης"
-                    },
-                    "header": "Επεξεργασία περιβάλλοντος χρήστη",
-                    "edit_view": {
-                        "header": "Ρυθμίσεις προβολής",
-                        "add": "Προσθήκη προβολής",
-                        "edit": "Επεξεργασία προβολής",
-                        "delete": "Διαγραφή προβολής"
-                    },
-                    "save_config": {
-                        "header": "Πάρτε τον έλεγχο του περιβάλλοντος χρήστη στο Lovelace",
-                        "para": "Από προεπιλογή, το Home Assistant θα διατηρήσει το περιβάλλον χρήστη που έχετε ενημερώνοντας το όταν θα γίνονται διαθέσιμες νέες οντότητες ή στοιχεία Lovelace. Αν πάρετε τον έλεγχο, δεν θα πραγματοποιούμε πλέον αλλαγές για εσάς.",
-                        "para_sure": "Είστε βέβαιος ότι θέλετε να πάρετε τον έλεγχο του περιβάλλοντος χρήστη;",
-                        "cancel": "Δεν πειράζει",
-                        "save": "Πάρτε τον έλεγχο"
-                    },
-                    "menu": {
-                        "raw_editor": "Επεξεργαστής ρυθμίσεων Raw"
-                    },
-                    "raw_editor": {
-                        "header": "Επεξεργαστείτε το Config",
-                        "save": "Αποθήκευση",
-                        "unsaved_changes": "Μη αποθηκευμένες αλλαγές",
-                        "saved": "Αποθηκεύτηκε"
-                    },
-                    "edit_lovelace": {
-                        "header": "Τίτλος του περιβάλλοντος εργασίας σας Lovelace",
-                        "explanation": "Αυτός ο τίτλος εμφανίζεται πάνω από όλες τις καρτέλες σας στο Lovelace."
-                    },
                     "card": {
                         "alarm_panel": {
                             "available_states": "Διαθέσιμες λειτουργίες"
                         },
+                        "alarm-panel": {
+                            "available_states": "Διαθέσιμες λειτουργίες",
+                            "name": "Πίνακας συναγερμών"
+                        },
                         "config": {
-                            "required": "Υποχρεωτικό",
-                            "optional": "Προαιρετικό"
+                            "optional": "Προαιρετικό",
+                            "required": "Υποχρεωτικό"
+                        },
+                        "entities": {
+                            "name": "Οντότητες"
+                        },
+                        "entity-button": {
+                            "name": "Κουμπί οντότητας"
+                        },
+                        "entity-filter": {
+                            "name": "Φίλτρο οντοτήτων"
                         },
                         "gauge": {
+                            "name": "Μετρητής",
                             "severity": {
                                 "green": "Πράσινος",
                                 "red": "Κόκκινο",
                                 "yellow": "Κίτρινο"
-                            },
-                            "name": "Μετρητής"
-                        },
-                        "glance": {
-                            "columns": "Στήλες"
+                            }
                         },
                         "generic": {
                             "aspect_ratio": "Αναλογία απεικόνισης",
@@ -1237,32 +1311,12 @@
                             "show_icon": "Εμφάνιση εικονιδίου;",
                             "show_name": "Εμφάνιση ονόματος;",
                             "show_state": "Εμφάνιση κατάστασης;",
-                            "title": "Τίτλος",
                             "theme": "Θέμα",
+                            "title": "Τίτλος",
                             "unit": "Μονάδα"
                         },
-                        "map": {
-                            "geo_location_sources": "Πηγές γεωγεωγραφικής θέσης",
-                            "dark_mode": "Σκοτεινή λειτουργία;",
-                            "default_zoom": "Προεπιλεγμένο ζουμ",
-                            "source": "Πηγή",
-                            "name": "Χάρτης"
-                        },
-                        "markdown": {
-                            "content": "Περιεχόμενο"
-                        },
-                        "alarm-panel": {
-                            "name": "Πίνακας συναγερμών",
-                            "available_states": "Διαθέσιμες λειτουργίες"
-                        },
-                        "entities": {
-                            "name": "Οντότητες"
-                        },
-                        "entity-button": {
-                            "name": "Κουμπί οντότητας"
-                        },
-                        "entity-filter": {
-                            "name": "Φίλτρο οντοτήτων"
+                        "glance": {
+                            "columns": "Στήλες"
                         },
                         "history-graph": {
                             "name": "Ιστορικό γράφημα"
@@ -1272,6 +1326,16 @@
                         },
                         "light": {
                             "name": "Φως"
+                        },
+                        "map": {
+                            "dark_mode": "Σκοτεινή λειτουργία;",
+                            "default_zoom": "Προεπιλεγμένο ζουμ",
+                            "geo_location_sources": "Πηγές γεωγεωγραφικής θέσης",
+                            "name": "Χάρτης",
+                            "source": "Πηγή"
+                        },
+                        "markdown": {
+                            "content": "Περιεχόμενο"
                         },
                         "picture": {
                             "name": "Εικόνα"
@@ -1294,396 +1358,332 @@
                         "weather-forecast": {
                             "name": "πρόγνωση καιρού"
                         }
+                    },
+                    "edit_card": {
+                        "add": "Προσθήκη κάρτας",
+                        "delete": "Διαγραφή",
+                        "edit": "Επεξεργασία",
+                        "header": "Διαμόρφωση κάρτας",
+                        "move": "Μετακίνηση",
+                        "pick_card": "Επιλέξτε την κάρτα που θέλετε να προσθέσετε.",
+                        "save": "Αποθήκευση",
+                        "show_code_editor": "Εμφάνιση επεξεργαστή κώδικα",
+                        "toggle_editor": "Εναλλαγή κειμενογράφου"
+                    },
+                    "edit_lovelace": {
+                        "explanation": "Αυτός ο τίτλος εμφανίζεται πάνω από όλες τις καρτέλες σας στο Lovelace.",
+                        "header": "Τίτλος του περιβάλλοντος εργασίας σας Lovelace"
+                    },
+                    "edit_view": {
+                        "add": "Προσθήκη προβολής",
+                        "delete": "Διαγραφή προβολής",
+                        "edit": "Επεξεργασία προβολής",
+                        "header": "Ρυθμίσεις προβολής"
+                    },
+                    "header": "Επεξεργασία περιβάλλοντος χρήστη",
+                    "menu": {
+                        "raw_editor": "Επεξεργαστής ρυθμίσεων Raw"
+                    },
+                    "migrate": {
+                        "header": "Μη συμβατή διαμόρφωση",
+                        "migrate": "Ρυθμίσεις μετεγκατάστασης",
+                        "para_migrate": "Ο Home Assistant μπορεί να προσθέσει αυτόματα όλα τα αναγνωριστικά από τις κάρτες και τις προβολές σας πατώντας το πλήκτρο 'Ρυθμίσεις μετεγκατάστασης'.",
+                        "para_no_id": "Αυτό το στοιχείο δεν έχει αναγνωριστικό. Προσθέστε ένα αναγνωριστικό σε αυτό το στοιχείο στο 'ui-lovelace.yaml'."
+                    },
+                    "raw_editor": {
+                        "header": "Επεξεργαστείτε το Config",
+                        "save": "Αποθήκευση",
+                        "saved": "Αποθηκεύτηκε",
+                        "unsaved_changes": "Μη αποθηκευμένες αλλαγές"
+                    },
+                    "save_config": {
+                        "cancel": "Δεν πειράζει",
+                        "header": "Πάρτε τον έλεγχο του περιβάλλοντος χρήστη στο Lovelace",
+                        "para": "Από προεπιλογή, το Home Assistant θα διατηρήσει το περιβάλλον χρήστη που έχετε ενημερώνοντας το όταν θα γίνονται διαθέσιμες νέες οντότητες ή στοιχεία Lovelace. Αν πάρετε τον έλεγχο, δεν θα πραγματοποιούμε πλέον αλλαγές για εσάς.",
+                        "para_sure": "Είστε βέβαιος ότι θέλετε να πάρετε τον έλεγχο του περιβάλλοντος χρήστη;",
+                        "save": "Πάρτε τον έλεγχο"
                     }
                 },
                 "menu": {
                     "configure_ui": "Ρύθμιση UI",
-                    "unused_entities": "Αχρησιμοποίητες οντότητες",
                     "help": "Βοήθεια",
-                    "refresh": "Ανανέωση"
+                    "refresh": "Ανανέωση",
+                    "unused_entities": "Αχρησιμοποίητες οντότητες"
                 },
+                "reload_lovelace": "Επαναφόρτωση Lovelace",
                 "warning": {
-                    "entity_not_found": "Η οντότητα δεν είναι διαθέσιμη: {entity}",
-                    "entity_non_numeric": "Η οντότητα δεν είναι αριθμητική: {entity}"
+                    "entity_non_numeric": "Η οντότητα δεν είναι αριθμητική: {entity}",
+                    "entity_not_found": "Η οντότητα δεν είναι διαθέσιμη: {entity}"
+                }
+            },
+            "mailbox": {
+                "delete_button": "Διαγραφή",
+                "delete_prompt": "Διαγραφή αυτού του μηνύματος;",
+                "empty": "Δεν έχετε μηνύματα",
+                "playback_title": "Αναπαραγωγή μηνύματος"
+            },
+            "page-authorize": {
+                "abort_intro": "Σύνδεση ματαιώθηκε",
+                "authorizing_client": "Πρόκειται να δώσετε στο {clientId} πρόσβαση στο Home Assistant.",
+                "form": {
+                    "providers": {
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "Η περίοδος σύνδεσης έληξε, συνδεθείτε ξανά."
+                            },
+                            "error": {
+                                "invalid_auth": "Μη έγκυρο όνομα χρήστη ή κωδικός πρόσβασης",
+                                "invalid_code": "Λανθασμένος κώδικας ταυτοποίησης"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Κωδικός",
+                                        "username": "Όνομα χρήστη"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Κωδικός ταυτοποίησης δυο παραγόντων"
+                                    },
+                                    "description": "Ανοίξτε το **{mfa_module_name}** στην συσκευή σας για να δείτε τον κωδικό ταυτοποίησης δυο-παραγόντων και να επιβεβαιώσετε την ταυτότητα:"
+                                }
+                            }
+                        },
+                        "homeassistant": {
+                            "abort": {
+                                "login_expired": "Η περίοδος σύνδεσης έληξε, συνδεθείτε ξανά."
+                            },
+                            "error": {
+                                "invalid_auth": "Μη έγκυρο όνομα χρήστη ή κωδικός πρόσβασης",
+                                "invalid_code": "Μη έγκυρος κωδικός ταυτοποίησης"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Κωδικός",
+                                        "username": "Όνομα χρήστη"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Κωδικός ταυτοποίησης δυο παραγόντων"
+                                    },
+                                    "description": "Ανοίξτε το **{mfa_module_name}** στην συσκευή σας για να δείτε τον κωδικό ταυτοποίησης δυο-παραγόντων και να επιβεβαιώσετε την ταυτότητα:"
+                                }
+                            }
+                        },
+                        "legacy_api_password": {
+                            "abort": {
+                                "login_expired": "Έληξε η περίοδος σύνδεσης, παρακαλώ ξανά συνδεθείτε.",
+                                "no_api_password_set": "Δεν έχετε διαμορφώσει έναν κωδικό πρόσβασης API."
+                            },
+                            "error": {
+                                "invalid_auth": "Άκυρος κωδικός ΑPI",
+                                "invalid_code": "Μη έγκυρος κωδικός ταυτοποίησης"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Κωδικός API"
+                                    },
+                                    "description": "Εισαγάγετε τον κωδικό API στο http config:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Κωδικός ταυτοποίησης δυο παραγόντων"
+                                    },
+                                    "description": "Ανοίξτε το **{mfa_module_name}** στην συσκευή σας για να δείτε τον κωδικό ταυτοποίησης δυο-παραγόντων και να επιβεβαιώσετε την ταυτότητα:"
+                                }
+                            }
+                        },
+                        "trusted_networks": {
+                            "abort": {
+                                "not_whitelisted": "Ο υπολογιστής σας δεν είναι στη λίστα επιτρεπόμενων."
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Χρήστης"
+                                    },
+                                    "description": "Παρακαλούμε επιλέξτε ένα χρήστη που θέλετε να συνδεθείτε ως:"
+                                }
+                            }
+                        }
+                    },
+                    "unknown_error": "Κάτι πήγε στραβά",
+                    "working": "Παρακαλώ περιμένετε"
                 },
-                "changed_toast": {
-                    "message": "Οι ρυθμίσεις Lovelace άλλαξαν, θέλεις να ανανεώσεις;",
-                    "refresh": "Ανανέωση"
-                },
-                "reload_lovelace": "Επαναφόρτωση Lovelace"
+                "initializing": "Αρχικοποίηση",
+                "logging_in_with": "Σύνδεση με **{authProviderName}**.",
+                "pick_auth_provider": "Ή συνδεθείτε με"
             },
             "page-demo": {
                 "cards": {
                     "demo": {
                         "demo_by": "από {name}",
-                        "next_demo": "Επόμενο demo",
                         "introduction": "Καλώς όρισες σπίτι! Έχετε φθάσει στο demo Home Assistant όπου παρουσιάζουμε τους καλύτερους UI που δημιουργήθηκαν από την κοινότητά μας.",
-                        "learn_more": "Μάθετε περισσότερα για το Home Assistant"
+                        "learn_more": "Μάθετε περισσότερα για το Home Assistant",
+                        "next_demo": "Επόμενο demo"
                     }
                 },
                 "config": {
                     "arsaboo": {
-                        "names": {
-                            "upstairs": "Επάνω",
-                            "family_room": "Οικογενειακό Δωμάτιο",
-                            "kitchen": "Κουζίνα",
-                            "patio": "Αίθριο",
-                            "hallway": "Διάδρομος",
-                            "master_bedroom": "Κύριο Υπνοδωμάτιο",
-                            "left": "Αριστερά",
-                            "right": "Δεξιά",
-                            "mirror": "Καθρέφτης"
-                        },
                         "labels": {
-                            "lights": "Φώτα",
-                            "information": "Πληροφορίες",
-                            "morning_commute": "Πρωινή Μετακίνηση",
+                            "activity": "Δραστηριότητα",
+                            "air": "Αέρας",
                             "commute_home": "Μετακίνηση προς Σπίτι",
                             "entertainment": "Ψυχαγωγία",
-                            "activity": "Δραστηριότητα",
                             "hdmi_input": "Είσοδος HDMI",
                             "hdmi_switcher": "Μεταγωγέας HDMI",
-                            "volume": "Ένταση ήχου",
+                            "information": "Πληροφορίες",
+                            "lights": "Φώτα",
+                            "morning_commute": "Πρωινή Μετακίνηση",
                             "total_tv_time": "Συνολικός χρόνος θέασης",
                             "turn_tv_off": "Απενεργοποίηση Τηλεόρασης",
-                            "air": "Αέρας"
+                            "volume": "Ένταση ήχου"
+                        },
+                        "names": {
+                            "family_room": "Οικογενειακό Δωμάτιο",
+                            "hallway": "Διάδρομος",
+                            "kitchen": "Κουζίνα",
+                            "left": "Αριστερά",
+                            "master_bedroom": "Κύριο Υπνοδωμάτιο",
+                            "mirror": "Καθρέφτης",
+                            "patio": "Αίθριο",
+                            "right": "Δεξιά",
+                            "upstairs": "Επάνω"
                         },
                         "unit": {
-                            "watching": "παρακολούθηση",
-                            "minutes_abbr": "λεπτά"
+                            "minutes_abbr": "λεπτά",
+                            "watching": "παρακολούθηση"
                         }
                     }
                 }
+            },
+            "page-onboarding": {
+                "core-config": {
+                    "button_detect": "Ανίχνευση",
+                    "finish": "Επόμενο",
+                    "intro": "Γεια σου {name}, καλώς ήρθες στο Home Assistant. Πώς θα ήθελες να αναφέρεσαι στο σπίτι σου;",
+                    "intro_location": "Θα θέλαμε να μάθουμε πού ζεις. Αυτές οι πληροφορίες θα βοηθήσουν στην προβολή πληροφοριών και στη ρύθμιση αυτοματισμών που βασίζονται στον ήλιο. Αυτά τα δεδομένα δεν μοιράζονται ποτέ εκτός του δικτύου σας.",
+                    "intro_location_detect": "Μπορούμε να σε βοηθήσουμε να συμπληρώσεις αυτές τις πληροφορίες, κάνοντας μια εφάπαξ αίτηση σε μια εξωτερική υπηρεσία.",
+                    "location_name_default": "Σπίτι"
+                },
+                "integration": {
+                    "finish": "Τέλος",
+                    "intro": "Οι συσκευές και οι υπηρεσίες εκπροσωπούνται στο Home Assistant ως ενσωματώσεις. Μπορείτε να τα ρυθμίσετε τώρα ή αργότερα από την οθόνη διαμόρφωσης.",
+                    "more_integrations": "Περισσότερα"
+                },
+                "intro": "Είστε έτοιμοι να ξυπνήσετε το σπίτι σας, να διεκδικήσετε την ιδιωτικότητά σας και να συμμετάσχετε σε μια παγκόσμια κοινότητα μαστροχαλαστών;",
+                "user": {
+                    "create_account": "Δημιουργία Λογαριασμού",
+                    "data": {
+                        "name": "Όνομα",
+                        "password": "Κωδικός",
+                        "password_confirm": "Επιβεβαίωση Κωδικού",
+                        "username": "Όνομα χρήστη"
+                    },
+                    "error": {
+                        "password_not_match": "Οι κωδικοί πρόσβασης δεν ταιριάζουν",
+                        "required_fields": "Συμπληρώστε όλα τα υποχρεωτικά πεδία"
+                    },
+                    "intro": "Ας ξεκινήσουμε δημιουργώντας ένα λογαριασμό χρήστη.",
+                    "required_field": "Υποχρεωτικό"
+                }
+            },
+            "profile": {
+                "advanced_mode": {
+                    "description": "εξειδικευμένη λειτουργία",
+                    "title": "εξειδικευμένη λειτουργία"
+                },
+                "change_password": {
+                    "confirm_new_password": "Επιβεβαιώστε τον καινούριο κωδικό",
+                    "current_password": "Τρέχων κωδικός",
+                    "error_required": "Απαιτείται",
+                    "header": "Αλλαγή Κωδικού",
+                    "new_password": "Νέος κωδικός",
+                    "submit": "Υποβολή"
+                },
+                "current_user": "Αυτήν τη στιγμή είστε συνδεδεμένος ως {fullName}.",
+                "force_narrow": {
+                    "description": "Αυτό θα κρύψει την πλαϊνή μπάρα από προεπιλογή, παρόμοια με την εμπειρία κινητού.",
+                    "header": "Να αποκρύπτεται πάντα η πλαϊνή μπάρα"
+                },
+                "is_owner": "Είστε ιδιοκτήτης.",
+                "language": {
+                    "dropdown_label": "Γλώσσα",
+                    "header": "Γλώσσα",
+                    "link_promo": "Βοηθήστε στη μετάφραση"
+                },
+                "logout": "Αποσύνδεση",
+                "long_lived_access_tokens": {
+                    "confirm_delete": "Είστε σίγουρος ότι θέλετε να διαγράψετε το διακριτικό πρόσβασης για το {name};",
+                    "create": "Δημιουργία Διακριτικού",
+                    "create_failed": "Αδύνατη η δημιουργία του τρέχοντος διακριτικού.",
+                    "created_at": "Δημιουργήθηκε στις {date}",
+                    "delete_failed": "Αδύνατη η διαγραφή του τρέχοντος διακριτικού.",
+                    "description": "Δημιουργήστε διακριτικά πρόσβασης μακράς διάρκειας για να επιτρέψετε στα σενάρια σας να αλληλεπιδρούν με το Home Assistant. Κάθε διακριτικό θα ισχύει για 10 χρόνια. Τα παρακάτω διακριτικά πρόσβασης μακράς διαρκείας είναι ενεργά.",
+                    "empty_state": "Δεν έχετε ακόμη αναγνωριστικά πρόσβασης μεγάλης διάρκειας.",
+                    "header": "Διακριτικά πρόσβασης μακράς διάρκειας",
+                    "last_used": "Τελευταία χρήση στις {date} από {location}",
+                    "learn_auth_requests": "Μάθετε πώς να κάνετε πιστοποιημένα αιτήματα.",
+                    "not_used": "Δεν έχει χρησιμοποιηθεί ποτέ",
+                    "prompt_copy_token": "Αντιγράψτε το διακριτικό πρόσβασης. Δεν θα εμφανιστεί ξανά.",
+                    "prompt_name": "Όνομα;"
+                },
+                "mfa_setup": {
+                    "close": "Κλείστε",
+                    "step_done": "Η εγκατάσταση έγινε για {step}",
+                    "submit": "Υποβολή",
+                    "title_aborted": "Ματαιώθηκε",
+                    "title_success": "Επιτυχία!"
+                },
+                "mfa": {
+                    "confirm_disable": "Είστε βέβαιος ότι θέλετε να απενεργοποιήσετε το {name} ;",
+                    "disable": "Απενεργοποίηση",
+                    "enable": "Ενεργοποίηση",
+                    "header": "Πολυπαραγοντικά Αρθρώματα Ταυτοποίησης"
+                },
+                "push_notifications": {
+                    "description": "Αποστολή ειδοποιήσεων σε αυτήν τη συσκευή.",
+                    "error_load_platform": "Ρυθμίστε το notify.html5.",
+                    "error_use_https": "Απαιτείται η ενεργοποίηση του SSL για το προσκήνιο.",
+                    "header": "Ειδοποιήσεις Push",
+                    "link_promo": "Μάθετε περισσότερα",
+                    "push_notifications": "Ειδοποιήσεις push"
+                },
+                "refresh_tokens": {
+                    "confirm_delete": "Είστε σίγουρος ότι θέλετε να διαγράψετε το διακριτικό πρόσβασης για το {name};",
+                    "created_at": "Δημιουργήθηκε στις {date}",
+                    "current_token_tooltip": "Αδύνατη η διαγραφή του τρέχοντος διακριτικού",
+                    "delete_failed": "Αδύνατη η διαγραφή του τρέχοντος διακριτικού.",
+                    "description": "Κάθε διακριτικό ανανέωσης αντιπροσωπεύει μια περίοδο σύνδεσης. Τα ανανεωμένα tokens θα καταργηθούν αυτόματα όταν αποσυνδεθείτε. Τα παρακάτω διακριτικά ανανέωσης είναι ενεργά για το λογαριασμό σας.",
+                    "header": "Ανανέωση διακριτικών",
+                    "last_used": "Τελευταία χρήση στις {date} από {location}",
+                    "not_used": "Δεν έχει χρησιμοποιηθεί ποτέ",
+                    "token_title": "Ανανέωση διακριτικού για το {clientId}"
+                },
+                "themes": {
+                    "dropdown_label": "Θέμα",
+                    "error_no_theme": "Δεν υπάρχουν διαθέσιμα θέματα.",
+                    "header": "Θέμα",
+                    "link_promo": "Μάθετε σχετικά με τα θέματα"
+                },
+                "vibrate": {
+                    "description": "Ενεργοποιήστε ή απενεργοποιήστε τις δονήσεις σε αυτήν τη συσκευή κατά τον έλεγχο συσκευών.",
+                    "header": "Δόνηση"
+                }
+            },
+            "shopping-list": {
+                "add_item": "Προσθήκη στοιχείου",
+                "clear_completed": "Καθαρισμός Ολοκληρώθηκε",
+                "microphone_tip": "Πατήστε το μικρόφωνο στην επάνω δεξιά γωνία και πείτε \"Προσθήκη καραμελών στη λίστα αγορών μου\""
             }
         },
         "sidebar": {
-            "log_out": "Αποσύνδεση",
-            "external_app_configuration": "Διαμόρφωση Εφαρμογής"
-        },
-        "common": {
-            "loading": "Φόρτωση",
-            "cancel": "Ακύρωση",
-            "save": "Αποθήκευση",
-            "successfully_saved": "Αποθηκεύτηκε με επιτυχία"
-        },
-        "duration": {
-            "day": "{count} {count, plural,\n  one {μέρα}\n  other {μέρες}\n}",
-            "week": "{count} {count, plural,\n  one {εβδομάδα}\n  other {εβδομάδες}\n}",
-            "second": "{count} {count, plural,\n  one {δευτερόλεπτο}\n  other {δευτερόλεπτα}\n}",
-            "minute": "{count} {count, plural,\n  one {λεπτό}\n  other {λεπτά}\n}",
-            "hour": "{count} {count, plural,\n  one {ώρα}\n  other {ώρες}\n}"
-        },
-        "login-form": {
-            "password": "Κωδικός",
-            "remember": "Να θυμάμαι",
-            "log_in": "Σύνδεση"
-        },
-        "card": {
-            "camera": {
-                "not_available": "Μη διαθέσιμη εικόνα"
-            },
-            "persistent_notification": {
-                "dismiss": "Απόρριψη"
-            },
-            "scene": {
-                "activate": "Ενεργοποίηση"
-            },
-            "script": {
-                "execute": "Εκτέλεση"
-            },
-            "weather": {
-                "attributes": {
-                    "air_pressure": "Πίεση αέρα",
-                    "humidity": "Υγρασία",
-                    "temperature": "Θερμοκρασία",
-                    "visibility": "Ορατότητα",
-                    "wind_speed": "Ταχύτητα ανέμου"
-                },
-                "cardinal_direction": {
-                    "e": "Α",
-                    "ene": "ΑΒΑ",
-                    "ese": "ΑΝΑ",
-                    "n": "Β",
-                    "ne": "ΒΑ",
-                    "nne": "ΒΒΑ",
-                    "nw": "ΒΔ",
-                    "nnw": "ΒΒΔ",
-                    "s": "Ν",
-                    "se": "ΝΑ",
-                    "sse": "ΝΝΑ",
-                    "ssw": "ΝΝΔ",
-                    "sw": "ΝΔ",
-                    "w": "Δ",
-                    "wnw": "ΔΒΔ",
-                    "wsw": "ΔΝΔ"
-                },
-                "forecast": "Πρόγνωση"
-            },
-            "alarm_control_panel": {
-                "code": "Κωδικός",
-                "clear_code": "Καθαρισμός",
-                "disarm": "Αφοπλισμός",
-                "arm_home": "Οπλισμός εντός",
-                "arm_away": "Οπλισμός εκτός",
-                "arm_night": "Οπλισμός νυκτός",
-                "armed_custom_bypass": "Προσαρμοσμένη παράκαμψη",
-                "arm_custom_bypass": "Προσαρμοσμένη παράκαμψη"
-            },
-            "automation": {
-                "last_triggered": "Τελευταίο έναυσμα",
-                "trigger": "Έναυσμα"
-            },
-            "cover": {
-                "position": "Θέση",
-                "tilt_position": "Θέση ανάκλισης"
-            },
-            "fan": {
-                "speed": "Ταχύτητα",
-                "oscillate": "Περιστροφή",
-                "direction": "Κατεύθυνση",
-                "forward": "Εμπρός",
-                "reverse": "Αντιστροφή"
-            },
-            "light": {
-                "brightness": "Φωτεινότητα",
-                "color_temperature": "Θερμοκρασία χρώματος",
-                "white_value": "Τιμή λευκού",
-                "effect": "Εφέ"
-            },
-            "media_player": {
-                "text_to_speak": "Κείμενο προς εκφώνηση",
-                "source": "Πηγή",
-                "sound_mode": "Λειτουργία ήχου"
-            },
-            "climate": {
-                "currently": "Αυτή τη στιγμή",
-                "on_off": "Ενεργοποίηση \/ απενεργοποίηση",
-                "target_temperature": "Επιθυμητή θερμοκρασία",
-                "target_humidity": "Επιθυμητή υγρασία",
-                "operation": "Λειτουργία",
-                "fan_mode": "Λειτουργία ανεμιστήρα",
-                "swing_mode": "Λειτουργία ανεμιστήρα",
-                "away_mode": "Λειτουργία εκτός σπιτιού",
-                "aux_heat": "Θερμοκρασία Aux",
-                "preset_mode": "Προκαθορισμένο"
-            },
-            "lock": {
-                "code": "Κώδικας",
-                "lock": "Κλείδωμα",
-                "unlock": "Ξεκλείδωμα"
-            },
-            "vacuum": {
-                "actions": {
-                    "resume_cleaning": "Συνέχιση καθαρισμού",
-                    "return_to_base": "Επιστροφή στο dock",
-                    "start_cleaning": "Έναρξη καθαρισμού",
-                    "turn_on": "Ενεργοποίηση",
-                    "turn_off": "Απενεργοποίηση"
-                }
-            },
-            "water_heater": {
-                "currently": "Αυτή τη στιγμή",
-                "on_off": "Ενεργοποίηση \/ απενεργοποίηση",
-                "target_temperature": "Επιθυμητή θερμοκρασία",
-                "operation": "Λειτουργία",
-                "away_mode": "Λειτουργία 'Είμαι εκτός'"
-            },
-            "timer": {
-                "actions": {
-                    "start": "Εκκίνηση",
-                    "pause": "Παύση",
-                    "cancel": "Ακύρωση",
-                    "finish": "Ολοκληρώθηκαν"
-                }
-            }
-        },
-        "components": {
-            "entity": {
-                "entity-picker": {
-                    "entity": "Οντότητα"
-                }
-            },
-            "service-picker": {
-                "service": "Υπηρεσία"
-            },
-            "relative_time": {
-                "past": "{time} πριν",
-                "future": "Σε {time}",
-                "never": "Ποτέ",
-                "duration": {
-                    "second": "{count} {count, plural,\n  one {δευτερόλεπτο}\n  other {δευτερόλεπτα}\n}",
-                    "minute": "{count} {count, plural,\n  one {λεπτό}\n  other {λεπτά}\n}",
-                    "hour": "{count} {count, plural,\n  one {ώρα}\n  other {ώρες}\n}",
-                    "day": "{count} {count, plural,\n  one {μέρα}\n  other {μέρες}\n}",
-                    "week": "{count} {count, plural,\n  one {εβδομάδα}\n  other {εβδομάδες}\n}"
-                }
-            },
-            "history_charts": {
-                "loading_history": "Φόρτωση ιστορικού κατάστασης …",
-                "no_history_found": "Δεν έχει βρεθεί ιστορικό κατάστασης."
-            }
-        },
-        "notification_toast": {
-            "entity_turned_on": "Ενεργοποιημένο στο {entity}.",
-            "entity_turned_off": "Απενεργοποίηση {entity}.",
-            "service_called": "Επιτυχής κλήση στην υπηρεσία {service}",
-            "service_call_failed": "Απέτυχε η κλήση στην υπηρεσία {service}.",
-            "connection_lost": "Η σύνδεση χάθηκε. Επανασύνδεση…"
-        },
-        "dialogs": {
-            "more_info_settings": {
-                "save": "Αποθήκευση",
-                "name": "Επιβολή Ονόματος",
-                "entity_id": "Αναγνωριστικό οντότητας"
-            },
-            "more_info_control": {
-                "script": {
-                    "last_action": "Τελευταία Ενέργεια"
-                },
-                "sun": {
-                    "elevation": "Υψόμετρο",
-                    "rising": "Αύξηση",
-                    "setting": "Ρύθμιση"
-                },
-                "updater": {
-                    "title": "Οδηγίες Ενημέρωσης"
-                }
-            },
-            "options_flow": {
-                "form": {
-                    "header": "Επιλογές"
-                },
-                "success": {
-                    "description": "Οι επιλογές αποθηκεύτηκαν με επιτυχία."
-                }
-            },
-            "config_entry_system_options": {
-                "title": "Επιλογές συστήματος",
-                "enable_new_entities_label": "Ενεργοποίηση οντοτήτων που προστέθηκαν πρόσφατα.",
-                "enable_new_entities_description": "Αν απενεργοποιηθεί, οι πρόσφατα ανακαλυφθείσες οντότητες δεν θα προστεθούν αυτόματα στον Home Assistant."
-            },
-            "zha_device_info": {
-                "manuf": "από τον {manufacturer}",
-                "no_area": "Καμία περιοχή",
-                "services": {
-                    "reconfigure": "Ρυθμίστε ξανά τη συσκευή ZHA (θεραπεία συσκευής). Χρησιμοποιήστε αυτήν την επιλογή εάν αντιμετωπίζετε προβλήματα με τη συσκευή. Εάν η συγκεκριμένη συσκευή τροφοδοτείται από μπαταρία παρακαλώ βεβαιωθείτε ότι είναι ενεργοποιημένη και δέχεται εντολές όταν χρησιμοποιείτε αυτή την υπηρεσία.",
-                    "updateDeviceName": "Ορίστε ένα προσαρμοσμένο όνομα γι αυτήν τη συσκευή στο μητρώο συσκευών.",
-                    "remove": "Καταργήστε μια συσκευή από το δίκτυο Zigbee."
-                },
-                "zha_device_card": {
-                    "device_name_placeholder": "Όνομα δοσμένο από τον χρήστη",
-                    "area_picker_label": "Περιοχή",
-                    "update_name_button": "Ενημέρωση ονόματος"
-                },
-                "buttons": {
-                    "add": "Προσθήκη συσκευών",
-                    "remove": "Κατάργηση συσκευής",
-                    "reconfigure": "Ρυθμίστε Ξανά Τη Συσκευή"
-                },
-                "quirk": "Ιδιοτροπία",
-                "power_source": "Πηγή ενέργειας",
-                "unknown": "Άγνωστη"
-            }
-        },
-        "auth_store": {
-            "ask": "Θέλετε να αποθηκεύσετε αυτή την σύνδεση;",
-            "decline": "Όχι, ευχαριστώ",
-            "confirm": "Αποθήκευση σύνδεσης"
-        },
-        "notification_drawer": {
-            "click_to_configure": "Πατήστε το κουμπί για να διαμορφώσετε το {entity}",
-            "empty": "Καμία ειδοποίηση",
-            "title": "Ειδοποιήσεις"
-        }
-    },
-    "domain": {
-        "alarm_control_panel": "Πίνακας ελέγχου ειδοποιήσεων",
-        "automation": "Αυτοματισμός",
-        "binary_sensor": "Δυαδικός αισθητήρας",
-        "calendar": "Ημερολόγιο",
-        "camera": "Κάμερα",
-        "climate": "Το κλίμα",
-        "configurator": "Διαμορφωτής",
-        "conversation": "Συνομιλία",
-        "cover": "Κάλυψη",
-        "device_tracker": "Συσκευή ανιχνευτή",
-        "fan": "Ανεμιστήρας",
-        "history_graph": "Γράφημα του ιστορικού",
-        "group": "Ομάδα",
-        "image_processing": "Επεξεργασία εικόνας",
-        "input_boolean": "Εισαγωγή λογικής πράξης",
-        "input_datetime": "Εισαγωγή ημερομηνίας",
-        "input_select": "Επιλογή εισόδου",
-        "input_number": "Αριθμός εισόδου",
-        "input_text": "Εισαγωγή κειμένου",
-        "light": "Φωτιστικά",
-        "lock": "Κλείδωμα",
-        "mailbox": "Γραμματοκιβώτιο",
-        "media_player": "Συσκευή αναπαραγωγής πολυμέσων",
-        "notify": "Κοινοποίηση",
-        "plant": "Χλωρίδα",
-        "proximity": "Εγγύτητα",
-        "remote": "Τηλεχειρισμός",
-        "scene": "Σκηνή",
-        "script": "Δέσμη ενεργειών",
-        "sensor": "Αισθητήρας",
-        "sun": "Ήλιος",
-        "switch": "Διακόπτης",
-        "updater": "Επικαιροποιητής",
-        "weblink": "Σύνδεσμος",
-        "zwave": "Z-Wave",
-        "vacuum": "Εκκένωση",
-        "zha": "ΖΗΑ",
-        "hassio": "Hass.io",
-        "homeassistant": "Home Assistant",
-        "lovelace": "Lovelace",
-        "system_health": "Υγεία Συστήματος",
-        "person": "Άτομο"
-    },
-    "attribute": {
-        "weather": {
-            "humidity": "Υγρασία",
-            "visibility": "Ορατότητα",
-            "wind_speed": "Ταχύτητα ανέμου"
-        }
-    },
-    "state_attributes": {
-        "climate": {
-            "fan_mode": {
-                "off": "Κλειστό",
-                "on": "Ενεργό",
-                "auto": "Αυτόματο"
-            },
-            "preset_mode": {
-                "none": "Κανένας",
-                "eco": "Οικονομικό",
-                "away": "Εκτός Σπιτιού",
-                "boost": "Ενίσχυση",
-                "comfort": "Άνεση",
-                "home": "Σπίτι",
-                "sleep": "Ύπνος",
-                "activity": "Δραστηριότητα"
-            },
-            "hvac_action": {
-                "off": "Κλειστό",
-                "heating": "Θέρμανση",
-                "cooling": "Ψύξη",
-                "drying": "Αφύγρανση",
-                "idle": "Σε αδράνεια",
-                "fan": "Ανεμιστήρας"
-            }
-        }
-    },
-    "groups": {
-        "system-admin": "Διαχειριστές",
-        "system-users": "Χρήστες",
-        "system-read-only": "Χρήστες μόνο για ανάγνωση"
-    },
-    "config_entry": {
-        "disabled_by": {
-            "user": "Χρήστης",
-            "integration": "Ενσωμάτωση",
-            "config_entry": "Παράμετρος διαμόρφωσης"
+            "external_app_configuration": "Διαμόρφωση Εφαρμογής",
+            "log_out": "Αποσύνδεση"
         }
     }
 }
