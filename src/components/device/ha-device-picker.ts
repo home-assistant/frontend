@@ -191,7 +191,7 @@ class HaDevicePicker extends SubscribeMixin(LitElement) {
   }
 
   private _clearValue() {
-    this.value = "";
+    this._setValue("");
   }
 
   private get _value() {
@@ -206,12 +206,16 @@ class HaDevicePicker extends SubscribeMixin(LitElement) {
     const newValue = ev.detail.value;
 
     if (newValue !== this._value) {
-      this.value = newValue;
-      setTimeout(() => {
-        fireEvent(this, "value-changed", { value: newValue });
-        fireEvent(this, "change");
-      }, 0);
+      this._setValue(newValue);
     }
+  }
+
+  private _setValue(value: string) {
+    this.value = value;
+    setTimeout(() => {
+      fireEvent(this, "value-changed", { value });
+      fireEvent(this, "change");
+    }, 0);
   }
 
   static get styles(): CSSResult {
