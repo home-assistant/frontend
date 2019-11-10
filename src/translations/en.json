@@ -559,8 +559,8 @@
         "found": "I found the following for you:",
         "error": "Oops, an error has occurred",
         "how_can_i_help": "How can I help?",
-        "label": "Type a question and press <Enter>",
-        "label_voice": "Type and press <Enter> or tap the microphone icon to speak"
+        "label": "Type a question and press 'Enter'",
+        "label_voice": "Type and press 'Enter' or tap the microphone to speak"
       },
       "confirmation": {
         "cancel": "Cancel",
