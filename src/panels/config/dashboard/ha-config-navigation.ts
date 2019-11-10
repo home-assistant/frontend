@@ -16,32 +16,20 @@ import {
   css,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
-
-const PAGES: Array<{
-  page: string;
-  core?: boolean;
-  advanced?: boolean;
-}> = [
-  { page: "core", core: true },
-  { page: "server_control", core: true },
-  { page: "entity_registry", core: true },
-  { page: "area_registry", core: true },
-  { page: "person" },
-  { page: "users", core: true },
-  { page: "zha" },
-  { page: "zwave" },
-  { page: "customize", core: true, advanced: true },
-];
-
 @customElement("ha-config-navigation")
 class HaConfigNavigation extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public showAdvanced!: boolean;
+  @property() public pages!: Array<{
+    page: string;
+    core?: boolean;
+    advanced?: boolean;
+  }>;
 
   protected render(): TemplateResult | void {
     return html`
       <ha-card>
-        ${PAGES.map(({ page, core, advanced }) =>
+        ${this.pages.map(({ page, core, advanced }) =>
           (core || isComponentLoaded(this.hass, page)) &&
           (!advanced || this.showAdvanced)
             ? html`
