@@ -103,18 +103,45 @@ class HaConfigDashboard extends NavigateMixin(LocalizeMixin(PolymerElement)) {
                 <ha-icon-next></ha-icon-next>
               </paper-item>
             </a>
-
-            <a href='/config/users' tabindex="-1">
-              <paper-item>
-                <paper-item-body two-line>
-                  [[localize('ui.panel.config.users.caption')]]
-                  <div secondary>
-                    [[localize('ui.panel.config.users.description')]]
-                  </div>
-                </paper-item-body>
-                <ha-icon-next></ha-icon-next>
-              </paper-item>
-            </a>
+            <template is="dom-if" if="[[computeIsLoaded(hass, 'automation')]]">
+              <a href='/config/automation' tabindex="-1">
+                <paper-item>
+                  <paper-item-body two-line>
+                    [[localize('ui.panel.config.automation.caption')]]
+                    <div secondary>
+                      [[localize('ui.panel.config.automation.description')]]
+                    </div>
+                  </paper-item-body>
+                  <ha-icon-next></ha-icon-next>
+                </paper-item>
+              </a>
+            </template>
+            <template is="dom-if" if="[[computeIsLoaded(hass, 'script')]]">
+              <a href='/config/script' tabindex="-1">
+                <paper-item>
+                  <paper-item-body two-line>
+                    [[localize('ui.panel.config.script.caption')]]
+                    <div secondary>
+                      [[localize('ui.panel.config.script.description')]]
+                    </div>
+                  </paper-item-body>
+                  <ha-icon-next></ha-icon-next>
+                </paper-item>
+              </a>
+            </template>
+            <template is="dom-if" if="[[computeIsLoaded(hass, 'scene')]]">
+              <a href='/config/scene' tabindex="-1">
+                <paper-item>
+                  <paper-item-body two-line>
+                    [[localize('ui.panel.config.scene.caption')]]
+                    <div secondary>
+                      [[localize('ui.panel.config.scene.description')]]
+                    </div>
+                  </paper-item-body>
+                  <ha-icon-next></ha-icon-next>
+                </paper-item>
+              </a>
+            </template>
           </ha-card>
 
           <ha-config-navigation
