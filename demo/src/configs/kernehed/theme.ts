@@ -24,7 +24,7 @@ export const demoThemeKernehed = () => ({
   "paper-listbox-background-color": "#141414",
   "table-row-background-color": "#292929",
   "paper-grey-50": "var(--primary-text-color)",
-  "switch-checked-color": "var(--accent-color)",
+  "switch-checked-button-color": "var(--accent-color)",
   "paper-dialog-background-color": "#292929",
   "secondary-text-color": "#b58e31",
   "google-red-500": "#b58e31",

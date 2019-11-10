@@ -23,7 +23,7 @@ export const demoThemeJimpower = () => ({
   "paper-listbox-background-color": "#2E333A",
   "table-row-background-color": "#353840",
   "paper-grey-50": "var(--primary-text-color)",
-  "switch-checked-color": "var(--accent-color)",
+  "switch-checked-button-color": "var(--accent-color)",
   "paper-dialog-background-color": "#434954",
   "secondary-text-color": "#5294E2",
   "google-red-500": "#E45E65",
