@@ -55,8 +55,10 @@ documentContainer.innerHTML = `<custom-style>
       --sidebar-selected-icon-color: var(--primary-color);
 
       /* controls */
-      --switch-checked-button-color: var(--primary-color, var(--paper-grey-50));
-      --switch-checked-track-color: var(--primary-color, #000000);
+      --switch-checked-color: var(--primary-color);
+      /* --switch-unchecked-color: var(--accent-color); */
+      --switch-checked-button-color: var(--switch-checked-color, var(--paper-grey-50));
+      --switch-checked-track-color: var(--switch-checked-color, #000000);
       --switch-unchecked-button-color: var(--switch-unchecked-color, var(--paper-grey-50));
       --switch-unchecked-track-color: var(--switch-unchecked-color, #000000);
       --slider-color: var(--primary-color);
