@@ -166,6 +166,7 @@ class HaEntityPicker extends LitElement {
                   slot="suffix"
                   class="clear-button"
                   icon="hass:close"
+                  @click=${this._clearValue}
                   no-ripple
                 >
                   Clear
@@ -189,6 +190,10 @@ class HaEntityPicker extends LitElement {
         </paper-input>
       </vaadin-combo-box-light>
     `;
+  }
+
+  private _clearValue() {
+    this.value = "";
   }
 
   private get _value() {
