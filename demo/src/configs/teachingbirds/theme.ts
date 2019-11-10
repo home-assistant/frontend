@@ -21,7 +21,7 @@ export const demoThemeTeachingbirds = () => ({
   "secondary-background-color": "#2b2b2b",
   "paper-slider-knob-start-color": "var(--primary-color)",
   "paper-item-icon-active-color": "#d8bf50",
-  "switch-checked-button-color": "var(--primary-color)",
+  "switch-checked-color": "var(--primary-color)",
   "secondary-text-color": "#389638",
   "disabled-text-color": "#545454",
   "paper-item-icon_-_color": "var(--primary-text-color)",
