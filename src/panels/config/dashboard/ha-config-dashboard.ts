@@ -15,7 +15,7 @@ import "../../../components/ha-menu-button";
 
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { CloudStatusLoggedIn } from "../../../data/cloud";
+import { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 import "../../../components/ha-card";
@@ -28,7 +28,7 @@ class HaConfigDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
   @property() public isWide!: boolean;
-  @property() public cloudStatus!: CloudStatusLoggedIn;
+  @property() public cloudStatus!: CloudStatus;
   @property() public showAdvanced!: boolean;
 
   protected render(): TemplateResult | void {
