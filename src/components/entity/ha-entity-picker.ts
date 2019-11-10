@@ -192,8 +192,9 @@ class HaEntityPicker extends LitElement {
     `;
   }
 
-  private _clearValue() {
-    this.value = "";
+  private _clearValue(ev: Event) {
+    ev.stopPropagation();
+    this._setValue("");
   }
 
   private get _value() {
@@ -207,12 +208,16 @@ class HaEntityPicker extends LitElement {
   private _valueChanged(ev: PolymerChangedEvent<string>) {
     const newValue = ev.detail.value;
     if (newValue !== this._value) {
-      this.value = ev.detail.value;
-      setTimeout(() => {
-        fireEvent(this, "value-changed", { value: this.value });
-        fireEvent(this, "change");
-      }, 0);
+      this._setValue(newValue);
     }
+  }
+
+  private _setValue(value: string) {
+    this.value = value;
+    setTimeout(() => {
+      fireEvent(this, "value-changed", { value });
+      fireEvent(this, "change");
+    }, 0);
   }
 
   static get styles(): CSSResult {
