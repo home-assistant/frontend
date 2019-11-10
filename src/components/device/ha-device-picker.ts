@@ -164,6 +164,7 @@ class HaDevicePicker extends SubscribeMixin(LitElement) {
                   slot="suffix"
                   class="clear-button"
                   icon="hass:close"
+                  @click=${this._clearValue}
                   no-ripple
                 >
                   Clear
@@ -187,6 +188,10 @@ class HaDevicePicker extends SubscribeMixin(LitElement) {
         </paper-input>
       </vaadin-combo-box-light>
     `;
+  }
+
+  private _clearValue() {
+    this.value = "";
   }
 
   private get _value() {
