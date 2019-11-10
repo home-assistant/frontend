@@ -15,7 +15,7 @@ export class HaSwitch extends MwcSwitch {
     super.firstUpdated();
     this.style.setProperty(
       "--mdc-theme-secondary",
-      "var(--switch-checked-button-color)"
+      "var(--switch-checked-color)"
     );
     this.classList.toggle(
       "slotted",
