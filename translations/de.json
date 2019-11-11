@@ -1642,7 +1642,7 @@
                             "name": "Picture"
                         },
                         "plant-status": {
-                            "name": "Planzen Status"
+                            "name": "Pflanzen Status"
                         },
                         "sensor": {
                             "graph_detail": "Diagrammdetail",
