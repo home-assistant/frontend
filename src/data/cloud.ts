@@ -1,6 +1,7 @@
 import { HomeAssistant } from "../types";
 import { EntityFilter } from "../common/entity/entity_filter";
 import { AutomationConfig } from "./automation";
+import { PlaceholderContainer } from "../panels/config/automation/thingtalk/dialog-thingtalk";
 
 interface CloudStatusBase {
   logged_in: boolean;
@@ -66,6 +67,7 @@ export interface CloudWebhook {
 
 export interface ThingTalkConversion {
   config: Partial<AutomationConfig>;
+  placeholders: PlaceholderContainer;
 }
 
 export const fetchCloudStatus = (hass: HomeAssistant) =>

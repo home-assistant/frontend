@@ -99,9 +99,11 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
                         .placeholder=${placeholder}
                         @change=${this._devicePicked}
                         .hass=${this.hass}
-                        .includeDomains=${[placeholder.domain]}
-                        .label=${this.hass.localize(
-                          `domain.${placeholder.domain}`
+                        .includeDomains=${placeholder.domains}
+                        .includeDeviceClasses=${placeholder.device_classes}
+                        .label=${this._getLabel(
+                          placeholder.domains,
+                          placeholder.device_classes
                         )}
                       ></ha-device-picker>
                       ${(getPath(this._placeholderValues, [
@@ -126,11 +128,13 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
                               .type=${type}
                               .placeholder=${placeholder}
                               @change=${this._entityPicked}
-                              .includeDomains=${[placeholder.domain]}
+                              .includeDomains=${placeholder.domains}
+                              .includeDeviceClasses=${placeholder.device_classes}
                               .hass=${this.hass}
-                              .label=${`${this.hass.localize(
-                                `domain.${placeholder.domain}`
-                              )} of device`}
+                              .label=${this._getLabel(
+                                placeholder.domains,
+                                placeholder.device_classes
+                              )}
                               .entityFilter=${(state: HassEntity) =>
                                 this._deviceEntityLookup[
                                   this._placeholderValues[type][
@@ -142,25 +146,25 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
                         : ""}
                     `;
                   } else if (placeholder.fields.includes("entity_id")) {
-                    const domain =
-                      placeholder.domain === "zone"
-                        ? "person"
-                        : placeholder.domain;
                     return html`
                       <ha-entity-picker
                         .type=${type}
                         .placeholder=${placeholder}
                         @change=${this._entityPicked}
-                        .includeDomains=${[domain]}
+                        .includeDomains=${placeholder.domains}
+                        .includeDeviceClasses=${placeholder.device_classes}
                         .hass=${this.hass}
-                        .label=${this.hass.localize(`domain.${domain}`)}
+                        .label=${this._getLabel(
+                          placeholder.domains,
+                          placeholder.device_classes
+                        )}
                       ></ha-entity-picker>
                     `;
                   }
                   return html`
                     <div class="error">
                       Unknown placeholder<br />
-                      ${placeholder.domain}<br />
+                      ${placeholder.domains}<br />
                       ${placeholder.fields.map(
                         (field) =>
                           html`
@@ -200,6 +204,14 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
     );
   }
 
+  private _getLabel(domains: string[], deviceClasses?: string[]) {
+    return `${domains
+      .map((domain) => this.hass.localize(`domain.${domain}`))
+      .join(", ")}${
+      deviceClasses ? ` of type ${deviceClasses.join(", ")}` : ""
+    }`;
+  }
+
   private _devicePicked(ev: Event): void {
     const target = ev.target as any;
     const placeholder = target.placeholder as Placeholder;
@@ -212,12 +224,27 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
     );
     if (placeholder.fields.includes("entity_id")) {
       const devEntities = this._deviceEntityLookup[value];
-      const entities = devEntities.filter(
-        (eid) => computeDomain(eid) === placeholder.domain
-      );
+      const entities = devEntities.filter((eid) => {
+        if (placeholder.device_classes) {
+          const stateObj = this.hass.states[eid];
+          if (!stateObj) {
+            return false;
+          }
+          return (
+            placeholder.domains.includes(computeDomain(eid)) &&
+            stateObj.attributes.device_class &&
+            placeholder.device_classes.includes(
+              stateObj.attributes.device_class
+            )
+          );
+        }
+        return placeholder.domains.includes(computeDomain(eid));
+      });
       if (entities.length === 0) {
         // Should not happen because we filter the device picker on domain
-        this._error = `No ${placeholder.domain} entities found in this device.`;
+        this._error = `No ${placeholder.domains
+          .map((domain) => this.hass.localize(`domain.${domain}`))
+          .join(", ")} entities found in this device.`;
       } else if (entities.length === 1) {
         applyPatch(
           this._placeholderValues,

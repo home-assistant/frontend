@@ -75,6 +75,13 @@ class HaEntityPicker extends LitElement {
    */
   @property({ type: Array, attribute: "exclude-domains" })
   public excludeDomains?: string[];
+  /**
+   * Show only entities of these device classes.
+   * @type {Array}
+   * @attr include-device-classes
+   */
+  @property({ type: Array, attribute: "include-device-classes" })
+  public includeDeviceClasses?: string[];
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
   @property({ type: Boolean }) private _opened?: boolean;
   @property() private _hass?: HomeAssistant;
@@ -84,7 +91,8 @@ class HaEntityPicker extends LitElement {
       hass: this["hass"],
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
-      entityFilter: this["entityFilter"]
+      entityFilter: this["entityFilter"],
+      includeDeviceClasses: this["includeDeviceClasses"]
     ) => {
       let states: HassEntity[] = [];
 
@@ -107,6 +115,16 @@ class HaEntityPicker extends LitElement {
 
       states = entityIds.sort().map((key) => hass!.states[key]);
 
+      if (includeDeviceClasses) {
+        states = states.filter(
+          (stateObj) =>
+            // We always want to include the entity of the current value
+            stateObj.entity_id === this.value ||
+            (stateObj.attributes.device_class &&
+              includeDeviceClasses.includes(stateObj.attributes.device_class))
+        );
+      }
+
       if (entityFilter) {
         states = states.filter(
           (stateObj) =>
@@ -114,6 +132,7 @@ class HaEntityPicker extends LitElement {
             stateObj.entity_id === this.value || entityFilter!(stateObj)
         );
       }
+
       return states;
     }
   );
@@ -131,7 +150,8 @@ class HaEntityPicker extends LitElement {
       this._hass,
       this.includeDomains,
       this.excludeDomains,
-      this.entityFilter
+      this.entityFilter,
+      this.includeDeviceClasses
     );
 
     return html`

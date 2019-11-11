@@ -73,20 +73,28 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
   @property() public areas?: AreaRegistryEntry[];
   @property() public entities?: EntityRegistryEntry[];
   /**
-   * Show entities from specific domains.
+   * Show only devices with entities from specific domains.
    * @type {Array}
    * @attr include-domains
    */
   @property({ type: Array, attribute: "include-domains" })
   public includeDomains?: string[];
   /**
-   * Show no entities of these domains.
+   * Show no devices with entities of these domains.
    * @type {Array}
    * @attr exclude-domains
    */
   @property({ type: Array, attribute: "exclude-domains" })
   public excludeDomains?: string[];
-  @property({ type: Boolean }) private _opened?: boolean;
+  /**
+   * Show only deviced with entities of these device classes.
+   * @type {Array}
+   * @attr include-device-classes
+   */
+  @property({ type: Array, attribute: "include-device-classes" })
+  public includeDeviceClasses?: string[];
+  @property({ type: Boolean })
+  private _opened?: boolean;
 
   private _getDevices = memoizeOne(
     (
@@ -94,7 +102,8 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       areas: AreaRegistryEntry[],
       entities: EntityRegistryEntry[],
       includeDomains: this["includeDomains"],
-      excludeDomains: this["excludeDomains"]
+      excludeDomains: this["excludeDomains"],
+      includeDeviceClasses: this["includeDeviceClasses"]
     ): Device[] => {
       if (!devices.length) {
         return [];
@@ -143,6 +152,25 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
         });
       }
 
+      if (includeDeviceClasses) {
+        inputDevices = inputDevices.filter((device) => {
+          const devEntities = deviceEntityLookup[device.id];
+          if (!devEntities || !devEntities.length) {
+            return false;
+          }
+          return deviceEntityLookup[device.id].some((entity) => {
+            const stateObj = this.hass.states[entity.entity_id];
+            if (!stateObj) {
+              return false;
+            }
+            return (
+              stateObj.attributes.device_class &&
+              includeDeviceClasses.includes(stateObj.attributes.device_class)
+            );
+          });
+        });
+      }
+
       const outputDevices = inputDevices.map((device) => {
         return {
           id: device.id,
@@ -184,7 +212,8 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
       this.areas,
       this.entities,
       this.includeDomains,
-      this.excludeDomains
+      this.excludeDomains,
+      this.includeDeviceClasses
     );
     return html`
       <vaadin-combo-box-light

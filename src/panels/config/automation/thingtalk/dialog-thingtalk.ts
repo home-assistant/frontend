@@ -29,7 +29,8 @@ import { convertThingTalk } from "../../../../data/cloud";
 export interface Placeholder {
   index: number;
   fields: string[];
-  domain: string;
+  domains: string[];
+  device_classes?: string[];
 }
 
 export interface PlaceholderContainer {
@@ -139,18 +140,16 @@ class DialogThingtalk extends LitElement {
     }
     this._submitting = true;
     let config: Partial<AutomationConfig>;
+    let placeholders: PlaceholderContainer;
     try {
       const result = await convertThingTalk(this.hass, this._value);
       config = result.config;
+      placeholders = result.placeholders;
     } catch (err) {
       this._error = err.message;
       this._submitting = false;
       return;
     }
-    const placeholders: PlaceholderContainer = {};
-    this._getPlaceholders(placeholders, "trigger", config.trigger);
-    this._getPlaceholders(placeholders, "condition", config.condition);
-    this._getPlaceholders(placeholders, "action", config.action);
 
     this._submitting = false;
 
@@ -159,36 +158,6 @@ class DialogThingtalk extends LitElement {
       this._placeholders = placeholders;
     } else {
       this._sendConfig(this._value, config);
-    }
-  }
-
-  private _getPlaceholders(
-    placeholders: PlaceholderContainer,
-    key: string,
-    rules
-  ): void {
-    const temp: Placeholder[] = [];
-    if (!rules) {
-      return;
-    }
-    rules.forEach((config, index) => {
-      const fields: string[] = [];
-      if (config.device_id === "") {
-        fields.push("device_id");
-      }
-      if (config.entity_id === "") {
-        fields.push("entity_id");
-      }
-      if (fields.length) {
-        temp.push({
-          index,
-          fields,
-          domain: config.domain || config.platform,
-        });
-      }
-    });
-    if (temp.length) {
-      placeholders[key] = temp;
     }
   }
 
