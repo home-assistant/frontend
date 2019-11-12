@@ -226,6 +226,9 @@ class DialogEntityRegistryDetail extends LitElement {
     return [
       haStyleDialog,
       css`
+        :host {
+          --paper-font-title_-_white-space: normal;
+        }
         ha-paper-dialog {
           min-width: 400px;
           max-width: 450px;
