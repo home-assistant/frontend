@@ -14,7 +14,7 @@ function hasHtml(data) {
 function recursiveCheckHasHtml(file, data, errors, recKey) {
   Object.keys(data).forEach(function(key) {
     if (typeof data[key] === "object") {
-      nextRecKey = recKey ? `${recKey}.${key}` : key;
+      const nextRecKey = recKey ? `${recKey}.${key}` : key;
       recursiveCheckHasHtml(file, data[key], errors, nextRecKey);
     } else if (hasHtml(data[key])) {
       errors.push(`HTML found in ${file.path} at key ${recKey}.${key}`);
@@ -23,7 +23,7 @@ function recursiveCheckHasHtml(file, data, errors, recKey) {
 }
 
 function checkHtml() {
-  let errors = [];
+  const errors = [];
 
   return mapStream(function(file, cb) {
     const content = file.contents;
