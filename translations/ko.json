@@ -534,8 +534,10 @@
         "common": {
             "cancel": "취소",
             "loading": "읽는 중",
+            "no": "아니오",
             "save": "저장",
-            "successfully_saved": "성공적으로 저장되었습니다"
+            "successfully_saved": "성공적으로 저장되었습니다",
+            "yes": "예"
         },
         "components": {
             "device-picker": {

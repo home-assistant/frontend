@@ -900,11 +900,16 @@
                     },
                     "picker": {
                         "add_automation": "Afegeix automatització",
+                        "delete_automation": "Suprimeix l'automatització",
+                        "delete_confirm": "Estàs segur que vols eliminar aquesta automatització?",
+                        "edit_automation": "Edita automatització",
                         "header": "Editor d'automatitzacions",
                         "introduction": "L'editor d'automatitzacions et permet crear i editar automatitzacions. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
                         "learn_more": "Més informació sobre les automatitzacions",
                         "no_automations": "No s'ha pogut trobar cap automatització editable",
-                        "pick_automation": "Tria l'automatització a editar"
+                        "only_editable": "Només es poden editar les automatitzacions definides dins l'arxiu automations.yaml.",
+                        "pick_automation": "Selecciona l'automatització a editar",
+                        "show_info_automation": "Mostra informació sobre l'automatització"
                     }
                 },
                 "cloud": {
@@ -1117,15 +1122,19 @@
                 },
                 "customize": {
                     "attributes_customize": "Els atributs següents ja s'han definit a customize.yaml",
+                    "attributes_not_set": "Els atributs següents no s'han configurat. Els pots configurar, si vols.",
+                    "attributes_override": "Si vols, pots substituir-los.",
                     "caption": "Personalització",
                     "description": "Personalitza les entitats",
+                    "pick_attribute": "Selecciona un atribut per substituir-lo",
                     "picker": {
                         "header": "Personalització",
                         "introduction": "Personalitza els atributs de les entitats al teu gust. Les personalitzacions afegides\/modificades apareixeran immediatament, les que s'hagin eliminat tindran efecte quan l'entitat s'actualitzi."
                     },
                     "warning": {
                         "include_link": "inclou customize.yaml",
-                        "include_sentence": "Sembla que la teva configuració a configuration.yaml no"
+                        "include_sentence": "Sembla que la teva configuració a configuration.yaml no",
+                        "not_applied": "Els canvis realitzats aquí es desen, però no s’aplicaran fins que es torni a carregar la configuració, tret que la inclusió estigui present."
                     }
                 },
                 "devices": {
@@ -1143,6 +1152,7 @@
                     },
                     "automations": "Automatitzacions",
                     "caption": "Dispositius",
+                    "confirm_rename_entity_ids": "Vols, també, canviar el nom dels ID's d’entitat de les entitats?",
                     "data_table": {
                         "area": "Àrea",
                         "battery": "Bateria",
@@ -1170,6 +1180,7 @@
                         "enabled_cause": "Desactivat per {cause}.",
                         "enabled_description": "Les entitats desactivades no s’afegiran a Home Assistant.",
                         "enabled_label": "Activa l’entitat",
+                        "note": "Nota: podria no funcionar amb alguna de les integracions.",
                         "unavailable": "Aquesta entitat no està disponible actualment.",
                         "update": "ACTUALITZAR"
                     },
@@ -1209,9 +1220,11 @@
                         "via": "Connectat a través de"
                     },
                     "config_flow": {
+                        "aborted": "Avortat",
                         "add_area": "Afegeix àrea",
                         "area_picker_label": "Àrea",
                         "close": "Tanca",
+                        "created_config": "S'ha creat configuració per a {name}.",
                         "error_saving_area": "Error desant àrea: {error}",
                         "external_step": {
                             "description": "Aquest pas requereix que visitis un lloc web extern per completar-lo.",
@@ -1220,7 +1233,8 @@
                         "failed_create_area": "No s'ha pogut crear l'àrea.",
                         "finish": "Finalitza",
                         "name_new_area": "Nom de la nova àrea?",
-                        "not_all_required_fields": "No s'han omplert tots els camps obligatoris."
+                        "not_all_required_fields": "No s'han omplert tots els camps obligatoris.",
+                        "submit": "Envia"
                     },
                     "configure": "Configurar",
                     "configured": "Configurades",
@@ -1261,13 +1275,37 @@
                     "note_about_persons_configured_in_yaml": "Nota: les persones configurades mitjançant configuration.yaml no es poden editar a la UI."
                 },
                 "scene": {
+                    "caption": "Escenes",
                     "editor": {
                         "default_name": "Nova escena",
-                        "entities": {
-                            "header": "Entitats"
+                        "devices": {
+                            "add": "Afegeix un dispositiu",
+                            "delete": "Suprimeix el dispositiu",
+                            "header": "Dispositius"
                         },
+                        "entities": {
+                            "add": "Afegeix una entitat",
+                            "delete": "Suprimeix l'entitat",
+                            "header": "Entitats",
+                            "without_device": "Entitats sense dispositiu"
+                        },
+                        "load_error_not_editable": "Només es poden editar les escenes de l'arxiu scenes.yaml.",
+                        "load_error_unknown": "Error en carregar l’escena ({err_no}).",
                         "name": "Nom",
-                        "save": "Desa"
+                        "save": "Desa",
+                        "unsaved_confirm": "Hi han canvis no desats. Segur que vols sortir?"
+                    },
+                    "picker": {
+                        "add_scene": "Afegeix escena",
+                        "delete_confirm": "Estàs segur que vols eliminar aquesta escena?",
+                        "delete_scene": "Suprimeix l'escena",
+                        "edit_scene": "Edita escena",
+                        "header": "Editor d’escenes",
+                        "learn_more": "Més informació sobre les escenes",
+                        "no_scenes": "No s'ha pogut trobar cap escena editable",
+                        "only_editable": "Només es poden editar les escenes definides dins l'arxiu scenes.yaml.",
+                        "pick_scene": "Selecciona l'escena a editar",
+                        "show_info_scene": "Mostra informació sobre l'escena"
                     }
                 },
                 "script": {
@@ -1277,7 +1315,8 @@
                         "default_name": "Nou script",
                         "delete_confirm": "Estàs segur que vols eliminar aquest script?",
                         "header": "Script: {name}",
-                        "load_error_not_editable": "Només es poden editar els scripts dins de l'arxiu scripts.yaml."
+                        "load_error_not_editable": "Només es poden editar els scripts dins de l'arxiu scripts.yaml.",
+                        "sequence": "Seqüència"
                     },
                     "picker": {
                         "add_script": "Afegeix script",
@@ -1774,6 +1813,7 @@
                     },
                     "raw_editor": {
                         "confirm_unsaved_changes": "Hi han canvis no desats. Segur que vols sortir?",
+                        "confirm_unsaved_comments": "La configuració conté comentaris que es descartaran. Vols continuar?",
                         "error_invalid_config": "La configuració no és vàlida: {error}",
                         "error_parse_yaml": "No es pot analitzar YAML: {error}",
                         "error_save_yaml": "No es pot desar YAML: {error}",
@@ -1809,6 +1849,7 @@
                     "domain": "Domini",
                     "entity": "Entitat",
                     "entity_id": "ID de l'entitat",
+                    "last_changed": "Últim canvi",
                     "select_to_add": "Selecciona les entitats que vols afegir a una targeta i fés clic al botó d'afegir targeta.",
                     "title": "Entitats sense utilitzar"
                 },
@@ -2000,6 +2041,7 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant oculta de manera predeterminada les funcions i opcions avançades. Pots accedir a aquestes funcions commutant aquest interruptor. Aquesta és una configuració específica per a usuari i no afecta altres usuaris que utilitzin Home Assistant.",
+                    "hint_enable": "Falten opcions de configuració? Activa el mode avançat",
                     "link_profile_page": "la teva pàgina de perfil",
                     "title": "Mode avançat"
                 },

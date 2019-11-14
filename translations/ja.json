@@ -18,6 +18,7 @@
         "notify": "通知",
         "script": "スクリプト",
         "sensor": "センサー",
+        "sun": "太陽",
         "switch": "スイッチ",
         "updater": "アップデーター",
         "zwave": "Z-Wave"
@@ -79,6 +80,7 @@
                 "on": "ウェット"
             },
             "motion": {
+                "off": "クリア",
                 "on": "検出"
             },
             "occupancy": {
@@ -256,6 +258,9 @@
             "script": {
                 "execute": "実行"
             },
+            "water_heater": {
+                "target_temperature": "目標温度"
+            },
             "weather": {
                 "attributes": {
                     "air_pressure": "気圧",
@@ -307,6 +312,13 @@
             }
         },
         "dialogs": {
+            "more_info_control": {
+                "sun": {
+                    "elevation": "高度",
+                    "rising": "日の出ます",
+                    "setting": "日の入っています"
+                }
+            },
             "more_info_settings": {
                 "name": "名前",
                 "save": "保存"
@@ -364,6 +376,7 @@
                             "type_select": "条件の種類",
                             "type": {
                                 "sun": {
+                                    "label": "太陽",
                                     "sunrise": "日の出",
                                     "sunset": "日の入"
                                 }
@@ -399,6 +412,8 @@
                                     "to": "変化後"
                                 },
                                 "sun": {
+                                    "event": "イベント",
+                                    "label": "太陽",
                                     "offset": "オフセット（オプション）",
                                     "sunrise": "日の出",
                                     "sunset": "日の入"
@@ -452,7 +467,44 @@
                 "customize": {
                     "caption": "カスタマイズ"
                 },
+                "devices": {
+                    "area_picker_label": "エリア",
+                    "automations": "オートメーション",
+                    "data_table": {
+                        "area": "エリア",
+                        "battery": "バッテリー",
+                        "device": "デバイス",
+                        "manufacturer": "メーカー"
+                    },
+                    "device_not_found": "デバイスが見つかりません。",
+                    "entities": "エンティティ",
+                    "info": "デバイス情報",
+                    "unknown_error": "不明なエラー"
+                },
                 "header": "Home Assistantの設定",
+                "integrations": {
+                    "config_flow": {
+                        "aborted": "中止",
+                        "add_area": "エリアを追加",
+                        "area_picker_label": "エリア",
+                        "close": "閉じる",
+                        "finish": "完了"
+                    }
+                },
+                "scene": {
+                    "editor": {
+                        "devices": {
+                            "add": "デバイスを追加",
+                            "delete": "デバイスを削除",
+                            "header": "デバイス"
+                        },
+                        "entities": {
+                            "add": "エンティティを追加",
+                            "header": "エンティティ"
+                        },
+                        "save": "保存"
+                    }
+                },
                 "script": {
                     "caption": "スクリプト",
                     "description": "スクリプトの作成と編集"
@@ -499,6 +551,15 @@
                 "period": "期間"
             },
             "lovelace": {
+                "editor": {
+                    "edit_lovelace": {
+                        "edit_title": "タイトルを編集"
+                    },
+                    "edit_view": {
+                        "move_left": "ビューを左に移動",
+                        "move_right": "ビューを右に移動"
+                    }
+                },
                 "menu": {
                     "close": "閉じる"
                 },
@@ -506,6 +567,7 @@
                     "domain": "ドメイン",
                     "entity": "エンティティ",
                     "entity_id": "エンティティ ID",
+                    "last_changed": "最終変更",
                     "title": "未使用のエンティティ"
                 }
             },
@@ -513,6 +575,25 @@
                 "delete_button": "削除",
                 "delete_prompt": "このメッセージを削除しますか？",
                 "empty": "メッセージはありません"
+            },
+            "page-demo": {
+                "config": {
+                    "arsaboo": {
+                        "labels": {
+                            "hdmi_switcher": "HDMIスイッチ"
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "core-config": {
+                    "intro_location": "どこに住んでいるか知りたいです。 この情報は、他の情報の表示および太陽の位置に関する自動化の設定に役立ちます。 これらの情報がインターネットで外部と共有されることがありません。"
+                }
+            },
+            "profile": {
+                "advanced_mode": {
+                    "link_profile_page": "プロフィールページ"
+                }
             },
             "shopping-list": {
                 "add_item": "アイテムを追加",
