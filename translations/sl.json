@@ -534,8 +534,10 @@
         "common": {
             "cancel": "Prekliči",
             "loading": "Nalaganje",
+            "no": "Ne",
             "save": "Shrani",
-            "successfully_saved": "Shranjeno"
+            "successfully_saved": "Shranjeno",
+            "yes": "Da"
         },
         "components": {
             "device-picker": {
@@ -580,6 +582,9 @@
                 "ok": "V redu",
                 "title": "Ste prepričani?"
             },
+            "domain_toggler": {
+                "title": "Preklopi domene"
+            },
             "more_info_control": {
                 "script": {
                     "last_action": "Zadnje Dejanje"
@@ -605,6 +610,14 @@
                 "success": {
                     "description": "Možnosti so uspešno shranjene."
                 }
+            },
+            "voice_command": {
+                "did_not_hear": "Home Assistant ni slišal ničesar",
+                "error": "Ups, prišlo je do napake",
+                "found": "Za vas sem našel naslednje:",
+                "how_can_i_help": "Kako lahko pomagam?",
+                "label": "Vnesite vprašanje in pritisnite »Enter«",
+                "label_voice": "Vnesite in pritisnite »Enter« ali tapnite mikrofon in spregovorite"
             },
             "zha_device_info": {
                 "buttons": {
@@ -888,11 +901,16 @@
                     },
                     "picker": {
                         "add_automation": "Dodaj avtomatizacijo",
+                        "delete_automation": "Izbriši avtomatizacijo",
+                        "delete_confirm": "Ali ste prepričani, da želite izbrisati to avtomatizacijo?",
+                        "edit_automation": "Urejanje avtomatizacije",
                         "header": "Urejevalnik avtomatizacije",
                         "introduction": "Urejevalnik za avtomatizacijo vam omogoča ustvarjanje in urejanje avtomatizacij. Prosimo, da preberete [navodila] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), da preverite, ali ste pravilno nastavili Home Assistant-a.",
                         "learn_more": "Več o avtomatizacijah",
                         "no_automations": "Ne moremo najti nobene avtomatizacije za urejanje",
-                        "pick_automation": "Izberite avtomatizacijo za urejanje"
+                        "only_editable": "Urejajo se lahko samo avtomatizacije, definirane v automations.yaml.",
+                        "pick_automation": "Izberite avtomatizacijo za urejanje",
+                        "show_info_automation": "Prikaži informacije o avtomatizaciji"
                     }
                 },
                 "cloud": {
@@ -1104,14 +1122,27 @@
                     }
                 },
                 "customize": {
+                    "attributes_customize": "Naslednji atributi so že nastavljeni v customize.yaml",
+                    "attributes_not_set": "Naslednji atributi niso bili nastavljeni. Nastavite jih, če želite.",
+                    "attributes_outside": "Naslednji atributi so prilagojeni zunaj customize.yaml",
+                    "attributes_override": "Če jih želite, jih lahko preglasite.",
+                    "attributes_set": "Naslednji atributi entitete so nastavljeni programsko.",
                     "caption": "Prilagajanje",
                     "description": "Prilagodite svoje entitete",
+                    "different_include": "Mogoče prek domene, globusa ali drugačne vsebovanosti.",
+                    "pick_attribute": "Izberite atribut, ki ga želite preglasiti",
                     "picker": {
                         "header": "Prilagajanje",
                         "introduction": "Prilagajanja atributov na entiteti. Dodane\/spremenjene prilagoditve začnejo veljati takoj. Odstranjene pa po posodobitvi entitete."
+                    },
+                    "warning": {
+                        "include_link": "vsebuje pravilno customize.yaml",
+                        "include_sentence": "Zdi se, da vaš configuration.yaml ne",
+                        "not_applied": "Spremembe bodo vpisane, vendar ne bodo prikazane po ponovnem nalaganju konfiguracije, razen, če je pravilno nastavljeno vsebovanje."
                     }
                 },
                 "devices": {
+                    "area_picker_label": "Območje",
                     "automation": {
                         "actions": {
                             "caption": "Ko se nekaj sproži ..."
@@ -1123,8 +1154,24 @@
                             "caption": "Naredi nekaj, ko ..."
                         }
                     },
+                    "automations": "Avtomatizacije",
                     "caption": "Naprave",
-                    "description": "Upravljajte povezane naprave"
+                    "confirm_rename_entity_ids": "Ali želite preimenovati tudi ID entitete vaših entitet?",
+                    "data_table": {
+                        "area": "Območje",
+                        "battery": "Baterija",
+                        "device": "Naprava",
+                        "integration": "Integracija",
+                        "manufacturer": "Proizvajalec",
+                        "model": "Model"
+                    },
+                    "description": "Upravljajte povezane naprave",
+                    "details": "Tu so vse podrobnosti vaše naprave.",
+                    "device_not_found": "Naprave ni bilo mogoče najti",
+                    "entities": "Entitete",
+                    "info": "Informacije o napravi",
+                    "unknown_error": "Neznana napaka",
+                    "unnamed_device": "Neimenovana naprava"
                 },
                 "entity_registry": {
                     "caption": "Seznam entitet",
@@ -1137,6 +1184,7 @@
                         "enabled_cause": "Onemogočeno zaradi {cause}.",
                         "enabled_description": "Onemogočeni subjekti ne bodo dodani v Home Assistant-a.",
                         "enabled_label": "Omogoči entiteto",
+                        "note": "Opomba: to morda še ne deluje z vsemi integracijami.",
                         "unavailable": "Ta entiteta trenutno ni na voljo.",
                         "update": "POSODOBITEV"
                     },
@@ -1176,16 +1224,28 @@
                         "via": "Povezan prek"
                     },
                     "config_flow": {
+                        "aborted": "Prekinjeno",
+                        "add_area": "Dodaj območje",
+                        "area_picker_label": "Območje",
+                        "close": "Zapri",
+                        "created_config": "Ustvarjena konfiguracija za {name}.",
+                        "error_saving_area": "Napaka pri shranjevanju območja: {error}",
                         "external_step": {
                             "description": "Ta korak zahteva, da za končanje obiščete zunanjo spletno stran.",
                             "open_site": "Odprite spletno stran"
-                        }
+                        },
+                        "failed_create_area": "Območja ni bilo mogoče ustvariti.",
+                        "finish": "Dokončaj",
+                        "name_new_area": "Ime novega območja?",
+                        "not_all_required_fields": "Vsa zahtevana polja niso izpolnjena.",
+                        "submit": "Pošlji"
                     },
                     "configure": "Konfiguriraj",
                     "configured": "Konfigurirano",
                     "description": "Upravljanje in nastavitev integracij",
                     "discovered": "Odkrito",
                     "home_assistant_website": "spletne strani Home Assistant",
+                    "integration_not_found": "Integracije ni mogoče najti.",
                     "new": "Nastavite novo integracijo",
                     "none": "Nič še ni konfigurirano",
                     "note_about_integrations": "Vseh integracij še ni mogoče konfigurirati prek uporabniškega vmesnika.",
@@ -1218,21 +1278,69 @@
                     "no_persons_created_yet": "Izgleda, da še niste ustvarili nobene osebe.",
                     "note_about_persons_configured_in_yaml": "Opomba: oseb, konfiguriranih prek config.yaml, ni mogoče urejati prek uporabniškega vmesnika."
                 },
+                "scene": {
+                    "activated": "Aktivirana scena {name} .",
+                    "caption": "Scene",
+                    "description": "Ustvarjanje in urejanje scen",
+                    "editor": {
+                        "default_name": "Nova scena",
+                        "devices": {
+                            "add": "Dodajte napravo",
+                            "delete": "Izbrišite napravo",
+                            "header": "Naprave",
+                            "introduction": "Dodajte naprave, ki jih želite vključiti v sceno. Nastavite vse naprave na stanje, ki ga želite za to sceno"
+                        },
+                        "entities": {
+                            "add": "Dodajte entiteto",
+                            "delete": "Izbrišite entiteto",
+                            "device_entities": "Če dodate entiteto, ki pripada napravi, bo dodana naprava.",
+                            "header": "Entitete",
+                            "introduction": "Tukaj lahko nastavite entitete, ki ne pripadajo napravam.",
+                            "without_device": "Entitete brez naprave"
+                        },
+                        "introduction": "Uporabite scene, da oživite svoj dom.",
+                        "load_error_not_editable": "Urejajo se lahko samo scene v scene.yaml.",
+                        "load_error_unknown": "Napaka pri nalaganju scene ({err_no}).",
+                        "name": "Ime",
+                        "save": "Shrani",
+                        "unsaved_confirm": "Imate neshranjene spremembe. Si prepričan, da želiš oditi?"
+                    },
+                    "picker": {
+                        "add_scene": "Dodajanje scene",
+                        "delete_confirm": "Ali ste prepričani, da želite izbrisati to sceno?",
+                        "delete_scene": "Brisanje scene",
+                        "edit_scene": "Urejanje scene",
+                        "header": "Urejevalnik scen",
+                        "introduction": "Urejevalnik scen vam omogoča njihovo ustvarjanje in urejanje. Upoštevajte spodnjo povezavo in si preberite navodila, da se prepričate, da ste pravilno konfigurirali Home Assistant.",
+                        "learn_more": "Preberite več o scenah",
+                        "no_scenes": "Nismo našli nobene scene za urejanje",
+                        "only_editable": "Urejajo se lahko samo scene, definirane v scenes.yaml.",
+                        "pick_scene": "Izberite sceno za urejanje",
+                        "show_info_scene": "Pokaži informacije o sceni"
+                    }
+                },
                 "script": {
                     "caption": "Skripte",
                     "description": "Ustvarite in uredite skripte",
                     "editor": {
                         "default_name": "Nova Skripta",
                         "delete_confirm": "Ali ste prepričani, da želite izbrisati to skripto?",
+                        "delete_script": "Izbriši skripto",
                         "header": "Skripta: {name}",
-                        "load_error_not_editable": "Urejati je mogoče le skripte znotraj scripts.yaml."
+                        "introduction": "Uporabite skripte za izvajanje zaporedij dejanj.",
+                        "link_available_actions": "Preberite več o razpoložljivih dejanjih.",
+                        "load_error_not_editable": "Urejati je mogoče le skripte znotraj scripts.yaml.",
+                        "sequence": "Zaporedje",
+                        "sequence_sentence": "Zaporedje dejanj te skripte."
                     },
                     "picker": {
                         "add_script": "Dodaj skripto",
+                        "edit_script": "Uredi skripto",
                         "header": "Urejevalnik skript",
                         "introduction": "Urejevalnik skript vam omogoča njihovo ustvarjanje in urejanje. Upoštevajte spodnjo povezavo in si preberite navodila, da se prepričate, da ste pravilno konfigurirali Home Assistant-a.",
                         "learn_more": "Preberite več o skriptah",
-                        "no_scripts": "Nismo našli nobene skripte za urejanje"
+                        "no_scripts": "Nismo našli nobene skripte za urejanje",
+                        "trigger_script": "Sproži skripto"
                     }
                 },
                 "server_control": {
@@ -1241,7 +1349,7 @@
                     "section": {
                         "reloading": {
                             "automation": "Ponovno naloži avtomatizacije",
-                            "core": "Ponovno naloži jedro",
+                            "core": "Ponovno naloži lokacijo in prilagoditve",
                             "group": "Ponovno naloži skupine",
                             "heading": "Ponovno nalaganje konfiguracije",
                             "introduction": "Nekateri deli Home Assistanta se lahko znova naložijo brez potrebe po ponovnem zagonu. S pritiskom na \"ponovno naloži\" se bo naložila nova konfiguracija",
@@ -1411,6 +1519,13 @@
                     }
                 }
             },
+            "custom": {
+                "external_panel": {
+                    "complete_access": "Imela bo dostop do vseh podatkov v Home Assistant-u.",
+                    "hide_message": "Preverite dokumente za komponento panel_custom, da skrijete to sporočilo",
+                    "question_trust": "Ali zaupate zunanji plošči {name} na {link} ?"
+                }
+            },
             "developer-tools": {
                 "tabs": {
                     "events": {
@@ -1521,6 +1636,7 @@
                 "showing_entries": "Prikaz vnosov za"
             },
             "logbook": {
+                "entries_not_found": "Ni vpisov v dnevnike.",
                 "period": "Obdobje",
                 "showing_entries": "Prikaz vnosov za"
             },
@@ -1676,10 +1792,10 @@
                     },
                     "edit_card": {
                         "add": "Dodaj kartico",
-                        "delete": "Izbriši",
+                        "delete": "Izbriši kartico",
                         "edit": "Uredi",
                         "header": "Konfiguracija kartice",
-                        "move": "Premakni",
+                        "move": "Premakni v pogled",
                         "options": "Več možnosti",
                         "pick_card": "Katero kartico želite dodati?",
                         "pick_card_view_title": "Katero kartico želite dodati v pogled {name}?",
@@ -1689,6 +1805,7 @@
                         "toggle_editor": "Preklop na urejevalnik"
                     },
                     "edit_lovelace": {
+                        "edit_title": "Uredi naslov",
                         "explanation": "Ta naslov je prikazan nad vsemi vašimi pogledi v Lovelace-u.",
                         "header": "Naslov vašega uporabniškega vmesnika Lovelace"
                     },
@@ -1697,7 +1814,9 @@
                         "delete": "Izbriši pogled",
                         "edit": "Uredi pogled",
                         "header": "Prikaži konfiguracijo",
-                        "header_name": "{name} Prikaži konfiguracijo"
+                        "header_name": "{name} Prikaži konfiguracijo",
+                        "move_left": "Premakni pogled levo",
+                        "move_right": "Premakni pogled desno"
                     },
                     "header": "Uredi UI",
                     "menu": {
@@ -1711,6 +1830,11 @@
                         "para_no_id": "Ta element nima ID-ja. Prosimo, dodajte ID tega elementa v 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_unsaved_changes": "Imate neshranjene spremembe, ali ste prepričani, da želite zapreti?",
+                        "confirm_unsaved_comments": "Vaša konfiguracija vsebuje komentarje, ti ne bodo shranjeni. Ali želite nadaljevati?",
+                        "error_invalid_config": "Vaš konfiguracija ni veljavna: {error}",
+                        "error_parse_yaml": "Ni mogoče razčleniti YAML: {error}",
+                        "error_save_yaml": "YAML-a ni mogoče shraniti: {error}",
                         "header": "Uredi nastavitve",
                         "save": "Shrani",
                         "saved": "Shranjeno",
@@ -1731,12 +1855,22 @@
                     }
                 },
                 "menu": {
+                    "close": "Zapri",
                     "configure_ui": "Konfiguriraj UI",
                     "help": "Pomoč",
                     "refresh": "Osveži",
                     "unused_entities": "Neuporabljene entitete"
                 },
                 "reload_lovelace": "Ponovno naloži Lovelace",
+                "unused_entities": {
+                    "available_entities": "To so entitete, ki so vam na voljo, vendar še niso v uporabniškem vmesniku Lovelace.",
+                    "domain": "Domena",
+                    "entity": "Subjekt",
+                    "entity_id": "ID subjekta",
+                    "last_changed": "Zadnja sprememba",
+                    "select_to_add": "Izberite entitete, ki jih želite dodati na kartico, in nato kliknite gumb Dodaj kartico.",
+                    "title": "Neuporabljene entitete"
+                },
                 "views": {
                     "confirm_delete": "Ali ste prepričani, da želite izbrisati ta pogled?",
                     "existing_cards": "Ne morete izbrisati pogleda, v katerem so kartice. Najprej jih odstranite."
@@ -1926,6 +2060,8 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant privzeto skrije napredne funkcije in možnosti. Do teh funkcij lahko dostopate tako, da vklopite to stikalo. To je uporabniško določena nastavitev, ki ne vpliva na druge uporabnike.",
+                    "hint_enable": "Ali manjkajo možnosti konfiguracije? Vključi napredni način",
+                    "link_profile_page": "stran profila",
                     "title": "Napredni način"
                 },
                 "change_password": {
@@ -2009,7 +2145,7 @@
             "shopping-list": {
                 "add_item": "Dodaj potrebščino",
                 "clear_completed": "Počisti dokončane",
-                "microphone_tip": "Tapnite mikrofon zgoraj desno in recite (Le ANG) \"Add candy to my shopping list\""
+                "microphone_tip": "Dotaknite se mikrofona v zgornjem desnem kotu in recite ali vnesite »Dodaj sladkarije na moj nakupovalni seznam«"
             }
         },
         "sidebar": {

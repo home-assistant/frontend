@@ -101,9 +101,15 @@
     },
     "state_badge": {
         "alarm_control_panel": {
+            "armed": "Ekki á verði",
+            "armed_away": "Á verði",
+            "armed_custom_bypass": "Á verði",
+            "armed_home": "Á verði",
+            "armed_night": "Á verði",
             "arming": "set á vörð",
-            "disarmed": "ekki á verði",
+            "disarmed": "Ekki á verði",
             "disarming": "tek af verði",
+            "pending": "Í bið",
             "triggered": "Kveik"
         },
         "default": {
@@ -122,8 +128,15 @@
     },
     "state": {
         "alarm_control_panel": {
+            "armed": "Á verði",
+            "armed_away": "Á verði úti",
+            "armed_home": "Á verði heima",
+            "armed_night": "Á verði nótt",
+            "arming": "Set á vörð",
             "disarmed": "ekki á verði",
-            "disarming": "tek af verði"
+            "disarming": "tek af verði",
+            "pending": "Bíður",
+            "triggered": "Ræst"
         },
         "automation": {
             "off": "Óvirk",

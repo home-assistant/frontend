@@ -582,6 +582,9 @@
                 "ok": "OK",
                 "title": "Er du sikker?"
             },
+            "domain_toggler": {
+                "title": "Veksle Domener"
+            },
             "more_info_control": {
                 "script": {
                     "last_action": "Siste handling"
@@ -609,8 +612,12 @@
                 }
             },
             "voice_command": {
+                "did_not_hear": "Home Assistant hørte ikke noe",
                 "error": "Beklager, det har oppstått en feil",
-                "how_can_i_help": "Hvordan kan jeg hjelpe?"
+                "found": "Jeg fant følgende for deg:",
+                "how_can_i_help": "Hvordan kan jeg hjelpe?",
+                "label": "Skriv inn et spørsmål og trykk 'Enter'",
+                "label_voice": "Skriv og trykk 'Enter', eller trykk på mikrofonen for å snakke"
             },
             "zha_device_info": {
                 "buttons": {
@@ -901,6 +908,7 @@
                         "introduction": "Automasjonsredigeringen lar deg lage og redigere automasjoner. Vennligst les [instruksjonene](https:\/\/home-assistant.io\/docs\/automation\/editor\/) for å forsikre deg om at du har konfigurert Home Assistant riktig.",
                         "learn_more": "Lær mer om automatisering",
                         "no_automations": "Vi kunne ikke finne noen redigerbare automasjoner",
+                        "only_editable": "Bare automatiseringer definert i automations.yaml kan redigeres.",
                         "pick_automation": "Velg automasjon for å redigere",
                         "show_info_automation": "Vis informasjon om automatisering"
                     }
@@ -1114,15 +1122,23 @@
                     }
                 },
                 "customize": {
+                    "attributes_customize": "Følgende attributter er allerede angitt i customize.yaml",
+                    "attributes_not_set": "Følgende attributter ble ikke angitt. Sett dem hvis du vil.",
+                    "attributes_outside": "Følgende attributter tilpasses utenfra customize.yaml",
                     "attributes_override": "Du kan overstyre dem hvis du vil.",
+                    "attributes_set": "Følgende attributter for enheten angis programmatisk.",
                     "caption": "Tilpasning",
                     "description": "Tilpass dine oppføringer",
+                    "different_include": "Muligens via et domene, en glob eller noe annent som er inkluderet",
+                    "pick_attribute": "Velg et attributt som skal overstyres",
                     "picker": {
                         "header": "Tilpasning",
                         "introduction": "Juster per-enhet attributter. Lagt til\/redigert tilpasninger trer i kraft umiddelbart. Fjernede tilpasninger trer i kraft når enheten er oppdatert."
                     },
                     "warning": {
-                        "include_link": "inkluder customize.yaml"
+                        "include_link": "inkluder customize.yaml",
+                        "include_sentence": "Det ser ut til at din configurasjon.yaml ikke er riktig",
+                        "not_applied": "Endringer gjort her er skrevet i den, men vil ikke bli brukt etter en konfigurasjonsinnlasting med mindre inkluderingen er på plass."
                     }
                 },
                 "devices": {
@@ -1140,6 +1156,7 @@
                     },
                     "automations": "Automatiseringer",
                     "caption": "Enheter",
+                    "confirm_rename_entity_ids": "Vil du også endre navn på enhets-ID-en for enhetene dine?",
                     "data_table": {
                         "area": "Område",
                         "battery": "Batteri",
@@ -1149,7 +1166,9 @@
                         "model": "Modell"
                     },
                     "description": "Administrer tilkoblede enheter",
+                    "details": "Her er alle detaljer for enheten.",
                     "device_not_found": "Enhet ikke funnet",
+                    "entities": "Enheter",
                     "info": "Enhetsinformasjon",
                     "unknown_error": "Ukjent feil",
                     "unnamed_device": "Enhet uten navn"
@@ -1165,6 +1184,7 @@
                         "enabled_cause": "Deaktivert av {cause}.",
                         "enabled_description": "Deaktiverte enheter vil ikke bli lagt til i Home Assistant.",
                         "enabled_label": "Aktiver enhet",
+                        "note": "Merk: dette fungerer kanskje ikke ennå med alle integrasjoner.",
                         "unavailable": "Denne enheten er ikke tilgjengelig for øyeblikket.",
                         "update": "OPPDATER"
                     },
@@ -1208,6 +1228,7 @@
                         "add_area": "Legg til område",
                         "area_picker_label": "Område",
                         "close": "Lukk",
+                        "created_config": "Opprettet konfigurasjon for {name}.",
                         "error_saving_area": "Feil ved lagring av område: {error}",
                         "external_step": {
                             "description": "Dette trinnet krever at du besøker et eksternt nettsted som skal fylles ut.",
@@ -1216,6 +1237,7 @@
                         "failed_create_area": "Kunne ikke opprette område.",
                         "finish": "Fullfør",
                         "name_new_area": "Navn på det nye området?",
+                        "not_all_required_fields": "Ikke alle obligatoriske felt er fylt ut.",
                         "submit": "Send inn"
                     },
                     "configure": "Konfigurer",
@@ -1223,6 +1245,7 @@
                     "description": "Administrer og konfigurer integrasjoner",
                     "discovered": "Oppdaget",
                     "home_assistant_website": "Nettsted for Home Assistant",
+                    "integration_not_found": "Integrering ikke funnet.",
                     "new": "Sett opp en ny integrasjon",
                     "none": "Ingenting er konfigurert enda",
                     "note_about_integrations": "Ikke alle integrasjoner kan konfigureres via brukergrensesnittet ennå.",
@@ -1264,19 +1287,34 @@
                         "devices": {
                             "add": "Legg til en enhet",
                             "delete": "Slett enhet",
-                            "header": "Enheter"
+                            "header": "Enheter",
+                            "introduction": "Legg til enhetene du vil bli inkludert i scenen din. Sett alle enhetene til tilstanden du ønsker for denne scenen."
                         },
+                        "entities": {
+                            "add": "Legg til en enhet",
+                            "delete": "Slett enhet",
+                            "device_entities": "Hvis du legger til en enhet som tilhører en enhet, vil enheten bli lagt til.",
+                            "header": "Enheter",
+                            "introduction": "Enheter som ikke tilhører en enhet, kan angis her.",
+                            "without_device": "Enheter uten enhet"
+                        },
+                        "introduction": "Bruk scener for å gjøre hjemmet ditt mer levende.",
+                        "load_error_not_editable": "Bare scener i scener.yaml kan redigeres.",
                         "load_error_unknown": "Feil ved lasting av scene ({err_no}).",
                         "name": "Navn",
-                        "save": "Lagre"
+                        "save": "Lagre",
+                        "unsaved_confirm": "Du har ulagrede endringer. Er du sikker på at du vil lukke?"
                     },
                     "picker": {
                         "add_scene": "Legg til scene",
                         "delete_confirm": "Er du sikker på at du vil slette denne scenen?",
                         "delete_scene": "Slett scene",
                         "edit_scene": "Rediger scene",
+                        "header": "Sceneditor",
+                        "introduction": "Sceneditoren lar deg lage og redigere scener. Følg lenken nedenfor for å lese instruksjonene for å forsikre deg om at du har konfigurert Home Assistant riktig.",
                         "learn_more": "Lær mer om scener",
                         "no_scenes": "Vi fant ingen redigerbare scener",
+                        "only_editable": "Bare scener som er definert i scenes.yaml kan redigeres.",
                         "pick_scene": "Velg scene du vil redigere",
                         "show_info_scene": "Vis info om scene"
                     }
@@ -1289,8 +1327,11 @@
                         "delete_confirm": "Er du sikker på at du vil slette dette skriptet?",
                         "delete_script": "Slett skript",
                         "header": "Skript: {navn}",
+                        "introduction": "Bruk skript til å utføre en sekvens med handlinger.",
+                        "link_available_actions": "Finn ut mer om tilgjengelige handlinger.",
                         "load_error_not_editable": "Bare skript inne i skript.yaml kan redigeres.",
-                        "sequence": "Sekvens"
+                        "sequence": "Sekvens",
+                        "sequence_sentence": "Handlingssekvensen til dette skriptet."
                     },
                     "picker": {
                         "add_script": "Legg til skript",
@@ -1298,7 +1339,8 @@
                         "header": "Skriptredigering",
                         "introduction": "Skripteditoren lar deg lage og redigere skript. Følg lenken nedenfor for å lese instruksjonene for å forsikre deg om at du har konfigurert Home Assistant riktig.",
                         "learn_more": "Lær mer om skript",
-                        "no_scripts": "Vi kunne ikke finne noen redigerbare skript"
+                        "no_scripts": "Vi kunne ikke finne noen redigerbare skript",
+                        "trigger_script": "Utløse skript"
                     }
                 },
                 "server_control": {
@@ -1477,6 +1519,13 @@
                     }
                 }
             },
+            "custom": {
+                "external_panel": {
+                    "complete_access": "Den vil ha tilgang til alle data i Home Assistant.",
+                    "hide_message": "Sjekk dokumenter for panel_custom-komponenten for å skjule denne meldingen",
+                    "question_trust": "Stoler du på det eksterne panelet {name} på {link} ?"
+                }
+            },
             "developer-tools": {
                 "tabs": {
                     "events": {
@@ -1531,12 +1580,12 @@
                     "mqtt": {
                         "description_listen": "Lytt til et emne",
                         "description_publish": "Publiser en pakke",
-                        "listening_to": "Lytte til",
+                        "listening_to": "Lytter til",
                         "message_received": "Meldingen {ID} ble mottatt på {topic} klokken {time}:",
                         "payload": "Payload (mal tillatt)",
                         "publish": "Publiser",
                         "start_listening": "Begynn å lytte",
-                        "stop_listening": "Stopp lytting",
+                        "stop_listening": "Slutt å lytte",
                         "subscribe_to": "Emne å abonnere på",
                         "title": "MQTT",
                         "topic": "emne"
@@ -1587,6 +1636,7 @@
                 "showing_entries": "Viser oppføringer for"
             },
             "logbook": {
+                "entries_not_found": "Finner ingen loggbok oppføringer.",
                 "period": "Periode",
                 "showing_entries": "Viser oppføringer for"
             },
@@ -1742,10 +1792,10 @@
                     },
                     "edit_card": {
                         "add": "Legg til kort",
-                        "delete": "Slett",
+                        "delete": "Slett kort",
                         "edit": "Rediger",
                         "header": "Kortkonfigurasjon",
-                        "move": "Flytt",
+                        "move": "Flytt til visning",
                         "options": "Flere alternativer",
                         "pick_card": "Hvilket kort vil du legge til?",
                         "pick_card_view_title": "Hvilket kort vil du legge til i {name} visningen?",
@@ -1780,6 +1830,10 @@
                         "para_no_id": "Dette elementet har ingen ID. Vennligst legg til en ID på dette elementet i 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_unsaved_changes": "Du har ulagrede endringer, er du sikker på at du vil avslutte?",
+                        "confirm_unsaved_comments": "Konfigurasjonen din inneholder kommentar (er), disse vil ikke bli lagret. Vil du fortsette?",
+                        "error_invalid_config": "Konfigurasjonen er ikke gyldig: {error}",
+                        "error_parse_yaml": "Kan ikke analysere YAML: {error}",
                         "error_save_yaml": "Kan ikke lagre YAML: {error}",
                         "header": "Rediger konfigurasjon",
                         "save": "Lagre",
@@ -1809,8 +1863,13 @@
                 },
                 "reload_lovelace": "Laste Lovelace på nytt",
                 "unused_entities": {
+                    "available_entities": "Dette er enheter som du har tilgjengelig, men er ikke i Lovelace UI ennå.",
                     "domain": "Domene",
-                    "last_changed": "Sist endret"
+                    "entity": "Enhet",
+                    "entity_id": "Enhet-ID",
+                    "last_changed": "Sist endret",
+                    "select_to_add": "Velg enhetene du vil legge til et kort, og klikk deretter på knappen Legg til kort.",
+                    "title": "Ubrukte enheter"
                 },
                 "views": {
                     "confirm_delete": "Er du sikker på at du vil slette denne visningen?",
