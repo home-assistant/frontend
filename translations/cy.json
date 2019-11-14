@@ -451,6 +451,10 @@
             },
             "more_info_settings": {
                 "name": "Gwrthwneud Enw"
+            },
+            "voice_command": {
+                "label": "Teipiwch gwestiwn a gwasgwch 'Enter'",
+                "label_voice": "Teipiwch a pwyswch 'Enter' neu tapiwch y meicroffon i siarad"
             }
         },
         "duration": {
@@ -879,6 +883,13 @@
                     }
                 }
             },
+            "custom": {
+                "external_panel": {
+                    "complete_access": "Byddaf efo mynediad i holl ddata yn Home Assistant",
+                    "hide_message": "Gwirio'r dogfennau ar gyfer y gydran panel_custom er mwyn cuddio'r neges hon",
+                    "question_trust": "Ydych chi'n ymddiried yn y panel allanol {name} yn {link} ?"
+                }
+            },
             "developer-tools": {
                 "tabs": {
                     "events": {
@@ -1023,7 +1034,9 @@
                         "add": "Ychwanegu golwg",
                         "delete": "Delete golwg",
                         "edit": "Golygu golwg",
-                        "header": "Gweld Ffurfweddiad"
+                        "header": "Gweld Ffurfweddiad",
+                        "move_left": "Symud y wedd i'r chwith",
+                        "move_right": "Symud y wedd i'r dde"
                     },
                     "header": "Golygu rhyngwyneb defnyddiwr",
                     "menu": {
@@ -1164,6 +1177,8 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Mae Home Assistant yn cuddio nodweddion uwch ac opsiynau yn ddiofyn. Gallwch wneud y nodweddion hyn yn hygyrch trwy ticio'r toggle hwn. Mae hwn yn leoliad penodol i ddefnyddwyr ac nid yw'n effeithio ar ddefnyddwyr eraill sy'n defnyddio Home Assistant.",
+                    "hint_enable": "Opsiynau ffurfweddu ar goll? Galluogi modd uwch ymlaen",
+                    "link_profile_page": "eich tudalen proffil",
                     "title": "Modd Uwch"
                 }
             },

@@ -534,8 +534,10 @@
         "common": {
             "cancel": "Ofbriechen",
             "loading": "Lued",
+            "no": "Nee",
             "save": "Späicheren",
-            "successfully_saved": "Erfollegräich gespäichert."
+            "successfully_saved": "Erfollegräich gespäichert.",
+            "yes": "Jo"
         },
         "components": {
             "device-picker": {
@@ -580,6 +582,9 @@
                 "ok": "OK",
                 "title": "Sécher?"
             },
+            "domain_toggler": {
+                "title": "Domäner ëmschalten"
+            },
             "more_info_control": {
                 "script": {
                     "last_action": "Läscht Aktioun"
@@ -605,6 +610,13 @@
                 "success": {
                     "description": "Optiounen erfollegräich gespäichert."
                 }
+            },
+            "voice_command": {
+                "did_not_hear": "Home Assistant huet näischt héieren.",
+                "error": "Ups, ee Feeler ass opgetrueden",
+                "found": "Ech hunn folgendes fir iech fonnt:",
+                "how_can_i_help": "Wéi kann ech hëllefen?",
+                "label": "Tippt eng Fro an dréckt 'Enter'"
             },
             "zha_device_info": {
                 "buttons": {
@@ -888,11 +900,16 @@
                     },
                     "picker": {
                         "add_automation": "Automatismus dobäisetzen",
+                        "delete_automation": "Automatisme läschen",
+                        "delete_confirm": "Sécher fir dës Automatisme ze läschen?",
+                        "edit_automation": "Automatisme änneren",
                         "header": "Automatismen editéieren",
                         "introduction": "Den Automatismen-Editor erméiglecht et fir Automatismen z'erstellen an ze änneren. Lies w.e.g. [d'Instruktioune](https:\/\/home-assistant.io\/docs\/automation\/editor\/) fir sécher ze stellen dass den Home Assistant richteg agestallt ass.",
                         "learn_more": "Méi iwwert Automatioune liesen",
                         "no_automations": "Keen Automatismus fir ze ännere fonnt",
-                        "pick_automation": "Automatismus fir ze änneren auswielen"
+                        "only_editable": "Nëmmen Automatiounen déi am automations.yaml séfinéiert sinn kënnen editéiert ginn.",
+                        "pick_automation": "Automatismus fir ze änneren auswielen",
+                        "show_info_automation": "Informatiounen vum Automatisme uweisen"
                     }
                 },
                 "cloud": {
@@ -1104,14 +1121,18 @@
                     }
                 },
                 "customize": {
+                    "attributes_not_set": "Folgend Attributer sinn net gesaat. Définéiert sie wann dir wëllt.",
+                    "attributes_override": "Dir könnt sie iwwerschrweiwen wann dir wëllt.",
                     "caption": "Personaliséieren",
                     "description": "Är Entitéite personaliséieren",
+                    "pick_attribute": "Wielt een Attribut aus fir z'iwwerschreiwen",
                     "picker": {
                         "header": "Personaliséieren",
                         "introduction": "Manipulatioun vun den Attributen pro Entitéit. Nei\/geännert Personlisatiounen sinn direkt effektiv. Geläschte Personalisatioune ginn effektiv wann d'Entitéit sech aktualiséiert."
                     }
                 },
                 "devices": {
+                    "area_picker_label": "Beräich",
                     "automation": {
                         "actions": {
                             "caption": "Wann eppes ausgeléist gëtt"
@@ -1123,8 +1144,23 @@
                             "caption": "Maach eppes wann..."
                         }
                     },
+                    "automations": "Automatisme",
                     "caption": "Apparater",
-                    "description": "Verwalt verbonnen Apparater"
+                    "data_table": {
+                        "area": "Beräich",
+                        "battery": "Batterie",
+                        "device": "Apparat",
+                        "integration": "Integratioun",
+                        "manufacturer": "Hiersteller",
+                        "model": "Modell"
+                    },
+                    "description": "Verwalt verbonnen Apparater",
+                    "details": "Hei sinn all Detailer vun ärem Apparat.",
+                    "device_not_found": "Apparat net fonnt.",
+                    "entities": "Entitéiten",
+                    "info": "Informatioune vum Apparat",
+                    "unknown_error": "Onbekannten Feeler",
+                    "unnamed_device": "Apparat ouni Numm"
                 },
                 "entity_registry": {
                     "caption": "Lëscht vun den Entitéiten",
@@ -1137,6 +1173,7 @@
                         "enabled_cause": "Desaktivéiert duerch {cause}.",
                         "enabled_description": "Desaktivéiert Entitéiten ginn net am Home Assistant bäigesat.",
                         "enabled_label": "Entitéit aktivéieren",
+                        "note": "Nott: dëst funktionéiert villäicht nach net mat all Integratioun.",
                         "unavailable": "Dës Entitéit ass net erreechbar fir de Moment.",
                         "update": "Aktualiséieren"
                     },
@@ -1176,16 +1213,28 @@
                         "via": "Verbonnen via"
                     },
                     "config_flow": {
+                        "aborted": "Ofgebrach",
+                        "add_area": "Beräich dobäisetzen",
+                        "area_picker_label": "Beräich",
+                        "close": "Zoumaachen",
+                        "created_config": "Konfiguratioun erstallt fir {name}.",
+                        "error_saving_area": "Feeler beim späicheren vum Beräich: {error}",
                         "external_step": {
                             "description": "Fir dës Etapp ofzeschléisse muss dir eng externe Internetsäit besichen.",
                             "open_site": "Internetsäit opmaachen"
-                        }
+                        },
+                        "failed_create_area": "Feeler beim erstellen vum Beräich.",
+                        "finish": "Ofschléissen",
+                        "name_new_area": "Numm vum neie Beräich?",
+                        "not_all_required_fields": "Net all erfuerderlech Felder sinn ausgefëllt.",
+                        "submit": "Ofschécken"
                     },
                     "configure": "Astellen",
                     "configured": "Konfiguréiert",
                     "description": "Verwalt verbonnen Apparater an Servicen",
                     "discovered": "Entdeckt",
                     "home_assistant_website": "Home Assistant Websäit",
+                    "integration_not_found": "Integratioun net fonnt.",
                     "new": "Eng nei Integratioun ariichten",
                     "none": "Nach näischt konfiguréiert",
                     "note_about_integrations": "Net all Integratioune könne nach via den Benotzer Interface konfiguréiert ginn.",
@@ -1218,21 +1267,65 @@
                     "no_persons_created_yet": "Et gesäit sou aus wéi wann nach keng Persounen erstallt goufen.",
                     "note_about_persons_configured_in_yaml": "Note: Persounen konfiguréiert via configuration.yaml können net via den UI geännert ginn."
                 },
+                "scene": {
+                    "activated": "Zeen {name} aktivéiert.",
+                    "caption": "Zeene",
+                    "description": "Zeenen erstellen an änneren",
+                    "editor": {
+                        "default_name": "Nei Zeen",
+                        "devices": {
+                            "add": "Apparat dobäisetzen",
+                            "delete": "Apparat läschen",
+                            "header": "Apparater"
+                        },
+                        "entities": {
+                            "add": "Entitéit dobäisetzen",
+                            "delete": "Entitéit läschen",
+                            "header": "Entitéiten",
+                            "without_device": "Entitéiten ouni Apparater"
+                        },
+                        "introduction": "Benotzt Zeene fir äert Haus zum Liewen ze bréngen",
+                        "load_error_not_editable": "Nëmme Zeene am scenes.yaml kënnen editéiert ginn.",
+                        "load_error_unknown": "Feeler beim luede vun der Zeen ({err_no}).",
+                        "name": "Numm",
+                        "save": "Späicheren",
+                        "unsaved_confirm": "Net gespäichert Ännerungen. Trotzdeem verloossen?"
+                    },
+                    "picker": {
+                        "add_scene": "Zeen dobäisetzen",
+                        "delete_confirm": "Sécher fir dës Zeen ze läschen?",
+                        "delete_scene": "Zeen läschen",
+                        "edit_scene": "Zeen änneren",
+                        "header": "Zeen Editeur",
+                        "learn_more": "Méi iwwert Zeene léieren",
+                        "no_scenes": "Keng Zeene fir ze ännere fonnt",
+                        "only_editable": "Nëmme Zeene am scenes.yaml kënnen editéiert ginn.",
+                        "pick_scene": "Zeen fir ze änneren auswielen",
+                        "show_info_scene": "Informatiounen vun der Zeen uweisen"
+                    }
+                },
                 "script": {
                     "caption": "Skript",
                     "description": "Skript erstellen an änneren",
                     "editor": {
                         "default_name": "Neie Skript",
                         "delete_confirm": "Sécher fir dësen Skript ze läsche?",
+                        "delete_script": "Skript läschen",
                         "header": "Skript: {name}",
-                        "load_error_not_editable": "Nëmme Skripten am scripts.yaml kënnen editéiert ginn."
+                        "introduction": "Benotzt Skripter fir eng Sequenz vun Aktiounen auszeféieren.",
+                        "link_available_actions": "Méi iwwert verfügbar Aktioune liesen.",
+                        "load_error_not_editable": "Nëmme Skripten am scripts.yaml kënnen editéiert ginn.",
+                        "sequence": "Sequenz",
+                        "sequence_sentence": "D'Sequenz vun Aktiounen an dësem Skript."
                     },
                     "picker": {
                         "add_script": "Skript dobäisetze",
+                        "edit_script": "Skript änneren",
                         "header": "Skript Editeur",
                         "introduction": "De Skript Editeur erlaabt Iech Skripten ze erstellen an z'änneren. Follegt de Link hei ënnendrënner fir d'Instruktiounen ze liese fir sécher ze stellen, datt Dir den Home Assistant richteg konfiguréiert hutt",
                         "learn_more": "Méi iwwert Skripten léieren",
-                        "no_scripts": "Keng Skripte fir ze ännere fonnt"
+                        "no_scripts": "Keng Skripte fir ze ännere fonnt",
+                        "trigger_script": "Skript ausléisen"
                     }
                 },
                 "server_control": {
@@ -1411,6 +1504,12 @@
                     }
                 }
             },
+            "custom": {
+                "external_panel": {
+                    "complete_access": "Et wäert Accès op all Donnéeë am Home Assistant kréien.",
+                    "question_trust": "Vertraut dir dem externe Panneau {name} op {link}?"
+                }
+            },
             "developer-tools": {
                 "tabs": {
                     "events": {
@@ -1521,6 +1620,7 @@
                 "showing_entries": "Weist Beiträg fir"
             },
             "logbook": {
+                "entries_not_found": "Keng Logbicher Entrée fonnt",
                 "period": "Zäitraum",
                 "showing_entries": "Weist Beiträg fir"
             },
@@ -1689,6 +1789,7 @@
                         "toggle_editor": "Editeur ëmschalten"
                     },
                     "edit_lovelace": {
+                        "edit_title": "Titel änneren",
                         "explanation": "Dësen Titel gëtt iwwert den Usiichte vu Lovelace ugewisen.",
                         "header": "Titel vun ärem Lovelace Benotzer Interface"
                     },
@@ -1697,7 +1798,9 @@
                         "delete": "Vue läschen",
                         "edit": "Vue änneren",
                         "header": "Konfiguratioun kucken",
-                        "header_name": "{name} Konfiguratioun kucken"
+                        "header_name": "{name} Konfiguratioun kucken",
+                        "move_left": "Usiicht no lenks réckelen",
+                        "move_right": "Usiicht no riets réckelen"
                     },
                     "header": "UI änneren",
                     "menu": {
@@ -1711,6 +1814,11 @@
                         "para_no_id": "Dëst Element huet keng ID. Definéiert w.e.g. eng ID fir dëst Element am 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_unsaved_changes": "Dir hutt net gespäichert Ännerungen, sécher fir eraus ze goen?",
+                        "confirm_unsaved_comments": "Är Konfiguratioun enthält Kommentaren, dës ginn net gespäichert. Wëllt dir weiderfueren?",
+                        "error_invalid_config": "Är Konfiguratioun ass ongëlteg: {error}",
+                        "error_parse_yaml": "Kann de YAML net analyséieren: {error}",
+                        "error_save_yaml": "Kann de YAML net späicheren: {error}",
                         "header": "Konfiguratioun änneren",
                         "save": "Späicheren",
                         "saved": "Gespäichert",
@@ -1731,12 +1839,22 @@
                     }
                 },
                 "menu": {
+                    "close": "Zoumaachen",
                     "configure_ui": "UI konfiguréieren",
                     "help": "Hëllef",
                     "refresh": "Erneieren",
                     "unused_entities": "Onbenotzt Entitéiten"
                 },
                 "reload_lovelace": "Lovelace frësch lueden",
+                "unused_entities": {
+                    "available_entities": "Dës si verfügbar Entitéiten, déi awer nach net an ärer Lovelace UI sinn.",
+                    "domain": "Domän",
+                    "entity": "Entitéit",
+                    "entity_id": "ID vun der Entitéit",
+                    "last_changed": "Läscht Ännerung",
+                    "select_to_add": "Wielt d'Entitéite aus déi zu enger Kaart dobäigesaat solle ginn an klickt den Kaart dobäisetzen Knäppchen",
+                    "title": "Onbenotzten Entitéiten"
+                },
                 "views": {
                     "confirm_delete": "Sécher fir dës Usiicht ze läsche?",
                     "existing_cards": "Dir kënnt keng Usiicht mat Kaarten läschen. Läscht d'Kaarten fir d'éischt."
@@ -1926,6 +2044,8 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant verstoppt standardméisseg avancéiert Features an Optiounen. Dir kënnt dës Funktiounen zougänglech maachen andeems Dir dës Optioun aktivéiert. Dës ass eng Benotzer spezifesch Astellung an huet keen Impakt op aner Home Assistant Benotzer.",
+                    "hint_enable": "Feelen Konfiguratioun's Optiounen? Avancéierte Modus aschalten op",
+                    "link_profile_page": "är Profil Säit",
                     "title": "Avancéierte Modus"
                 },
                 "change_password": {
