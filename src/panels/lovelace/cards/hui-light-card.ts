@@ -5,6 +5,8 @@ import {
   TemplateResult,
   property,
   customElement,
+  css,
+  CSSResult,
 } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@thomasloven/round-slider";
@@ -27,6 +29,7 @@ import { toggleEntity } from "../common/entity/toggle-entity";
 import { LightCardConfig } from "./types";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { SUPPORT_BRIGHTNESS } from "../../../data/light";
+import { actionHandler } from "../common/directives/action-handler-directive";
 
 @customElement("hui-light-card")
 export class HuiLightCard extends LitElement implements LovelaceCard {
@@ -78,7 +81,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     }
 
     return html`
-      ${this.renderStyle()}
       <ha-card>
         ${stateObj.state === "unavailable"
           ? html`
@@ -93,36 +95,38 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
           @click="${this._handleMoreInfo}"
         ></paper-icon-button>
 
-        <div id="light">
-          ${supportsFeature(stateObj, SUPPORT_BRIGHTNESS)
-            ? html`
-                <round-slider
-                  min="1"
-                  .value=${brightness}
-                  @value-changing=${this._dragEvent}
-                  @value-changed=${this._setBrightness}
-                ></round-slider>
-              `
-            : ""}
-          <ha-icon
-            class="light-icon"
-            data-state="${stateObj.state}"
-            .icon="${this._config.icon || stateIcon(stateObj)}"
-            style="${styleMap({
-              filter: this._computeBrightness(stateObj),
-              color: this._computeColor(stateObj),
-            })}"
-            @click="${this._handleClick}"
-          ></ha-icon>
+        <div id="controls">
+          <div id="slider">
+            ${supportsFeature(stateObj, SUPPORT_BRIGHTNESS)
+              ? html`
+                  <round-slider
+                    min="1"
+                    .value=${brightness}
+                    @value-changing=${this._dragEvent}
+                    @value-changed=${this._setBrightness}
+                  ></round-slider>
+                `
+              : ""}
+            <ha-icon
+              class="slider-center"
+              data-state="${stateObj.state}"
+              .icon="${this._config.icon || stateIcon(stateObj)}"
+              style="${styleMap({
+                filter: this._computeBrightness(stateObj),
+                color: this._computeColor(stateObj),
+              })}"
+              @action="${this._handleClick}"
+              .actionHandler=${actionHandler()}
+              tabindex="0"
+            ></ha-icon>
+          </div>
         </div>
 
-        <div id="tooltip">
+        <div id="info">
           <div class="brightness" @ha-click="${this._handleClick}">
-            ${brightness} %
+            &nbsp;&nbsp;${brightness} %
           </div>
-          <div class="name">
-            ${this._config.name || computeStateName(stateObj)}
-          </div>
+          ${this._config.name || computeStateName(stateObj)}
         </div>
       </ha-card>
     `;
@@ -159,110 +163,9 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private renderStyle(): TemplateResult {
-    return html`
-      <style>
-        :host {
-          display: block;
-        }
-
-        ha-card {
-          position: relative;
-          overflow: hidden;
-          --name-font-size: 1.2rem;
-          --brightness-font-size: 1.2rem;
-          --rail-border-color: transparent;
-        }
-
-        #tooltip {
-          position: absolute;
-          top: 0;
-          left: 0;
-          right: 0;
-          height: 100%;
-          text-align: center;
-        }
-
-        #light {
-          margin: auto;
-          padding-top: 0;
-          padding-bottom: 32px;
-          display: flex;
-          justify-content: center;
-          align-items: center;
-          height: 160px;
-          width: 160px;
-        }
-        #light round-slider {
-          margin: 0 auto;
-          display: inline-block;
-          --round-slider-path-color: var(--disabled-text-color);
-          --round-slider-bar-color: var(--primary-color);
-          z-index: 20;
-        }
-
-        .light-icon {
-          position: absolute;
-          margin: 0 auto;
-          width: 76px;
-          height: 76px;
-          color: var(--paper-item-icon-color, #44739e);
-          cursor: pointer;
-          z-index: 20;
-        }
-
-        .light-icon[data-state="on"] {
-          color: var(--paper-item-icon-active-color, #fdd835);
-        }
-
-        .light-icon[data-state="unavailable"] {
-          color: var(--state-icon-unavailable-color);
-        }
-
-        .name {
-          position: absolute;
-          font-size: var(--name-font-size);
-          bottom: 16px;
-          box-sizing: border-box;
-          text-align: center;
-          width: 100%;
-          padding: 0 16px;
-        }
-
-        .brightness {
-          font-size: var(--brightness-font-size);
-          position: absolute;
-          margin: 0 auto;
-          top: 135px;
-          left: 50%;
-          transform: translate(-50%);
-          opacity: 0;
-          transition: opacity 0.5s ease-in-out;
-          -moz-transition: opacity 0.5s ease-in-out;
-          -webkit-transition: opacity 0.5s ease-in-out;
-          cursor: pointer;
-          pointer-events: none;
-        }
-
-        .show_brightness {
-          opacity: 1;
-        }
-
-        .more-info {
-          position: absolute;
-          cursor: pointer;
-          top: 0;
-          right: 0;
-          z-index: 25;
-          color: var(--secondary-text-color);
-        }
-      </style>
-    `;
-  }
-
   private _dragEvent(e: any): void {
     this.shadowRoot!.querySelector(".brightness")!.innerHTML =
-      e.detail.value + "%";
+      "&nbsp;" + e.detail.value + " %";
     this._showBrightness();
     this._hideBrightness();
   }
@@ -316,6 +219,102 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     fireEvent(this, "hass-more-info", {
       entityId: this._config!.entity,
     });
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        display: block;
+      }
+
+      ha-card {
+        position: relative;
+        overflow: hidden;
+        --name-font-size: 1.2rem;
+        --brightness-font-size: 1.2rem;
+      }
+
+      .more-info {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        right: 0;
+        border-radius: 100%;
+        color: var(--secondary-text-color);
+        z-index: 25;
+      }
+
+      #controls {
+        display: flex;
+        justify-content: center;
+        padding: 16px;
+        position: relative;
+      }
+
+      #slider {
+        height: 100%;
+        width: 100%;
+        position: relative;
+        max-width: 300px;
+        min-width: 100px;
+      }
+
+      round-slider {
+        --round-slider-path-color: var(--disabled-text-color);
+        --round-slider-bar-color: var(--primary-color);
+        padding-bottom: 10%;
+      }
+
+      .slider-center {
+        position: absolute;
+        width: 70%;
+        height: 70%;
+        max-height: calc(100% - 40px);
+        max-width: calc(100% - 40px);
+        box-sizing: border-box;
+        border-radius: 100%;
+        top: 50%;
+        left: 50%;
+        color: var(--paper-item-icon-color, #44739e);
+        cursor: pointer;
+        transform: translate(-50%, -50%);
+      }
+      .slider-center:focus {
+        outline: none;
+        background: var(--divider-color);
+      }
+
+      .slider-center[data-state="on"] {
+        color: var(--paper-item-icon-active-color, #fdd835);
+      }
+
+      .slider-center[data-state="unavailable"] {
+        color: var(--state-icon-unavailable-color);
+      }
+
+      #info {
+        display: flex-vertical;
+        justify-content: center;
+        text-align: center;
+        margin-top: -56px;
+        padding: 16px;
+        font-size: var(--name-font-size);
+      }
+
+      .brightness {
+        font-size: var(--brightness-font-size);
+        opacity: 0;
+        transition: opacity 0.5s ease-in-out;
+        -moz-transition: opacity 0.5s ease-in-out;
+        -webkit-transition: opacity 0.5s ease-in-out;
+        cursor: pointer;
+        pointer-events: none;
+      }
+
+      .show_brightness {
+        opacity: 1;
+      }
+    `;
   }
 }
 
