@@ -105,6 +105,13 @@ class HuiGenericEntityRow extends LitElement {
                     .datetime=${stateObj.last_changed}
                   ></ha-relative-time>
                 `
+              : this.config.secondary_info === "last-triggered"
+              ? html`
+                  <ha-relative-time
+                    .hass=${this.hass}
+                    .datetime=${stateObj.last_triggered}
+                  ></ha-relative-time>
+                `
               : ""}
           </div>
         </div>
