@@ -534,8 +534,10 @@
         "common": {
             "cancel": "Abbrechen",
             "loading": "Laden",
+            "no": "Nein",
             "save": "Speichern",
-            "successfully_saved": "Erfolgreich gespeichert"
+            "successfully_saved": "Erfolgreich gespeichert",
+            "yes": "Ja"
         },
         "components": {
             "device-picker": {
@@ -580,6 +582,9 @@
                 "ok": "OK",
                 "title": "Sind Sie sicher?"
             },
+            "domain_toggler": {
+                "title": "Domänen umschalten"
+            },
             "more_info_control": {
                 "script": {
                     "last_action": "Letzte Aktion"
@@ -605,6 +610,13 @@
                 "success": {
                     "description": "Optionen wurden erfolgreich gespeichert."
                 }
+            },
+            "voice_command": {
+                "did_not_hear": "Home Assistant hat nichts gehört",
+                "error": "Ups, ein Fehler ist aufgetreten.",
+                "found": "Ich habe folgendes für dich gefunden:",
+                "how_can_i_help": "Wie kann ich helfen?",
+                "label": "Gib eine Frage ein und klicke auf 'Enter'."
             },
             "zha_device_info": {
                 "buttons": {
@@ -888,11 +900,15 @@
                     },
                     "picker": {
                         "add_automation": "Automatisierung hinzufügen",
+                        "delete_automation": "Automatisierung löschen",
+                        "delete_confirm": "Bist du sicher, dass du diese Automatisierung löschen willst?",
+                        "edit_automation": "Automatisierung bearbeiten",
                         "header": "Automatisierungseditor",
                         "introduction": "Mit dem Automationseditor können Automatisierungen erstellt und bearbeitet werden. Bitte folge dem nachfolgenden Link, um die Anleitung zu lesen, um sicherzustellen, dass du Home Assistant richtig konfiguriert hast.",
                         "learn_more": "Erfahre mehr über Automatisierungen",
                         "no_automations": "Wir konnten keine editierbaren Automatisierungen finden",
-                        "pick_automation": "Wähle eine Automatisierung zum Bearbeiten"
+                        "pick_automation": "Wähle eine Automatisierung zum Bearbeiten",
+                        "show_info_automation": "Informationen über die Automatisierung anzeigen"
                     }
                 },
                 "cloud": {
@@ -1112,6 +1128,7 @@
                     }
                 },
                 "devices": {
+                    "area_picker_label": "Bereich",
                     "automation": {
                         "actions": {
                             "caption": "Wenn etwas ausgelöst wird ..."
@@ -1123,8 +1140,23 @@
                             "caption": "Tu nur etwas, wenn..."
                         }
                     },
+                    "automations": "Automatisierungen",
                     "caption": "Geräte",
-                    "description": "Verwalte verbundene Geräte"
+                    "confirm_rename_entity_ids": "Möchtest du auch die Entitäts-ID's deiner Entitäten umbenennen?",
+                    "data_table": {
+                        "area": "Bereich",
+                        "battery": "Batterie",
+                        "device": "Gerät",
+                        "integration": "Integration",
+                        "manufacturer": "Hersteller",
+                        "model": "Modell"
+                    },
+                    "description": "Verwalte verbundene Geräte",
+                    "device_not_found": "Gerät nicht gefunden.",
+                    "entities": "Entitäten",
+                    "info": "Geräteinformationen",
+                    "unknown_error": "Unbekannter Fehler",
+                    "unnamed_device": "Unbenanntes Gerät"
                 },
                 "entity_registry": {
                     "caption": "Entitätsregister",
@@ -1137,6 +1169,7 @@
                         "enabled_cause": "Deaktiviert durch {cause}.",
                         "enabled_description": "Deaktivierte Entitäten werden in Home Assistant nicht hinzugefügt.",
                         "enabled_label": "Entität aktivieren",
+                        "note": "Hinweis: Dies funktioniert möglicherweise noch nicht bei allen Integrationen.",
                         "unavailable": "Diese Entität ist derzeit nicht verfügbar.",
                         "update": "UPDATE"
                     },
@@ -1176,16 +1209,26 @@
                         "via": "Verbunden über"
                     },
                     "config_flow": {
+                        "aborted": "Abgebrochen",
+                        "add_area": "Bereich hinzufügen",
+                        "area_picker_label": "Bereich",
+                        "close": "Schließen",
                         "external_step": {
                             "description": "Für diesen Schritt musst du eine externe Website besuchen, um den Vorgang abzuschließen.",
                             "open_site": "Website öffnen"
-                        }
+                        },
+                        "failed_create_area": "Der Bereich konnte nicht erstellt werden.",
+                        "finish": "Fertig",
+                        "name_new_area": "Name des neuen Bereichs?",
+                        "not_all_required_fields": "Nicht alle Pflichtfelder sind ausgefüllt.",
+                        "submit": "Absenden"
                     },
                     "configure": "Konfigurieren",
                     "configured": "Konfiguriert",
                     "description": "Verwalte verbundene Geräte und Dienste",
                     "discovered": "Entdeckt",
                     "home_assistant_website": "Home Assistant Website",
+                    "integration_not_found": "Integration nicht gefunden.",
                     "new": "Richte eine neue Integration ein",
                     "none": "Noch nichts konfiguriert",
                     "note_about_integrations": "Nicht alle Integrationen können über die Benutzeroberfläche konfiguriert werden.",
@@ -1218,21 +1261,47 @@
                     "no_persons_created_yet": "Sieht so aus, als hättest du noch keine Personen angelegt.",
                     "note_about_persons_configured_in_yaml": "Hinweis: Personen, die über configuration.yaml konfiguriert wurden, können nicht über die Benutzeroberfläche bearbeitet werden."
                 },
+                "scene": {
+                    "caption": "Szenen",
+                    "editor": {
+                        "devices": {
+                            "add": "Ein Gerät hinzufügen",
+                            "delete": "Gerät löschen",
+                            "header": "Geräte"
+                        },
+                        "entities": {
+                            "add": "Eine Entität hinzufügen",
+                            "delete": "Entität löschen",
+                            "header": "Entitäten",
+                            "without_device": "Entitäten ohne Gerät"
+                        },
+                        "name": "Name",
+                        "save": "Speichern",
+                        "unsaved_confirm": "Du hast ungespeicherte Änderungen. Bist du dir sicher, dass du den Editor verlassen möchtest?"
+                    },
+                    "picker": {
+                        "header": "Szenen-Editor"
+                    }
+                },
                 "script": {
                     "caption": "Skript",
                     "description": "Skripte erstellen und bearbeiten",
                     "editor": {
                         "default_name": "Neues Skript",
                         "delete_confirm": "Möchten Sie dieses Skript wirklich löschen?",
+                        "delete_script": "Skript löschen",
                         "header": "Skript: {name}",
-                        "load_error_not_editable": "Nur Skripte in scripts.yaml können bearbeitet werden."
+                        "load_error_not_editable": "Nur Skripte in scripts.yaml können bearbeitet werden.",
+                        "sequence": "Sequenz"
                     },
                     "picker": {
                         "add_script": "Skript hinzufügen",
+                        "edit_script": "Skript bearbeiten",
                         "header": "Skript-Editor",
                         "introduction": "Mit dem Skript-Editor können Skripte erstellt und bearbeitet werden. Bitte folge Sie dem untenstehenden Link, um die Anleitung zu finden. Das stellt sicher, dass Home Assistant richtig konfiguriert ist.",
                         "learn_more": "Weitere Informationen zu Skripten",
-                        "no_scripts": "Wir konnten keine bearbeitbaren Skripte finden"
+                        "no_scripts": "Wir konnten keine bearbeitbaren Skripte finden",
+                        "trigger_script": "Skript auslösen"
                     }
                 },
                 "server_control": {
@@ -1411,9 +1480,15 @@
                     }
                 }
             },
+            "custom": {
+                "external_panel": {
+                    "hide_message": "Überprüfe die Dokumentation für die panel_custom Komponente, um diese Meldung auszublenden."
+                }
+            },
             "developer-tools": {
                 "tabs": {
                     "events": {
+                        "alert_event_type": "Der Ereignistyp ist ein Pflichtfeld.",
                         "available_events": "Verfügbare Ereignisse",
                         "count_listeners": " ({count} Listener)",
                         "data": "Ereignisdaten (YAML, optional)",
@@ -1423,6 +1498,9 @@
                         "fire_event": "Ereignis auslösen",
                         "listen_to_events": "Hören auf Ereignisse",
                         "listening_to": "Hören auf",
+                        "notification_event_fired": "Ereignis {type} erfolgreich ausgelöst!",
+                        "start_listening": "Anfangen zuzuhören",
+                        "stop_listening": "Aufhören zuzuhören",
                         "title": "Ereignisse",
                         "type": "Ereignistyp"
                     },
@@ -1459,8 +1537,13 @@
                     },
                     "mqtt": {
                         "description_publish": "Ein Paket veröffentlichen",
+                        "listening_to": "Anhören von",
                         "message_received": "Nachricht {id} empfangen auf {topic} um {time} :",
+                        "payload": "Payload (Vorlage erlaubt)",
                         "publish": "Veröffentlichen",
+                        "start_listening": "Anfangen zuzuhören",
+                        "stop_listening": "Aufhören zuzuhören",
+                        "subscribe_to": "Thema abonnieren",
                         "title": "MQTT",
                         "topic": "Topic"
                     },
@@ -1509,6 +1592,7 @@
                 "showing_entries": "Zeige Einträge für"
             },
             "logbook": {
+                "entries_not_found": "Keine Logbucheinträge gefunden.",
                 "period": "Zeitraum",
                 "showing_entries": "Zeige Einträge für"
             },
@@ -1642,7 +1726,7 @@
                             "name": "Picture"
                         },
                         "plant-status": {
-                            "name": "Planzen Status"
+                            "name": "Pflanzen Status"
                         },
                         "sensor": {
                             "graph_detail": "Diagrammdetail",
@@ -1677,6 +1761,7 @@
                         "toggle_editor": "Editor umschalten"
                     },
                     "edit_lovelace": {
+                        "edit_title": "Titel bearbeiten",
                         "explanation": "Dieser Titel wird überhalb aller deiner Lovelace Ansichten gezeigt.",
                         "header": "Titel deiner Lovelace UI"
                     },
@@ -1685,7 +1770,9 @@
                         "delete": "Ansicht löschen",
                         "edit": "Ansicht bearbeiten",
                         "header": "Konfiguration anzeigen",
-                        "header_name": "{name} Konfiguration anzeigen"
+                        "header_name": "{name} Konfiguration anzeigen",
+                        "move_left": "Ansicht nach links verschieben",
+                        "move_right": "Ansicht nach rechts verschieben"
                     },
                     "header": "Benutzeroberfläche bearbeiten",
                     "menu": {
@@ -1699,6 +1786,10 @@
                         "para_no_id": "Dieses Element hat keine ID. Bitte füge diesem Element eine ID in 'ui-lovelace.yaml' hinzu."
                     },
                     "raw_editor": {
+                        "confirm_unsaved_changes": "Du hast ungespeicherte Änderungen, bist du sicher, dass du sie beenden willst?",
+                        "error_invalid_config": "Deine Konfiguration ist ungültig: {error}",
+                        "error_parse_yaml": "YAML kann nicht geparsed werden: {error}",
+                        "error_save_yaml": "YAML konnte nicht gespeichert werden: {error}",
                         "header": "Konfiguration bearbeiten",
                         "save": "Speichern",
                         "saved": "Gespeichert",
@@ -1719,12 +1810,20 @@
                     }
                 },
                 "menu": {
+                    "close": "Schließen",
                     "configure_ui": "Benutzeroberfläche konfigurieren",
                     "help": "Hilfe",
                     "refresh": "Aktualisieren",
                     "unused_entities": "Ungenutzte Elemente"
                 },
                 "reload_lovelace": "Lovelace neu laden",
+                "unused_entities": {
+                    "domain": "Domain",
+                    "entity": "Entität",
+                    "entity_id": "Entitäts-ID",
+                    "last_changed": "Zuletzt geändert",
+                    "title": "Nicht verwendete Entitäten"
+                },
                 "views": {
                     "confirm_delete": "Möchten Sie diese Ansicht wirklich löschen?",
                     "existing_cards": "Sie können eine Ansicht mit Karten nicht löschen. Entfernen Sie zuerst die Karten."
@@ -1914,6 +2013,8 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home-Assistent verbirgt standardmäßig erweiterte Funktionen und Optionen. Mache diese Funktionen zugänglich, indem diese Option aktiviert wird. Dies ist eine benutzerspezifische Einstellung, die sich nicht auf andere Benutzer auswirkt, die Home Assistant verwenden.",
+                    "hint_enable": "Fehlende Konfigurationsoptionen? Aktiviere den erweiterten Modus bei",
+                    "link_profile_page": "deine Profilseite",
                     "title": "Erweiterter Modus"
                 },
                 "change_password": {
