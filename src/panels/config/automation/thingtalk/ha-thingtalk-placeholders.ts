@@ -222,53 +222,65 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
       [type, placeholder.index, "device_id"],
       value
     );
-    if (placeholder.fields.includes("entity_id")) {
-      const devEntities = this._deviceEntityLookup[value];
-      const entities = devEntities.filter((eid) => {
-        if (placeholder.device_classes) {
-          const stateObj = this.hass.states[eid];
-          if (!stateObj) {
-            return false;
-          }
-          return (
-            placeholder.domains.includes(computeDomain(eid)) &&
-            stateObj.attributes.device_class &&
-            placeholder.device_classes.includes(
-              stateObj.attributes.device_class
-            )
-          );
-        }
-        return placeholder.domains.includes(computeDomain(eid));
-      });
-      if (entities.length === 0) {
-        // Should not happen because we filter the device picker on domain
-        this._error = `No ${placeholder.domains
-          .map((domain) => this.hass.localize(`domain.${domain}`))
-          .join(", ")} entities found in this device.`;
-      } else if (entities.length === 1) {
-        applyPatch(
-          this._placeholderValues,
-          [type, placeholder.index, "entity_id"],
-          entities[0]
-        );
-        applyPatch(
-          this._manualEntities,
-          [type, placeholder.index, "manual"],
-          false
-        );
-        this.requestUpdate("_placeholderValues");
-      } else {
-        delete this._placeholderValues[type][placeholder.index].entity_id;
-        if (this._deviceEntityPicker) {
-          this._deviceEntityPicker.value = undefined;
-        }
-        applyPatch(
-          this._manualEntities,
-          [type, placeholder.index, "manual"],
-          true
-        );
-        this.requestUpdate("_placeholderValues");
+    if (!placeholder.fields.includes("entity_id")) {
+      return;
+    }
+    if (value === "") {
+      delete this._placeholderValues[type][placeholder.index].entity_id;
+      if (this._deviceEntityPicker) {
+        this._deviceEntityPicker.value = undefined;
       }
+      applyPatch(
+        this._manualEntities,
+        [type, placeholder.index, "manual"],
+        false
+      );
+      this.requestUpdate("_placeholderValues");
+      return;
+    }
+    const devEntities = this._deviceEntityLookup[value];
+    const entities = devEntities.filter((eid) => {
+      if (placeholder.device_classes) {
+        const stateObj = this.hass.states[eid];
+        if (!stateObj) {
+          return false;
+        }
+        return (
+          placeholder.domains.includes(computeDomain(eid)) &&
+          stateObj.attributes.device_class &&
+          placeholder.device_classes.includes(stateObj.attributes.device_class)
+        );
+      }
+      return placeholder.domains.includes(computeDomain(eid));
+    });
+    if (entities.length === 0) {
+      // Should not happen because we filter the device picker on domain
+      this._error = `No ${placeholder.domains
+        .map((domain) => this.hass.localize(`domain.${domain}`))
+        .join(", ")} entities found in this device.`;
+    } else if (entities.length === 1) {
+      applyPatch(
+        this._placeholderValues,
+        [type, placeholder.index, "entity_id"],
+        entities[0]
+      );
+      applyPatch(
+        this._manualEntities,
+        [type, placeholder.index, "manual"],
+        false
+      );
+      this.requestUpdate("_placeholderValues");
+    } else {
+      delete this._placeholderValues[type][placeholder.index].entity_id;
+      if (this._deviceEntityPicker) {
+        this._deviceEntityPicker.value = undefined;
+      }
+      applyPatch(
+        this._manualEntities,
+        [type, placeholder.index, "manual"],
+        true
+      );
+      this.requestUpdate("_placeholderValues");
     }
   }
 

@@ -94,12 +94,22 @@ class DialogThingtalk extends LitElement {
           <ul @click=${this._handleExampleClick}>
             <li>
               <button class="link">
-                Turn the lights on when I come home and the sun is set
+                Turn off the lights when I leave home
               </button>
             </li>
             <li>
               <button class="link">
-                Set the thermostat to 15 degrees when I leave the house
+                Turn on the lights when the sun is set
+              </button>
+            </li>
+            <li>
+              <button class="link">
+                Notify me if the door opens and I am not at home
+              </button>
+            </li>
+            <li>
+              <button class="link">
+                Turn the light on when motion is detected
               </button>
             </li>
           </ul>
@@ -153,7 +163,9 @@ class DialogThingtalk extends LitElement {
 
     this._submitting = false;
 
-    if (Object.keys(placeholders).length) {
+    if (!Object.keys(config).length) {
+      this._error = "We couldn't create an automation for that (yet?).";
+    } else if (Object.keys(placeholders).length) {
       this._config = config;
       this._placeholders = placeholders;
     } else {
