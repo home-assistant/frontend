@@ -21,6 +21,7 @@ import { HomeAssistant } from "../../types";
 import { HassEntity } from "home-assistant-js-websocket";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDomain } from "../../common/entity/compute_domain";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
@@ -62,7 +63,7 @@ class HaEntityPicker extends LitElement {
   @property() public value?: string;
   /**
    * Show entities from specific domains.
-   * @type {string}
+   * @type {Array}
    * @attr include-domains
    */
   @property({ type: Array, attribute: "include-domains" })
@@ -74,6 +75,13 @@ class HaEntityPicker extends LitElement {
    */
   @property({ type: Array, attribute: "exclude-domains" })
   public excludeDomains?: string[];
+  /**
+   * Show only entities of these device classes.
+   * @type {Array}
+   * @attr include-device-classes
+   */
+  @property({ type: Array, attribute: "include-device-classes" })
+  public includeDeviceClasses?: string[];
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
   @property({ type: Boolean }) private _opened?: boolean;
   @property() private _hass?: HomeAssistant;
@@ -83,7 +91,8 @@ class HaEntityPicker extends LitElement {
       hass: this["hass"],
       includeDomains: this["includeDomains"],
       excludeDomains: this["excludeDomains"],
-      entityFilter: this["entityFilter"]
+      entityFilter: this["entityFilter"],
+      includeDeviceClasses: this["includeDeviceClasses"]
     ) => {
       let states: HassEntity[] = [];
 
@@ -94,17 +103,27 @@ class HaEntityPicker extends LitElement {
 
       if (includeDomains) {
         entityIds = entityIds.filter((eid) =>
-          includeDomains.includes(eid.substr(0, eid.indexOf(".")))
+          includeDomains.includes(computeDomain(eid))
         );
       }
 
       if (excludeDomains) {
         entityIds = entityIds.filter(
-          (eid) => !excludeDomains.includes(eid.substr(0, eid.indexOf(".")))
+          (eid) => !excludeDomains.includes(computeDomain(eid))
         );
       }
 
       states = entityIds.sort().map((key) => hass!.states[key]);
+
+      if (includeDeviceClasses) {
+        states = states.filter(
+          (stateObj) =>
+            // We always want to include the entity of the current value
+            stateObj.entity_id === this.value ||
+            (stateObj.attributes.device_class &&
+              includeDeviceClasses.includes(stateObj.attributes.device_class))
+        );
+      }
 
       if (entityFilter) {
         states = states.filter(
@@ -113,6 +132,7 @@ class HaEntityPicker extends LitElement {
             stateObj.entity_id === this.value || entityFilter!(stateObj)
         );
       }
+
       return states;
     }
   );
@@ -130,7 +150,8 @@ class HaEntityPicker extends LitElement {
       this._hass,
       this.includeDomains,
       this.excludeDomains,
-      this.entityFilter
+      this.entityFilter,
+      this.includeDeviceClasses
     );
 
     return html`
