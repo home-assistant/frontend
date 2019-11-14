@@ -59,11 +59,11 @@ export class HuiHistoryGraphCardEditor extends LitElement
   }
 
   get _hours_to_show(): number {
-    return this._config!.number || 24;
+    return this._config!.hours_to_show || 24;
   }
 
   get _refresh_interval(): number {
-    return this._config!.number || 0;
+    return this._config!.refresh_interval || 0;
   }
 
   protected render(): TemplateResult | void {

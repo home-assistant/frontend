@@ -32,6 +32,14 @@ export class HaSwitch extends MwcSwitch {
           flex-direction: row;
           align-items: center;
         }
+        .mdc-switch.mdc-switch--checked .mdc-switch__thumb {
+          background-color: var(--switch-checked-button-color);
+          border-color: var(--switch-checked-button-color);
+        }
+        .mdc-switch.mdc-switch--checked .mdc-switch__track {
+          background-color: var(--switch-checked-track-color);
+          border-color: var(--switch-checked-track-color);
+        }
         .mdc-switch:not(.mdc-switch--checked) .mdc-switch__thumb {
           background-color: var(--switch-unchecked-button-color);
           border-color: var(--switch-unchecked-button-color);

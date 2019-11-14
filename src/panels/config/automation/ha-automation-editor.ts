@@ -170,7 +170,8 @@ export class HaAutomationEditor extends LitElement {
     }
 
     if (changedProps.has("creatingNew") && this.creatingNew && this.hass) {
-      this._dirty = false;
+      const initData = getAutomationEditorInitData();
+      this._dirty = initData ? true : false;
       this._config = {
         alias: this.hass.localize(
           "ui.panel.config.automation.editor.default_name"
@@ -179,7 +180,7 @@ export class HaAutomationEditor extends LitElement {
         trigger: [{ platform: "state" }],
         condition: [],
         action: [{ service: "" }],
-        ...getAutomationEditorInitData(),
+        ...initData,
       };
     }
 
