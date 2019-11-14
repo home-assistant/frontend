@@ -6,7 +6,8 @@ export const haStyle = css`
   }
 
   app-header-layout,
-  ha-app-layout {
+  ha-app-layout,
+  body {
     background-color: var(--primary-background-color);
   }
 
