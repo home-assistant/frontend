@@ -68,7 +68,7 @@ export default class DeviceActionEditor extends Component<
         {extraFieldsData && (
           <ha-form
             data={Object.assign({}, ...extraFieldsData)}
-            onData-changed={this._extraFieldsChanged}
+            onvalue-changed={this._extraFieldsChanged}
             schema={this.state.capabilities.extra_fields}
             computeLabel={this._extraFieldsComputeLabelCallback(hass.localize)}
           />
