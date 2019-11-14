@@ -16,7 +16,13 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
-import { processText } from "../../data/conversation";
+import { SpeechRecognition } from "../../common/dom/speech-recognition";
+import {
+  processText,
+  getAgentInfo,
+  setConversationOnboarding,
+  AgentInfo,
+} from "../../data/conversation";
 import { classMap } from "lit-html/directives/class-map";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { haStyleDialog } from "../../resources/styles";
@@ -35,21 +41,6 @@ interface Results {
   final: boolean;
 }
 
-/* tslint:disable */
-// @ts-ignore
-window.SpeechRecognition =
-  // @ts-ignore
-  window.SpeechRecognition || window.webkitSpeechRecognition;
-// @ts-ignore
-window.SpeechGrammarList =
-  // @ts-ignore
-  window.SpeechGrammarList || window.webkitSpeechGrammarList;
-// @ts-ignore
-window.SpeechRecognitionEvent =
-  // @ts-ignore
-  window.SpeechRecognitionEvent || window.webkitSpeechRecognitionEvent;
-/* tslint:enable */
-
 @customElement("ha-voice-command-dialog")
 export class HaVoiceCommandDialog extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -61,8 +52,9 @@ export class HaVoiceCommandDialog extends LitElement {
     },
   ];
   @property() private _opened = false;
+  @property() private _agentInfo?: AgentInfo;
   @query("#messages") private messages!: PaperDialogScrollableElement;
-  private recognition?: SpeechRecognition;
+  private recognition!: SpeechRecognition;
   private _conversationId?: string;
 
   public async showDialog(): Promise<void> {
@@ -70,6 +62,7 @@ export class HaVoiceCommandDialog extends LitElement {
     if (SpeechRecognition) {
       this._startListening();
     }
+    this._agentInfo = await getAgentInfo(this.hass);
   }
 
   protected render(): TemplateResult {
@@ -111,7 +104,30 @@ export class HaVoiceCommandDialog extends LitElement {
         .opened=${this._opened}
         @opened-changed=${this._openedChanged}
       >
-        <paper-dialog-scrollable id="messages">
+        ${this._agentInfo && this._agentInfo.onboarding
+          ? html`
+              <div class="onboarding">
+                ${this._agentInfo.onboarding.text}
+                <div class="side-by-side" @click=${this._completeOnboarding}>
+                  <a
+                    class="button"
+                    href="${this._agentInfo.onboarding.url}"
+                    target="_blank"
+                    ><mwc-button unelevated>Yes!</mwc-button></a
+                  >
+                  <mwc-button outlined>No</mwc-button>
+                </div>
+              </div>
+            `
+          : ""}
+        <paper-dialog-scrollable
+          id="messages"
+          class=${classMap({
+            "top-border": Boolean(
+              this._agentInfo && this._agentInfo.onboarding
+            ),
+          })}
+        >
           ${this._conversation.map(
             (message) => html`
               <div class="${this._computeMessageClasses(message)}">
@@ -132,36 +148,48 @@ export class HaVoiceCommandDialog extends LitElement {
               `
             : ""}
         </paper-dialog-scrollable>
-        <paper-input
-          @keyup=${this._handleKeyUp}
-          label="${this.hass!.localize(
-            `ui.dialogs.voice_command.${
-              SpeechRecognition ? "label_voice" : "label"
-            }`
-          )}"
-          autofocus
-        >
-          ${SpeechRecognition
+        <div class="input">
+          <paper-input
+            @keyup=${this._handleKeyUp}
+            label="${this.hass!.localize(
+              `ui.dialogs.voice_command.${
+                SpeechRecognition ? "label_voice" : "label"
+              }`
+            )}"
+            autofocus
+          >
+            ${SpeechRecognition
+              ? html`
+                  <span suffix="" slot="suffix">
+                    ${this.results
+                      ? html`
+                          <div class="bouncer">
+                            <div class="double-bounce1"></div>
+                            <div class="double-bounce2"></div>
+                          </div>
+                        `
+                      : ""}
+                    <paper-icon-button
+                      .active=${Boolean(this.results)}
+                      icon="hass:microphone"
+                      @click=${this._toggleListening}
+                    >
+                    </paper-icon-button>
+                  </span>
+                `
+              : ""}
+          </paper-input>
+          ${this._agentInfo && this._agentInfo.attribution
             ? html`
-                <span suffix="" slot="suffix">
-                  ${this.results
-                    ? html`
-                        <div class="bouncer">
-                          <div class="double-bounce1"></div>
-                          <div class="double-bounce2"></div>
-                        </div>
-                      `
-                    : ""}
-                  <paper-icon-button
-                    .active=${Boolean(this.results)}
-                    icon="hass:microphone"
-                    @click=${this._toggleListening}
-                  >
-                  </paper-icon-button>
-                </span>
+                <a
+                  href=${this._agentInfo.attribution.url}
+                  class="attribution"
+                  target="_blank"
+                  >${this._agentInfo.attribution.name}</a
+                >
               `
             : ""}
-        </paper-input>
+        </div>
       </ha-paper-dialog>
     `;
   }
@@ -196,18 +224,23 @@ export class HaVoiceCommandDialog extends LitElement {
     }
   }
 
+  private _completeOnboarding() {
+    setConversationOnboarding(this.hass, true);
+    this._agentInfo! = { ...this._agentInfo, onboarding: undefined };
+  }
+
   private _initRecognition() {
     this.recognition = new SpeechRecognition();
     this.recognition.interimResults = true;
     this.recognition.lang = "en-US";
 
-    this.recognition!.onstart = () => {
+    this.recognition.onstart = () => {
       this.results = {
         final: false,
         transcript: "",
       };
     };
-    this.recognition!.onerror = (event) => {
+    this.recognition.onerror = (event) => {
       this.recognition!.abort();
       if (event.error !== "aborted") {
         const text =
@@ -220,7 +253,7 @@ export class HaVoiceCommandDialog extends LitElement {
       }
       this.results = null;
     };
-    this.recognition!.onend = () => {
+    this.recognition.onend = () => {
       // Already handled by onerror
       if (this.results == null) {
         return;
@@ -240,7 +273,7 @@ export class HaVoiceCommandDialog extends LitElement {
       }
     };
 
-    this.recognition!.onresult = (event) => {
+    this.recognition.onresult = (event) => {
       const result = event.results[0];
       this.results = {
         transcript: result[0].transcript,
@@ -270,14 +303,6 @@ export class HaVoiceCommandDialog extends LitElement {
       message.text = plain.speech;
 
       this.requestUpdate("_conversation");
-
-      if (speechSynthesis) {
-        const speech = new SpeechSynthesisUtterance(
-          response.speech.plain.speech
-        );
-        speech.lang = "en-US";
-        speechSynthesis.speak(speech);
-      }
     } catch {
       message.text = this.hass.localize("ui.dialogs.voice_command.error");
       message.error = true;
@@ -343,14 +368,42 @@ export class HaVoiceCommandDialog extends LitElement {
           color: var(--primary-color);
         }
 
-        paper-input {
+        .input {
           margin: 0 0 16px 0;
         }
 
         ha-paper-dialog {
           width: 450px;
         }
-
+        a.button {
+          text-decoration: none;
+        }
+        a.button > mwc-button {
+          width: 100%;
+        }
+        .onboarding {
+          padding: 0 24px;
+        }
+        paper-dialog-scrollable.top-border::before {
+          content: "";
+          position: absolute;
+          top: 0;
+          left: 0;
+          right: 0;
+          height: 1px;
+          background: var(--divider-color);
+        }
+        .side-by-side {
+          display: flex;
+          margin: 8px 0;
+        }
+        .side-by-side > * {
+          flex: 1 0;
+          padding: 4px;
+        }
+        .attribution {
+          color: var(--secondary-text-color);
+        }
         .message {
           font-size: 18px;
           clear: both;

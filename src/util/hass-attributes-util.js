@@ -45,6 +45,7 @@ hassAttributeUtil.DOMAIN_DEVICE_CLASS = {
     "pressure",
     "power",
     "signal_strength",
+    "timestamp",
   ],
   switch: ["switch", "outlet"],
 };

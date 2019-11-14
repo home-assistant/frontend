@@ -531,7 +531,8 @@
       },
       "device-picker": {
         "clear": "Clear",
-        "show_devices": "Show devices"
+        "show_devices": "Show devices",
+        "device": "Device"
       },
       "relative_time": {
         "past": "{time} ago",
@@ -559,8 +560,8 @@
         "found": "I found the following for you:",
         "error": "Oops, an error has occurred",
         "how_can_i_help": "How can I help?",
-        "label": "Type a question and press <Enter>",
-        "label_voice": "Type and press <Enter> or tap the microphone icon to speak"
+        "label": "Type a question and press 'Enter'",
+        "label_voice": "Type and press 'Enter' or tap the microphone to speak"
       },
       "confirmation": {
         "cancel": "Cancel",
@@ -661,10 +662,10 @@
           }
         },
         "area_registry": {
-          "caption": "Area Registry",
+          "caption": "Areas",
           "description": "Overview of all areas in your home.",
           "picker": {
-            "header": "Area Registry",
+            "header": "Areas",
             "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
             "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards.",
             "integrations_page": "Integrations page",
@@ -704,7 +705,7 @@
           }
         },
         "server_control": {
-          "caption": "Server Control",
+          "caption": "Server Controls",
           "description": "Restart and stop the Home Assistant server",
           "section": {
             "validation": {
@@ -717,7 +718,7 @@
             "reloading": {
               "heading": "Configuration reloading",
               "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.",
-              "core": "Reload core",
+              "core": "Reload location & customizations",
               "group": "Reload groups",
               "automation": "Reload automations",
               "script": "Reload scripts",
@@ -734,10 +735,10 @@
           }
         },
         "customize": {
-          "caption": "Customization",
+          "caption": "Customizations",
           "description": "Customize your entities",
           "picker": {
-            "header": "Customization",
+            "header": "Customizations",
             "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated."
           },
           "warning": {
@@ -754,7 +755,7 @@
           "pick_attribute": "Pick an attribute to override"
         },
         "automation": {
-          "caption": "Automation",
+          "caption": "Automations",
           "description": "Create and edit automations",
           "picker": {
             "header": "Automation Editor",
@@ -782,6 +783,7 @@
               "placeholder": "Optional description"
             },
             "triggers": {
+              "name": "Trigger",
               "header": "Triggers",
               "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.",
               "learn_more": "Learn more about triggers",
@@ -872,6 +874,7 @@
               }
             },
             "conditions": {
+              "name": "Condition",
               "header": "Conditions",
               "introduction": "Conditions are an optional part of an automation rule and can be used to prevent an action from happening when triggered. Conditions look very similar to triggers but are very different. A trigger will look at events happening in the system while a condition only looks at how the system looks right now. A trigger can observe that a switch is being turned on. A condition can only see if a switch is currently on or off.",
               "learn_more": "Learn more about conditions",
@@ -932,6 +935,7 @@
               }
             },
             "actions": {
+              "name": "Action",
               "header": "Actions",
               "introduction": "The actions are what Home Assistant will do when the automation is triggered.",
               "learn_more": "Learn more about actions",
@@ -977,7 +981,7 @@
           }
         },
         "script": {
-          "caption": "Script",
+          "caption": "Scripts",
           "description": "Create and edit scripts",
           "picker": {
             "header": "Script Editor",
@@ -1229,10 +1233,10 @@
           }
         },
         "entity_registry": {
-          "caption": "Entity Registry",
+          "caption": "Entities",
           "description": "Overview of all known entities.",
           "picker": {
-            "header": "Entity Registry",
+            "header": "Entities",
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant. Note, removing the entity registry entry won't remove the entity. To do that, follow the link below and remove it from the integrations page.",
             "integrations_page": "Integrations page",
