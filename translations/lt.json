@@ -216,9 +216,9 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\n  one {diena}\\n  other {dienos}\\n}",
-            "second": "{count} {count, plural,\\n  one {sekundė}\\n  other {sekundės}\\n}",
-            "week": "{count} {count, plural,\\n  one {savaitė}\\n  other {savaitės}\\n}"
+            "day": "{count} {count, plural,\n  one {diena}\n  other {dienos}\n}",
+            "second": "{count} {count, plural,\n  one {sekundė}\n  other {sekundės}\n}",
+            "week": "{count} {count, plural,\n  one {savaitė}\n  other {savaitės}\n}"
         },
         "panel": {
             "config": {

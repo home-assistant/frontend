@@ -360,7 +360,7 @@
                 "away_mode": "خارج المنزل",
                 "currently": "حاليا",
                 "fan_mode": "وضع المروحة",
-                "on_off": "إيقاف\/تشغيل",
+                "on_off": "إيقاف/تشغيل",
                 "target_humidity": "Doelluchtvochtigheid",
                 "target_temperature": "درجة الحرارة المستهدفة"
             },
@@ -397,7 +397,7 @@
             "water_heater": {
                 "away_mode": "حالة خارج المنزل",
                 "currently": "حاليا",
-                "on_off": "إيقاف\/تشغيل",
+                "on_off": "إيقاف/تشغيل",
                 "operation": "تشغيل",
                 "target_temperature": "درجة الحرارة المستهدفة"
             }
@@ -432,9 +432,9 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {يوم}\\nother {أيام}\\n}",
-            "second": "{count} {count, plural,\\none {ثانية}\\nother {ثواني}\\n}",
-            "week": "{count} {count, plural,\\none {أسبوع}\\nother {أسابيع}\\n}"
+            "day": "{count} {count, plural,\none {يوم}\nother {أيام}\n}",
+            "second": "{count} {count, plural,\none {ثانية}\nother {ثواني}\n}",
+            "week": "{count} {count, plural,\none {أسبوع}\nother {أسابيع}\n}"
         },
         "login-form": {
             "log_in": "تسجيل الدخول",
@@ -459,7 +459,7 @@
                             "delete_confirm": "هل تريد الحذف فعلا؟",
                             "duplicate": "تكرار",
                             "header": "الإجراءات",
-                            "introduction": "الإجراءات هي ما سيفعله Home Assistant عندما يتفعّل الجهاز المُتحَكم به.\\n\\n [مزيد من المعلومات حول الإجراءات.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "الإجراءات هي ما سيفعله Home Assistant عندما يتفعّل الجهاز المُتحَكم به.\n\n [مزيد من المعلومات حول الإجراءات.] (https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "معرفة المزيد عن الإجراءات",
                             "type_select": "نوع الإجراء",
                             "type": {
@@ -494,7 +494,7 @@
                             "delete_confirm": "هل تريد الحذف فعلا؟",
                             "duplicate": "تكرار",
                             "header": "الشروط",
-                            "introduction": "الشروط هي جزء اختياري من قواعد المتحكم الآلي ويمكن استخدامها لمنع تفعّل الإجراء بالمشغل. الشروط تبدو متشابهة جدًا مع المشغلات ولكنها مختلفة جدًا. سينظر المشغل في الأحداث التي تحدث في النظام بينما ينظر الشرط فقط إلى كيفية ظهور النظام الآن. يستطيع المشغل ملاحظة أن مفتاح التشغيل تم تشغيله. بينما الشرط يرى فقط ما إذا كان أحد المفاتيح هل هو قيد التشغيل أو الإيقاف حاليًا. \\n\\n [مزيد من المعلومات حول الشروط.] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "الشروط هي جزء اختياري من قواعد المتحكم الآلي ويمكن استخدامها لمنع تفعّل الإجراء بالمشغل. الشروط تبدو متشابهة جدًا مع المشغلات ولكنها مختلفة جدًا. سينظر المشغل في الأحداث التي تحدث في النظام بينما ينظر الشرط فقط إلى كيفية ظهور النظام الآن. يستطيع المشغل ملاحظة أن مفتاح التشغيل تم تشغيله. بينما الشرط يرى فقط ما إذا كان أحد المفاتيح هل هو قيد التشغيل أو الإيقاف حاليًا. \n\n [مزيد من المعلومات حول الشروط.] (https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "معرفة المزيد عن الشروط",
                             "type_select": "نوع الشرط",
                             "type": {
@@ -543,7 +543,7 @@
                             "delete_confirm": "هل تريد الحذف فعلا؟",
                             "duplicate": "تكرار",
                             "header": "المشغلات",
-                            "introduction": "المشغلات هي ما يبدأ تشغيل قاعدة المتحكم الآلي. من الممكن تحديد مشغلات متعددة لنفس القاعدة. بمجرد بدء المشغل ، سيقوم Home Assistant بالتحقق من الشروط ، إن وجدت ، واستدعاء الإجراء. \\n\\n [مزيد من المعلومات حول المشغلات.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "المشغلات هي ما يبدأ تشغيل قاعدة المتحكم الآلي. من الممكن تحديد مشغلات متعددة لنفس القاعدة. بمجرد بدء المشغل ، سيقوم Home Assistant بالتحقق من الشروط ، إن وجدت ، واستدعاء الإجراء. \n\n [مزيد من المعلومات حول المشغلات.] (https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "معرفة المزيد عن المشغلات",
                             "type_select": "نوع المشغل",
                             "type": {
@@ -611,7 +611,7 @@
                     "picker": {
                         "add_automation": "أضف متحكم آلي",
                         "header": "محرر المتحكم الآلي",
-                        "introduction": "محرر المتحكم الآلي يسمح لك بإنشاء وتحرير المتحكمات الآلية. يرجى قراءة [الإرشادات] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) للتأكد من إعدادك Home Assistant بشكل صحيح.",
+                        "introduction": "محرر المتحكم الآلي يسمح لك بإنشاء وتحرير المتحكمات الآلية. يرجى قراءة [الإرشادات] (https://home-assistant.io/docs/automation/editor/) للتأكد من إعدادك Home Assistant بشكل صحيح.",
                         "learn_more": "معرفة المزيد عن التحكم الآلي",
                         "no_automations": "لم تعثر على أي متحكم آلي قابل للتعديل",
                         "pick_automation": "أختر متحكم آلي للتعديل"

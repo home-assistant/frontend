@@ -247,7 +247,7 @@
             "fan_only": "Ventilateur seul",
             "gas": "Gaz",
             "heat": "Chauffe",
-            "heat_cool": "Chaud\/Froid",
+            "heat_cool": "Chaud/Froid",
             "heat_pump": "Pompe à chaleur",
             "high_demand": "Forte demande",
             "idle": "Inactif",
@@ -369,12 +369,12 @@
             "fog": "Brouillard",
             "hail": "Grêle",
             "lightning": "Orage",
-            "lightning-rainy": "Orage \/ Pluie",
+            "lightning-rainy": "Orage / Pluie",
             "partlycloudy": "Partiellement nuageux",
             "pouring": "Averses",
             "rainy": "Pluie",
             "snowy": "Neige",
-            "snowy-rainy": "Neige \/ Pluie",
+            "snowy-rainy": "Neige / Pluie",
             "sunny": "Soleil",
             "windy": "Vent",
             "windy-variant": "Vent"
@@ -426,7 +426,7 @@
                 "heating": "{name} chauffage",
                 "high": "haute",
                 "low": "basse",
-                "on_off": "Allumé \/ Éteint",
+                "on_off": "Allumé / Éteint",
                 "operation": "Opération",
                 "preset_mode": "Préréglage",
                 "swing_mode": "Mode de balancement",
@@ -498,7 +498,7 @@
             "water_heater": {
                 "away_mode": "Mode \"Absent\"",
                 "currently": "Actuellement",
-                "on_off": "Marche \/ Arrêt",
+                "on_off": "Marche / Arrêt",
                 "operation": "Opération",
                 "target_temperature": "Température cible"
             },
@@ -557,11 +557,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\none {jour}\\nother {jours}\\n}",
-                    "hour": "{count} {count, plural,\\none {heure}\\nother {heures}\\n}",
-                    "minute": "{count} {count, plural,\\none {minute}\\nother {minutes}\\n}",
-                    "second": "{count} {count, plural,\\none {seconde}\\nother {secondes}\\n}",
-                    "week": "{count} {count, plural,\\none {semaine}\\nother {semaines}\\n}"
+                    "day": "{count} {count, plural,\none {jour}\nother {jours}\n}",
+                    "hour": "{count} {count, plural,\none {heure}\nother {heures}\n}",
+                    "minute": "{count} {count, plural,\none {minute}\nother {minutes}\n}",
+                    "second": "{count} {count, plural,\none {seconde}\nother {secondes}\n}",
+                    "week": "{count} {count, plural,\none {semaine}\nother {semaines}\n}"
                 },
                 "future": "Dans {time}",
                 "never": "Jamais",
@@ -644,11 +644,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {jour}\\nother {jours}\\n}",
-            "hour": "{count} {count, plural,\\none {heure}\\nother {heures}\\n}",
-            "minute": "{count} {count, plural,\\none {minute}\\nother {minutes}\\n}",
-            "second": "{count} {count, plural,\\none {seconde}\\nother {secondes}\\n}",
-            "week": "{count} {count, plural,\\none {semaine}\\nother {semaines}\\n}"
+            "day": "{count} {count, plural,\none {jour}\nother {jours}\n}",
+            "hour": "{count} {count, plural,\none {heure}\nother {heures}\n}",
+            "minute": "{count} {count, plural,\none {minute}\nother {minutes}\n}",
+            "second": "{count} {count, plural,\none {seconde}\nother {secondes}\n}",
+            "week": "{count} {count, plural,\none {semaine}\nother {semaines}\n}"
         },
         "login-form": {
             "log_in": "Connexion",
@@ -702,6 +702,7 @@
                             "header": "Actions",
                             "introduction": "Les actions sont ce que Home Assistant fera quand une automatisation est déclenchée.",
                             "learn_more": "En savoir plus sur les actions",
+                            "name": "Action",
                             "type_select": "Type d'action",
                             "type": {
                                 "condition": {
@@ -813,7 +814,7 @@
                             "delete_confirm": "Voulez-vous effacer ?",
                             "duplicate": "Dupliquer",
                             "header": "Déclencheurs",
-                            "introduction": "Les déclencheurs sont ce qui lance le traitement d'une règle d'automatisation. Il est possible de spécifier plusieurs déclencheurs pour une même règle. Dès qu'un déclencheur est activé, Home Assistant validera les conditions, s'il y en a, et appellera l'action.\\n\\n[En apprendre plus sur les déclencheurs.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Les déclencheurs sont ce qui lance le traitement d'une règle d'automatisation. Il est possible de spécifier plusieurs déclencheurs pour une même règle. Dès qu'un déclencheur est activé, Home Assistant validera les conditions, s'il y en a, et appellera l'action.\n\n[En apprendre plus sur les déclencheurs.](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "En savoir plus sur les déclencheurs",
                             "type_select": "Type de déclencheur",
                             "type": {
@@ -939,7 +940,7 @@
                             "enable_state_reporting": "Activer le rapport d'état",
                             "enter_pin_error": "Impossible de stocker le PIN:",
                             "enter_pin_hint": "Entrer un code PIN pour utiliser les dispositifs de sécurité",
-                            "enter_pin_info": "Veuillez entrer un code PIN pour interagir avec les dispositifs de sécurité. Les dispositifs de sécurité sont les portes, les portes de garage et les serrures. Il vous sera demandé de dire\/entrer ce code PIN lorsque vous interagissez avec de tels appareils via Google Assistant.",
+                            "enter_pin_info": "Veuillez entrer un code PIN pour interagir avec les dispositifs de sécurité. Les dispositifs de sécurité sont les portes, les portes de garage et les serrures. Il vous sera demandé de dire/entrer ce code PIN lorsque vous interagissez avec de tels appareils via Google Assistant.",
                             "info": "Grâce à l'intégration de Google Assistant pour Home Assistant Cloud, vous pourrez contrôler tous vos appareils Home Assistant via n'importe quel appareil compatible avec Google Assistant.",
                             "info_state_reporting": "Si vous activez le rapport d'état, Home Assistant envoie tous les changements d'état des entités exposées à Google. Cela vous permet de toujours voir les derniers états de l'application Google.",
                             "manage_entities": "Gérer les entités",
@@ -1030,7 +1031,7 @@
                         "alert_password_change_required": "Vous devez changer votre mot de passe avant de vous connecter.",
                         "dismiss": "Rejeter",
                         "email": "Email",
-                        "email_error_msg": "E-mail non valide",
+                        "email_error_msg": "Email non valide",
                         "forgot_password": "Mot de passe oublié?",
                         "introduction": "Home Assistant Cloud vous fournit une connexion sécurisée à distance à votre instance lorsque vous êtes loin de chez vous. Il vous permet également de vous connecter à des services cloud uniquement : Amazon Alexa et Google Assistant.",
                         "introduction2": "Ce service est géré par notre partenaire",
@@ -1130,7 +1131,7 @@
                     "description": "Personnaliser vos entités",
                     "picker": {
                         "header": "Personnalisation",
-                        "introduction": "Ajuster les attributs par entité. Les personnalisations ajoutées \/ modifiées prendront effet immédiatement. Les personnalisations supprimées prendront effet lors de la mise à jour de l'entité."
+                        "introduction": "Ajuster les attributs par entité. Les personnalisations ajoutées / modifiées prendront effet immédiatement. Les personnalisations supprimées prendront effet lors de la mise à jour de l'entité."
                     },
                     "warning": {
                         "include_link": "inclure customize.yaml",
@@ -1404,7 +1405,7 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "discovery_text": "Les appareils découverts apparaîtront ici. Suivez les instructions pour votre \/ vos appareil(s) et placez-le(s) en mode de couplage.",
+                        "discovery_text": "Les appareils découverts apparaîtront ici. Suivez les instructions pour votre / vos appareil(s) et placez-le(s) en mode de couplage.",
                         "header": "Zigbee Home Automation - Ajout de périphériques",
                         "search_again": "Rechercher à nouveau",
                         "spinner": "Recherche de périphériques ZHA Zigbee ..."
@@ -1648,7 +1649,7 @@
                         "more_info": "Afficher plus d'informations: {name}",
                         "navigate_to": "Accédez à {location}",
                         "tap": "Appuyez sur:",
-                        "toggle": "Activer\/désactiver {name}",
+                        "toggle": "Activer/désactiver {name}",
                         "url": "Ouvrir la fenêtre vers {url_path}."
                     },
                     "shopping-list": {
@@ -1796,7 +1797,7 @@
                         "save": "Enregistrer",
                         "show_code_editor": "Afficher l'éditeur de code",
                         "show_visual_editor": "Afficher l'éditeur visuel",
-                        "toggle_editor": "Activer\/désactiver l’éditeur"
+                        "toggle_editor": "Activer/désactiver l’éditeur"
                     },
                     "edit_lovelace": {
                         "edit_title": "Editer le titre",

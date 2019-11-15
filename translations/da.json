@@ -247,7 +247,7 @@
             "fan_only": "Kun blæser",
             "gas": "Gas",
             "heat": "Varme",
-            "heat_cool": "Opvarm\/køl",
+            "heat_cool": "Opvarm/køl",
             "heat_pump": "Varmepumpe",
             "high_demand": "Høj efterspørgsel",
             "idle": "Inaktiv",
@@ -426,7 +426,7 @@
                 "heating": "{name} opvarmer",
                 "high": "høj",
                 "low": "lav",
-                "on_off": "On \/ off",
+                "on_off": "On / off",
                 "operation": "Drift",
                 "preset_mode": "Forudindstilling",
                 "swing_mode": "Swing tilstand",
@@ -496,7 +496,7 @@
             "water_heater": {
                 "away_mode": "Ikke til stede",
                 "currently": "Lige nu",
-                "on_off": "Tænd \/ sluk",
+                "on_off": "Tænd / sluk",
                 "operation": "Drift",
                 "target_temperature": "Ønsket temperatur"
             },
@@ -553,11 +553,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\none {dag}\\nother {dage}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {time}\\n  other {timer}\\n}",
-                    "minute": "{count} {count, plural,\\none {minut}\\nother {minutter}\\n}",
-                    "second": "{count} {count, plural,\\n  one {sekund}\\n  other {sekunder}\\n}",
-                    "week": "{count} {count, plural,\\none {uge}\\nother {uger}\\n}"
+                    "day": "{count} {count, plural,\none {dag}\nother {dage}\n}",
+                    "hour": "{count} {count, plural,\n  one {time}\n  other {timer}\n}",
+                    "minute": "{count} {count, plural,\none {minut}\nother {minutter}\n}",
+                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekunder}\n}",
+                    "week": "{count} {count, plural,\none {uge}\nother {uger}\n}"
                 },
                 "future": "Om {time}",
                 "never": "Aldrig",
@@ -628,11 +628,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {dag}\\nother {dage}\\n}",
-            "hour": "{count} {count, plural,\\n  one {time}\\n  other {timer}\\n}",
-            "minute": "{count} {count, plural,\\none {minut}\\nother {minutter}\\n}",
-            "second": "{count} {count, plural,\\none {sekund}\\nother {sekunder}\\n}",
-            "week": "{count} {count, plural,\\none {uge}\\nother {uger}\\n}"
+            "day": "{count} {count, plural,\none {dag}\nother {dage}\n}",
+            "hour": "{count} {count, plural,\n  one {time}\n  other {timer}\n}",
+            "minute": "{count} {count, plural,\none {minut}\nother {minutter}\n}",
+            "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}",
+            "week": "{count} {count, plural,\none {uge}\nother {uger}\n}"
         },
         "login-form": {
             "log_in": "Log på",
@@ -683,7 +683,7 @@
                             "delete_confirm": "Er du sikker på du vil slette?",
                             "duplicate": "Kopier",
                             "header": "Handlinger",
-                            "introduction": "Handlinger er, hvad Home Assistant skal gøre, når automatiseringen udløses. \\n\\n [Lær mere om handlinger.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Handlinger er, hvad Home Assistant skal gøre, når automatiseringen udløses. \n\n [Lær mere om handlinger.] (https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Lær om handlinger",
                             "type_select": "Begivenhedstype",
                             "type": {
@@ -727,7 +727,7 @@
                             "delete_confirm": "Er du sikker på du vil slette?",
                             "duplicate": "Kopier",
                             "header": "Betingelser",
-                            "introduction": "Betingelser er en valgfri del af en automatiseringsregel og kan bruges til at forhindre, at en handling sker, når den udløses. Betingelser ligner udløsere, men er meget forskellige. En udløser vil se på begivenheder der sker i systemet, mens en tilstand kun ser på, hvordan systemet ser ud lige nu. En udløser kan observere, at der er tændt for en kontakt. En tilstand kan kun se, om en kontakt i øjeblikket er til eller fra. \\n\\n [Lær mere om betingelser.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Betingelser er en valgfri del af en automatiseringsregel og kan bruges til at forhindre, at en handling sker, når den udløses. Betingelser ligner udløsere, men er meget forskellige. En udløser vil se på begivenheder der sker i systemet, mens en tilstand kun ser på, hvordan systemet ser ud lige nu. En udløser kan observere, at der er tændt for en kontakt. En tilstand kan kun se, om en kontakt i øjeblikket er til eller fra. \n\n [Lær mere om betingelser.] (Https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Lær om betingelser",
                             "type_select": "Betingelsestype",
                             "type": {
@@ -796,7 +796,7 @@
                             "delete_confirm": "Sikker på, at du vil slette?",
                             "duplicate": "Kopier",
                             "header": "Udløser",
-                            "introduction": "Udløsere er, hvad der begynder behandlingen af en automatiseringsregel. Det er muligt at angive flere udløsere for samme regel. Når en udløser starter, vil Home Assistant validere eventuelle betingelser og udføre handlingen. \\n\\n [Lær mere om udløsere.] (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Udløsere er, hvad der begynder behandlingen af en automatiseringsregel. Det er muligt at angive flere udløsere for samme regel. Når en udløser starter, vil Home Assistant validere eventuelle betingelser og udføre handlingen. \n\n [Lær mere om udløsere.] (Https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Lær om udløsere",
                             "type_select": "Udløser type",
                             "type": {
@@ -885,7 +885,7 @@
                     "picker": {
                         "add_automation": "Tilføj automatisering",
                         "header": "Automatiserings editor",
-                        "introduction": "Automatiserings editoren giver dig mulighed for at oprette og redigere automatiseringer. Læs venligst [instruktionerne] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) for at sikre dig, at du har konfigureret Home Assistant korrekt.",
+                        "introduction": "Automatiserings editoren giver dig mulighed for at oprette og redigere automatiseringer. Læs venligst [instruktionerne] (https://home-assistant.io/docs/automation/editor/) for at sikre dig, at du har konfigureret Home Assistant korrekt.",
                         "learn_more": "Lær om automatiseringer",
                         "no_automations": "Vi kunne ikke finde nogen redigerbare automatiseringer",
                         "pick_automation": "Vælg automatisering for at redigere"
@@ -1070,7 +1070,7 @@
                     "description": "Tilpas dine enheder",
                     "picker": {
                         "header": "Tilpasning",
-                        "introduction": "Tilpas enhedsattributter. Tilføjede\/redigerede tilpasninger træder i kraft med det samme. Fjernede tilpasninger træder i kraft når enheden opdateres."
+                        "introduction": "Tilpas enhedsattributter. Tilføjede/redigerede tilpasninger træder i kraft med det samme. Fjernede tilpasninger træder i kraft når enheden opdateres."
                     }
                 },
                 "devices": {
