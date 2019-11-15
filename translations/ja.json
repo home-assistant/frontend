@@ -325,10 +325,10 @@
             }
         },
         "duration": {
-            "hour": "{count} {count, plural,\\n  one {時間}\\n  other {時間}\\n}",
-            "minute": "{count} {count, plural,\\n  one {分}\\n  other {分}\\n}",
-            "second": "{count} {count, plural,\\n  one {秒}\\n  other {秒}\\n}",
-            "week": "{count} {count, plural,\\n  one {週間}\\n  other {週間}\\n}"
+            "hour": "{count} {count, plural,\n  one {時間}\n  other {時間}\n}",
+            "minute": "{count} {count, plural,\n  one {分}\n  other {分}\n}",
+            "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}",
+            "week": "{count} {count, plural,\n  one {週間}\n  other {週間}\n}"
         },
         "login-form": {
             "log_in": "ログイン",
@@ -352,7 +352,7 @@
                             "delete": "削除",
                             "delete_confirm": "本当に削除しますか？",
                             "header": "アクション",
-                            "introduction": "アクションは、オートメーションがトリガーされたときにHome Assistantが実行するものです。\\n\\n [アクションの詳細]（https:\/\/home-assistant.io\/docs\/automation\/action\/）",
+                            "introduction": "アクションは、オートメーションがトリガーされたときにHome Assistantが実行するものです。\n\n [アクションの詳細]（https://home-assistant.io/docs/automation/action/）",
                             "type_select": "アクションの種類",
                             "type": {
                                 "condition": {
@@ -391,7 +391,7 @@
                             "delete_confirm": "本当に削除しますか？",
                             "duplicate": "複製",
                             "header": "トリガー",
-                            "introduction": "トリガーはオートメーションルールの処理を開始させます。同じルールに対して複数のトリガーを指定することが可能です。トリガーが開始されると、Home Assistantは条件があれば確認し、アクションを呼び出します。\\n\\n[トリガーについて](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "トリガーはオートメーションルールの処理を開始させます。同じルールに対して複数のトリガーを指定することが可能です。トリガーが開始されると、Home Assistantは条件があれば確認し、アクションを呼び出します。\n\n[トリガーについて](https://home-assistant.io/docs/automation/trigger/)",
                             "type_select": "トリガーの種類",
                             "type": {
                                 "event": {

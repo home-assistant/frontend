@@ -190,8 +190,8 @@
     },
     "ui": {
         "duration": {
-            "day": "{count} {count, plural,\\n  one {दिन}\\n  other {दिन}\\n}",
-            "week": "{count} {count, plural,\\n  one {हफ़्ता}\\n  other {हफ़्ते}\\n}"
+            "day": "{count} {count, plural,\n  one {दिन}\n  other {दिन}\n}",
+            "week": "{count} {count, plural,\n  one {हफ़्ता}\n  other {हफ़्ते}\n}"
         },
         "notification_drawer": {
             "empty": "सूचनाएँ नहीं हैं",
@@ -245,7 +245,7 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "discovery_text": "I dispositivi rilevati verranno visualizzati qui. Seguire le istruzioni per il \/ i dispositivo \/ i e posizionare il \/ i dispositivo \/ i in modalità accoppiamento.",
+                        "discovery_text": "I dispositivi rilevati verranno visualizzati qui. Seguire le istruzioni per il / i dispositivo / i e posizionare il / i dispositivo / i in modalità accoppiamento.",
                         "header": "Zigbee Home Automation - Aggiungi dispositivi",
                         "spinner": "Ricerca di dispositivi ZHA Zigbee ..."
                     },

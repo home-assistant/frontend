@@ -275,9 +275,9 @@
             "loading": "Učitava"
         },
         "duration": {
-            "day": "{count} {count, plural,\\n  one {dan}\\n  other {dana}\\n}",
-            "second": "{count} {count, plural,\\n  one {sekunda}\\n  other {sekundi}\\n}",
-            "week": "{count} {count, plural,\\n  one {sedmica}\\n  other {sedmice}\\n}"
+            "day": "{count} {count, plural,\n  one {dan}\n  other {dana}\n}",
+            "second": "{count} {count, plural,\n  one {sekunda}\n  other {sekundi}\n}",
+            "week": "{count} {count, plural,\n  one {sedmica}\n  other {sedmice}\n}"
         },
         "panel": {
             "config": {

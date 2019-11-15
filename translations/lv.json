@@ -247,7 +247,7 @@
             "fan_only": "Tikai ventilators",
             "gas": "Gāze",
             "heat": "Sildīšana",
-            "heat_cool": "Sildīt \/ Atdzesēt",
+            "heat_cool": "Sildīt / Atdzesēt",
             "heat_pump": "Siltumsūknis",
             "high_demand": "Augsts pieprasījums",
             "idle": "Dīkstāve",
@@ -421,7 +421,7 @@
                 "away_mode": "Prombūtnes režīms",
                 "currently": "Pašlaik",
                 "fan_mode": "Ventilatora režīms",
-                "on_off": "Ieslēgts \/ Izslēgts",
+                "on_off": "Ieslēgts / Izslēgts",
                 "operation": "Darbība",
                 "preset_mode": "Iestatījums",
                 "swing_mode": "Šūpošanas režīms",
@@ -484,7 +484,7 @@
             "water_heater": {
                 "away_mode": "Prombūtnes režīms",
                 "currently": "Pašlaik",
-                "on_off": "Ieslēgts \/ Izslēgts",
+                "on_off": "Ieslēgts / Izslēgts",
                 "operation": "Darbība",
                 "target_temperature": "Mērķa temperatūra"
             },
@@ -535,11 +535,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {diena}\\n  other {dienas}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {stunda}\\n  other {stundas}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {minūte}\\n  other {minūtes}\\n}",
-                    "second": "{count} {count, plural,\\n  one {sekunde}\\n  other {sekundes}\\n}",
-                    "week": "{count} {count, plural,\\n  one {nedēļa}\\n  other {nedēļas}\\n}"
+                    "day": "{count} {count, plural,\n  one {diena}\n  other {dienas}\n}",
+                    "hour": "{count} {count, plural,\n  one {stunda}\n  other {stundas}\n}",
+                    "minute": "{count} {count, plural,\n  one {minūte}\n  other {minūtes}\n}",
+                    "second": "{count} {count, plural,\n  one {sekunde}\n  other {sekundes}\n}",
+                    "week": "{count} {count, plural,\n  one {nedēļa}\n  other {nedēļas}\n}"
                 },
                 "future": "Pēc {time}",
                 "never": "Nekad",
@@ -597,11 +597,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {diena}\\nother {dienas}\\n}",
-            "hour": "{count} {count, plural,\\n  one {stunda}\\n  other {stundas}\\n}",
-            "minute": "{count} {count, plural,\\n  one {minūte}\\n  other {minūtes}\\n}",
-            "second": "{count} {count, plural,\\n  one {sekunde}\\n  other {sekundes}\\n}",
-            "week": "{count} {count, plural,\\n  one {nedēļa}\\n  other {nedēļas}\\n}"
+            "day": "{count} {count, plural,\none {diena}\nother {dienas}\n}",
+            "hour": "{count} {count, plural,\n  one {stunda}\n  other {stundas}\n}",
+            "minute": "{count} {count, plural,\n  one {minūte}\n  other {minūtes}\n}",
+            "second": "{count} {count, plural,\n  one {sekunde}\n  other {sekundes}\n}",
+            "week": "{count} {count, plural,\n  one {nedēļa}\n  other {nedēļas}\n}"
         },
         "login-form": {
             "log_in": "Pieslēgties",
@@ -893,7 +893,7 @@
                     "description": "Pielāgojiet jūsu iekārtas",
                     "picker": {
                         "header": "Pielāgošana",
-                        "introduction": "Korekcijas atribūti vienai vienībai. Pievienotās \/ labotās pielāgošanas stāsies spēkā nekavējoties. Noņemtie pielāgojumi stāsies spēkā, kad vienība tiks atjaunināta."
+                        "introduction": "Korekcijas atribūti vienai vienībai. Pievienotās / labotās pielāgošanas stāsies spēkā nekavējoties. Noņemtie pielāgojumi stāsies spēkā, kad vienība tiks atjaunināta."
                     }
                 },
                 "devices": {

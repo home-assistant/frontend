@@ -247,7 +247,7 @@
             "fan_only": "Solo ventilatore",
             "gas": "Gas",
             "heat": "Caldo",
-            "heat_cool": "Caldo\/Freddo",
+            "heat_cool": "Caldo/Freddo",
             "heat_pump": "Pompa di calore",
             "high_demand": "Forte richiesta",
             "idle": "Inattivo",
@@ -426,7 +426,7 @@
                 "heating": "{name} riscaldamento",
                 "high": "alto",
                 "low": "basso",
-                "on_off": "Acceso \/ Spento",
+                "on_off": "Acceso / Spento",
                 "operation": "Operazione",
                 "preset_mode": "Preset",
                 "swing_mode": "Modo oscillazione",
@@ -498,7 +498,7 @@
             "water_heater": {
                 "away_mode": "Modalità fuori casa",
                 "currently": "Attualmente",
-                "on_off": "Acceso \/ Spento",
+                "on_off": "Acceso / Spento",
                 "operation": "Operazione",
                 "target_temperature": "Temperatura da raggiungere"
             },
@@ -557,11 +557,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\none {giorno}\\nother {giorni}\\n}",
-                    "hour": "{count} {count, plural,\\none {ora}\\nother {ore}\\n}",
-                    "minute": "{count} {count, plural,\\none {minuto}\\nother {minuti}\\n}",
-                    "second": "{count} {count, plural,\\none {secondo}\\nother {secondi}\\n}",
-                    "week": "{count} {count, plural,\\none {settimana}\\nother {settimane}\\n}"
+                    "day": "{count} {count, plural,\none {giorno}\nother {giorni}\n}",
+                    "hour": "{count} {count, plural,\none {ora}\nother {ore}\n}",
+                    "minute": "{count} {count, plural,\none {minuto}\nother {minuti}\n}",
+                    "second": "{count} {count, plural,\none {secondo}\nother {secondi}\n}",
+                    "week": "{count} {count, plural,\none {settimana}\nother {settimane}\n}"
                 },
                 "future": "tra {time}",
                 "never": "Mai",
@@ -583,7 +583,7 @@
                 "title": "Sei sicuro?"
             },
             "domain_toggler": {
-                "title": "Attiva\/disattiva domini"
+                "title": "Attiva/disattiva domini"
             },
             "more_info_control": {
                 "script": {
@@ -644,11 +644,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {giorno}\\nother {giorni}\\n}",
-            "hour": "{count} {count, plural,\\none {ora}\\nother {ore}\\n}",
-            "minute": "{count} {count, plural,\\none {minuto}\\nother {minuti}\\n}",
-            "second": "{count} {count, plural,\\none {secondo}\\nother {secondi}\\n}",
-            "week": "{count} {count, plural,\\none {settimana}\\nother {settimane}\\n}"
+            "day": "{count} {count, plural,\none {giorno}\nother {giorni}\n}",
+            "hour": "{count} {count, plural,\none {ora}\nother {ore}\n}",
+            "minute": "{count} {count, plural,\none {minuto}\nother {minuti}\n}",
+            "second": "{count} {count, plural,\none {secondo}\nother {secondi}\n}",
+            "week": "{count} {count, plural,\none {settimana}\nother {settimane}\n}"
         },
         "login-form": {
             "log_in": "Accedi",
@@ -700,7 +700,7 @@
                             "delete_confirm": "Sicuro di voler eliminare?",
                             "duplicate": "Duplica",
                             "header": "Azioni",
-                            "introduction": "Le azioni sono ciò che Home Assistant farà quando un trigger attiva un automazione. \\n\\n [Ulteriori informazioni sulle azioni.](Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Le azioni sono ciò che Home Assistant farà quando un trigger attiva un automazione. \n\n [Ulteriori informazioni sulle azioni.](Https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Per saperne di più sulle azioni",
                             "type_select": "Tipo di azione",
                             "type": {
@@ -744,7 +744,7 @@
                             "delete_confirm": "Sicuro di voler eliminare?",
                             "duplicate": "Duplica",
                             "header": "Condizioni",
-                            "introduction": "Le condizioni sono una parte facoltativa di una regola di automazione e possono essere utilizzate per impedire che un'azione si verifichi quando viene attivata. Le condizioni sembrano molto simili ai trigger, ma sono molto diverse. Un trigger analizzerà gli eventi che si verificano nel sistema mentre una condizione analizza solo l'aspetto del sistema in questo momento. Un trigger può osservare che un interruttore è in fase di accensione. Una condizione può vedere solo se un interruttore è attivo o meno. \\n\\n [Ulteriori informazioni sulle condizioni.](Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Le condizioni sono una parte facoltativa di una regola di automazione e possono essere utilizzate per impedire che un'azione si verifichi quando viene attivata. Le condizioni sembrano molto simili ai trigger, ma sono molto diverse. Un trigger analizzerà gli eventi che si verificano nel sistema mentre una condizione analizza solo l'aspetto del sistema in questo momento. Un trigger può osservare che un interruttore è in fase di accensione. Una condizione può vedere solo se un interruttore è attivo o meno. \n\n [Ulteriori informazioni sulle condizioni.](Https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Per saperne di più sulle condizioni",
                             "type_select": "Tipo di condizione",
                             "type": {
@@ -813,7 +813,7 @@
                             "delete_confirm": "Sicuro di voler eliminare?",
                             "duplicate": "Duplica",
                             "header": "Triggers",
-                            "introduction": "I trigger sono ciò che avvia l'elaborazione di una regola di automazione. È possibile specificare più trigger per la stessa regola. Una volta avviato il trigger, Home Assistant convaliderà le condizioni, se presenti, e chiamerà l'azione. \\n\\n [Ulteriori informazioni sui trigger.](Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "I trigger sono ciò che avvia l'elaborazione di una regola di automazione. È possibile specificare più trigger per la stessa regola. Una volta avviato il trigger, Home Assistant convaliderà le condizioni, se presenti, e chiamerà l'azione. \n\n [Ulteriori informazioni sui trigger.](Https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Per saperne di più sui trigger",
                             "type_select": "Tipo di trigger",
                             "type": {
@@ -905,7 +905,7 @@
                         "delete_confirm": "Sei sicuro di voler eliminare questa automazione?",
                         "edit_automation": "Modifica automazione",
                         "header": "Editor automazione",
-                        "introduction": "L'editor di automazione consente di creare e modificare automazioni. Per favore leggi le istruzioni (https:\/\/home-assistant.io\/docs\/automation\/editor\/) per assicurarti di aver configurato correttamente Home Assistant.",
+                        "introduction": "L'editor di automazione consente di creare e modificare automazioni. Per favore leggi le istruzioni (https://home-assistant.io/docs/automation/editor/) per assicurarti di aver configurato correttamente Home Assistant.",
                         "learn_more": "Per saperne di più sulle automazioni",
                         "no_automations": "Nessuna automazione modificabile trovata",
                         "only_editable": "Solo le automazioni definite in automations.yaml sono modificabili.",
@@ -939,7 +939,7 @@
                             "enable_state_reporting": "Attivare la segnalazione dello Stato",
                             "enter_pin_error": "Impossibile memorizzare il pin:",
                             "enter_pin_hint": "Immettere un PIN per utilizzare i dispositivi di sicurezza",
-                            "enter_pin_info": "Inserisci un PIN per interagire con i dispositivi di sicurezza. I dispositivi di sicurezza sono porte, porte da garage e serrature. Ti verrà chiesto di dire\/inserire questo PIN quando interagisci con tali dispositivi tramite Google Assistant.",
+                            "enter_pin_info": "Inserisci un PIN per interagire con i dispositivi di sicurezza. I dispositivi di sicurezza sono porte, porte da garage e serrature. Ti verrà chiesto di dire/inserire questo PIN quando interagisci con tali dispositivi tramite Google Assistant.",
                             "info": "Con l'integrazione di Google Assistant per Home Assistant Cloud sarai in grado di controllare tutti i tuoi dispositivi Home Assistant tramite qualsiasi dispositivo abilitato per Google Assistant.",
                             "info_state_reporting": "Se si abilita la segnalazione dello stato, Home Assistant invierà a Google tutte le modifiche di stato delle entità esposte. Questo ti permette di vedere sempre gli ultimi stati nell'app di Google.",
                             "manage_entities": "Gestire le entità",
@@ -1133,7 +1133,7 @@
                     "pick_attribute": "Scegli un attributo da sovrascrivere",
                     "picker": {
                         "header": "Personalizzazione",
-                        "introduction": "Modificare gli attributi per entità. Le personalizzazioni aggiunte \/ modificate avranno effetto immediato. Le personalizzazioni rimosse avranno effetto quando l'entità viene aggiornata."
+                        "introduction": "Modificare gli attributi per entità. Le personalizzazioni aggiunte / modificate avranno effetto immediato. Le personalizzazioni rimosse avranno effetto quando l'entità viene aggiornata."
                     },
                     "warning": {
                         "include_link": "includere customize.yaml",
@@ -1409,7 +1409,7 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "discovery_text": "I dispositivi rilevati verranno visualizzati qui. Seguire le istruzioni per il \/ i dispositivo \/ i e posizionare il \/ i dispositivo \/ i in modalità accoppiamento.",
+                        "discovery_text": "I dispositivi rilevati verranno visualizzati qui. Seguire le istruzioni per il / i dispositivo / i e posizionare il / i dispositivo / i in modalità accoppiamento.",
                         "header": "Zigbee Home Automation - Aggiungi dispositivi",
                         "search_again": "Cerca di nuovo",
                         "spinner": "Ricerca di dispositivi ZHA Zigbee ..."
@@ -1686,7 +1686,7 @@
                         "entities": {
                             "name": "Entità",
                             "show_header_toggle": "Mostrare l'interruttore dell'intestazione?",
-                            "toggle": "Attiva\/disattiva entità."
+                            "toggle": "Attiva/disattiva entità."
                         },
                         "entity-button": {
                             "name": "Pulsante Entità"
@@ -1802,7 +1802,7 @@
                         "save": "Salva",
                         "show_code_editor": "Mostra Editor di Codice",
                         "show_visual_editor": "Mostra Editor Visivo",
-                        "toggle_editor": "Attiva \/ disattiva l'editor"
+                        "toggle_editor": "Attiva / disattiva l'editor"
                     },
                     "edit_lovelace": {
                         "edit_title": "Modifica titolo",
@@ -2151,7 +2151,7 @@
         "sidebar": {
             "external_app_configuration": "Configurazione App",
             "log_out": "Esci",
-            "sidebar_toggle": "Attiva\/disattiva la barra laterale"
+            "sidebar_toggle": "Attiva/disattiva la barra laterale"
         }
     }
 }

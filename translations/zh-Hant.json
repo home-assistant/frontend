@@ -22,7 +22,7 @@
         "climate": "溫控",
         "configurator": "設定檔編輯器",
         "conversation": "語音互動",
-        "cover": "捲簾\/門",
+        "cover": "捲簾/門",
         "device_tracker": "設備追蹤器",
         "fan": "風扇",
         "group": "群組",
@@ -247,7 +247,7 @@
             "fan_only": "僅送風",
             "gas": "瓦斯模式",
             "heat": "暖氣",
-            "heat_cool": "暖氣\/冷氣",
+            "heat_cool": "暖氣/冷氣",
             "heat_pump": "暖氣",
             "high_demand": "高用量",
             "idle": "待命",
@@ -426,7 +426,7 @@
                 "heating": "{name} 加熱中",
                 "high": "調高",
                 "low": "調低",
-                "on_off": "開 \/ 關",
+                "on_off": "開 / 關",
                 "operation": "運轉模式",
                 "preset_mode": "預置",
                 "swing_mode": "擺動模式",
@@ -498,7 +498,7 @@
             "water_heater": {
                 "away_mode": "外出模式",
                 "currently": "目前狀態",
-                "on_off": "開 \/ 關",
+                "on_off": "開 / 關",
                 "operation": "運轉模式",
                 "target_temperature": "設定溫度"
             },
@@ -542,6 +542,7 @@
         "components": {
             "device-picker": {
                 "clear": "清除",
+                "device": "設備",
                 "show_devices": "顯示設備"
             },
             "entity": {
@@ -557,11 +558,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {天}\\n  other {天}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {小時}\\n  other {小時}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {分鐘}\\n  other {分鐘}\\n}",
-                    "second": "{count} {count, plural,\\n  one {秒}\\n  other {秒}\\n}",
-                    "week": "{count} {count, plural,\\n  one {週}\\n  other {週}\\n}"
+                    "day": "{count} {count, plural,\n  one {天}\n  other {天}\n}",
+                    "hour": "{count} {count, plural,\n  one {小時}\n  other {小時}\n}",
+                    "minute": "{count} {count, plural,\n  one {分鐘}\n  other {分鐘}\n}",
+                    "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}",
+                    "week": "{count} {count, plural,\n  one {週}\n  other {週}\n}"
                 },
                 "future": "{time}後",
                 "never": "未執行",
@@ -644,11 +645,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {天}\\nother {天}\\n}",
-            "hour": "{count} {count, plural,\\n  one {小時}\\n  other {小時}\\n}",
-            "minute": "{count} {count, plural,\\n  one {分鐘}\\n  other {分鐘}\\n}",
-            "second": "{count} {count, plural,\\none {秒}\\nother {秒}\\n}",
-            "week": "{count} {count, plural,\\none {週}\\nother {週}\\n}"
+            "day": "{count} {count, plural,\none {天}\nother {天}\n}",
+            "hour": "{count} {count, plural,\n  one {小時}\n  other {小時}\n}",
+            "minute": "{count} {count, plural,\n  one {分鐘}\n  other {分鐘}\n}",
+            "second": "{count} {count, plural,\none {秒}\nother {秒}\n}",
+            "week": "{count} {count, plural,\none {週}\nother {週}\n}"
         },
         "login-form": {
             "log_in": "登入",
@@ -671,7 +672,7 @@
         "panel": {
             "config": {
                 "area_registry": {
-                    "caption": "分區 ID",
+                    "caption": "分區",
                     "create_area": "建立分區",
                     "description": "家中所有分區概觀",
                     "editor": {
@@ -683,7 +684,7 @@
                     "no_areas": "看起來你還沒有建立分區！",
                     "picker": {
                         "create_area": "建立分區",
-                        "header": "分區 ID",
+                        "header": "分區",
                         "integrations_page": "整合頁面",
                         "introduction": "分區主要用以管理設備所在位置。此資訊將會於 Home Assistant 中使用以協助您管理介面、權限，並與其他系統進行整合。",
                         "introduction2": "欲於分區中放置設備，請使用下方連結至整合頁面，並點選設定整合以設定設備卡片。",
@@ -691,7 +692,7 @@
                     }
                 },
                 "automation": {
-                    "caption": "設定自動化",
+                    "caption": "自動化",
                     "description": "新增和編輯自動化內容",
                     "editor": {
                         "actions": {
@@ -702,6 +703,7 @@
                             "header": "觸發後動作",
                             "introduction": "「動作」為自動化觸發後，Home Assistant 所執行的自動化。",
                             "learn_more": "詳細了解動作",
+                            "name": "動作",
                             "type_select": "觸發後動作類別",
                             "type": {
                                 "condition": {
@@ -746,6 +748,7 @@
                             "header": "觸發判斷",
                             "introduction": "「觸發判斷」為自動化規則中，選項使用的部分。可以用以避免誤觸發某些動作。「觸發判斷」看起來跟觸發很類似，但實際上不盡相同。觸發主要監看系統中、事件的變化產生，而觸發判斷僅監看系統目前的狀況。例如：觸發可以觀察到開關被開啟，而觸發判斷僅關注目前開關是開啟或關閉的狀態。",
                             "learn_more": "詳細了解觸發判斷",
+                            "name": "判斷式",
                             "type_select": "觸發判斷類別",
                             "type": {
                                 "and": {
@@ -777,7 +780,7 @@
                                     "after_offset": "偏移後（選項）",
                                     "before": "在...之前",
                                     "before_offset": "偏移前（選項）",
-                                    "label": "日出\/日落",
+                                    "label": "日出/日落",
                                     "sunrise": "日出",
                                     "sunset": "日落"
                                 },
@@ -815,6 +818,7 @@
                             "header": "觸發",
                             "introduction": "「觸發條件」為可使設定好的自動化開始運作。可以針對一個自動化設定多個觸發條件。一旦觸發後，Home Assistant 會檢查觸發判斷式，並開始執行動作。",
                             "learn_more": "詳細了解觸發條件",
+                            "name": "觸發自動化",
                             "type_select": "觸發條件類型",
                             "type": {
                                 "device": {
@@ -863,7 +867,7 @@
                                 },
                                 "sun": {
                                     "event": "事件：",
-                                    "label": "日出\/日落",
+                                    "label": "日出/日落",
                                     "offset": "偏移（選項）",
                                     "sunrise": "日出",
                                     "sunset": "日落"
@@ -939,7 +943,7 @@
                             "enable_state_reporting": "開啟狀態回報",
                             "enter_pin_error": "無法儲存 Pin：",
                             "enter_pin_hint": "請輸入安全碼以使用加密設備",
-                            "enter_pin_info": "請輸入加密設備 Pin 碼、加密設備為如門、車庫與門鎖。當透過 Google Assistant 與此類設備進行互動時，將需要語音說出\/輸入密碼。",
+                            "enter_pin_info": "請輸入加密設備 Pin 碼、加密設備為如門、車庫與門鎖。當透過 Google Assistant 與此類設備進行互動時，將需要語音說出/輸入密碼。",
                             "info": "藉由 Home Assistant Cloud 雲服務  Google Assistant 整合，將能透過 Google Assistant 支援設備以控制所有 Home Assistant 設備。",
                             "info_state_reporting": "假如開啟狀態回報，Home Assistant 將會持續傳送所有連結物件的狀態改變至 Google。以確保於 Google app 中設備永遠保持最新狀態、並藉以創建例行自動化。",
                             "manage_entities": "管理物件",
@@ -1102,7 +1106,7 @@
                                 "core": "重新載入核心設定（core）",
                                 "group": "重新載入群組（group）",
                                 "heading": "重新載入設定檔（configuration）",
-                                "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。\\n點選重新載入按鈕，即可重新載入最新設定。",
+                                "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。\n點選重新載入按鈕，即可重新載入最新設定。",
                                 "script": "重新載入腳本（script）"
                             },
                             "server_management": {
@@ -1114,7 +1118,7 @@
                             "validation": {
                                 "check_config": "檢查設定內容",
                                 "heading": "設定驗證",
-                                "introduction": "如果您對設定進行了一些更改，並且想要確保這些設定有無錯誤\\n可以選擇先驗證您的設定內容。",
+                                "introduction": "如果您對設定進行了一些更改，並且想要確保這些設定有無錯誤\n可以選擇先驗證您的設定內容。",
                                 "invalid": "設定檔內容檢查錯誤",
                                 "valid": "設定檔內容檢查正確"
                             }
@@ -1127,13 +1131,13 @@
                     "attributes_outside": "以下屬性為 customize.yaml 外自訂化。",
                     "attributes_override": "假如願意，可以進行覆寫。",
                     "attributes_set": "以下物件屬性為可程式化設定。",
-                    "caption": "自定義",
-                    "description": "自定義元件內容與中文化",
+                    "caption": "自訂化",
+                    "description": "自訂化元件內容與中文化",
                     "different_include": "可能透過區域、全局或不同的包含。",
                     "pick_attribute": "選擇欲覆寫屬性",
                     "picker": {
-                        "header": "自定義",
-                        "introduction": "調整每個物件屬性。新增\/編輯自訂化將可以立即生效，移除自訂化則必須等到物件更新時、方能生效。"
+                        "header": "自訂化",
+                        "introduction": "調整每個物件屬性。新增/編輯自訂化將可以立即生效，移除自訂化則必須等到物件更新時、方能生效。"
                     },
                     "warning": {
                         "include_link": "包含 customize.yaml",
@@ -1174,7 +1178,7 @@
                     "unnamed_device": "未命名設備"
                 },
                 "entity_registry": {
-                    "caption": "物件 ID",
+                    "caption": "物件",
                     "description": "所有已知物件概觀",
                     "editor": {
                         "confirm_delete": "確定要刪除此物件？",
@@ -1189,7 +1193,7 @@
                         "update": "更新"
                     },
                     "picker": {
-                        "header": "物件 ID",
+                        "header": "物件",
                         "headers": {
                             "enabled": "已啟用",
                             "entity_id": "物件 ID",

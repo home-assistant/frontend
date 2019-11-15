@@ -247,7 +247,7 @@
             "fan_only": "Iba ventilátor",
             "gas": "Plyn",
             "heat": "Kúrenie",
-            "heat_cool": "Vykurovanie \/ Chladenie",
+            "heat_cool": "Vykurovanie / Chladenie",
             "heat_pump": "Tepelné čerpadlo",
             "high_demand": "Vysoký výkon",
             "idle": "Nečinné",
@@ -425,7 +425,7 @@
                 "heating": "{name} kúrenie",
                 "high": "vysoká",
                 "low": "nízka",
-                "on_off": "Zapnúť \/ vypnúť",
+                "on_off": "Zapnúť / vypnúť",
                 "operation": "Prevádzka",
                 "preset_mode": "Predvoľba",
                 "swing_mode": "Vejárový režim",
@@ -497,7 +497,7 @@
             "water_heater": {
                 "away_mode": "Režim neprítomnosti",
                 "currently": "Aktuálne",
-                "on_off": "Zapnúť \/ vypnúť",
+                "on_off": "Zapnúť / vypnúť",
                 "operation": "V prevádzke",
                 "target_temperature": "Cieľová teplota"
             },
@@ -554,11 +554,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\none {deň}\\nother {dní}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {hodina}\\n  other {hodiny}\\n}",
-                    "minute": "{count} {count, plural,\\none {minúta}\\nother {minút}\\n}",
-                    "second": "{count} {count, plural,\\none {sekunda}\\nother {sekúnd}\\n}",
-                    "week": "{count} {count, plural,\\none {týždeň}\\nother {týždne}\\n}"
+                    "day": "{count} {count, plural,\none {deň}\nother {dní}\n}",
+                    "hour": "{count} {count, plural,\n  one {hodina}\n  other {hodiny}\n}",
+                    "minute": "{count} {count, plural,\none {minúta}\nother {minút}\n}",
+                    "second": "{count} {count, plural,\none {sekunda}\nother {sekúnd}\n}",
+                    "week": "{count} {count, plural,\none {týždeň}\nother {týždne}\n}"
                 },
                 "future": "O {time}",
                 "never": "Nikdy",
@@ -628,11 +628,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {deň}\\nfew {dni}\\nother {dní}\\n}",
-            "hour": "{count} {count, plural,\\n  one {hodina}\\n  other {hodiny}\\n}",
-            "minute": "{count} {count, plural,\\none {minúta}\\nother {minút}\\n}",
-            "second": "{count} {count, plural,\\none {sekunda}\\nfew {sekundy}\\nother {sekúnd}\\n}",
-            "week": "{count} {count, plural,\\none {týždeň}\\nfew {týždne}\\nother {týždňov}\\n}"
+            "day": "{count} {count, plural,\none {deň}\nfew {dni}\nother {dní}\n}",
+            "hour": "{count} {count, plural,\n  one {hodina}\n  other {hodiny}\n}",
+            "minute": "{count} {count, plural,\none {minúta}\nother {minút}\n}",
+            "second": "{count} {count, plural,\none {sekunda}\nfew {sekundy}\nother {sekúnd}\n}",
+            "week": "{count} {count, plural,\none {týždeň}\nfew {týždne}\nother {týždňov}\n}"
         },
         "login-form": {
             "log_in": "Prihlásiť sa",
@@ -684,7 +684,7 @@
                             "delete_confirm": "Ste si istý odstránením ? ",
                             "duplicate": "Duplikovať",
                             "header": "Akcie",
-                            "introduction": "Akcie, ktoré vykoná Home Assistant, sa aktivujú po spustení automatizácie. \\n\\n [Viac informácií o akciách.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Akcie, ktoré vykoná Home Assistant, sa aktivujú po spustení automatizácie. \n\n [Viac informácií o akciách.](https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Získajte viac informácií o akciách",
                             "type_select": "Typ akcie",
                             "type": {
@@ -728,7 +728,7 @@
                             "delete_confirm": "Ste si istý odstránením ? ",
                             "duplicate": "Duplikovať",
                             "header": "Podmienky",
-                            "introduction": "Podmienky sú voliteľnou súčasťou pravidla automatizácie a môžu sa použiť na zabránenie tomu, aby sa akcia vykonala pri spustení. Podmienky vyzerajú veľmi podobne ako spúšťače, ale sú veľmi odlišné. Spúšťač sa zameria na udalosti, ktoré sa dejú v systéme, zatiaľ čo podmienka sa zameriava iba na to, ako systém práve vyzerá. Spúšťač môže pozorovať, že je zapnutý spínač. Podmienkou je iba to, či je vypínač v súčasnosti zapnutý alebo vypnutý. \\n\\n [Viac informácií o podmienkach.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Podmienky sú voliteľnou súčasťou pravidla automatizácie a môžu sa použiť na zabránenie tomu, aby sa akcia vykonala pri spustení. Podmienky vyzerajú veľmi podobne ako spúšťače, ale sú veľmi odlišné. Spúšťač sa zameria na udalosti, ktoré sa dejú v systéme, zatiaľ čo podmienka sa zameriava iba na to, ako systém práve vyzerá. Spúšťač môže pozorovať, že je zapnutý spínač. Podmienkou je iba to, či je vypínač v súčasnosti zapnutý alebo vypnutý. \n\n [Viac informácií o podmienkach.](https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Získajte viac informácií o podmienkach",
                             "type_select": "Typ podmienky",
                             "type": {
@@ -797,7 +797,7 @@
                             "delete_confirm": "Ste si istý odstránením ?",
                             "duplicate": "Duplikovať",
                             "header": "Spúšťače",
-                            "introduction": "Spúšťače spúšťajú spracovanie pravidla automatizácie. Pre rovnaké pravidlo je možné určiť viac spúšťačov. Po spustení spúšťača aplikácia Home Assistant overí prípadné podmienky a zavolá akciu. \\n\\n [Viac informácií o spúšťačov.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Spúšťače spúšťajú spracovanie pravidla automatizácie. Pre rovnaké pravidlo je možné určiť viac spúšťačov. Po spustení spúšťača aplikácia Home Assistant overí prípadné podmienky a zavolá akciu. \n\n [Viac informácií o spúšťačov.](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Získajte viac informácií o spúšťačoch",
                             "type_select": "Typ spúšťača",
                             "type": {
@@ -886,7 +886,7 @@
                     "picker": {
                         "add_automation": "Pridať automatizáciu",
                         "header": "Editor automatizácií",
-                        "introduction": "Editor automatizácií vám umožňuje vytvárať a upravovať automatizácie. Prečítajte si prosím [pokyny](https:\/\/home-assistant.io\/docs\/automation\/editor\/), aby ste sa uistili, že ste nakonfigurovali Home Assistant správne.",
+                        "introduction": "Editor automatizácií vám umožňuje vytvárať a upravovať automatizácie. Prečítajte si prosím [pokyny](https://home-assistant.io/docs/automation/editor/), aby ste sa uistili, že ste nakonfigurovali Home Assistant správne.",
                         "learn_more": "Získajte viac informácií o automatizáciách",
                         "no_automations": "Nepodarilo sa nájsť žiadne editovateľné automatizácie",
                         "pick_automation": "Vyberte automatizáciu, ktorú chcete upraviť"
@@ -1042,7 +1042,7 @@
                     "description": "Prispôsobte svoje entity",
                     "picker": {
                         "header": "Prispôsobenie",
-                        "introduction": "Upravujte atribúty v rámci entity. Pridané \/ upravené prispôsobenia sa prejavia okamžite. Odstránené prispôsobenia sa prejavia po aktualizácii entity."
+                        "introduction": "Upravujte atribúty v rámci entity. Pridané / upravené prispôsobenia sa prejavia okamžite. Odstránené prispôsobenia sa prejavia po aktualizácii entity."
                     }
                 },
                 "devices": {
