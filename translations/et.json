@@ -247,7 +247,7 @@
             "fan_only": "Ainult ventilaator",
             "gas": "Gaas",
             "heat": "Soojenda",
-            "heat_cool": "Küta\/jahuta",
+            "heat_cool": "Küta/jahuta",
             "heat_pump": "Soojuspump",
             "high_demand": "Kõrge nõudlus",
             "idle": "Ootel",
@@ -426,7 +426,7 @@
                 "heating": "{name} soojendab",
                 "high": "kõrge",
                 "low": "madal",
-                "on_off": "Sees \/ väljas",
+                "on_off": "Sees / väljas",
                 "operation": "Töörežiim",
                 "preset_mode": "Eelseade",
                 "swing_mode": "Õõtsumise režiim",
@@ -498,7 +498,7 @@
             "water_heater": {
                 "away_mode": "Eemalolekurežiim",
                 "currently": "Hetkel",
-                "on_off": "Sees \/ väljas",
+                "on_off": "Sees / väljas",
                 "operation": "Töörežiim",
                 "target_temperature": "Soovitud temperatuur"
             },
@@ -555,11 +555,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {päev}\\n  other {päeva}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {tund}\\n  other {tundi}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {minut}\\n  other {minutit}\\n}",
-                    "second": "{count} {count, plural,\\n  one {sekund}\\n  other {sekundit}\\n}",
-                    "week": "{count} {count, plural,\\n  one {nädal}\\n  other {nädalat}\\n}"
+                    "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n}",
+                    "hour": "{count} {count, plural,\n  one {tund}\n  other {tundi}\n}",
+                    "minute": "{count} {count, plural,\n  one {minut}\n  other {minutit}\n}",
+                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundit}\n}",
+                    "week": "{count} {count, plural,\n  one {nädal}\n  other {nädalat}\n}"
                 },
                 "future": "{time} pärast",
                 "never": "Iial",
@@ -629,11 +629,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\n  one {päev}\\n  other {päeva}\\n}",
-            "hour": "{count} {count, plural,\\n  one {tund}\\n  other {tundi}\\n}",
-            "minute": "{count} {count, plural,\\n  one {minut}\\n  other {minutit}\\n}",
-            "second": "{count} {count, plural,\\n  one {sekund}\\n  other {sekundit}\\n}",
-            "week": "{count} {count, plural,\\n  one {nädal}\\n  other {nädalat}\\n}"
+            "day": "{count} {count, plural,\n  one {päev}\n  other {päeva}\n}",
+            "hour": "{count} {count, plural,\n  one {tund}\n  other {tundi}\n}",
+            "minute": "{count} {count, plural,\n  one {minut}\n  other {minutit}\n}",
+            "second": "{count} {count, plural,\n  one {sekund}\n  other {sekundit}\n}",
+            "week": "{count} {count, plural,\n  one {nädal}\n  other {nädalat}\n}"
         },
         "login-form": {
             "log_in": "Logi sisse",
@@ -1554,7 +1554,7 @@
                         "save": "Salvesta",
                         "show_code_editor": "Kuva koodiredaktor",
                         "show_visual_editor": "Kuva visuaalne redaktor",
-                        "toggle_editor": "Lülita redaktor sisse\/välja"
+                        "toggle_editor": "Lülita redaktor sisse/välja"
                     },
                     "edit_lovelace": {
                         "explanation": "Seda pealkirja näidatakse kõikide Lovelace'i vaadete kohal.",

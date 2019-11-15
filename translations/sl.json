@@ -118,7 +118,7 @@
         "default": {
             "entity_not_found": "Entiteta ni bila najdena",
             "error": "Napaka",
-            "unavailable": "N\/A",
+            "unavailable": "N/A",
             "unknown": "Neznano"
         },
         "device_tracker": {
@@ -247,7 +247,7 @@
             "fan_only": "Samo ventilator",
             "gas": "Plin",
             "heat": "Toplo",
-            "heat_cool": "Gretje\/Hlajenje",
+            "heat_cool": "Gretje/Hlajenje",
             "heat_pump": "Toplotna črpalka",
             "high_demand": "Visoka poraba",
             "idle": "V pripravljenosti",
@@ -426,7 +426,7 @@
                 "heating": "{name} ogrevanje",
                 "high": "visoka",
                 "low": "nizka",
-                "on_off": "Vključen \/ izključen",
+                "on_off": "Vključen / izključen",
                 "operation": "Delovanje",
                 "preset_mode": "Prednastavitev",
                 "swing_mode": "Način Swing",
@@ -498,7 +498,7 @@
             "water_heater": {
                 "away_mode": "Način odsotnosti",
                 "currently": "Trenutno",
-                "on_off": "Vključen \/ izključen",
+                "on_off": "Vključen / izključen",
                 "operation": "Delovanje",
                 "target_temperature": "Ciljna temperatura"
             },
@@ -557,11 +557,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\none {Dan}\\nother {Dni}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {Ura}\\n  other {Ur}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {minuta}\\n  other {minut}\\n}",
-                    "second": "{count} {count, plural,\\none {sekunda}\\nother {sekund}\\n}",
-                    "week": "{count} {count, plural,\\none {Teden}\\nother {Tednov}\\n}"
+                    "day": "{count} {count, plural,\none {Dan}\nother {Dni}\n}",
+                    "hour": "{count} {count, plural,\n  one {Ura}\n  other {Ur}\n}",
+                    "minute": "{count} {count, plural,\n  one {minuta}\n  other {minut}\n}",
+                    "second": "{count} {count, plural,\none {sekunda}\nother {sekund}\n}",
+                    "week": "{count} {count, plural,\none {Teden}\nother {Tednov}\n}"
                 },
                 "future": "Čez {time}",
                 "never": "Nikoli",
@@ -644,11 +644,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {Dan}\\nother {Dni}\\n}",
-            "hour": "{count} {count, plural,\\n  one {Ura}\\n  other {Ur}\\n}",
-            "minute": "{count} {count, plural,\\n  one {Minuta}\\n  other {Minut}\\n}",
-            "second": "{count} {count, plural,\\none {Sekunda}\\nother {Sekund}\\n}",
-            "week": "{count} {count, plural,\\none {Teden}\\nother {Tednov}\\n}"
+            "day": "{count} {count, plural,\none {Dan}\nother {Dni}\n}",
+            "hour": "{count} {count, plural,\n  one {Ura}\n  other {Ur}\n}",
+            "minute": "{count} {count, plural,\n  one {Minuta}\n  other {Minut}\n}",
+            "second": "{count} {count, plural,\none {Sekunda}\nother {Sekund}\n}",
+            "week": "{count} {count, plural,\none {Teden}\nother {Tednov}\n}"
         },
         "login-form": {
             "log_in": "Prijavi se",
@@ -700,7 +700,7 @@
                             "delete_confirm": "Ste prepričani, da želite izbrisati?",
                             "duplicate": "Podvoji",
                             "header": "Akcije",
-                            "introduction": "Akcije so, kaj bo storil Home Assistant, ko se sproži avtomatizacija. \\n\\n [Več o dejavnostih.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Akcije so, kaj bo storil Home Assistant, ko se sproži avtomatizacija. \n\n [Več o dejavnostih.] (Https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Več o akcijah",
                             "type_select": "Vrsta ukrepa",
                             "type": {
@@ -744,7 +744,7 @@
                             "delete_confirm": "Ste prepričani, da želite izbrisati?",
                             "duplicate": "Podvoji",
                             "header": "Pogoji",
-                            "introduction": "Pogoji so neobvezni del pravila za avtomatizacijo in jih je mogoče uporabiti za preprečitev, da bi se dejanje zgodilo ob sprožitvi. Pogoji so zelo podobni sprožilcem, vendar so zelo različni. Sprožilec bo pogledal dogodke, ki se dogajajo v sistemu, medtem, ko pogoj gleda samo na to, kako sistem trenutno izgleda. Sprožilec lahko opazi, da je stikalo vklopljeno. Pogoj lahko vidi le, če je stikalo trenutno vklopljeno ali izklopljeno. \\n\\n [Več o pogojih.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Pogoji so neobvezni del pravila za avtomatizacijo in jih je mogoče uporabiti za preprečitev, da bi se dejanje zgodilo ob sprožitvi. Pogoji so zelo podobni sprožilcem, vendar so zelo različni. Sprožilec bo pogledal dogodke, ki se dogajajo v sistemu, medtem, ko pogoj gleda samo na to, kako sistem trenutno izgleda. Sprožilec lahko opazi, da je stikalo vklopljeno. Pogoj lahko vidi le, če je stikalo trenutno vklopljeno ali izklopljeno. \n\n [Več o pogojih.] (Https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Več o pogojih",
                             "type_select": "Vrsta pogoja",
                             "type": {
@@ -813,7 +813,7 @@
                             "delete_confirm": "Ste prepričani, da želite izbrisati?",
                             "duplicate": "Podvoji",
                             "header": "Sprožilci",
-                            "introduction": "Sprožilci so tisto, kar začne postopek obdelave avtomatizacije pravila. Za isto pravilo je mogoče določiti več sprožilcev. Ko se začne sprožilec, bo Home Assistant potrdil pogoje, če so, in poklical dejanje. \\n\\n [Več o sprožilcih.] (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Sprožilci so tisto, kar začne postopek obdelave avtomatizacije pravila. Za isto pravilo je mogoče določiti več sprožilcev. Ko se začne sprožilec, bo Home Assistant potrdil pogoje, če so, in poklical dejanje. \n\n [Več o sprožilcih.] (Https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Več o sprožilcih",
                             "type_select": "Tip sprožilca",
                             "type": {
@@ -905,7 +905,7 @@
                         "delete_confirm": "Ali ste prepričani, da želite izbrisati to avtomatizacijo?",
                         "edit_automation": "Urejanje avtomatizacije",
                         "header": "Urejevalnik avtomatizacije",
-                        "introduction": "Urejevalnik za avtomatizacijo vam omogoča ustvarjanje in urejanje avtomatizacij. Prosimo, da preberete [navodila] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), da preverite, ali ste pravilno nastavili Home Assistant-a.",
+                        "introduction": "Urejevalnik za avtomatizacijo vam omogoča ustvarjanje in urejanje avtomatizacij. Prosimo, da preberete [navodila] (https://home-assistant.io/docs/automation/editor/), da preverite, ali ste pravilno nastavili Home Assistant-a.",
                         "learn_more": "Več o avtomatizacijah",
                         "no_automations": "Ne moremo najti nobene avtomatizacije za urejanje",
                         "only_editable": "Urejajo se lahko samo avtomatizacije, definirane v automations.yaml.",
@@ -939,7 +939,7 @@
                             "enable_state_reporting": "Omogoči poročanje o stanju",
                             "enter_pin_error": "PIN-a ni mogoče shraniti:",
                             "enter_pin_hint": "Vnesite kodo PIN za uporabo varnostnih naprav",
-                            "enter_pin_info": "Prosimo vnesite kodo pin za interakcijo z varnostnimi napravami. Varnostne naprave so vrata, garažna vrata in ključavnice. Med interakcijo s takšnimi napravami prek Googlovega pomočnika boste morali povedati \/ vnesti ta pin.",
+                            "enter_pin_info": "Prosimo vnesite kodo pin za interakcijo z varnostnimi napravami. Varnostne naprave so vrata, garažna vrata in ključavnice. Med interakcijo s takšnimi napravami prek Googlovega pomočnika boste morali povedati / vnesti ta pin.",
                             "info": "Z integracijo Pomočnik Google za Home Assistant cloud boste lahko nadzirali vse svoje naprave s pomočjo katere koli naprave, ki ga podpirajo.",
                             "info_state_reporting": "Če omogočite poročanje o stanju, bo Home Assistant Googlu poslal vse spremembe stanja izpostavljenih entitet. To vam omogoča, da vedno vidite najnovejša stanja v aplikaciji Google.",
                             "manage_entities": "Upravljajte entitete",
@@ -1133,7 +1133,7 @@
                     "pick_attribute": "Izberite atribut, ki ga želite preglasiti",
                     "picker": {
                         "header": "Prilagajanje",
-                        "introduction": "Prilagajanja atributov na entiteti. Dodane\/spremenjene prilagoditve začnejo veljati takoj. Odstranjene pa po posodobitvi entitete."
+                        "introduction": "Prilagajanja atributov na entiteti. Dodane/spremenjene prilagoditve začnejo veljati takoj. Odstranjene pa po posodobitvi entitete."
                     },
                     "warning": {
                         "include_link": "vsebuje pravilno customize.yaml",
