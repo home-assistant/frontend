@@ -106,7 +106,7 @@ class HuiGenericEntityRow extends LitElement {
                   ></ha-relative-time>
                 `
               : this.config.secondary_info === "last-triggered" &&
-                  stateObj.attributes.last_triggered
+                stateObj.attributes.last_triggered
               ? html`
                   <ha-relative-time
                     .hass=${this.hass}
