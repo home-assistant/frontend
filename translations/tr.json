@@ -21,8 +21,8 @@
         "group": "Grup",
         "history_graph": "Geçmiş grafiği",
         "image_processing": "Görüntü işleme",
-        "input_boolean": "Doğru\/Yanlış giriniz",
-        "input_datetime": "Giriş Tarih\/Saat",
+        "input_boolean": "Doğru/Yanlış giriniz",
+        "input_datetime": "Giriş Tarih/Saat",
         "input_number": "Numara giriniz",
         "input_select": "Girdi seçiniz",
         "input_text": "Metin giriniz",
@@ -342,7 +342,7 @@
             "climate": {
                 "away_mode": "Dışarıda modu",
                 "fan_mode": "Fan modu",
-                "on_off": "Açık \/ kapalı",
+                "on_off": "Açık / kapalı",
                 "swing_mode": "Salınım modu",
                 "target_humidity": "Hedef nem",
                 "target_temperature": "Hedef sıcaklık"
@@ -380,7 +380,7 @@
             "water_heater": {
                 "away_mode": "Dışarıda modu",
                 "currently": "Şu an",
-                "on_off": "Açık \/ kapalı",
+                "on_off": "Açık / kapalı",
                 "operation": "İşlem",
                 "target_temperature": "Hedef sıcaklık"
             },
@@ -420,9 +420,9 @@
             }
         },
         "duration": {
-            "day": "{count}{count, plural,\\n  one { gün }\\n  other { gün }\\n}",
-            "second": "{count}{count, plural,\\n  one { saniye }\\n  other { saniye }\\n}",
-            "week": "{count}{count, plural,\\n  one { hafta }\\n  other { hafta }\\n}"
+            "day": "{count}{count, plural,\n  one { gün }\n  other { gün }\n}",
+            "second": "{count}{count, plural,\n  one { saniye }\n  other { saniye }\n}",
+            "week": "{count}{count, plural,\n  one { hafta }\n  other { hafta }\n}"
         },
         "login-form": {
             "log_in": "Oturum aç",

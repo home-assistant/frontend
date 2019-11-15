@@ -247,7 +247,7 @@
             "fan_only": "仅送风",
             "gas": "燃气",
             "heat": "制热",
-            "heat_cool": "制热\/制冷",
+            "heat_cool": "制热/制冷",
             "heat_pump": "热泵",
             "high_demand": "高需求",
             "idle": "待机",
@@ -420,7 +420,7 @@
                 "away_mode": "离开模式",
                 "currently": "当前",
                 "fan_mode": "风速",
-                "on_off": "开\/关",
+                "on_off": "开/关",
                 "operation": "运行模式",
                 "preset_mode": "预设",
                 "swing_mode": "扫风模式",
@@ -479,7 +479,7 @@
             "water_heater": {
                 "away_mode": "离开模式",
                 "currently": "当前",
-                "on_off": "开\/关",
+                "on_off": "开/关",
                 "operation": "操作",
                 "target_temperature": "设定温度"
             },
@@ -530,11 +530,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {天}\\n  other {天}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {小时}\\n  other {小时}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {分钟}\\n  other {分钟}\\n}",
-                    "second": "{count} {count, plural,\\n  one {秒}\\n  other {秒}\\n}",
-                    "week": "{count} {count, plural,\\n  one {周}\\n  other {周}\\n}"
+                    "day": "{count} {count, plural,\n  one {天}\n  other {天}\n}",
+                    "hour": "{count} {count, plural,\n  one {小时}\n  other {小时}\n}",
+                    "minute": "{count} {count, plural,\n  one {分钟}\n  other {分钟}\n}",
+                    "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}",
+                    "week": "{count} {count, plural,\n  one {周}\n  other {周}\n}"
                 },
                 "future": "{time}后",
                 "never": "从未",
@@ -578,11 +578,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {天}\\nother {天}\\n}",
-            "hour": "{count} {count, plural,\\none {小时}\\nother {小时}\\n}",
-            "minute": "{count} {count, plural,\\none {分钟}\\nother {分钟}\\n}",
-            "second": "{count} {count, plural,\\none {秒}\\nother {秒}\\n}",
-            "week": "{count} {count, plural,\\none {周}\\nother {周}\\n}"
+            "day": "{count} {count, plural,\none {天}\nother {天}\n}",
+            "hour": "{count} {count, plural,\none {小时}\nother {小时}\n}",
+            "minute": "{count} {count, plural,\none {分钟}\nother {分钟}\n}",
+            "second": "{count} {count, plural,\none {秒}\nother {秒}\n}",
+            "week": "{count} {count, plural,\none {周}\nother {周}\n}"
         },
         "login-form": {
             "log_in": "登录",
@@ -633,7 +633,7 @@
                             "delete_confirm": "确认删除？",
                             "duplicate": "复制",
                             "header": "动作",
-                            "introduction": "Actions（动作）是当自动化条件满足时 Home Assistant 执行的操作。\\n\\n[了解更多关于 Actions 的信息](https:\/\/home-assistant.io\/docs\/automation\/action)",
+                            "introduction": "Actions（动作）是当自动化条件满足时 Home Assistant 执行的操作。\n\n[了解更多关于 Actions 的信息](https://home-assistant.io/docs/automation/action)",
                             "learn_more": "详细了解动作",
                             "type_select": "动作类型",
                             "type": {
@@ -690,7 +690,7 @@
                                     "after_offset": "延后：（可选）",
                                     "before": "早于：",
                                     "before_offset": "提前：（可选）",
-                                    "label": "日出\/日落",
+                                    "label": "日出/日落",
                                     "sunrise": "日出",
                                     "sunset": "日落"
                                 },
@@ -722,7 +722,7 @@
                             "delete_confirm": "确认删除？",
                             "duplicate": "复制",
                             "header": "触发条件",
-                            "introduction": "触发条件是整个自动化流程的起点。一个自动化实例中可以设置多个触发条件。一旦该条件满足，Home Assistant 将验证环境条件（Conditions）是否符合，如果符合，则执行动作（Actions）。\\n\\n[了解更多内容](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "触发条件是整个自动化流程的起点。一个自动化实例中可以设置多个触发条件。一旦该条件满足，Home Assistant 将验证环境条件（Conditions）是否符合，如果符合，则执行动作（Actions）。\n\n[了解更多内容](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "详细了解触发条件",
                             "type_select": "触发条件类型",
                             "type": {
@@ -767,7 +767,7 @@
                                 },
                                 "sun": {
                                     "event": "事件：",
-                                    "label": "日出\/日落",
+                                    "label": "日出/日落",
                                     "offset": "偏移（可选）",
                                     "sunrise": "日出",
                                     "sunset": "日落"
@@ -871,7 +871,7 @@
                     "description": "自定义实体",
                     "picker": {
                         "header": "自定义",
-                        "introduction": "调整每个实体的属性。添加\/编辑的自定义设置将立即生效，删除的自定义设置将在实体更新时生效。"
+                        "introduction": "调整每个实体的属性。添加/编辑的自定义设置将立即生效，删除的自定义设置将在实体更新时生效。"
                     }
                 },
                 "devices": {
@@ -1137,17 +1137,17 @@
                         "title": "服务"
                     },
                     "states": {
-                        "alert_entity_field": "设备\/实体是必填字段",
+                        "alert_entity_field": "设备/实体是必填字段",
                         "attributes": "属性",
-                        "current_entities": "现有设备\/实体",
+                        "current_entities": "现有设备/实体",
                         "description1": "设置设备在Homo Assistant中的呈现方式。",
                         "description2": "这将不影响实际设备。",
-                        "entity": "设备\/实体",
+                        "entity": "设备/实体",
                         "filter_attributes": "输入筛选属性",
-                        "filter_entities": "输入筛选设备\/实体",
+                        "filter_entities": "输入筛选设备/实体",
                         "filter_states": "输入筛选状态",
                         "more_info": "更多信息",
-                        "no_entities": "没有可用设备\/实体",
+                        "no_entities": "没有可用设备/实体",
                         "set_state": "设置状态",
                         "state": "状态",
                         "state_attributes": "状态属性（格式为YAML，选填）",

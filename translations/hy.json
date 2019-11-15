@@ -247,7 +247,7 @@
             "fan_only": "Օդափոխիչ",
             "gas": "Գազ",
             "heat": "Ջերմություն",
-            "heat_cool": "Ջեռուցում\/Հովացում",
+            "heat_cool": "Ջեռուցում/Հովացում",
             "heat_pump": "Ջերմային պոմպ",
             "high_demand": "Բարձր պահանջարկ",
             "idle": "Պարապ",
@@ -535,11 +535,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {day}\\n  other {days}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {hour}\\n  other {hours}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {minute}\\n  other {minutes}\\n}",
-                    "second": "{count} {count, plural,\\n  one {second}\\n  other {seconds}\\n}",
-                    "week": "{count} {count, plural,\\n  one {week}\\n  other {weeks}\\n}"
+                    "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
+                    "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+                    "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
+                    "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+                    "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
                 },
                 "future": "{time} ընթացքում",
                 "never": "Երբեք",
@@ -597,11 +597,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\n  one {day}\\n  other {days}\\n}",
-            "hour": "{count} {count, plural,\\n  one {ժամ}\\n  other {ժամ}\\n}",
-            "minute": "{count} {count, plural,\\n  one {minute}\\n  other {minutes}\\n}",
-            "second": "{count} {count, plural,\\n  one {second}\\n  other {seconds}\\n}",
-            "week": "{count} {count, plural,\\n  one {week}\\n  other {weeks}\\n}"
+            "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
+            "hour": "{count} {count, plural,\n  one {ժամ}\n  other {ժամ}\n}",
+            "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
+            "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+            "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
         },
         "login-form": {
             "log_in": "Մուտք գործեք",
@@ -893,7 +893,7 @@
                     "description": "Կարգավորել ձեր անձի",
                     "picker": {
                         "header": "հարմարեցում",
-                        "introduction": "Կսմթել յուրաքանչյուր անձի հատկանիշները: Անհապաղ գործողության մեջ կավելացվեն \/ խմբագրված փոփոխությունները: Հեռացված կարգավորումները ուժի մեջ են մտնում սուբյեկտի թարմացման դեպքում:"
+                        "introduction": "Կսմթել յուրաքանչյուր անձի հատկանիշները: Անհապաղ գործողության մեջ կավելացվեն / խմբագրված փոփոխությունները: Հեռացված կարգավորումները ուժի մեջ են մտնում սուբյեկտի թարմացման դեպքում:"
                     }
                 },
                 "entity_registry": {
@@ -1255,7 +1255,7 @@
                         "legacy_api_password": {
                             "abort": {
                                 "login_expired": "Նիստն ավարտվեց,խնդրում ենք նորից մուտք գործել",
-                                "no_api_password_set": "Դուք API գաղտնաբառով կարգավորումներ չունեք\\n՛"
+                                "no_api_password_set": "Դուք API գաղտնաբառով կարգավորումներ չունեք\n՛"
                             },
                             "error": {
                                 "invalid_auth": " API գաղտնաբառը անվավեր է",

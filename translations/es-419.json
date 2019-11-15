@@ -247,7 +247,7 @@
             "fan_only": "Sólo ventilador",
             "gas": "Gas",
             "heat": "Calentar",
-            "heat_cool": "Calentar\/Enfriar",
+            "heat_cool": "Calentar/Enfriar",
             "heat_pump": "Bomba de Calor",
             "high_demand": "Alta Demanda",
             "idle": "Inactivo",
@@ -421,7 +421,7 @@
                 "away_mode": "Fuera de Casa",
                 "currently": "Actualmente",
                 "fan_mode": "Modo del ventilador",
-                "on_off": "Encendido \/ Apagado",
+                "on_off": "Encendido / Apagado",
                 "operation": "Modo",
                 "preset_mode": "Preestablecido",
                 "swing_mode": "Modo de oscilación",
@@ -476,7 +476,7 @@
             "water_heater": {
                 "away_mode": "Modo ausente",
                 "currently": "Actualmente",
-                "on_off": "Encendido \/ Apagado",
+                "on_off": "Encendido / Apagado",
                 "operation": "Operación",
                 "target_temperature": "Temperatura deseada"
             },
@@ -526,11 +526,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {día}\\n  other {días}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {hora}\\n  other {horas}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {minuto}\\n  other {minutos}\\n}",
-                    "second": "{count} {count, plural,\\n  one {segundo}\\n  other {segundos}\\n}",
-                    "week": "{count} {count, plural,\\n  one {semana}\\n  other {semanas}\\n}"
+                    "day": "{count} {count, plural,\n  one {día}\n  other {días}\n}",
+                    "hour": "{count} {count, plural,\n  one {hora}\n  other {horas}\n}",
+                    "minute": "{count} {count, plural,\n  one {minuto}\n  other {minutos}\n}",
+                    "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
+                    "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
                 },
                 "future": "en {time}",
                 "never": "Nunca",
@@ -587,11 +587,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\n  one {día}\\n  other {días}\\n}",
-            "hour": "{count} {count, plural,\\n  one {hora}\\n  other {horas}\\n}",
-            "minute": "{count} {count, plural,\\n  one {minuto}\\n  other {minutos}\\n}",
-            "second": "{count} {count, plural,\\n  one {segundo}\\n  other {segundos}\\n}",
-            "week": "{count} {count, plural,\\n  one {semana}\\n  other {semanas}\\n}"
+            "day": "{count} {count, plural,\n  one {día}\n  other {días}\n}",
+            "hour": "{count} {count, plural,\n  one {hora}\n  other {horas}\n}",
+            "minute": "{count} {count, plural,\n  one {minuto}\n  other {minutos}\n}",
+            "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
+            "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
         },
         "login-form": {
             "log_in": "Iniciar sesión",
@@ -893,7 +893,7 @@
                     "description": "Personaliza tus entidades",
                     "picker": {
                         "header": "Personalización",
-                        "introduction": "Ajustar los atributos por entidad. Las personalizaciones agregadas\/editadas tendrán efecto inmediatamente. Las personalizaciones eliminadas entrarán en vigor cuando se actualice la entidad."
+                        "introduction": "Ajustar los atributos por entidad. Las personalizaciones agregadas/editadas tendrán efecto inmediatamente. Las personalizaciones eliminadas entrarán en vigor cuando se actualice la entidad."
                     }
                 },
                 "devices": {

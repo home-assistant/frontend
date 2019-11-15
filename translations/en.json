@@ -247,7 +247,7 @@
             "fan_only": "Fan only",
             "gas": "Gas",
             "heat": "Heat",
-            "heat_cool": "Heat\/Cool",
+            "heat_cool": "Heat/Cool",
             "heat_pump": "Heat pump",
             "high_demand": "High demand",
             "idle": "Idle",
@@ -426,7 +426,7 @@
                 "heating": "{name} heating",
                 "high": "high",
                 "low": "low",
-                "on_off": "On \/ off",
+                "on_off": "On / off",
                 "operation": "Operation",
                 "preset_mode": "Preset",
                 "swing_mode": "Swing mode",
@@ -498,7 +498,7 @@
             "water_heater": {
                 "away_mode": "Away mode",
                 "currently": "Currently",
-                "on_off": "On \/ off",
+                "on_off": "On / off",
                 "operation": "Operation",
                 "target_temperature": "Target temperature"
             },
@@ -542,6 +542,7 @@
         "components": {
             "device-picker": {
                 "clear": "Clear",
+                "device": "Device",
                 "show_devices": "Show devices"
             },
             "entity": {
@@ -557,11 +558,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {day}\\n  other {days}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {hour}\\n  other {hours}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {minute}\\n  other {minutes}\\n}",
-                    "second": "{count} {count, plural,\\n  one {second}\\n  other {seconds}\\n}",
-                    "week": "{count} {count, plural,\\n  one {week}\\n  other {weeks}\\n}"
+                    "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
+                    "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+                    "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
+                    "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+                    "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
                 },
                 "future": "In {time}",
                 "never": "Never",
@@ -644,11 +645,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\n  one {day}\\n  other {days}\\n}",
-            "hour": "{count} {count, plural,\\n  one {hour}\\n  other {hours}\\n}",
-            "minute": "{count} {count, plural,\\n  one {minute}\\n  other {minutes}\\n}",
-            "second": "{count} {count, plural,\\n  one {second}\\n  other {seconds}\\n}",
-            "week": "{count} {count, plural,\\n  one {week}\\n  other {weeks}\\n}"
+            "day": "{count} {count, plural,\n  one {day}\n  other {days}\n}",
+            "hour": "{count} {count, plural,\n  one {hour}\n  other {hours}\n}",
+            "minute": "{count} {count, plural,\n  one {minute}\n  other {minutes}\n}",
+            "second": "{count} {count, plural,\n  one {second}\n  other {seconds}\n}",
+            "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
         },
         "login-form": {
             "log_in": "Log in",
@@ -671,7 +672,7 @@
         "panel": {
             "config": {
                 "area_registry": {
-                    "caption": "Area Registry",
+                    "caption": "Areas",
                     "create_area": "CREATE AREA",
                     "description": "Overview of all areas in your home.",
                     "editor": {
@@ -683,7 +684,7 @@
                     "no_areas": "Looks like you have no areas yet!",
                     "picker": {
                         "create_area": "CREATE AREA",
-                        "header": "Area Registry",
+                        "header": "Areas",
                         "integrations_page": "Integrations page",
                         "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
                         "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards.",
@@ -691,7 +692,7 @@
                     }
                 },
                 "automation": {
-                    "caption": "Automation",
+                    "caption": "Automations",
                     "description": "Create and edit automations",
                     "editor": {
                         "actions": {
@@ -702,6 +703,7 @@
                             "header": "Actions",
                             "introduction": "The actions are what Home Assistant will do when the automation is triggered.",
                             "learn_more": "Learn more about actions",
+                            "name": "Action",
                             "type_select": "Action type",
                             "type": {
                                 "condition": {
@@ -746,6 +748,7 @@
                             "header": "Conditions",
                             "introduction": "Conditions are an optional part of an automation rule and can be used to prevent an action from happening when triggered. Conditions look very similar to triggers but are very different. A trigger will look at events happening in the system while a condition only looks at how the system looks right now. A trigger can observe that a switch is being turned on. A condition can only see if a switch is currently on or off.",
                             "learn_more": "Learn more about conditions",
+                            "name": "Condition",
                             "type_select": "Condition type",
                             "type": {
                                 "and": {
@@ -815,6 +818,7 @@
                             "header": "Triggers",
                             "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.",
                             "learn_more": "Learn more about triggers",
+                            "name": "Trigger",
                             "type_select": "Trigger type",
                             "type": {
                                 "device": {
@@ -939,7 +943,7 @@
                             "enable_state_reporting": "Enable State Reporting",
                             "enter_pin_error": "Unable to store pin:",
                             "enter_pin_hint": "Enter a PIN to use security devices",
-                            "enter_pin_info": "Please enter a pin to interact with security devices. Security devices are doors, garage doors and locks. You will be asked to say\/enter this pin when interacting with such devices via Google Assistant.",
+                            "enter_pin_info": "Please enter a pin to interact with security devices. Security devices are doors, garage doors and locks. You will be asked to say/enter this pin when interacting with such devices via Google Assistant.",
                             "info": "With the Google Assistant integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
                             "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Google. This allows you to always see the latest states in the Google app.",
                             "manage_entities": "Manage Entities",
@@ -1127,13 +1131,13 @@
                     "attributes_outside": "The following attributes are customized from outside of customize.yaml",
                     "attributes_override": "You can override them if you like.",
                     "attributes_set": "The following attributes of the entity are set programmatically.",
-                    "caption": "Customization",
+                    "caption": "Customizations",
                     "description": "Customize your entities",
                     "different_include": "Possibly via a domain, a glob or a different include.",
                     "pick_attribute": "Pick an attribute to override",
                     "picker": {
-                        "header": "Customization",
-                        "introduction": "Tweak per-entity attributes. Added\/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated."
+                        "header": "Customizations",
+                        "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated."
                     },
                     "warning": {
                         "include_link": "include customize.yaml",
@@ -1174,7 +1178,7 @@
                     "unnamed_device": "Unnamed device"
                 },
                 "entity_registry": {
-                    "caption": "Entity Registry",
+                    "caption": "Entities",
                     "description": "Overview of all known entities.",
                     "editor": {
                         "confirm_delete": "Are you sure you want to delete this entry?",
@@ -1189,7 +1193,7 @@
                         "update": "UPDATE"
                     },
                     "picker": {
-                        "header": "Entity Registry",
+                        "header": "Entities",
                         "headers": {
                             "enabled": "Enabled",
                             "entity_id": "Entity ID",
@@ -1320,7 +1324,7 @@
                     }
                 },
                 "script": {
-                    "caption": "Script",
+                    "caption": "Scripts",
                     "description": "Create and edit scripts",
                     "editor": {
                         "default_name": "New Script",
@@ -1344,7 +1348,7 @@
                     }
                 },
                 "server_control": {
-                    "caption": "Server Control",
+                    "caption": "Server Controls",
                     "description": "Restart and stop the Home Assistant server",
                     "section": {
                         "reloading": {
