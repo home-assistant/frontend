@@ -31,7 +31,7 @@
         "homeassistant": "Home Assistant",
         "image_processing": "Bildveraarbechtung",
         "input_boolean": "Boolean-Agab",
-        "input_datetime": "Datum-\/Zäit-Agab",
+        "input_datetime": "Datum-/Zäit-Agab",
         "input_number": "Zuelen-Agab",
         "input_select": "Auswiel-Agab",
         "input_text": "Text-Agab",
@@ -247,7 +247,7 @@
             "fan_only": "Nëmme Ventilator",
             "gas": "Gas",
             "heat": "Heizen",
-            "heat_cool": "Hëtzen\/Ofkillen",
+            "heat_cool": "Hëtzen/Ofkillen",
             "heat_pump": "Heizung",
             "high_demand": "Héich Ufro",
             "idle": "Leerlauf",
@@ -426,7 +426,7 @@
                 "heating": "{name} hëtzen",
                 "high": "héich",
                 "low": "niddreg",
-                "on_off": "Un \/ Aus",
+                "on_off": "Un / Aus",
                 "operation": "Aktioun",
                 "preset_mode": "Virastellung",
                 "swing_mode": "Schwenk Modus",
@@ -498,7 +498,7 @@
             "water_heater": {
                 "away_mode": "Modus Keen Doheem",
                 "currently": "Momentan",
-                "on_off": "Un \/ Aus",
+                "on_off": "Un / Aus",
                 "operation": "Aktioun",
                 "target_temperature": "Zieltemperatur"
             },
@@ -542,6 +542,7 @@
         "components": {
             "device-picker": {
                 "clear": "Läschen",
+                "device": "Apparat",
                 "show_devices": "Apparater uweisen"
             },
             "entity": {
@@ -557,11 +558,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\none {Dag}\\nother {Deeg}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {Stonn}\\n  other {Stonnen}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {Minutt}\\n  other {Minutten}\\n}",
-                    "second": "{count} {count, plural,\\none {Sekonn}\\nother {Sekonnen}\\n}",
-                    "week": "{count} {count, plural,\\none {Woch}\\nother {Wochen}\\n}"
+                    "day": "{count} {count, plural,\none {Dag}\nother {Deeg}\n}",
+                    "hour": "{count} {count, plural,\n  one {Stonn}\n  other {Stonnen}\n}",
+                    "minute": "{count} {count, plural,\n  one {Minutt}\n  other {Minutten}\n}",
+                    "second": "{count} {count, plural,\none {Sekonn}\nother {Sekonnen}\n}",
+                    "week": "{count} {count, plural,\none {Woch}\nother {Wochen}\n}"
                 },
                 "future": "An {time}",
                 "never": "Nie",
@@ -616,7 +617,8 @@
                 "error": "Ups, ee Feeler ass opgetrueden",
                 "found": "Ech hunn folgendes fir iech fonnt:",
                 "how_can_i_help": "Wéi kann ech hëllefen?",
-                "label": "Tippt eng Fro an dréckt 'Enter'"
+                "label": "Tippt eng Fro an dréckt 'Enter'",
+                "label_voice": "Tippt an dréckt 'Enter' oder klick de Mikro fir ze schwätzen"
             },
             "zha_device_info": {
                 "buttons": {
@@ -643,11 +645,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {Dag}\\nother {Deeg}\\n}",
-            "hour": "{count} {count, plural,\\n  one {Stonn}\\n  other {Stonnen}\\n}",
-            "minute": "{count} {count, plural,\\n  one {Minutt}\\n  other {Minutten}\\n}",
-            "second": "{count} {count, plural,\\none {Sekonn}\\nother {Sekonnen}\\n}",
-            "week": "{count} {count, plural,\\none {Woch}\\nother {Wochen}\\n}"
+            "day": "{count} {count, plural,\none {Dag}\nother {Deeg}\n}",
+            "hour": "{count} {count, plural,\n  one {Stonn}\n  other {Stonnen}\n}",
+            "minute": "{count} {count, plural,\n  one {Minutt}\n  other {Minutten}\n}",
+            "second": "{count} {count, plural,\none {Sekonn}\nother {Sekonnen}\n}",
+            "week": "{count} {count, plural,\none {Woch}\nother {Wochen}\n}"
         },
         "login-form": {
             "log_in": "Aloggen",
@@ -699,8 +701,9 @@
                             "delete_confirm": "Element sécher läschen?",
                             "duplicate": "Duplikéiere",
                             "header": "Aktiounen",
-                            "introduction": "Aktioune déi den Home Assistant ausféiert wann den Automatismus ausgeléist gouf.\\n[Léier méi iwwert Aktiounen.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Aktioune déi den Home Assistant ausféiert wann den Automatismus ausgeléist gouf.\n[Léier méi iwwert Aktiounen.](https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Méi iwwert Aktioune liesen",
+                            "name": "Aktioun",
                             "type_select": "Aktioun Typ",
                             "type": {
                                 "condition": {
@@ -743,8 +746,9 @@
                             "delete_confirm": "Sëcher fir ze läschen?",
                             "duplicate": "Duplikéiere",
                             "header": "Konditiounen",
-                            "introduction": "Konditioune sinn een optionalen Deel vun engem Automatismus a kënne benotzt gi fir ze bestëmme wann eng Aktioun ausgeféiert gëtt. Konditioune gläichen den Ausléiser mee sinn awer ganz ënnerschiddlech. Een Ausléiser iwwerwaacht d'Evenementer am System, an eng Konditioun iwwerwaacht de Status vum System. Een Ausléiser gesäit wann ee Schalter ugeschalt gëtt. Eng Konditioun gesäit nëmmen op de Schalter un oder aus ass.\\n\\n[Léier méi iwwer Konditioune.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Konditioune sinn een optionalen Deel vun engem Automatismus a kënne benotzt gi fir ze bestëmme wann eng Aktioun ausgeféiert gëtt. Konditioune gläichen den Ausléiser mee sinn awer ganz ënnerschiddlech. Een Ausléiser iwwerwaacht d'Evenementer am System, an eng Konditioun iwwerwaacht de Status vum System. Een Ausléiser gesäit wann ee Schalter ugeschalt gëtt. Eng Konditioun gesäit nëmmen op de Schalter un oder aus ass.\n\n[Léier méi iwwer Konditioune.](https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Méi iwwert Konditioune liesen",
+                            "name": "Konditioun",
                             "type_select": "Typ vun Konditioun",
                             "type": {
                                 "and": {
@@ -812,8 +816,9 @@
                             "delete_confirm": "Sëcher fir ze läschen?",
                             "duplicate": "Replikéieren",
                             "header": "Ausléiser",
-                            "introduction": "Een Ausléiser start de Prozess vun engem Automatismus. Et ass méiglech méi wéi een Ausléiser fir een Automatismus unzeginn. Wann een Ausléiser start validéiert Home Assistant d'Konditiounen a féiert - de Fall gesat - eng Aktioun aus.\\n\\n[Léier méi iwwert Ausléiser.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Een Ausléiser start de Prozess vun engem Automatismus. Et ass méiglech méi wéi een Ausléiser fir een Automatismus unzeginn. Wann een Ausléiser start validéiert Home Assistant d'Konditiounen a féiert - de Fall gesat - eng Aktioun aus.\n\n[Léier méi iwwert Ausléiser.](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Méi iwwert Ausléiser liesen",
+                            "name": "Ausléiser",
                             "type_select": "Typ vun Ausléiser",
                             "type": {
                                 "device": {
@@ -904,7 +909,7 @@
                         "delete_confirm": "Sécher fir dës Automatisme ze läschen?",
                         "edit_automation": "Automatisme änneren",
                         "header": "Automatismen editéieren",
-                        "introduction": "Den Automatismen-Editor erméiglecht et fir Automatismen z'erstellen an ze änneren. Lies w.e.g. [d'Instruktioune](https:\/\/home-assistant.io\/docs\/automation\/editor\/) fir sécher ze stellen dass den Home Assistant richteg agestallt ass.",
+                        "introduction": "Den Automatismen-Editor erméiglecht et fir Automatismen z'erstellen an ze änneren. Lies w.e.g. [d'Instruktioune](https://home-assistant.io/docs/automation/editor/) fir sécher ze stellen dass den Home Assistant richteg agestallt ass.",
                         "learn_more": "Méi iwwert Automatioune liesen",
                         "no_automations": "Keen Automatismus fir ze ännere fonnt",
                         "only_editable": "Nëmmen Automatiounen déi am automations.yaml séfinéiert sinn kënnen editéiert ginn.",
@@ -1121,14 +1126,22 @@
                     }
                 },
                 "customize": {
+                    "attributes_customize": "Folgend Attributer si schonn an der customize.yaml gesat",
                     "attributes_not_set": "Folgend Attributer sinn net gesaat. Définéiert sie wann dir wëllt.",
+                    "attributes_outside": "Folgend Attributer sinn ausserhalb vun der customize.yaml personaliséiert ginn",
                     "attributes_override": "Dir könnt sie iwwerschrweiwen wann dir wëllt.",
+                    "attributes_set": "Déi folgend Attributer vun der Entitéit gi programméiert gesat.",
                     "caption": "Personaliséieren",
                     "description": "Är Entitéite personaliséieren",
+                    "different_include": "Eventuell iwwer e Domän, e Glob oder eng aner Include Method.",
                     "pick_attribute": "Wielt een Attribut aus fir z'iwwerschreiwen",
                     "picker": {
                         "header": "Personaliséieren",
-                        "introduction": "Manipulatioun vun den Attributen pro Entitéit. Nei\/geännert Personlisatiounen sinn direkt effektiv. Geläschte Personalisatioune ginn effektiv wann d'Entitéit sech aktualiséiert."
+                        "introduction": "Manipulatioun vun den Attributen pro Entitéit. Nei/geännert Personlisatiounen sinn direkt effektiv. Geläschte Personalisatioune ginn effektiv wann d'Entitéit sech aktualiséiert."
+                    },
+                    "warning": {
+                        "include_link": "customize.yaml enthält",
+                        "include_sentence": "Et schéngt wéi wann är configuration.yaml net richteg"
                     }
                 },
                 "devices": {
@@ -1146,6 +1159,7 @@
                     },
                     "automations": "Automatisme",
                     "caption": "Apparater",
+                    "confirm_rename_entity_ids": "Wëllt Dir och d'Entitéiten-ID vun Ären Entitéiten ëmbenennen?",
                     "data_table": {
                         "area": "Beräich",
                         "battery": "Batterie",
@@ -1281,7 +1295,9 @@
                         "entities": {
                             "add": "Entitéit dobäisetzen",
                             "delete": "Entitéit läschen",
+                            "device_entities": "Wann Dir eng Entitéit dobäisetzt déi zu engem Apparat gehéiert, gëtt den Apparat dobäigesat.",
                             "header": "Entitéiten",
+                            "introduction": "Entitéiten déi zu kengem Apparat gehéiere kënnen hei definéiert ginn.",
                             "without_device": "Entitéiten ouni Apparater"
                         },
                         "introduction": "Benotzt Zeene fir äert Haus zum Liewen ze bréngen",
@@ -1781,7 +1797,7 @@
                         "header": "Kaart Konfiguratioun",
                         "move": "Réckelen",
                         "options": "Méi Optiounen",
-                        "pick_card": "Wielt d'Kaart aus déi soll dobäigesat ginn.",
+                        "pick_card": "Wielt eng Kaart aus déi soll dobäigesat ginn.",
                         "pick_card_view_title": "Wéieng Kaart wëllt dir zu ärer {name] Usiicht dobäisetzen?",
                         "save": "Späicheren",
                         "show_code_editor": "Code Editeur uweisen",
@@ -2129,7 +2145,7 @@
             "shopping-list": {
                 "add_item": "Objet dobäisetze",
                 "clear_completed": "Fäerdeg Elementer ewechhuelen",
-                "microphone_tip": "Tipp uewe riets op de Mikro a so “Add candy to my shopping list”"
+                "microphone_tip": "Tipp uewe riets op de Mikro a so “Add candy to my shopping list”"
             }
         },
         "sidebar": {

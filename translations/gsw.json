@@ -300,7 +300,7 @@
                 "away_mode": "Wäg-Modus",
                 "currently": "Aktuell",
                 "fan_mode": "Ventilator-Modus",
-                "on_off": "I \/ us",
+                "on_off": "I / us",
                 "operation": "Aktion",
                 "swing_mode": "Schwing-Modus",
                 "target_humidity": "Ziu-Fuächtigkeit",
@@ -343,7 +343,7 @@
             },
             "water_heater": {
                 "currently": "Aktuell",
-                "on_off": "I \/ Us",
+                "on_off": "I / Us",
                 "operation": "Operation",
                 "target_temperature": "Ziu-Temperatur"
             },

@@ -243,7 +243,7 @@
             "fan_only": "Tuuletus",
             "gas": "Kaasu",
             "heat": "Lämmitys",
-            "heat_cool": "Lämmitys\/jäähdytys",
+            "heat_cool": "Lämmitys/jäähdytys",
             "heat_pump": "Lämpöpumppu",
             "high_demand": "Täysi teho",
             "idle": "Lepotilassa",
@@ -417,7 +417,7 @@
                 "away_mode": "Poissa kotoa -tila",
                 "currently": "Tällä hetkellä",
                 "fan_mode": "Tuuletustila",
-                "on_off": "Päällä \/ pois",
+                "on_off": "Päällä / pois",
                 "operation": "Toiminto",
                 "preset_mode": "Esiasetus",
                 "swing_mode": "Heilutustila",
@@ -483,7 +483,7 @@
             "water_heater": {
                 "away_mode": "Poissa kotoa",
                 "currently": "Tällä hetkellä",
-                "on_off": "Päällä \/ pois",
+                "on_off": "Päällä / pois",
                 "operation": "Toiminto",
                 "target_temperature": "Tavoitelämpötila"
             },
@@ -539,11 +539,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {päivä}\\n  other {päivää}\\n}",
-                    "hour": "{count} {count, plural,\\none {tunti}\\nother {tuntia}\\n}",
-                    "minute": "{count} {count, plural,\\none {minuutti}\\nother {minuuttia}\\n}",
-                    "second": "{count} {count, plural,\\none {sekunti}\\nother {sekuntia}\\n}",
-                    "week": "{count} {count, plural,\\n  one {viikko}\\n  other {viikkoa}\\n}"
+                    "day": "{count} {count, plural,\n  one {päivä}\n  other {päivää}\n}",
+                    "hour": "{count} {count, plural,\none {tunti}\nother {tuntia}\n}",
+                    "minute": "{count} {count, plural,\none {minuutti}\nother {minuuttia}\n}",
+                    "second": "{count} {count, plural,\none {sekunti}\nother {sekuntia}\n}",
+                    "week": "{count} {count, plural,\n  one {viikko}\n  other {viikkoa}\n}"
                 },
                 "future": "{time} kuluttua",
                 "never": "Ei koskaan",
@@ -603,11 +603,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\n  one {päivä}\\n  other {päivää}\\n}",
-            "hour": "{count} {count, plural,\\none {tunti}\\nother {tuntia}\\n}",
-            "minute": "{count} {count, plural,\\none {minuutti}\\nother {minuuttia}\\n}",
-            "second": "{count} {count, plural,\\none {sekunti}\\nother {sekuntia}\\n}",
-            "week": "{count} {count, plural,\\n  one {viikko}\\n  other {viikkoa}\\n}"
+            "day": "{count} {count, plural,\n  one {päivä}\n  other {päivää}\n}",
+            "hour": "{count} {count, plural,\none {tunti}\nother {tuntia}\n}",
+            "minute": "{count} {count, plural,\none {minuutti}\nother {minuuttia}\n}",
+            "second": "{count} {count, plural,\none {sekunti}\nother {sekuntia}\n}",
+            "week": "{count} {count, plural,\n  one {viikko}\n  other {viikkoa}\n}"
         },
         "login-form": {
             "log_in": "Kirjaudu sisään",
@@ -676,6 +676,9 @@
                                     "event": "Tapahtuma",
                                     "label": "Lähetä tapahtuma",
                                     "service_data": "Palvelun data"
+                                },
+                                "scene": {
+                                    "label": "Aktivoi tilanne"
                                 },
                                 "service": {
                                     "label": "Kutsu palvelua",
@@ -1026,7 +1029,7 @@
                     "description": "Muokkaa laitteita",
                     "picker": {
                         "header": "Räätälöinti",
-                        "introduction": "Muotoile ominaisuuksia olemuskohtaisesti. Lisäykset\/muokkaukset tulevat välittömästi voimaan. Poistetut mukautukset tulevat voimaan, kun olemus päivitetään."
+                        "introduction": "Muotoile ominaisuuksia olemuskohtaisesti. Lisäykset/muokkaukset tulevat välittömästi voimaan. Poistetut mukautukset tulevat voimaan, kun olemus päivitetään."
                     }
                 },
                 "devices": {
@@ -1116,6 +1119,44 @@
                         "update": "Päivitä"
                     },
                     "no_persons_created_yet": "Näyttää siltä, ettet ole vielä luonut yhtään henkilöä."
+                },
+                "scene": {
+                    "activated": "Aktivoitu tilanne {name}.",
+                    "caption": "Tilanteet",
+                    "description": "Luo ja muokkaa tilanteita",
+                    "editor": {
+                        "default_name": "Uusi tilanne",
+                        "devices": {
+                            "add": "Lisää laite",
+                            "delete": "Poista laite",
+                            "header": "Laitteet",
+                            "introduction": "Lisää laitteet, jotka haluat sisällyttää tilanteeseesi. Aseta kaikki laitteet haluamaasi tilaan tätä tilannetta varten."
+                        },
+                        "entities": {
+                            "add": "Lisää kohde",
+                            "delete": "Poista kohde",
+                            "device_entities": "Jos lisäät kohteen, joka kuuluu laitteeseen, laite lisätään.",
+                            "header": "Kohteet",
+                            "introduction": "Kohteet jotka eivät kuulu laitteisiin voidaan asettaa täällä.",
+                            "without_device": "Kohteet ilman laitetta"
+                        },
+                        "introduction": "Käytä tilanteita herättääksesi kotisi eloon.",
+                        "load_error_not_editable": "Vain tilanteet tiedostossa scenes.yaml ovat muokattavissa.",
+                        "load_error_unknown": "Virhe ladattaessa tilannetta ({err_no}).",
+                        "name": "Nimi",
+                        "save": "Tallenna",
+                        "unsaved_confirm": "Sinulla on tallentamattomia muutoksia. Haluatko varmasti poistua?"
+                    },
+                    "picker": {
+                        "add_scene": "Lisää tilanne",
+                        "delete_confirm": "Haluatko varmasti poistaa tämän tilanteen?",
+                        "delete_scene": "Poista tilanne",
+                        "edit_scene": "Muokkaa tilannetta",
+                        "header": "Tilanne-editori",
+                        "introduction": "Tilanne-editorin avulla voit luoda ja muokata tilanteita. Seuraa alla olevaa linkkiä lukeaksesi ohjeet varmistaaksesi, että olet määrittänyt Home Assistant -sovelluksen oikein.",
+                        "pick_scene": "Valitse muokattava tilanne",
+                        "show_info_scene": "Näytä tietoja tilanteesta"
+                    }
                 },
                 "script": {
                     "caption": "Skripti",
@@ -1312,11 +1353,14 @@
                         "title": "Tiedot"
                     },
                     "mqtt": {
+                        "description_listen": "Kuuntele aihetta",
+                        "description_publish": "Julkaise paketti",
                         "listening_to": "Kuunnellaan",
                         "publish": "Julkaise",
                         "start_listening": "Aloita kuuntelu",
                         "stop_listening": "Lopeta kuuntelu",
-                        "title": "MQTT"
+                        "title": "MQTT",
+                        "topic": "aihe"
                     },
                     "services": {
                         "call_service": "Kutsu palvelua",
