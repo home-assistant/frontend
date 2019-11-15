@@ -247,7 +247,7 @@
             "fan_only": "Alleen ventilatie",
             "gas": "Gas",
             "heat": "Verwarmen",
-            "heat_cool": "Verwarmen\/Koelen",
+            "heat_cool": "Verwarmen/Koelen",
             "heat_pump": "Warmtepomp",
             "high_demand": "Hoge vraag",
             "idle": "Inactief",
@@ -426,7 +426,7 @@
                 "heating": "{name} verwarming",
                 "high": "hoog",
                 "low": "laag",
-                "on_off": "Aan \/ uit",
+                "on_off": "Aan / uit",
                 "operation": "Werking",
                 "preset_mode": "Voorinstelling",
                 "swing_mode": "Swingmodus",
@@ -498,7 +498,7 @@
             "water_heater": {
                 "away_mode": "Afwezigheidsmodus",
                 "currently": "Momenteel",
-                "on_off": "Aan \/ uit",
+                "on_off": "Aan / uit",
                 "operation": "Werking",
                 "target_temperature": "Gewenste temperatuur"
             },
@@ -555,11 +555,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\none {dag}\\nother {dagen}\\n}",
-                    "hour": "{count} {count, plural,\\none {uur}\\nother {uur}\\n}",
-                    "minute": "{count} {count, plural,\\none {minuut}\\nother {minuten}\\n}",
-                    "second": "{count} {count, plural,\\none {seconde}\\nother {seconden}\\n}",
-                    "week": "{count} {count, plural,\\none {week}\\nother {weken}\\n}"
+                    "day": "{count} {count, plural,\none {dag}\nother {dagen}\n}",
+                    "hour": "{count} {count, plural,\none {uur}\nother {uur}\n}",
+                    "minute": "{count} {count, plural,\none {minuut}\nother {minuten}\n}",
+                    "second": "{count} {count, plural,\none {seconde}\nother {seconden}\n}",
+                    "week": "{count} {count, plural,\none {week}\nother {weken}\n}"
                 },
                 "future": "Over {time}",
                 "never": "Nooit",
@@ -631,11 +631,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {dag}\\nother {dagen}\\n}",
-            "hour": "{count} {count, plural,\\none {uur}\\nother {uur}\\n}",
-            "minute": "{count} {count, plural,\\none {minuut}\\nother {minuten}\\n}",
-            "second": "{count} {count, plural,\\none {seconde}\\nother {seconden}\\n}",
-            "week": "{count} {count, plural,\\none {week}\\nother {weken}\\n}"
+            "day": "{count} {count, plural,\none {dag}\nother {dagen}\n}",
+            "hour": "{count} {count, plural,\none {uur}\nother {uur}\n}",
+            "minute": "{count} {count, plural,\none {minuut}\nother {minuten}\n}",
+            "second": "{count} {count, plural,\none {seconde}\nother {seconden}\n}",
+            "week": "{count} {count, plural,\none {week}\nother {weken}\n}"
         },
         "login-form": {
             "log_in": "Aanmelden",
@@ -1108,7 +1108,7 @@
                     "description": "Pas je entiteiten aan",
                     "picker": {
                         "header": "Aanpassingen",
-                        "introduction": "Pas attributen per entiteit aan. Toegevoegde\/gewijzigde aanpassingen worden onmiddellijk van kracht. Verwijderde aanpassingen worden van kracht wanneer de entiteit wordt bijgewerkt."
+                        "introduction": "Pas attributen per entiteit aan. Toegevoegde/gewijzigde aanpassingen worden onmiddellijk van kracht. Verwijderde aanpassingen worden van kracht wanneer de entiteit wordt bijgewerkt."
                     }
                 },
                 "devices": {

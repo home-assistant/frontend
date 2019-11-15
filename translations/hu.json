@@ -19,7 +19,7 @@
         "binary_sensor": "Bináris érzékelő",
         "calendar": "Naptár",
         "camera": "Kamera",
-        "climate": "Hűtés\/fűtés",
+        "climate": "Hűtés/fűtés",
         "configurator": "Konfigurátor",
         "conversation": "Beszélgetés",
         "cover": "Borító",
@@ -247,7 +247,7 @@
             "fan_only": "Csak ventilátor",
             "gas": "Gáz",
             "heat": "Fűtés",
-            "heat_cool": "Fűtés\/Hűtés",
+            "heat_cool": "Fűtés/Hűtés",
             "heat_pump": "Hőszivattyú",
             "high_demand": "Magas igénybevétel",
             "idle": "Tétlen",
@@ -426,7 +426,7 @@
                 "heating": "{name} fűtés",
                 "high": "magas",
                 "low": "alacsony",
-                "on_off": "Be \/ ki",
+                "on_off": "Be / ki",
                 "operation": "Üzemmód",
                 "preset_mode": "Beállítási mód",
                 "swing_mode": "Forgási mód",
@@ -498,7 +498,7 @@
             "water_heater": {
                 "away_mode": "Távoli mód",
                 "currently": "Jelenleg",
-                "on_off": "Be \/ ki",
+                "on_off": "Be / ki",
                 "operation": "Üzemmód",
                 "target_temperature": "Kívánt hőmérséklet"
             },
@@ -555,11 +555,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {nappal}\\n  other {nappal}\\n}",
-                    "hour": "{count} {count, plural,\\none {órával}\\nother {órával}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {perccel}\\n  other {perccel}\\n}",
-                    "second": "{count} {count, plural,\\n  one {másodperccel}\\n  other {másodperccel}\\n}",
-                    "week": "{count} {count, plural,\\n  one {héttel}\\n  other {héttel}\\n}"
+                    "day": "{count} {count, plural,\n  one {nappal}\n  other {nappal}\n}",
+                    "hour": "{count} {count, plural,\none {órával}\nother {órával}\n}",
+                    "minute": "{count} {count, plural,\n  one {perccel}\n  other {perccel}\n}",
+                    "second": "{count} {count, plural,\n  one {másodperccel}\n  other {másodperccel}\n}",
+                    "week": "{count} {count, plural,\n  one {héttel}\n  other {héttel}\n}"
                 },
                 "future": "{time} később",
                 "never": "Soha",
@@ -639,11 +639,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {nap}\\nother {nap}\\n}",
-            "hour": "{count} {count, plural,\\none {óra}\\nother {óra}\\n}",
-            "minute": "{count} {count, plural,\\none {perc}\\nother {perc}\\n}",
-            "second": "{count} {count, plural,\\none {másodperc}\\nother {másodperc}\\n}",
-            "week": "{count} {count, plural,\\none {hét}\\nother {hét}\\n}"
+            "day": "{count} {count, plural,\none {nap}\nother {nap}\n}",
+            "hour": "{count} {count, plural,\none {óra}\nother {óra}\n}",
+            "minute": "{count} {count, plural,\none {perc}\nother {perc}\n}",
+            "second": "{count} {count, plural,\none {másodperc}\nother {másodperc}\n}",
+            "week": "{count} {count, plural,\none {hét}\nother {hét}\n}"
         },
         "login-form": {
             "log_in": "Bejelentkezés",
@@ -1111,7 +1111,7 @@
                     "description": "Entitások testreszabása",
                     "picker": {
                         "header": "Testreszabás",
-                        "introduction": "Szabd testre az entitások tulajdonságait. A hozzáadott\/szerkesztett testreszabások azonnal érvényesülnek. A testreszabások eltávolítása akkor lép életbe, amikor az entitás frissül."
+                        "introduction": "Szabd testre az entitások tulajdonságait. A hozzáadott/szerkesztett testreszabások azonnal érvényesülnek. A testreszabások eltávolítása akkor lép életbe, amikor az entitás frissül."
                     }
                 },
                 "devices": {

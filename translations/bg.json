@@ -247,7 +247,7 @@
             "fan_only": "Само вентилатор",
             "gas": "Газ",
             "heat": "Отопление",
-            "heat_cool": "Отопление\/Охлаждане",
+            "heat_cool": "Отопление/Охлаждане",
             "heat_pump": "Термопомпа",
             "high_demand": "Високо натоварване",
             "idle": "Неработещ",
@@ -421,7 +421,7 @@
                 "away_mode": "Режим на отсъствие",
                 "currently": "В момента",
                 "fan_mode": "Режим на вентилатора",
-                "on_off": "Вкл. \/ Изкл",
+                "on_off": "Вкл. / Изкл",
                 "operation": "Режим",
                 "preset_mode": "Предварително-зададени настройки",
                 "swing_mode": "Режим на люлеене",
@@ -484,7 +484,7 @@
             "water_heater": {
                 "away_mode": "Режим на отсъствие",
                 "currently": "В момента",
-                "on_off": "Вкл. \/ Изкл.",
+                "on_off": "Вкл. / Изкл.",
                 "operation": "Режим",
                 "target_temperature": "Желана температура"
             },
@@ -535,11 +535,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count}{count, plural,\\n  one {ден}\\n  other {дни}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {час}\\n  other {часа}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {минута}\\n  other {минути}\\n}",
-                    "second": "{count}{count, plural,\\n  one {секунда}\\n  other {секунди}\\n}",
-                    "week": "{count}{count, plural,\\n  one {седмица}\\n  other {седмици}\\n}"
+                    "day": "{count}{count, plural,\n  one {ден}\n  other {дни}\n}",
+                    "hour": "{count} {count, plural,\n  one {час}\n  other {часа}\n}",
+                    "minute": "{count} {count, plural,\n  one {минута}\n  other {минути}\n}",
+                    "second": "{count}{count, plural,\n  one {секунда}\n  other {секунди}\n}",
+                    "week": "{count}{count, plural,\n  one {седмица}\n  other {седмици}\n}"
                 },
                 "future": "След {time}",
                 "never": "Никога",
@@ -597,11 +597,11 @@
             }
         },
         "duration": {
-            "day": "{count}{count, plural,\\n  one {ден}\\n  other {дни}\\n}",
-            "hour": "{count} {count, plural,\\n  one {час}\\n  other {часа}\\n}",
-            "minute": "{count} {count, plural,\\n  one {минута}\\n  other {минути}\\n}",
-            "second": "{count}{count, plural,\\n  one {секунда}\\n  other {секунди}\\n}",
-            "week": "{count}{count, plural,\\n  one {седмица}\\n  other {седмици}\\n}"
+            "day": "{count}{count, plural,\n  one {ден}\n  other {дни}\n}",
+            "hour": "{count} {count, plural,\n  one {час}\n  other {часа}\n}",
+            "minute": "{count} {count, plural,\n  one {минута}\n  other {минути}\n}",
+            "second": "{count}{count, plural,\n  one {секунда}\n  other {секунди}\n}",
+            "week": "{count}{count, plural,\n  one {седмица}\n  other {седмици}\n}"
         },
         "login-form": {
             "log_in": "Вход",
@@ -893,7 +893,7 @@
                     "description": "Персонализирайте Вашите обекти",
                     "picker": {
                         "header": "Персонализиране",
-                        "introduction": "Настройте атрибутите за всеки обект. Добавени\/редактирани персонализации ще имат ефект, когато обектът бъде опреснен."
+                        "introduction": "Настройте атрибутите за всеки обект. Добавени/редактирани персонализации ще имат ефект, когато обектът бъде опреснен."
                     }
                 },
                 "devices": {

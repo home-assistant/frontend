@@ -304,7 +304,7 @@
                 "away_mode": "Etxetik kanpo",
                 "currently": "Orain",
                 "fan_mode": "Haizagailuaren modua",
-                "on_off": "Piztuta \/ itzalita",
+                "on_off": "Piztuta / itzalita",
                 "operation": "Modua"
             },
             "cover": {
@@ -343,7 +343,7 @@
             },
             "water_heater": {
                 "currently": "Orain",
-                "on_off": "Piztuta \/ itzalita",
+                "on_off": "Piztuta / itzalita",
                 "operation": "Operazioa"
             },
             "weather": {
@@ -382,11 +382,11 @@
         "components": {
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {egun}\\n  other {egun}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {ordu}\\n  other {ordu}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {minutu}\\n  other {minutu}\\n}",
-                    "second": "{count} {count, plural,\\n  one {segundo}\\n  other {segundo}\\n}",
-                    "week": "{count} {count, plural,\\n  one {aste}\\n  other {aste}\\n}"
+                    "day": "{count} {count, plural,\n  one {egun}\n  other {egun}\n}",
+                    "hour": "{count} {count, plural,\n  one {ordu}\n  other {ordu}\n}",
+                    "minute": "{count} {count, plural,\n  one {minutu}\n  other {minutu}\n}",
+                    "second": "{count} {count, plural,\n  one {segundo}\n  other {segundo}\n}",
+                    "week": "{count} {count, plural,\n  one {aste}\n  other {aste}\n}"
                 },
                 "future": "{time} barru",
                 "never": "Inoiz",
@@ -415,11 +415,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\n  one {egun}\\n  other {egun}\\n}",
-            "hour": "{count} {count, plural,\\n  one {ordu}\\n  other {ordu}\\n}",
-            "minute": "{count} {count, plural,\\n  one {minutu}\\n  other {minutu}\\n}",
-            "second": "{count} {count, plural,\\n  one {segundo}\\n  other {segundo}\\n}",
-            "week": "{count} {count, plural,\\n  one {aste}\\n  other {aste}\\n}"
+            "day": "{count} {count, plural,\n  one {egun}\n  other {egun}\n}",
+            "hour": "{count} {count, plural,\n  one {ordu}\n  other {ordu}\n}",
+            "minute": "{count} {count, plural,\n  one {minutu}\n  other {minutu}\n}",
+            "second": "{count} {count, plural,\n  one {segundo}\n  other {segundo}\n}",
+            "week": "{count} {count, plural,\n  one {aste}\n  other {aste}\n}"
         },
         "login-form": {
             "log_in": "Saioa hasi",

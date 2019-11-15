@@ -109,11 +109,12 @@ class EntityFilterBadge extends HTMLElement implements LovelaceBadge {
       return;
     }
 
-    // Attach element if it has never been attached.
-    if (!this.lastChild) {
-      for (const element of this._elements) {
-        this.appendChild(element);
-      }
+    while (this.lastChild) {
+      this.removeChild(this.lastChild);
+    }
+
+    for (const element of this._elements) {
+      this.appendChild(element);
     }
 
     this.style.display = "inline";

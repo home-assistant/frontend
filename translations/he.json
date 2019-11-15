@@ -246,7 +246,7 @@
             "fan_only": "מאוורר בלבד",
             "gas": "גז",
             "heat": "חימום",
-            "heat_cool": "חימום\/קירור",
+            "heat_cool": "חימום/קירור",
             "heat_pump": "משאבת חום",
             "high_demand": "ביקוש גבוה",
             "idle": "ממתין",
@@ -419,7 +419,7 @@
                 "away_mode": "מצב מחוץ לבית",
                 "currently": "כעת",
                 "fan_mode": "מצב מאורר",
-                "on_off": "הפעלה \/ כיבוי",
+                "on_off": "הפעלה / כיבוי",
                 "operation": "סוג",
                 "preset_mode": "מצב מוגדר",
                 "swing_mode": "מצב נדנוד",
@@ -472,7 +472,7 @@
             "water_heater": {
                 "away_mode": "מצב מחוץ לבית",
                 "currently": "כעת",
-                "on_off": "הפעלה \/ כיבוי",
+                "on_off": "הפעלה / כיבוי",
                 "operation": "פעולה",
                 "target_temperature": "טמפרטורת היעד"
             },
@@ -522,11 +522,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {יום}\\n  other {ימים}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {שעה}\\n  other {שעות}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {דקה}\\n  other {דקות}\\n}",
-                    "second": "{count} {count, plural,\\n  one {שנייה}\\n  other {שניות}\\n}",
-                    "week": "{count} {count, plural,\\n  one {שבוע}\\n  other {שבועות}\\n}"
+                    "day": "{count} {count, plural,\n  one {יום}\n  other {ימים}\n}",
+                    "hour": "{count} {count, plural,\n  one {שעה}\n  other {שעות}\n}",
+                    "minute": "{count} {count, plural,\n  one {דקה}\n  other {דקות}\n}",
+                    "second": "{count} {count, plural,\n  one {שנייה}\n  other {שניות}\n}",
+                    "week": "{count} {count, plural,\n  one {שבוע}\n  other {שבועות}\n}"
                 },
                 "future": "ב{time}",
                 "never": "אף פעם לא",
@@ -571,8 +571,8 @@
         },
         "duration": {
             "day": "יום ימים",
-            "hour": "{count} {count, plural,\\n  one {שעה}\\n  other {שעות}\\n}",
-            "minute": "{count} {count, plural,\\n  one {דקה}\\n  other {דקות}\\n}",
+            "hour": "{count} {count, plural,\n  one {שעה}\n  other {שעות}\n}",
+            "minute": "{count} {count, plural,\n  one {דקה}\n  other {דקות}\n}",
             "second": "שניה שניות",
             "week": "שבוע שבועות"
         },
@@ -701,7 +701,7 @@
                             "unsupported_condition": "תנאי לא נתמך: {condition}"
                         },
                         "default_name": "אוטומציה חדשה",
-                        "introduction": "השתמש\/י באוטומציות להפיח חיים בביתך.",
+                        "introduction": "השתמש/י באוטומציות להפיח חיים בביתך.",
                         "load_error_not_editable": "רק אוטומציה ב automations.yaml ניתנים לעריכה.",
                         "load_error_unknown": "שגיאה בטעינת האוטומציה ( {err_no} ).",
                         "save": "שמור",
@@ -856,7 +856,7 @@
                                 "core": "טען מחדש את הליבה",
                                 "group": "טען מחדש קבוצות",
                                 "heading": "טען מחדש קונפיגורציה",
-                                "introduction": "חלקים מסוימים של Home Assistant יכולים להיטען מחדש ללא צורך בהפעלה מחדש.\\nטעינה מחדש תשנה את הקונפיגורציה הנוכחית ותטען קונפיגורציה חדשה.",
+                                "introduction": "חלקים מסוימים של Home Assistant יכולים להיטען מחדש ללא צורך בהפעלה מחדש.\nטעינה מחדש תשנה את הקונפיגורציה הנוכחית ותטען קונפיגורציה חדשה.",
                                 "script": "טען מחדש סקריפטים"
                             },
                             "server_management": {
@@ -880,7 +880,7 @@
                     "description": "התאם אישית את הישויות שלך",
                     "picker": {
                         "header": "התאמה אישית",
-                        "introduction": "כוונן תכונות של כל ישות. ההתאמות הנוספות שנוספו \/ ייכנסו לתוקף באופן מיידי. התאמות אישיות שהוסרו ייכנסו לתוקף כאשר הישות תעודכן."
+                        "introduction": "כוונן תכונות של כל ישות. ההתאמות הנוספות שנוספו / ייכנסו לתוקף באופן מיידי. התאמות אישיות שהוסרו ייכנסו לתוקף כאשר הישות תעודכן."
                     }
                 },
                 "entity_registry": {
@@ -958,7 +958,7 @@
                             "core": "טען מחדש את הליבה",
                             "group": "טען מחדש קבוצות",
                             "heading": "טען מחדש קונפיגורציה",
-                            "introduction": "חלקים מסוימים של Home Assistant יכולים להטען מחדש ללא צורך בהפעלה מחדש.\\nטעינה מחדש תשנה את הקונפיגורציה הנוכחית ותטען קונפיגורציה חדשה.",
+                            "introduction": "חלקים מסוימים של Home Assistant יכולים להטען מחדש ללא צורך בהפעלה מחדש.\nטעינה מחדש תשנה את הקונפיגורציה הנוכחית ותטען קונפיגורציה חדשה.",
                             "script": "טען מחדש סקריפטים"
                         },
                         "server_management": {
@@ -991,7 +991,7 @@
                         "active": "פעיל",
                         "caption": "הצג משתמש",
                         "change_password": "שינוי סיסמה",
-                        "confirm_user_deletion": "האם הינך בטוח\/ה שברצונך למחוק את {name} ?",
+                        "confirm_user_deletion": "האם הינך בטוח/ה שברצונך למחוק את {name} ?",
                         "deactivate_user": "בטל את המשתמש",
                         "delete_user": "מחיקת משתמש",
                         "enter_new_name": "הזן שם חדש",
@@ -1448,7 +1448,7 @@
                     "create_failed": "יצירת אסימון הגישה נכשלה.",
                     "created_at": "נוצר בתאריך {date}",
                     "delete_failed": "מחיקת אסימון הגישה נכשלה.",
-                    "description": "צור אסימוני גישה ארוכי טווח כדי לאפשר לסקריפטים שלך לקיים אינטראקציה עם Home Assistant.\\nאסימונים אלו פועלים כיום:",
+                    "description": "צור אסימוני גישה ארוכי טווח כדי לאפשר לסקריפטים שלך לקיים אינטראקציה עם Home Assistant.\nאסימונים אלו פועלים כיום:",
                     "empty_state": "אין לך עדיין אסימוני גישה ארוכים.",
                     "header": "אסימוני גישה ארוכים חיים",
                     "last_used": "נעשה שימוש לאחרונה  {date} מ{location}",

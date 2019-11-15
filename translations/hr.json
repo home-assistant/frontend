@@ -247,7 +247,7 @@
             "fan_only": "Samo ventilator",
             "gas": "Plin",
             "heat": "Grijanje",
-            "heat_cool": "Grijanje\/Hlađenje",
+            "heat_cool": "Grijanje/Hlađenje",
             "heat_pump": "Toplinska pumpa",
             "high_demand": "Velike potražnje",
             "idle": "Besposlen",
@@ -421,7 +421,7 @@
                 "away_mode": "Način rada: Odsutan",
                 "currently": "Trenutno",
                 "fan_mode": "Način rada s ventilatorom",
-                "on_off": "Uključivanje \/ isključivanje",
+                "on_off": "Uključivanje / isključivanje",
                 "operation": "operacija",
                 "preset_mode": "Zadano",
                 "swing_mode": "Swing način rada",
@@ -484,7 +484,7 @@
             "water_heater": {
                 "away_mode": "Način rada: Odsutan",
                 "currently": "Trenutno",
-                "on_off": "Uključeno\/Isključeno",
+                "on_off": "Uključeno/Isključeno",
                 "operation": "Operacija",
                 "target_temperature": "Ciljana temperatura"
             },
@@ -535,11 +535,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {dan}\\n  other {dana}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {sat}\\n  other {sati}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {minuta}\\n  other {minuta}\\n}",
-                    "second": "{count} {count, plural,\\n  one {sekunda}\\n  other {sekunde}\\n}",
-                    "week": "{count} {count, plural,\\n  one {week}\\n  other {weeks}\\n}"
+                    "day": "{count} {count, plural,\n  one {dan}\n  other {dana}\n}",
+                    "hour": "{count} {count, plural,\n  one {sat}\n  other {sati}\n}",
+                    "minute": "{count} {count, plural,\n  one {minuta}\n  other {minuta}\n}",
+                    "second": "{count} {count, plural,\n  one {sekunda}\n  other {sekunde}\n}",
+                    "week": "{count} {count, plural,\n  one {week}\n  other {weeks}\n}"
                 },
                 "future": "Za {time}",
                 "never": "Nikada",
@@ -597,11 +597,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\n  one {dan}\\n  other {dani}\\n}",
+            "day": "{count} {count, plural,\n  one {dan}\n  other {dani}\n}",
             "hour": "{broj} {broj, množina, jedan {sat} drugi {sati}}",
             "minute": "{broj} {broj, množina, jedna {minuta}, druge {minute}}",
-            "second": "{count} {count, plural,\\n  one {sekunde}\\n  other {sekunde}\\n}",
-            "week": "{count} {count, plural,\\n  one {tjedan}\\n  other {tjedni}\\n}"
+            "second": "{count} {count, plural,\n  one {sekunde}\n  other {sekunde}\n}",
+            "week": "{count} {count, plural,\n  one {tjedan}\n  other {tjedni}\n}"
         },
         "login-form": {
             "log_in": "Prijava",
@@ -652,7 +652,7 @@
                             "delete_confirm": "Sigurno želite pobrisati?",
                             "duplicate": "Dupliciraj",
                             "header": "Akcije",
-                            "introduction": "Radnje su ono što će Home Assistant učiniti kada se aktivira automatizacija. \\n\\n [Saznajte više o radnjama.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Radnje su ono što će Home Assistant učiniti kada se aktivira automatizacija. \n\n [Saznajte više o radnjama.] (Https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Saznajte više o akcijama",
                             "type_select": "Vrsta akcije",
                             "type": {
@@ -690,7 +690,7 @@
                             "delete_confirm": "Sigurno želite pobrisati?",
                             "duplicate": "Dupliciran",
                             "header": "Uvjeti",
-                            "introduction": "Uvjeti su neobvezni dio pravila o automatizaciji i mogu se upotrebljavati kako bi se spriječilo da se neka akcija dogodi prilikom pokretanja. Uvjeti izgledaju vrlo slični pokretačima, ali su vrlo različiti. Okidač će pogledati događaje koji se događaju u sustavu, a stanje samo gleda kako sustav izgleda upravo sada. Okidač može primijetiti da je prekidač uključen. Stanje može vidjeti samo ako je uključen ili isključen prekidač. \\n\\n [Saznajte više o uvjetima.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Uvjeti su neobvezni dio pravila o automatizaciji i mogu se upotrebljavati kako bi se spriječilo da se neka akcija dogodi prilikom pokretanja. Uvjeti izgledaju vrlo slični pokretačima, ali su vrlo različiti. Okidač će pogledati događaje koji se događaju u sustavu, a stanje samo gleda kako sustav izgleda upravo sada. Okidač može primijetiti da je prekidač uključen. Stanje može vidjeti samo ako je uključen ili isključen prekidač. \n\n [Saznajte više o uvjetima.] (Https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Saznajte više o uvjetima",
                             "type_select": "Vrsta uvjeta",
                             "type": {
@@ -744,7 +744,7 @@
                             "delete_confirm": "Jeste li sigurni dai želite izbrisati?",
                             "duplicate": "Udvostruči",
                             "header": "Okidači",
-                            "introduction": "Okidači su ono što pokreće obradu pravila o automatizaciji. Moguće je odrediti više okidača za isto pravilo. Kada pokrenete okidač, Home Assistant provjerit će uvjete, ako ih ima i pozvati akciju. \\n\\n [Saznajte više o pokretačima.] (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Okidači su ono što pokreće obradu pravila o automatizaciji. Moguće je odrediti više okidača za isto pravilo. Kada pokrenete okidač, Home Assistant provjerit će uvjete, ako ih ima i pozvati akciju. \n\n [Saznajte više o pokretačima.] (Https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Saznajte više o okidačima",
                             "type_select": "Tip okidača",
                             "type": {
@@ -828,7 +828,7 @@
                     "picker": {
                         "add_automation": "Dodaj automatizaciju",
                         "header": "Urednik Automatizacije",
-                        "introduction": "Automatizacijski urednik omogućuje stvaranje i uređivanje automatizacije. Molimo pročitajte [upute] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) kako biste bili sigurni da ste ispravno konfigurirali Home Assistant.",
+                        "introduction": "Automatizacijski urednik omogućuje stvaranje i uređivanje automatizacije. Molimo pročitajte [upute] (https://home-assistant.io/docs/automation/editor/) kako biste bili sigurni da ste ispravno konfigurirali Home Assistant.",
                         "learn_more": "Saznajte više o automatizacijama",
                         "no_automations": "Nismo mogli pronaći nikakve automatizirane uređaje",
                         "pick_automation": "Odaberite automatizaciju za uređivanje"
@@ -893,7 +893,7 @@
                     "description": "Prilagodite entitete",
                     "picker": {
                         "header": "Prilagodba",
-                        "introduction": "Podešavanje atributa po entitetu. Dodane\/uređene prilagodbe će odmah stupiti na snagu. Uklonjene prilagodbe stupit će na snagu kada se entitet ažurira."
+                        "introduction": "Podešavanje atributa po entitetu. Dodane/uređene prilagodbe će odmah stupiti na snagu. Uklonjene prilagodbe stupit će na snagu kada se entitet ažurira."
                     }
                 },
                 "devices": {

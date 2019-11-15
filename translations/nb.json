@@ -247,7 +247,7 @@
             "fan_only": "Kun vifte",
             "gas": "Gass",
             "heat": "Varme",
-            "heat_cool": "Varme\/kjøling",
+            "heat_cool": "Varme/kjøling",
             "heat_pump": "Varmepumpe",
             "high_demand": "Høy etterspørsel",
             "idle": "Inaktiv",
@@ -426,7 +426,7 @@
                 "heating": "{name} oppvarming",
                 "high": "høy",
                 "low": "lav",
-                "on_off": "På \/ av",
+                "on_off": "På / av",
                 "operation": "Operasjon",
                 "preset_mode": "Preset",
                 "swing_mode": "Svingmodus",
@@ -498,7 +498,7 @@
             "water_heater": {
                 "away_mode": "Bortemodus",
                 "currently": "Temperatur nå",
-                "on_off": "På \/ av",
+                "on_off": "På / av",
                 "operation": "Drift",
                 "target_temperature": "Ønsket temperatur"
             },
@@ -542,6 +542,7 @@
         "components": {
             "device-picker": {
                 "clear": "Tøm",
+                "device": "Enhet",
                 "show_devices": "Vis enheter"
             },
             "entity": {
@@ -557,11 +558,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {dag}\\n  other {dager}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {time}\\n  other {timer}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {minutt}\\n  other {minutter}\\n}",
-                    "second": "{count} {count, plural,\\n  one {sekund}\\n  other {sekunder}\\n}",
-                    "week": "{count} {count, plural,\\n  one {uke}\\n  other {uker}\\n}"
+                    "day": "{count} {count, plural,\n  one {dag}\n  other {dager}\n}",
+                    "hour": "{count} {count, plural,\n  one {time}\n  other {timer}\n}",
+                    "minute": "{count} {count, plural,\n  one {minutt}\n  other {minutter}\n}",
+                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekunder}\n}",
+                    "week": "{count} {count, plural,\n  one {uke}\n  other {uker}\n}"
                 },
                 "future": "Om {time}",
                 "never": "Aldri",
@@ -644,11 +645,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {dag}\\nother {dager}\\n}",
-            "hour": "{count} {count, plural,\\none {time}\\nother {timer}\\n}",
-            "minute": "{count} {count, plural,\\none {minutt}\\nother {minutter}\\n}",
-            "second": "{count} {count, plural,\\none {sekund}\\nother {sekunder}\\n}",
-            "week": "{count} {count, plural,\\none {uke}\\nother {uker}\\n}"
+            "day": "{count} {count, plural,\none {dag}\nother {dager}\n}",
+            "hour": "{count} {count, plural,\none {time}\nother {timer}\n}",
+            "minute": "{count} {count, plural,\none {minutt}\nother {minutter}\n}",
+            "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}",
+            "week": "{count} {count, plural,\none {uke}\nother {uker}\n}"
         },
         "login-form": {
             "log_in": "Logg inn",
@@ -702,6 +703,7 @@
                             "header": "Handlinger",
                             "introduction": "Handling(ene) er hva Home Assistant vil utføre når en automasjon utløses.",
                             "learn_more": "Lær mer om handlinger",
+                            "name": "Handling",
                             "type_select": "Handlingstype",
                             "type": {
                                 "condition": {
@@ -744,8 +746,9 @@
                             "delete_confirm": "Er du sikker på at du ønsker å slette?",
                             "duplicate": "Dupliser",
                             "header": "Betingelser",
-                            "introduction": "Betingelser er en valgfri del av en automasjonsregel og kan brukes til å forhindre at en handling skjer når den blir aktivert. \\nBetingelsene ser veldig ut som utløsere, men er veldig forskjellige. \\nEn utløser vil se på hendelser som skjer i systemet, mens en betingelse bare ser på hvordan systemet ser ut akkurat nå. En utløser kan observere at en bryter er slått på. En betingelse kan bare se om en bryter for øyeblikket er på eller av.",
+                            "introduction": "Betingelser er en valgfri del av en automasjonsregel og kan brukes til å forhindre at en handling skjer når den blir aktivert. \nBetingelsene ser veldig ut som utløsere, men er veldig forskjellige. \nEn utløser vil se på hendelser som skjer i systemet, mens en betingelse bare ser på hvordan systemet ser ut akkurat nå. En utløser kan observere at en bryter er slått på. En betingelse kan bare se om en bryter for øyeblikket er på eller av.",
                             "learn_more": "Lær mer om betingelser",
+                            "name": "Betingelse",
                             "type_select": "Type Betingelse",
                             "type": {
                                 "and": {
@@ -813,8 +816,9 @@
                             "delete_confirm": "Er du sikker på at du vil slette?",
                             "duplicate": "Dupliser",
                             "header": "Utløsere",
-                            "introduction": "Utløsere er det som starter en automatiseringsregel. Det er mulig å spesifisere flere utløsere for samme regel. Når en utløser aktiveres, vil Home Assistant bekrefte vilkårene, hvis noen, og kjøre handlingen. \\n\\n[Lær mer om utløsere.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Utløsere er det som starter en automatiseringsregel. Det er mulig å spesifisere flere utløsere for samme regel. Når en utløser aktiveres, vil Home Assistant bekrefte vilkårene, hvis noen, og kjøre handlingen. \n\n[Lær mer om utløsere.](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Lær mer om utløsere",
+                            "name": "Utløse",
                             "type_select": "Utløser type",
                             "type": {
                                 "device": {
@@ -905,7 +909,7 @@
                         "delete_confirm": "Er du sikker på at du vil slette denne automatiseringen?",
                         "edit_automation": "Rediger automatisering",
                         "header": "Automasjonsredigering",
-                        "introduction": "Automasjonsredigeringen lar deg lage og redigere automasjoner. Vennligst les [instruksjonene](https:\/\/home-assistant.io\/docs\/automation\/editor\/) for å forsikre deg om at du har konfigurert Home Assistant riktig.",
+                        "introduction": "Automasjonsredigeringen lar deg lage og redigere automasjoner. Vennligst les [instruksjonene](https://home-assistant.io/docs/automation/editor/) for å forsikre deg om at du har konfigurert Home Assistant riktig.",
                         "learn_more": "Lær mer om automatisering",
                         "no_automations": "Vi kunne ikke finne noen redigerbare automasjoner",
                         "only_editable": "Bare automatiseringer definert i automations.yaml kan redigeres.",
@@ -939,7 +943,7 @@
                             "enable_state_reporting": "Aktiver tilstandsrapportering",
                             "enter_pin_error": "Kunne ikke lagre PIN-kode:",
                             "enter_pin_hint": "Angi en PIN-kode for å bruke sikkerhetsenheter",
-                            "enter_pin_info": "Angi en PIN-kode for å samhandle med sikkerhetsenheter. Sikkerhetsanordninger er dører, garasjeporter og låser. Du vil bli bedt om å si\/angi denne PIN-koden når du samhandler med slike enheter via Google Assistant.",
+                            "enter_pin_info": "Angi en PIN-kode for å samhandle med sikkerhetsenheter. Sikkerhetsanordninger er dører, garasjeporter og låser. Du vil bli bedt om å si/angi denne PIN-koden når du samhandler med slike enheter via Google Assistant.",
                             "info": "Med Google Assistant-integrasjonen for Home Assistant Cloud vil du kunne kontrollere alle dine Home Assistant-enheter via hvilken som helst Google Assistant-aktivert enhet.",
                             "info_state_reporting": "Hvis du aktiverer tilstandsrapportering, vil Home Assistant sende alle tilstandsendringer av utsatte enheter til Google. Dette lar deg alltid se de nyeste delene av Google-appen.",
                             "manage_entities": "Administrer enheter",
@@ -1133,7 +1137,7 @@
                     "pick_attribute": "Velg et attributt som skal overstyres",
                     "picker": {
                         "header": "Tilpasning",
-                        "introduction": "Juster per-enhet attributter. Lagt til\/redigert tilpasninger trer i kraft umiddelbart. Fjernede tilpasninger trer i kraft når enheten er oppdatert."
+                        "introduction": "Juster per-enhet attributter. Lagt til/redigert tilpasninger trer i kraft umiddelbart. Fjernede tilpasninger trer i kraft når enheten er oppdatert."
                     },
                     "warning": {
                         "include_link": "inkluder customize.yaml",
@@ -1686,7 +1690,7 @@
                         "entities": {
                             "name": "Enheter",
                             "show_header_toggle": "Vise topptekst veksling?",
-                            "toggle": "Aktiver\/deaktiver enheter."
+                            "toggle": "Aktiver/deaktiver enheter."
                         },
                         "entity-button": {
                             "name": "Enhetsknapp"
@@ -2151,7 +2155,7 @@
         "sidebar": {
             "external_app_configuration": "Appkonfigurasjon",
             "log_out": "Logg ut",
-            "sidebar_toggle": "Vis\/Skjul sidepanel"
+            "sidebar_toggle": "Vis/Skjul sidepanel"
         }
     }
 }

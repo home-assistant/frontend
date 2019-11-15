@@ -24,7 +24,7 @@
         "homeassistant": "Home Assistant",
         "image_processing": "Beeldverwerking",
         "input_boolean": "Invoer boole",
-        "input_datetime": "Invoer datum\/tyd",
+        "input_datetime": "Invoer datum/tyd",
         "input_number": "Invoer nommer",
         "input_select": "Invoer seleksie",
         "input_text": "Invoer teks",
@@ -240,7 +240,7 @@
             "fan_only": "Slegs waaier",
             "gas": "Gas",
             "heat": "Hitte",
-            "heat_cool": "Verhit\/Verkoel",
+            "heat_cool": "Verhit/Verkoel",
             "heat_pump": "Hittepomp",
             "high_demand": "Hoë aanvraag",
             "idle": "Ledig",
@@ -413,7 +413,7 @@
                 "away_mode": "Wegmodus",
                 "currently": "Tans",
                 "fan_mode": "Waaier modus",
-                "on_off": "Aan \/ af",
+                "on_off": "Aan / af",
                 "operation": "Operasie",
                 "preset_mode": "Voorafbepaalde",
                 "swing_mode": "Swaai modus",
@@ -466,7 +466,7 @@
             "water_heater": {
                 "away_mode": "Afwesig modus",
                 "currently": "Tans",
-                "on_off": "Aan \/ af",
+                "on_off": "Aan / af",
                 "operation": "Operasie",
                 "target_temperature": "Teiken temperatuur"
             },
@@ -516,11 +516,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {dag}\\n  other {dae}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {uur}\\n  other {ure}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {minuut}\\n  other {minute}\\n}",
-                    "second": "{count} {count, plural,\\n  one {sekonde}\\n  other {sekondes}\\n}",
-                    "week": "{count} {count, plural,\\n  one {week}\\n  other {weke}\\n}"
+                    "day": "{count} {count, plural,\n  one {dag}\n  other {dae}\n}",
+                    "hour": "{count} {count, plural,\n  one {uur}\n  other {ure}\n}",
+                    "minute": "{count} {count, plural,\n  one {minuut}\n  other {minute}\n}",
+                    "second": "{count} {count, plural,\n  one {sekonde}\n  other {sekondes}\n}",
+                    "week": "{count} {count, plural,\n  one {week}\n  other {weke}\n}"
                 },
                 "future": "In {time}",
                 "never": "Nooit",
@@ -551,11 +551,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\n  one {dag}\\n  other {dae}\\n}",
-            "hour": "{count} {count, plural,\\n  one {uur}\\n  other {ure}\\n}",
-            "minute": "{count} {count, plural,\\none {minuut}\\nother {minute}\\n}",
-            "second": "{count} {count, plural,\\n  one {sekonde}\\n  other {sekondes}\\n}",
-            "week": "{count} {count, plural,\\n  one {week}\\n  other {weke}\\n}"
+            "day": "{count} {count, plural,\n  one {dag}\n  other {dae}\n}",
+            "hour": "{count} {count, plural,\n  one {uur}\n  other {ure}\n}",
+            "minute": "{count} {count, plural,\none {minuut}\nother {minute}\n}",
+            "second": "{count} {count, plural,\n  one {sekonde}\n  other {sekondes}\n}",
+            "week": "{count} {count, plural,\n  one {week}\n  other {weke}\n}"
         },
         "login-form": {
             "log_in": "Meld aan",
@@ -838,7 +838,7 @@
                     "description": "Pas u entiteite aan",
                     "picker": {
                         "header": "Pasgemaakte Instellings",
-                        "introduction": "Verfyn per-entiteit eienskappe. Bygevoegde \/ gewysigde aanpassings sal onmiddellik in werking tree. Verwyderde aanpassings sal in werking tree wanneer die entiteit opgedateer word."
+                        "introduction": "Verfyn per-entiteit eienskappe. Bygevoegde / gewysigde aanpassings sal onmiddellik in werking tree. Verwyderde aanpassings sal in werking tree wanneer die entiteit opgedateer word."
                     }
                 },
                 "entity_registry": {

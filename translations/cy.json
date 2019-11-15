@@ -24,7 +24,7 @@
         "homeassistant": "Home Assistant",
         "image_processing": "Prosesu delwedd",
         "input_boolean": "Mewnbynnu boolean",
-        "input_datetime": "Mewnbynnu dyddiad\/amser",
+        "input_datetime": "Mewnbynnu dyddiad/amser",
         "input_number": "Mewnbynnu rhif",
         "input_select": "Mewnbynnu dewis",
         "input_text": "Mewnbynnu testun",
@@ -387,7 +387,7 @@
             "water_heater": {
                 "away_mode": "Dull i ffwrdd",
                 "currently": "Ar hyn o bryd",
-                "on_off": "Ar \/ i ffwrdd",
+                "on_off": "Ar / i ffwrdd",
                 "operation": "Gweithredu",
                 "target_temperature": "Tymheredd targed"
             },
@@ -497,7 +497,7 @@
                             "delete_confirm": "Ydych yn siŵr bod chi eisiau dileu?",
                             "duplicate": "Dyblygu",
                             "header": "Camau gweithredu",
-                            "introduction": "Y camau gweithredu yw'r hyn mae Home Assistant yn gwneud pan mae'r awtomeiddio yn cael ei sbarduno\\n\\n[Dysgwch mwy am weithred.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Y camau gweithredu yw'r hyn mae Home Assistant yn gwneud pan mae'r awtomeiddio yn cael ei sbarduno\n\n[Dysgwch mwy am weithred.](https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Dysgu mwy am gamau gweithredu",
                             "type_select": "Math weithrediad",
                             "type": {
@@ -532,7 +532,7 @@
                             "delete_confirm": "Siwr bod chi eisiau dileu?",
                             "duplicate": "Dyblygu",
                             "header": "Amodau",
-                            "introduction": "Mae'r amodau'n rhan ddewisol o reol awtomeiddio, a gellir eu defnyddio i atal camau rhag digwydd pan fyddant yn cael eu sbarduno. Mae'r amodau'n edrych yn debyg iawn i sbardunau ond maent yn wahanol iawn. Bydd sbardun yn edrych ar ddigwyddiadau sy'n digwydd yn y system tra bod amod yn edrych ar sut mae'r system yn edrych ar hyn o bryd. Gall sbarduno arsylwi bod switsh yn cael ei droi ymlaen. Dim ond os yw switsh ar neu i ffwrdd ar hyn o bryd y gall cyflwr weld. \\n\\n [Dysgwch fwy am amodau.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Mae'r amodau'n rhan ddewisol o reol awtomeiddio, a gellir eu defnyddio i atal camau rhag digwydd pan fyddant yn cael eu sbarduno. Mae'r amodau'n edrych yn debyg iawn i sbardunau ond maent yn wahanol iawn. Bydd sbardun yn edrych ar ddigwyddiadau sy'n digwydd yn y system tra bod amod yn edrych ar sut mae'r system yn edrych ar hyn o bryd. Gall sbarduno arsylwi bod switsh yn cael ei droi ymlaen. Dim ond os yw switsh ar neu i ffwrdd ar hyn o bryd y gall cyflwr weld. \n\n [Dysgwch fwy am amodau.] (Https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Dysgu mwy am amodau",
                             "type_select": "Math o gyflwr",
                             "type": {
@@ -583,7 +583,7 @@
                             "delete_confirm": "Sicr bod chi eisiau dileu?",
                             "duplicate": "Dyblyg",
                             "header": "Sbardunau",
-                            "introduction": "Sbarduno yw'r hyn sy'n dechrau proses rheol awtomeiddio.  Mae'n bosib dewis nifer o sbardunau i'run rheol. Unwaith mae sbardun yn cychwyn, bydd Home Assistant yn dilysu'r amodau, os o gwbl, a galw'r gweithred. \\n\\n[dysgwch mwy am sbardunau.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Sbarduno yw'r hyn sy'n dechrau proses rheol awtomeiddio.  Mae'n bosib dewis nifer o sbardunau i'run rheol. Unwaith mae sbardun yn cychwyn, bydd Home Assistant yn dilysu'r amodau, os o gwbl, a galw'r gweithred. \n\n[dysgwch mwy am sbardunau.] (https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Dysgu mwy am sbardunau",
                             "type_select": "Math sbardun",
                             "type": {
@@ -663,7 +663,7 @@
                     "picker": {
                         "add_automation": "Ychwanegu awtomeiddiad",
                         "header": "Golygydd awtomeiddio",
-                        "introduction": "Mae'r olygydd awtomeiddio yn caniatáu ichi greu a golygu awtomeiddiau. Darllenwch [y cyfarwyddiadau] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) i sicrhau bod chi wedi ffurfweddu'r Home Assistant yn gywir.",
+                        "introduction": "Mae'r olygydd awtomeiddio yn caniatáu ichi greu a golygu awtomeiddiau. Darllenwch [y cyfarwyddiadau] (https://home-assistant.io/docs/automation/editor/) i sicrhau bod chi wedi ffurfweddu'r Home Assistant yn gywir.",
                         "learn_more": "Dysgu mwy am awtomeiddio",
                         "no_automations": "Doeddem ddim yn gallu darganfod unrhyw awtomeiddiau",
                         "pick_automation": "Dewiswch awtomeiddiad i olygu"
@@ -728,7 +728,7 @@
                     "description": "Addasu eich endidau",
                     "picker": {
                         "header": "Addasu",
-                        "introduction": "Addasu nodweddion yr endid. Bydd ychwanegu\/golygu osodiadau bersonol i rym ar unwaith. Bydd addasiadau sydd wedi tynnu yn dod i rym pan fydd yr endid yn cael ei ddiweddaru."
+                        "introduction": "Addasu nodweddion yr endid. Bydd ychwanegu/golygu osodiadau bersonol i rym ar unwaith. Bydd addasiadau sydd wedi tynnu yn dod i rym pan fydd yr endid yn cael ei ddiweddaru."
                     }
                 },
                 "entity_registry": {
@@ -830,7 +830,7 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "discovery_text": "Bydd dyfeisiau a ddarganfuwyd yn ymddangos yma. Dilynwch y cyfarwyddiadau ar gyfer eich dyfais \/ dyfaisiau a rhowch y ddyfais \/ dyfeisiau yn y modd paru.",
+                        "discovery_text": "Bydd dyfeisiau a ddarganfuwyd yn ymddangos yma. Dilynwch y cyfarwyddiadau ar gyfer eich dyfais / dyfaisiau a rhowch y ddyfais / dyfeisiau yn y modd paru.",
                         "header": "Awtomeiddiad Cartref Zigbee - Ychwanegwch Dyfeisiadau",
                         "spinner": "Chwilio am ddyfeisiau ZHA Zigbee ..."
                     },
