@@ -109,7 +109,7 @@ class HuiGenericEntityRow extends LitElement {
               ? html`
                   <ha-relative-time
                     .hass=${this.hass}
-                    .datetime=${stateObj.last_triggered}
+                    .datetime=${stateObj.attributes.last_triggered}
                   ></ha-relative-time>
                 `
               : ""}
