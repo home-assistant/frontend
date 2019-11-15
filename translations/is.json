@@ -28,7 +28,7 @@
         "hassio": "Hass.io",
         "history_graph": "Sögulínurit",
         "homeassistant": "Home Assistant",
-        "input_datetime": "Innsláttar dagsetning\/tími",
+        "input_datetime": "Innsláttar dagsetning/tími",
         "input_number": "Innsláttarnúmer",
         "input_select": "Innsláttarval",
         "input_text": "Innsláttartexti",
@@ -236,7 +236,7 @@
             "fan_only": "Vifta eingöngu",
             "gas": "Gas",
             "heat": "Hitun",
-            "heat_cool": "Hita\/Kæla",
+            "heat_cool": "Hita/Kæla",
             "heat_pump": "Hitadæla",
             "idle": "Aðgerðalaus",
             "manual": "Handvirkt",
@@ -404,7 +404,7 @@
                 "away_mode": "Fjarverandi hamur",
                 "currently": "Er núna",
                 "fan_mode": "Viftuhamur",
-                "on_off": "Kveikt \/ slökkt",
+                "on_off": "Kveikt / slökkt",
                 "operation": "Aðgerð",
                 "preset_mode": "Forstilling",
                 "swing_mode": "Sveifluhamur",
@@ -467,7 +467,7 @@
             "water_heater": {
                 "away_mode": "Fjarverandi hamur",
                 "currently": "Er núna",
-                "on_off": "Kveikt \/ slökkt",
+                "on_off": "Kveikt / slökkt",
                 "operation": "Aðgerð",
                 "target_temperature": "Viðmiðunarhitastig"
             },
@@ -503,11 +503,18 @@
         "common": {
             "cancel": "Hætta við",
             "loading": "Hleð",
-            "save": "Vista"
+            "no": "Nei",
+            "save": "Vista",
+            "yes": "Já"
         },
         "components": {
+            "device-picker": {
+                "clear": "Hreinsa",
+                "device": "Tæki"
+            },
             "entity": {
                 "entity-picker": {
+                    "clear": "Hreinsa",
                     "entity": "Eining"
                 }
             },
@@ -517,11 +524,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {dagur}\\n  other {dagar}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {klukkutími}\\n  other {klukkutímar}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {mínúta}\\n  other {mínútur}\\n}",
-                    "second": "{count} {count, plural,\\n  one {sekúnda}\\n  other {sekúndur}\\n}",
-                    "week": "{count} {count, plural,\\n  one {vika}\\n  other {vikur}\\n}"
+                    "day": "{count} {count, plural,\n  one {dagur}\n  other {dagar}\n}",
+                    "hour": "{count} {count, plural,\n  one {klukkutími}\n  other {klukkutímar}\n}",
+                    "minute": "{count} {count, plural,\n  one {mínúta}\n  other {mínútur}\n}",
+                    "second": "{count} {count, plural,\n  one {sekúnda}\n  other {sekúndur}\n}",
+                    "week": "{count} {count, plural,\n  one {vika}\n  other {vikur}\n}"
                 },
                 "future": "Eftir {time}",
                 "never": "Aldrei",
@@ -535,6 +542,10 @@
             "config_entry_system_options": {
                 "enable_new_entities_label": "Virkja einingar sem nýlega var bætt við",
                 "title": "Kerfisvalkostir"
+            },
+            "confirmation": {
+                "cancel": "Hætta við",
+                "ok": "Í lagi"
             },
             "more_info_control": {
                 "script": {
@@ -575,11 +586,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\n  one {dagur}\\n  other {dagar}\\n}",
-            "hour": "{count} {count, plural,\\n  one {klukkutími}\\n  other {klukkutímar}\\n}",
-            "minute": "{count} {count, plural,\\n  one {mínúta}\\n  other {mínútur}\\n}",
-            "second": "{count} {count, plural,\\n  one {sekúnda}\\n  other {sekúndur}\\n}",
-            "week": "{count} {count, plural,\\n  one {vika}\\n  other {vikur}\\n}"
+            "day": "{count} {count, plural,\n  one {dagur}\n  other {dagar}\n}",
+            "hour": "{count} {count, plural,\n  one {klukkutími}\n  other {klukkutímar}\n}",
+            "minute": "{count} {count, plural,\n  one {mínúta}\n  other {mínútur}\n}",
+            "second": "{count} {count, plural,\n  one {sekúnda}\n  other {sekúndur}\n}",
+            "week": "{count} {count, plural,\n  one {vika}\n  other {vikur}\n}"
         },
         "login-form": {
             "log_in": "Skrá inn",
@@ -632,6 +643,7 @@
                             "header": "Aðgerðir",
                             "introduction": "Aðgerðir er það sem Home Assistant mun gera þegar sjálfvirkni er ræst.",
                             "learn_more": "Læra meira um aðgerðir",
+                            "name": "Aðgerð",
                             "type_select": "Gerð aðgerðar",
                             "type": {
                                 "condition": {
@@ -669,6 +681,7 @@
                             "duplicate": "Fjölfalda",
                             "header": "Skilyrði",
                             "learn_more": "Læra meira um skilyrði",
+                            "name": "Skilyrði",
                             "type_select": "Gerð skilyrðis",
                             "type": {
                                 "and": {
@@ -969,7 +982,12 @@
                         }
                     },
                     "caption": "Tæki",
-                    "description": "Stjórna tengdum tækjum"
+                    "data_table": {
+                        "manufacturer": "Framleiðandi"
+                    },
+                    "description": "Stjórna tengdum tækjum",
+                    "device_not_found": "Tæki fannst ekki.",
+                    "unknown_error": "Óþekkt villa"
                 },
                 "entity_registry": {
                     "caption": "Einingarskrá",
@@ -1043,6 +1061,17 @@
                         "name_error_msg": "Nafn er skilyrt",
                         "new_person": "Ný persóna",
                         "update": "Uppfæra"
+                    }
+                },
+                "scene": {
+                    "editor": {
+                        "devices": {
+                            "add": "Bæta við tæki",
+                            "delete": "Eyða tæki",
+                            "header": "Tæki"
+                        },
+                        "name": "Nafn",
+                        "save": "Vista"
                     }
                 },
                 "script": {
@@ -1181,6 +1210,9 @@
                     },
                     "info": {
                         "title": "Upplýsingar"
+                    },
+                    "logs": {
+                        "clear": "Hreinsa"
                     },
                     "mqtt": {
                         "title": "MQTT"
@@ -1363,12 +1395,16 @@
                     }
                 },
                 "menu": {
+                    "close": "Loka",
                     "configure_ui": "Stilla notendaviðmót",
                     "help": "Hjálp",
                     "refresh": "Endurnýja",
                     "unused_entities": "Ónýttar einingar"
                 },
                 "reload_lovelace": "Endurhlaða Lovelace",
+                "unused_entities": {
+                    "last_changed": "Síðast breytt"
+                },
                 "warning": {
                     "entity_not_found": "Eining ekki tiltæk: {entity}"
                 }

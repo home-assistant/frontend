@@ -247,7 +247,7 @@
             "fan_only": "Apenas ventilador",
             "gas": "Gás",
             "heat": "Quente",
-            "heat_cool": "Quente\/Frio",
+            "heat_cool": "Quente/Frio",
             "heat_pump": "Bomba de calor",
             "high_demand": "Alta demanda",
             "idle": "Ocioso",
@@ -426,7 +426,7 @@
                 "heating": "Aquecendo {name}",
                 "high": "quente",
                 "low": "frio",
-                "on_off": "Lig. \/ Des.",
+                "on_off": "Lig. / Des.",
                 "operation": "Operação",
                 "preset_mode": "Predefinir",
                 "swing_mode": "Modo oscilante",
@@ -498,7 +498,7 @@
             "water_heater": {
                 "away_mode": "Modo ausente",
                 "currently": "Atualmente",
-                "on_off": "Lig. \/ Des.",
+                "on_off": "Lig. / Des.",
                 "operation": "Operação",
                 "target_temperature": "Temperatura alvo"
             },
@@ -557,11 +557,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {dia}\\n other {dias}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {hora}\\n  other {horas}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {minuto}\\n  other {minutos}\\n}",
-                    "second": "{count} {count, plural,\\n  one {segundo}\\n  other {segundos}\\n}",
-                    "week": "{count} {count, plural,\\n  one {semana}\\n  other {semanas}\\n}"
+                    "day": "{count} {count, plural,\n  one {dia}\n other {dias}\n}",
+                    "hour": "{count} {count, plural,\n  one {hora}\n  other {horas}\n}",
+                    "minute": "{count} {count, plural,\n  one {minuto}\n  other {minutos}\n}",
+                    "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
+                    "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
                 },
                 "future": "Em {time}",
                 "never": "Nunca",
@@ -641,11 +641,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {day}\\nother {days}\\n}",
-            "hour": "{count} {count, plural,\\none {hora}\\nother {horas}\\n}",
-            "minute": "{count} {count, plural,\\none {minuto}\\nother {minutos}\\n}",
-            "second": "{count} {count, plural,\\none {second}\\nother {seconds}\\n}",
-            "week": "{count} {count, plural,\\none {semana}\\nother {semanas}\\n}"
+            "day": "{count} {count, plural,\none {day}\nother {days}\n}",
+            "hour": "{count} {count, plural,\none {hora}\nother {horas}\n}",
+            "minute": "{count} {count, plural,\none {minuto}\nother {minutos}\n}",
+            "second": "{count} {count, plural,\none {second}\nother {seconds}\n}",
+            "week": "{count} {count, plural,\none {semana}\nother {semanas}\n}"
         },
         "login-form": {
             "log_in": "Entrar",
@@ -930,7 +930,7 @@
                             "enable_state_reporting": "Ativar relatório de estado",
                             "enter_pin_error": "Não foi possível armazenar o pin:",
                             "enter_pin_hint": "Digite um PIN para usar dispositivos de segurança",
-                            "enter_pin_info": "Digite um pin para interagir com os dispositivos de segurança. Dispositivos de segurança são portas, portas de garagem e fechaduras. Você será solicitado a dizer\/inserir este pin ao interagir com esses dispositivos pelo Google Assistant.",
+                            "enter_pin_info": "Digite um pin para interagir com os dispositivos de segurança. Dispositivos de segurança são portas, portas de garagem e fechaduras. Você será solicitado a dizer/inserir este pin ao interagir com esses dispositivos pelo Google Assistant.",
                             "info": "Com a integração do Google Assistant para o Home Assistant Cloud, você poderá controlar todos os seus dispositivos do Home Assistant por meio de qualquer dispositivo ativado pelo Google Assistant.",
                             "info_state_reporting": "Se você ativar os relatórios de estado, o Home Assistant enviará todas as alterações de estado das entidades expostas ao Google. Isso permite que você sempre veja os estados mais recentes no aplicativo do Google.",
                             "manage_entities": "Gerenciar Entidades",
@@ -1093,7 +1093,7 @@
                     "description": "Personalizar suas entidades",
                     "picker": {
                         "header": "Personalização",
-                        "introduction": "Ajustar atributos por entidade. As personalizações adicionadas \/ editadas entrarão em vigor imediatamente. As personalizações removidas entrarão em vigor quando a entidade for atualizada."
+                        "introduction": "Ajustar atributos por entidade. As personalizações adicionadas / editadas entrarão em vigor imediatamente. As personalizações removidas entrarão em vigor quando a entidade for atualizada."
                     },
                     "warning": {
                         "include_link": "incluir customize.yaml",

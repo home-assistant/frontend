@@ -247,7 +247,7 @@
             "fan_only": "Лише вентилятор",
             "gas": "Газ",
             "heat": "Обігрівання",
-            "heat_cool": "Опалення\/Охолодження",
+            "heat_cool": "Опалення/Охолодження",
             "heat_pump": "Тепловий насос",
             "high_demand": "Велике споживання",
             "idle": "Очікування",
@@ -421,7 +421,7 @@
                 "away_mode": "Режиму очікування",
                 "currently": "В даний час",
                 "fan_mode": "Режим вентилятора",
-                "on_off": "Вкл \/ викл",
+                "on_off": "Вкл / викл",
                 "operation": "Режим",
                 "preset_mode": "Режим",
                 "swing_mode": "Режим гойдання",
@@ -484,7 +484,7 @@
             "water_heater": {
                 "away_mode": "Режиму очікування",
                 "currently": "В даний час",
-                "on_off": "Вкл \/ викл",
+                "on_off": "Вкл / викл",
                 "operation": "Операція",
                 "target_temperature": "Задана температура"
             },
@@ -543,11 +543,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {д.}\\n  other {д.}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {год.}\\n  other {год.}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {хв.}\\n  other {хв.}\\n}",
-                    "second": "{count} {count, plural,\\n  one {сек.}\\n  other {сек.}\\n}",
-                    "week": "{count} {count, plural,\\n  one {тиж.}\\n  other {тиж.}\\n}"
+                    "day": "{count} {count, plural,\n  one {д.}\n  other {д.}\n}",
+                    "hour": "{count} {count, plural,\n  one {год.}\n  other {год.}\n}",
+                    "minute": "{count} {count, plural,\n  one {хв.}\n  other {хв.}\n}",
+                    "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
+                    "week": "{count} {count, plural,\n  one {тиж.}\n  other {тиж.}\n}"
                 },
                 "future": "{time} тому",
                 "never": "Ніколи",
@@ -609,11 +609,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\n  one {д.}\\n  other {д.}\\n}",
-            "hour": "{count} {count, plural,\\n  one {год.}\\n  other {год.}\\n}",
-            "minute": "{count} {count, plural,\\n  one {хв.}\\n  other {хв.}\\n}",
-            "second": "{count} {count, plural,\\n  one {сек.}\\n  other {сек.}\\n}",
-            "week": "{count} {count, plural,\\n  one {тиж.}\\n  other {тиж.}\\n}"
+            "day": "{count} {count, plural,\n  one {д.}\n  other {д.}\n}",
+            "hour": "{count} {count, plural,\n  one {год.}\n  other {год.}\n}",
+            "minute": "{count} {count, plural,\n  one {хв.}\n  other {хв.}\n}",
+            "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
+            "week": "{count} {count, plural,\n  one {тиж.}\n  other {тиж.}\n}"
         },
         "login-form": {
             "log_in": "Ввійти",
@@ -664,7 +664,7 @@
                             "delete_confirm": "Ви впевнені, що хочете видалити?",
                             "duplicate": "Дублювати",
                             "header": "Дії",
-                            "introduction": "Що Home Assistant буде робити, коли автоматизація спрацьовує. \\n\\n [Докладніше про дії.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Що Home Assistant буде робити, коли автоматизація спрацьовує. \n\n [Докладніше про дії.] (https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Докладніше про дії",
                             "type_select": "Тип дії",
                             "type": {
@@ -705,7 +705,7 @@
                             "delete_confirm": "Ви впевнені, що хочете видалити?",
                             "duplicate": "Дублювати",
                             "header": "Умови",
-                            "introduction": "Умови є необов'язковою частиною правила автоматизації і можуть використовуватися для запобігання дії, що відбувається під час запуску. Умови виглядають дуже схоже на тригери, але вони різні. Тригер буде дивитися на події, що відбуваються в системі, в той час як умова тільки дивиться на те, як система виглядає зараз. Тригер може спостерігати, що перемикач включений. Умова може бачити тільки, якщо перемикач ввімкнено або вимкнено. \\n\\n [Докладніше про умови.] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Умови є необов'язковою частиною правила автоматизації і можуть використовуватися для запобігання дії, що відбувається під час запуску. Умови виглядають дуже схоже на тригери, але вони різні. Тригер буде дивитися на події, що відбуваються в системі, в той час як умова тільки дивиться на те, як система виглядає зараз. Тригер може спостерігати, що перемикач включений. Умова може бачити тільки, якщо перемикач ввімкнено або вимкнено. \n\n [Докладніше про умови.] (https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Докладніше про умови",
                             "type_select": "Тип умови",
                             "type": {
@@ -768,7 +768,7 @@
                             "delete_confirm": "Ви впевнені, що хочете видалити?",
                             "duplicate": "Дублювати",
                             "header": "Тригери",
-                            "introduction": "Тригери - це те, що починає обробляти правило автоматизації. Можна вказати декілька тригерів для одного і того ж правила. Після запуску тригера, Home Assistant перевірить умови, якщо такі є, і викликає дію. \\n\\n [Докладніше про тригери.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Тригери - це те, що починає обробляти правило автоматизації. Можна вказати декілька тригерів для одного і того ж правила. Після запуску тригера, Home Assistant перевірить умови, якщо такі є, і викликає дію. \n\n [Докладніше про тригери.] (https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Докладніше про тригери",
                             "type_select": "Тип тригера",
                             "type": {
@@ -852,7 +852,7 @@
                     "picker": {
                         "add_automation": "Додати автоматизацію",
                         "header": "Редактор автоматизації",
-                        "introduction": "Редактор автоматизації дозволяє створювати та редагувати автоматизації. Будь ласка, прочитайте [інструкції] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), щоб переконатися, що ви правильно налаштували Home Assistant.",
+                        "introduction": "Редактор автоматизації дозволяє створювати та редагувати автоматизації. Будь ласка, прочитайте [інструкції] (https://home-assistant.io/docs/automation/editor/), щоб переконатися, що ви правильно налаштували Home Assistant.",
                         "learn_more": "Докладніше про автоматизації",
                         "no_automations": "Ми не знайшли автоматизації для редагування",
                         "pick_automation": "Оберіть автоматизацію для редагування"
@@ -926,7 +926,7 @@
                     "pick_attribute": "Виберіть атрибут, який слід замінити",
                     "picker": {
                         "header": "Налаштування",
-                        "introduction": "Налаштування атрибутів на об'єкт. Додані \/ відредаговані налаштування набудуть чинності негайно. Видалені налаштування набудуть чинності після оновлення об'єкта."
+                        "introduction": "Налаштування атрибутів на об'єкт. Додані / відредаговані налаштування набудуть чинності негайно. Видалені налаштування набудуть чинності після оновлення об'єкта."
                     },
                     "warning": {
                         "include_link": "включити customize.yaml",
