@@ -109,10 +109,8 @@ class EntityFilterBadge extends HTMLElement implements LovelaceBadge {
       return;
     }
 
-    let child = this.lastElementChild;
-    while (child) {
-      this.removeChild(child);
-      child = this.lastElementChild;
+    while (this.lastChild) {
+      this.removeChild(this.lastChild);
     }
 
     for (const element of this._elements) {
