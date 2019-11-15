@@ -31,7 +31,7 @@
         "homeassistant": "Home Assistant",
         "image_processing": "Processamento de imagem",
         "input_boolean": "Introduzir booleano",
-        "input_datetime": "Introduzir data\/hora",
+        "input_datetime": "Introduzir data/hora",
         "input_number": "Introduzir número",
         "input_select": "Escolher",
         "input_text": "Introduzir texto",
@@ -247,7 +247,7 @@
             "fan_only": "Apenas ventilar",
             "gas": "Gás",
             "heat": "Quente",
-            "heat_cool": "Calor \/ Frio",
+            "heat_cool": "Calor / Frio",
             "heat_pump": "Bomba de calor",
             "high_demand": "Necessidade alta",
             "idle": "Em espera",
@@ -425,7 +425,7 @@
                 "heating": "{name} a aquecer",
                 "high": "Alta",
                 "low": "Baixa",
-                "on_off": "Ligado \/ desligado",
+                "on_off": "Ligado / desligado",
                 "operation": "Operação",
                 "preset_mode": "Predefinição",
                 "swing_mode": "Modo oscilante",
@@ -496,7 +496,7 @@
             "water_heater": {
                 "away_mode": "Modo ausente",
                 "currently": "Atualmente",
-                "on_off": "Ligado \/ desligado",
+                "on_off": "Ligado / desligado",
                 "operation": "Operação",
                 "target_temperature": "Temperatura pretendida"
             },
@@ -555,11 +555,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {dia}\\n  other {dias}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {hora}\\n  other {horas}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {minuto}\\n  other {minutos}\\n}",
-                    "second": "{count} {count, plural,\\n  one {segundo}\\n  other {segundos}\\n}",
-                    "week": "{count} {count, plural,\\n  one {semana}\\n  other {semanas}\\n}"
+                    "day": "{count} {count, plural,\n  one {dia}\n  other {dias}\n}",
+                    "hour": "{count} {count, plural,\n  one {hora}\n  other {horas}\n}",
+                    "minute": "{count} {count, plural,\n  one {minuto}\n  other {minutos}\n}",
+                    "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
+                    "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
                 },
                 "future": "Às {time}",
                 "never": "Nunca",
@@ -637,11 +637,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\n  one {dia}\\n  other {dias}\\n}",
-            "hour": "{count} {count, plural,\\n  one {hora}\\n  other {horas}\\n}",
-            "minute": "{count} {count, plural,\\n  one {minuto}\\n  other {minutos}\\n}",
-            "second": "{count} {count, plural,\\n  one {segundo}\\n  other {segundos}\\n}",
-            "week": "{count} {count, plural,\\n  one {semana}\\n  other {semanas}\\n}"
+            "day": "{count} {count, plural,\n  one {dia}\n  other {dias}\n}",
+            "hour": "{count} {count, plural,\n  one {hora}\n  other {horas}\n}",
+            "minute": "{count} {count, plural,\n  one {minuto}\n  other {minutos}\n}",
+            "second": "{count} {count, plural,\n  one {segundo}\n  other {segundos}\n}",
+            "week": "{count} {count, plural,\n  one {semana}\n  other {semanas}\n}"
         },
         "login-form": {
             "log_in": "Entrar",
@@ -734,7 +734,7 @@
                             "delete_confirm": "Tem certeza que deseja apagar?",
                             "duplicate": "Duplicar",
                             "header": "Condições",
-                            "introduction": "As condições são uma parte opcional de uma regra de automação e podem ser usadas para impedir que uma ação ocorra quando um acionador é despoletado. As condições embora pareçam muito semelhantes aos acionadores, são muito diferentes. Um acionador examinará os eventos que acontecem no sistema, enquanto uma condição apenas analisa a forma como o sistema parece no momento. Um acionador pode observar que um interruptor está a ser ligado. Uma condição só pode ver se um interruptor está ligado ou desligado. \\n\\n [Saiba mais sobre as condições.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "As condições são uma parte opcional de uma regra de automação e podem ser usadas para impedir que uma ação ocorra quando um acionador é despoletado. As condições embora pareçam muito semelhantes aos acionadores, são muito diferentes. Um acionador examinará os eventos que acontecem no sistema, enquanto uma condição apenas analisa a forma como o sistema parece no momento. Um acionador pode observar que um interruptor está a ser ligado. Uma condição só pode ver se um interruptor está ligado ou desligado. \n\n [Saiba mais sobre as condições.] (Https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Saber mais sobre condições",
                             "type_select": "Tipo de condição",
                             "type": {
@@ -803,7 +803,7 @@
                             "delete_confirm": "Tem certeza que deseja apagar?",
                             "duplicate": "Duplicar",
                             "header": "Acionadores",
-                            "introduction": "Os acionadores são o que iniciam o processamento de uma regra de automação. É possível especificar vários acionadores para a mesma regra. Uma vez iniciado um acionador, o Home Assistant irá validar as condições, e caso as mesmas ocorram, chamar a ação.\\n\\n[Saiba mais sobre acionadores.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Os acionadores são o que iniciam o processamento de uma regra de automação. É possível especificar vários acionadores para a mesma regra. Uma vez iniciado um acionador, o Home Assistant irá validar as condições, e caso as mesmas ocorram, chamar a ação.\n\n[Saiba mais sobre acionadores.](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Saber mais sobre acionadores",
                             "type_select": "Tipo de acionador",
                             "type": {
@@ -893,7 +893,7 @@
                         "add_automation": "Acrescentar automação",
                         "edit_automation": "Editar automação",
                         "header": "Editor de automação",
-                        "introduction": "O editor de automação permite criar e editar automações. Leia [as instruções] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) para se certificar de que configurou o Home Assistant corretamente.",
+                        "introduction": "O editor de automação permite criar e editar automações. Leia [as instruções] (https://home-assistant.io/docs/automation/editor/) para se certificar de que configurou o Home Assistant corretamente.",
                         "learn_more": "Saber mais sobre automações",
                         "no_automations": "Não foi possível encontrar nenhuma automação editável",
                         "pick_automation": "Escolha a automação a editar"
@@ -1054,7 +1054,7 @@
                     "description": "Personalizar as suas entidades",
                     "picker": {
                         "header": "Personalização",
-                        "introduction": "Ajustar atributos por entidade. Personalizações acrescentadas\/editadas terão efeitos imediatos. Remoção de personalizações terão efeito quando a entidade for atualizada."
+                        "introduction": "Ajustar atributos por entidade. Personalizações acrescentadas/editadas terão efeitos imediatos. Remoção de personalizações terão efeito quando a entidade for atualizada."
                     },
                     "warning": {
                         "include_link": "incluir customize.yaml"

@@ -31,7 +31,7 @@
         "homeassistant": "Home Assistant",
         "image_processing": "Bildverarbeitung",
         "input_boolean": "Boolsche Eingabe",
-        "input_datetime": "Eingabe Datum\/Uhrzeit",
+        "input_datetime": "Eingabe Datum/Uhrzeit",
         "input_number": "Numerische Eingabe",
         "input_select": "Auswahlfeld",
         "input_text": "Texteingabe",
@@ -247,7 +247,7 @@
             "fan_only": "Nur Ventilator",
             "gas": "Gas",
             "heat": "Heizen",
-            "heat_cool": "Heizen\/Kühlen",
+            "heat_cool": "Heizen/Kühlen",
             "heat_pump": "Wärmepumpe",
             "high_demand": "Hoher Verbrauch",
             "idle": "Untätig",
@@ -426,7 +426,7 @@
                 "heating": "{name} Heizung",
                 "high": "hoch",
                 "low": "niedrig",
-                "on_off": "An \/ aus",
+                "on_off": "An / aus",
                 "operation": "Aktion",
                 "preset_mode": "Voreinstellung",
                 "swing_mode": "Schwenk-Modus",
@@ -498,7 +498,7 @@
             "water_heater": {
                 "away_mode": "Abwesenheitsmodus",
                 "currently": "Aktuell",
-                "on_off": "An \/ Aus",
+                "on_off": "An / Aus",
                 "operation": "Betrieb",
                 "target_temperature": "Solltemperatur"
             },
@@ -557,11 +557,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\none {Tag}\\nother {Tagen}\\n}",
-                    "hour": "{count} {count, plural,\\none {Stunde}\\nother {Stunden}\\n}",
-                    "minute": "{count} {count, plural,\\none {Minute}\\nother {Minuten}\\n}",
-                    "second": "{count} {count, plural,\\none {Sekunde}\\nother {Sekunden}\\n}",
-                    "week": "{count} {count, plural,\\none {Woche}\\nother {Wochen}\\n}"
+                    "day": "{count} {count, plural,\none {Tag}\nother {Tagen}\n}",
+                    "hour": "{count} {count, plural,\none {Stunde}\nother {Stunden}\n}",
+                    "minute": "{count} {count, plural,\none {Minute}\nother {Minuten}\n}",
+                    "second": "{count} {count, plural,\none {Sekunde}\nother {Sekunden}\n}",
+                    "week": "{count} {count, plural,\none {Woche}\nother {Wochen}\n}"
                 },
                 "future": "In {time}",
                 "never": "Noch nie",
@@ -643,11 +643,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {Tag}\\nother {Tage}\\n}",
-            "hour": "{count} {count, plural,\\none {Stunde}\\nother {Stunden}\\n}",
-            "minute": "{count} {count, plural,\\none {Minute}\\nother {Minuten}\\n}",
-            "second": "{count} {count, plural,\\none {Sekunde}\\nother {Sekunden}\\n}",
-            "week": "{count} {count, plural,\\none {Woche}\\nother {Wochen}\\n}"
+            "day": "{count} {count, plural,\none {Tag}\nother {Tage}\n}",
+            "hour": "{count} {count, plural,\none {Stunde}\nother {Stunden}\n}",
+            "minute": "{count} {count, plural,\none {Minute}\nother {Minuten}\n}",
+            "second": "{count} {count, plural,\none {Sekunde}\nother {Sekunden}\n}",
+            "week": "{count} {count, plural,\none {Woche}\nother {Wochen}\n}"
         },
         "login-form": {
             "log_in": "Anmelden",
@@ -937,7 +937,7 @@
                             "enable_state_reporting": "Statusberichterstattung aktivieren",
                             "enter_pin_error": "PIN kann nicht gespeichert werden:",
                             "enter_pin_hint": "Geben Sie eine PIN ein, um Sicherheitsgeräte zu verwenden",
-                            "enter_pin_info": "Bitte geben Sie eine PIN ein, um mit Sicherheitsgeräten zu interagieren. Sicherheitsgeräte sind Türen, Garagentore und Schlösser. Sie werden aufgefordert, diese PIN zu sagen \/ einzugeben, wenn Sie mit solchen Geräten über Google Assistant interagieren.",
+                            "enter_pin_info": "Bitte geben Sie eine PIN ein, um mit Sicherheitsgeräten zu interagieren. Sicherheitsgeräte sind Türen, Garagentore und Schlösser. Sie werden aufgefordert, diese PIN zu sagen / einzugeben, wenn Sie mit solchen Geräten über Google Assistant interagieren.",
                             "info": "Mit der Google Assistant-Integration für Home Assistant Cloud können Sie alle Ihre Home Assistant-Geräte über jedes Google Assistant-fähige Gerät steuern.",
                             "info_state_reporting": "Wenn die Statusberichterstellung aktiviert wird, sendet Home Assistant alle Statusänderungen exponierter Entitäten an Google. So wird in der Google-App immer der neueste Status angezeigt.",
                             "manage_entities": "Entitäten verwalten",
@@ -1124,7 +1124,7 @@
                     "description": "Elemente anpassen",
                     "picker": {
                         "header": "Anpassung",
-                        "introduction": "Optimieren Sie die Entitätenattribute. Hinzugefügte \/ bearbeitete Anpassungen werden sofort wirksam. Entfernte Anpassungen werden wirksam, wenn die Entität aktualisiert wird."
+                        "introduction": "Optimieren Sie die Entitätenattribute. Hinzugefügte / bearbeitete Anpassungen werden sofort wirksam. Entfernte Anpassungen werden wirksam, wenn die Entität aktualisiert wird."
                     }
                 },
                 "devices": {

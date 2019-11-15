@@ -240,7 +240,7 @@
             "fan_only": "Chỉ có quạt",
             "gas": "Khí",
             "heat": "Nhiệt",
-            "heat_cool": "Nóng\/Lạnh",
+            "heat_cool": "Nóng/Lạnh",
             "heat_pump": "Bơm nhiệt",
             "high_demand": "Nhu cầu cao",
             "idle": "Không hoạt động",
@@ -413,7 +413,7 @@
                 "away_mode": "Chế độ đi vắng",
                 "currently": "Hiện tại",
                 "fan_mode": "Chế độ quạt",
-                "on_off": "Bật \/ tắt",
+                "on_off": "Bật / tắt",
                 "operation": "Chế độ hoạt động",
                 "preset_mode": "Đặt trước",
                 "swing_mode": "Chế độ swing",
@@ -466,7 +466,7 @@
             "water_heater": {
                 "away_mode": "Chế độ đi vắng",
                 "currently": "Hiện tại",
-                "on_off": "Bật \/ tắt",
+                "on_off": "Bật / tắt",
                 "operation": "Chế độ hoạt động",
                 "target_temperature": "Nhiệt độ mục tiêu"
             },
@@ -516,11 +516,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one { ngày }\\n  other { ngày }\\n}",
-                    "hour": "{count} {count, plural,\\n  one { giờ }\\n  other { giờ }\\n}",
-                    "minute": "{count} {count, plural,\\n  one { phút }\\n  other { phút }\\n}",
-                    "second": "{count}{count, plural,\\n  one { giây }\\n  other { giây }\\n}",
-                    "week": "{count} {count, plural,\\n  one { tuần }\\n  other { tuần }\\n}"
+                    "day": "{count} {count, plural,\n  one { ngày }\n  other { ngày }\n}",
+                    "hour": "{count} {count, plural,\n  one { giờ }\n  other { giờ }\n}",
+                    "minute": "{count} {count, plural,\n  one { phút }\n  other { phút }\n}",
+                    "second": "{count}{count, plural,\n  one { giây }\n  other { giây }\n}",
+                    "week": "{count} {count, plural,\n  one { tuần }\n  other { tuần }\n}"
                 },
                 "future": "Trong {time}",
                 "never": "Không bao giờ",
@@ -551,11 +551,11 @@
             }
         },
         "duration": {
-            "day": "{count}{count, plural,\\n  one { ngày }\\n  other { ngày }\\n}",
-            "hour": "{count} {count, plural,\\n  one { giờ }\\n  other { giờ }\\n}",
-            "minute": "{count} {count, plural,\\n  one { phút }\\n  other { phút }\\n}",
-            "second": "{count}{count, plural,\\n  one { giây }\\n  other { giây }\\n}",
-            "week": "{count}{count, plural,\\n  one { tuần }\\n  other { tuần }\\n}"
+            "day": "{count}{count, plural,\n  one { ngày }\n  other { ngày }\n}",
+            "hour": "{count} {count, plural,\n  one { giờ }\n  other { giờ }\n}",
+            "minute": "{count} {count, plural,\n  one { phút }\n  other { phút }\n}",
+            "second": "{count}{count, plural,\n  one { giây }\n  other { giây }\n}",
+            "week": "{count}{count, plural,\n  one { tuần }\n  other { tuần }\n}"
         },
         "login-form": {
             "log_in": "Đăng nhập",
@@ -606,7 +606,7 @@
                             "delete_confirm": "Bạn chắc chắn muốn xoá?",
                             "duplicate": "Nhân đôi",
                             "header": "Hành động",
-                            "introduction": "Hành động là những gì Home Assistant sẽ làm khi tự động hóa được kích hoạt. \\n\\n [Tìm hiểu thêm về các hành động.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Hành động là những gì Home Assistant sẽ làm khi tự động hóa được kích hoạt. \n\n [Tìm hiểu thêm về các hành động.] (https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Tìm hiểu thêm về Hành động",
                             "type_select": "Loại hành động",
                             "type": {
@@ -641,7 +641,7 @@
                             "delete_confirm": "Bạn chắc chắn muốn xoá?",
                             "duplicate": "Nhân đôi",
                             "header": "Điều kiện",
-                            "introduction": "Điều kiện là một phần tùy chọn của quy tắc tự động hóa và có thể được sử dụng để ngăn chặn một hành động xảy ra khi kích hoạt. Các điều kiện trông rất giống với kích hoạt nhưng rất khác nhau. Trình kích hoạt sẽ xem xét các sự kiện xảy ra trong hệ thống trong khi điều kiện chỉ nhìn vào hệ thống hiện tại. Một bộ kích hoạt có thể quan sát thấy rằng một công tắc đang được bật. Một điều kiện chỉ có thể xem nếu một công tắc hiện đang được bật hoặc tắt. \\n\\n [Tìm hiểu thêm về điều kiện] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Điều kiện là một phần tùy chọn của quy tắc tự động hóa và có thể được sử dụng để ngăn chặn một hành động xảy ra khi kích hoạt. Các điều kiện trông rất giống với kích hoạt nhưng rất khác nhau. Trình kích hoạt sẽ xem xét các sự kiện xảy ra trong hệ thống trong khi điều kiện chỉ nhìn vào hệ thống hiện tại. Một bộ kích hoạt có thể quan sát thấy rằng một công tắc đang được bật. Một điều kiện chỉ có thể xem nếu một công tắc hiện đang được bật hoặc tắt. \n\n [Tìm hiểu thêm về điều kiện] (https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Tìm hiểu thêm về Điều kiện",
                             "type_select": "Loại điều kiện",
                             "type": {
@@ -692,7 +692,7 @@
                             "delete_confirm": "Chắc chắn bạn muốn xóa?",
                             "duplicate": "Bản sao",
                             "header": "Bộ khởi động",
-                            "introduction": "Bộ khởi động là bắt đầu quá trình xử lý quy tắc tự động hóa. Có thể chỉ định nhiều Bộ khởi động cho cùng một quy tắc. Khi kích hoạt một bộ khởi động, Home Assistant  sẽ xác nhận các điều kiện, nếu có, và gọi hành động. \\n\\n [Tìm hiểu thêm về Bộ khởi động] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Bộ khởi động là bắt đầu quá trình xử lý quy tắc tự động hóa. Có thể chỉ định nhiều Bộ khởi động cho cùng một quy tắc. Khi kích hoạt một bộ khởi động, Home Assistant  sẽ xác nhận các điều kiện, nếu có, và gọi hành động. \n\n [Tìm hiểu thêm về Bộ khởi động] (https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Tìm hiểu thêm về Kích hoạt",
                             "type_select": "Loại Bộ khởi động",
                             "type": {
@@ -773,7 +773,7 @@
                     "picker": {
                         "add_automation": "Thêm Tự động hóa",
                         "header": "Trình biên tập tự động hóa",
-                        "introduction": "Trình soạn thảo tự động hóa cho phép bạn tạo và chỉnh sửa tự động. Vui lòng đọc [hướng dẫn] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) để đảm bảo rằng bạn đã cấu hình chính xác Home Assistant.",
+                        "introduction": "Trình soạn thảo tự động hóa cho phép bạn tạo và chỉnh sửa tự động. Vui lòng đọc [hướng dẫn] (https://home-assistant.io/docs/automation/editor/) để đảm bảo rằng bạn đã cấu hình chính xác Home Assistant.",
                         "learn_more": "Tìm hiểu thêm về Tự động hóa",
                         "no_automations": "Chúng tôi không thể tìm thấy tự động hóa nào có thể chỉnh sửa",
                         "pick_automation": "Chọn tự động hóa để chỉnh sửa"
@@ -837,7 +837,7 @@
                     "description": "Tùy chỉnh các thực thể của bạn",
                     "picker": {
                         "header": "Tùy chỉnh",
-                        "introduction": "Tinh chỉnh thuộc tính mỗi thực thể. Các tùy chỉnh được thêm \/ chỉnh sửa sẽ có hiệu lực ngay lập tức. Các tùy chỉnh bị xóa sẽ có hiệu lực khi thực thể được cập nhật."
+                        "introduction": "Tinh chỉnh thuộc tính mỗi thực thể. Các tùy chỉnh được thêm / chỉnh sửa sẽ có hiệu lực ngay lập tức. Các tùy chỉnh bị xóa sẽ có hiệu lực khi thực thể được cập nhật."
                     }
                 },
                 "entity_registry": {

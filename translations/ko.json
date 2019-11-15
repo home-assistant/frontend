@@ -31,7 +31,7 @@
         "homeassistant": "Home Assistant",
         "image_processing": "이미지처리",
         "input_boolean": "논리입력",
-        "input_datetime": "날짜\/시간입력",
+        "input_datetime": "날짜/시간입력",
         "input_number": "숫자입력",
         "input_select": "선택입력",
         "input_text": "문자입력",
@@ -426,7 +426,7 @@
                 "heating": "{name} 난방중",
                 "high": "높음",
                 "low": "낮음",
-                "on_off": "켜기 \/ 끄기",
+                "on_off": "켜기 / 끄기",
                 "operation": "운전 모드",
                 "preset_mode": "프리셋",
                 "swing_mode": "회전 모드",
@@ -498,7 +498,7 @@
             "water_heater": {
                 "away_mode": "외출 모드",
                 "currently": "현재 온도",
-                "on_off": "켜기 \/ 끄기",
+                "on_off": "켜기 / 끄기",
                 "operation": "운전",
                 "target_temperature": "희망 온도"
             },
@@ -557,11 +557,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\none {일}\\nother {일}\\n}",
-                    "hour": "{count} {count, plural,\\none {시간}\\nother {시간}\\n}",
-                    "minute": "{count} {count, plural,\\none {분}\\nother {분}\\n}",
-                    "second": "{count} {count, plural,\\none {초}\\nother {초}\\n}",
-                    "week": "{count} {count, plural,\\none {주}\\nother {주}\\n}"
+                    "day": "{count} {count, plural,\none {일}\nother {일}\n}",
+                    "hour": "{count} {count, plural,\none {시간}\nother {시간}\n}",
+                    "minute": "{count} {count, plural,\none {분}\nother {분}\n}",
+                    "second": "{count} {count, plural,\none {초}\nother {초}\n}",
+                    "week": "{count} {count, plural,\none {주}\nother {주}\n}"
                 },
                 "future": "{time} 후",
                 "never": "해당없음",
@@ -633,11 +633,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {일}\\nother {일}\\n}",
-            "hour": "{count} {count, plural,\\none {시간}\\nother {시간}\\n}",
-            "minute": "{count} {count, plural,\\none {분}\\nother {분}\\n}",
-            "second": "{count} {count, plural,\\none {초}\\nother {초}\\n}",
-            "week": "{count} {count, plural,\\none {주}\\nother {주}\\n}"
+            "day": "{count} {count, plural,\none {일}\nother {일}\n}",
+            "hour": "{count} {count, plural,\none {시간}\nother {시간}\n}",
+            "minute": "{count} {count, plural,\none {분}\nother {분}\n}",
+            "second": "{count} {count, plural,\none {초}\nother {초}\n}",
+            "week": "{count} {count, plural,\none {주}\nother {주}\n}"
         },
         "login-form": {
             "log_in": "로그인",
