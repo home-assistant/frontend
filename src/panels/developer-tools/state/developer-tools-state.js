@@ -3,6 +3,7 @@ import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-tooltip";
 // import "copy-to-clipboard";
+import "@polymer/paper-toast/paper-toast";
 import copy from "copy-to-clipboard";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -14,6 +15,7 @@ import "../../../components/ha-code-editor";
 import "../../../resources/ha-style";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import { showToast } from "../../../util/toast";
 
 const ERROR_SENTINEL = {};
 /*
@@ -73,6 +75,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         }
       </style>
 
+      <span id="toto_test">pour test</span>
       <div class="inputs">
         <p>
           [[localize('ui.panel.developer-tools.tabs.states.description1')]]<br />
@@ -161,31 +164,43 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               >
               </paper-icon-button>
               <paper-icon-button
-                id="copyBtn[[entity.entity_id]]"
+                id="copyBtn-[[sanitizeId(entity.entity_id)]]"
                 on-click="entityCopyId"
                 icon="hass:content-copy"
                 alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
                 title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
               >
               </paper-icon-button>
-              <paper-tooltip
-                id="tooltip[[entity.entity_id]]"
-                for$="copyBtn[[entity.entity_id]]"
-                position="top"
-                >👍</paper-tooltip
+              <a
+                href="#"
+                on-click="entitySelected"
+                id="entity-id-[[sanitizeId(entity.entity_id)]]"
+                >[[entity.entity_id]]</a
               >
-              <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
             </td>
             <td>[[entity.state]]</td>
             <template
               is="dom-if"
               if="[[computeShowAttributes(narrow, _showAttributes)]]"
             >
-              <td>[[attributeString(entity)]]</td>
+              <td>
+                [[attributeString(entity)]]
+                <paper-tooltip
+                  id="tooltip-[[sanitizeId(entity.entity_id)]]"
+                  for$="entity-id-[[sanitizeId(entity.entity_id)]]"
+                  animation-delay="0"
+                  manual-mode="true"
+                  offset="0"
+                  paper-tooltip-duration-in="0"
+                  >Copiédddd</paper-tooltip
+                >
+              </td>
             </template>
           </tr>
         </template>
       </table>
+
+      <paper-toast id="toast0" alwaysOnTop="true" text="Copié"></paper-toast>
     `;
   }
 
@@ -272,16 +287,28 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this.fire("hass-more-info", { entityId: ev.model.entity.entity_id });
   }
 
-  entityCopyId(ev) {
-    copy(ev.model.entity.entity_id, {
-      debug: true,
-    });
+  sanitizeId(id) {
+    return id.replace(".", "-");
+  }
 
-    var state = this.shadowRoot.getElementById(
-      "tooltip" + ev.model.entity.entity_id
-    );
-    state.playAnimation("entry");
-    // alert("Copied to clipboard successfully!"+"tooltip" + ev.model.entity.entity_id);
+  entityCopyId(ev) {
+    copy(ev.model.entity.entity_id);
+    showToast(this, { message: "Copié" });
+    // this.$.toast0.alwaysOnTop = true;
+    // this.$.toast0.left = 200;
+    // this.$.toast0.open();
+    // var tooltipId = "tooltip-" + this.sanitizeId(ev.model.entity.entity_id);
+    // var btnId = "copyBtn-" + this.sanitizeId(ev.model.entity.entity_id);
+    // var btn = this.shadowRoot.getElementById(btnId);
+    // btn.icon = "hass:information-outline";
+    // var state = this.shadowRoot.getElementById(tooltipId);
+    // state.playAnimation("entry");
+    // setTimeout(function() {
+    //   var btnId = "copyBtn-" + this.sanitizeId(ev.model.entity.entity_id);
+    //   var btn = this.shadowRoot.getElementById(btnId);
+    //   state.playAnimation("exit");
+    //   btn.icon = "hass:content-copy";
+    // }, 2000);
   }
 
   handleSetState() {
