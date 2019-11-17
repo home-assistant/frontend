@@ -124,7 +124,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
         <div id="info">
           <div class="brightness" @ha-click="${this._handleClick}">
-            &nbsp;&nbsp;${brightness} %
+            %
           </div>
           ${this._config.name || computeStateName(stateObj)}
         </div>
@@ -165,7 +165,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
   private _dragEvent(e: any): void {
     this.shadowRoot!.querySelector(".brightness")!.innerHTML =
-      "&nbsp;" + e.detail.value + " %";
+      `&nbsp;&nbsp;${e.detail.value} %`;
     this._showBrightness();
     this._hideBrightness();
   }
@@ -255,7 +255,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         height: 100%;
         width: 100%;
         position: relative;
-        max-width: 300px;
+        max-width: 200px;
         min-width: 100px;
       }
 

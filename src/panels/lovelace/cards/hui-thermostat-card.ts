@@ -7,6 +7,7 @@ import {
   property,
   css,
   CSSResult,
+  svg,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import "@polymer/paper-icon-button/paper-icon-button";
@@ -127,7 +128,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           `;
 
     const currentTemperature = stateObj.attributes.current_temperature
-      ? html`
+      ? svg`
           <svg viewBox="0 0 40 20">
             <text
               x=${23 - (stateObj.attributes.current_temperature < 0 ? 2 : 0)}
@@ -144,18 +145,18 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         `
       : "";
 
-    const setValues = html`
+    const setValues = svg`
       <svg id="set-values">
         <g>
           <text text-anchor="middle" style="font-size: 20px;" class="set-value">
             ${!this._setTemp
               ? ""
               : Array.isArray(this._setTemp)
-              ? html`
+              ? svg`
                   ${this._setTemp[0].toFixed(1)} -
                   ${this._setTemp[1].toFixed(1)}
                 `
-              : html`
+              : svg`
                   ${this._setTemp.toFixed(1)}
                 `}
           </text>
@@ -223,7 +224,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  protected rescale_svg() {
+  rescale_svg() {
     // Set the viewbox of the SVG containing the set temperature to perfectly
     // fit the text
     // That way it will auto-scale correctly
