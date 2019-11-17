@@ -1,9 +1,6 @@
 import "@material/mwc-button";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-tooltip";
-// import "copy-to-clipboard";
-import "@polymer/paper-toast/paper-toast";
 import copy from "copy-to-clipboard";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -183,24 +180,11 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               is="dom-if"
               if="[[computeShowAttributes(narrow, _showAttributes)]]"
             >
-              <td>
-                [[attributeString(entity)]]
-                <paper-tooltip
-                  id="tooltip-[[sanitizeId(entity.entity_id)]]"
-                  for$="entity-id-[[sanitizeId(entity.entity_id)]]"
-                  animation-delay="0"
-                  manual-mode="true"
-                  offset="0"
-                  paper-tooltip-duration-in="0"
-                  >Copiédddd</paper-tooltip
-                >
-              </td>
+              <td>[[attributeString(entity)]]</td>
             </template>
           </tr>
         </template>
       </table>
-
-      <paper-toast id="toast0" alwaysOnTop="true" text="Copié"></paper-toast>
     `;
   }
 
@@ -294,21 +278,6 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   entityCopyId(ev) {
     copy(ev.model.entity.entity_id);
     showToast(this, { message: "Copié" });
-    // this.$.toast0.alwaysOnTop = true;
-    // this.$.toast0.left = 200;
-    // this.$.toast0.open();
-    // var tooltipId = "tooltip-" + this.sanitizeId(ev.model.entity.entity_id);
-    // var btnId = "copyBtn-" + this.sanitizeId(ev.model.entity.entity_id);
-    // var btn = this.shadowRoot.getElementById(btnId);
-    // btn.icon = "hass:information-outline";
-    // var state = this.shadowRoot.getElementById(tooltipId);
-    // state.playAnimation("entry");
-    // setTimeout(function() {
-    //   var btnId = "copyBtn-" + this.sanitizeId(ev.model.entity.entity_id);
-    //   var btn = this.shadowRoot.getElementById(btnId);
-    //   state.playAnimation("exit");
-    //   btn.icon = "hass:content-copy";
-    // }, 2000);
   }
 
   handleSetState() {
