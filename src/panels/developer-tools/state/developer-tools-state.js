@@ -72,7 +72,6 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         }
       </style>
 
-      <span id="toto_test">pour test</span>
       <div class="inputs">
         <p>
           [[localize('ui.panel.developer-tools.tabs.states.description1')]]<br />
@@ -164,8 +163,8 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 id="copyBtn-[[sanitizeId(entity.entity_id)]]"
                 on-click="entityCopyId"
                 icon="hass:content-copy"
-                alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
-                title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
+                alt="[[localize('ui.panel.developer-tools.tabs.states.copy_entity_id')]]"
+                title="[[localize('ui.panel.developer-tools.tabs.states.copy_entity_id')]]"
               >
               </paper-icon-button>
               <a
@@ -277,7 +276,11 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   entityCopyId(ev) {
     copy(ev.model.entity.entity_id);
-    showToast(this, { message: "Copié" });
+    showToast(this, {
+      message: this.hass.localize(
+        "ui.panel.developer-tools.tabs.states.copied"
+      ),
+    });
   }
 
   handleSetState() {
