@@ -164,8 +164,9 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   }
 
   private _dragEvent(e: any): void {
-    this.shadowRoot!.querySelector(".brightness")!.innerHTML =
-      `&nbsp;&nbsp;${e.detail.value} %`;
+    this.shadowRoot!.querySelector(".brightness")!.innerHTML = `&nbsp;&nbsp;${
+      e.detail.value
+    } %`;
     this._showBrightness();
     this._hideBrightness();
   }

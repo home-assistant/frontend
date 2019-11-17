@@ -149,16 +149,18 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       <svg id="set-values">
         <g>
           <text text-anchor="middle" style="font-size: 20px;" class="set-value">
-            ${!this._setTemp
-              ? ""
-              : Array.isArray(this._setTemp)
-              ? svg`
+            ${
+              !this._setTemp
+                ? ""
+                : Array.isArray(this._setTemp)
+                ? svg`
                   ${this._setTemp[0].toFixed(1)} -
                   ${this._setTemp[1].toFixed(1)}
-                `
-              : svg`
+                  `
+                : svg`
                   ${this._setTemp.toFixed(1)}
-                `}
+              `
+            }
           </text>
           <text
             dy="22"
@@ -166,24 +168,28 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             style="font-size: 16px"
             id="set-mode"
           >
-            ${stateObj.attributes.hvac_action
-              ? this.hass!.localize(
-                  `state_attributes.climate.hvac_action.${
-                    stateObj.attributes.hvac_action
-                  }`
-                )
-              : this.hass!.localize(`state.climate.${stateObj.state}`)}
-            ${stateObj.attributes.preset_mode &&
-            stateObj.attributes.preset_mode !== CLIMATE_PRESET_NONE
-              ? html`
-                  -
-                  ${this.hass!.localize(
-                    `state_attributes.climate.preset_mode.${
-                      stateObj.attributes.preset_mode
+            ${
+              stateObj.attributes.hvac_action
+                ? this.hass!.localize(
+                    `state_attributes.climate.hvac_action.${
+                      stateObj.attributes.hvac_action
                     }`
-                  ) || stateObj.attributes.preset_mode}
-                `
-              : ""}
+                  )
+                : this.hass!.localize(`state.climate.${stateObj.state}`)
+            }
+            ${
+              stateObj.attributes.preset_mode &&
+              stateObj.attributes.preset_mode !== CLIMATE_PRESET_NONE
+                ? html`
+                    -
+                    ${this.hass!.localize(
+                      `state_attributes.climate.preset_mode.${
+                        stateObj.attributes.preset_mode
+                      }`
+                    ) || stateObj.attributes.preset_mode}
+                  `
+                : ""
+            }
           </text>
         </g>
       </svg>
@@ -224,28 +230,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  rescale_svg() {
-    // Set the viewbox of the SVG containing the set temperature to perfectly
-    // fit the text
-    // That way it will auto-scale correctly
-    // This is not done to the SVG containing the current temperature, because
-    // it should not be centered on the text, but only on the value
-    if (this.shadowRoot && this.shadowRoot.querySelector("ha-card")) {
-      (this.shadowRoot.querySelector(
-        "ha-card"
-      ) as LitElement).updateComplete.then(() => {
-        const svg = this.shadowRoot!.querySelector("#set-values");
-        const box = svg!.querySelector("g")!.getBBox();
-        svg!.setAttribute(
-          "viewBox",
-          `${box!.x} ${box!.y} ${box!.width} ${box!.height}`
-        );
-        svg!.setAttribute("width", `${box!.width}`);
-        svg!.setAttribute("height", `${box!.height}`);
-      });
-    }
-  }
-
   protected shouldUpdate(changedProps: PropertyValues): boolean {
     return hasConfigOrEntityChanged(this, changedProps);
   }
@@ -272,6 +256,28 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
     this._setTemp = this._getSetTemp(this.hass!.states[this._config!.entity]);
     this.rescale_svg();
+  }
+
+  private rescale_svg() {
+    // Set the viewbox of the SVG containing the set temperature to perfectly
+    // fit the text
+    // That way it will auto-scale correctly
+    // This is not done to the SVG containing the current temperature, because
+    // it should not be centered on the text, but only on the value
+    if (this.shadowRoot && this.shadowRoot.querySelector("ha-card")) {
+      (this.shadowRoot.querySelector(
+        "ha-card"
+      ) as LitElement).updateComplete.then(() => {
+        const svgRoot = this.shadowRoot!.querySelector("#set-values");
+        const box = svgRoot!.querySelector("g")!.getBBox();
+        svgRoot!.setAttribute(
+          "viewBox",
+          `${box!.x} ${box!.y} ${box!.width} ${box!.height}`
+        );
+        svgRoot!.setAttribute("width", `${box!.width}`);
+        svgRoot!.setAttribute("height", `${box!.height}`);
+      });
+    }
   }
 
   private get _stepSize(): number {
