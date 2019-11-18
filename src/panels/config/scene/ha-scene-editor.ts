@@ -250,14 +250,14 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                           @click=${this._deleteDevice}
                         ></paper-icon-button>
                       </div>
-                      ${device.entities.map((entity) => {
-                        const stateObj = this.hass.states[entity];
+                      ${device.entities.map((entityId) => {
+                        const stateObj = this.hass.states[entityId];
                         if (!stateObj) {
                           return html``;
                         }
                         return html`
                           <paper-icon-item
-                            .entity=${stateObj.entity_id}
+                            .entityId=${entityId}
                             @click=${this._showMoreInfo}
                             class="device-entity"
                           >
@@ -313,14 +313,14 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                               "ui.panel.config.scene.editor.entities.without_device"
                             )}
                           >
-                            ${entities.map((entity) => {
-                              const stateObj = this.hass.states[entity];
+                            ${entities.map((entityId) => {
+                              const stateObj = this.hass.states[entityId];
                               if (!stateObj) {
                                 return html``;
                               }
                               return html`
                                 <paper-icon-item
-                                  .entity=${stateObj.entity_id}
+                                  .entityId=${entityId}
                                   @click=${this._showMoreInfo}
                                   class="device-entity"
                                 >
@@ -333,7 +333,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                                   </paper-item-body>
                                   <paper-icon-button
                                     icon="hass:delete"
-                                    .entity=${entity}
+                                    .entityId=${entityId}
                                     .title="${this.hass.localize(
                                       "ui.panel.config.scene.editor.entities.delete"
                                     )}"
@@ -428,7 +428,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   }
 
   private _showMoreInfo(ev: Event) {
-    const entityId = (ev.currentTarget as any).entity;
+    const entityId = (ev.currentTarget as any).entityId;
     fireEvent(this, "hass-more-info", { entityId });
   }
 
