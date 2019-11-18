@@ -51,6 +51,7 @@ export interface HaFormFloatSchema extends HaFormBaseSchema {
 
 export interface HaFormStringSchema extends HaFormBaseSchema {
   type: "string";
+  format?: string;
 }
 
 export interface HaFormBooleanSchema extends HaFormBaseSchema {
