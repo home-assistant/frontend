@@ -88,10 +88,10 @@ export class HaFormString extends LitElement implements HaFormElement {
 
   private _stringType() {
     if (["email", "url"].includes(this.schema.format)) {
-      return this.schema.format
+      return this.schema.format;
     }
     if (this.schema.format === "fqdnurl") {
-      return "url"
+      return "url";
     }
     return "text";
   }
