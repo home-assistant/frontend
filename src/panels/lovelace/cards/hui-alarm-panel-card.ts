@@ -7,6 +7,7 @@ import {
   css,
   property,
   customElement,
+  query,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
@@ -50,6 +51,8 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: AlarmPanelCardConfig;
+
+  @query("#alarmCode") private _input?: PaperInputElement;
 
   public getCardSize(): number {
     if (!this._config || !this.hass) {
@@ -217,26 +220,22 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
   }
 
   private _handlePadClick(e: MouseEvent): void {
-    const input = this.shadowRoot!.querySelector(
-      "#alarmCode"
-    ) as PaperInputElement;
     const val = (e.currentTarget! as any).value;
-    input.value = val === "clear" ? "" : input.value + val;
+    this._input!.value = val === "clear" ? "" : this._input!.value + val;
   }
 
   private _handleActionClick(e: MouseEvent): void {
-    const input = this.shadowRoot!.querySelector(
-      "#alarmCode"
-    ) as PaperInputElement;
     const code =
-      input && input.value && input.value.length > 0 ? input.value : "";
+      this._input && this._input!.value && this._input!.value.length > 0
+        ? this._input!.value
+        : "";
     callAlarmAction(
       this.hass!,
       this._config!.entity,
       (e.currentTarget! as any).action,
       code
     );
-    input.value = "";
+    this._input!.value = "";
   }
 
   static get styles(): CSSResult {
