@@ -178,11 +178,19 @@ export default class MediaPlayerEntity {
   }
 
   togglePower() {
-    if (this.isOff) {
-      this.turnOn();
+    if (this.supportsTurnOn && this.supportsTurnOff) {
+      this.toggle();
     } else {
-      this.turnOff();
+      if (this.isOff) {
+        this.turnOn();
+      } else {
+        this.turnOff();
+      }
     }
+  }
+
+  toggle() {
+    this.callService("toggle");
   }
 
   turnOff() {
