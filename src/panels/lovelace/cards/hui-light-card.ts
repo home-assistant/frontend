@@ -164,7 +164,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   }
 
   private _dragEvent(e: any): void {
-    this.shadowRoot!.querySelector(".brightness")!.innerHTML = `&nbsp;&nbsp;${
+    this.shadowRoot!.querySelector(".brightness")!.innerHTML = `${
       e.detail.value
     } %`;
     this._showBrightness();
@@ -310,6 +310,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         -webkit-transition: opacity 0.5s ease-in-out;
         cursor: pointer;
         pointer-events: none;
+        padding-left: 0.5em;
       }
 
       .show_brightness {
