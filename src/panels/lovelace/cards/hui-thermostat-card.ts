@@ -461,7 +461,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         position: absolute;
         width: calc(100% - 40px);
         height: calc(100% - 40px);
-        xborder: 1px green solid;
         box-sizing: border-box;
         border-radius: 100%;
         left: 20px;
