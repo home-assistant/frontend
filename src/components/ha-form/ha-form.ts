@@ -151,7 +151,7 @@ export class HaForm extends LitElement implements HaFormElement {
             </div>
           `
         : ""}
-      <div id="element" @value-changed=${this._valueChanged}></div>
+      <div id="element"></div>
     `;
   }
 

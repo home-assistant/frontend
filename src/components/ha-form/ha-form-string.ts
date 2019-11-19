@@ -76,14 +76,9 @@ export class HaFormString extends LitElement implements HaFormElement {
     if (this.data === value) {
       return;
     }
-    fireEvent(
-      this,
-      "value-changed",
-      {
-        value,
-      },
-      { bubbles: false }
-    );
+    fireEvent(this, "value-changed", {
+      value,
+    });
   }
 
   private _stringType() {
