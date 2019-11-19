@@ -33,6 +33,5 @@ export default class SceneAction extends Component<any> {
 }
 
 (SceneAction as any).defaultConfig = {
-  alias: "",
   scene: "",
 };
