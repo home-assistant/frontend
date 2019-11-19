@@ -540,6 +540,7 @@
         "components": {
             "device-picker": {
                 "clear": "Wis",
+                "device": "Apparaat",
                 "show_devices": "Apparaten weergeven"
             },
             "entity": {
@@ -606,6 +607,10 @@
                     "description": "Instellingen succesvol opgeslagen."
                 }
             },
+            "voice_command": {
+                "label": "Typ een vraag en druk op 'Enter'",
+                "label_voice": "Typ en druk op 'Enter' of tik op de microfoon om te spreken"
+            },
             "zha_device_info": {
                 "buttons": {
                     "add": "Apparaten toevoegen",
@@ -658,7 +663,7 @@
         "panel": {
             "config": {
                 "area_registry": {
-                    "caption": "Gebiedenregister",
+                    "caption": "Gebieden",
                     "create_area": "MAAK GEBIED",
                     "description": "Overzicht van alle gebieden in je huis.",
                     "editor": {
@@ -670,7 +675,7 @@
                     "no_areas": "Het lijkt erop dat je nog geen gebieden hebt!",
                     "picker": {
                         "create_area": "MAAK RUIMTE",
-                        "header": "Gebiedenregister",
+                        "header": "Gebieden",
                         "integrations_page": "Integratiespagina",
                         "introduction": "Gebieden worden gebruikt om te bepalen waar apparaten zijn. Deze informatie wordt overal in de Home Assistant gebruikt om je te helpen bij het organiseren van je interface, machtigingen en integraties met andere systemen.",
                         "introduction2": "Als u apparaten in een gebied wilt plaatsen, gebruikt u de onderstaande koppeling om naar de integratiespagina te gaan en vervolgens op een geconfigureerde integratie te klikken om naar de apparaatkaarten te gaan.",
@@ -678,7 +683,7 @@
                     }
                 },
                 "automation": {
-                    "caption": "Automatisering",
+                    "caption": "Automatiseringen",
                     "description": "Het maken en bewerken van automatiseringen",
                     "editor": {
                         "actions": {
@@ -689,6 +694,7 @@
                             "header": "Acties",
                             "introduction": "De acties zijn wat Home Assistant zal doen wanneer de automatisering wordt geactiveerd.",
                             "learn_more": "Meer informatie over acties",
+                            "name": "Actie",
                             "type_select": "Type actie",
                             "type": {
                                 "condition": {
@@ -733,6 +739,7 @@
                             "header": "Voorwaarden",
                             "introduction": "Voorwaarden zijn een optioneel onderdeel van een automatiseringsregel en kunnen worden gebruikt om te voorkomen dat een actie plaatsvindt wanneer deze wordt geactiveerd. Voorwaarden lijken erg op triggers, maar zijn verschillend. Een trigger zal kijken naar gebeurtenissen die in het systeem plaatsvinden, terwijl een voorwaarde alleen kijkt naar hoe het systeem er op dit moment uitziet. Een trigger kan waarnemen dat een schakelaar wordt ingeschakeld. Een voorwaarde kan alleen zien of een schakelaar aan of uit staat.",
                             "learn_more": "Meer informatie over condities",
+                            "name": "Voorwaarde",
                             "type_select": "Type voorwaarde",
                             "type": {
                                 "and": {
@@ -802,6 +809,7 @@
                             "header": "",
                             "introduction": "Triggers starten de verwerking van een automatiseringsregel. Het is mogelijk om meerdere triggers voor dezelfde regel op te geven. Zodra een trigger start, valideert Home Assistant de eventuele voorwaarden en roept hij de actie aan.",
                             "learn_more": "Meer informatie over triggers",
+                            "name": "Trigger",
                             "type_select": "Trigger-type",
                             "type": {
                                 "device": {
@@ -1104,6 +1112,7 @@
                     }
                 },
                 "customize": {
+                    "attributes_customize": "De volgende attributen zijn al ingesteld in adjust.yaml",
                     "caption": "Aanpassingen",
                     "description": "Pas je entiteiten aan",
                     "picker": {
@@ -1112,6 +1121,7 @@
                     }
                 },
                 "devices": {
+                    "area_picker_label": "Gebied",
                     "automation": {
                         "actions": {
                             "caption": "Wanneer iets wordt getriggerd..."
@@ -1123,11 +1133,26 @@
                             "caption": "Doe iets wanneer..."
                         }
                     },
+                    "automations": "Automatiseringen",
                     "caption": "Apparaten",
-                    "description": "Beheer verbonden apparaten"
+                    "data_table": {
+                        "area": "Gebied",
+                        "battery": "Batterij",
+                        "device": "Apparaat",
+                        "integration": "Integratie",
+                        "manufacturer": "Fabrikant",
+                        "model": "Model"
+                    },
+                    "description": "Beheer verbonden apparaten",
+                    "details": "Hier zijn alle details van uw apparaat",
+                    "device_not_found": "Apparaat niet gevonden.",
+                    "entities": "Entiteiten",
+                    "info": "Apparaat info",
+                    "unknown_error": "Onbekende fout",
+                    "unnamed_device": "Naamloos apparaat"
                 },
                 "entity_registry": {
-                    "caption": "Entiteitenregister",
+                    "caption": "Entiteiten",
                     "description": "Overzicht van alle geregistreerde entiteiten",
                     "editor": {
                         "confirm_delete": "Weet u zeker dat u dit item wilt verwijderen?",
@@ -1137,11 +1162,12 @@
                         "enabled_cause": "Uitgeschakeld vanwege {cause}",
                         "enabled_description": "Uitgeschakelde entiteiten zullen niet aan Home Assistant worden toegevoegd",
                         "enabled_label": "Schakel entiteit in",
+                        "note": "Nota bene: dit werkt mogelijk nog niet met alle integraties.",
                         "unavailable": "Deze entiteit is momenteel niet beschikbaar.",
                         "update": "BIJWERKEN"
                     },
                     "picker": {
-                        "header": "Entiteitenregister",
+                        "header": "Entiteiten",
                         "headers": {
                             "enabled": "Ingeschakeld",
                             "entity_id": "Entiteits-ID",
@@ -1176,18 +1202,28 @@
                         "via": "Verbonden via"
                     },
                     "config_flow": {
+                        "aborted": "Afgebroken",
+                        "add_area": "Gebied toevoegen",
+                        "area_picker_label": "Gebied",
+                        "close": "Sluiten",
                         "created_config": "Configuratie gemaakt voor {name}.",
+                        "error_saving_area": "Fout bij het opslaan van gebied: {error}",
                         "external_step": {
                             "description": "Deze stap vereist dat je een externe website bezoekt om dit te voltooien.",
                             "open_site": "Open website"
                         },
-                        "name_new_area": "Naam van het nieuwe gebied?"
+                        "failed_create_area": "Kan het gebied niet maken.",
+                        "finish": "Voltooien",
+                        "name_new_area": "Naam van het nieuwe gebied?",
+                        "not_all_required_fields": "Niet alle verplichte velden zijn ingevuld.",
+                        "submit": "Opslaan"
                     },
                     "configure": "Configureer",
                     "configured": "Geconfigureerd",
                     "description": "Beheer en installeer integraties",
                     "discovered": "Ontdekt",
                     "home_assistant_website": "Home Assistant-website",
+                    "integration_not_found": "Integratie niet gevonden.",
                     "new": "Stel een nieuwe integratie in",
                     "none": "Er is nog niets geconfigureerd",
                     "note_about_integrations": "Nog niet alle integraties kunnen via de UI worden geconfigureerd.",
@@ -1220,8 +1256,38 @@
                     "no_persons_created_yet": "Het lijkt erop dat je nog geen personen hebt aangemaakt.",
                     "note_about_persons_configured_in_yaml": "Opmerking: personen die zijn geconfigureerd via configuration.yaml kunnen niet worden bewerkt via de UI."
                 },
+                "scene": {
+                    "editor": {
+                        "default_name": "Nieuwe scène",
+                        "devices": {
+                            "add": "Apparaat toevoegen",
+                            "delete": "Apparaat verwijderen",
+                            "header": "Apparaten"
+                        },
+                        "entities": {
+                            "add": "Voeg een entiteit toe",
+                            "delete": "Verwijderen entiteit",
+                            "device_entities": "Als u een entiteit toevoegt die tot een apparaat hoort, wordt het apparaat ook toegevoegd.",
+                            "header": "Entiteiten",
+                            "without_device": "Entiteiten zonder apparaat"
+                        },
+                        "introduction": "Gebruik scènes om je huis tot leven te brengen.",
+                        "load_error_not_editable": "Alleen scènes die zijn gedefinieerd in scenes.yaml kunnen worden bewerkt.",
+                        "load_error_unknown": "Fout bij het laden van de scène {{err_no}}.",
+                        "name": "Naam",
+                        "save": "Opslaan"
+                    },
+                    "picker": {
+                        "add_scene": "Voeg scène toe",
+                        "delete_confirm": "Weet je zeker dat je deze scène wilt verwijderen?",
+                        "delete_scene": "Scène verwijderen",
+                        "edit_scene": "Scène bewerken",
+                        "only_editable": "Alleen scènes die zijn gedefinieerd in scenes.yaml kunnen worden bewerkt.",
+                        "show_info_scene": "Informatie weergeven over scène"
+                    }
+                },
                 "script": {
-                    "caption": "Script",
+                    "caption": "Scripts",
                     "description": "Maak en bewerk scripts",
                     "editor": {
                         "default_name": "Nieuw script",
@@ -1243,7 +1309,7 @@
                     "section": {
                         "reloading": {
                             "automation": "Herlaad automatiseringen",
-                            "core": "Herlaad kern",
+                            "core": "Herlaad lokatie en aanpassingen",
                             "group": "Herlaad groepen",
                             "heading": "Configuratie herladen",
                             "introduction": "Sommige delen van Home Assistant kunnen opnieuw worden geladen zonder dat een herstart vereist is. Als je herladen gebruikt, wordt de huidige configuratie leeggemaakt en wordt de nieuwe geladen.",
@@ -1413,6 +1479,13 @@
                     }
                 }
             },
+            "custom": {
+                "external_panel": {
+                    "complete_access": "Het geeft toegang tot alle data van Home Assistant.",
+                    "hide_message": "Raadpleeg de documentatie voor de panel_custom component hoe deze melding te verbergen",
+                    "question_trust": "Vertrouw je het externe paneel {name} op {link} ?"
+                }
+            },
             "developer-tools": {
                 "tabs": {
                     "events": {
@@ -1523,6 +1596,7 @@
                 "showing_entries": "Toon items voor"
             },
             "logbook": {
+                "entries_not_found": "Geen logboekvermeldingen gevonden.",
                 "period": "Periode",
                 "showing_entries": "Toont gegevens van"
             },
@@ -1678,7 +1752,7 @@
                     },
                     "edit_card": {
                         "add": "Kaart toevoegen",
-                        "delete": "Verwijder",
+                        "delete": "Verwijder kaart",
                         "edit": "Bewerken",
                         "header": "Kaart configuratie",
                         "move": "Verplaatsen",
@@ -1716,6 +1790,11 @@
                         "para_no_id": "Dit element heeft geen ID. Voeg een ID toe aan dit element in 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_unsaved_changes": "Er zijn nog niet-opgeslagen wijzigingen, weet u zeker dat u wilt afsluiten?",
+                        "confirm_unsaved_comments": "Uw configuratie bevat commentaren, deze worden niet opgeslagen. Wil je doorgaan?",
+                        "error_invalid_config": "Uw configuratie is niet geldig: {error}",
+                        "error_parse_yaml": "Kan YAML niet parseren: {error}",
+                        "error_save_yaml": "Kan YAML niet opslaan: {error}",
                         "header": "Configuratie bewerken",
                         "save": "Opslaan",
                         "saved": "Opgeslagen",
@@ -1745,6 +1824,9 @@
                 "reload_lovelace": "Lovelace herladen",
                 "unused_entities": {
                     "available_entities": "Dit zijn de entiteiten die je beschikbaar hebt, maar die nog niet in je Lovelace UI staan.",
+                    "domain": "Domein",
+                    "entity": "Entiteit",
+                    "entity_id": "Entiteits-ID",
                     "last_changed": "Laatst gewijzigd",
                     "select_to_add": "Selecteer de entiteiten die u aan een kaart wilt toevoegen en klik vervolgens op de knop Kaart toevoegen.",
                     "title": "Ongebruikte entiteiten"
@@ -1938,6 +2020,7 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant verbergt standaard geavanceerde functies en opties. U kunt deze functies toegankelijk maken door deze schakelaar aan te zetten. Dit is een gebruikersspecifieke instelling en heeft geen invloed op andere gebruikers die Home Assistant gebruiken.",
+                    "hint_enable": "Ontbrekende configuratie-opties? Schakel geavanceerde modus in",
                     "link_profile_page": "Je profielpagina",
                     "title": "Geavanceerde modus"
                 },
