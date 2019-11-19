@@ -7,6 +7,7 @@ import {
   css,
   property,
   customElement,
+  query,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
@@ -51,7 +52,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   @property() private _config?: AlarmPanelCardConfig;
 
-  @property() private _code?: string;
+  @query("#alarmCode") private _input?: PaperInputElement;
 
   public getCardSize(): number {
     if (!this._config || !this.hass) {
@@ -79,7 +80,6 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     };
 
     this._config = { ...defaults, ...config };
-    this._code = "";
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -103,7 +103,7 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_config") || changedProps.has("_code")) {
+    if (changedProps.has("_config")) {
       return true;
     }
 
@@ -174,7 +174,6 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
                 id="alarmCode"
                 label="Alarm Code"
                 type="password"
-                .value="${this._code}"
               ></paper-input>
             `}
         ${stateObj.attributes.code_format !== FORMAT_NUMBER
@@ -222,23 +221,20 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   private _handlePadClick(e: MouseEvent): void {
     const val = (e.currentTarget! as any).value;
-    this._code = val === "clear" ? "" : this._code + val;
+    this._input!.value = val === "clear" ? "" : this._input!.value + val;
   }
 
   private _handleActionClick(e: MouseEvent): void {
-    const input = this.shadowRoot!.querySelector(
-      "#alarmCode"
-    ) as PaperInputElement;
+    const input = this._input!;
     const code =
-      this._code ||
-      (input && input.value && input.value.length > 0 ? input.value : "");
+      input && input.value && input.value.length > 0 ? input.value : "";
     callAlarmAction(
       this.hass!,
       this._config!.entity,
       (e.currentTarget! as any).action,
       code
     );
-    this._code = "";
+    input.value = "";
   }
 
   static get styles(): CSSResult {

@@ -135,7 +135,6 @@ export class HaDevicesDataTable extends LitElement {
             name: {
               title: "Device",
               sortable: true,
-              filterKey: "name",
               filterable: true,
               direction: "asc",
               template: (name, device: DataTableRowData) => {

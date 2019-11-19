@@ -64,7 +64,7 @@ export class HuiGaugeCardEditor extends LitElement
   }
 
   get _min(): number {
-    return this._config!.number || 0;
+    return this._config!.min || 0;
   }
 
   get _max(): number {
