@@ -16,6 +16,7 @@ import "@thomasloven/round-slider";
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
 import "../components/hui-warning";
+import "../components/hui-unavailable";
 
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -110,7 +111,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         : stateObj.attributes.min_temp;
 
     const slider =
-      stateObj.state === "unvailable"
+      stateObj.state === "unavailable"
         ? html`
             <round-slider disabled="true"></round-slider>
           `
@@ -201,6 +202,13 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           [mode]: true,
         })}
       >
+        ${stateObj.state === "unavailable"
+          ? html`
+              <hui-unavailable
+                .text="${this.hass.localize("state.default.unavailable")}"
+              ></hui-unavailable>
+            `
+          : ""}
         <paper-icon-button
           icon="hass:dots-vertical"
           class="more-info"
