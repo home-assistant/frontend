@@ -421,7 +421,7 @@
                 "away_mode": "Mode absent",
                 "cooling": "{name} refredant",
                 "current_temperature": "Temperatura actual de {name}",
-                "currently": "Actual",
+                "currently": "Actualment",
                 "fan_mode": "Mode ventilació",
                 "heating": "{name} escalfant",
                 "high": "alt",
@@ -432,7 +432,8 @@
                 "swing_mode": "Mode oscil·lació",
                 "target_humidity": "Humitat desitjada",
                 "target_temperature": "Temperatura desitjada",
-                "target_temperature_entity": "Temperatura objectiu de {name}"
+                "target_temperature_entity": "Temperatura desitjada de {name}",
+                "target_temperature_mode": "Temperatura desitjada de {name} {mode}"
             },
             "counter": {
                 "actions": {
@@ -1035,7 +1036,7 @@
                         "email": "Correu electrònic",
                         "email_error_msg": "Correu electrònic invàlid",
                         "forgot_password": "has oblidat la contrasenya?",
-                        "introduction": "Home Assistant Cloud t'ofereix una connexió remota i segura amb la teva instància mentre siguis fora de casa. També et permet connectar-te amb els serveis només disponibles al núvol: Amazon Alexa i Google Assistant.",
+                        "introduction": "Home Assistant Cloud t'ofereix una connexió remota i segura amb la teva instància mentre siguis fora de casa. També et permet connectar-te amb els serveis disponibles al núvol: Amazon Alexa i Google Assistant.",
                         "introduction2": "Aquest servei està gestionat pel nostre soci ",
                         "introduction2a": ", una empresa fundada pels creadors de Home Assistant i Hass.io.",
                         "introduction3": "Home Assistant Cloud és un servei de subscripció amb una prova gratuïta d’un mes. No és necessària la informació de pagament.",
@@ -1132,6 +1133,7 @@
                     "attributes_set": "Els següents atributs d'entitat s'estableixen programàticament.",
                     "caption": "Personalització",
                     "description": "Personalitza les entitats",
+                    "different_include": "Possiblement a través d’un domini o una altra inclusió diferent.",
                     "pick_attribute": "Selecciona un atribut per substituir-lo",
                     "picker": {
                         "header": "Personalització",

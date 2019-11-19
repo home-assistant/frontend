@@ -542,6 +542,7 @@
         "components": {
             "device-picker": {
                 "clear": "Počisti",
+                "device": "Naprava",
                 "show_devices": "Pokažite naprave"
             },
             "entity": {
@@ -702,6 +703,7 @@
                             "header": "Akcije",
                             "introduction": "Akcije so, kaj bo storil Home Assistant, ko se sproži avtomatizacija. \n\n [Več o dejavnostih.] (Https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Več o akcijah",
+                            "name": "Akcija",
                             "type_select": "Vrsta ukrepa",
                             "type": {
                                 "condition": {
@@ -746,6 +748,7 @@
                             "header": "Pogoji",
                             "introduction": "Pogoji so neobvezni del pravila za avtomatizacijo in jih je mogoče uporabiti za preprečitev, da bi se dejanje zgodilo ob sprožitvi. Pogoji so zelo podobni sprožilcem, vendar so zelo različni. Sprožilec bo pogledal dogodke, ki se dogajajo v sistemu, medtem, ko pogoj gleda samo na to, kako sistem trenutno izgleda. Sprožilec lahko opazi, da je stikalo vklopljeno. Pogoj lahko vidi le, če je stikalo trenutno vklopljeno ali izklopljeno. \n\n [Več o pogojih.] (Https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Več o pogojih",
+                            "name": "Stanje",
                             "type_select": "Vrsta pogoja",
                             "type": {
                                 "and": {
@@ -815,6 +818,7 @@
                             "header": "Sprožilci",
                             "introduction": "Sprožilci so tisto, kar začne postopek obdelave avtomatizacije pravila. Za isto pravilo je mogoče določiti več sprožilcev. Ko se začne sprožilec, bo Home Assistant potrdil pogoje, če so, in poklical dejanje. \n\n [Več o sprožilcih.] (Https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Več o sprožilcih",
+                            "name": "Sprožilec",
                             "type_select": "Tip sprožilca",
                             "type": {
                                 "device": {
