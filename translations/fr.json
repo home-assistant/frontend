@@ -80,7 +80,7 @@
             "fan_mode": {
                 "auto": "Auto",
                 "off": "Off",
-                "on": "On"
+                "on": "Actif"
             },
             "hvac_action": {
                 "cooling": "Refroidissement",
@@ -269,7 +269,7 @@
         },
         "default": {
             "off": "Off",
-            "on": "On",
+            "on": "Actif",
             "unavailable": "Indisponible",
             "unknown": "Inconnu"
         },
@@ -326,7 +326,7 @@
         },
         "remote": {
             "off": "Arrêt",
-            "on": "On"
+            "on": "Actif"
         },
         "scene": {
             "scening": "Scénario"
@@ -542,6 +542,7 @@
         "components": {
             "device-picker": {
                 "clear": "Effacer",
+                "device": "Appareil",
                 "show_devices": "Afficher les appareils"
             },
             "entity": {
@@ -747,6 +748,7 @@
                             "header": "Conditions",
                             "introduction": "Les conditions sont une partie optionnelle d'une règle d'automatisation et peuvent être utilisées pour empêcher une action d'avoir lieu lorsque la règle est déclenchée. Les conditions ressemblent aux déclencheurs mais sont très différentes. Un déclencheur regardera les événements sur le système tandis qu'une condition ne regarde que l'état courant du système. Un déclencheur peut observer qu'un interrupteur est en train d'être allumé. Une condition ne peut que voir si l'interrupteur est allumé ou éteint.",
                             "learn_more": "En savoir plus sur les conditions",
+                            "name": "Condition",
                             "type_select": "Type de condition",
                             "type": {
                                 "and": {
@@ -816,6 +818,7 @@
                             "header": "Déclencheurs",
                             "introduction": "Les déclencheurs sont ce qui lance le traitement d'une règle d'automatisation. Il est possible de spécifier plusieurs déclencheurs pour une même règle. Dès qu'un déclencheur est activé, Home Assistant validera les conditions, s'il y en a, et appellera l'action.\n\n[En apprendre plus sur les déclencheurs.](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "En savoir plus sur les déclencheurs",
+                            "name": "Déclencheur",
                             "type_select": "Type de déclencheur",
                             "type": {
                                 "device": {
@@ -1123,19 +1126,23 @@
                     }
                 },
                 "customize": {
-                    "attributes_not_set": "Les attributs suivants ne sont pas définis. Les définir si vous le souhaitez.",
-                    "attributes_outside": "Les attributs suivants sont customisés en dehors du fichier customize.yaml",
+                    "attributes_customize": "Les attributs suivants sont déjà configurés dans le fichier customize.yaml",
+                    "attributes_not_set": "Les attributs suivants ne sont pas définis. Définissez-les si vous le voulez.",
+                    "attributes_outside": "Les attributs suivants sont personnalisés en dehors du fichier customize.yaml",
                     "attributes_override": "Vous pouvez les remplacer si vous le souhaitez.",
                     "attributes_set": "Les attributs suivants de l'entité sont définis par programmation.",
                     "caption": "Personnalisation",
                     "description": "Personnaliser vos entités",
+                    "different_include": "Peut-être via un domaine, un glob ou un autre include.",
+                    "pick_attribute": "Sélectionnez un attribut à remplacer",
                     "picker": {
                         "header": "Personnalisation",
                         "introduction": "Ajuster les attributs par entité. Les personnalisations ajoutées / modifiées prendront effet immédiatement. Les personnalisations supprimées prendront effet lors de la mise à jour de l'entité."
                     },
                     "warning": {
                         "include_link": "inclure customize.yaml",
-                        "include_sentence": "Il semble que votre configuration.yaml ne fonctionne pas correctement"
+                        "include_sentence": "Il semble que votre configuration.yaml ne fonctionne pas correctement",
+                        "not_applied": "Les modifications apportées ici y sont écrites, mais ne seront pas appliquées après un rechargement de configuration, à moins que l'inclusion ne soit en place."
                     }
                 },
                 "devices": {
@@ -1226,6 +1233,7 @@
                         "area_picker_label": "Zone",
                         "close": "Fermer",
                         "created_config": "Configuration créée pour {name}.",
+                        "error_saving_area": "Erreur lors de l'enregistrement de la zone: {error}",
                         "external_step": {
                             "description": "Cette étape nécessite la visite d'un site Web externe pour être complétée.",
                             "open_site": "Ouvrir le site"
@@ -1284,7 +1292,7 @@
                             "add": "Ajouter un appareil",
                             "delete": "Supprimer l'appareil",
                             "header": "Appareils",
-                            "introduction": "Ajouter les périphériques que vous souhaitez inclure dans votre scène. Définir tous les périphériques dans l'état que vous souhaitez pour cette scène."
+                            "introduction": "Ajouter les périphériques que vous souhaitez inclure dans votre scène. Définissez tous les périphériques dans l'état que vous souhaitez pour cette scène."
                         },
                         "entities": {
                             "add": "Ajouter une entité",
@@ -1305,7 +1313,7 @@
                         "add_scene": "Ajouter une scène",
                         "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette scène?",
                         "delete_scene": "Supprimer la scène",
-                        "edit_scene": "Editer la scène",
+                        "edit_scene": "Éditer la scène",
                         "header": "Éditeur de scène",
                         "introduction": "L'éditeur de scène vous permet de créer et d'éditer des scènes. Suivez le lien ci-dessous pour lire les instructions afin de vous assurer que vous avez correctement configuré Home Assistant.",
                         "learn_more": "En savoir plus sur les scènes",
@@ -1518,6 +1526,7 @@
             "custom": {
                 "external_panel": {
                     "complete_access": "Il aura accès à toutes les données de Home Assistant",
+                    "hide_message": "Vérifiez la documentation du composant panel_custom pour masquer ce message",
                     "question_trust": "Faire confiance au panneau externe {name} sur {link}?"
                 }
             },
@@ -1543,16 +1552,16 @@
                     },
                     "info": {
                         "built_using": "Construit en utilisant",
-                        "custom_uis": "Interface utilisateur personnalisée:",
+                        "custom_uis": "Interfaces utilisateur personnalisées :",
                         "default_ui": "{action} {name} comme page par défaut sur ce périphérique",
                         "developed_by": "Développé par un groupe de personnes formidables.",
                         "frontend": "interface utilisateur",
-                        "frontend_version": "Version interface utilisateur: {version} - {type}",
+                        "frontend_version": "Version interface utilisateur : {version} - {type}",
                         "home_assistant_logo": "Logo de Home Assistant",
                         "icons_by": "Icônes par",
                         "license": "Publié sous la licence Apache 2.0",
                         "lovelace_ui": "Accéder à l'interface utilisateur de Lovelace",
-                        "path_configuration": "Chemin vers configuration.yaml: {path}",
+                        "path_configuration": "Chemin vers configuration.yaml : {path}",
                         "remove": "Supprimer",
                         "server": "serveur",
                         "set": "Mettre",
@@ -1586,13 +1595,13 @@
                         "topic": "sujet"
                     },
                     "services": {
-                        "alert_parsing_yaml": "Erreur d'analyse de YAML: {data}",
+                        "alert_parsing_yaml": "Erreur d'analyse de YAML : {data}",
                         "call_service": "Appeler le service",
                         "column_description": "Description",
                         "column_example": "Exemple",
                         "column_parameter": "Paramètre",
                         "data": "Données de service (YAML, facultatif)",
-                        "description": "L'outil service dev vous permet d'appeler n'importe quel service disponible dans Home Assistant.",
+                        "description": "L'outil de développement 'services' vous permet d'appeler n'importe quel service disponible dans Home Assistant.",
                         "fill_example_data": "Remplir des exemples de données",
                         "no_description": "Aucune description n'est disponible",
                         "no_parameters": "Ce service ne prend aucun paramètre.",
@@ -1724,7 +1733,7 @@
                         },
                         "glance": {
                             "columns": "Colonnes",
-                            "name": "Coup d'oeil"
+                            "name": "Coup d'œil"
                         },
                         "history-graph": {
                             "name": "Graphique Historique"
@@ -1800,7 +1809,7 @@
                         "toggle_editor": "Activer/désactiver l’éditeur"
                     },
                     "edit_lovelace": {
-                        "edit_title": "Editer le titre",
+                        "edit_title": "Éditer le titre",
                         "explanation": "Ce titre est affiché au-dessus de toutes vos vues dans Lovelace.",
                         "header": "Titre de votre UI Lovelace"
                     },
@@ -1827,9 +1836,9 @@
                     "raw_editor": {
                         "confirm_unsaved_changes": "Vous avez des changements non enregistrés. Êtes-vous sûr de vouloir quitter?",
                         "confirm_unsaved_comments": "Votre configuration contient des commentaires, ceux-ci ne seront pas sauvegardés. Voulez-vous continuer?",
-                        "error_invalid_config": "Votre configuration n'est pas valide: {error}",
-                        "error_parse_yaml": "Impossible d'analyser YAML: {error}",
-                        "error_save_yaml": "Impossible de sauvegarder YAML: {error}",
+                        "error_invalid_config": "Votre configuration n'est pas valide : {error}",
+                        "error_parse_yaml": "Impossible d'analyser le YAML : {error}",
+                        "error_save_yaml": "Impossible de sauvegarder le YAML : {error}",
                         "header": "Modifier la configuration",
                         "save": "Enregistrer",
                         "saved": "Enregistré",
