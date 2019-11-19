@@ -96,19 +96,14 @@ export class HaFormTimePeriod extends LitElement implements HaFormElement {
       value %= 60;
     }
 
-    fireEvent(
-      this,
-      "value-changed",
-      {
-        value: {
-          hours,
-          minutes,
-          seconds: this._seconds,
-          ...{ [unit]: value },
-        },
+    fireEvent(this, "value-changed", {
+      value: {
+        hours,
+        minutes,
+        seconds: this._seconds,
+        ...{ [unit]: value },
       },
-      { bubbles: false }
-    );
+    });
   }
 }
 

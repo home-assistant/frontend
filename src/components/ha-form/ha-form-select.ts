@@ -60,14 +60,9 @@ export class HaFormSelect extends LitElement implements HaFormElement {
     if (!ev.detail.value) {
       return;
     }
-    fireEvent(
-      this,
-      "value-changed",
-      {
-        value: ev.detail.value.itemValue,
-      },
-      { bubbles: false }
-    );
+    fireEvent(this, "value-changed", {
+      value: ev.detail.value.itemValue,
+    });
   }
 }
 
