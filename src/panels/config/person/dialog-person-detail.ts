@@ -226,6 +226,7 @@ class DialogPersonDetail extends LitElement {
       css`
         mwc-dialog {
           min-width: 400px;
+          max-width: 600px;
         }
         .form {
           padding-bottom: 24px;
@@ -238,6 +239,9 @@ class DialogPersonDetail extends LitElement {
         }
         .error {
           color: var(--google-red-500);
+        }
+        a {
+          color: var(--primary-color);
         }
       `,
     ];
