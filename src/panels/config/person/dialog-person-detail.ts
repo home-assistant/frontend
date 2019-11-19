@@ -6,17 +6,16 @@ import {
   TemplateResult,
   property,
 } from "lit-element";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-input/paper-input";
-import "@material/mwc-button";
 import memoizeOne from "memoize-one";
 
-import "../../../components/dialog/ha-paper-dialog";
+import "@polymer/paper-input/paper-input";
+import "@material/mwc-button";
+import "@material/mwc-dialog";
+
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/user/ha-user-picker";
 import { PersonDetailDialogParams } from "./show-dialog-person-detail";
 import { PolymerChangedEvent } from "../../../polymer-types";
-import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { PersonMutableParams } from "../../../data/person";
 
@@ -57,17 +56,14 @@ class DialogPersonDetail extends LitElement {
     }
     const nameInvalid = this._name.trim() === "";
     return html`
-      <ha-paper-dialog
-        with-backdrop
-        opened
-        @opened-changed="${this._openedChanged}"
+      <mwc-dialog
+        open
+        @closing="${this._close}"
+        .title=${this._params.entry
+          ? this._params.entry.name
+          : this.hass!.localize("ui.panel.config.person.detail.new_person")}
       >
-        <h2>
-          ${this._params.entry
-            ? this._params.entry.name
-            : this.hass!.localize("ui.panel.config.person.detail.new_person")}
-        </h2>
-        <paper-dialog-scrollable>
+        <div>
           ${this._error
             ? html`
                 <div class="error">${this._error}</div>
@@ -144,29 +140,29 @@ class DialogPersonDetail extends LitElement {
                   </ul>
                 `}
           </div>
-        </paper-dialog-scrollable>
-        <div class="paper-dialog-buttons">
-          ${this._params.entry
-            ? html`
-                <mwc-button
-                  class="warning"
-                  @click="${this._deleteEntry}"
-                  .disabled=${this._submitting}
-                >
-                  ${this.hass!.localize("ui.panel.config.person.detail.delete")}
-                </mwc-button>
-              `
-            : html``}
-          <mwc-button
-            @click="${this._updateEntry}"
-            .disabled=${nameInvalid || this._submitting}
-          >
-            ${this._params.entry
-              ? this.hass!.localize("ui.panel.config.person.detail.update")
-              : this.hass!.localize("ui.panel.config.person.detail.create")}
-          </mwc-button>
         </div>
-      </ha-paper-dialog>
+        ${this._params.entry
+          ? html`
+              <mwc-button
+                slot="secondaryAction"
+                class="warning"
+                @click="${this._deleteEntry}"
+                .disabled=${this._submitting}
+              >
+                ${this.hass!.localize("ui.panel.config.person.detail.delete")}
+              </mwc-button>
+            `
+          : html``}
+        <mwc-button
+          slot="primaryAction"
+          @click="${this._updateEntry}"
+          .disabled=${nameInvalid || this._submitting}
+        >
+          ${this._params.entry
+            ? this.hass!.localize("ui.panel.config.person.detail.update")
+            : this.hass!.localize("ui.panel.config.person.detail.create")}
+        </mwc-button>
+      </mwc-dialog>
     `;
   }
 
@@ -221,17 +217,14 @@ class DialogPersonDetail extends LitElement {
     }
   }
 
-  private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
-    if (!ev.detail.value) {
-      this._params = undefined;
-    }
+  private _close(): void {
+    this._params = undefined;
   }
 
   static get styles(): CSSResult[] {
     return [
-      haStyleDialog,
       css`
-        ha-paper-dialog {
+        mwc-dialog {
           min-width: 400px;
         }
         .form {
@@ -241,7 +234,7 @@ class DialogPersonDetail extends LitElement {
           margin-top: 16px;
         }
         mwc-button.warning {
-          margin-right: auto;
+          --mdc-theme-primary: var(--google-red-500);
         }
         .error {
           color: var(--google-red-500);
