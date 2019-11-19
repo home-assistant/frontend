@@ -515,6 +515,9 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
     }
     this._devices = [...this._devices, device];
     const deviceEntities = this._deviceEntityLookup[device];
+    if (!deviceEntities) {
+      return;
+    }
     this._entities = [...this._entities, ...deviceEntities];
     deviceEntities.forEach((entityId) => {
       this._storeState(entityId);
@@ -526,6 +529,9 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
     const deviceId = (ev.target as any).device;
     this._devices = this._devices.filter((device) => device !== deviceId);
     const deviceEntities = this._deviceEntityLookup[deviceId];
+    if (!deviceEntities) {
+      return;
+    }
     this._entities = this._entities.filter(
       (entityId) => !deviceEntities.includes(entityId)
     );
