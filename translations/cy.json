@@ -1030,6 +1030,9 @@
                         "show_visual_editor": "Dangos Golygydd Gweledol",
                         "toggle_editor": "Toglo Golygydd"
                     },
+                    "edit_lovelace": {
+                        "edit_title": "Golygu teitl"
+                    },
                     "edit_view": {
                         "add": "Ychwanegu golwg",
                         "delete": "Delete golwg",
@@ -1049,6 +1052,11 @@
                         "para_no_id": "Tydi'r elfen yma ddim efo ID. Plís ychwanegwch ID i'r elfen yma yn 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_unsaved_changes": "Mae gennych newidiadau heb eu cadw. Ydych chi'n siŵr bod chi eisiau gadael?",
+                        "confirm_unsaved_comments": "Mae eich cyfluniad yn cynnwys sylwadau (au), ni fydd y rhain yn cael eu cadw. Ydych chi eisio parhau?",
+                        "error_invalid_config": "Dydy eich cyfluniad ddim yn ddilys: {Error}",
+                        "error_parse_yaml": "Methu gramadegu YAML: {Error}",
+                        "error_save_yaml": "Methu arbed YAML: {error}",
                         "header": "Golygu ffurfweddu",
                         "save": "Arbed",
                         "saved": "Arbed",
@@ -1063,12 +1071,19 @@
                     }
                 },
                 "menu": {
+                    "close": "Cau",
                     "configure_ui": "Ffurfweddu rhyngwyneb defnyddiwr",
                     "help": "Help",
                     "refresh": "Adnewyddu",
                     "unused_entities": "Endidau heb ei ddefnyddio"
                 },
                 "reload_lovelace": "Ail-lwytho Lovelace",
+                "unused_entities": {
+                    "domain": "Parth",
+                    "entity": "Endid",
+                    "entity_id": "ID Endid",
+                    "last_changed": "Newid Diwethaf"
+                },
                 "warning": {
                     "entity_non_numeric": "Endid di-rhifol: {entity}",
                     "entity_not_found": "Endid ddim ar gael: {entity}"
