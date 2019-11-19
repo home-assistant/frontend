@@ -2,7 +2,7 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import "@vaadin/vaadin-combo-box/vaadin-combo-box-light";
+import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 import memoizeOne from "memoize-one";
 
 import "./state-badge";
