@@ -43,14 +43,9 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
   }
 
   private _valueChanged(ev: Event) {
-    fireEvent(
-      this,
-      "value-changed",
-      {
-        value: (ev.target as PaperCheckboxElement).checked,
-      },
-      { bubbles: false }
-    );
+    fireEvent(this, "value-changed", {
+      value: (ev.target as PaperCheckboxElement).checked,
+    });
   }
 
   static get styles(): CSSResult {
