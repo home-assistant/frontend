@@ -32,6 +32,7 @@ import {
 } from "../../../data/automation";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialog-confirmation";
 
 function AutomationEditor(mountEl, props, mergeEl) {
   return render(h(Automation, props), mountEl, mergeEl);
@@ -210,15 +211,18 @@ export class HaAutomationEditor extends LitElement {
   }
 
   private _backTapped(): void {
-    if (
-      this._dirty &&
-      !confirm(
-        this.hass!.localize("ui.panel.config.automation.editor.unsaved_confirm")
-      )
-    ) {
-      return;
+    if (this._dirty) {
+      showConfirmationDialog(this, {
+        text: this.hass!.localize(
+          "ui.panel.config.automation.editor.unsaved_confirm"
+        ),
+        confirmBtnText: this.hass!.localize("ui.common.yes"),
+        cancelBtnText: this.hass!.localize("ui.common.no"),
+        confirm: () => history.back(),
+      });
+    } else {
+      history.back();
     }
-    history.back();
   }
 
   private async _delete() {
