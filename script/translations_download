@@ -35,6 +35,8 @@ docker run \
      file download \
      --export-empty-as skip \
      --format json \
+     --json-unescaped-slashes=true \
+     --replace-breaks=false \
      --original-filenames=false \
      --unzip-to /opt/dest
 

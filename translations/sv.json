@@ -247,7 +247,7 @@
             "fan_only": "Endast fläkt",
             "gas": "Gas",
             "heat": "Värme",
-            "heat_cool": "Värme\/Kyla",
+            "heat_cool": "Värme/Kyla",
             "heat_pump": "Värmepump",
             "high_demand": "Stort behov",
             "idle": "Inaktiv",
@@ -421,7 +421,7 @@
                 "away_mode": "Bortaläge",
                 "currently": "Nuvarande",
                 "fan_mode": "Fläktläge",
-                "on_off": "På \/ av",
+                "on_off": "På / av",
                 "operation": "Driftläge",
                 "preset_mode": "Förinställning",
                 "swing_mode": "Svepläge",
@@ -484,7 +484,7 @@
             "water_heater": {
                 "away_mode": "Bortaläge",
                 "currently": "Nuvarande",
-                "on_off": "På \/ av",
+                "on_off": "På / av",
                 "operation": "Operation",
                 "target_temperature": "Måltemperatur"
             },
@@ -540,11 +540,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\none {dag}\\nother {dagar}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {timme}\\n  other {timmar}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {minut}\\n  other {minuter}\\n}",
-                    "second": "{count} {count, plural,\\n  one {sekund}\\n  other {sekunder}\\n}",
-                    "week": "{count} {count, plural,\\none {vecka}\\nother {veckor}\\n}"
+                    "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",
+                    "hour": "{count} {count, plural,\n  one {timme}\n  other {timmar}\n}",
+                    "minute": "{count} {count, plural,\n  one {minut}\n  other {minuter}\n}",
+                    "second": "{count} {count, plural,\n  one {sekund}\n  other {sekunder}\n}",
+                    "week": "{count} {count, plural,\none {vecka}\nother {veckor}\n}"
                 },
                 "future": "Om {time}",
                 "never": "Aldrig",
@@ -602,11 +602,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {dag}\\nother {dagar}\\n}",
-            "hour": "{count} {count, plural,\\n  one {timme}\\n  other {timmar}\\n}",
-            "minute": "{count} {count, plural,\\n  one {minut}\\n  other {minuter}\\n}",
-            "second": "{count} {count, plural,\\none {sekund}\\nother {sekunder}\\n}",
-            "week": "{count} {count, plural,\\none {vecka}\\nother {veckor}\\n}"
+            "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",
+            "hour": "{count} {count, plural,\n  one {timme}\n  other {timmar}\n}",
+            "minute": "{count} {count, plural,\n  one {minut}\n  other {minuter}\n}",
+            "second": "{count} {count, plural,\none {sekund}\nother {sekunder}\n}",
+            "week": "{count} {count, plural,\none {vecka}\nother {veckor}\n}"
         },
         "login-form": {
             "log_in": "Logga in",
@@ -833,7 +833,7 @@
                     "picker": {
                         "add_automation": "Lägg till automatisering",
                         "header": "Automatiseringseditor",
-                        "introduction": "Automatiseringseditorn låter dig skapa och redigera automationer. Läs [instruktionerna](https:\/\/home-assistant.io\/docs\/automation\/editor\/) för att se till att du har konfigurerat Home Assistant korrekt.",
+                        "introduction": "Automatiseringseditorn låter dig skapa och redigera automationer. Läs [instruktionerna](https://home-assistant.io/docs/automation/editor/) för att se till att du har konfigurerat Home Assistant korrekt.",
                         "learn_more": "Lär dig mer om automatiseringar",
                         "no_automations": "Vi kunde inte hitta några redigerbara automationer",
                         "pick_automation": "Välj automation att redigera"
@@ -1158,7 +1158,7 @@
                         "options": "Fler alternativ",
                         "pick_card": "Välj det kort du vill lägga till.",
                         "save": "Spara",
-                        "toggle_editor": "Visa \/ Dölj redigerare"
+                        "toggle_editor": "Visa / Dölj redigerare"
                     },
                     "edit_lovelace": {
                         "explanation": "Den här titeln visas ovanför alla dina vyer i Lovelace.",

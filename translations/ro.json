@@ -30,7 +30,7 @@
         "history_graph": "Istorie grafic",
         "homeassistant": "Home Assistant",
         "image_processing": "Procesarea imaginii",
-        "input_boolean": "Selectie On\/Off",
+        "input_boolean": "Selectie On/Off",
         "input_datetime": "Selectați o data",
         "input_number": "Selectați numarul",
         "input_select": "Selectați",
@@ -247,7 +247,7 @@
             "fan_only": "Numai ventilator",
             "gas": "Gaz",
             "heat": "Căldură",
-            "heat_cool": "Încălzire \/ Răcire",
+            "heat_cool": "Încălzire / Răcire",
             "heat_pump": "Pompă de căldură",
             "high_demand": "Consum mare",
             "idle": "Inactiv",
@@ -421,7 +421,7 @@
                 "away_mode": "Plecat",
                 "currently": "În prezent",
                 "fan_mode": "Mod ventilator",
-                "on_off": "Pornit \/ Oprit",
+                "on_off": "Pornit / Oprit",
                 "operation": "Operație",
                 "preset_mode": "Presetare",
                 "swing_mode": "Mod baleare",
@@ -484,7 +484,7 @@
             "water_heater": {
                 "away_mode": "Plecat",
                 "currently": "În prezent",
-                "on_off": "Pornit \/ Oprit",
+                "on_off": "Pornit / Oprit",
                 "operation": "Operație",
                 "target_temperature": "Temperatura țintă"
             },
@@ -541,11 +541,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count}{count, plural,\\n  one { zi }\\n  other { zile }\\n}",
-                    "hour": "{count}{count, plural,\\n  one { ora }\\n  other { ore }\\n}",
-                    "minute": "{count} {count, plural,\\n  one { minut }\\n  other { minute }\\n}",
-                    "second": "{count} {count, plural,\\none {secunda}\\nother {secunde}\\n}",
-                    "week": "{count}{count, plural,\\n  one { săptămână }\\n  other { săptămâni }\\n}"
+                    "day": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}",
+                    "hour": "{count}{count, plural,\n  one { ora }\n  other { ore }\n}",
+                    "minute": "{count} {count, plural,\n  one { minut }\n  other { minute }\n}",
+                    "second": "{count} {count, plural,\none {secunda}\nother {secunde}\n}",
+                    "week": "{count}{count, plural,\n  one { săptămână }\n  other { săptămâni }\n}"
                 },
                 "future": "În {time}",
                 "never": "Niciodată",
@@ -603,11 +603,11 @@
             }
         },
         "duration": {
-            "day": "{count}{count, plural,\\n  one { zi }\\n  other { zile }\\n}",
-            "hour": "{count}{count, plural,\\n  one { ora }\\n  other { ore }\\n}",
-            "minute": "{count} {count, plural,\\n  one { minut }\\n  other { minute }\\n}",
-            "second": "{count} {count, plural,\\none {secunda}\\nother {secunde}\\n}",
-            "week": "{count}{count, plural,\\n  one { săptămână }\\n  other { săptămâni }\\n}"
+            "day": "{count}{count, plural,\n  one { zi }\n  other { zile }\n}",
+            "hour": "{count}{count, plural,\n  one { ora }\n  other { ore }\n}",
+            "minute": "{count} {count, plural,\n  one { minut }\n  other { minute }\n}",
+            "second": "{count} {count, plural,\none {secunda}\nother {secunde}\n}",
+            "week": "{count}{count, plural,\n  one { săptămână }\n  other { săptămâni }\n}"
         },
         "login-form": {
             "log_in": "Conectare",
@@ -658,7 +658,7 @@
                             "delete_confirm": "Ești sigur că vrei să ștergi?",
                             "duplicate": "Duplicat",
                             "header": "Acţiuni",
-                            "introduction": "Acțiunile sunt cele pe care Home Assistant le va face când se declanșează automatizarea. \\n\\n [Aflați mai multe despre acțiuni.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Acțiunile sunt cele pe care Home Assistant le va face când se declanșează automatizarea. \n\n [Aflați mai multe despre acțiuni.] (https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Aflați mai multe despre acțiuni",
                             "type_select": "Tip acțiune",
                             "type": {
@@ -696,7 +696,7 @@
                             "delete_confirm": "Ești sigur că vrei să ștergi?",
                             "duplicate": "Dublura",
                             "header": "Condiții",
-                            "introduction": "Condițiile sunt o parte opțională a unei reguli de automatizare și pot fi folosite pentru a împiedica o acțiune să se întâmple atunci când este declanșată. Condițiile par foarte asemănătoare cu declanșatoarele, dar sunt foarte diferite. Un declanșator va privi evenimentele care se întâmplă în sistem, în timp ce o condiție va arăta numai cum arată sistemul acum. Un declanșator poate observa că un comutator este pornit. O condiție poate vedea numai dacă un comutator este în prezent pornit sau oprit. \\n\\n [Aflați mai multe despre condiții.] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Condițiile sunt o parte opțională a unei reguli de automatizare și pot fi folosite pentru a împiedica o acțiune să se întâmple atunci când este declanșată. Condițiile par foarte asemănătoare cu declanșatoarele, dar sunt foarte diferite. Un declanșator va privi evenimentele care se întâmplă în sistem, în timp ce o condiție va arăta numai cum arată sistemul acum. Un declanșator poate observa că un comutator este pornit. O condiție poate vedea numai dacă un comutator este în prezent pornit sau oprit. \n\n [Aflați mai multe despre condiții.] (https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Aflați mai multe despre condiții",
                             "type_select": "Tip condiționare",
                             "type": {
@@ -750,7 +750,7 @@
                             "delete_confirm": "Sigur doriți să ștergeți?",
                             "duplicate": "Dublura",
                             "header": "Declanșatoare",
-                            "introduction": "Declanșatoarele sunt cele ce încep procesarea unei reguli de automatizare. Este posibil să specificați mai multe declanșatoare pentru aceeași regulă. Odată ce începe declanșarea, Home Assistant va valida condițiile, dacă este cazul, și va apela acțiunea. \\n\\n [Aflați mai multe despre declanșatoare.] (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Declanșatoarele sunt cele ce încep procesarea unei reguli de automatizare. Este posibil să specificați mai multe declanșatoare pentru aceeași regulă. Odată ce începe declanșarea, Home Assistant va valida condițiile, dacă este cazul, și va apela acțiunea. \n\n [Aflați mai multe despre declanșatoare.] (Https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Aflați mai multe despre triggeri",
                             "type_select": "Tip acțiune",
                             "type": {
@@ -834,7 +834,7 @@
                     "picker": {
                         "add_automation": "Adăugați o automatizare",
                         "header": "Editor de automatizare",
-                        "introduction": "Editorul de automatizare vă permite să creați și să editați automatizări. Citiți [instrucțiunile] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) pentru a vă asigura că ați configurat corect Home Assistant.",
+                        "introduction": "Editorul de automatizare vă permite să creați și să editați automatizări. Citiți [instrucțiunile] (https://home-assistant.io/docs/automation/editor/) pentru a vă asigura că ați configurat corect Home Assistant.",
                         "learn_more": "Aflați mai multe despre automatizări",
                         "no_automations": "Nu am putut găsi automatizări editabile",
                         "pick_automation": "Alegeți automatizarea pentru a o edita"
@@ -899,7 +899,7 @@
                     "description": "Personalizați-vă entitățile",
                     "picker": {
                         "header": "Personalizare",
-                        "introduction": "Atributele per entitate. Particularizările adăugate\/editate vor avea efect imediat. Particularizările eliminate vor avea efect atunci când entitatea este actualizată."
+                        "introduction": "Atributele per entitate. Particularizările adăugate/editate vor avea efect imediat. Particularizările eliminate vor avea efect atunci când entitatea este actualizată."
                     }
                 },
                 "devices": {

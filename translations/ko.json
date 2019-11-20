@@ -31,7 +31,7 @@
         "homeassistant": "Home Assistant",
         "image_processing": "이미지처리",
         "input_boolean": "논리입력",
-        "input_datetime": "날짜\/시간입력",
+        "input_datetime": "날짜/시간입력",
         "input_number": "숫자입력",
         "input_select": "선택입력",
         "input_text": "문자입력",
@@ -426,7 +426,7 @@
                 "heating": "{name} 난방중",
                 "high": "높음",
                 "low": "낮음",
-                "on_off": "켜기 \/ 끄기",
+                "on_off": "켜기 / 끄기",
                 "operation": "운전 모드",
                 "preset_mode": "프리셋",
                 "swing_mode": "회전 모드",
@@ -498,7 +498,7 @@
             "water_heater": {
                 "away_mode": "외출 모드",
                 "currently": "현재 온도",
-                "on_off": "켜기 \/ 끄기",
+                "on_off": "켜기 / 끄기",
                 "operation": "운전",
                 "target_temperature": "희망 온도"
             },
@@ -534,12 +534,15 @@
         "common": {
             "cancel": "취소",
             "loading": "읽는 중",
+            "no": "아니오",
             "save": "저장",
-            "successfully_saved": "성공적으로 저장되었습니다"
+            "successfully_saved": "성공적으로 저장되었습니다",
+            "yes": "예"
         },
         "components": {
             "device-picker": {
                 "clear": "지우기",
+                "device": "기기",
                 "show_devices": "기기 표시"
             },
             "entity": {
@@ -555,11 +558,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\none {일}\\nother {일}\\n}",
-                    "hour": "{count} {count, plural,\\none {시간}\\nother {시간}\\n}",
-                    "minute": "{count} {count, plural,\\none {분}\\nother {분}\\n}",
-                    "second": "{count} {count, plural,\\none {초}\\nother {초}\\n}",
-                    "week": "{count} {count, plural,\\none {주}\\nother {주}\\n}"
+                    "day": "{count} {count, plural,\none {일}\nother {일}\n}",
+                    "hour": "{count} {count, plural,\none {시간}\nother {시간}\n}",
+                    "minute": "{count} {count, plural,\none {분}\nother {분}\n}",
+                    "second": "{count} {count, plural,\none {초}\nother {초}\n}",
+                    "week": "{count} {count, plural,\none {주}\nother {주}\n}"
                 },
                 "future": "{time} 후",
                 "never": "해당없음",
@@ -579,6 +582,9 @@
                 "cancel": "취소",
                 "ok": "확인",
                 "title": "다시 한번 확인해주세요"
+            },
+            "domain_toggler": {
+                "title": "도메인 토글"
             },
             "more_info_control": {
                 "script": {
@@ -606,6 +612,14 @@
                     "description": "옵션이 성공적으로 저장되었습니다."
                 }
             },
+            "voice_command": {
+                "did_not_hear": "Home Assistant 가 아무 소리도 듣지 못했습니다",
+                "error": "이런, 오류가 발생했습니다",
+                "found": "다음을 찾았습니다:",
+                "how_can_i_help": "무엇을 도와드릴까요?",
+                "label": "질문을 입력하고 'Enter' 를 눌러주세요",
+                "label_voice": "질문을 입력하고 'Enter' 를 누르거나 마이크를 탭하여 말씀해보세요"
+            },
             "zha_device_info": {
                 "buttons": {
                     "add": "기기 추가",
@@ -631,11 +645,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {일}\\nother {일}\\n}",
-            "hour": "{count} {count, plural,\\none {시간}\\nother {시간}\\n}",
-            "minute": "{count} {count, plural,\\none {분}\\nother {분}\\n}",
-            "second": "{count} {count, plural,\\none {초}\\nother {초}\\n}",
-            "week": "{count} {count, plural,\\none {주}\\nother {주}\\n}"
+            "day": "{count} {count, plural,\none {일}\nother {일}\n}",
+            "hour": "{count} {count, plural,\none {시간}\nother {시간}\n}",
+            "minute": "{count} {count, plural,\none {분}\nother {분}\n}",
+            "second": "{count} {count, plural,\none {초}\nother {초}\n}",
+            "week": "{count} {count, plural,\none {주}\nother {주}\n}"
         },
         "login-form": {
             "log_in": "로그인",
@@ -670,7 +684,7 @@
                     "no_areas": "등록된 영역이 없습니다. 거실, 침실과 같이 영역을 등록해보세요!",
                     "picker": {
                         "create_area": "영역 만들기",
-                        "header": "영역 등록",
+                        "header": "영역",
                         "integrations_page": "통합 구성요소 페이지",
                         "introduction": "영역은 기기가 있는 위치를 설정하는데 사용합니다. 이 정보는 인터페이스와 권한 그리고 다른 시스템과의 연동을 구성하는 데 도움이 되도록 Home Assistant 에 사용됩니다.",
                         "introduction2": "특정 영역에 기기를 배치하려면 아래 링크를 따라 통합 구성요소 페이지로 이동 한 다음, 설정된 구성요소의 기기를 클릭하여 영역을 설정해주세요.",
@@ -689,6 +703,7 @@
                             "header": "동작",
                             "introduction": "동작은 자동화가 트리거 될 때 Home Assistant 가 수행할 작업입니다.",
                             "learn_more": "동작에 대해 더 알아보기",
+                            "name": "동작",
                             "type_select": "동작 유형",
                             "type": {
                                 "condition": {
@@ -733,6 +748,7 @@
                             "header": "조건",
                             "introduction": "조건은 자동화 규칙의 선택사항이며 트리거 될 때 발생하는 동작을 방지하는 데 사용할 수 있습니다. 조건은 트리거와 비슷해 보이지만 매우 다릅니다. 트리거는 시스템에서 발생하는 이벤트를 검사하고 조건은 시스템의 현재 상태를 검사합니다. 스위치를 예로 들면, 트리거는 스위치가 켜지는 것(이벤트)을, 조건은 스위치가 현재 켜져 있는지 혹은 꺼져 있는지(상태)를 검사합니다.",
                             "learn_more": "조건에 대해 더 알아보기",
+                            "name": "조건",
                             "type_select": "조건 유형",
                             "type": {
                                 "and": {
@@ -802,6 +818,7 @@
                             "header": "트리거",
                             "introduction": "트리거는 자동화 규칙을 처리하는 시작점 입니다. 같은 자동화 규칙에 여러 개의 트리거를 지정할 수 있습니다. 트리거가 발동되면 Home Assistant 는 조건을 확인하고 동작을 호출합니다.",
                             "learn_more": "트리거에 대해 더 알아보기",
+                            "name": "트리거",
                             "type_select": "트리거 유형",
                             "type": {
                                 "device": {
@@ -1109,6 +1126,10 @@
                     "picker": {
                         "header": "사용자화",
                         "introduction": "구성요소의 속성값을 입맛에 맞게 변경할 수 있습니다. 추가 혹은 수정된 사용자 정의 내용은 즉시 적용되지만, 제거된 내용은 구성요소가 업데이트 될 때 적용됩니다."
+                    },
+                    "warning": {
+                        "include_link": "customize.yaml 포함",
+                        "include_sentence": "configuration.yaml 이 올바르지 않은 것 같습니다"
                     }
                 },
                 "devices": {
@@ -1241,7 +1262,7 @@
                     "section": {
                         "reloading": {
                             "automation": "자동화 새로고침",
-                            "core": "코어 새로고침",
+                            "core": "위치 및 사용자화 새로고침",
                             "group": "그룹 새로고침",
                             "heading": "구성 내용 새로고침",
                             "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어들일 수 있습니다. 새로고침을 누르면 현재 구성 내용을 내리고 새로운 구성 내용을 읽어들입니다.",
@@ -1409,6 +1430,13 @@
                     "values": {
                         "header": "노드 값"
                     }
+                }
+            },
+            "custom": {
+                "external_panel": {
+                    "complete_access": "Home Assistant 의 모든 데이터에 액세스 할 수 있습니다.",
+                    "hide_message": "이 메시지를 숨기려면 panel_custom 구성요소에 대한 문서를 확인해주세요",
+                    "question_trust": "{link} 의 외부 패널 {name} 을(를) 신뢰하십니까?"
                 }
             },
             "developer-tools": {
@@ -1676,10 +1704,10 @@
                     },
                     "edit_card": {
                         "add": "카드 추가하기",
-                        "delete": "삭제",
+                        "delete": "카드 삭제",
                         "edit": "편집",
                         "header": "카드 구성",
-                        "move": "이동",
+                        "move": "보기로 이동",
                         "options": "옵션 더보기",
                         "pick_card": "어떤 카드를 추가 하시겠습니까?",
                         "pick_card_view_title": "{name} 뷰에 어떤 카드를 추가 하시겠습니까?",
@@ -1926,6 +1954,7 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant 의 고급 기능과 옵션은 기본적으로 숨겨져 있으며 토글을 활성화하여 이러한 기능을 사용하실 수 있습니다. 이 설정은 사용자별 설정이며 Home Assistant 를 사용하는 다른 사용자에게 영향을 미치지 않습니다.",
+                    "link_profile_page": "프로필 페이지",
                     "title": "고급 모드"
                 },
                 "change_password": {
@@ -2009,7 +2038,7 @@
             "shopping-list": {
                 "add_item": "항목추가",
                 "clear_completed": "완료항목삭제",
-                "microphone_tip": "우상단 마이크를 탭하고 \"Add candy to my shopping list\"라고 말해보세요"
+                "microphone_tip": "우상단 마이크를 탭하고 \"Add candy to my shopping list\" 라고 말하거나 입력해보세요"
             }
         },
         "sidebar": {

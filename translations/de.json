@@ -31,7 +31,7 @@
         "homeassistant": "Home Assistant",
         "image_processing": "Bildverarbeitung",
         "input_boolean": "Boolsche Eingabe",
-        "input_datetime": "Eingabe Datum\/Uhrzeit",
+        "input_datetime": "Eingabe Datum/Uhrzeit",
         "input_number": "Numerische Eingabe",
         "input_select": "Auswahlfeld",
         "input_text": "Texteingabe",
@@ -247,7 +247,7 @@
             "fan_only": "Nur Ventilator",
             "gas": "Gas",
             "heat": "Heizen",
-            "heat_cool": "Heizen\/Kühlen",
+            "heat_cool": "Heizen/Kühlen",
             "heat_pump": "Wärmepumpe",
             "high_demand": "Hoher Verbrauch",
             "idle": "Untätig",
@@ -426,7 +426,7 @@
                 "heating": "{name} Heizung",
                 "high": "hoch",
                 "low": "niedrig",
-                "on_off": "An \/ aus",
+                "on_off": "An / aus",
                 "operation": "Aktion",
                 "preset_mode": "Voreinstellung",
                 "swing_mode": "Schwenk-Modus",
@@ -498,7 +498,7 @@
             "water_heater": {
                 "away_mode": "Abwesenheitsmodus",
                 "currently": "Aktuell",
-                "on_off": "An \/ Aus",
+                "on_off": "An / Aus",
                 "operation": "Betrieb",
                 "target_temperature": "Solltemperatur"
             },
@@ -534,12 +534,15 @@
         "common": {
             "cancel": "Abbrechen",
             "loading": "Laden",
+            "no": "Nein",
             "save": "Speichern",
-            "successfully_saved": "Erfolgreich gespeichert"
+            "successfully_saved": "Erfolgreich gespeichert",
+            "yes": "Ja"
         },
         "components": {
             "device-picker": {
                 "clear": "Löschen",
+                "device": "Gerät",
                 "show_devices": "Geräte anzeigen"
             },
             "entity": {
@@ -555,11 +558,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\none {Tag}\\nother {Tagen}\\n}",
-                    "hour": "{count} {count, plural,\\none {Stunde}\\nother {Stunden}\\n}",
-                    "minute": "{count} {count, plural,\\none {Minute}\\nother {Minuten}\\n}",
-                    "second": "{count} {count, plural,\\none {Sekunde}\\nother {Sekunden}\\n}",
-                    "week": "{count} {count, plural,\\none {Woche}\\nother {Wochen}\\n}"
+                    "day": "{count} {count, plural,\none {Tag}\nother {Tagen}\n}",
+                    "hour": "{count} {count, plural,\none {Stunde}\nother {Stunden}\n}",
+                    "minute": "{count} {count, plural,\none {Minute}\nother {Minuten}\n}",
+                    "second": "{count} {count, plural,\none {Sekunde}\nother {Sekunden}\n}",
+                    "week": "{count} {count, plural,\none {Woche}\nother {Wochen}\n}"
                 },
                 "future": "In {time}",
                 "never": "Noch nie",
@@ -579,6 +582,9 @@
                 "cancel": "Abbrechen",
                 "ok": "OK",
                 "title": "Sind Sie sicher?"
+            },
+            "domain_toggler": {
+                "title": "Domänen umschalten"
             },
             "more_info_control": {
                 "script": {
@@ -606,6 +612,13 @@
                     "description": "Optionen wurden erfolgreich gespeichert."
                 }
             },
+            "voice_command": {
+                "did_not_hear": "Home Assistant hat nichts gehört",
+                "error": "Ups, ein Fehler ist aufgetreten.",
+                "found": "Ich habe folgendes für dich gefunden:",
+                "how_can_i_help": "Wie kann ich helfen?",
+                "label": "Gib eine Frage ein und klicke auf 'Enter'."
+            },
             "zha_device_info": {
                 "buttons": {
                     "add": "Geräte hinzufügen",
@@ -631,11 +644,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {Tag}\\nother {Tage}\\n}",
-            "hour": "{count} {count, plural,\\none {Stunde}\\nother {Stunden}\\n}",
-            "minute": "{count} {count, plural,\\none {Minute}\\nother {Minuten}\\n}",
-            "second": "{count} {count, plural,\\none {Sekunde}\\nother {Sekunden}\\n}",
-            "week": "{count} {count, plural,\\none {Woche}\\nother {Wochen}\\n}"
+            "day": "{count} {count, plural,\none {Tag}\nother {Tage}\n}",
+            "hour": "{count} {count, plural,\none {Stunde}\nother {Stunden}\n}",
+            "minute": "{count} {count, plural,\none {Minute}\nother {Minuten}\n}",
+            "second": "{count} {count, plural,\none {Sekunde}\nother {Sekunden}\n}",
+            "week": "{count} {count, plural,\none {Woche}\nother {Wochen}\n}"
         },
         "login-form": {
             "log_in": "Anmelden",
@@ -689,6 +702,7 @@
                             "header": "Aktionen",
                             "introduction": "Aktionen werden von Home Assistant ausgeführt, wenn Automatisierungen ausgelöst werden.",
                             "learn_more": "Erfahre mehr über Aktionen",
+                            "name": "Aktion",
                             "type_select": "Aktionstyp",
                             "type": {
                                 "condition": {
@@ -733,6 +747,7 @@
                             "header": "Bedingungen",
                             "introduction": "Bedingungen sind ein optionaler Bestandteil bei automatisierten Abläufen und können das Ausführen einer Aktion verhindern. Bedingungen sind Auslösern ähnlich, aber dennoch verschieden. Ein Auslöser beobachtet im System ablaufende Ereignisse, wohingegen Bedingungen nur den aktuellen Systemzustand betrachten. Ein Auslöser kann beobachten, ob ein Schalter aktiviert wird. Eine Bedingung kann lediglich sehen, ob ein Schalter aktuell an oder aus ist.",
                             "learn_more": "Erfahre mehr über Bedingungen",
+                            "name": "Zustand",
                             "type_select": "Bedingungstyp",
                             "type": {
                                 "and": {
@@ -802,6 +817,7 @@
                             "header": "Auslöser",
                             "introduction": "Auslöser starten automatisierte Abläufe. Es ist möglich, mehrere Auslöser für dieselbe Abfolge zu definieren. Wenn ein Auslöser aktiviert wird, prüft Home Assistant die Bedingungen, sofern vorhanden, und führt die Aktion aus.",
                             "learn_more": "Erfahre mehr über Auslöser",
+                            "name": "Auslöser",
                             "type_select": "Auslösertyp",
                             "type": {
                                 "device": {
@@ -888,11 +904,15 @@
                     },
                     "picker": {
                         "add_automation": "Automatisierung hinzufügen",
+                        "delete_automation": "Automatisierung löschen",
+                        "delete_confirm": "Bist du sicher, dass du diese Automatisierung löschen willst?",
+                        "edit_automation": "Automatisierung bearbeiten",
                         "header": "Automatisierungseditor",
                         "introduction": "Mit dem Automationseditor können Automatisierungen erstellt und bearbeitet werden. Bitte folge dem nachfolgenden Link, um die Anleitung zu lesen, um sicherzustellen, dass du Home Assistant richtig konfiguriert hast.",
                         "learn_more": "Erfahre mehr über Automatisierungen",
                         "no_automations": "Wir konnten keine editierbaren Automatisierungen finden",
-                        "pick_automation": "Wähle eine Automatisierung zum Bearbeiten"
+                        "pick_automation": "Wähle eine Automatisierung zum Bearbeiten",
+                        "show_info_automation": "Informationen über die Automatisierung anzeigen"
                     }
                 },
                 "cloud": {
@@ -921,7 +941,7 @@
                             "enable_state_reporting": "Statusberichterstattung aktivieren",
                             "enter_pin_error": "PIN kann nicht gespeichert werden:",
                             "enter_pin_hint": "Geben Sie eine PIN ein, um Sicherheitsgeräte zu verwenden",
-                            "enter_pin_info": "Bitte geben Sie eine PIN ein, um mit Sicherheitsgeräten zu interagieren. Sicherheitsgeräte sind Türen, Garagentore und Schlösser. Sie werden aufgefordert, diese PIN zu sagen \/ einzugeben, wenn Sie mit solchen Geräten über Google Assistant interagieren.",
+                            "enter_pin_info": "Bitte geben Sie eine PIN ein, um mit Sicherheitsgeräten zu interagieren. Sicherheitsgeräte sind Türen, Garagentore und Schlösser. Sie werden aufgefordert, diese PIN zu sagen / einzugeben, wenn Sie mit solchen Geräten über Google Assistant interagieren.",
                             "info": "Mit der Google Assistant-Integration für Home Assistant Cloud können Sie alle Ihre Home Assistant-Geräte über jedes Google Assistant-fähige Gerät steuern.",
                             "info_state_reporting": "Wenn die Statusberichterstellung aktiviert wird, sendet Home Assistant alle Statusänderungen exponierter Entitäten an Google. So wird in der Google-App immer der neueste Status angezeigt.",
                             "manage_entities": "Entitäten verwalten",
@@ -1108,23 +1128,40 @@
                     "description": "Elemente anpassen",
                     "picker": {
                         "header": "Anpassung",
-                        "introduction": "Optimieren Sie die Entitätenattribute. Hinzugefügte \/ bearbeitete Anpassungen werden sofort wirksam. Entfernte Anpassungen werden wirksam, wenn die Entität aktualisiert wird."
+                        "introduction": "Optimieren Sie die Entitätenattribute. Hinzugefügte / bearbeitete Anpassungen werden sofort wirksam. Entfernte Anpassungen werden wirksam, wenn die Entität aktualisiert wird."
                     }
                 },
                 "devices": {
+                    "area_picker_label": "Bereich",
                     "automation": {
                         "actions": {
                             "caption": "Wenn etwas ausgelöst wird ..."
                         },
                         "conditions": {
-                            "caption": "Tu nur etwas, wenn..."
+                            "caption": "Tue nur dann etwas, wenn....."
                         },
                         "triggers": {
-                            "caption": "Tu nur etwas, wenn..."
+                            "caption": "Tue etwas, wenn..."
                         }
                     },
+                    "automations": "Automatisierungen",
                     "caption": "Geräte",
-                    "description": "Verwalte verbundene Geräte"
+                    "confirm_rename_entity_ids": "Möchtest du auch die Entitäts-ID's deiner Entitäten umbenennen?",
+                    "data_table": {
+                        "area": "Bereich",
+                        "battery": "Batterie",
+                        "device": "Gerät",
+                        "integration": "Integration",
+                        "manufacturer": "Hersteller",
+                        "model": "Modell"
+                    },
+                    "description": "Verwalte verbundene Geräte",
+                    "details": "Hier sind alle Details deines Geräts.",
+                    "device_not_found": "Gerät nicht gefunden.",
+                    "entities": "Entitäten",
+                    "info": "Geräteinformationen",
+                    "unknown_error": "Unbekannter Fehler",
+                    "unnamed_device": "Unbenanntes Gerät"
                 },
                 "entity_registry": {
                     "caption": "Entitätsregister",
@@ -1137,6 +1174,7 @@
                         "enabled_cause": "Deaktiviert durch {cause}.",
                         "enabled_description": "Deaktivierte Entitäten werden in Home Assistant nicht hinzugefügt.",
                         "enabled_label": "Entität aktivieren",
+                        "note": "Hinweis: Dies funktioniert möglicherweise noch nicht bei allen Integrationen.",
                         "unavailable": "Diese Entität ist derzeit nicht verfügbar.",
                         "update": "UPDATE"
                     },
@@ -1176,16 +1214,28 @@
                         "via": "Verbunden über"
                     },
                     "config_flow": {
+                        "aborted": "Abgebrochen",
+                        "add_area": "Bereich hinzufügen",
+                        "area_picker_label": "Bereich",
+                        "close": "Schließen",
+                        "created_config": "Erstellte Konfiguration für {name}.",
+                        "error_saving_area": "Fehler beim Speichern des Bereichs: {error}",
                         "external_step": {
                             "description": "Für diesen Schritt musst du eine externe Website besuchen, um den Vorgang abzuschließen.",
                             "open_site": "Website öffnen"
-                        }
+                        },
+                        "failed_create_area": "Der Bereich konnte nicht erstellt werden.",
+                        "finish": "Fertig",
+                        "name_new_area": "Name des neuen Bereichs?",
+                        "not_all_required_fields": "Nicht alle Pflichtfelder sind ausgefüllt.",
+                        "submit": "Absenden"
                     },
                     "configure": "Konfigurieren",
                     "configured": "Konfiguriert",
                     "description": "Verwalte verbundene Geräte und Dienste",
                     "discovered": "Entdeckt",
                     "home_assistant_website": "Home Assistant Website",
+                    "integration_not_found": "Integration nicht gefunden.",
                     "new": "Richte eine neue Integration ein",
                     "none": "Noch nichts konfiguriert",
                     "note_about_integrations": "Nicht alle Integrationen können über die Benutzeroberfläche konfiguriert werden.",
@@ -1218,21 +1268,61 @@
                     "no_persons_created_yet": "Sieht so aus, als hättest du noch keine Personen angelegt.",
                     "note_about_persons_configured_in_yaml": "Hinweis: Personen, die über configuration.yaml konfiguriert wurden, können nicht über die Benutzeroberfläche bearbeitet werden."
                 },
+                "scene": {
+                    "activated": "Aktivierte Szene {name}.",
+                    "caption": "Szenen",
+                    "description": "Erstelle und bearbeite Szenen.",
+                    "editor": {
+                        "default_name": "Neue Szene",
+                        "devices": {
+                            "add": "Ein Gerät hinzufügen",
+                            "delete": "Gerät löschen",
+                            "header": "Geräte"
+                        },
+                        "entities": {
+                            "add": "Eine Entität hinzufügen",
+                            "delete": "Entität löschen",
+                            "header": "Entitäten",
+                            "without_device": "Entitäten ohne Gerät"
+                        },
+                        "introduction": "Benutze Szenen, um deinem Zuhause Leben einzuhauchen",
+                        "load_error_not_editable": "Nur Szenen in der scenes.yaml sind editierbar.",
+                        "load_error_unknown": "Fehler beim Laden der Szene ({err_no}).",
+                        "name": "Name",
+                        "save": "Speichern",
+                        "unsaved_confirm": "Du hast ungespeicherte Änderungen. Bist du dir sicher, dass du den Editor verlassen möchtest?"
+                    },
+                    "picker": {
+                        "add_scene": "Szene hinzufügen",
+                        "delete_confirm": "Bist du dir sicher, dass du diese Szene löschen möchtest?",
+                        "delete_scene": "Szene löschen",
+                        "edit_scene": "Szene bearbeiten",
+                        "header": "Szenen-Editor",
+                        "learn_more": "Erfahre mehr über Szenen.",
+                        "no_scenes": "Wir konnten keine editierbaren Szenen finden",
+                        "pick_scene": "Wähle eine Szene zum Bearbeiten aus.",
+                        "show_info_scene": "Informationen über die Szene anzeigen"
+                    }
+                },
                 "script": {
                     "caption": "Skript",
                     "description": "Skripte erstellen und bearbeiten",
                     "editor": {
                         "default_name": "Neues Skript",
                         "delete_confirm": "Möchten Sie dieses Skript wirklich löschen?",
+                        "delete_script": "Skript löschen",
                         "header": "Skript: {name}",
-                        "load_error_not_editable": "Nur Skripte in scripts.yaml können bearbeitet werden."
+                        "load_error_not_editable": "Nur Skripte in scripts.yaml können bearbeitet werden.",
+                        "sequence": "Sequenz"
                     },
                     "picker": {
                         "add_script": "Skript hinzufügen",
+                        "edit_script": "Skript bearbeiten",
                         "header": "Skript-Editor",
                         "introduction": "Mit dem Skript-Editor können Skripte erstellt und bearbeitet werden. Bitte folge Sie dem untenstehenden Link, um die Anleitung zu finden. Das stellt sicher, dass Home Assistant richtig konfiguriert ist.",
                         "learn_more": "Weitere Informationen zu Skripten",
-                        "no_scripts": "Wir konnten keine bearbeitbaren Skripte finden"
+                        "no_scripts": "Wir konnten keine bearbeitbaren Skripte finden",
+                        "trigger_script": "Skript auslösen"
                     }
                 },
                 "server_control": {
@@ -1411,9 +1501,16 @@
                     }
                 }
             },
+            "custom": {
+                "external_panel": {
+                    "complete_access": "Es wird Zugriff auf alle Daten in Home Assistant haben.",
+                    "hide_message": "Überprüfe die Dokumentation für die panel_custom Komponente, um diese Meldung auszublenden."
+                }
+            },
             "developer-tools": {
                 "tabs": {
                     "events": {
+                        "alert_event_type": "Der Ereignistyp ist ein Pflichtfeld.",
                         "available_events": "Verfügbare Ereignisse",
                         "count_listeners": " ({count} Listener)",
                         "data": "Ereignisdaten (YAML, optional)",
@@ -1423,6 +1520,9 @@
                         "fire_event": "Ereignis auslösen",
                         "listen_to_events": "Hören auf Ereignisse",
                         "listening_to": "Hören auf",
+                        "notification_event_fired": "Ereignis {type} erfolgreich ausgelöst!",
+                        "start_listening": "Anfangen zuzuhören",
+                        "stop_listening": "Aufhören zuzuhören",
                         "title": "Ereignisse",
                         "type": "Ereignistyp"
                     },
@@ -1459,8 +1559,13 @@
                     },
                     "mqtt": {
                         "description_publish": "Ein Paket veröffentlichen",
+                        "listening_to": "Anhören von",
                         "message_received": "Nachricht {id} empfangen auf {topic} um {time} :",
+                        "payload": "Payload (Vorlage erlaubt)",
                         "publish": "Veröffentlichen",
+                        "start_listening": "Anfangen zuzuhören",
+                        "stop_listening": "Aufhören zuzuhören",
+                        "subscribe_to": "Thema abonnieren",
                         "title": "MQTT",
                         "topic": "Topic"
                     },
@@ -1509,6 +1614,7 @@
                 "showing_entries": "Zeige Einträge für"
             },
             "logbook": {
+                "entries_not_found": "Keine Logbucheinträge gefunden.",
                 "period": "Zeitraum",
                 "showing_entries": "Zeige Einträge für"
             },
@@ -1642,7 +1748,7 @@
                             "name": "Picture"
                         },
                         "plant-status": {
-                            "name": "Planzen Status"
+                            "name": "Pflanzen Status"
                         },
                         "sensor": {
                             "graph_detail": "Diagrammdetail",
@@ -1677,6 +1783,7 @@
                         "toggle_editor": "Editor umschalten"
                     },
                     "edit_lovelace": {
+                        "edit_title": "Titel bearbeiten",
                         "explanation": "Dieser Titel wird überhalb aller deiner Lovelace Ansichten gezeigt.",
                         "header": "Titel deiner Lovelace UI"
                     },
@@ -1685,7 +1792,9 @@
                         "delete": "Ansicht löschen",
                         "edit": "Ansicht bearbeiten",
                         "header": "Konfiguration anzeigen",
-                        "header_name": "{name} Konfiguration anzeigen"
+                        "header_name": "{name} Konfiguration anzeigen",
+                        "move_left": "Ansicht nach links verschieben",
+                        "move_right": "Ansicht nach rechts verschieben"
                     },
                     "header": "Benutzeroberfläche bearbeiten",
                     "menu": {
@@ -1699,6 +1808,11 @@
                         "para_no_id": "Dieses Element hat keine ID. Bitte füge diesem Element eine ID in 'ui-lovelace.yaml' hinzu."
                     },
                     "raw_editor": {
+                        "confirm_unsaved_changes": "Du hast ungespeicherte Änderungen, bist du sicher, dass du sie beenden willst?",
+                        "confirm_unsaved_comments": "Deine Konfiguration enthält einen oder mehrere Kommentare, diese werden nicht gespeichert. Möchtest du fortfahren?",
+                        "error_invalid_config": "Deine Konfiguration ist ungültig: {error}",
+                        "error_parse_yaml": "YAML kann nicht geparsed werden: {error}",
+                        "error_save_yaml": "YAML konnte nicht gespeichert werden: {error}",
                         "header": "Konfiguration bearbeiten",
                         "save": "Speichern",
                         "saved": "Gespeichert",
@@ -1719,12 +1833,20 @@
                     }
                 },
                 "menu": {
+                    "close": "Schließen",
                     "configure_ui": "Benutzeroberfläche konfigurieren",
                     "help": "Hilfe",
                     "refresh": "Aktualisieren",
                     "unused_entities": "Ungenutzte Elemente"
                 },
                 "reload_lovelace": "Lovelace neu laden",
+                "unused_entities": {
+                    "domain": "Domain",
+                    "entity": "Entität",
+                    "entity_id": "Entitäts-ID",
+                    "last_changed": "Zuletzt geändert",
+                    "title": "Nicht verwendete Entitäten"
+                },
                 "views": {
                     "confirm_delete": "Möchten Sie diese Ansicht wirklich löschen?",
                     "existing_cards": "Sie können eine Ansicht mit Karten nicht löschen. Entfernen Sie zuerst die Karten."
@@ -1914,6 +2036,8 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home-Assistent verbirgt standardmäßig erweiterte Funktionen und Optionen. Mache diese Funktionen zugänglich, indem diese Option aktiviert wird. Dies ist eine benutzerspezifische Einstellung, die sich nicht auf andere Benutzer auswirkt, die Home Assistant verwenden.",
+                    "hint_enable": "Fehlende Konfigurationsoptionen? Aktiviere den erweiterten Modus.",
+                    "link_profile_page": "deine Profilseite",
                     "title": "Erweiterter Modus"
                 },
                 "change_password": {

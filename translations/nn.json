@@ -247,7 +247,7 @@
             "fan_only": "Berre vifte",
             "gas": "Gass",
             "heat": "Varme",
-            "heat_cool": "Oppvarming\/Nedkjøling",
+            "heat_cool": "Oppvarming/Nedkjøling",
             "heat_pump": "Varmepumpe",
             "high_demand": "Høg etterspurnad",
             "idle": "Inaktiv",
@@ -421,7 +421,7 @@
                 "away_mode": "Bortemodus",
                 "currently": "Akkuratt no",
                 "fan_mode": "Viftemodus",
-                "on_off": "På \/ av",
+                "on_off": "På / av",
                 "operation": "Operasjon",
                 "preset_mode": "Mal",
                 "swing_mode": "Svingmodus",
@@ -484,7 +484,7 @@
             "water_heater": {
                 "away_mode": "Bortemodus",
                 "currently": "For augeblinken",
-                "on_off": "På \/ av",
+                "on_off": "På / av",
                 "operation": "Operasjon",
                 "target_temperature": "Temperaturmål"
             },
@@ -535,11 +535,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\none {dag}\\nother {dagar}\\n}",
-                    "hour": "{count} {count, plural,\\none {time}\\nother {timar}\\n}",
-                    "minute": "{count} {count, plural,\\none {minutt}\\nother {minutt}\\n}",
-                    "second": "{count} {count, plural,\\none {sekund}\\nother {sekundar}\\n}",
-                    "week": "{count} {count, plural,\\none {veke}\\nother {veker}\\n}"
+                    "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",
+                    "hour": "{count} {count, plural,\none {time}\nother {timar}\n}",
+                    "minute": "{count} {count, plural,\none {minutt}\nother {minutt}\n}",
+                    "second": "{count} {count, plural,\none {sekund}\nother {sekundar}\n}",
+                    "week": "{count} {count, plural,\none {veke}\nother {veker}\n}"
                 },
                 "future": "Om {time}",
                 "never": "Aldri",
@@ -597,11 +597,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {dag}\\nother {dagar}\\n}",
-            "hour": "{count} {count, plural,\\none {time}\\nother {timar}\\n}",
-            "minute": "{count} {count, plural,\\none {minutt}\\nother {minutt}\\n}",
-            "second": "{count} {count, plural,\\none {sekund}\\nother {sekundar}\\n}",
-            "week": "{count} {count, plural,\\none {veke}\\nother {veker}\\n}"
+            "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",
+            "hour": "{count} {count, plural,\none {time}\nother {timar}\n}",
+            "minute": "{count} {count, plural,\none {minutt}\nother {minutt}\n}",
+            "second": "{count} {count, plural,\none {sekund}\nother {sekundar}\n}",
+            "week": "{count} {count, plural,\none {veke}\nother {veker}\n}"
         },
         "login-form": {
             "log_in": "Logg inn",
@@ -690,7 +690,7 @@
                             "delete_confirm": "Er det sekert du vil slettje?",
                             "duplicate": "Dupliser",
                             "header": "Føresetnadar",
-                            "introduction": "Føresetnadar er ein valfri del av automasjonsregelen og kan brukast til å hindre at ei handling vert gjennomført når den er utløyst. Føresetnadane liknar på utløysarane, men er veldig forskjellig frå dei. Ein utløysar vil sjå på hendingar som skjer i systemet, medan ein føresetnad berre ser på korleis systemet er akkuratt no. Ein utløysar kan observere at ein brytar blir skrudt på, medan ein føresetnad berre kan sjå om brytaren er på eller av. \\n\\n[Lær meir om føresetnadar.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Føresetnadar er ein valfri del av automasjonsregelen og kan brukast til å hindre at ei handling vert gjennomført når den er utløyst. Føresetnadane liknar på utløysarane, men er veldig forskjellig frå dei. Ein utløysar vil sjå på hendingar som skjer i systemet, medan ein føresetnad berre ser på korleis systemet er akkuratt no. Ein utløysar kan observere at ein brytar blir skrudt på, medan ein føresetnad berre kan sjå om brytaren er på eller av. \n\n[Lær meir om føresetnadar.](https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Lær meir om føresetnader",
                             "type_select": "Føresetnadstype",
                             "type": {
@@ -744,7 +744,7 @@
                             "delete_confirm": "Er du sikker på at du vil slette?",
                             "duplicate": "Dupliser",
                             "header": "Utløysarar",
-                            "introduction": "Utløysarar er det som startar ein prosess i ein automasjonsregel. Det er mogleg å spesifisere fleire utløysarar for same regel. Når ein utløysar startar, vil Home Assistant validere føresetnadane, dersom der er nokon, og så setje i gang handlinga.\\n\\n[Lær meir om utløysarar.](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Utløysarar er det som startar ein prosess i ein automasjonsregel. Det er mogleg å spesifisere fleire utløysarar for same regel. Når ein utløysar startar, vil Home Assistant validere føresetnadane, dersom der er nokon, og så setje i gang handlinga.\n\n[Lær meir om utløysarar.](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Lær meir om utløysarar",
                             "type_select": "Utløysartype",
                             "type": {
@@ -828,7 +828,7 @@
                     "picker": {
                         "add_automation": "Legg til automasjon",
                         "header": "Automasjonsredigerar",
-                        "introduction": "Automasjonsredigeringa tillet deg å lage og redigere automasjonar. Ver vennleg og les [instruksjonane](https:\/\/home-assistant.io\/docs\/automation\/editor\/) for å vere sikker på om du har konfigurert Home Assistant rett.",
+                        "introduction": "Automasjonsredigeringa tillet deg å lage og redigere automasjonar. Ver vennleg og les [instruksjonane](https://home-assistant.io/docs/automation/editor/) for å vere sikker på om du har konfigurert Home Assistant rett.",
                         "learn_more": "Lær meir om automasjonar",
                         "no_automations": "Vi klarte ikkje å finne nokon automasjonar som kunne redigerast",
                         "pick_automation": "Vel ein automasjon for å redigere"
@@ -893,7 +893,7 @@
                     "description": "Tilpass dine einingar",
                     "picker": {
                         "header": "Tilpasning",
-                        "introduction": "Modifiser oppføringsattributtane. Dei nyleg lagt til\/endra endringane kjem til å bli sett til verks med ein gang. Fjerna endringar kjem i gang når oppføringa er oppdatert."
+                        "introduction": "Modifiser oppføringsattributtane. Dei nyleg lagt til/endra endringane kjem til å bli sett til verks med ein gang. Fjerna endringar kjem i gang når oppføringa er oppdatert."
                     }
                 },
                 "devices": {

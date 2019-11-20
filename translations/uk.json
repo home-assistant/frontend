@@ -247,7 +247,7 @@
             "fan_only": "Лише вентилятор",
             "gas": "Газ",
             "heat": "Обігрівання",
-            "heat_cool": "Опалення\/Охолодження",
+            "heat_cool": "Опалення/Охолодження",
             "heat_pump": "Тепловий насос",
             "high_demand": "Велике споживання",
             "idle": "Очікування",
@@ -421,7 +421,7 @@
                 "away_mode": "Режиму очікування",
                 "currently": "В даний час",
                 "fan_mode": "Режим вентилятора",
-                "on_off": "Вкл \/ викл",
+                "on_off": "Вкл / викл",
                 "operation": "Режим",
                 "preset_mode": "Режим",
                 "swing_mode": "Режим гойдання",
@@ -484,7 +484,7 @@
             "water_heater": {
                 "away_mode": "Режиму очікування",
                 "currently": "В даний час",
-                "on_off": "Вкл \/ викл",
+                "on_off": "Вкл / викл",
                 "operation": "Операція",
                 "target_temperature": "Задана температура"
             },
@@ -520,8 +520,10 @@
         "common": {
             "cancel": "Скасувати",
             "loading": "Завантаження",
+            "no": "Ні",
             "save": "Зберегти",
-            "successfully_saved": "Успішно збережено"
+            "successfully_saved": "Успішно збережено",
+            "yes": "Так"
         },
         "components": {
             "device-picker": {
@@ -541,11 +543,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {д.}\\n  other {д.}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {год.}\\n  other {год.}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {хв.}\\n  other {хв.}\\n}",
-                    "second": "{count} {count, plural,\\n  one {сек.}\\n  other {сек.}\\n}",
-                    "week": "{count} {count, plural,\\n  one {тиж.}\\n  other {тиж.}\\n}"
+                    "day": "{count} {count, plural,\n  one {д.}\n  other {д.}\n}",
+                    "hour": "{count} {count, plural,\n  one {год.}\n  other {год.}\n}",
+                    "minute": "{count} {count, plural,\n  one {хв.}\n  other {хв.}\n}",
+                    "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
+                    "week": "{count} {count, plural,\n  one {тиж.}\n  other {тиж.}\n}"
                 },
                 "future": "{time} тому",
                 "never": "Ніколи",
@@ -607,11 +609,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\n  one {д.}\\n  other {д.}\\n}",
-            "hour": "{count} {count, plural,\\n  one {год.}\\n  other {год.}\\n}",
-            "minute": "{count} {count, plural,\\n  one {хв.}\\n  other {хв.}\\n}",
-            "second": "{count} {count, plural,\\n  one {сек.}\\n  other {сек.}\\n}",
-            "week": "{count} {count, plural,\\n  one {тиж.}\\n  other {тиж.}\\n}"
+            "day": "{count} {count, plural,\n  one {д.}\n  other {д.}\n}",
+            "hour": "{count} {count, plural,\n  one {год.}\n  other {год.}\n}",
+            "minute": "{count} {count, plural,\n  one {хв.}\n  other {хв.}\n}",
+            "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
+            "week": "{count} {count, plural,\n  one {тиж.}\n  other {тиж.}\n}"
         },
         "login-form": {
             "log_in": "Ввійти",
@@ -662,7 +664,7 @@
                             "delete_confirm": "Ви впевнені, що хочете видалити?",
                             "duplicate": "Дублювати",
                             "header": "Дії",
-                            "introduction": "Що Home Assistant буде робити, коли автоматизація спрацьовує. \\n\\n [Докладніше про дії.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Що Home Assistant буде робити, коли автоматизація спрацьовує. \n\n [Докладніше про дії.] (https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Докладніше про дії",
                             "type_select": "Тип дії",
                             "type": {
@@ -703,7 +705,7 @@
                             "delete_confirm": "Ви впевнені, що хочете видалити?",
                             "duplicate": "Дублювати",
                             "header": "Умови",
-                            "introduction": "Умови є необов'язковою частиною правила автоматизації і можуть використовуватися для запобігання дії, що відбувається під час запуску. Умови виглядають дуже схоже на тригери, але вони різні. Тригер буде дивитися на події, що відбуваються в системі, в той час як умова тільки дивиться на те, як система виглядає зараз. Тригер може спостерігати, що перемикач включений. Умова може бачити тільки, якщо перемикач ввімкнено або вимкнено. \\n\\n [Докладніше про умови.] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Умови є необов'язковою частиною правила автоматизації і можуть використовуватися для запобігання дії, що відбувається під час запуску. Умови виглядають дуже схоже на тригери, але вони різні. Тригер буде дивитися на події, що відбуваються в системі, в той час як умова тільки дивиться на те, як система виглядає зараз. Тригер може спостерігати, що перемикач включений. Умова може бачити тільки, якщо перемикач ввімкнено або вимкнено. \n\n [Докладніше про умови.] (https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Докладніше про умови",
                             "type_select": "Тип умови",
                             "type": {
@@ -766,7 +768,7 @@
                             "delete_confirm": "Ви впевнені, що хочете видалити?",
                             "duplicate": "Дублювати",
                             "header": "Тригери",
-                            "introduction": "Тригери - це те, що починає обробляти правило автоматизації. Можна вказати декілька тригерів для одного і того ж правила. Після запуску тригера, Home Assistant перевірить умови, якщо такі є, і викликає дію. \\n\\n [Докладніше про тригери.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Тригери - це те, що починає обробляти правило автоматизації. Можна вказати декілька тригерів для одного і того ж правила. Після запуску тригера, Home Assistant перевірить умови, якщо такі є, і викликає дію. \n\n [Докладніше про тригери.] (https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Докладніше про тригери",
                             "type_select": "Тип тригера",
                             "type": {
@@ -850,7 +852,7 @@
                     "picker": {
                         "add_automation": "Додати автоматизацію",
                         "header": "Редактор автоматизації",
-                        "introduction": "Редактор автоматизації дозволяє створювати та редагувати автоматизації. Будь ласка, прочитайте [інструкції] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), щоб переконатися, що ви правильно налаштували Home Assistant.",
+                        "introduction": "Редактор автоматизації дозволяє створювати та редагувати автоматизації. Будь ласка, прочитайте [інструкції] (https://home-assistant.io/docs/automation/editor/), щоб переконатися, що ви правильно налаштували Home Assistant.",
                         "learn_more": "Докладніше про автоматизації",
                         "no_automations": "Ми не знайшли автоматизації для редагування",
                         "pick_automation": "Оберіть автоматизацію для редагування"
@@ -914,11 +916,21 @@
                     }
                 },
                 "customize": {
+                    "attributes_customize": "Наступні атрибути вже встановлені в customize.yaml",
+                    "attributes_not_set": "Наступні атрибути не встановлені. Встановіть їх, якщо хочете.",
+                    "attributes_outside": "Наступні атрибути налаштовані поза межами customize.yaml",
+                    "attributes_override": "Ви можете їх замінити, якщо хочете.",
+                    "attributes_set": "Наступні атрибути сутності задаються програмно.",
                     "caption": "Налаштування",
                     "description": "Налаштуйте свої об'єкти",
+                    "pick_attribute": "Виберіть атрибут, який слід замінити",
                     "picker": {
                         "header": "Налаштування",
-                        "introduction": "Налаштування атрибутів на об'єкт. Додані \/ відредаговані налаштування набудуть чинності негайно. Видалені налаштування набудуть чинності після оновлення об'єкта."
+                        "introduction": "Налаштування атрибутів на об'єкт. Додані / відредаговані налаштування набудуть чинності негайно. Видалені налаштування набудуть чинності після оновлення об'єкта."
+                    },
+                    "warning": {
+                        "include_link": "включити customize.yaml",
+                        "include_sentence": "Здається, що ваш config.yaml не працює належним чином"
                     }
                 },
                 "devices": {
@@ -930,8 +942,21 @@
                             "caption": "Зроби щось, коли..."
                         }
                     },
+                    "automations": "Автоматизації",
                     "caption": "Пристрої",
-                    "description": "Керування підключеними пристроями"
+                    "data_table": {
+                        "area": "Область",
+                        "battery": "Акумулятор",
+                        "device": "Пристрій",
+                        "integration": "Інтеграція",
+                        "manufacturer": "Виробник",
+                        "model": "Модель"
+                    },
+                    "description": "Керування підключеними пристроями",
+                    "details": "Тут ви знайдете всі деталі вашого пристрою.",
+                    "device_not_found": "Пристрій не знайдено",
+                    "entities": "Об'єкти",
+                    "info": "Інформація про пристрій"
                 },
                 "entity_registry": {
                     "caption": "Реєстр об'єктів",
@@ -942,6 +967,7 @@
                         "enabled_cause": "Відключено: {cause}.",
                         "enabled_description": "Відключені об'єкти не будуть додані в Home Assistant.",
                         "enabled_label": "Увімкнути об'єкт",
+                        "note": "Примітка: це може не працювати ще з усіма інтеграціями.",
                         "unavailable": "Цей об'єкт наразі недоступний.",
                         "update": "ОНОВИТИ"
                     },
@@ -975,16 +1001,27 @@
                         "via": "Підключено через"
                     },
                     "config_flow": {
+                        "aborted": "Скасовано",
+                        "add_area": "Додати область",
+                        "area_picker_label": "Область",
+                        "close": "Закрити",
+                        "created_config": "Створено конфігурацію для {name} .",
+                        "error_saving_area": "Помилка збереження області: {error}",
                         "external_step": {
                             "description": "На цьому кроці необхідно відвідати зовнішній веб-сайт.",
                             "open_site": "Відкрити веб-сайт"
-                        }
+                        },
+                        "failed_create_area": "Не вдалося створити область.",
+                        "finish": "Закінчити",
+                        "name_new_area": "Назва нової області?",
+                        "submit": "Надіслати"
                     },
                     "configure": "Налаштувати",
                     "configured": "Налаштовано",
                     "description": "Управління та налаштування інтеграцій",
                     "discovered": "Виявлено",
                     "home_assistant_website": "Веб-сайт Home Assistant",
+                    "integration_not_found": "Інтеграція не знайдена.",
                     "new": "Налаштуйте нову інтеграцію",
                     "none": "Ще нічого не налаштовано",
                     "note_about_integrations": "Ще не всі інтеграції можна налаштувати через інтерфейс користувача.",
@@ -1015,6 +1052,13 @@
                     },
                     "no_persons_created_yet": "Схоже, ви ще не створили жодної людини.",
                     "note_about_persons_configured_in_yaml": "Примітка: люди, налаштовані за допомогою config.yaml, не можуть редагуватися через інтерфейс користувача."
+                },
+                "scene": {
+                    "editor": {
+                        "devices": {
+                            "delete": "Видалити пристрій"
+                        }
+                    }
                 },
                 "script": {
                     "caption": "Сценарій",
@@ -1187,16 +1231,42 @@
                         "title": "Лог"
                     },
                     "mqtt": {
-                        "title": "MQTT"
+                        "description_listen": "Слухати тему",
+                        "description_publish": "Опублікувати пакет",
+                        "listening_to": "Слухати",
+                        "message_received": "Повідомлення {id} отримане в {topic} о {time} :",
+                        "publish": "Опублікувати",
+                        "start_listening": "Почати прослуховування",
+                        "stop_listening": "Припинити прослуховування",
+                        "subscribe_to": "Тема для підписки",
+                        "title": "MQTT",
+                        "topic": "тема"
                     },
                     "services": {
+                        "call_service": "Викликати службу",
+                        "column_description": "Опис",
+                        "column_example": "Приклад",
+                        "column_parameter": "Параметр",
+                        "data": "Дані служби (YAML, необов'язково)",
+                        "description": "Сервіс dev Tool дозволяє викликати будь-яку доступну службу в Home Assistant.",
+                        "fill_example_data": "Заповнити дані прикладом",
+                        "no_description": "Опис відсутній",
+                        "no_parameters": "Ця служба не приймає ніяких параметрів.",
+                        "select_service": "Виберіть службу, щоб переглянути опис",
                         "title": "Сервіси"
                     },
                     "states": {
+                        "attributes": "Атрибути",
+                        "entity": "Об'єкт",
+                        "filter_attributes": "Фільтрувати атрибути",
                         "more_info": "Більше інформації",
+                        "no_entities": "Немає об'єктів",
+                        "set_state": "Встановити стан",
+                        "state": "Статус",
                         "title": "Стан"
                     },
                     "templates": {
+                        "description": "Шаблони відтворюються за допомогою механізму шаблонів Jinja2 з деякими розширеннями Home Assistant.",
                         "editor": "Редактор шаблонів",
                         "jinja_documentation": "Документація щодо шаблону Jinja2",
                         "template_extensions": "Розширення шаблонів Home Assistant",
@@ -1210,6 +1280,7 @@
                 "showing_entries": "Показані записи для"
             },
             "logbook": {
+                "entries_not_found": "Не знайдено записів журналу.",
                 "period": "Період",
                 "showing_entries": "Відображення записів за"
             },
@@ -1269,11 +1340,13 @@
                         "edit": "Редагувати",
                         "header": "Конфігурація картки",
                         "move": "Переміщення",
+                        "options": "Більше опцій",
                         "pick_card": "Виберіть картку, яку хочете додати.",
                         "save": "Зберегти",
                         "toggle_editor": "Перемкнути редактор"
                     },
                     "edit_lovelace": {
+                        "edit_title": "Редагувати назву",
                         "explanation": "Цей заголовок буде показаний над вашими картками в Lovelace",
                         "header": "Заголовок для Lovelace"
                     },
@@ -1281,10 +1354,13 @@
                         "add": "Додати вигляд",
                         "delete": "Видалити вигляд",
                         "edit": "Редагувати вигляд",
-                        "header": "Перегляд Конфігурації"
+                        "header": "Перегляд Конфігурації",
+                        "move_left": "Перемістити перегляд ліворуч",
+                        "move_right": "Перемістити перегляд праворуч"
                     },
                     "header": "Редагування інтерфейсу",
                     "menu": {
+                        "open": "Відкрийте меню Lovelace",
                         "raw_editor": "Текстовий редактор"
                     },
                     "migrate": {
@@ -1294,6 +1370,11 @@
                         "para_no_id": "Цей елемент не має ID. Додайте ID до цього елемента в 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_unsaved_changes": "У вас є незбережені зміни, ви впевнені, що хочете вийти?",
+                        "confirm_unsaved_comments": "Ваша конфігурація містить коментарі, вони не будуть збережені. Ви хочете продовжити?",
+                        "error_invalid_config": "Ваш конфігурація недійсна: {error}",
+                        "error_parse_yaml": "Неможливо розібрати YAML: {error}",
+                        "error_save_yaml": "Неможливо зберегти YAML: {error}",
                         "header": "Редагувати конфігурацію",
                         "save": "Зберегти",
                         "saved": "Збережено",
@@ -1313,12 +1394,20 @@
                     }
                 },
                 "menu": {
+                    "close": "Закрити",
                     "configure_ui": "Налаштувати інтерфейс користувача",
                     "help": "Допомога",
                     "refresh": "Оновити",
                     "unused_entities": "Незадіяні об'єкти"
                 },
                 "reload_lovelace": "Перезавантажити Lovelace",
+                "unused_entities": {
+                    "domain": "Домен",
+                    "entity": "Об'єкт",
+                    "entity_id": "ID об'єкту",
+                    "last_changed": "Востаннє змінено",
+                    "title": "Незадіяні об'єкти"
+                },
                 "views": {
                     "confirm_delete": "Ви впевнені, що хочете видалити цей вид?"
                 },
@@ -1505,6 +1594,8 @@
             },
             "profile": {
                 "advanced_mode": {
+                    "hint_enable": "Відсутні параметри конфігурації? Увімкнути розширений режим",
+                    "link_profile_page": "сторінка вашого профілю",
                     "title": "Розширений режим"
                 },
                 "change_password": {
@@ -1589,7 +1680,8 @@
         },
         "sidebar": {
             "external_app_configuration": "Конфігурація застосунку",
-            "log_out": "Вийти"
+            "log_out": "Вийти",
+            "sidebar_toggle": "Переключити бічну панель"
         }
     }
 }

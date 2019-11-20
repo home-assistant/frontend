@@ -18,6 +18,7 @@
         "notify": "通知",
         "script": "スクリプト",
         "sensor": "センサー",
+        "sun": "太陽",
         "switch": "スイッチ",
         "updater": "アップデーター",
         "zwave": "Z-Wave"
@@ -34,6 +35,9 @@
         "states": "状態"
     },
     "state_badge": {
+        "alarm_control_panel": {
+            "armed_home": "アームしました"
+        },
         "default": {
             "unknown": "不明"
         },
@@ -67,23 +71,40 @@
                 "off": "オフ",
                 "on": "オン"
             },
+            "door": {
+                "off": "閉じました",
+                "on": "開けました"
+            },
+            "garage_door": {
+                "off": "閉じました",
+                "on": "開けました"
+            },
             "gas": {
                 "off": "未検出",
                 "on": "検出"
             },
             "heat": {
+                "off": "正常",
                 "on": "高温"
+            },
+            "lock": {
+                "off": "ロックされました",
+                "on": "ロックされていません"
             },
             "moisture": {
                 "off": "ドライ",
                 "on": "ウェット"
             },
             "motion": {
+                "off": "未検出",
                 "on": "検出"
             },
             "occupancy": {
                 "off": "未検出",
                 "on": "検出"
+            },
+            "opening": {
+                "off": "閉じました"
             },
             "presence": {
                 "off": "外出",
@@ -97,14 +118,20 @@
                 "on": "危険"
             },
             "smoke": {
-                "off": "未検出"
+                "off": "未検出",
+                "on": "検出"
             },
             "sound": {
+                "off": "未検出",
                 "on": "検出"
             },
             "vibration": {
                 "off": "未検出",
                 "on": "検出"
+            },
+            "window": {
+                "off": "閉じました",
+                "on": "開けました"
             }
         },
         "calendar": {
@@ -147,7 +174,9 @@
             "on": "オン"
         },
         "group": {
+            "closed": "閉じました",
             "home": "在宅",
+            "locked": "ロックされました",
             "not_home": "外出",
             "off": "オフ",
             "ok": "OK",
@@ -192,6 +221,7 @@
             "on": "オン"
         },
         "weather": {
+            "clear-night": "晴れた夜",
             "cloudy": "曇り",
             "fog": "霧",
             "hail": "雹",
@@ -220,7 +250,7 @@
     "ui": {
         "card": {
             "alarm_control_panel": {
-                "clear_code": "クリア",
+                "clear_code": "削除",
                 "code": "パスワード"
             },
             "automation": {
@@ -256,6 +286,9 @@
             "script": {
                 "execute": "実行"
             },
+            "water_heater": {
+                "target_temperature": "目標温度"
+            },
             "weather": {
                 "attributes": {
                     "air_pressure": "気圧",
@@ -286,9 +319,14 @@
         },
         "common": {
             "cancel": "キャンセル",
-            "loading": "読込中"
+            "loading": "読込中",
+            "no": "いいえ",
+            "yes": "はい"
         },
         "components": {
+            "device-picker": {
+                "device": "デバイス"
+            },
             "entity": {
                 "entity-picker": {
                     "entity": "エンティティ"
@@ -307,16 +345,38 @@
             }
         },
         "dialogs": {
+            "config_entry_system_options": {
+                "title": "{integration} のシステムオプション"
+            },
+            "more_info_control": {
+                "sun": {
+                    "elevation": "高度",
+                    "rising": "日の出ます",
+                    "setting": "日の入っています"
+                }
+            },
             "more_info_settings": {
-                "name": "名前",
+                "name": "名前の上書き",
                 "save": "保存"
+            },
+            "voice_command": {
+                "did_not_hear": "Home Assistant は何も聞きませんでした",
+                "error": "エラーが発生しました",
+                "found": "以下の結果は見つけました：",
+                "how_can_i_help": "どうなご用でしょう？",
+                "label": "質問を入力して「Enter」を押してください。"
+            },
+            "zha_device_info": {
+                "services": {
+                    "remove": "Zigbee ネットワークからデバイスを削除します。"
+                }
             }
         },
         "duration": {
-            "hour": "{count} {count, plural,\\n  one {時間}\\n  other {時間}\\n}",
-            "minute": "{count} {count, plural,\\n  one {分}\\n  other {分}\\n}",
-            "second": "{count} {count, plural,\\n  one {秒}\\n  other {秒}\\n}",
-            "week": "{count} {count, plural,\\n  one {週間}\\n  other {週間}\\n}"
+            "hour": "{count} {count, plural,\n  one {時間}\n  other {時間}\n}",
+            "minute": "{count} {count, plural,\n  one {分}\n  other {分}\n}",
+            "second": "{count} {count, plural,\n  one {秒}\n  other {秒}\n}",
+            "week": "{count} {count, plural,\n  one {週間}\n  other {週間}\n}"
         },
         "login-form": {
             "log_in": "ログイン",
@@ -331,6 +391,12 @@
         },
         "panel": {
             "config": {
+                "area_registry": {
+                    "caption": "エリア",
+                    "picker": {
+                        "header": "エリア"
+                    }
+                },
                 "automation": {
                     "caption": "オートメーション",
                     "description": "オートメーションの作成と編集",
@@ -339,12 +405,21 @@
                             "add": "アクションを追加",
                             "delete": "削除",
                             "delete_confirm": "本当に削除しますか？",
+                            "duplicate": "デュプリケート",
                             "header": "アクション",
-                            "introduction": "アクションは、オートメーションがトリガーされたときにHome Assistantが実行するものです。\\n\\n [アクションの詳細]（https:\/\/home-assistant.io\/docs\/automation\/action\/）",
+                            "introduction": "アクションは、オートメーションがトリガーされたときにHome Assistantが実行するものです。\n\n [アクションの詳細]（https://home-assistant.io/docs/automation/action/）",
+                            "name": "アクション",
                             "type_select": "アクションの種類",
                             "type": {
                                 "condition": {
                                     "label": "条件"
+                                },
+                                "delay": {
+                                    "delay": "遅延"
+                                },
+                                "event": {
+                                    "event": "イベント：",
+                                    "service_data": "サービスデータ"
                                 },
                                 "service": {
                                     "service_data": "サービスのデータ"
@@ -360,17 +435,41 @@
                             "add": "条件を追加",
                             "delete": "削除",
                             "delete_confirm": "本当に削除しますか？",
+                            "duplicate": "デュプリケート",
                             "header": "条件",
+                            "name": "条件",
                             "type_select": "条件の種類",
                             "type": {
+                                "numeric_state": {
+                                    "above": "超過",
+                                    "below": "未満",
+                                    "value_template": "バリューテンプレート（オプショナル）"
+                                },
+                                "state": {
+                                    "label": "状態",
+                                    "state": "状態"
+                                },
                                 "sun": {
+                                    "label": "太陽",
                                     "sunrise": "日の出",
                                     "sunset": "日の入"
+                                },
+                                "template": {
+                                    "label": "テンプレート",
+                                    "value_template": "バリューテンプレート"
+                                },
+                                "time": {
+                                    "label": "時間"
+                                },
+                                "zone": {
+                                    "label": "ゾーン",
+                                    "zone": "ゾーン"
                                 }
                             },
                             "unsupported_condition": "未サポートの条件：{condition}"
                         },
                         "default_name": "新しいオートメーション",
+                        "introduction": "オートメーションを使用して、あなたの家を生き生きとさせましょう。",
                         "save": "保存",
                         "triggers": {
                             "add": "トリガーを追加",
@@ -378,13 +477,17 @@
                             "delete_confirm": "本当に削除しますか？",
                             "duplicate": "複製",
                             "header": "トリガー",
-                            "introduction": "トリガーはオートメーションルールの処理を開始させます。同じルールに対して複数のトリガーを指定することが可能です。トリガーが開始されると、Home Assistantは条件があれば確認し、アクションを呼び出します。\\n\\n[トリガーについて](https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "トリガーはオートメーションルールの処理を開始させます。同じルールに対して複数のトリガーを指定することが可能です。トリガーが開始されると、Home Assistantは条件があれば確認し、アクションを呼び出します。\n\n[トリガーについて](https://home-assistant.io/docs/automation/trigger/)",
+                            "name": "トリガー",
                             "type_select": "トリガーの種類",
                             "type": {
                                 "event": {
                                     "event_data": "イベントのデータ",
                                     "event_type": "イベントの種類",
                                     "label": "イベント"
+                                },
+                                "geo_location": {
+                                    "zone": "ゾーン"
                                 },
                                 "homeassistant": {
                                     "label": "Home Assistant",
@@ -394,28 +497,43 @@
                                 "mqtt": {
                                     "label": "MQTT"
                                 },
+                                "numeric_state": {
+                                    "value_template": "バリューテンプレート（オプショナル）"
+                                },
                                 "state": {
                                     "from": "変化前",
                                     "to": "変化後"
                                 },
                                 "sun": {
+                                    "event": "イベント",
+                                    "label": "太陽",
                                     "offset": "オフセット（オプション）",
                                     "sunrise": "日の出",
                                     "sunset": "日の入"
                                 },
                                 "template": {
-                                    "label": "テンプレート"
+                                    "label": "テンプレート",
+                                    "value_template": "バリューテンプレート"
                                 },
                                 "time": {
                                     "label": "時刻"
+                                },
+                                "zone": {
+                                    "event": "イベント：",
+                                    "zone": "ゾーン"
                                 }
-                            }
+                            },
+                            "unsupported_platform": "サポートされていないプラットフォーム： {platform}"
                         }
                     },
                     "picker": {
                         "add_automation": "オートメーションの追加",
+                        "delete_automation": "オートメーションを削除",
+                        "delete_confirm": "このオートメーションを削除してもよろしいですか？",
+                        "edit_automation": "オートメーションを編集",
                         "header": "オートメーションエディター",
-                        "no_automations": "編集可能なオートメーションが見つかりません。"
+                        "no_automations": "編集可能なオートメーションが見つかりません。",
+                        "only_editable": "automations.yaml で定義されたオートメーションのみが編集可能です。"
                     }
                 },
                 "cloud": {
@@ -425,6 +543,12 @@
                     "caption": "一般",
                     "description": "設定ファイルの検証とサーバーの操作",
                     "section": {
+                        "core": {
+                            "core_config": {
+                                "time_zone": "タイムゾーン"
+                            },
+                            "header": "一般的な設定"
+                        },
                         "server_control": {
                             "reloading": {
                                 "automation": "オートメーションの再読込",
@@ -450,12 +574,106 @@
                     }
                 },
                 "customize": {
-                    "caption": "カスタマイズ"
+                    "attributes_not_set": "次の属性は設定されていません。必要に応じて設定してください。",
+                    "attributes_override": "必要に応じてオーバーライドできます。",
+                    "caption": "カスタマイズ",
+                    "pick_attribute": "オーバーライドする属性を選択してください",
+                    "picker": {
+                        "header": "カスタマイズ"
+                    },
+                    "warning": {
+                        "include_link": "customize.yaml を含めます"
+                    }
+                },
+                "devices": {
+                    "area_picker_label": "エリア",
+                    "automations": "オートメーション",
+                    "confirm_rename_entity_ids": "エンティティの ID も変更しますか？",
+                    "data_table": {
+                        "area": "エリア",
+                        "battery": "バッテリー",
+                        "device": "デバイス",
+                        "integration": "インテグレーション",
+                        "manufacturer": "メーカー",
+                        "model": "型番"
+                    },
+                    "details": "これらはデバイスの詳細な情報です。",
+                    "device_not_found": "デバイスが見つかりません。",
+                    "entities": "エンティティ",
+                    "info": "デバイス情報",
+                    "unknown_error": "不明なエラー",
+                    "unnamed_device": "名前のないデバイス"
+                },
+                "entity_registry": {
+                    "caption": "エンティティ",
+                    "picker": {
+                        "header": "エンティティ"
+                    }
                 },
                 "header": "Home Assistantの設定",
+                "integrations": {
+                    "config_flow": {
+                        "aborted": "中止",
+                        "add_area": "エリアを追加",
+                        "area_picker_label": "エリア",
+                        "close": "閉じる",
+                        "created_config": "{name} の構成が作成しました。",
+                        "error_saving_area": "エリアを保存できません: {error}",
+                        "failed_create_area": "エリアを作成できませんでした。",
+                        "finish": "完了",
+                        "name_new_area": "新しいエリアの名前は？",
+                        "submit": "送信"
+                    },
+                    "description": "インテグレーションの管理とセットアップ",
+                    "integration_not_found": "インテグレーションが見つかりません。"
+                },
+                "scene": {
+                    "activated": "アクティブ化されたシーン {name}。",
+                    "caption": "シーン",
+                    "description": "シーンの作成と編集",
+                    "editor": {
+                        "default_name": "新しいシーン",
+                        "devices": {
+                            "add": "デバイスを追加",
+                            "delete": "デバイスを削除",
+                            "header": "デバイス"
+                        },
+                        "entities": {
+                            "add": "エンティティを追加",
+                            "delete": "エンティティを削除",
+                            "device_entities": "デバイスに属するエンティティを追加するには、デバイスも追加されます。",
+                            "header": "エンティティ",
+                            "without_device": "デバイスのないエンティティ"
+                        },
+                        "name": "名前",
+                        "save": "保存",
+                        "unsaved_confirm": "未保存の変更があります、終了してもよろしいですか？"
+                    },
+                    "picker": {
+                        "add_scene": "シーンを追加",
+                        "delete_scene": "シーンを削除",
+                        "edit_scene": "シーンを編集",
+                        "header": "シーンエディター",
+                        "learn_more": "シーンの情報をもっと見る。",
+                        "no_scenes": "編集可能なシーンが見つかりません。",
+                        "pick_scene": "編集するシーンを選択",
+                        "show_info_scene": "シーンに関する情報を表示"
+                    }
+                },
                 "script": {
                     "caption": "スクリプト",
-                    "description": "スクリプトの作成と編集"
+                    "description": "スクリプトの作成と編集",
+                    "editor": {
+                        "delete_script": "スクリプトを削除",
+                        "sequence": "シーケンス"
+                    },
+                    "picker": {
+                        "edit_script": "スクリプトを編集",
+                        "trigger_script": "トリガースクリプト"
+                    }
+                },
+                "server_control": {
+                    "caption": "サーバー コントロール"
                 },
                 "users": {
                     "caption": "ユーザー",
@@ -473,10 +691,20 @@
                 },
                 "zwave": {
                     "caption": "Z-Wave",
+                    "common": {
+                        "value": "バリュー"
+                    },
                     "description": "Z-waveネットワークを管理します",
                     "node_config": {
+                        "config_value": "バリューを設定",
                         "set_config_parameter": "構成パラメーターの設定"
                     }
+                }
+            },
+            "custom": {
+                "external_panel": {
+                    "complete_access": "Home Assistant のすべてのデータにアクセスできます。",
+                    "hide_message": "このメッセージを非表示にするには、ドキュメントから panel_custom コンポーネントを確認してください"
                 }
             },
             "developer-tools": {
@@ -499,13 +727,43 @@
                 "period": "期間"
             },
             "lovelace": {
+                "cards": {
+                    "shopping-list": {
+                        "clear_items": "チェックされたアイテムを削除"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "delete": "カードを削除",
+                        "options": "その他のオプション",
+                        "pick_card": "どのカードを追加しますか？"
+                    },
+                    "edit_lovelace": {
+                        "edit_title": "タイトルを編集"
+                    },
+                    "edit_view": {
+                        "move_left": "ビューを左に移動",
+                        "move_right": "ビューを右に移動"
+                    },
+                    "menu": {
+                        "open": "Lovelace メニューを開く"
+                    },
+                    "raw_editor": {
+                        "confirm_unsaved_changes": "未保存の変更があります、終了してもよろしいですか？",
+                        "error_invalid_config": "設定が無効です: {error}",
+                        "error_parse_yaml": "YAMLを解析できません: {error}",
+                        "error_save_yaml": "YAMLを保存できません: {error}"
+                    }
+                },
                 "menu": {
                     "close": "閉じる"
                 },
                 "unused_entities": {
+                    "available_entities": "これらは Lovelace UI にまだありませんの使用可能なエンティティです。",
                     "domain": "ドメイン",
                     "entity": "エンティティ",
                     "entity_id": "エンティティ ID",
+                    "last_changed": "最終変更",
                     "title": "未使用のエンティティ"
                 }
             },
@@ -513,6 +771,28 @@
                 "delete_button": "削除",
                 "delete_prompt": "このメッセージを削除しますか？",
                 "empty": "メッセージはありません"
+            },
+            "page-demo": {
+                "config": {
+                    "arsaboo": {
+                        "labels": {
+                            "hdmi_switcher": "HDMIスイッチ"
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "core-config": {
+                    "intro_location": "どこに住んでいるか知りたいです。 この情報は、他の情報の表示および太陽の位置に関する自動化の設定に役立ちます。 これらの情報がインターネットで外部と共有されることがありません。"
+                }
+            },
+            "profile": {
+                "advanced_mode": {
+                    "link_profile_page": "プロフィールページ"
+                },
+                "push_notifications": {
+                    "description": "このデバイスに通知を送信します。"
+                }
             },
             "shopping-list": {
                 "add_item": "アイテムを追加",

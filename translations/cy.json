@@ -24,7 +24,7 @@
         "homeassistant": "Home Assistant",
         "image_processing": "Prosesu delwedd",
         "input_boolean": "Mewnbynnu boolean",
-        "input_datetime": "Mewnbynnu dyddiad\/amser",
+        "input_datetime": "Mewnbynnu dyddiad/amser",
         "input_number": "Mewnbynnu rhif",
         "input_select": "Mewnbynnu dewis",
         "input_text": "Mewnbynnu testun",
@@ -387,7 +387,7 @@
             "water_heater": {
                 "away_mode": "Dull i ffwrdd",
                 "currently": "Ar hyn o bryd",
-                "on_off": "Ar \/ i ffwrdd",
+                "on_off": "Ar / i ffwrdd",
                 "operation": "Gweithredu",
                 "target_temperature": "Tymheredd targed"
             },
@@ -451,6 +451,10 @@
             },
             "more_info_settings": {
                 "name": "Gwrthwneud Enw"
+            },
+            "voice_command": {
+                "label": "Teipiwch gwestiwn a gwasgwch 'Enter'",
+                "label_voice": "Teipiwch a pwyswch 'Enter' neu tapiwch y meicroffon i siarad"
             }
         },
         "duration": {
@@ -493,7 +497,7 @@
                             "delete_confirm": "Ydych yn siŵr bod chi eisiau dileu?",
                             "duplicate": "Dyblygu",
                             "header": "Camau gweithredu",
-                            "introduction": "Y camau gweithredu yw'r hyn mae Home Assistant yn gwneud pan mae'r awtomeiddio yn cael ei sbarduno\\n\\n[Dysgwch mwy am weithred.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Y camau gweithredu yw'r hyn mae Home Assistant yn gwneud pan mae'r awtomeiddio yn cael ei sbarduno\n\n[Dysgwch mwy am weithred.](https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Dysgu mwy am gamau gweithredu",
                             "type_select": "Math weithrediad",
                             "type": {
@@ -528,7 +532,7 @@
                             "delete_confirm": "Siwr bod chi eisiau dileu?",
                             "duplicate": "Dyblygu",
                             "header": "Amodau",
-                            "introduction": "Mae'r amodau'n rhan ddewisol o reol awtomeiddio, a gellir eu defnyddio i atal camau rhag digwydd pan fyddant yn cael eu sbarduno. Mae'r amodau'n edrych yn debyg iawn i sbardunau ond maent yn wahanol iawn. Bydd sbardun yn edrych ar ddigwyddiadau sy'n digwydd yn y system tra bod amod yn edrych ar sut mae'r system yn edrych ar hyn o bryd. Gall sbarduno arsylwi bod switsh yn cael ei droi ymlaen. Dim ond os yw switsh ar neu i ffwrdd ar hyn o bryd y gall cyflwr weld. \\n\\n [Dysgwch fwy am amodau.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Mae'r amodau'n rhan ddewisol o reol awtomeiddio, a gellir eu defnyddio i atal camau rhag digwydd pan fyddant yn cael eu sbarduno. Mae'r amodau'n edrych yn debyg iawn i sbardunau ond maent yn wahanol iawn. Bydd sbardun yn edrych ar ddigwyddiadau sy'n digwydd yn y system tra bod amod yn edrych ar sut mae'r system yn edrych ar hyn o bryd. Gall sbarduno arsylwi bod switsh yn cael ei droi ymlaen. Dim ond os yw switsh ar neu i ffwrdd ar hyn o bryd y gall cyflwr weld. \n\n [Dysgwch fwy am amodau.] (Https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Dysgu mwy am amodau",
                             "type_select": "Math o gyflwr",
                             "type": {
@@ -579,7 +583,7 @@
                             "delete_confirm": "Sicr bod chi eisiau dileu?",
                             "duplicate": "Dyblyg",
                             "header": "Sbardunau",
-                            "introduction": "Sbarduno yw'r hyn sy'n dechrau proses rheol awtomeiddio.  Mae'n bosib dewis nifer o sbardunau i'run rheol. Unwaith mae sbardun yn cychwyn, bydd Home Assistant yn dilysu'r amodau, os o gwbl, a galw'r gweithred. \\n\\n[dysgwch mwy am sbardunau.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Sbarduno yw'r hyn sy'n dechrau proses rheol awtomeiddio.  Mae'n bosib dewis nifer o sbardunau i'run rheol. Unwaith mae sbardun yn cychwyn, bydd Home Assistant yn dilysu'r amodau, os o gwbl, a galw'r gweithred. \n\n[dysgwch mwy am sbardunau.] (https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Dysgu mwy am sbardunau",
                             "type_select": "Math sbardun",
                             "type": {
@@ -659,7 +663,7 @@
                     "picker": {
                         "add_automation": "Ychwanegu awtomeiddiad",
                         "header": "Golygydd awtomeiddio",
-                        "introduction": "Mae'r olygydd awtomeiddio yn caniatáu ichi greu a golygu awtomeiddiau. Darllenwch [y cyfarwyddiadau] (https:\/\/home-assistant.io\/docs\/automation\/editor\/) i sicrhau bod chi wedi ffurfweddu'r Home Assistant yn gywir.",
+                        "introduction": "Mae'r olygydd awtomeiddio yn caniatáu ichi greu a golygu awtomeiddiau. Darllenwch [y cyfarwyddiadau] (https://home-assistant.io/docs/automation/editor/) i sicrhau bod chi wedi ffurfweddu'r Home Assistant yn gywir.",
                         "learn_more": "Dysgu mwy am awtomeiddio",
                         "no_automations": "Doeddem ddim yn gallu darganfod unrhyw awtomeiddiau",
                         "pick_automation": "Dewiswch awtomeiddiad i olygu"
@@ -724,7 +728,7 @@
                     "description": "Addasu eich endidau",
                     "picker": {
                         "header": "Addasu",
-                        "introduction": "Addasu nodweddion yr endid. Bydd ychwanegu\/golygu osodiadau bersonol i rym ar unwaith. Bydd addasiadau sydd wedi tynnu yn dod i rym pan fydd yr endid yn cael ei ddiweddaru."
+                        "introduction": "Addasu nodweddion yr endid. Bydd ychwanegu/golygu osodiadau bersonol i rym ar unwaith. Bydd addasiadau sydd wedi tynnu yn dod i rym pan fydd yr endid yn cael ei ddiweddaru."
                     }
                 },
                 "entity_registry": {
@@ -826,7 +830,7 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "discovery_text": "Bydd dyfeisiau a ddarganfuwyd yn ymddangos yma. Dilynwch y cyfarwyddiadau ar gyfer eich dyfais \/ dyfaisiau a rhowch y ddyfais \/ dyfeisiau yn y modd paru.",
+                        "discovery_text": "Bydd dyfeisiau a ddarganfuwyd yn ymddangos yma. Dilynwch y cyfarwyddiadau ar gyfer eich dyfais / dyfaisiau a rhowch y ddyfais / dyfeisiau yn y modd paru.",
                         "header": "Awtomeiddiad Cartref Zigbee - Ychwanegwch Dyfeisiadau",
                         "spinner": "Chwilio am ddyfeisiau ZHA Zigbee ..."
                     },
@@ -877,6 +881,13 @@
                         "header": "OZW Log",
                         "introduction": "Gweld y log. 0 yn y lleiaf (llwyth cyfan log) a 1000 yn yr uchafswm. Llwyth yn dangos sefydlog o log ac yn y gynffon, bydd yn diweddariad automatig gyda nifer penodol diwethaf o linellau o log."
                     }
+                }
+            },
+            "custom": {
+                "external_panel": {
+                    "complete_access": "Byddaf efo mynediad i holl ddata yn Home Assistant",
+                    "hide_message": "Gwirio'r dogfennau ar gyfer y gydran panel_custom er mwyn cuddio'r neges hon",
+                    "question_trust": "Ydych chi'n ymddiried yn y panel allanol {name} yn {link} ?"
                 }
             },
             "developer-tools": {
@@ -1019,11 +1030,16 @@
                         "show_visual_editor": "Dangos Golygydd Gweledol",
                         "toggle_editor": "Toglo Golygydd"
                     },
+                    "edit_lovelace": {
+                        "edit_title": "Golygu teitl"
+                    },
                     "edit_view": {
                         "add": "Ychwanegu golwg",
                         "delete": "Delete golwg",
                         "edit": "Golygu golwg",
-                        "header": "Gweld Ffurfweddiad"
+                        "header": "Gweld Ffurfweddiad",
+                        "move_left": "Symud y wedd i'r chwith",
+                        "move_right": "Symud y wedd i'r dde"
                     },
                     "header": "Golygu rhyngwyneb defnyddiwr",
                     "menu": {
@@ -1036,6 +1052,11 @@
                         "para_no_id": "Tydi'r elfen yma ddim efo ID. Plís ychwanegwch ID i'r elfen yma yn 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_unsaved_changes": "Mae gennych newidiadau heb eu cadw. Ydych chi'n siŵr bod chi eisiau gadael?",
+                        "confirm_unsaved_comments": "Mae eich cyfluniad yn cynnwys sylwadau (au), ni fydd y rhain yn cael eu cadw. Ydych chi eisio parhau?",
+                        "error_invalid_config": "Dydy eich cyfluniad ddim yn ddilys: {Error}",
+                        "error_parse_yaml": "Methu gramadegu YAML: {Error}",
+                        "error_save_yaml": "Methu arbed YAML: {error}",
                         "header": "Golygu ffurfweddu",
                         "save": "Arbed",
                         "saved": "Arbed",
@@ -1050,12 +1071,19 @@
                     }
                 },
                 "menu": {
+                    "close": "Cau",
                     "configure_ui": "Ffurfweddu rhyngwyneb defnyddiwr",
                     "help": "Help",
                     "refresh": "Adnewyddu",
                     "unused_entities": "Endidau heb ei ddefnyddio"
                 },
                 "reload_lovelace": "Ail-lwytho Lovelace",
+                "unused_entities": {
+                    "domain": "Parth",
+                    "entity": "Endid",
+                    "entity_id": "ID Endid",
+                    "last_changed": "Newid Diwethaf"
+                },
                 "warning": {
                     "entity_non_numeric": "Endid di-rhifol: {entity}",
                     "entity_not_found": "Endid ddim ar gael: {entity}"
@@ -1164,6 +1192,8 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Mae Home Assistant yn cuddio nodweddion uwch ac opsiynau yn ddiofyn. Gallwch wneud y nodweddion hyn yn hygyrch trwy ticio'r toggle hwn. Mae hwn yn leoliad penodol i ddefnyddwyr ac nid yw'n effeithio ar ddefnyddwyr eraill sy'n defnyddio Home Assistant.",
+                    "hint_enable": "Opsiynau ffurfweddu ar goll? Galluogi modd uwch ymlaen",
+                    "link_profile_page": "eich tudalen proffil",
                     "title": "Modd Uwch"
                 }
             },
