@@ -30,7 +30,7 @@
         "history_graph": "Graf historie",
         "homeassistant": "Home Assistant",
         "image_processing": "Zpracování obrazu",
-        "input_boolean": "Zadání ano\/ne",
+        "input_boolean": "Zadání ano/ne",
         "input_datetime": "Zadání času",
         "input_number": "Zadání čísla",
         "input_select": "Zadání volby",
@@ -247,7 +247,7 @@
             "fan_only": "Pouze ventilátor",
             "gas": "Plyn",
             "heat": "Topení",
-            "heat_cool": "Vytápění\/Chlazení",
+            "heat_cool": "Vytápění/Chlazení",
             "heat_pump": "Tepelné čerpadlo",
             "high_demand": "Vysoký výkon",
             "idle": "Nečinný",
@@ -426,7 +426,7 @@
                 "heating": "{name} topení",
                 "high": "vysoká",
                 "low": "nízká",
-                "on_off": "Zapnout \/ vypnout",
+                "on_off": "Zapnout / vypnout",
                 "operation": "Provoz",
                 "preset_mode": "Předvolba",
                 "swing_mode": "Režim kmitání",
@@ -498,7 +498,7 @@
             "water_heater": {
                 "away_mode": "Prázdninový režim",
                 "currently": "Momentálně",
-                "on_off": "Zapnout \/ vypnout",
+                "on_off": "Zapnout / vypnout",
                 "operation": "Provoz",
                 "target_temperature": "Cílová teplota"
             },
@@ -555,11 +555,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\none {den}\\nfew {dny}\\nother {dnů}\\n}",
-                    "hour": "{count} {count, plural,\\none {hodinu}\\nfew {hodiny}\\nother {hodin}\\n}",
-                    "minute": "{count} {count, plural,\\none {minutu}\\nfew {minuty}\\nother {minut}\\n}",
-                    "second": "{count} {count, plural,\\none {sekundu}\\nfew {sekundy}\\nother {sekund}\\n}",
-                    "week": "{count} {count, plural,\\none {týden}\\nother {týdnů}\\n}"
+                    "day": "{count} {count, plural,\none {den}\nfew {dny}\nother {dnů}\n}",
+                    "hour": "{count} {count, plural,\none {hodinu}\nfew {hodiny}\nother {hodin}\n}",
+                    "minute": "{count} {count, plural,\none {minutu}\nfew {minuty}\nother {minut}\n}",
+                    "second": "{count} {count, plural,\none {sekundu}\nfew {sekundy}\nother {sekund}\n}",
+                    "week": "{count} {count, plural,\none {týden}\nother {týdnů}\n}"
                 },
                 "future": "Za {time}",
                 "never": "Nikdy",
@@ -578,7 +578,7 @@
             "confirmation": {
                 "cancel": "Zrušit",
                 "ok": "OK",
-                "title": "Jste si jistý\/á?"
+                "title": "Jste si jistý/á?"
             },
             "more_info_control": {
                 "script": {
@@ -631,11 +631,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\none {den}\\nfew {dny}\\nother {dnů}\\n}",
-            "hour": "{count} {count, plural,\\n  one {hodinou}\\n  other {hodiny}\\n}",
-            "minute": "{count} {count, plural,\\none {minutou}\\nother {minuty}\\n}",
-            "second": "{count} {count, plural,\\none {sekunda}\\nfew {sekundy}\\nother {sekund}\\n}",
-            "week": "{count} {count, plural,\\none {týden}\\nfew {týdny}\\nother {týdnů}\\n}"
+            "day": "{count} {count, plural,\none {den}\nfew {dny}\nother {dnů}\n}",
+            "hour": "{count} {count, plural,\n  one {hodinou}\n  other {hodiny}\n}",
+            "minute": "{count} {count, plural,\none {minutou}\nother {minuty}\n}",
+            "second": "{count} {count, plural,\none {sekunda}\nfew {sekundy}\nother {sekund}\n}",
+            "week": "{count} {count, plural,\none {týden}\nfew {týdny}\nother {týdnů}\n}"
         },
         "login-form": {
             "log_in": "Přihlásit se",
@@ -687,7 +687,7 @@
                             "delete_confirm": "Opravdu smazat?",
                             "duplicate": "Duplikovat",
                             "header": "Akce",
-                            "introduction": "Akce jsou to, co Home Assistant provede při spuštění automatizace. \\n\\n [Více informací o akcích.] (Https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Akce jsou to, co Home Assistant provede při spuštění automatizace. \n\n [Více informací o akcích.] (Https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Další informace o akcích",
                             "type_select": "Typ akce",
                             "type": {
@@ -731,7 +731,7 @@
                             "delete_confirm": "Opravdu smazat?",
                             "duplicate": "Duplikovat",
                             "header": "Podmínky",
-                            "introduction": "Podmínky jsou volitelnou součástí automatizačního pravidla a mohou být použity k zabránění spuštění akce. Podmínky vypadají velmi podobně jako spouštěče, ale jsou velmi odlišné. Spouštěč se podívá na události, ke kterým dochází v systému, zatímco podmínka se zabývá pouze tím, jak systém vypadá právě teď. Pro spouštěč se může jevit že je spínač zapnutý. Stav může vidět pouze tehdy, je-li přepínač aktuálně zapnutý nebo vypnutý. \\n\\n [Další informace o podmínkách.] (Https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Podmínky jsou volitelnou součástí automatizačního pravidla a mohou být použity k zabránění spuštění akce. Podmínky vypadají velmi podobně jako spouštěče, ale jsou velmi odlišné. Spouštěč se podívá na události, ke kterým dochází v systému, zatímco podmínka se zabývá pouze tím, jak systém vypadá právě teď. Pro spouštěč se může jevit že je spínač zapnutý. Stav může vidět pouze tehdy, je-li přepínač aktuálně zapnutý nebo vypnutý. \n\n [Další informace o podmínkách.] (Https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Další informace o podmínkách",
                             "type_select": "Typ podmínky",
                             "type": {
@@ -800,7 +800,7 @@
                             "delete_confirm": "Opravdu smazat?",
                             "duplicate": "Duplikovat",
                             "header": "Spouštěče",
-                            "introduction": "Spouštěče spouštějí zpracování automatizačního pravidla. Pro stejné pravidlo je možné zadat více spouštěčů. Po spuštění spouštěče ověří Home Assistant případné podmínky a zavolá akci. \\n\\n [Další informace o spouštěčích.] (Https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
+                            "introduction": "Spouštěče spouštějí zpracování automatizačního pravidla. Pro stejné pravidlo je možné zadat více spouštěčů. Po spuštění spouštěče ověří Home Assistant případné podmínky a zavolá akci. \n\n [Další informace o spouštěčích.] (Https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Další informace o spouštěčích",
                             "type_select": "Typ spouštěče",
                             "type": {
@@ -889,7 +889,7 @@
                     "picker": {
                         "add_automation": "Přidat automatizaci",
                         "header": "Editor automatizací",
-                        "introduction": "Editor automatizací umožňuje vytvářet a upravovat automatizace. Přečtěte si prosím [pokyny] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), abyste se ujistili, že jste aplikaci Home Assistant nakonfigurovali správně.",
+                        "introduction": "Editor automatizací umožňuje vytvářet a upravovat automatizace. Přečtěte si prosím [pokyny] (https://home-assistant.io/docs/automation/editor/), abyste se ujistili, že jste aplikaci Home Assistant nakonfigurovali správně.",
                         "learn_more": "Další informace o automatizaci",
                         "no_automations": "Nelze najít žádnou upravitelnou automatizaci",
                         "pick_automation": "Vyberte automatizaci, kterou chcete upravit"
@@ -921,7 +921,7 @@
                             "enable_state_reporting": "Povolit hlášení stavu",
                             "enter_pin_error": "Nelze uložit pin:",
                             "enter_pin_hint": "Chcete-li používat zabezpečovací zařízení, zadejte kód PIN",
-                            "enter_pin_info": "Chcete-li komunikovat se zabezpečovacími zařízeními, zadejte kód PIN. Zabezpečovací zařízení jsou dveře, garážová vrata a zámky. Při interakci s takovými zařízeními budete požádáni o zadání \/ zadání tohoto kódu PIN pomocí Google Assistant.",
+                            "enter_pin_info": "Chcete-li komunikovat se zabezpečovacími zařízeními, zadejte kód PIN. Zabezpečovací zařízení jsou dveře, garážová vrata a zámky. Při interakci s takovými zařízeními budete požádáni o zadání / zadání tohoto kódu PIN pomocí Google Assistant.",
                             "info": "Díky integraci Google Assistant pro Home Assistant Cloud budete moci ovládat všechna zařízení v Home Assistant pomocí jakéhokoli zařízení podporujícího Google Assistant.",
                             "info_state_reporting": "Pokud povolíte hlášení stavu, Home Assistant bude posílat veškeré změny stavů všech exponovaných entit do Google. Toto vám umožní sledovat vždy aktuální stavy entit v aplikaci Google.",
                             "manage_entities": "Správa entit",
@@ -1108,7 +1108,7 @@
                     "description": "Přizpůsobte své entity",
                     "picker": {
                         "header": "Přizpůsobení",
-                        "introduction": "Upravit atributy entity. Přídání\/úprava bude mít okamžitý efekt. Odebraní se projeví až po aktualizaci entity."
+                        "introduction": "Upravit atributy entity. Přídání/úprava bude mít okamžitý efekt. Odebraní se projeví až po aktualizaci entity."
                     }
                 },
                 "devices": {
@@ -1191,7 +1191,7 @@
                     "note_about_integrations": "Ne všechny integrace lze prozatím konfigurovat prostřednictvím uživatelského rozhraní.",
                     "note_about_website_reference": "Další jsou k dispozici na "
                 },
-                "introduction": "Zde je možné konfigurovat vaše komponenty a Home Assistant.\\nZ uživatelského rozhraní sice zatím není možné konfigurovat vše, ale pracujeme na tom.",
+                "introduction": "Zde je možné konfigurovat vaše komponenty a Home Assistant.\nZ uživatelského rozhraní sice zatím není možné konfigurovat vše, ale pracujeme na tom.",
                 "person": {
                     "add_person": "Přidat osobu",
                     "caption": "Osoby",

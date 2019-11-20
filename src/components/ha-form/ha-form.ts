@@ -51,6 +51,7 @@ export interface HaFormFloatSchema extends HaFormBaseSchema {
 
 export interface HaFormStringSchema extends HaFormBaseSchema {
   type: "string";
+  format?: string;
 }
 
 export interface HaFormBooleanSchema extends HaFormBaseSchema {
@@ -150,7 +151,7 @@ export class HaForm extends LitElement implements HaFormElement {
             </div>
           `
         : ""}
-      <div id="element" @value-changed=${this._valueChanged}></div>
+      <div id="element"></div>
     `;
   }
 

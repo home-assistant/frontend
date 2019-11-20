@@ -71,14 +71,9 @@ export class HaFormInteger extends LitElement implements HaFormElement {
     if (this._value === value) {
       return;
     }
-    fireEvent(
-      this,
-      "value-changed",
-      {
-        value,
-      },
-      { bubbles: false }
-    );
+    fireEvent(this, "value-changed", {
+      value,
+    });
   }
 }
 

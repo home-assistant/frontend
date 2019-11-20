@@ -247,7 +247,7 @@
             "fan_only": "Només ventilador",
             "gas": "Gas",
             "heat": "Escalfar",
-            "heat_cool": "Escalfar\/Refredar",
+            "heat_cool": "Escalfar/Refredar",
             "heat_pump": "Bomba de calor",
             "high_demand": "Alta potència",
             "idle": "Inactiu",
@@ -421,18 +421,19 @@
                 "away_mode": "Mode absent",
                 "cooling": "{name} refredant",
                 "current_temperature": "Temperatura actual de {name}",
-                "currently": "Actual",
+                "currently": "Actualment",
                 "fan_mode": "Mode ventilació",
                 "heating": "{name} escalfant",
                 "high": "alt",
                 "low": "baix",
-                "on_off": "On \/ Off",
+                "on_off": "On / Off",
                 "operation": "Funcionament",
                 "preset_mode": "Programat",
                 "swing_mode": "Mode oscil·lació",
                 "target_humidity": "Humitat desitjada",
                 "target_temperature": "Temperatura desitjada",
-                "target_temperature_entity": "Temperatura objectiu de {name}"
+                "target_temperature_entity": "Temperatura desitjada de {name}",
+                "target_temperature_mode": "Temperatura desitjada de {name} {mode}"
             },
             "counter": {
                 "actions": {
@@ -497,7 +498,7 @@
             "water_heater": {
                 "away_mode": "Mode fora",
                 "currently": "Actual",
-                "on_off": "On \/ Off",
+                "on_off": "On / Off",
                 "operation": "Funcionament",
                 "target_temperature": "Temperatura desitjada"
             },
@@ -541,6 +542,7 @@
         "components": {
             "device-picker": {
                 "clear": "Esborra",
+                "device": "Dispositiu",
                 "show_devices": "Mostra dispositius"
             },
             "entity": {
@@ -556,11 +558,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one {dia}\\n  other {dies}\\n}",
-                    "hour": "{count} {count, plural,\\n  one {hora}\\n  other {hores}\\n}",
-                    "minute": "{count} {count, plural,\\n  one {minut}\\n  other {minuts}\\n}",
-                    "second": "{count} {count, plural,\\n  one {segon}\\n  other {segons}\\n}",
-                    "week": "{count} {count, plural,\\n  one {setmana}\\n  other {setmanes}\\n}"
+                    "day": "{count} {count, plural,\n  one {dia}\n  other {dies}\n}",
+                    "hour": "{count} {count, plural,\n  one {hora}\n  other {hores}\n}",
+                    "minute": "{count} {count, plural,\n  one {minut}\n  other {minuts}\n}",
+                    "second": "{count} {count, plural,\n  one {segon}\n  other {segons}\n}",
+                    "week": "{count} {count, plural,\n  one {setmana}\n  other {setmanes}\n}"
                 },
                 "future": "D'aquí a {time}",
                 "never": "Mai",
@@ -643,11 +645,11 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\\n  one {dia}\\n  other {dies}\\n}",
-            "hour": "{count} {count, plural,\\none {hora}\\nother {hores}\\n}",
-            "minute": "{count} {count, plural,\\none {minut}\\nother {minuts}\\n}",
-            "second": "{count} {count, plural,\\none {segon}\\nother {segons}\\n}",
-            "week": "{count} {count, plural,\\n  one {setmana}\\n  other {setmanes}\\n}"
+            "day": "{count} {count, plural,\n  one {dia}\n  other {dies}\n}",
+            "hour": "{count} {count, plural,\none {hora}\nother {hores}\n}",
+            "minute": "{count} {count, plural,\none {minut}\nother {minuts}\n}",
+            "second": "{count} {count, plural,\none {segon}\nother {segons}\n}",
+            "week": "{count} {count, plural,\n  one {setmana}\n  other {setmanes}\n}"
         },
         "login-form": {
             "log_in": "Iniciar sessió",
@@ -665,7 +667,7 @@
             "entity_turned_on": "S'ha engegat {entity}.",
             "service_call_failed": "Ha fallat la crida al servei {service}.",
             "service_called": "S'ha cridat el servei {service}.",
-            "triggered": "{name} disparat\/ada"
+            "triggered": "{name} disparat/ada"
         },
         "panel": {
             "config": {
@@ -701,6 +703,7 @@
                             "header": "Accions",
                             "introduction": "Les accions són allò que farà Home Assistant quan es dispari l'automatització i es compleixin totes les condicions (si n'hi ha).",
                             "learn_more": "Més informació sobre les accions",
+                            "name": "Acció",
                             "type_select": "Tipus d'acció",
                             "type": {
                                 "condition": {
@@ -745,6 +748,7 @@
                             "header": "Condicions",
                             "introduction": "Les condicions són part opcional d'una automatització i es poden utilitzar per permetre o evitar que es produeixi una acció quan es dispari l'automatització. Les condicions són similars als activadors però funcionen de forma diferent: un activador analitza els esdeveniments que ocorren en el sistema mentre que una condició només observa com està el sistema en un moment determinat, per exemple, un activador se n'adonarà de quan s'està activant un interruptor mentre que una condició només pot veure si un interruptor està activat o desactivat.",
                             "learn_more": "Més informació sobre les condicions",
+                            "name": "Condició",
                             "type_select": "Tipus de condició",
                             "type": {
                                 "and": {
@@ -814,6 +818,7 @@
                             "header": "Activadors",
                             "introduction": "Els activadors són les regles que fan que es dispari una automatització. Pots definir més d'un activador per a cada automatització. Una vegada s'iniciï un activador, el Home Assistant validarà les condicions (si n'hi ha) i finalment cridarà l'acció.",
                             "learn_more": "Més informació sobre els activadors",
+                            "name": "Disparador",
                             "type_select": "Tipus d'activador",
                             "type": {
                                 "device": {
@@ -845,7 +850,7 @@
                                 },
                                 "mqtt": {
                                     "label": "MQTT",
-                                    "payload": "Dades\/payload (opcional)",
+                                    "payload": "Dades/payload (opcional)",
                                     "topic": "Topic"
                                 },
                                 "numeric_state": {
@@ -900,11 +905,16 @@
                     },
                     "picker": {
                         "add_automation": "Afegeix automatització",
+                        "delete_automation": "Suprimeix l'automatització",
+                        "delete_confirm": "Estàs segur que vols eliminar aquesta automatització?",
+                        "edit_automation": "Edita automatització",
                         "header": "Editor d'automatitzacions",
                         "introduction": "L'editor d'automatitzacions et permet crear i editar automatitzacions. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
                         "learn_more": "Més informació sobre les automatitzacions",
                         "no_automations": "No s'ha pogut trobar cap automatització editable",
-                        "pick_automation": "Tria l'automatització a editar"
+                        "only_editable": "Només es poden editar les automatitzacions definides dins l'arxiu automations.yaml.",
+                        "pick_automation": "Selecciona l'automatització a editar",
+                        "show_info_automation": "Mostra informació sobre l'automatització"
                     }
                 },
                 "cloud": {
@@ -1026,7 +1036,7 @@
                         "email": "Correu electrònic",
                         "email_error_msg": "Correu electrònic invàlid",
                         "forgot_password": "has oblidat la contrasenya?",
-                        "introduction": "Home Assistant Cloud t'ofereix una connexió remota i segura amb la teva instància mentre siguis fora de casa. També et permet connectar-te amb els serveis només disponibles al núvol: Amazon Alexa i Google Assistant.",
+                        "introduction": "Home Assistant Cloud t'ofereix una connexió remota i segura amb la teva instància mentre siguis fora de casa. També et permet connectar-te amb els serveis disponibles al núvol: Amazon Alexa i Google Assistant.",
                         "introduction2": "Aquest servei està gestionat pel nostre soci ",
                         "introduction2a": ", una empresa fundada pels creadors de Home Assistant i Hass.io.",
                         "introduction3": "Home Assistant Cloud és un servei de subscripció amb una prova gratuïta d’un mes. No és necessària la informació de pagament.",
@@ -1117,15 +1127,22 @@
                 },
                 "customize": {
                     "attributes_customize": "Els atributs següents ja s'han definit a customize.yaml",
+                    "attributes_not_set": "Els atributs següents no s'han configurat. Els pots configurar, si vols.",
+                    "attributes_outside": "Els atributs següents es configuren des de fora l'arxiu customize.yaml",
+                    "attributes_override": "Si vols, pots substituir-los.",
+                    "attributes_set": "Els següents atributs d'entitat s'estableixen programàticament.",
                     "caption": "Personalització",
                     "description": "Personalitza les entitats",
+                    "different_include": "Possiblement a través d’un domini o una altra inclusió diferent.",
+                    "pick_attribute": "Selecciona un atribut per substituir-lo",
                     "picker": {
                         "header": "Personalització",
-                        "introduction": "Personalitza els atributs de les entitats al teu gust. Les personalitzacions afegides\/modificades apareixeran immediatament, les que s'hagin eliminat tindran efecte quan l'entitat s'actualitzi."
+                        "introduction": "Personalitza els atributs de les entitats al teu gust. Les personalitzacions afegides/modificades apareixeran immediatament, les que s'hagin eliminat tindran efecte quan l'entitat s'actualitzi."
                     },
                     "warning": {
                         "include_link": "inclou customize.yaml",
-                        "include_sentence": "Sembla que la teva configuració a configuration.yaml no"
+                        "include_sentence": "Sembla que la teva configuració a configuration.yaml no",
+                        "not_applied": "Els canvis realitzats aquí es desen, però no s’aplicaran fins que es torni a carregar la configuració, tret que la inclusió estigui present."
                     }
                 },
                 "devices": {
@@ -1143,6 +1160,7 @@
                     },
                     "automations": "Automatitzacions",
                     "caption": "Dispositius",
+                    "confirm_rename_entity_ids": "Vols, també, canviar el nom dels ID's d’entitat de les entitats?",
                     "data_table": {
                         "area": "Àrea",
                         "battery": "Bateria",
@@ -1170,6 +1188,7 @@
                         "enabled_cause": "Desactivat per {cause}.",
                         "enabled_description": "Les entitats desactivades no s’afegiran a Home Assistant.",
                         "enabled_label": "Activa l’entitat",
+                        "note": "Nota: podria no funcionar amb alguna de les integracions.",
                         "unavailable": "Aquesta entitat no està disponible actualment.",
                         "update": "ACTUALITZAR"
                     },
@@ -1209,9 +1228,11 @@
                         "via": "Connectat a través de"
                     },
                     "config_flow": {
+                        "aborted": "Avortat",
                         "add_area": "Afegeix àrea",
                         "area_picker_label": "Àrea",
                         "close": "Tanca",
+                        "created_config": "S'ha creat configuració per a {name}.",
                         "error_saving_area": "Error desant àrea: {error}",
                         "external_step": {
                             "description": "Aquest pas requereix que visitis un lloc web extern per completar-lo.",
@@ -1220,7 +1241,8 @@
                         "failed_create_area": "No s'ha pogut crear l'àrea.",
                         "finish": "Finalitza",
                         "name_new_area": "Nom de la nova àrea?",
-                        "not_all_required_fields": "No s'han omplert tots els camps obligatoris."
+                        "not_all_required_fields": "No s'han omplert tots els camps obligatoris.",
+                        "submit": "Envia"
                     },
                     "configure": "Configurar",
                     "configured": "Configurades",
@@ -1261,13 +1283,44 @@
                     "note_about_persons_configured_in_yaml": "Nota: les persones configurades mitjançant configuration.yaml no es poden editar a la UI."
                 },
                 "scene": {
+                    "activated": "Escena {name} activada.",
+                    "caption": "Escenes",
+                    "description": "Crea i edita escenes",
                     "editor": {
                         "default_name": "Nova escena",
-                        "entities": {
-                            "header": "Entitats"
+                        "devices": {
+                            "add": "Afegeix un dispositiu",
+                            "delete": "Suprimeix el dispositiu",
+                            "header": "Dispositius",
+                            "introduction": "Afegeix els dispositius que vols incloure a l'escena. Configura tots els dispositius en els estats que es corresponguin amb aquesta escena."
                         },
+                        "entities": {
+                            "add": "Afegeix una entitat",
+                            "delete": "Suprimeix l'entitat",
+                            "device_entities": "Si afegeixes una entitat que pertany a un dispositiu, s'afegirà el dispositiu.",
+                            "header": "Entitats",
+                            "introduction": "Les entitats que no pertanyen a cap dispositiu es poden configurar aquí.",
+                            "without_device": "Entitats sense dispositiu"
+                        },
+                        "introduction": "Utilitza les escenes per donar més vida a la teva llar.",
+                        "load_error_not_editable": "Només es poden editar les escenes de l'arxiu scenes.yaml.",
+                        "load_error_unknown": "Error en carregar l’escena ({err_no}).",
                         "name": "Nom",
-                        "save": "Desa"
+                        "save": "Desa",
+                        "unsaved_confirm": "Hi han canvis no desats. Segur que vols sortir?"
+                    },
+                    "picker": {
+                        "add_scene": "Afegeix escena",
+                        "delete_confirm": "Estàs segur que vols eliminar aquesta escena?",
+                        "delete_scene": "Suprimeix l'escena",
+                        "edit_scene": "Edita escena",
+                        "header": "Editor d’escenes",
+                        "introduction": "L'editor d'escenes et permet crear i editar escenes. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
+                        "learn_more": "Més informació sobre les escenes",
+                        "no_scenes": "No s'ha pogut trobar cap escena editable",
+                        "only_editable": "Només es poden editar les escenes definides dins l'arxiu scenes.yaml.",
+                        "pick_scene": "Selecciona l'escena a editar",
+                        "show_info_scene": "Mostra informació sobre l'escena"
                     }
                 },
                 "script": {
@@ -1276,15 +1329,22 @@
                     "editor": {
                         "default_name": "Nou script",
                         "delete_confirm": "Estàs segur que vols eliminar aquest script?",
+                        "delete_script": "Suprimeix l'script",
                         "header": "Script: {name}",
-                        "load_error_not_editable": "Només es poden editar els scripts dins de l'arxiu scripts.yaml."
+                        "introduction": "Utilitza els scripts per executar seqüències d’accions.",
+                        "link_available_actions": "Més informació sobre les accions disponibles.",
+                        "load_error_not_editable": "Només es poden editar els scripts dins de l'arxiu scripts.yaml.",
+                        "sequence": "Seqüència",
+                        "sequence_sentence": "Seqüència d’accions de l'script."
                     },
                     "picker": {
                         "add_script": "Afegeix script",
+                        "edit_script": "Edita l'script",
                         "header": "Editor de scripts",
                         "introduction": "L'editor de scripts et permet crear i editar scripts. Vés a l'enllaç de sota per veure'n les instruccions i assegurar-te que has configurat el Home Assistant correctament.",
                         "learn_more": "Més informació sobre els scripts",
-                        "no_scripts": "No hem trobat cap script editable"
+                        "no_scripts": "No hem trobat cap script editable",
+                        "trigger_script": "Dispara l'script"
                     }
                 },
                 "server_control": {
@@ -1353,7 +1413,7 @@
                 },
                 "zha": {
                     "add_device_page": {
-                        "discovery_text": "Els dispositius descoberts apareixeran aquí. Segueix les instruccions del teu dispositiu\/s i posa el dispositiu\/s en mode d’emparellament.",
+                        "discovery_text": "Els dispositius descoberts apareixeran aquí. Segueix les instruccions del teu dispositiu/s i posa el dispositiu/s en mode d’emparellament.",
                         "header": "Domòtica amb Zigbee - Afegir dispositius",
                         "search_again": "Torna a cercar",
                         "spinner": "S'estan cercant dispositius ZHA Zigbee..."
@@ -1466,6 +1526,7 @@
             "custom": {
                 "external_panel": {
                     "complete_access": "Tindrà accés a totes les dades de Home Assistant.",
+                    "hide_message": "Mira la documentació de panel_custom per ocultar aquest missatge",
                     "question_trust": "Confies en el panell extern {name} de {link}?"
                 }
             },
@@ -1525,7 +1586,7 @@
                         "description_publish": "Publicació d'un paquet",
                         "listening_to": "Escoltant a",
                         "message_received": "Missatge {id} rebut a {topic} a les {time}:",
-                        "payload": "Dades\/missatge (plantilla permesa)",
+                        "payload": "Dades/missatge (plantilla permesa)",
                         "publish": "Publica",
                         "start_listening": "Comença a escoltar",
                         "stop_listening": "Deixa d’escoltar",
@@ -1589,7 +1650,7 @@
                     "empty_state": {
                         "go_to_integrations_page": "Vés a la pàgina d'integracions.",
                         "no_devices": "Aquesta pàgina et permet controlar els teus dispositius, però sembla que encara no en tens cap configurat. Vés a la pàgina d'integracions per a començar.",
-                        "title": "Benvingut\/da a casa"
+                        "title": "Benvingut/da a casa"
                     },
                     "picture-elements": {
                         "call_service": "Crida servei {name}",
@@ -1774,6 +1835,7 @@
                     },
                     "raw_editor": {
                         "confirm_unsaved_changes": "Hi han canvis no desats. Segur que vols sortir?",
+                        "confirm_unsaved_comments": "La configuració conté comentaris que es descartaran. Vols continuar?",
                         "error_invalid_config": "La configuració no és vàlida: {error}",
                         "error_parse_yaml": "No es pot analitzar YAML: {error}",
                         "error_save_yaml": "No es pot desar YAML: {error}",
@@ -1809,6 +1871,7 @@
                     "domain": "Domini",
                     "entity": "Entitat",
                     "entity_id": "ID de l'entitat",
+                    "last_changed": "Últim canvi",
                     "select_to_add": "Selecciona les entitats que vols afegir a una targeta i fés clic al botó d'afegir targeta.",
                     "title": "Entitats sense utilitzar"
                 },
@@ -1957,6 +2020,7 @@
                             "mirror": "Mirall",
                             "patio": "Pati",
                             "right": "Dreta",
+                            "temperature_study": "Temperatura Study",
                             "upstairs": "Pis superior"
                         },
                         "unit": {
@@ -1970,7 +2034,7 @@
                 "core-config": {
                     "button_detect": "Detecta",
                     "finish": "Següent",
-                    "intro": "Hola {name}, benvingut\/uda a Home Assistant. Quin nom t'agradaria posar a la teva casa?",
+                    "intro": "Hola {name}, benvingut/uda a Home Assistant. Quin nom t'agradaria posar a la teva casa?",
                     "intro_location": "Voldirem saber la zona on vius. Aquesta informació servirà per poder mostrar certa informació i configurar automatitzacions relatives a la posició del sol. Aquestes dades mai es compartiran fora de la teva xarxa personal.",
                     "intro_location_detect": "Et podem ajudar a completar aquesta informació fent una única sol·licitud a un servei extern.",
                     "location_name_default": "Casa"
@@ -2000,6 +2064,7 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant oculta de manera predeterminada les funcions i opcions avançades. Pots accedir a aquestes funcions commutant aquest interruptor. Aquesta és una configuració específica per a usuari i no afecta altres usuaris que utilitzin Home Assistant.",
+                    "hint_enable": "Falten opcions de configuració? Activa el mode avançat",
                     "link_profile_page": "la teva pàgina de perfil",
                     "title": "Mode avançat"
                 },

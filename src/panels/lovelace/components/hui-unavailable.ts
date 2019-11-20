@@ -40,6 +40,7 @@ export class HuiUnavailable extends LitElement {
         top: 50%;
         left: 50%;
         font-size: 24px;
+        text-align: center;
         color: var(--primary-text-color);
         transform: translate(-50%, -50%);
         -ms-transform: translate(-50%, -50%);

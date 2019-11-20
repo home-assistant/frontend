@@ -368,7 +368,7 @@
                 "away_mode": "Mode jauh",
                 "currently": "Saat ini",
                 "fan_mode": "Mode kipas",
-                "on_off": "Hidup \/ mati",
+                "on_off": "Hidup / mati",
                 "operation": "Operasi",
                 "swing_mode": "Mode ayunan",
                 "target_humidity": "Target kelembaban",
@@ -468,11 +468,11 @@
             },
             "relative_time": {
                 "duration": {
-                    "day": "{count} {count, plural,\\n  one { hari }\\n  other { hari }\\n}",
-                    "hour": "{count} {count, plural,\\n  one { jam }\\n  other { jam }\\n}",
-                    "minute": "{count} {count, plural,\\n  one { menit }\\n  other { menit }\\n}",
-                    "second": "{count} {count, plural,\\n  one { detik }\\n  other { detik }\\n}",
-                    "week": "{count} {count, plural,\\n  one { minggu }\\n  other { minggu }\\n}"
+                    "day": "{count} {count, plural,\n  one { hari }\n  other { hari }\n}",
+                    "hour": "{count} {count, plural,\n  one { jam }\n  other { jam }\n}",
+                    "minute": "{count} {count, plural,\n  one { menit }\n  other { menit }\n}",
+                    "second": "{count} {count, plural,\n  one { detik }\n  other { detik }\n}",
+                    "week": "{count} {count, plural,\n  one { minggu }\n  other { minggu }\n}"
                 },
                 "future": "dalam {time}",
                 "never": "Tak pernah",
@@ -503,11 +503,11 @@
             }
         },
         "duration": {
-            "day": "{count}{count, plural,\\n  one { hari }\\n  other { hari }\\n}",
-            "hour": "{count} {count, plural,\\n  one { jam }\\n  other { jam }\\n}",
-            "minute": "{count} {count, plural,\\n  one { menit }\\n  other { menit }\\n}",
-            "second": "{count}{count, plural,\\n  one { detik }\\n  other { detik }\\n}",
-            "week": "{count}{count, plural,\\n  one { minggu }\\n  other { minggu }\\n}"
+            "day": "{count}{count, plural,\n  one { hari }\n  other { hari }\n}",
+            "hour": "{count} {count, plural,\n  one { jam }\n  other { jam }\n}",
+            "minute": "{count} {count, plural,\n  one { menit }\n  other { menit }\n}",
+            "second": "{count}{count, plural,\n  one { detik }\n  other { detik }\n}",
+            "week": "{count}{count, plural,\n  one { minggu }\n  other { minggu }\n}"
         },
         "login-form": {
             "log_in": "Masuk",
@@ -554,7 +554,7 @@
                             "delete_confirm": "Anda yakin ingin menghapus?",
                             "duplicate": "Gandakan",
                             "header": "Aksi",
-                            "introduction": "Aksi adalah apa yang Home Assistant akan lakukan ketika otomasi terpicu.\\n\\n[Pelajari lebih lanjut tentang aksi.](https:\/\/home-assistant.io\/docs\/automation\/action\/)",
+                            "introduction": "Aksi adalah apa yang Home Assistant akan lakukan ketika otomasi terpicu.\n\n[Pelajari lebih lanjut tentang aksi.](https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Pelajari lebih lanjut tentang Aksi",
                             "type_select": "Jenis aksi",
                             "type": {
@@ -589,7 +589,7 @@
                             "delete_confirm": "Anda yakin ingin menghapus?",
                             "duplicate": "Gandakan",
                             "header": "Kondisi",
-                            "introduction": "Kondisi merupakan bagian opsional dari aturan otomasi dan dapat digunakan untuk mencegah Event terjadi saat dipicu. Kondisi terlihat sangat mirip dengan pemicu tetapi sangat berbeda. Pemicu akan melihat peristiwa yang terjadi di sistem sementara kondisi hanya melihat bagaimana sistem terlihat sekarang. Pemicu dapat mengamati bahwa saklar sedang dinyalakan. Suatu kondisi hanya dapat melihat apakah switch sedang aktif atau tidak aktif. \\n\\n[Pelajari lebih lanjut tentang kondisi.](https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
+                            "introduction": "Kondisi merupakan bagian opsional dari aturan otomasi dan dapat digunakan untuk mencegah Event terjadi saat dipicu. Kondisi terlihat sangat mirip dengan pemicu tetapi sangat berbeda. Pemicu akan melihat peristiwa yang terjadi di sistem sementara kondisi hanya melihat bagaimana sistem terlihat sekarang. Pemicu dapat mengamati bahwa saklar sedang dinyalakan. Suatu kondisi hanya dapat melihat apakah switch sedang aktif atau tidak aktif. \n\n[Pelajari lebih lanjut tentang kondisi.](https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Pelajari lebih lanjut tentang kondisi",
                             "type_select": "Jenis kondisi",
                             "type": {
@@ -719,7 +719,7 @@
                     "picker": {
                         "add_automation": "Tambah otomasi",
                         "header": "Editor otomasi",
-                        "introduction": "Editor otomasi memungkinkan Anda untuk membuat dan mengedit otomasi. Silakan baca [petunjuk](https:\/\/home-assistant.io\/docs\/automation\/editor\/) untuk memastikan bahwa Anda telah mengonfigurasi Home Assistant dengan benar.",
+                        "introduction": "Editor otomasi memungkinkan Anda untuk membuat dan mengedit otomasi. Silakan baca [petunjuk](https://home-assistant.io/docs/automation/editor/) untuk memastikan bahwa Anda telah mengonfigurasi Home Assistant dengan benar.",
                         "learn_more": "Pelajari lebih lanjut tentang otomasi",
                         "no_automations": "Kami tidak dapat menemukan otomasi yang dapat diedit",
                         "pick_automation": "Pilih otomasi untuk diedit"
