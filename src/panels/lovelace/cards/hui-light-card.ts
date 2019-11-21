@@ -64,8 +64,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     }
 
     const stateObj = this.hass.states[this._config!.entity] as LightEntity;
-    const brightness =
-      Math.round((stateObj.attributes.brightness / 254) * 100) || 0;
 
     if (!stateObj) {
       return html`
@@ -78,6 +76,9 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         >
       `;
     }
+
+    const brightness =
+      Math.round((stateObj.attributes.brightness / 254) * 100) || 0;
 
     return html`
       <ha-card>
