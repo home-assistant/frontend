@@ -109,7 +109,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
             <paper-icon-button
               class="light-button ${classMap({
                 "slider-center": supportsFeature(stateObj, SUPPORT_BRIGHTNESS),
-                "no-slider": !supportsFeature(stateObj, SUPPORT_BRIGHTNESS),
               })}"
               .icon=${this._config.icon || stateIcon(stateObj)}
               style=${styleMap({
@@ -280,9 +279,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-      }
-
-      .no-slider: {
       }
 
       .slider-center[data-state="on"] {
