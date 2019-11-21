@@ -130,13 +130,14 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       ? svg`
           <svg viewBox="0 0 40 20">
             <text
-              x=${23 - (stateObj.attributes.current_temperature < 0 ? 2 : 0)}
-              y="75%"
+              x="50%"
+              dx="1"
+              y="60%"
               text-anchor="middle"
-              style="font-size: 15px;"
+              style="font-size: 13px;"
             >
               ${stateObj.attributes.current_temperature}
-              <tspan dx="-4" dy="-7" style="font-size: 5px;">
+              <tspan dx="-3" dy="-6.5" style="font-size: 4px;">
                 ${this.hass.config.unit_system.temperature}
               </tspan>
             </text>
@@ -508,10 +509,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         cursor: pointer;
         display: inline-block;
         margin: 0 10px;
-        border-radius: 100%;
       }
 
-      #modes *.selected-icon {
+      #modes .selected-icon {
         color: var(--mode-color);
       }
 
