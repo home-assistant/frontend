@@ -8,6 +8,8 @@ import {
   css,
   CSSResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
+import { styleMap } from "lit-html/directives/style-map";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@thomasloven/round-slider";
 
@@ -16,12 +18,10 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 
 import "../../../components/ha-card";
-import "../../../components/ha-icon";
 import "../components/hui-warning";
 import "../components/hui-unavailable";
 
 import { fireEvent } from "../../../common/dom/fire_event";
-import { styleMap } from "lit-html/directives/style-map";
 import { HomeAssistant, LightEntity } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
@@ -29,7 +29,6 @@ import { toggleEntity } from "../common/entity/toggle-entity";
 import { LightCardConfig } from "./types";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { SUPPORT_BRIGHTNESS } from "../../../data/light";
-import { actionHandler } from "../common/directives/action-handler-directive";
 
 @customElement("hui-light-card")
 export class HuiLightCard extends LitElement implements LovelaceCard {
@@ -65,8 +64,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     }
 
     const stateObj = this.hass.states[this._config!.entity] as LightEntity;
-    const brightness =
-      Math.round((stateObj.attributes.brightness / 254) * 100) || 0;
 
     if (!stateObj) {
       return html`
@@ -79,6 +76,9 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         >
       `;
     }
+
+    const brightness =
+      Math.round((stateObj.attributes.brightness / 254) * 100) || 0;
 
     return html`
       <ha-card>
@@ -100,30 +100,31 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
             ${supportsFeature(stateObj, SUPPORT_BRIGHTNESS)
               ? html`
                   <round-slider
-                    min="1"
+                    min="0"
                     .value=${brightness}
                     @value-changing=${this._dragEvent}
                     @value-changed=${this._setBrightness}
                   ></round-slider>
                 `
               : ""}
-            <ha-icon
-              class="slider-center"
-              data-state="${stateObj.state}"
-              .icon="${this._config.icon || stateIcon(stateObj)}"
-              style="${styleMap({
+            <paper-icon-button
+              class="light-button ${classMap({
+                "slider-center": supportsFeature(stateObj, SUPPORT_BRIGHTNESS),
+                "state-on": stateObj.state === "on",
+                "state-unavailable": stateObj.state === "unavailable",
+              })}"
+              .icon=${this._config.icon || stateIcon(stateObj)}
+              style=${styleMap({
                 filter: this._computeBrightness(stateObj),
                 color: this._computeColor(stateObj),
-              })}"
-              @action="${this._handleClick}"
-              .actionHandler=${actionHandler()}
-              tabindex="0"
-            ></ha-icon>
+              })}
+              @click=${this._handleClick}
+            ></paper-icon-button>
           </div>
         </div>
 
         <div id="info">
-          <div class="brightness" @ha-click="${this._handleClick}">
+          <div class="brightness">
             %
           </div>
           ${this._config.name || computeStateName(stateObj)}
@@ -231,6 +232,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       ha-card {
         position: relative;
         overflow: hidden;
+        text-align: center;
         --name-font-size: 1.2rem;
         --brightness-font-size: 1.2rem;
       }
@@ -266,31 +268,28 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         padding-bottom: 10%;
       }
 
+      .light-button {
+        color: var(--paper-item-icon-color, #44739e);
+        width: 60%;
+        height: auto;
+      }
+
+      .light-button.state-on {
+        color: var(--paper-item-icon-active-color, #fdd835);
+      }
+
+      .light-button.state-unavailable {
+        color: var(--state-icon-unavailable-color);
+      }
+
       .slider-center {
         position: absolute;
-        width: 70%;
-        height: 70%;
-        max-height: calc(100% - 40px);
         max-width: calc(100% - 40px);
         box-sizing: border-box;
         border-radius: 100%;
         top: 50%;
         left: 50%;
-        color: var(--paper-item-icon-color, #44739e);
-        cursor: pointer;
         transform: translate(-50%, -50%);
-      }
-      .slider-center:focus {
-        outline: none;
-        background: var(--divider-color);
-      }
-
-      .slider-center[data-state="on"] {
-        color: var(--paper-item-icon-active-color, #fdd835);
-      }
-
-      .slider-center[data-state="unavailable"] {
-        color: var(--state-icon-unavailable-color);
       }
 
       #info {
