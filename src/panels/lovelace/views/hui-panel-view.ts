@@ -55,7 +55,7 @@ export class HUIPanelView extends UpdatingElement {
     const card: LovelaceCard = createCardElement(this.config!.cards![0]);
     card.hass = this.hass;
     card.isPanel = true;
-    this.append(card);
+    this.appendChild(card);
   }
 }
 
