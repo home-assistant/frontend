@@ -663,7 +663,7 @@ class HUIRoot extends LitElement {
           this.config.background
         );
       }
-      root.append(unusedEntities);
+      root.appendChild(unusedEntities);
       return;
     }
 
@@ -698,7 +698,7 @@ class HUIRoot extends LitElement {
       view.style.setProperty("--lovelace-background", configBackground);
     }
 
-    root.append(view);
+    root.appendChild(view);
   }
 }
 
