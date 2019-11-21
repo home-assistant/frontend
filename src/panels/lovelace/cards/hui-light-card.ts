@@ -110,6 +110,8 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
             <paper-icon-button
               class="light-button ${classMap({
                 "slider-center": supportsFeature(stateObj, SUPPORT_BRIGHTNESS),
+                "state-on": stateObj.state === "on",
+                "state-unavailable": stateObj.state === "unavailable",
               })}"
               .icon=${this._config.icon || stateIcon(stateObj)}
               style=${styleMap({
@@ -272,6 +274,14 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         height: auto;
       }
 
+      .light-button.state-on {
+        color: var(--paper-item-icon-active-color, #fdd835);
+      }
+
+      .light-button.state-unavailable {
+        color: var(--state-icon-unavailable-color);
+      }
+
       .slider-center {
         position: absolute;
         max-width: calc(100% - 40px);
@@ -280,14 +290,6 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-      }
-
-      .slider-center[data-state="on"] {
-        color: var(--paper-item-icon-active-color, #fdd835);
-      }
-
-      .slider-center[data-state="unavailable"] {
-        color: var(--state-icon-unavailable-color);
       }
 
       #info {
