@@ -14,7 +14,6 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import "@thomasloven/round-slider";
 
 import "../../../components/ha-card";
-import "../../../components/ha-icon";
 import "../components/hui-warning";
 import "../components/hui-unavailable";
 
@@ -34,7 +33,6 @@ import {
   CLIMATE_PRESET_NONE,
 } from "../../../data/climate";
 import { HassEntity } from "home-assistant-js-websocket";
-import { actionHandler } from "../common/directives/action-handler-directive";
 
 const modeIcons: { [mode in HvacMode]: string } = {
   auto: "hass:calendar-repeat",
@@ -149,7 +147,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     const setValues = svg`
       <svg id="set-values">
         <g>
-          <text text-anchor="middle" style="font-size: 20px;" class="set-value">
+          <text text-anchor="middle" class="set-value">
             ${
               !this._setTemp
                 ? ""
@@ -166,7 +164,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           <text
             dy="22"
             text-anchor="middle"
-            style="font-size: 16px"
             id="set-mode"
           >
             ${
@@ -355,14 +352,13 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       return html``;
     }
     return html`
-      <ha-icon
+      <paper-icon-button
         class="${classMap({ "selected-icon": currentMode === mode })}"
         .mode="${mode}"
         .icon="${modeIcons[mode]}"
-        @action="${this._handleModeClick}"
-        .actionHandler=${actionHandler()}
+        @click="${this._handleModeClick}"
         tabindex="0"
-      ></ha-icon>
+      ></paper-icon-button>
     `;
   }
 
@@ -455,7 +451,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         height: 100%;
         width: 100%;
         position: relative;
-        max-width: 300px;
+        max-width: 250px;
         min-width: 100px;
       }
 
@@ -490,10 +486,12 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       #set-values {
         max-width: 80%;
         transform: translate(0, -50%);
+        font-size: 20px;
       }
 
       #set-mode {
         fill: var(--secondary-text-color);
+        font-size: 16px;
       }
 
       #info {
@@ -505,23 +503,20 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         font-size: var(--name-font-size);
       }
 
-      #modes {
-      }
-
-      #modes ha-icon {
+      #modes > * {
         color: var(--disabled-text-color);
         cursor: pointer;
         display: inline-block;
         margin: 0 10px;
         border-radius: 100%;
       }
-      #modes ha-icon:focus {
-        outline: none;
-        background: var(--divider-color);
+
+      #modes *.selected-icon {
+        color: var(--mode-color);
       }
 
-      #modes ha-icon.selected-icon {
-        color: var(--mode-color);
+      text {
+        fill: var(--primary-text-color);
       }
     `;
   }
