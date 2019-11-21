@@ -508,7 +508,6 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         color: var(--disabled-text-color);
         cursor: pointer;
         display: inline-block;
-        margin: 0 10px;
       }
 
       #modes .selected-icon {
