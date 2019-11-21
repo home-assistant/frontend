@@ -160,19 +160,14 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               >
               </paper-icon-button>
               <paper-icon-button
-                id="copyBtn-[[sanitizeId(entity.entity_id)]]"
+                id="copyBtn-[[entity.entity_id]]"
                 on-click="entityCopyId"
                 icon="hass:content-copy"
                 alt="[[localize('ui.panel.developer-tools.tabs.states.copy_entity_id')]]"
                 title="[[localize('ui.panel.developer-tools.tabs.states.copy_entity_id')]]"
               >
               </paper-icon-button>
-              <a
-                href="#"
-                on-click="entitySelected"
-                id="entity-id-[[sanitizeId(entity.entity_id)]]"
-                >[[entity.entity_id]]</a
-              >
+              <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
             </td>
             <td>[[entity.state]]</td>
             <template
@@ -268,10 +263,6 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   entityMoreInfo(ev) {
     ev.preventDefault();
     this.fire("hass-more-info", { entityId: ev.model.entity.entity_id });
-  }
-
-  sanitizeId(id) {
-    return id.replace(".", "-");
   }
 
   entityCopyId(ev) {
