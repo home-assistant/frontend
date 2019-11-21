@@ -175,7 +175,7 @@ export class HaForm extends LitElement implements HaFormElement {
       if (this._elementContainer!.lastChild) {
         this._elementContainer!.removeChild(this._elementContainer!.lastChild);
       }
-      this._elementContainer!.append(element);
+      this._elementContainer!.appendChild(element);
     } else if (this._elementContainer && this._elementContainer.lastChild) {
       const element = this._elementContainer!.lastChild as HaFormElement;
       element.schema = this.schema;
