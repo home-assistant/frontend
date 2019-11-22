@@ -27,7 +27,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
   @property() private _init = false;
   @query("paper-dropdown-menu") private _input?: HTMLElement;
 
-  public focus() {
+  public focus(): void {
     if (this._input) {
       this._input.focus();
     }
@@ -57,15 +57,15 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
     `;
   }
 
-  private _optionValue(item) {
+  private _optionValue(item: string | string[]): string | string[] {
     return Array.isArray(item) ? item[0] : item;
   }
 
-  private _optionLabel(item) {
+  private _optionLabel(item: string | string[]): string | string[] {
     return Array.isArray(item) ? item[1] : item;
   }
 
-  private _valueChanged(ev: CustomEvent) {
+  private _valueChanged(ev: CustomEvent): void {
     if (!ev.detail.value || !this._init) {
       // ignore first call because that is the init of the component
       this._init = true;
