@@ -138,6 +138,9 @@ class HaConfigDashboard extends LitElement {
     return [
       haStyle,
       css`
+        ha-config-navigation {
+          margin-bottom: 24px;
+        }
         ha-card {
           overflow: hidden;
         }
