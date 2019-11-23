@@ -129,6 +129,7 @@ export class HaPanelCustom extends UpdatingElement {
         width: 100%;
         height: 100%;
         display: block;
+        background-color: var(--primary-background-color);
       }
     </style>
     <iframe></iframe>
