@@ -138,7 +138,7 @@ class HaConfigDashboard extends LitElement {
     return [
       haStyle,
       css`
-        ha-config-navigation {
+        ha-config-navigation:last-child {
           margin-bottom: 24px;
         }
         ha-card {
