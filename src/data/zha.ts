@@ -24,6 +24,12 @@ export interface ZHADevice {
   area_id?: string;
 }
 
+export interface ZHAGroup {
+  name: string;
+  group_id: number;
+  members: ZHADevice[];
+}
+
 export interface Attribute {
   name: string;
   id: number;
@@ -78,6 +84,11 @@ export const fetchAttributesForCluster = (
 export const fetchDevices = (hass: HomeAssistant): Promise<ZHADevice[]> =>
   hass.callWS({
     type: "zha/devices",
+  });
+
+export const fetchGroups = (hass: HomeAssistant): Promise<ZHAGroup[]> =>
+  hass.callWS({
+    type: "zha/groups",
   });
 
 export const fetchZHADevice = (
