@@ -1381,6 +1381,9 @@
           "common": {
             "add_devices": "Add Devices",
             "clusters": "Clusters",
+            "zha_zigbee_groups": "ZHA Zigbee Groups",
+            "manage_groups": "Manage Zigbee Groups",
+            "groups": "Groups",
             "devices": "Devices",
             "manufacturer_code_override": "Manufacturer Code Override",
             "value": "Value"
@@ -1394,6 +1397,10 @@
           "network_management": {
             "header": "Network Management",
             "introduction": "Commands that affect the entire network"
+          },
+          "groups_management": {
+            "header": "Zigbee Group Management",
+            "introduction": "Create and modify zigbee groups"
           },
           "node_management": {
             "header": "Device Management",
