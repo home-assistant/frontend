@@ -163,7 +163,6 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
               >
               </paper-icon-button>
-
               <paper-menu-button>
                 <paper-icon-button
                   icon="hass:menu"
@@ -209,9 +208,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               is="dom-if"
               if="[[computeShowAttributes(narrow, _showAttributes)]]"
             >
-              <td id="attributes-[[entity.entity_id]]">
-                [[attributeString(entity)]]
-              </td>
+              <td id="attributes-[[entity.entity_id]]">[[attributeString(entity)]]</td>
             </template>
           </tr>
         </template>
