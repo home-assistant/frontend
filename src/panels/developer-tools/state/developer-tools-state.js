@@ -304,16 +304,14 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   entityCopyValue(ev) {
     var action = ev.currentTarget.attributes.action.value;
-    if (action == "copyId") {
+    if (action === "copyId") {
       copy(ev.model.entity.entity_id);
-    } else if (action == "copyState") {
+    } else if (action === "copyState") {
       copy(ev.model.entity.state);
-    } else if (action == "copyAttributes") {
+    } else if (action === "copyAttributes") {
       var td = this.shadowRoot.getElementById(
         "attributes-" + ev.model.entity.entity_id
       );
-      // copy(td.textContent.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ '<br />' +'$2'));
-      //copy(td.textContent.replace(/(\r\n|\n\r|\r|\n)/g, '<br />'));
       copy(td.textContent.replace(/\n/g, "<br />"));
     } else {
       return;
