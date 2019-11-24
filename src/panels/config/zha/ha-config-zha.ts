@@ -5,6 +5,7 @@ import "./zha-cluster-attributes";
 import "./zha-cluster-commands";
 import "./zha-network";
 import "./zha-node";
+import "./zha-groups-tile";
 import "@polymer/paper-icon-button/paper-icon-button";
 
 import {
@@ -45,12 +46,18 @@ export class HaConfigZha extends LitElement {
           .hass="${this.hass}"
         ></zha-network>
 
+        <zha-groups-tile
+          .isWide="${this.isWide}"
+          .hass="${this.hass}"
+        ></zha-groups-tile>
+
         <zha-node
           .isWide="${this.isWide}"
           .hass="${this.hass}"
           @zha-cluster-selected="${this._onClusterSelected}"
           @zha-node-selected="${this._onDeviceSelected}"
         ></zha-node>
+
         ${this._selectedCluster
           ? html`
               <zha-cluster-attributes
