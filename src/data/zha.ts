@@ -91,6 +91,15 @@ export const fetchGroups = (hass: HomeAssistant): Promise<ZHAGroup[]> =>
     type: "zha/groups",
   });
 
+export const fetchGroup = (
+  hass: HomeAssistant,
+  groupId: number
+): Promise<ZHAGroup> =>
+  hass.callWS({
+    type: "zha/group",
+    group_id: groupId,
+  });
+
 export const fetchZHADevice = (
   hass: HomeAssistant,
   ieeeAddress: string

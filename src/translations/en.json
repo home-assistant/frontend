@@ -1386,6 +1386,9 @@
             "groups": "Groups",
             "group_id": "Group ID",
             "members": "Members",
+            "add_members": "Add Members",
+            "group_info": "Group Information",
+            "group_details": "Here are all the details for the selected Zigbee group.",
             "devices": "Devices",
             "manufacturer_code_override": "Manufacturer Code Override",
             "value": "Value"

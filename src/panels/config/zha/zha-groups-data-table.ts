@@ -24,6 +24,7 @@ import { formatAsPaddedHex } from "./functions";
 
 export interface GroupRowData extends ZHAGroup {
   group?: GroupRowData;
+  id: number;
 }
 
 @customElement("zha-groups-data-table")
@@ -41,6 +42,7 @@ export class ZHAGroupsDataTable extends LitElement {
         name: group.name,
         group_id: group.group_id,
         members: group.members,
+        id: group.group_id,
       };
     });
 
@@ -106,8 +108,8 @@ export class ZHAGroupsDataTable extends LitElement {
   }
 
   private _handleRowClicked(ev: CustomEvent) {
-    const deviceId = (ev.detail as RowClickedEvent).id;
-    navigate(this, `/config/devices/device/${deviceId}`);
+    const groupId = (ev.detail as RowClickedEvent).id;
+    navigate(this, `/config/zha/group/${groupId}`);
   }
 }
 
