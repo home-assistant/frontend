@@ -1384,6 +1384,8 @@
             "zha_zigbee_groups": "ZHA Zigbee Groups",
             "manage_groups": "Manage Zigbee Groups",
             "groups": "Groups",
+            "group_id": "Group ID",
+            "members": "Members",
             "devices": "Devices",
             "manufacturer_code_override": "Manufacturer Code Override",
             "value": "Value"

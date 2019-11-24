@@ -18,21 +18,34 @@ import {
   DataTableRowData,
 } from "../../../components/data-table/ha-data-table";
 // tslint:disable-next-line
-import { DeviceRegistryEntry } from "../../../data/device_registry";
 import { navigate } from "../../../common/navigate";
-import { LocalizeFunc } from "../../../common/translations/localize";
+import { ZHAGroup, ZHADevice } from "../../../data/zha";
+import { formatAsPaddedHex } from "./functions";
 
-export interface GroupRowData extends DeviceRegistryEntry {
-  device?: GroupRowData;
-  area?: string;
-  integration?: string;
-  battery_entity?: string;
+export interface GroupRowData extends ZHAGroup {
+  group?: GroupRowData;
 }
 
 @customElement("zha-groups-data-table")
 export class ZHAGroupsDataTable extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow = false;
+  @property() public groups!: ZHAGroup[];
+
+  private _groups = memoizeOne((groups: ZHAGroup[]) => {
+    let outputGroups: GroupRowData[] = groups;
+
+    outputGroups = outputGroups.map((group) => {
+      return {
+        ...group,
+        name: group.name,
+        group_id: group.group_id,
+        members: group.members,
+      };
+    });
+
+    return outputGroups;
+  });
 
   private _columns = memoizeOne(
     (narrow: boolean): DataTableColumnContainer =>
@@ -43,7 +56,7 @@ export class ZHAGroupsDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
-              template: (name, group: DataTableRowData) => {
+              template: (name: DataTableRowData) => {
                 return html`
                   ${name}<br />
                 `;
@@ -57,6 +70,28 @@ export class ZHAGroupsDataTable extends LitElement {
               filterable: true,
               direction: "asc",
             },
+            group_id: {
+              title: this.hass.localize("ui.panel.config.zha.common.group_id"),
+              template: (groupId: number) => {
+                return html`
+                  ${formatAsPaddedHex(groupId)}
+                `;
+              },
+              sortable: true,
+              filterable: true,
+              direction: "asc",
+            },
+            members: {
+              title: this.hass.localize("ui.panel.config.zha.common.members"),
+              template: (members: ZHADevice[]) => {
+                return html`
+                  ${members.length}
+                `;
+              },
+              sortable: true,
+              filterable: true,
+              direction: "asc",
+            },
           }
   );
 
@@ -64,7 +99,7 @@ export class ZHAGroupsDataTable extends LitElement {
     return html`
       <ha-data-table
         .columns=${this._columns(this.narrow)}
-        .data=${[]}
+        .data=${this._groups(this.groups)}
         @row-click=${this._handleRowClicked}
       ></ha-data-table>
     `;
