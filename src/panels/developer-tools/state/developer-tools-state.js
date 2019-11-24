@@ -1,6 +1,7 @@
 import "@material/mwc-button";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
+import "@polymer/paper-menu-button";
 import copy from "copy-to-clipboard";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
@@ -69,6 +70,9 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         .entities a {
           color: var(--primary-color);
+        }
+        paper-item {
+          cursor: pointer;
         }
       </style>
 
@@ -159,14 +163,45 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
                 title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
               >
               </paper-icon-button>
-              <paper-icon-button
-                id="copyBtn-[[entity.entity_id]]"
-                on-click="entityCopyId"
-                icon="hass:content-copy"
-                alt="[[localize('ui.panel.developer-tools.tabs.states.copy_entity_id')]]"
-                title="[[localize('ui.panel.developer-tools.tabs.states.copy_entity_id')]]"
-              >
-              </paper-icon-button>
+
+              <paper-menu-button>
+                <paper-icon-button
+                  icon="hass:menu"
+                  slot="dropdown-trigger"
+                  alt="menu"
+                ></paper-icon-button>
+                <paper-listbox slot="dropdown-content" role="listbox">
+                  <paper-item action="copyId" on-click="entityCopyValue">
+                    <paper-icon-button
+                      icon="hass:content-copy"
+                      alt="[[localize('ui.panel.developer-tools.tabs.states.copy_entity_id')]]"
+                      title="[[localize('ui.panel.developer-tools.tabs.states.copy_entity_id')]]"
+                    ></paper-icon-button>
+                    [[localize('ui.panel.developer-tools.tabs.states.copy_entity_id')]]
+                  </paper-item>
+
+                  <paper-item action="copyState" on-click="entityCopyValue">
+                    <paper-icon-button
+                      icon="hass:content-copy"
+                      alt="[[localize('ui.panel.developer-tools.tabs.states.copy_entity_state')]]"
+                      title="[[localize('ui.panel.developer-tools.tabs.states.copy_entity_state')]]"
+                    ></paper-icon-button>
+                    [[localize('ui.panel.developer-tools.tabs.states.copy_entity_state')]]
+                  </paper-item>
+
+                  <paper-item
+                    action="copyAttributes"
+                    on-click="entityCopyValue"
+                  >
+                    <paper-icon-button
+                      icon="hass:content-copy"
+                      alt="[[localize('ui.panel.developer-tools.tabs.states.copy_entity_attribute')]]"
+                      title="[[localize('ui.panel.developer-tools.tabs.states.copy_entity_attribute')]]"
+                    ></paper-icon-button>
+                    [[localize('ui.panel.developer-tools.tabs.states.copy_entity_attribute')]]
+                  </paper-item>
+                </paper-listbox>
+              </paper-menu-button>
               <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
             </td>
             <td>[[entity.state]]</td>
@@ -174,7 +209,9 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               is="dom-if"
               if="[[computeShowAttributes(narrow, _showAttributes)]]"
             >
-              <td>[[attributeString(entity)]]</td>
+              <td id="attributes-[[entity.entity_id]]">
+                [[attributeString(entity)]]
+              </td>
             </template>
           </tr>
         </template>
@@ -265,8 +302,22 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     this.fire("hass-more-info", { entityId: ev.model.entity.entity_id });
   }
 
-  entityCopyId(ev) {
-    copy(ev.model.entity.entity_id);
+  entityCopyValue(ev) {
+    var action = ev.currentTarget.attributes.action.value;
+    if (action == "copyId") {
+      copy(ev.model.entity.entity_id);
+    } else if (action == "copyState") {
+      copy(ev.model.entity.state);
+    } else if (action == "copyAttributes") {
+      var td = this.shadowRoot.getElementById(
+        "attributes-" + ev.model.entity.entity_id
+      );
+      // copy(td.textContent.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1'+ '<br />' +'$2'));
+      //copy(td.textContent.replace(/(\r\n|\n\r|\r|\n)/g, '<br />'));
+      copy(td.textContent.replace(/\n/g, "<br />"));
+    } else {
+      return;
+    }
     showToast(this, {
       message: this.hass.localize(
         "ui.panel.developer-tools.tabs.states.copied"
