@@ -331,14 +331,13 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
     const placeholder = target.placeholder as Placeholder;
     const type = target.type;
 
-    if (!value.length && this._placeholderValues[type]) {
+    if (this._placeholderValues[type]) {
       delete this._placeholderValues[type][placeholder.index];
       delete this._extraInfo[type][placeholder.index];
-      this.requestUpdate("_placeholderValues");
-      return;
     }
 
     if (!value.length) {
+      this.requestUpdate("_placeholderValues");
       return;
     }
 
