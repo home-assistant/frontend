@@ -2043,10 +2043,10 @@
             "no_entities": "No entities",
             "more_info": "More Info",
             "alert_entity_field": "Entity is a mandatory field",
-            "copy_entity_id": "Copy entity ID",
-            "copy_entity_state": "Copy entity state",
-            "copy_entity_attribute": "Copy entity attributes",
-            "copied": "Copied!"
+            "copy_entity_id": "Copy ID",
+            "copy_entity_state": "Copy state",
+            "copy_entity_attribute": "Copy attributes",
+            "copied": "Copied to clipboard"
           },
           "templates": {
             "title": "Template",

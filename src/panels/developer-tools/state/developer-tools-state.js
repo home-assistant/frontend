@@ -63,6 +63,10 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           height: 24px;
           padding: 0;
         }
+        .entities paper-menu-button {
+          height: 24px;
+          padding: 0;
+        }
         .entities td:nth-child(3) {
           white-space: pre-wrap;
           word-break: break-word;
@@ -156,20 +160,26 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         <template is="dom-repeat" items="[[_entities]]" as="entity">
           <tr>
             <td>
-              <paper-icon-button
-                on-click="entityMoreInfo"
-                icon="hass:information-outline"
-                alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
-                title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
-              >
-              </paper-icon-button>
-              <paper-menu-button>
+              <paper-menu-button close-on-activate="true">
                 <paper-icon-button
-                  icon="hass:menu"
+                  icon="hass:dots-vertical"
                   slot="dropdown-trigger"
                   alt="menu"
                 ></paper-icon-button>
-                <paper-listbox slot="dropdown-content" role="listbox">
+                <paper-listbox
+                  slot="dropdown-content"
+                  role="listbox"
+                  selected="{{selectedItem}}"
+                >
+                  <paper-item on-click="entityMoreInfo">
+                    <paper-icon-button
+                      icon="hass:information-outline"
+                      alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
+                      title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
+                    ></paper-icon-button>
+                    [[localize('ui.panel.developer-tools.tabs.states.more_info')]]
+                  </paper-item>
+
                   <paper-item action="copyId" on-click="entityCopyValue">
                     <paper-icon-button
                       icon="hass:content-copy"
