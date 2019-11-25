@@ -153,13 +153,22 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
               !this._setTemp
                 ? ""
                 : Array.isArray(this._setTemp)
+                ? this._stepSize === 1
+                  ? svg`
+                      ${this._setTemp[0].toFixed()} -
+                      ${this._setTemp[1].toFixed()}
+                      `
+                  : svg`
+                      ${this._setTemp[0].toFixed(1)} -
+                      ${this._setTemp[1].toFixed(1)}
+                      `
+                : this._stepSize === 1
                 ? svg`
-                  ${this._setTemp[0].toFixed(1)} -
-                  ${this._setTemp[1].toFixed(1)}
-                  `
+                      ${this._setTemp.toFixed()}
+                      `
                 : svg`
-                  ${this._setTemp.toFixed(1)}
-              `
+                      ${this._setTemp.toFixed(1)}
+                      `
             }
           </text>
           <text
