@@ -208,7 +208,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
               is="dom-if"
               if="[[computeShowAttributes(narrow, _showAttributes)]]"
             >
-              <td id="attributes-[[entity.entity_id]]">[[attributeString(entity)]]</td>
+              <td>[[attributeString(entity)]]</td>
             </template>
           </tr>
         </template>
@@ -306,10 +306,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     } else if (action === "copyState") {
       copy(ev.model.entity.state);
     } else if (action === "copyAttributes") {
-      var td = this.shadowRoot.getElementById(
-        "attributes-" + ev.model.entity.entity_id
-      );
-      copy(td.textContent.replace(/\n/g, "<br />"));
+      copy(this.attributeString(ev.model.entity).replace(/\n/g, "<br />"));
     } else {
       return;
     }
