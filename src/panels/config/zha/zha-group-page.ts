@@ -13,6 +13,7 @@ import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-error-screen";
 import "../ha-config-section";
 import { HomeAssistant } from "../../../types";
+import { haStyleDialog } from "../../../resources/styles";
 import {
   ZHADevice,
   ZHAGroup,
@@ -30,7 +31,11 @@ export class ZHAGroupPage extends LitElement {
   @property() public devices!: ZHADevice[];
   @property() public groupId!: number;
   @property() public narrow!: boolean;
+  @property() private _canSave: boolean = false;
+  @property() private _processing: boolean = false;
+
   private _selectedDevices: string[] = [];
+
   private _members = memoizeOne(
     (group: ZHAGroup): ZHADevice[] => group.members
   );
@@ -104,6 +109,21 @@ export class ZHAGroupPage extends LitElement {
             @selection-changed=${this._handleSelectionChanged}
           >
           </zha-devices-data-table>
+
+          <div class="paper-dialog-buttons">
+            <mwc-button
+              ?disabled="${!this._canSave}"
+              @click="${this._addMembersToGroup}"
+            >
+              <paper-spinner
+                ?active="${this._processing}"
+                alt="Adding Members"
+              ></paper-spinner>
+              ${this.hass!.localize(
+                "ui.panel.config.zha.common.add_members"
+              )}</mwc-button
+            >
+          </div>
         </ha-config-section>
       </hass-subpage>
     `;
@@ -127,25 +147,42 @@ export class ZHAGroupPage extends LitElement {
         this._selectedDevices.splice(index, 1);
       }
     }
+    this._canSave = this._selectedDevices.length > 0;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .header {
-        font-family: var(--paper-font-display1_-_font-family);
-        -webkit-font-smoothing: var(
-          --paper-font-display1_-_-webkit-font-smoothing
-        );
-        font-size: var(--paper-font-display1_-_font-size);
-        font-weight: var(--paper-font-display1_-_font-weight);
-        letter-spacing: var(--paper-font-display1_-_letter-spacing);
-        line-height: var(--paper-font-display1_-_line-height);
-        opacity: var(--dark-primary-opacity);
-      }
+  private _addMembersToGroup(ev: CustomEvent): void {}
 
-      ha-config-section *:last-child {
-        padding-bottom: 24px;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      haStyleDialog,
+      css`
+        .header {
+          font-family: var(--paper-font-display1_-_font-family);
+          -webkit-font-smoothing: var(
+            --paper-font-display1_-_-webkit-font-smoothing
+          );
+          font-size: var(--paper-font-display1_-_font-size);
+          font-weight: var(--paper-font-display1_-_font-weight);
+          letter-spacing: var(--paper-font-display1_-_letter-spacing);
+          line-height: var(--paper-font-display1_-_line-height);
+          opacity: var(--dark-primary-opacity);
+        }
+
+        ha-config-section *:last-child {
+          padding-bottom: 24px;
+        }
+        mwc-button paper-spinner {
+          width: 14px;
+          height: 14px;
+          margin-right: 20px;
+        }
+        paper-spinner {
+          display: none;
+        }
+        paper-spinner[active] {
+          display: block;
+        }
+      `,
+    ];
   }
 }
