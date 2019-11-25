@@ -138,6 +138,9 @@ class HaConfigDashboard extends LitElement {
     return [
       haStyle,
       css`
+        ha-config-navigation:last-child {
+          margin-bottom: 24px;
+        }
         ha-card {
           overflow: hidden;
         }
@@ -148,6 +151,7 @@ class HaConfigDashboard extends LitElement {
         .promo-advanced {
           text-align: center;
           color: var(--secondary-text-color);
+          margin-bottom: 24px;
         }
         .promo-advanced a {
           color: var(--secondary-text-color);
