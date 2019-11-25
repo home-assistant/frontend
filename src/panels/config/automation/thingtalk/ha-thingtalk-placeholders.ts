@@ -331,8 +331,17 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
     const placeholder = target.placeholder as Placeholder;
     const type = target.type;
 
+    let oldValues = getPath(this._placeholderValues, [type, placeholder.index]);
+    if (oldValues) {
+      oldValues = Object.values(oldValues);
+    }
+    const oldExtraInfo = getPath(this._extraInfo, [type, placeholder.index]);
+
     if (this._placeholderValues[type]) {
       delete this._placeholderValues[type][placeholder.index];
+    }
+
+    if (this._extraInfo[type]) {
       delete this._extraInfo[type][placeholder.index];
     }
 
@@ -342,20 +351,40 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
     }
 
     value.forEach((deviceId, index) => {
+      let oldIndex;
+      if (oldValues) {
+        const oldDevice = oldValues.find((oldVal, idx) => {
+          oldIndex = idx;
+          return oldVal.device_id === deviceId;
+        });
+
+        if (oldDevice) {
+          applyPatch(
+            this._placeholderValues,
+            [type, placeholder.index, index],
+            oldDevice
+          );
+          if (oldExtraInfo) {
+            applyPatch(
+              this._extraInfo,
+              [type, placeholder.index, index],
+              oldExtraInfo[oldIndex]
+            );
+          }
+          return;
+        }
+      }
+
       applyPatch(
         this._placeholderValues,
         [type, placeholder.index, index, "device_id"],
         deviceId
       );
-    });
 
-    if (!placeholder.fields.includes("entity_id")) {
-      return;
-    }
+      if (!placeholder.fields.includes("entity_id")) {
+        return;
+      }
 
-    applyPatch(this._extraInfo, [type, placeholder.index], undefined);
-
-    value.forEach((deviceId, index) => {
       const devEntities = this._deviceEntityLookup[deviceId];
 
       const entities = devEntities.filter((eid) => {
