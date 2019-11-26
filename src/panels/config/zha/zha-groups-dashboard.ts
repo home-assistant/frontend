@@ -15,6 +15,7 @@ import { haStyleDialog } from "../../../resources/styles";
 import { ZHAGroup, fetchGroups, removeGroups } from "../../../data/zha";
 import { sortZHAGroups } from "./functions";
 import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
+import { navigate } from "../../../common/navigate";
 
 @customElement("zha-groups-dashboard")
 export class ZHAGroupsDashboard extends LitElement {
@@ -100,7 +101,9 @@ export class ZHAGroupsDashboard extends LitElement {
     this._processingRemove = false;
   }
 
-  private async _addGroup(ev: CustomEvent): Promise<void> {}
+  private async _addGroup(ev: CustomEvent): Promise<void> {
+    navigate(this, `/config/zha/group-add`);
+  }
 
   static get styles(): CSSResult[] {
     return [
