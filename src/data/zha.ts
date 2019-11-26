@@ -109,6 +109,17 @@ export const fetchGroup = (
     group_id: groupId,
   });
 
+export const addGroup = (
+  hass: HomeAssistant,
+  groupName: string,
+  membersToAdd?: string[]
+): Promise<ZHAGroup> =>
+  hass.callWS({
+    type: "zha/group/add",
+    group_name: groupName,
+    members: membersToAdd,
+  });
+
 export const addMembersToGroup = (
   hass: HomeAssistant,
   groupId: number,
