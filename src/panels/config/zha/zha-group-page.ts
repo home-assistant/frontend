@@ -19,6 +19,7 @@ import {
   ZHAGroup,
   fetchGroup,
   fetchDevices,
+  addMembersToGroup,
 } from "../../../data/zha";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-devices-data-table";
@@ -150,7 +151,15 @@ export class ZHAGroupPage extends LitElement {
     this._canSave = this._selectedDevices.length > 0;
   }
 
-  private _addMembersToGroup(ev: CustomEvent): void {}
+  private async _addMembersToGroup(ev: CustomEvent): Promise<void> {
+    this._processing = true;
+    this.group = await addMembersToGroup(
+      this.hass,
+      this.groupId,
+      this._selectedDevices
+    );
+    this._processing = false;
+  }
 
   static get styles(): CSSResult[] {
     return [
