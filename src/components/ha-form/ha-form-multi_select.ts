@@ -1,22 +1,21 @@
+import "@polymer/paper-checkbox/paper-checkbox";
+import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-item/paper-icon-item";
+import "@polymer/paper-listbox/paper-listbox";
 import {
   customElement,
-  LitElement,
   html,
+  LitElement,
   property,
-  TemplateResult,
   query,
+  TemplateResult,
 } from "lit-element";
+import { fireEvent } from "../../common/dom/fire_event";
 import {
   HaFormElement,
-  HaFormMultiSelectSchema,
   HaFormMultiSelectData,
+  HaFormMultiSelectSchema,
 } from "./ha-form";
-import { fireEvent } from "../../common/dom/fire_event";
-
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
-import "@polymer/paper-listbox/paper-listbox";
-import "@polymer/paper-item/paper-icon-item";
-import "@polymer/paper-checkbox/paper-checkbox";
 
 @customElement("ha-form-multi_select")
 export class HaFormMultiSelect extends LitElement implements HaFormElement {
@@ -57,11 +56,11 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
     `;
   }
 
-  private _optionValue(item: string | string[]): string | string[] {
+  private _optionValue(item: string | string[]): string {
     return Array.isArray(item) ? item[0] : item;
   }
 
-  private _optionLabel(item: string | string[]): string | string[] {
+  private _optionLabel(item: string | string[]): string {
     return Array.isArray(item) ? item[1] : item;
   }
 
