@@ -12,11 +12,7 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 // tslint:disable-next-line
-import {
-  DataTableColumnContainer,
-  RowClickedEvent,
-  DataTableRowData,
-} from "../../../components/data-table/ha-data-table";
+import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 // tslint:disable-next-line
 import { navigate } from "../../../common/navigate";
 import { ZHAGroup, ZHADevice } from "../../../data/zha";
@@ -24,7 +20,7 @@ import { formatAsPaddedHex } from "./functions";
 
 export interface GroupRowData extends ZHAGroup {
   group?: GroupRowData;
-  id: number;
+  id?: number;
 }
 
 @customElement("zha-groups-data-table")
@@ -32,6 +28,7 @@ export class ZHAGroupsDataTable extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow = false;
   @property() public groups!: ZHAGroup[];
+  @property() public selectable = false;
 
   private _groups = memoizeOne((groups: ZHAGroup[]) => {
     let outputGroups: GroupRowData[] = groups;
@@ -58,11 +55,11 @@ export class ZHAGroupsDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
-              template: (name: DataTableRowData) => {
-                return html`
-                  ${name}<br />
-                `;
-              },
+              template: (name) => html`
+                <div @click=${this._handleRowClicked} style="cursor: pointer;">
+                  ${name}
+                </div>
+              `,
             },
           }
         : {
@@ -71,6 +68,11 @@ export class ZHAGroupsDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
+              template: (name) => html`
+                <div @click=${this._handleRowClicked} style="cursor: pointer;">
+                  ${name}
+                </div>
+              `,
             },
             group_id: {
               title: this.hass.localize("ui.panel.config.zha.common.group_id"),
@@ -102,13 +104,15 @@ export class ZHAGroupsDataTable extends LitElement {
       <ha-data-table
         .columns=${this._columns(this.narrow)}
         .data=${this._groups(this.groups)}
-        @row-click=${this._handleRowClicked}
+        .selectable=${this.selectable}
       ></ha-data-table>
     `;
   }
 
   private _handleRowClicked(ev: CustomEvent) {
-    const groupId = (ev.detail as RowClickedEvent).id;
+    const groupId = (ev.target as HTMLElement)
+      .closest("tr")!
+      .getAttribute("data-row-id")!;
     navigate(this, `/config/zha/group/${groupId}`);
   }
 }
