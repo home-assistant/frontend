@@ -1389,8 +1389,12 @@
             "add_members": "Add Members",
             "remove_members": "Remove Members",
             "remove_groups": "Remove Groups",
+            "create_group": "Create New ZHA Zigbee Group",
+            "create": "Create Group",
             "group_info": "Group Information",
             "group_details": "Here are all the details for the selected Zigbee group.",
+            "create_group_details": "Enter the required details to create a new zigbee group",
+            "group_name_placeholder": "Group Name",
             "devices": "Devices",
             "manufacturer_code_override": "Manufacturer Code Override",
             "value": "Value"
