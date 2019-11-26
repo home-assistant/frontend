@@ -31,7 +31,7 @@ export class ZHAGroupsDataTable extends LitElement {
   @property() public selectable = false;
 
   private _groups = memoizeOne((groups: ZHAGroup[]) => {
-    let outputGroups: GroupRowData[] = groups;
+    let outputGroups: GroupRowData[] = groups || [];
 
     outputGroups = outputGroups.map((group) => {
       return {

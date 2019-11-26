@@ -93,7 +93,7 @@ export class ZHAGroupsDashboard extends LitElement {
     this._canRemove = this._selectedGroupsToRemove.length > 0;
   }
 
-  private async _removeGroup(ev: CustomEvent): Promise<void> {
+  private async _removeGroup(): Promise<void> {
     this._processingRemove = true;
     this._groups = await removeGroups(this.hass, this._selectedGroupsToRemove);
     this._selectedGroupsToRemove = [];
@@ -101,7 +101,7 @@ export class ZHAGroupsDashboard extends LitElement {
     this._processingRemove = false;
   }
 
-  private async _addGroup(ev: CustomEvent): Promise<void> {
+  private async _addGroup(): Promise<void> {
     navigate(this, `/config/zha/group-add`);
   }
 

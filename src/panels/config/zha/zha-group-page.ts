@@ -208,7 +208,7 @@ export class ZHAGroupPage extends LitElement {
     this._canRemove = this._selectedDevicesToRemove.length > 0;
   }
 
-  private async _addMembersToGroup(ev: CustomEvent): Promise<void> {
+  private async _addMembersToGroup(): Promise<void> {
     this._processingAdd = true;
     this.group = await addMembersToGroup(
       this.hass,
@@ -220,7 +220,7 @@ export class ZHAGroupPage extends LitElement {
     this._processingAdd = false;
   }
 
-  private async _removeMembersFromGroup(ev: CustomEvent): Promise<void> {
+  private async _removeMembersFromGroup(): Promise<void> {
     this._processingRemove = true;
     this.group = await removeMembersFromGroup(
       this.hass,
@@ -232,9 +232,9 @@ export class ZHAGroupPage extends LitElement {
     this._processingRemove = false;
   }
 
-  private async _deleteGroup(ev: CustomEvent): Promise<void> {
+  private async _deleteGroup(): Promise<void> {
     await removeGroups(this.hass, [this.groupId]);
-    navigate(this, `/config/zha/groups`);
+    navigate(this, `/config/zha/groups`, true);
   }
 
   static get styles(): CSSResult[] {

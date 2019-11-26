@@ -104,10 +104,9 @@ export class ZHAAddGroupPage extends LitElement {
         this._selectedDevicesToAdd.splice(index, 1);
       }
     }
-    this._canAdd = this._selectedDevicesToAdd.length > 0;
   }
 
-  private async _createGroup(ev: CustomEvent): Promise<void> {
+  private async _createGroup(): Promise<void> {
     this._processingAdd = true;
     const group: ZHAGroup = await addGroup(
       this.hass,
@@ -117,13 +116,17 @@ export class ZHAAddGroupPage extends LitElement {
     this._selectedDevicesToAdd = [];
     this._canAdd = false;
     this._processingAdd = false;
-    navigate(this, `/config/zha/group/${group.group_id}`);
+    this._groupName = "";
+    navigate(this, `/config/zha/group/${group.group_id}`, true);
   }
 
   private _handleNameChange(ev: PolymerChangedEvent<string>) {
     const target = ev.currentTarget as PaperInputElement;
     if (target.value) {
       this._groupName = target.value;
+      if (target.value.length > 0) {
+        this._canAdd = true;
+      }
     }
   }
 
