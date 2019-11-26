@@ -1,7 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "@vaadin/vaadin-combo-box/vaadin-combo-box-light";
+import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 import "@polymer/paper-listbox/paper-listbox";
 import memoizeOne from "memoize-one";
 import {
