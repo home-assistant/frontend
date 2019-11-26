@@ -21,10 +21,12 @@ import {
   fetchDevices,
   addMembersToGroup,
   removeMembersFromGroup,
+  removeGroups,
 } from "../../../data/zha";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-devices-data-table";
 import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
+import { navigate } from "../../../common/navigate";
 
 @customElement("zha-group-page")
 export class ZHAGroupPage extends LitElement {
@@ -67,7 +69,8 @@ export class ZHAGroupPage extends LitElement {
       <hass-subpage .header=${this.group.name}>
         <paper-icon-button
           slot="toolbar-icon"
-          icon="hass:settings"
+          icon="hass:delete"
+          @click=${this._deleteGroup}
         ></paper-icon-button>
         <ha-config-section .isWide=${!this.narrow}>
           <div class="header">
@@ -227,6 +230,11 @@ export class ZHAGroupPage extends LitElement {
     this._selectedDevicesToRemove = [];
     this._canRemove = false;
     this._processingRemove = false;
+  }
+
+  private async _deleteGroup(ev: CustomEvent): Promise<void> {
+    await removeGroups(this.hass, [this.groupId]);
+    navigate(this, `/config/zha/groups`);
   }
 
   static get styles(): CSSResult[] {
