@@ -70,11 +70,9 @@ export class ZHAGroupPage extends LitElement {
           icon="hass:settings"
         ></paper-icon-button>
         <ha-config-section .isWide=${!this.narrow}>
-          <span slot="header"
-            >${this.hass.localize(
-              "ui.panel.config.zha.common.group_info"
-            )}</span
-          >
+          <div class="header">
+            ${this.hass.localize("ui.panel.config.zha.common.group_info")}
+          </div>
           <span slot="introduction">
             ${this.hass.localize("ui.panel.config.zha.common.group_details")}
           </span>
@@ -116,6 +114,7 @@ export class ZHAGroupPage extends LitElement {
                   .narrow=${this.narrow}
                   .selectable=${true}
                   @selection-changed=${this._handleRemoveSelectionChanged}
+                  class="table"
                 >
                 </zha-devices-data-table>
 
@@ -123,6 +122,7 @@ export class ZHAGroupPage extends LitElement {
                   <mwc-button
                     ?disabled="${!this._canRemove}"
                     @click="${this._removeMembersFromGroup}"
+                    class="button"
                   >
                     <paper-spinner
                       ?active="${this._processingRemove}"
@@ -146,6 +146,7 @@ export class ZHAGroupPage extends LitElement {
             .narrow=${this.narrow}
             .selectable=${true}
             @selection-changed=${this._handleAddSelectionChanged}
+            class="table"
           >
           </zha-devices-data-table>
 
@@ -153,6 +154,7 @@ export class ZHAGroupPage extends LitElement {
             <mwc-button
               ?disabled="${!this._canAdd}"
               @click="${this._addMembersToGroup}"
+              class="button"
             >
               <paper-spinner
                 ?active="${this._processingAdd}"
@@ -241,6 +243,15 @@ export class ZHAGroupPage extends LitElement {
           letter-spacing: var(--paper-font-display1_-_letter-spacing);
           line-height: var(--paper-font-display1_-_line-height);
           opacity: var(--dark-primary-opacity);
+        }
+
+        .button {
+          float: right;
+        }
+
+        .table {
+          height: 200px;
+          overflow: auto;
         }
 
         ha-config-section *:last-child {
