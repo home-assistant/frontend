@@ -20,6 +20,7 @@ import {
   fetchGroup,
   fetchDevices,
   addMembersToGroup,
+  removeMembersFromGroup,
 } from "../../../data/zha";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-devices-data-table";
@@ -32,10 +33,13 @@ export class ZHAGroupPage extends LitElement {
   @property() public devices!: ZHADevice[];
   @property() public groupId!: number;
   @property() public narrow!: boolean;
-  @property() private _canSave: boolean = false;
-  @property() private _processing: boolean = false;
+  @property() private _canAdd: boolean = false;
+  @property() private _processingAdd: boolean = false;
+  @property() private _canRemove: boolean = false;
+  @property() private _processingRemove: boolean = false;
 
-  private _selectedDevices: string[] = [];
+  private _selectedDevicesToAdd: string[] = [];
+  private _selectedDevicesToRemove: string[] = [];
 
   private _members = memoizeOne(
     (group: ZHAGroup): ZHADevice[] => group.members
@@ -98,6 +102,40 @@ export class ZHAGroupPage extends LitElement {
                   This group has no members
                 </span>
               `}
+          ${members.length
+            ? html`
+                <div class="header">
+                  ${this.hass.localize(
+                    "ui.panel.config.zha.common.remove_members"
+                  )}
+                </div>
+
+                <zha-devices-data-table
+                  .hass=${this.hass}
+                  .devices=${members}
+                  .narrow=${this.narrow}
+                  .selectable=${true}
+                  @selection-changed=${this._handleRemoveSelectionChanged}
+                >
+                </zha-devices-data-table>
+
+                <div class="paper-dialog-buttons">
+                  <mwc-button
+                    ?disabled="${!this._canRemove}"
+                    @click="${this._removeMembersFromGroup}"
+                  >
+                    <paper-spinner
+                      ?active="${this._processingRemove}"
+                      alt="Removing Members"
+                    ></paper-spinner>
+                    ${this.hass!.localize(
+                      "ui.panel.config.zha.common.remove_members"
+                    )}</mwc-button
+                  >
+                </div>
+              `
+            : html``}
+
           <div class="header">
             ${this.hass.localize("ui.panel.config.zha.common.add_members")}
           </div>
@@ -107,17 +145,17 @@ export class ZHAGroupPage extends LitElement {
             .devices=${this.devices}
             .narrow=${this.narrow}
             .selectable=${true}
-            @selection-changed=${this._handleSelectionChanged}
+            @selection-changed=${this._handleAddSelectionChanged}
           >
           </zha-devices-data-table>
 
           <div class="paper-dialog-buttons">
             <mwc-button
-              ?disabled="${!this._canSave}"
+              ?disabled="${!this._canAdd}"
               @click="${this._addMembersToGroup}"
             >
               <paper-spinner
-                ?active="${this._processing}"
+                ?active="${this._processingAdd}"
                 alt="Adding Members"
               ></paper-spinner>
               ${this.hass!.localize(
@@ -137,28 +175,56 @@ export class ZHAGroupPage extends LitElement {
     this.devices = await fetchDevices(this.hass!);
   }
 
-  private _handleSelectionChanged(ev: CustomEvent): void {
+  private _handleAddSelectionChanged(ev: CustomEvent): void {
     const changedSelection = ev.detail as SelectionChangedEvent;
     const entity = changedSelection.id;
     if (changedSelection.selected) {
-      this._selectedDevices.push(entity);
+      this._selectedDevicesToAdd.push(entity);
     } else {
-      const index = this._selectedDevices.indexOf(entity);
+      const index = this._selectedDevicesToAdd.indexOf(entity);
       if (index !== -1) {
-        this._selectedDevices.splice(index, 1);
+        this._selectedDevicesToAdd.splice(index, 1);
       }
     }
-    this._canSave = this._selectedDevices.length > 0;
+    this._canAdd = this._selectedDevicesToAdd.length > 0;
+  }
+
+  private _handleRemoveSelectionChanged(ev: CustomEvent): void {
+    const changedSelection = ev.detail as SelectionChangedEvent;
+    const entity = changedSelection.id;
+    if (changedSelection.selected) {
+      this._selectedDevicesToRemove.push(entity);
+    } else {
+      const index = this._selectedDevicesToRemove.indexOf(entity);
+      if (index !== -1) {
+        this._selectedDevicesToRemove.splice(index, 1);
+      }
+    }
+    this._canRemove = this._selectedDevicesToRemove.length > 0;
   }
 
   private async _addMembersToGroup(ev: CustomEvent): Promise<void> {
-    this._processing = true;
+    this._processingAdd = true;
     this.group = await addMembersToGroup(
       this.hass,
       this.groupId,
-      this._selectedDevices
+      this._selectedDevicesToAdd
     );
-    this._processing = false;
+    this._selectedDevicesToAdd = [];
+    this._canAdd = false;
+    this._processingAdd = false;
+  }
+
+  private async _removeMembersFromGroup(ev: CustomEvent): Promise<void> {
+    this._processingRemove = true;
+    this.group = await removeMembersFromGroup(
+      this.hass,
+      this.groupId,
+      this._selectedDevicesToRemove
+    );
+    this._selectedDevicesToRemove = [];
+    this._canRemove = false;
+    this._processingRemove = false;
   }
 
   static get styles(): CSSResult[] {
