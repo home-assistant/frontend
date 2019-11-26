@@ -100,6 +100,28 @@ export const fetchGroup = (
     group_id: groupId,
   });
 
+export const addMembersToGroup = (
+  hass: HomeAssistant,
+  groupId: number,
+  membersToAdd: string[]
+): Promise<ZHAGroup> =>
+  hass.callWS({
+    type: "zha/group/members/add",
+    group_id: groupId,
+    members: membersToAdd,
+  });
+
+export const removeMembersFromGroup = (
+  hass: HomeAssistant,
+  groupId: number,
+  membersToRemove: string[]
+): Promise<ZHAGroup> =>
+  hass.callWS({
+    type: "zha/group/members/remove",
+    group_id: groupId,
+    members: membersToRemove,
+  });
+
 export const fetchZHADevice = (
   hass: HomeAssistant,
   ieeeAddress: string
