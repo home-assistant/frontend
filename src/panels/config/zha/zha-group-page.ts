@@ -32,7 +32,7 @@ import { navigate } from "../../../common/navigate";
 export class ZHAGroupPage extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public group!: ZHAGroup;
-  @property() public devices!: ZHADevice[];
+  @property() public devices: ZHADevice[] = [];
   @property() public groupId!: number;
   @property() public narrow!: boolean;
   @property() private _canAdd: boolean = false;

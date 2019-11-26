@@ -28,7 +28,7 @@ export class ZHADevicesDataTable extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow = false;
   @property() public selectable = false;
-  @property() public devices!: ZHADevice[];
+  @property() public devices: ZHADevice[] = [];
 
   private _devices = memoizeOne((devices: ZHADevice[]) => {
     let outputDevices: DeviceRowData[] = devices;

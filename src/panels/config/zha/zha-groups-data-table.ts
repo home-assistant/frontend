@@ -27,7 +27,7 @@ export interface GroupRowData extends ZHAGroup {
 export class ZHAGroupsDataTable extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow = false;
-  @property() public groups!: ZHAGroup[];
+  @property() public groups: ZHAGroup[] = [];
   @property() public selectable = false;
 
   private _groups = memoizeOne((groups: ZHAGroup[]) => {
