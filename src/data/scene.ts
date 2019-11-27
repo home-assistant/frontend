@@ -19,6 +19,18 @@ export const SCENE_IGNORED_DOMAINS = [
 ];
 
 export const SCENE_SAVED_ATTRIBUTES = {
+  cover: ["current_position", "current_tilt_position"],
+  climate: [
+    "target_temperature",
+    "target_temperature_high",
+    "target_temperature_low",
+    "target_humidity",
+    "fan_mode",
+    "swing_mode",
+    "hvac_mode",
+    "preset_mode",
+  ],
+  fan: ["speed", "current_direction"],
   light: [
     "brightness",
     "color_temp",
@@ -35,18 +47,7 @@ export const SCENE_SAVED_ATTRIBUTES = {
     "media_content_id",
     "media_content_type",
   ],
-  climate: [
-    "target_temperature",
-    "target_temperature_high",
-    "target_temperature_low",
-    "target_humidity",
-    "fan_mode",
-    "swing_mode",
-    "hvac_mode",
-    "preset_mode",
-  ],
   vacuum: ["cleaning_mode"],
-  fan: ["speed", "current_direction"],
   water_heather: ["temperature", "operation_mode"],
 };
 
