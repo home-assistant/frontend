@@ -23,7 +23,10 @@ declare global {
   }
 }
 
-const isExternal = location.search.includes("external_auth=1");
+const isExternal =
+  window.externalApp ||
+  (window.webkit && window.webkit.messageHandlers) ||
+  location.search.includes("external_auth=1");
 
 const authProm = isExternal
   ? () =>
