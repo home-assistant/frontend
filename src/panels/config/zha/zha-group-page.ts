@@ -18,7 +18,7 @@ import {
   ZHADevice,
   ZHAGroup,
   fetchGroup,
-  fetchDevices,
+  fetchGroupableDevices,
   addMembersToGroup,
   removeMembersFromGroup,
   removeGroups,
@@ -177,7 +177,7 @@ export class ZHAGroupPage extends LitElement {
     if (this.groupId !== null && this.groupId !== undefined) {
       this.group = await fetchGroup(this.hass!, this.groupId);
     }
-    this.devices = await fetchDevices(this.hass!);
+    this.devices = await fetchGroupableDevices(this.hass!);
   }
 
   private _handleAddSelectionChanged(ev: CustomEvent): void {

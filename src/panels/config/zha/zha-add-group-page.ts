@@ -12,7 +12,12 @@ import "../../../layouts/hass-error-screen";
 import "../ha-config-section";
 import { HomeAssistant } from "../../../types";
 import { haStyleDialog } from "../../../resources/styles";
-import { ZHADevice, fetchDevices, addGroup, ZHAGroup } from "../../../data/zha";
+import {
+  ZHADevice,
+  fetchGroupableDevices,
+  addGroup,
+  ZHAGroup,
+} from "../../../data/zha";
 import "./zha-devices-data-table";
 import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
 import { navigate } from "../../../common/navigate";
@@ -90,7 +95,7 @@ export class ZHAAddGroupPage extends LitElement {
   }
 
   private async _fetchData() {
-    this.devices = await fetchDevices(this.hass!);
+    this.devices = await fetchGroupableDevices(this.hass!);
   }
 
   private _handleAddSelectionChanged(ev: CustomEvent): void {

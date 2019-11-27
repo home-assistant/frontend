@@ -86,6 +86,13 @@ export const fetchDevices = (hass: HomeAssistant): Promise<ZHADevice[]> =>
     type: "zha/devices",
   });
 
+export const fetchGroupableDevices = (
+  hass: HomeAssistant
+): Promise<ZHADevice[]> =>
+  hass.callWS({
+    type: "zha/devices/groupable",
+  });
+
 export const fetchGroups = (hass: HomeAssistant): Promise<ZHAGroup[]> =>
   hass.callWS({
     type: "zha/groups",
