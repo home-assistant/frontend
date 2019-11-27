@@ -37,7 +37,6 @@ import {
   saveScene,
   SCENE_IGNORED_DOMAINS,
   SceneEntities,
-  SCENE_SAVED_ATTRIBUTES,
   applyScene,
   activateScene,
 } from "../../../data/scene";
@@ -617,17 +616,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
     if (!stateObj) {
       return;
     }
-    const domain = computeDomain(entityId);
-    const attributes = {};
-    for (const attribute in stateObj.attributes) {
-      if (
-        SCENE_SAVED_ATTRIBUTES[domain] &&
-        SCENE_SAVED_ATTRIBUTES[domain].includes(attribute)
-      ) {
-        attributes[attribute] = stateObj.attributes[attribute];
-      }
-    }
-    return { ...attributes, state: stateObj.state };
+    return { ...stateObj.attributes, state: stateObj.state };
   }
 
   private async _saveScene(): Promise<void> {
