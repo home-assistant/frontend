@@ -18,48 +18,6 @@ export const SCENE_IGNORED_DOMAINS = [
   "zone",
 ];
 
-export const SCENE_SAVED_ATTRIBUTES = {
-  counter: ["initial", "maximum", "minimum", "step"],
-  cover: [
-    "current_position",
-    "current_tilt_position",
-    "position",
-    "tilt_position",
-  ],
-  climate: [
-    "target_temperature",
-    "target_temperature_high",
-    "target_temperature_low",
-    "target_humidity",
-    "fan_mode",
-    "swing_mode",
-    "hvac_mode",
-    "preset_mode",
-  ],
-  fan: ["speed", "current_direction", "oscillating"],
-  input_datetime: ["has_date", "has_time"],
-  input_select: ["option", "options"],
-  light: [
-    "brightness",
-    "color_temp",
-    "effect",
-    "rgb_color",
-    "xy_color",
-    "hs_color",
-  ],
-  media_player: [
-    "is_volume_muted",
-    "volume_level",
-    "sound_mode",
-    "source",
-    "media_content_id",
-    "media_content_type",
-  ],
-  timer: ["duration"],
-  vacuum: ["cleaning_mode", "fan_speed"],
-  water_heather: ["temperature", "operation_mode", "away_mode"],
-};
-
 export interface SceneEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & { id?: string };
 }
