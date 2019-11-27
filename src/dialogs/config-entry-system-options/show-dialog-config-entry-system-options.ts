@@ -10,7 +10,9 @@ export interface ConfigEntrySystemOptionsDialogParams {
 }
 
 export const loadConfigEntrySystemOptionsDialog = () =>
-  import(/* webpackChunkName: "config-entry-system-options" */ "./dialog-config-entry-system-options");
+  import(
+    /* webpackChunkName: "config-entry-system-options" */ "./dialog-config-entry-system-options"
+  );
 
 export const showConfigEntrySystemOptionsDialog = (
   element: HTMLElement,

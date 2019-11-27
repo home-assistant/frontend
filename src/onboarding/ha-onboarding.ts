@@ -84,8 +84,12 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._fetchOnboardingSteps();
-    import(/* webpackChunkName: "onboarding-integrations" */ "./onboarding-integrations");
-    import(/* webpackChunkName: "onboarding-core-config" */ "./onboarding-core-config");
+    import(
+      /* webpackChunkName: "onboarding-integrations" */ "./onboarding-integrations"
+    );
+    import(
+      /* webpackChunkName: "onboarding-core-config" */ "./onboarding-core-config"
+    );
     registerServiceWorker(false);
     this.addEventListener("onboarding-step", (ev) => this._handleStepDone(ev));
   }

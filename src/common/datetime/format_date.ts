@@ -10,11 +10,11 @@ function toLocaleDateStringSupportsOptions() {
   return false;
 }
 
-export default (toLocaleDateStringSupportsOptions()
+export default toLocaleDateStringSupportsOptions()
   ? (dateObj: Date, locales: string) =>
       dateObj.toLocaleDateString(locales, {
         year: "numeric",
         month: "long",
         day: "numeric",
       })
-  : (dateObj: Date) => fecha.format(dateObj, "mediumDate"));
+  : (dateObj: Date) => fecha.format(dateObj, "mediumDate");
