@@ -109,9 +109,7 @@ export default class DeviceTrigger extends Component<any, any> {
     // Returns a callback for ha-form to calculate labels per schema object
     return (schema) =>
       localize(
-        `ui.panel.config.automation.editor.triggers.type.device.extra_fields.${
-          schema.name
-        }`
+        `ui.panel.config.automation.editor.triggers.type.device.extra_fields.${schema.name}`
       ) || schema.name;
   }
 }

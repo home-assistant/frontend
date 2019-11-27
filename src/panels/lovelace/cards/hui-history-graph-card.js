@@ -9,7 +9,9 @@ import { processConfigEntities } from "../common/process-config-entities";
 
 class HuiHistoryGraphCard extends PolymerElement {
   static async getConfigElement() {
-    await import(/* webpackChunkName: "hui-history-graph-card-editor" */ "../editor/config-elements/hui-history-graph-card-editor");
+    await import(
+      /* webpackChunkName: "hui-history-graph-card-editor" */ "../editor/config-elements/hui-history-graph-card-editor"
+    );
     return document.createElement("hui-history-graph-card-editor");
   }
 

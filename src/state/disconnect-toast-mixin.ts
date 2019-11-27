@@ -7,7 +7,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
     protected firstUpdated(changedProps) {
       super.firstUpdated(changedProps);
       // Need to load in advance because when disconnected, can't dynamically load code.
-      import(/* webpackChunkName: "notification-manager" */ "../managers/notification-manager");
+      import(
+        /* webpackChunkName: "notification-manager" */ "../managers/notification-manager"
+      );
     }
 
     protected hassReconnected() {
