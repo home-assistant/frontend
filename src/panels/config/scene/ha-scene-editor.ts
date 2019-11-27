@@ -616,11 +616,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
     if (!stateObj) {
       return;
     }
-    const attributes = {};
-    Object.entries(stateObj.attributes).forEach(([key, attribute]) => {
-      attributes[key] = attribute;
-    });
-    return { ...attributes, state: stateObj.state };
+    return { ...stateObj.attributes, state: stateObj.state };
   }
 
   private async _saveScene(): Promise<void> {
