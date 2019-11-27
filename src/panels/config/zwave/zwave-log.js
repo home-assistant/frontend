@@ -137,7 +137,9 @@ class OzwLog extends LocalizeMixin(EventsMixin(PolymerElement)) {
         dialogShowEvent: "show-ozwlog-dialog",
         dialogTag: "zwave-log-dialog",
         dialogImport: () =>
-          import(/* webpackChunkName: "zwave-log-dialog" */ "./zwave-log-dialog"),
+          import(
+            /* webpackChunkName: "zwave-log-dialog" */ "./zwave-log-dialog"
+          ),
       });
     }
   }

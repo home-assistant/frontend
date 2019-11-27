@@ -21,12 +21,16 @@ class ZHAConfigPanel extends HassRouterPage {
       configuration: {
         tag: "ha-config-zha",
         load: () =>
-          import(/* webpackChunkName: "zha-configuration-page" */ "./ha-config-zha"),
+          import(
+            /* webpackChunkName: "zha-configuration-page" */ "./ha-config-zha"
+          ),
       },
       add: {
         tag: "zha-add-devices-page",
         load: () =>
-          import(/* webpackChunkName: "zha-add-devices-page" */ "./zha-add-devices-page"),
+          import(
+            /* webpackChunkName: "zha-add-devices-page" */ "./zha-add-devices-page"
+          ),
       },
     },
   };

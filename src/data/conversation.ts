@@ -3,7 +3,7 @@ import { HomeAssistant } from "../types";
 interface ProcessResults {
   card: { [key: string]: { [key: string]: string } };
   speech: {
-    [SpeechType in "plain" | "ssml"]: { extra_data: any; speech: string }
+    [SpeechType in "plain" | "ssml"]: { extra_data: any; speech: string };
   };
 }
 

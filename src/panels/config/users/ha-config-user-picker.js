@@ -112,7 +112,9 @@ class HaUserPicker extends EventsMixin(
         dialogShowEvent: "show-add-user",
         dialogTag: "ha-dialog-add-user",
         dialogImport: () =>
-          import(/* webpackChunkName: "ha-dialog-add-user" */ "./ha-dialog-add-user"),
+          import(
+            /* webpackChunkName: "ha-dialog-add-user" */ "./ha-dialog-add-user"
+          ),
       });
     }
   }
