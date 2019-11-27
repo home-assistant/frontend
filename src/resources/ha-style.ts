@@ -147,8 +147,8 @@ documentContainer.innerHTML = `<custom-style>
       --mdc-theme-on-surface: var(--primary-text-color);
 
       /* app header background color */
-      --app-header-text-color: var(--text-primary-color)
-      --app-header-background-color: var(--primary-color)
+      --app-header-text-color: var(--text-primary-color);
+      --app-header-background-color: var(--primary-color);
     }
   </style>
 
