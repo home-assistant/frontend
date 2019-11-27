@@ -45,7 +45,9 @@ export class HomeAssistantAppEl extends HassElement {
     this._initialize();
     setTimeout(registerServiceWorker, 1000);
     /* polyfill for paper-dropdown */
-    import(/* webpackChunkName: "polyfill-web-animations-next" */ "web-animations-js/web-animations-next-lite.min");
+    import(
+      /* webpackChunkName: "polyfill-web-animations-next" */ "web-animations-js/web-animations-next-lite.min"
+    );
   }
 
   protected updated(changedProps: PropertyValues): void {
@@ -55,9 +57,10 @@ export class HomeAssistantAppEl extends HassElement {
       this._updateHass({ panelUrl: this._panelUrl });
     }
     if (changedProps.has("hass")) {
-      this.hassChanged(this.hass!, changedProps.get("hass") as
-        | HomeAssistant
-        | undefined);
+      this.hassChanged(
+        this.hass!,
+        changedProps.get("hass") as HomeAssistant | undefined
+      );
     }
   }
 

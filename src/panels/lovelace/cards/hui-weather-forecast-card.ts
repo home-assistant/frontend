@@ -65,7 +65,9 @@ const weatherIcons = {
 @customElement("hui-weather-forecast-card")
 class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(/* webpackChunkName: "hui-weather-forecast-card-editor" */ "../editor/config-elements/hui-weather-forecast-card-editor");
+    await import(
+      /* webpackChunkName: "hui-weather-forecast-card-editor" */ "../editor/config-elements/hui-weather-forecast-card-editor"
+    );
     return document.createElement("hui-weather-forecast-card-editor");
   }
   public static getStubConfig(): object {
@@ -218,7 +220,9 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
                             ? html`
                                 ${new Date(item.datetime).toLocaleTimeString(
                                   this.hass!.language,
-                                  { hour: "numeric" }
+                                  {
+                                    hour: "numeric",
+                                  }
                                 )}
                               `
                             : ""}

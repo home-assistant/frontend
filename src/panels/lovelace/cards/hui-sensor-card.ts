@@ -108,8 +108,14 @@ const coordinates = (
   history.forEach((item) => (item.state = Number(item.state)));
   history = history.filter((item) => !Number.isNaN(item.state));
 
-  const min = Math.min.apply(Math, history.map((item) => item.state));
-  const max = Math.max.apply(Math, history.map((item) => item.state));
+  const min = Math.min.apply(
+    Math,
+    history.map((item) => item.state)
+  );
+  const max = Math.max.apply(
+    Math,
+    history.map((item) => item.state)
+  );
   const now = new Date().getTime();
 
   const reduce = (res, item, point) => {
@@ -141,7 +147,9 @@ const coordinates = (
 @customElement("hui-sensor-card")
 class HuiSensorCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(/* webpackChunkName: "hui-sensor-card-editor" */ "../editor/config-elements/hui-sensor-card-editor");
+    await import(
+      /* webpackChunkName: "hui-sensor-card-editor" */ "../editor/config-elements/hui-sensor-card-editor"
+    );
     return document.createElement("hui-sensor-card-editor");
   }
 

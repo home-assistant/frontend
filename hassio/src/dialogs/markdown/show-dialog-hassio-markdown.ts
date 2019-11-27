@@ -12,7 +12,9 @@ export const showHassioMarkdownDialog = (
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-hassio-markdown",
     dialogImport: () =>
-      import(/* webpackChunkName: "dialog-hassio-markdown" */ "./dialog-hassio-markdown"),
+      import(
+        /* webpackChunkName: "dialog-hassio-markdown" */ "./dialog-hassio-markdown"
+      ),
     dialogParams,
   });
 };

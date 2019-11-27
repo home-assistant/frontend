@@ -36,7 +36,9 @@ const STATES_OFF = new Set(["closed", "locked", "not_home", "off"]);
 @customElement("hui-picture-glance-card")
 class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(/* webpackChunkName: "hui-picture-glance-card-editor" */ "../editor/config-elements/hui-picture-glance-card-editor");
+    await import(
+      /* webpackChunkName: "hui-picture-glance-card-editor" */ "../editor/config-elements/hui-picture-glance-card-editor"
+    );
     return document.createElement("hui-picture-glance-card-editor");
   }
   public static getStubConfig(): object {

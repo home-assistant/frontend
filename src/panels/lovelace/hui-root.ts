@@ -650,13 +650,13 @@ class HUIRoot extends LitElement {
     if (viewIndex === "hass-unused-entities") {
       const unusedEntities = document.createElement("hui-unused-entities");
       // Wait for promise to resolve so that the element has been upgraded.
-      import(/* webpackChunkName: "hui-unused-entities" */ "./editor/unused-entities/hui-unused-entities").then(
-        () => {
-          unusedEntities.hass = this.hass!;
-          unusedEntities.lovelace = this.lovelace!;
-          unusedEntities.narrow = this.narrow;
-        }
-      );
+      import(
+        /* webpackChunkName: "hui-unused-entities" */ "./editor/unused-entities/hui-unused-entities"
+      ).then(() => {
+        unusedEntities.hass = this.hass!;
+        unusedEntities.lovelace = this.lovelace!;
+        unusedEntities.narrow = this.narrow;
+      });
       if (this.config.background) {
         unusedEntities.style.setProperty(
           "--lovelace-background",

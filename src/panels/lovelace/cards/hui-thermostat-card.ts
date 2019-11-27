@@ -47,7 +47,9 @@ const modeIcons: { [mode in HvacMode]: string } = {
 @customElement("hui-thermostat-card")
 export class HuiThermostatCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(/* webpackChunkName: "hui-thermostat-card-editor" */ "../editor/config-elements/hui-thermostat-card-editor");
+    await import(
+      /* webpackChunkName: "hui-thermostat-card-editor" */ "../editor/config-elements/hui-thermostat-card-editor"
+    );
     return document.createElement("hui-thermostat-card-editor");
   }
 
@@ -179,9 +181,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             ${
               stateObj.attributes.hvac_action
                 ? this.hass!.localize(
-                    `state_attributes.climate.hvac_action.${
-                      stateObj.attributes.hvac_action
-                    }`
+                    `state_attributes.climate.hvac_action.${stateObj.attributes.hvac_action}`
                   )
                 : this.hass!.localize(`state.climate.${stateObj.state}`)
             }
@@ -191,9 +191,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
                 ? html`
                     -
                     ${this.hass!.localize(
-                      `state_attributes.climate.preset_mode.${
-                        stateObj.attributes.preset_mode
-                      }`
+                      `state_attributes.climate.preset_mode.${stateObj.attributes.preset_mode}`
                     ) || stateObj.attributes.preset_mode}
                   `
                 : ""

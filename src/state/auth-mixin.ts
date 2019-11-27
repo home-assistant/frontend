@@ -30,7 +30,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       if (askWrite()) {
         this.updateComplete
           .then(() =>
-            import(/* webpackChunkName: "ha-store-auth-card" */ "../dialogs/ha-store-auth-card")
+            import(
+              /* webpackChunkName: "ha-store-auth-card" */ "../dialogs/ha-store-auth-card"
+            )
           )
           .then(() => {
             const el = document.createElement("ha-store-auth-card");
