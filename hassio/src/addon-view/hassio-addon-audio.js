@@ -44,9 +44,7 @@ class HassioAddonAudio extends EventsMixin(PolymerElement) {
               selected="{{selectedInput}}"
             >
               <template is="dom-repeat" items="[[inputDevices]]">
-                <paper-item device\$="[[item.device]]"
-                  >[[item.name]]</paper-item
-                >
+                <paper-item device$="[[item.device]]">[[item.name]]</paper-item>
               </template>
             </paper-listbox>
           </paper-dropdown-menu>
@@ -57,9 +55,7 @@ class HassioAddonAudio extends EventsMixin(PolymerElement) {
               selected="{{selectedOutput}}"
             >
               <template is="dom-repeat" items="[[outputDevices]]">
-                <paper-item device\$="[[item.device]]"
-                  >[[item.name]]</paper-item
-                >
+                <paper-item device$="[[item.device]]">[[item.name]]</paper-item>
               </template>
             </paper-listbox>
           </paper-dropdown-menu>

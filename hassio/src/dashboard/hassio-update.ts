@@ -74,9 +74,7 @@ export class HassioUpdate extends LitElement {
             this.supervisorInfo.version,
             this.supervisorInfo.last_version,
             "hassio/supervisor/update",
-            `https://github.com//home-assistant/hassio/releases/tag/${
-              this.supervisorInfo.last_version
-            }`
+            `https://github.com//home-assistant/hassio/releases/tag/${this.supervisorInfo.last_version}`
           )}
           ${this.hassOsInfo
             ? this._renderUpdateCard(
@@ -84,9 +82,7 @@ export class HassioUpdate extends LitElement {
                 this.hassOsInfo.version,
                 this.hassOsInfo.version_latest,
                 "hassio/hassos/update",
-                `https://github.com//home-assistant/hassos/releases/tag/${
-                  this.hassOsInfo.version_latest
-                }`
+                `https://github.com//home-assistant/hassos/releases/tag/${this.hassOsInfo.version_latest}`
               )
             : ""}
         </div>

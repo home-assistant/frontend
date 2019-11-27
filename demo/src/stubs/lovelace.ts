@@ -12,9 +12,10 @@ export const mockLovelace = (
   localizePromise: Promise<LocalizeFunc>
 ) => {
   hass.mockWS("lovelace/config", () =>
-    Promise.all([selectedDemoConfig, localizePromise]).then(
-      ([config, localize]) => config.lovelace(localize)
-    )
+    Promise.all([
+      selectedDemoConfig,
+      localizePromise,
+    ]).then(([config, localize]) => config.lovelace(localize))
   );
 
   hass.mockWS("lovelace/config/save", () => Promise.resolve());
