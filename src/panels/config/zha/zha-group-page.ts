@@ -42,6 +42,7 @@ export class ZHAGroupPage extends LitElement {
 
   private _selectedDevicesToAdd: string[] = [];
   private _selectedDevicesToRemove: string[] = [];
+  private _filteredDevices: ZHADevice[] = [];
 
   private _members = memoizeOne(
     (group: ZHAGroup): ZHADevice[] => group.members
@@ -145,7 +146,7 @@ export class ZHAGroupPage extends LitElement {
 
           <zha-devices-data-table
             .hass=${this.hass}
-            .devices=${this.devices}
+            .devices=${this._filteredDevices}
             .narrow=${this.narrow}
             .selectable=${true}
             @selection-changed=${this._handleAddSelectionChanged}
@@ -178,6 +179,18 @@ export class ZHAGroupPage extends LitElement {
       this.group = await fetchGroup(this.hass!, this.groupId);
     }
     this.devices = await fetchGroupableDevices(this.hass!);
+    // filter the groupable devices so we only show devices that aren't already in the group
+    this._filterDevices();
+  }
+
+  private _filterDevices() {
+    // filter the groupable devices so we only show devices that aren't already in the group
+    this._filteredDevices = this.devices.filter((device) => {
+      return !(
+        this.group.members.filter((member) => member.ieee === device.ieee)
+          .length > 0
+      );
+    });
   }
 
   private _handleAddSelectionChanged(ev: CustomEvent): void {
@@ -215,6 +228,7 @@ export class ZHAGroupPage extends LitElement {
       this.groupId,
       this._selectedDevicesToAdd
     );
+    this._filterDevices();
     this._selectedDevicesToAdd = [];
     this._canAdd = false;
     this._processingAdd = false;
@@ -227,6 +241,7 @@ export class ZHAGroupPage extends LitElement {
       this.groupId,
       this._selectedDevicesToRemove
     );
+    this._filterDevices();
     this._selectedDevicesToRemove = [];
     this._canRemove = false;
     this._processingRemove = false;
