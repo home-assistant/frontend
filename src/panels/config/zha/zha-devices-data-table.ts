@@ -12,12 +12,10 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 // tslint:disable-next-line
-import {
-  DataTableColumnContainer,
-  DataTableRowData,
-} from "../../../components/data-table/ha-data-table";
+import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
 // tslint:disable-next-line
 import { ZHADevice } from "../../../data/zha";
+import { showZHADeviceInfoDialog } from "../../../dialogs/zha-device-info-dialog/show-dialog-zha-device-info";
 
 export interface DeviceRowData extends ZHADevice {
   device?: DeviceRowData;
@@ -36,7 +34,7 @@ export class ZHADevicesDataTable extends LitElement {
     outputDevices = outputDevices.map((device) => {
       return {
         ...device,
-        name: device.name,
+        name: device.user_given_name ? device.user_given_name : device.name,
         model: device.model,
         manufacturer: device.manufacturer,
         id: device.ieee,
@@ -55,11 +53,11 @@ export class ZHADevicesDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
-              template: (name: DataTableRowData) => {
-                return html`
-                  ${name}<br />
-                `;
-              },
+              template: (name) => html`
+                <div @click=${this._handleClicked} style="cursor: pointer;">
+                  ${name}
+                </div>
+              `,
             },
           }
         : {
@@ -68,6 +66,11 @@ export class ZHADevicesDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
+              template: (name) => html`
+                <div @click=${this._handleClicked} style="cursor: pointer;">
+                  ${name}
+                </div>
+              `,
             },
             manufacturer: {
               title: "Manufacturer",
@@ -92,6 +95,13 @@ export class ZHADevicesDataTable extends LitElement {
         .selectable=${this.selectable}
       ></ha-data-table>
     `;
+  }
+
+  private async _handleClicked(ev: CustomEvent) {
+    const ieee = (ev.target as HTMLElement)
+      .closest("tr")!
+      .getAttribute("data-row-id")!;
+    showZHADeviceInfoDialog(this, { ieee });
   }
 }
 
