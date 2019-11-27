@@ -25,7 +25,9 @@ declare global {
 
 const isExternal =
   window.externalApp ||
-  (window.webkit && window.webkit.messageHandlers) ||
+  (window.webkit &&
+    window.webkit.messageHandlers &&
+    window.webkit.messageHandlers.getExternalAuth) ||
   location.search.includes("external_auth=1");
 
 const authProm = isExternal
