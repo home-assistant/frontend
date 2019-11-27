@@ -27,7 +27,9 @@ const registerEditViewDialog = (element: HTMLElement): Event =>
     dialogShowEvent,
     dialogTag,
     dialogImport: () =>
-      import(/* webpackChunkName: "hui-dialog-edit-view" */ "./hui-dialog-edit-view"),
+      import(
+        /* webpackChunkName: "hui-dialog-edit-view" */ "./hui-dialog-edit-view"
+      ),
   });
 
 export const showEditViewDialog = (

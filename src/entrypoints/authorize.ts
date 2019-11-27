@@ -10,6 +10,8 @@ import "../auth/ha-authorize";
 /* polyfill for paper-dropdown */
 setTimeout(
   () =>
-    import(/* webpackChunkName: "polyfill-web-animations-next" */ "web-animations-js/web-animations-next-lite.min"),
+    import(
+      /* webpackChunkName: "polyfill-web-animations-next" */ "web-animations-js/web-animations-next-lite.min"
+    ),
   2000
 );

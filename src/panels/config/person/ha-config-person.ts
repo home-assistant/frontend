@@ -167,9 +167,9 @@ class HaConfigPerson extends LitElement {
       users: this._allowedUsers(users, entry),
       createEntry: async (values) => {
         const created = await createPerson(this.hass!, values);
-        this._storageItems = this._storageItems!.concat(created).sort(
-          (ent1, ent2) => compare(ent1.name, ent2.name)
-        );
+        this._storageItems = this._storageItems!.concat(
+          created
+        ).sort((ent1, ent2) => compare(ent1.name, ent2.name));
       },
       updateEntry: async (values) => {
         const updated = await updatePerson(this.hass!, entry!.id, values);

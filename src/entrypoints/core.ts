@@ -27,9 +27,9 @@ const isExternal = location.search.includes("external_auth=1");
 
 const authProm = isExternal
   ? () =>
-      import(/* webpackChunkName: "external_auth" */ "../external_app/external_auth").then(
-        ({ createExternalAuth }) => createExternalAuth(hassUrl)
-      )
+      import(
+        /* webpackChunkName: "external_auth" */ "../external_app/external_auth"
+      ).then(({ createExternalAuth }) => createExternalAuth(hassUrl))
   : () =>
       getAuth({
         hassUrl,

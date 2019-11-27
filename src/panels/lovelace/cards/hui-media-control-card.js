@@ -4,7 +4,9 @@ import LegacyWrapperCard from "./hui-legacy-wrapper-card";
 
 class HuiMediaControlCard extends LegacyWrapperCard {
   static async getConfigElement() {
-    await import(/* webpackChunkName: "hui-media-control-card-editor" */ "../editor/config-elements/hui-media-control-card-editor");
+    await import(
+      /* webpackChunkName: "hui-media-control-card-editor" */ "../editor/config-elements/hui-media-control-card-editor"
+    );
     return document.createElement("hui-media-control-card-editor");
   }
 

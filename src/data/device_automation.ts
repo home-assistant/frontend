@@ -107,9 +107,7 @@ export const localizeDeviceAutomationAction = (
     state ? computeStateName(state) : "<unknown>",
     "subtype",
     hass.localize(
-      `component.${action.domain}.device_automation.action_subtype.${
-        action.subtype
-      }`
+      `component.${action.domain}.device_automation.action_subtype.${action.subtype}`
     )
   );
 };
@@ -122,16 +120,12 @@ export const localizeDeviceAutomationCondition = (
     ? hass.states[condition.entity_id]
     : undefined;
   return hass.localize(
-    `component.${condition.domain}.device_automation.condition_type.${
-      condition.type
-    }`,
+    `component.${condition.domain}.device_automation.condition_type.${condition.type}`,
     "entity_name",
     state ? computeStateName(state) : "<unknown>",
     "subtype",
     hass.localize(
-      `component.${condition.domain}.device_automation.condition_subtype.${
-        condition.subtype
-      }`
+      `component.${condition.domain}.device_automation.condition_subtype.${condition.subtype}`
     )
   );
 };
@@ -142,16 +136,12 @@ export const localizeDeviceAutomationTrigger = (
 ) => {
   const state = trigger.entity_id ? hass.states[trigger.entity_id] : undefined;
   return hass.localize(
-    `component.${trigger.domain}.device_automation.trigger_type.${
-      trigger.type
-    }`,
+    `component.${trigger.domain}.device_automation.trigger_type.${trigger.type}`,
     "entity_name",
     state ? computeStateName(state) : "<unknown>",
     "subtype",
     hass.localize(
-      `component.${trigger.domain}.device_automation.trigger_subtype.${
-        trigger.subtype
-      }`
+      `component.${trigger.domain}.device_automation.trigger_subtype.${trigger.subtype}`
     )
   );
 };
