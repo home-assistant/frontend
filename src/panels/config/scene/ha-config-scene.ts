@@ -38,9 +38,11 @@ class HaConfigScene extends HassRouterPage {
 
   private _computeScenes = memoizeOne((states: HassEntities) => {
     const scenes: SceneEntity[] = [];
-    Object.keys(states).forEach((entityId) => {
+    Object.entries(states).forEach(([entityId, state]) => {
       if (computeDomain(entityId) === "scene") {
-        scenes.push(states[entityId] as SceneEntity);
+        if (!state.attributes.hidden) {
+          scenes.push(state as SceneEntity);
+        }
       }
     });
 
