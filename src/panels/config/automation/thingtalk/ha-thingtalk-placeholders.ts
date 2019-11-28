@@ -256,43 +256,45 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
   }
 
   private _searchNames() {
-    if (this._search && this._areas && this._devices) {
-      this._search = false;
-      Object.entries(this.placeholders).forEach(([type, placeholders]) =>
-        placeholders.forEach((placeholder) => {
-          if (placeholder.name) {
-            const name = placeholder.name;
-            const foundArea = this._areas!.find((area) =>
-              area.name.toLowerCase().includes(name)
-            );
-            if (foundArea) {
-              applyPatch(
-                this._extraInfo,
-                [type, placeholder.index, "area_id"],
-                foundArea.area_id
-              );
-              this.requestUpdate("_extraInfo");
-              return;
-            }
-            const foundDevices = this._devices!.filter((device) => {
-              const deviceName = device.name_by_user || device.name;
-              if (!deviceName) {
-                return false;
-              }
-              return deviceName.toLowerCase().includes(name);
-            });
-            if (foundDevices.length) {
-              applyPatch(
-                this._extraInfo,
-                [type, placeholder.index, "device_ids"],
-                foundDevices.map((device) => device.id)
-              );
-              this.requestUpdate("_extraInfo");
-            }
-          }
-        })
-      );
+    if (!this._search || !this._areas || !this._devices) {
+      return;
     }
+    this._search = false;
+    Object.entries(this.placeholders).forEach(([type, placeholders]) =>
+      placeholders.forEach((placeholder) => {
+        if (!placeholder.name) {
+          return;
+        }
+        const name = placeholder.name;
+        const foundArea = this._areas!.find((area) =>
+          area.name.toLowerCase().includes(name)
+        );
+        if (foundArea) {
+          applyPatch(
+            this._extraInfo,
+            [type, placeholder.index, "area_id"],
+            foundArea.area_id
+          );
+          this.requestUpdate("_extraInfo");
+          return;
+        }
+        const foundDevices = this._devices!.filter((device) => {
+          const deviceName = device.name_by_user || device.name;
+          if (!deviceName) {
+            return false;
+          }
+          return deviceName.toLowerCase().includes(name);
+        });
+        if (foundDevices.length) {
+          applyPatch(
+            this._extraInfo,
+            [type, placeholder.index, "device_ids"],
+            foundDevices.map((device) => device.id)
+          );
+          this.requestUpdate("_extraInfo");
+        }
+      })
+    );
   }
 
   private get _isDone(): boolean {
