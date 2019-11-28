@@ -50,7 +50,7 @@ export interface ExtraInfo {
     [index: number]: {
       [index: number]: {
         area_id?: string;
-        device_id?: string;
+        device_ids?: string[];
         manualEntity: boolean;
       };
     };
