@@ -4,6 +4,10 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 
+import "../../../../components/ha-code-editor";
+
+import YAMLTextArea from "../yaml_textarea";
+
 import DeviceTrigger from "./device";
 import EventTrigger from "./event";
 import GeolocationTrigger from "./geo_location";
@@ -41,25 +45,34 @@ export default class TriggerEdit extends Component<any> {
     super();
 
     this.typeChanged = this.typeChanged.bind(this);
+    this.onYamlChange = this.onYamlChange.bind(this);
   }
 
-  public render({ index, trigger, onChange, hass, localize }) {
+  public render({ index, trigger, onChange, hass, localize, yaml }) {
     // tslint:disable-next-line: variable-name
     const Comp = TYPES[trigger.platform];
     const selected = OPTIONS.indexOf(trigger.platform);
 
-    if (!Comp) {
+    if (yaml || !Comp) {
+      const style: any = {
+        marginRight: "24px",
+      };
       return (
-        <div>
-          {localize(
-            "ui.panel.config.automation.editor.triggers.unsupported_platform",
-            "platform",
-            trigger.platform
+        <div style={style}>
+          {!Comp && (
+            <div>
+              {localize(
+                "ui.panel.config.automation.editor.triggers.unsupported_platform",
+                "platform",
+                trigger.platform
+              )}
+            </div>
           )}
-          <pre>{JSON.stringify(trigger, null, 2)}</pre>
+          <YAMLTextArea value={trigger} onChange={this.onYamlChange} />
         </div>
       );
     }
+
     return (
       <div>
         <paper-dropdown-menu-light
@@ -102,5 +115,9 @@ export default class TriggerEdit extends Component<any> {
         ...TYPES[type].defaultConfig,
       });
     }
+  }
+
+  private onYamlChange(trigger) {
+    this.props.onChange(this.props.index, trigger);
   }
 }

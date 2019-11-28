@@ -11,14 +11,22 @@ export default class TriggerRow extends Component<any> {
   constructor() {
     super();
 
+    this.state = {
+      yaml: false,
+    };
+
     this.onDelete = this.onDelete.bind(this);
+    this.switchYaml = this.switchYaml.bind(this);
   }
 
-  public render(props) {
+  public render(props, { yaml }) {
+    const menuStyle: any = {
+      zIndex: 3,
+    };
     return (
       <ha-card>
         <div class="card-content">
-          <div class="card-menu">
+          <div class="card-menu" style={menuStyle}>
             <paper-menu-button
               no-animations
               horizontal-align="right"
@@ -30,6 +38,9 @@ export default class TriggerRow extends Component<any> {
                 slot="dropdown-trigger"
               />
               <paper-listbox slot="dropdown-content">
+                <paper-item onTap={this.switchYaml}>
+                  {yaml ? "Edit with UI" : "Edit as YAML"}
+                </paper-item>
                 <paper-item disabled>
                   {props.localize(
                     "ui.panel.config.automation.editor.triggers.duplicate"
@@ -43,7 +54,7 @@ export default class TriggerRow extends Component<any> {
               </paper-listbox>
             </paper-menu-button>
           </div>
-          <TriggerEdit {...props} />
+          <TriggerEdit {...props} yaml={yaml} />
         </div>
       </ha-card>
     );
@@ -60,5 +71,11 @@ export default class TriggerRow extends Component<any> {
     ) {
       this.props.onChange(this.props.index, null);
     }
+  }
+
+  private switchYaml() {
+    this.setState({
+      yaml: !this.state.yaml,
+    });
   }
 }
