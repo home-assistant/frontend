@@ -8,6 +8,7 @@ import "../../../../components/ha-card";
 import TriggerEdit from "./trigger_edit";
 
 export default class TriggerRow extends Component<any> {
+  public state: { yaml: boolean };
   constructor() {
     super();
 
@@ -32,6 +33,7 @@ export default class TriggerRow extends Component<any> {
               horizontal-align="right"
               horizontal-offset="-5"
               vertical-offset="-5"
+              close-on-activate
             >
               <paper-icon-button
                 icon="hass:dots-vertical"

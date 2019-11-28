@@ -1,15 +1,15 @@
-import { h, Component } from "preact";
+import { h } from "preact";
 
 import "@polymer/paper-input/paper-input";
 import "../../../../components/entity/ha-entity-picker";
 
 import { onChangeEvent } from "../../../../common/preact/event";
+import { AutomationComponent } from "../automation-component";
 
-export default class StateTrigger extends Component<any> {
+export default class StateTrigger extends AutomationComponent {
   private onChange: (obj: any) => void;
-  constructor() {
-    super();
-
+  constructor(props) {
+    super(props);
     this.onChange = onChangeEvent.bind(this, "trigger");
     this.entityPicked = this.entityPicked.bind(this);
   }
@@ -23,8 +23,7 @@ export default class StateTrigger extends Component<any> {
 
   /* eslint-disable camelcase */
   public render({ trigger, hass, localize }) {
-    const { entity_id, to } = trigger;
-    const trgFrom = trigger.from;
+    const { entity_id, to, from } = trigger;
     let trgFor = trigger.for;
 
     if (trgFor && (trgFor.hours || trgFor.minutes || trgFor.seconds)) {
@@ -50,7 +49,7 @@ export default class StateTrigger extends Component<any> {
             "ui.panel.config.automation.editor.triggers.type.state.from"
           )}
           name="from"
-          value={trgFrom}
+          value={from}
           onvalue-changed={this.onChange}
         />
         <paper-input
