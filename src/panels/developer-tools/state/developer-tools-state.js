@@ -160,7 +160,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         <template is="dom-repeat" items="[[_entities]]" as="entity">
           <tr>
             <td>
-              <paper-menu-button close-on-activate="true">
+              <paper-menu-button close-on-activate>
                 <paper-icon-button
                   icon="hass:dots-vertical"
                   slot="dropdown-trigger"
@@ -172,42 +172,46 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
                   selected="{{selectedItem}}"
                 >
                   <paper-item on-click="entityMoreInfo">
-                    <paper-icon-button
-                      icon="hass:information-outline"
-                      alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
-                      title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
-                    ></paper-icon-button>
-                    [[localize('ui.panel.developer-tools.tabs.states.more_info')]]
+                    <paper-icon-item>
+                      <ha-icon
+                        icon="hass:information-outline"
+                        slot="item-icon"
+                      ></ha-icon>
+                      [[localize('ui.panel.developer-tools.tabs.states.more_info')]]
+                    </paper-icon-item>
                   </paper-item>
 
                   <paper-item action="copyId" on-click="entityCopyValue">
-                    <paper-icon-button
-                      icon="hass:content-copy"
-                      alt="[[localize('ui.panel.developer-tools.tabs.states.copy_entity_id')]]"
-                      title="[[localize('ui.panel.developer-tools.tabs.states.copy_entity_id')]]"
-                    ></paper-icon-button>
-                    [[localize('ui.panel.developer-tools.tabs.states.copy_entity_id')]]
+                    <paper-icon-item>
+                      <ha-icon
+                        icon="hass:content-copy"
+                        slot="item-icon"
+                      ></ha-icon>
+                      [[localize('ui.panel.developer-tools.tabs.states.copy_entity_id')]]
+                    </paper-icon-item>
                   </paper-item>
 
                   <paper-item action="copyState" on-click="entityCopyValue">
-                    <paper-icon-button
-                      icon="hass:content-copy"
-                      alt="[[localize('ui.panel.developer-tools.tabs.states.copy_entity_state')]]"
-                      title="[[localize('ui.panel.developer-tools.tabs.states.copy_entity_state')]]"
-                    ></paper-icon-button>
-                    [[localize('ui.panel.developer-tools.tabs.states.copy_entity_state')]]
+                    <paper-icon-item>
+                      <ha-icon
+                        icon="hass:content-copy"
+                        slot="item-icon"
+                      ></ha-icon>
+                      [[localize('ui.panel.developer-tools.tabs.states.copy_entity_state')]]
+                    </paper-icon-item>
                   </paper-item>
 
                   <paper-item
                     action="copyAttributes"
                     on-click="entityCopyValue"
                   >
-                    <paper-icon-button
-                      icon="hass:content-copy"
-                      alt="[[localize('ui.panel.developer-tools.tabs.states.copy_entity_attribute')]]"
-                      title="[[localize('ui.panel.developer-tools.tabs.states.copy_entity_attribute')]]"
-                    ></paper-icon-button>
-                    [[localize('ui.panel.developer-tools.tabs.states.copy_entity_attribute')]]
+                    <paper-icon-item>
+                      <ha-icon
+                        icon="hass:content-copy"
+                        slot="item-icon"
+                      ></ha-icon>
+                      [[localize('ui.panel.developer-tools.tabs.states.copy_entity_attribute')]]
+                    </paper-icon-item>
                   </paper-item>
                 </paper-listbox>
               </paper-menu-button>
@@ -316,7 +320,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
     } else if (action === "copyState") {
       copy(ev.model.entity.state);
     } else if (action === "copyAttributes") {
-      copy(this.attributeString(ev.model.entity).replace(/\n/g, "<br />"));
+      copy(safeDump(ev.model.entity.attributes).replace(/\n/g, "<br />"));
     } else {
       return;
     }
