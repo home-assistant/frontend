@@ -136,6 +136,8 @@ export class HUIView extends LitElement {
           flex: 1 0 0;
           max-width: 500px;
           min-width: 0;
+          /* on iOS devices the column can become wider when toggling a switch */
+          overflow-x: hidden;
         }
 
         .column > * {
