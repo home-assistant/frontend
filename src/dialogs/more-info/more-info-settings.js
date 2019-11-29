@@ -47,7 +47,7 @@ class MoreInfoSettings extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
       <app-toolbar>
         <ha-paper-icon-button-arrow-prev
-          aria-label="[[localize('ui.dialog.more_info_settings.back')]]"
+          aria-label$="[[localize('ui.dialogs.more_info_settings.back')]]"
           on-click="_backTapped"
         ></ha-paper-icon-button-arrow-prev>
         <div main-title="">[[_computeStateName(stateObj)]]</div>

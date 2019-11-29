@@ -69,7 +69,7 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
       <app-toolbar>
         <paper-icon-button
-          aria-label="[[localize('ui.dialog.more_info_control.dismiss')]]"
+          aria-label$="[[localize('ui.dialogs.more_info_control.dismiss')]]"
           icon="hass:close"
           dialog-dismiss
         ></paper-icon-button>
@@ -78,7 +78,7 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
         </div>
         <template is="dom-if" if="[[canConfigure]]">
           <paper-icon-button
-            aria-label="[[localize('ui.dialog.more_info_control.settings')]]"
+            aria-label$="[[localize('ui.dialogs.more_info_control.settings')]]"
             icon="hass:settings"
             on-click="_gotoSettings"
           ></paper-icon-button>
