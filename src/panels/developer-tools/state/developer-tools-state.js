@@ -75,7 +75,7 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         .entities a {
           color: var(--primary-color);
         }
-        paper-item {
+        paper-icon-item {
           cursor: pointer;
         }
       </style>
@@ -171,48 +171,43 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
                   role="listbox"
                   selected="{{selectedItem}}"
                 >
-                  <paper-item on-click="entityMoreInfo">
-                    <paper-icon-item>
-                      <ha-icon
-                        icon="hass:information-outline"
-                        slot="item-icon"
-                      ></ha-icon>
-                      [[localize('ui.panel.developer-tools.tabs.states.more_info')]]
-                    </paper-icon-item>
-                  </paper-item>
+                  <paper-icon-item on-click="entityMoreInfo">
+                    <ha-icon
+                      icon="hass:information-outline"
+                      slot="item-icon"
+                    ></ha-icon>
+                    [[localize('ui.panel.developer-tools.tabs.states.more_info')]]
+                  </paper-icon-item>
 
-                  <paper-item action="copyId" on-click="entityCopyValue">
-                    <paper-icon-item>
-                      <ha-icon
-                        icon="hass:content-copy"
-                        slot="item-icon"
-                      ></ha-icon>
-                      [[localize('ui.panel.developer-tools.tabs.states.copy_entity_id')]]
-                    </paper-icon-item>
-                  </paper-item>
+                  <paper-icon-item action="copyId" on-click="entityCopyValue">
+                    <ha-icon
+                      icon="hass:content-copy"
+                      slot="item-icon"
+                    ></ha-icon>
+                    [[localize('ui.panel.developer-tools.tabs.states.copy_entity_id')]]
+                  </paper-icon-item>
 
-                  <paper-item action="copyState" on-click="entityCopyValue">
-                    <paper-icon-item>
-                      <ha-icon
-                        icon="hass:content-copy"
-                        slot="item-icon"
-                      ></ha-icon>
-                      [[localize('ui.panel.developer-tools.tabs.states.copy_entity_state')]]
-                    </paper-icon-item>
-                  </paper-item>
+                  <paper-icon-item
+                    action="copyState"
+                    on-click="entityCopyValue"
+                  >
+                    <ha-icon
+                      icon="hass:content-copy"
+                      slot="item-icon"
+                    ></ha-icon>
+                    [[localize('ui.panel.developer-tools.tabs.states.copy_entity_state')]]
+                  </paper-icon-item>
 
-                  <paper-item
+                  <paper-icon-item
                     action="copyAttributes"
                     on-click="entityCopyValue"
                   >
-                    <paper-icon-item>
-                      <ha-icon
-                        icon="hass:content-copy"
-                        slot="item-icon"
-                      ></ha-icon>
-                      [[localize('ui.panel.developer-tools.tabs.states.copy_entity_attribute')]]
-                    </paper-icon-item>
-                  </paper-item>
+                    <ha-icon
+                      icon="hass:content-copy"
+                      slot="item-icon"
+                    ></ha-icon>
+                    [[localize('ui.panel.developer-tools.tabs.states.copy_entity_attribute')]]
+                  </paper-icon-item>
                 </paper-listbox>
               </paper-menu-button>
               <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
