@@ -1,15 +1,17 @@
-import { h, Component } from "preact";
+import { h } from "preact";
+
 import "@polymer/paper-input/paper-input";
 import "../../../../components/ha-textarea";
 
 import "../../../../components/entity/ha-entity-picker";
 
 import { onChangeEvent } from "../../../../common/preact/event";
+import { AutomationComponent } from "../automation-component";
 
-export default class NumericStateTrigger extends Component<any> {
+export default class NumericStateTrigger extends AutomationComponent {
   private onChange: (obj: any) => void;
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.onChange = onChangeEvent.bind(this, "trigger");
     this.entityPicked = this.entityPicked.bind(this);

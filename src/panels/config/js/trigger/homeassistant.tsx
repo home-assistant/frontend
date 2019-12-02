@@ -1,8 +1,11 @@
-import { h, Component } from "preact";
+import { h } from "preact";
+
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
 
-export default class HassTrigger extends Component<any> {
+import { AutomationComponent } from "../automation-component";
+
+export default class HassTrigger extends AutomationComponent {
   constructor() {
     super();
 
@@ -10,6 +13,9 @@ export default class HassTrigger extends Component<any> {
   }
 
   public radioGroupPicked(ev) {
+    if (!this.initialized) {
+      return;
+    }
     this.props.onChange(this.props.index, {
       ...this.props.trigger,
       event: ev.target.selected,
