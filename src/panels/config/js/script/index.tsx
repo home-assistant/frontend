@@ -34,18 +34,12 @@ export default class Script extends Component<any> {
     this.props.onChange(script);
   }
 
-  public moveUp(index) {
-    const script = this.props.script.concat();
-    const action = script.splice(index, 1)[0];
-    script.splice(index - 1, 0, action);
-    this.props.onChange(script);
+  public moveUp(index: number) {
+    this.move(index, index - 1);
   }
 
-  public moveDown(index) {
-    const script = this.props.script.concat();
-    const action = script.splice(index, 1)[0];
-    script.splice(index + 1, 0, action);
-    this.props.onChange(script);
+  public moveDown(index: number) {
+    this.move(index, index + 1);
   }
 
   public render({ script, hass, localize }) {
@@ -72,5 +66,12 @@ export default class Script extends Component<any> {
         </ha-card>
       </div>
     );
+  }
+
+  private move(index: number, newIndex: number) {
+    const script = this.props.script.concat();
+    const action = script.splice(index, 1)[0];
+    script.splice(newIndex, 0, action);
+    this.props.onChange(script);
   }
 }
