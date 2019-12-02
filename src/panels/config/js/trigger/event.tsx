@@ -1,10 +1,12 @@
-import { h, Component } from "preact";
+import { h } from "preact";
+
 import "@polymer/paper-input/paper-input";
 
 import YAMLTextArea from "../yaml_textarea";
 import { onChangeEvent } from "../../../../common/preact/event";
+import { AutomationComponent } from "../automation-component";
 
-export default class EventTrigger extends Component<any> {
+export default class EventTrigger extends AutomationComponent {
   private onChange: (obj: any) => void;
   constructor() {
     super();

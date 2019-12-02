@@ -8,26 +8,23 @@ import "../../../../components/ha-card";
 import TriggerEdit from "./trigger_edit";
 
 export default class TriggerRow extends Component<any> {
-  public state: { yaml: boolean };
+  public state: { yamlMode: boolean };
   constructor() {
     super();
 
     this.state = {
-      yaml: false,
+      yamlMode: false,
     };
 
     this.onDelete = this.onDelete.bind(this);
-    this.switchYaml = this.switchYaml.bind(this);
+    this.switchYamlMode = this.switchYamlMode.bind(this);
   }
 
-  public render(props, { yaml }) {
-    const menuStyle: any = {
-      zIndex: 3,
-    };
+  public render(props, { yamlMode }) {
     return (
       <ha-card>
         <div class="card-content">
-          <div class="card-menu" style={menuStyle}>
+          <div class="card-menu" style="z-index: 3">
             <paper-menu-button
               no-animations
               horizontal-align="right"
@@ -40,8 +37,14 @@ export default class TriggerRow extends Component<any> {
                 slot="dropdown-trigger"
               />
               <paper-listbox slot="dropdown-content">
-                <paper-item onTap={this.switchYaml}>
-                  {yaml ? "Edit with UI" : "Edit as YAML"}
+                <paper-item onTap={this.switchYamlMode}>
+                  {yamlMode
+                    ? props.localize(
+                        "ui.panel.config.automation.editor.edit_ui"
+                      )
+                    : props.localize(
+                        "ui.panel.config.automation.editor.edit_yaml"
+                      )}
                 </paper-item>
                 <paper-item disabled>
                   {props.localize(
@@ -56,7 +59,7 @@ export default class TriggerRow extends Component<any> {
               </paper-listbox>
             </paper-menu-button>
           </div>
-          <TriggerEdit {...props} yaml={yaml} />
+          <TriggerEdit {...props} yamlMode={yamlMode} />
         </div>
       </ha-card>
     );
@@ -75,9 +78,9 @@ export default class TriggerRow extends Component<any> {
     }
   }
 
-  private switchYaml() {
+  private switchYamlMode() {
     this.setState({
-      yaml: !this.state.yaml,
+      yamlMode: !this.state.yamlMode,
     });
   }
 }

@@ -1,16 +1,18 @@
-import { h, Component } from "preact";
+import { h } from "preact";
+
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
 import "../../../../components/entity/ha-entity-picker";
 
 import { hasLocation } from "../../../../common/entity/has_location";
 import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
+import { AutomationComponent } from "../automation-component";
 
 function zoneAndLocationFilter(stateObj) {
   return hasLocation(stateObj) && computeStateDomain(stateObj) !== "zone";
 }
 
-export default class ZoneTrigger extends Component<any> {
+export default class ZoneTrigger extends AutomationComponent {
   constructor() {
     super();
 
@@ -70,6 +72,9 @@ export default class ZoneTrigger extends Component<any> {
   }
 
   private entityPicked(ev) {
+    if (!this.initialized) {
+      return;
+    }
     this.props.onChange(this.props.index, {
       ...this.props.trigger,
       entity_id: ev.target.value,
@@ -77,6 +82,9 @@ export default class ZoneTrigger extends Component<any> {
   }
 
   private zonePicked(ev) {
+    if (!this.initialized) {
+      return;
+    }
     this.props.onChange(this.props.index, {
       ...this.props.trigger,
       zone: ev.target.value,
@@ -84,6 +92,9 @@ export default class ZoneTrigger extends Component<any> {
   }
 
   private radioGroupPicked(ev) {
+    if (!this.initialized) {
+      return;
+    }
     this.props.onChange(this.props.index, {
       ...this.props.trigger,
       event: ev.target.selected,

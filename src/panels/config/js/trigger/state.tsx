@@ -15,6 +15,9 @@ export default class StateTrigger extends AutomationComponent {
   }
 
   public entityPicked(ev) {
+    if (!this.initialized) {
+      return;
+    }
     this.props.onChange(this.props.index, {
       ...this.props.trigger,
       entity_id: ev.target.value,

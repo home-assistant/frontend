@@ -48,17 +48,14 @@ export default class TriggerEdit extends Component<any> {
     this.onYamlChange = this.onYamlChange.bind(this);
   }
 
-  public render({ index, trigger, onChange, hass, localize, yaml }) {
+  public render({ index, trigger, onChange, hass, localize, yamlMode }) {
     // tslint:disable-next-line: variable-name
     const Comp = TYPES[trigger.platform];
     const selected = OPTIONS.indexOf(trigger.platform);
 
-    if (yaml || !Comp) {
-      const style: any = {
-        marginRight: "24px",
-      };
+    if (yamlMode || !Comp) {
       return (
-        <div style={style}>
+        <div style="margin-right: 24px;">
           {!Comp && (
             <div>
               {localize(

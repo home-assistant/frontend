@@ -1,11 +1,11 @@
 import { h, Component, ComponentChild } from "preact";
 
-export class AutomationComponent extends Component<any> {
+export class AutomationComponent extends Component<any, any> {
   // @ts-ignore
-  private initialized: boolean;
+  protected initialized: boolean;
 
-  constructor(props) {
-    super(props);
+  constructor(props?, context?) {
+    super(props, context);
     this.initialized = false;
   }
 
@@ -18,6 +18,6 @@ export class AutomationComponent extends Component<any> {
   }
 
   public render(_props?, _state?, _context?: any): ComponentChild {
-    return <div></div>;
+    return <div />;
   }
 }

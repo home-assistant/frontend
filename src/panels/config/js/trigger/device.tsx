@@ -1,4 +1,4 @@
-import { h, Component } from "preact";
+import { h } from "preact";
 
 import "../../../../components/device/ha-device-picker";
 import "../../../../components/device/ha-device-trigger-picker";
@@ -9,7 +9,9 @@ import {
   deviceAutomationsEqual,
 } from "../../../../data/device_automation";
 
-export default class DeviceTrigger extends Component<any, any> {
+import { AutomationComponent } from "../automation-component";
+
+export default class DeviceTrigger extends AutomationComponent {
   private _origTrigger;
 
   constructor() {
@@ -21,10 +23,16 @@ export default class DeviceTrigger extends Component<any, any> {
   }
 
   public devicePicked(ev) {
+    if (!this.initialized) {
+      return;
+    }
     this.setState({ ...this.state, device_id: ev.target.value });
   }
 
   public deviceTriggerPicked(ev) {
+    if (!this.initialized) {
+      return;
+    }
     let trigger = ev.target.value;
     if (
       this._origTrigger &&
@@ -75,6 +83,7 @@ export default class DeviceTrigger extends Component<any, any> {
   }
 
   public componentDidMount() {
+    this.initialized = true;
     if (!this.state.capabilities) {
       this._getCapabilities();
     }
@@ -99,6 +108,9 @@ export default class DeviceTrigger extends Component<any, any> {
   }
 
   private _extraFieldsChanged(ev) {
+    if (!this.initialized) {
+      return;
+    }
     this.props.onChange(this.props.index, {
       ...this.props.trigger,
       ...ev.detail.value,
@@ -109,7 +121,9 @@ export default class DeviceTrigger extends Component<any, any> {
     // Returns a callback for ha-form to calculate labels per schema object
     return (schema) =>
       localize(
-        `ui.panel.config.automation.editor.triggers.type.device.extra_fields.${schema.name}`
+        `ui.panel.config.automation.editor.triggers.type.device.extra_fields.${
+          schema.name
+        }`
       ) || schema.name;
   }
 }
