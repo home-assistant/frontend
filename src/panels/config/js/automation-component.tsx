@@ -1,6 +1,6 @@
 import { h, Component, ComponentChild } from "preact";
 
-export class AutomationComponent extends Component<any, any> {
+export class AutomationComponent<P = {}, S = {}> extends Component<P, S> {
   // @ts-ignore
   protected initialized: boolean;
 

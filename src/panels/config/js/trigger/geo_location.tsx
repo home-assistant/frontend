@@ -7,7 +7,7 @@ import "../../../../components/entity/ha-entity-picker";
 import { onChangeEvent } from "../../../../common/preact/event";
 import { AutomationComponent } from "../automation-component";
 
-export default class GeolocationTrigger extends AutomationComponent {
+export default class GeolocationTrigger extends AutomationComponent<any> {
   private onChange: (obj: any) => void;
   constructor() {
     super();

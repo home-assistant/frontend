@@ -1,8 +1,9 @@
-import { h, Component } from "preact";
+import { h } from "preact";
 
 import "../../../../components/device/ha-device-picker";
 import "../../../../components/device/ha-device-action-picker";
 import "../../../../components/ha-form/ha-form";
+import { AutomationComponent } from "../automation-component";
 
 import {
   fetchDeviceActionCapabilities,
@@ -11,7 +12,7 @@ import {
 import { DeviceAction } from "../../../../data/script";
 import { HomeAssistant } from "../../../../types";
 
-export default class DeviceActionEditor extends Component<
+export default class DeviceActionEditor extends AutomationComponent<
   {
     index: number;
     action: DeviceAction;
@@ -78,6 +79,7 @@ export default class DeviceActionEditor extends Component<
   }
 
   public componentDidMount() {
+    this.initialized = true;
     if (!this.state.capabilities) {
       this._getCapabilities();
     }
@@ -93,10 +95,16 @@ export default class DeviceActionEditor extends Component<
   }
 
   private devicePicked(ev) {
+    if (!this.initialized) {
+      return;
+    }
     this.setState({ ...this.state, device_id: ev.target.value });
   }
 
   private deviceActionPicked(ev) {
+    if (!this.initialized) {
+      return;
+    }
     let deviceAction = ev.target.value;
     if (
       this._origAction &&
@@ -117,6 +125,9 @@ export default class DeviceActionEditor extends Component<
   }
 
   private _extraFieldsChanged(ev) {
+    if (!this.initialized) {
+      return;
+    }
     this.props.onChange(this.props.index, {
       ...this.props.action,
       ...ev.detail.value,
