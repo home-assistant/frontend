@@ -3,6 +3,8 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
 
+import YAMLTextArea from "../yaml_textarea";
+
 import CallServiceAction from "./call_service";
 import ConditionAction from "./condition";
 import DelayAction from "./delay";
@@ -39,6 +41,7 @@ export default class Action extends Component<any> {
     super();
 
     this.typeChanged = this.typeChanged.bind(this);
+    this.onYamlChange = this.onYamlChange.bind(this);
   }
 
   public typeChanged(ev) {
@@ -50,25 +53,30 @@ export default class Action extends Component<any> {
     }
   }
 
-  public render({ index, action, onChange, hass, localize }) {
+  public render({ index, action, onChange, hass, localize, yamlMode }) {
     const type = getType(action);
     // tslint:disable-next-line: variable-name
     const Comp = type && TYPES[type];
     // @ts-ignore
     const selected = OPTIONS.indexOf(type);
 
-    if (!Comp) {
+    if (yamlMode || !Comp) {
       return (
-        <div>
-          {localize(
-            "ui.panel.config.automation.editor.actions.unsupported_action",
-            "action",
-            type
+        <div style="margin-right: 24px;">
+          {!Comp && (
+            <div>
+              {localize(
+                "ui.panel.config.automation.editor.actions.unsupported_action",
+                "action",
+                type
+              )}
+            </div>
           )}
-          <pre>{JSON.stringify(action, null, 2)}</pre>
+          <YAMLTextArea value={action} onChange={this.onYamlChange} />
         </div>
       );
     }
+
     return (
       <div>
         <paper-dropdown-menu-light
@@ -100,5 +108,9 @@ export default class Action extends Component<any> {
         />
       </div>
     );
+  }
+
+  private onYamlChange(condition) {
+    this.props.onChange(this.props.index, condition);
   }
 }

@@ -5,7 +5,7 @@ import "@polymer/paper-input/paper-input";
 import { onChangeEvent } from "../../../../common/preact/event";
 import { AutomationComponent } from "../automation-component";
 
-export default class TimeTrigger extends AutomationComponent {
+export default class TimeTrigger extends AutomationComponent<any> {
   private onChange: (obj: any) => void;
   constructor() {
     super();
