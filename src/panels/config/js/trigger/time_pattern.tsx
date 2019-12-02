@@ -47,8 +47,4 @@ export default class TimePatternTrigger extends AutomationComponent<any> {
   }
 }
 
-(TimePatternTrigger as any).defaultConfig = {
-  hours: "",
-  minutes: "",
-  seconds: "",
-};
+(TimePatternTrigger as any).defaultConfig = {};
