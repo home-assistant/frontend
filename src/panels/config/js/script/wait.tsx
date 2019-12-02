@@ -18,6 +18,9 @@ export default class WaitAction extends AutomationComponent<any> {
   // Gets fired on mount. If empty, onChangeEvent removes attribute.
   // Without the attribute this action is no longer matched to this component.
   public onTemplateChange(ev) {
+    if (!this.initialized) {
+      return;
+    }
     this.props.onChange(this.props.index, {
       ...this.props.action,
       [ev.target.getAttribute("name")]: ev.target.value,
