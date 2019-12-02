@@ -1,8 +1,11 @@
-import { h, Component } from "preact";
+import { h } from "preact";
+
 import "@polymer/paper-input/paper-input";
 
 import { onChangeEvent } from "../../../../common/preact/event";
-export default class WebhookTrigger extends Component<any> {
+import { AutomationComponent } from "../automation-component";
+
+export default class WebhookTrigger extends AutomationComponent {
   private onChange: (obj: any) => void;
   constructor() {
     super();

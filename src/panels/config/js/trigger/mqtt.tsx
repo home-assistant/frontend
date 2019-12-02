@@ -1,12 +1,14 @@
-import { h, Component } from "preact";
+import { h } from "preact";
+
 import "@polymer/paper-input/paper-input";
 
 import { onChangeEvent } from "../../../../common/preact/event";
+import { AutomationComponent } from "../automation-component";
 
-export default class MQTTTrigger extends Component<any> {
+export default class MQTTTrigger extends AutomationComponent {
   private onChange: (obj: any) => void;
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
 
     this.onChange = onChangeEvent.bind(this, "trigger");
   }

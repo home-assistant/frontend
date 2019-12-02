@@ -786,6 +786,8 @@
               "label": "Description",
               "placeholder": "Optional description"
             },
+            "edit_yaml": "Edit as YAML",
+            "edit_ui": "Edit with UI",
             "triggers": {
               "name": "Trigger",
               "header": "Triggers",

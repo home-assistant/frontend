@@ -1,12 +1,13 @@
-import { h, Component } from "preact";
+import { h } from "preact";
 
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
 
 import { onChangeEvent } from "../../../../common/preact/event";
+import { AutomationComponent } from "../automation-component";
 
-export default class SunTrigger extends Component<any> {
+export default class SunTrigger extends AutomationComponent {
   private onChange: (obj: any) => void;
   constructor() {
     super();
@@ -16,6 +17,9 @@ export default class SunTrigger extends Component<any> {
   }
 
   public radioGroupPicked(ev) {
+    if (!this.initialized) {
+      return;
+    }
     this.props.onChange(this.props.index, {
       ...this.props.trigger,
       event: ev.target.selected,
