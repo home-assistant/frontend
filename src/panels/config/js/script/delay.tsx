@@ -1,14 +1,12 @@
 import { h } from "preact";
 import "@polymer/paper-input/paper-input";
-import { onChangeEvent } from "../../../../common/preact/event";
 import { AutomationComponent } from "../automation-component";
 
 export default class DelayAction extends AutomationComponent<any> {
-  private onChange: (obj: any) => void;
   constructor() {
     super();
 
-    this.onChange = onChangeEvent.bind(this, "action");
+    this.onChange = this.onChange.bind(this);
   }
 
   public render({ action, localize }) {
@@ -25,6 +23,20 @@ export default class DelayAction extends AutomationComponent<any> {
         />
       </div>
     );
+  }
+
+  private onChange(ev) {
+    if (
+      !this.initialized ||
+      ev.target.value === this.props.action[ev.target.name]
+    ) {
+      return;
+    }
+
+    this.props.onChange(this.props.index, {
+      ...this.props.action,
+      [ev.target.name]: ev.target.value,
+    });
   }
 }
 
