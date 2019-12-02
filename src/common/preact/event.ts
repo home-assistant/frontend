@@ -7,8 +7,11 @@
 
 // export function onChangeEvent(this: OnChangeComponent, prop, ev) {
 export function onChangeEvent(this: any, prop, ev) {
-  const origData = this.props[prop];
+  if (!this.initialized) {
+    return;
+  }
 
+  const origData = this.props[prop];
   if (ev.target.value === origData[ev.target.name]) {
     return;
   }
