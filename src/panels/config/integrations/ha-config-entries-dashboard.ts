@@ -133,7 +133,11 @@ export class HaConfigManagerDashboard extends LitElement {
                             )}
                           </div>
                         </paper-item-body>
-                        <ha-icon-next></ha-icon-next>
+                        <ha-icon-next
+                          aria-label=${this.hass.localize(
+                            "ui.panel.config.integrations.details"
+                          )}
+                        ></ha-icon-next>
                       </paper-item>
                     </a>
                   `
@@ -154,6 +158,7 @@ export class HaConfigManagerDashboard extends LitElement {
 
         <ha-fab
           icon="hass:plus"
+          aria-label=${this.hass.localize("ui.panel.config.integrations.new")}
           title=${this.hass.localize("ui.panel.config.integrations.new")}
           @click=${this._createFlow}
           ?rtl=${computeRTL(this.hass!)}
