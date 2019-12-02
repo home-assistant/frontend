@@ -1,10 +1,11 @@
-import { h, Component } from "preact";
+import { h } from "preact";
 import "@polymer/paper-input/paper-input";
 import "../../../../components/entity/ha-entity-picker";
 
 import { onChangeEvent } from "../../../../common/preact/event";
+import { AutomationComponent } from "../automation-component";
 
-export default class StateCondition extends Component<any> {
+export default class StateCondition extends AutomationComponent {
   private onChange: (obj: any) => void;
   constructor() {
     super();
@@ -14,6 +15,9 @@ export default class StateCondition extends Component<any> {
   }
 
   public entityPicked(ev) {
+    if (!this.initialized) {
+      return;
+    }
     this.props.onChange(this.props.index, {
       ...this.props.condition,
       entity_id: ev.target.value,
