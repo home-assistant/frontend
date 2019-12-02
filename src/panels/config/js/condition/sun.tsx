@@ -6,7 +6,7 @@ import "@polymer/paper-radio-group/paper-radio-group";
 import { onChangeEvent } from "../../../../common/preact/event";
 import { AutomationComponent } from "../automation-component";
 
-export default class SunCondition extends AutomationComponent {
+export default class SunCondition extends AutomationComponent<any> {
   private onChange: (obj: any) => void;
   private afterPicked: (obj: any) => void;
   private beforePicked: (obj: any) => void;

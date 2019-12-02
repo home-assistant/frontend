@@ -4,7 +4,7 @@ import "../../../../components/ha-textarea";
 import { onChangeEvent } from "../../../../common/preact/event";
 import { AutomationComponent } from "../automation-component";
 
-export default class TemplateCondition extends AutomationComponent {
+export default class TemplateCondition extends AutomationComponent<any> {
   private onChange: (obj: any) => void;
   constructor() {
     super();

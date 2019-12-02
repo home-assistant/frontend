@@ -7,7 +7,7 @@ import "@polymer/paper-radio-group/paper-radio-group";
 import { onChangeEvent } from "../../../../common/preact/event";
 import { AutomationComponent } from "../automation-component";
 
-export default class SunTrigger extends AutomationComponent {
+export default class SunTrigger extends AutomationComponent<any> {
   private onChange: (obj: any) => void;
   constructor() {
     super();

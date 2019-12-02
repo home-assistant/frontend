@@ -1,9 +1,10 @@
-import { h, Component } from "preact";
+import { h } from "preact";
 import "../../../../components/ha-service-picker";
 
 import YAMLTextArea from "../yaml_textarea";
+import { AutomationComponent } from "../automation-component";
 
-export default class CallServiceAction extends Component<any> {
+export default class CallServiceAction extends AutomationComponent<any> {
   constructor() {
     super();
 
@@ -12,6 +13,9 @@ export default class CallServiceAction extends Component<any> {
   }
 
   public serviceChanged(ev) {
+    if (!this.initialized) {
+      return;
+    }
     this.props.onChange(this.props.index, {
       ...this.props.action,
       service: ev.target.value,
@@ -19,6 +23,9 @@ export default class CallServiceAction extends Component<any> {
   }
 
   public serviceDataChanged(data) {
+    if (!this.initialized) {
+      return;
+    }
     this.props.onChange(this.props.index, { ...this.props.action, data });
   }
 

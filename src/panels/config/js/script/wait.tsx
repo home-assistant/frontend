@@ -1,11 +1,12 @@
-import { h, Component } from "preact";
+import { h } from "preact";
 import "@polymer/paper-input/paper-input";
 
 import "../../../../components/ha-textarea";
 
 import { onChangeEvent } from "../../../../common/preact/event";
+import { AutomationComponent } from "../automation-component";
 
-export default class WaitAction extends Component<any> {
+export default class WaitAction extends AutomationComponent<any> {
   private onChange: (obj: any) => void;
   constructor() {
     super();
