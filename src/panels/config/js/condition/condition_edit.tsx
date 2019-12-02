@@ -3,6 +3,8 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu-light";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
 
+import YAMLTextArea from "../yaml_textarea";
+
 import DeviceCondition from "./device";
 import LogicalCondition from "./logical";
 import NumericStateCondition from "./numeric_state";
@@ -31,6 +33,7 @@ export default class ConditionEdit extends Component<any> {
     super();
 
     this.typeChanged = this.typeChanged.bind(this);
+    this.onYamlChange = this.onYamlChange.bind(this);
   }
 
   public typeChanged(ev) {
@@ -44,20 +47,24 @@ export default class ConditionEdit extends Component<any> {
     }
   }
 
-  public render({ index, condition, onChange, hass, localize }) {
+  public render({ index, condition, onChange, hass, localize, yamlMode }) {
     // tslint:disable-next-line: variable-name
     const Comp = TYPES[condition.condition];
     const selected = OPTIONS.indexOf(condition.condition);
 
-    if (!Comp) {
+    if (yamlMode || !Comp) {
       return (
-        <div>
-          {localize(
-            "ui.panel.config.automation.editor.conditions.unsupported_condition",
-            "condition",
-            condition.condition
+        <div style="margin-right: 24px;">
+          {!Comp && (
+            <div>
+              {localize(
+                "ui.panel.config.automation.editor.conditions.unsupported_condition",
+                "condition",
+                condition.condition
+              )}
+            </div>
           )}
-          <pre>{JSON.stringify(condition, null, 2)}</pre>
+          <YAMLTextArea value={condition} onChange={this.onYamlChange} />
         </div>
       );
     }
@@ -93,5 +100,9 @@ export default class ConditionEdit extends Component<any> {
         />
       </div>
     );
+  }
+
+  private onYamlChange(condition) {
+    this.props.onChange(this.props.index, condition);
   }
 }
