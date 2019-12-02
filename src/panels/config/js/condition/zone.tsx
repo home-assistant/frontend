@@ -9,7 +9,7 @@ function zoneAndLocationFilter(stateObj) {
   return hasLocation(stateObj) && computeStateDomain(stateObj) !== "zone";
 }
 
-export default class ZoneCondition extends AutomationComponent {
+export default class ZoneCondition extends AutomationComponent<any> {
   constructor() {
     super();
 

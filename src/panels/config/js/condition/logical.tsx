@@ -3,7 +3,7 @@ import { h } from "preact";
 import Condition from "./index";
 import { AutomationComponent } from "../automation-component";
 
-export default class LogicalCondition extends AutomationComponent {
+export default class LogicalCondition extends AutomationComponent<any> {
   constructor() {
     super();
     this.conditionChanged = this.conditionChanged.bind(this);

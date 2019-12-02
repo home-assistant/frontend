@@ -11,7 +11,7 @@ import {
 
 import { AutomationComponent } from "../automation-component";
 
-export default class DeviceCondition extends AutomationComponent {
+export default class DeviceCondition extends AutomationComponent<any, any> {
   private _origCondition;
 
   constructor() {
