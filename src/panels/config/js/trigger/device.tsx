@@ -11,7 +11,7 @@ import {
 
 import { AutomationComponent } from "../automation-component";
 
-export default class DeviceTrigger extends AutomationComponent {
+export default class DeviceTrigger extends AutomationComponent<any, any> {
   private _origTrigger;
 
   constructor() {

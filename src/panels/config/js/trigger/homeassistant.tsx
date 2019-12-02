@@ -5,7 +5,7 @@ import "@polymer/paper-radio-group/paper-radio-group";
 
 import { AutomationComponent } from "../automation-component";
 
-export default class HassTrigger extends AutomationComponent {
+export default class HassTrigger extends AutomationComponent<any> {
   constructor() {
     super();
 
