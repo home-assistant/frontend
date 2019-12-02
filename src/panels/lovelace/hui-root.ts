@@ -93,6 +93,9 @@ class HUIRoot extends LitElement {
             ? html`
                 <app-toolbar class="edit-mode">
                   <paper-icon-button
+                    aria-label="${this.hass!.localize(
+                      "ui.panel.lovelace.menu.exit_edit_mode"
+                    )}"
                     title="${this.hass!.localize(
                       "ui.panel.lovelace.menu.close"
                     )}"
@@ -103,6 +106,9 @@ class HUIRoot extends LitElement {
                     ${this.config.title ||
                       this.hass!.localize("ui.panel.lovelace.editor.header")}
                     <paper-icon-button
+                      aria-label="${this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_lovelace.edit_title"
+                      )}"
                       title="${this.hass!.localize(
                         "ui.panel.lovelace.editor.edit_lovelace.edit_title"
                       )}"
@@ -182,6 +188,12 @@ class HUIRoot extends LitElement {
                     horizontal-offset="-5"
                   >
                     <paper-icon-button
+                      aria-label=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.menu.open"
+                      )}
+                      title="${this.hass!.localize(
+                        "ui.panel.lovelace.editor.menu.open"
+                      )}"
                       icon="hass:dots-vertical"
                       slot="dropdown-trigger"
                     ></paper-icon-button>
