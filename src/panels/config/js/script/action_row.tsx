@@ -8,10 +8,16 @@ import "../../../../components/ha-card";
 import ActionEdit from "./action_edit";
 
 export default class Action extends Component<any> {
+  public state: { yamlMode: boolean };
   constructor() {
     super();
 
+    this.state = {
+      yamlMode: false,
+    };
+
     this.onDelete = this.onDelete.bind(this);
+    this.switchYamlMode = this.switchYamlMode.bind(this);
   }
 
   public onDelete() {
@@ -27,22 +33,32 @@ export default class Action extends Component<any> {
     }
   }
 
-  public render(props) {
+  public render(props, { yamlMode }) {
     return (
       <ha-card>
         <div class="card-content">
-          <div class="card-menu">
+          <div class="card-menu" style="z-index: 3">
             <paper-menu-button
               no-animations
               horizontal-align="right"
               horizontal-offset="-5"
               vertical-offset="-5"
+              close-on-activate
             >
               <paper-icon-button
                 icon="hass:dots-vertical"
                 slot="dropdown-trigger"
               />
               <paper-listbox slot="dropdown-content">
+                <paper-item onTap={this.switchYamlMode}>
+                  {yamlMode
+                    ? props.localize(
+                        "ui.panel.config.automation.editor.edit_ui"
+                      )
+                    : props.localize(
+                        "ui.panel.config.automation.editor.edit_yaml"
+                      )}
+                </paper-item>
                 <paper-item disabled>
                   {props.localize(
                     "ui.panel.config.automation.editor.actions.duplicate"
@@ -56,9 +72,15 @@ export default class Action extends Component<any> {
               </paper-listbox>
             </paper-menu-button>
           </div>
-          <ActionEdit {...props} />
+          <ActionEdit {...props} yamlMode={yamlMode} />
         </div>
       </ha-card>
     );
+  }
+
+  private switchYamlMode() {
+    this.setState({
+      yamlMode: !this.state.yamlMode,
+    });
   }
 }

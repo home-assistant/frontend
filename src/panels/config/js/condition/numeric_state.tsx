@@ -6,7 +6,7 @@ import "../../../../components/entity/ha-entity-picker";
 import { onChangeEvent } from "../../../../common/preact/event";
 import { AutomationComponent } from "../automation-component";
 
-export default class NumericStateCondition extends AutomationComponent {
+export default class NumericStateCondition extends AutomationComponent<any> {
   private onChange: (obj: any) => void;
   constructor() {
     super();

@@ -6,7 +6,7 @@ import YAMLTextArea from "../yaml_textarea";
 import { onChangeEvent } from "../../../../common/preact/event";
 import { AutomationComponent } from "../automation-component";
 
-export default class EventTrigger extends AutomationComponent {
+export default class EventTrigger extends AutomationComponent<any> {
   private onChange: (obj: any) => void;
   constructor() {
     super();
