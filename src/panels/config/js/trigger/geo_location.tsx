@@ -1,11 +1,13 @@
-import { h, Component } from "preact";
+import { h } from "preact";
+
 import "@polymer/paper-radio-button/paper-radio-button";
 import "@polymer/paper-radio-group/paper-radio-group";
 import "../../../../components/entity/ha-entity-picker";
 
 import { onChangeEvent } from "../../../../common/preact/event";
+import { AutomationComponent } from "../automation-component";
 
-export default class GeolocationTrigger extends Component<any> {
+export default class GeolocationTrigger extends AutomationComponent {
   private onChange: (obj: any) => void;
   constructor() {
     super();
