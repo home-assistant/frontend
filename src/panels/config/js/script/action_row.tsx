@@ -9,8 +9,10 @@ import ActionEdit from "./action_edit";
 
 export default class Action extends Component<any> {
   public state: { yamlMode: boolean };
-  constructor() {
-    super();
+  private moveUp: (event: Event) => void;
+  private moveDown: (event: Event) => void;
+  constructor(props) {
+    super(props);
 
     this.state = {
       yamlMode: false,
@@ -18,6 +20,8 @@ export default class Action extends Component<any> {
 
     this.onDelete = this.onDelete.bind(this);
     this.switchYamlMode = this.switchYamlMode.bind(this);
+    this.moveUp = props.moveUp.bind(this, props.index);
+    this.moveDown = props.moveDown.bind(this, props.index);
   }
 
   public onDelete() {
@@ -38,6 +42,12 @@ export default class Action extends Component<any> {
       <ha-card>
         <div class="card-content">
           <div class="card-menu" style="z-index: 3">
+            {props.index !== 0 && (
+              <paper-icon-button icon="hass:arrow-up" onTap={this.moveUp} />
+            )}
+            {props.index !== props.length - 1 && (
+              <paper-icon-button icon="hass:arrow-down" onTap={this.moveDown} />
+            )}
             <paper-menu-button
               no-animations
               horizontal-align="right"
