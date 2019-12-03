@@ -89,7 +89,7 @@ export default class CallServiceAction extends AutomationComponent<any> {
             value={entity_id}
             label={entity.description}
             onChange={this.entityChanged}
-            include-domains={JSON.stringify([computeDomain(service)])}
+            includeDomains={[computeDomain(service)]}
             allow-custom-entity
           />
         )}
