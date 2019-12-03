@@ -1,23 +1,23 @@
-import "@polymer/paper-menu-button/paper-menu-button";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
-import "../../../../components/ha-card";
+import "@polymer/paper-menu-button/paper-menu-button";
+import { safeDump, safeLoad } from "js-yaml";
 import {
+  css,
+  CSSResult,
+  customElement,
+  html,
   LitElement,
   property,
-  html,
   PropertyValues,
-  query,
-  customElement,
-  CSSResult,
-  css,
 } from "lit-element";
-import { HomeAssistant } from "../../../../types";
+import { dynamicContentDirective } from "../../../../common/dom/dynamic-content-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
-
+import "../../../../components/ha-card";
+import { HomeAssistant } from "../../../../types";
+import "./types/ha-automation-trigger-device";
 import "./types/ha-automation-trigger-state";
-import { safeDump, safeLoad } from "js-yaml";
 
 const OPTIONS = [
   "device",
@@ -42,35 +42,10 @@ export default class HaAutomationTriggerRow extends LitElement {
   @property() private _yamlMode = false;
   @property() private _yaml = "";
   @property() private error = "";
-  @query("#element") private _elementContainer?: HTMLDivElement;
 
   protected updated(changedProps: PropertyValues) {
-    let triggerChanged = changedProps.has("trigger");
-    const oldTrigger = changedProps.get("trigger");
-
     if (changedProps.has("_yamlMode") && this._yamlMode) {
       this._yaml = safeDump(this.trigger);
-    } else if (!this._yamlMode) {
-      triggerChanged = true;
-    }
-
-    if (
-      triggerChanged &&
-      (!oldTrigger || this.trigger.platform !== oldTrigger.platform)
-    ) {
-      const element = document.createElement(
-        `ha-automation-trigger-${this.trigger.platform}`
-      );
-      element.trigger = this.trigger;
-      element.hass = this.hass;
-      if (this._elementContainer!.lastChild) {
-        this._elementContainer!.removeChild(this._elementContainer!.lastChild);
-      }
-      this._elementContainer!.appendChild(element);
-    } else if (this._elementContainer && this._elementContainer.lastChild) {
-      const element = this._elementContainer!.lastChild;
-      element.trigger = this.trigger;
-      element.hass = this.hass;
     }
   }
 
@@ -164,7 +139,10 @@ export default class HaAutomationTriggerRow extends LitElement {
                     )}
                   </paper-listbox>
                 </paper-dropdown-menu-light>
-                <div id="element"></div>
+                ${dynamicContentDirective(
+                  `ha-automation-trigger-${this.trigger.platform}`,
+                  { hass: this.hass, trigger: this.trigger }
+                )}
               `}
         </div>
       </ha-card>

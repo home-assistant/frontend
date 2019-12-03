@@ -1,8 +1,8 @@
 import "@polymer/paper-input/paper-input";
-import "../../../../../components/entity/ha-entity-picker";
-import { LitElement, property, html, customElement } from "lit-element";
-import { HomeAssistant } from "../../../../../types";
+import { customElement, html, LitElement, property } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import "../../../../../components/entity/ha-entity-picker";
+import { HomeAssistant } from "../../../../../types";
 
 @customElement("ha-automation-trigger-state")
 export class HaStateTrigger extends LitElement {
@@ -67,9 +67,10 @@ export class HaStateTrigger extends LitElement {
     const name = ev.target.name;
     const newVal = ev.detail.value;
 
-    if (this.trigger[name] === newVal) {
+    if ((this.trigger[name] || "") === newVal) {
       return;
     }
+
     let trigger;
     if (!newVal) {
       trigger = { ...this.trigger };
@@ -82,7 +83,6 @@ export class HaStateTrigger extends LitElement {
 
   private _entityPicked(ev: CustomEvent) {
     ev.stopPropagation();
-
     fireEvent(this, "value-changed", {
       value: { ...this.trigger, entity_id: ev.target.value },
     });
