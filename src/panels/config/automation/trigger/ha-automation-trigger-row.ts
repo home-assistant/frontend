@@ -54,7 +54,10 @@ export default class HaAutomationTriggerRow extends LitElement {
       triggerChanged = true;
     }
 
-    if (triggerChanged) {
+    if (
+      triggerChanged &&
+      (!oldTrigger || this.trigger.platform !== oldTrigger.platform)
+    ) {
       const element = document.createElement(
         `ha-automation-trigger-${this.trigger.platform}`
       );
