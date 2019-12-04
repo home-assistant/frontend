@@ -33,7 +33,6 @@ import {
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialog-confirmation";
-import { fireEvent } from "../../../common/dom/fire_event";
 
 function AutomationEditor(mountEl, props, mergeEl) {
   return render(h(Automation, props), mountEl, mergeEl);

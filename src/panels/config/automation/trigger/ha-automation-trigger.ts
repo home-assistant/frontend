@@ -57,7 +57,7 @@ export default class HaAutomationTrigger extends LitElement {
     ev.stopPropagation();
     const triggers = [...this.triggers];
     const newValue = ev.detail.value;
-    const index = ev.target.index;
+    const index = (ev.target as any).index;
 
     if (newValue === null) {
       triggers.splice(index, 1);
