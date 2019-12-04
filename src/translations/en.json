@@ -569,6 +569,8 @@
         "title": "Are you sure?"
       },
       "more_info_control": {
+        "dismiss": "Dismiss dialog",
+        "settings": "Entity settings",
         "script": {
           "last_action": "Last Action"
         },
@@ -582,6 +584,7 @@
         }
       },
       "more_info_settings": {
+        "back": "Go back",
         "save": "Save",
         "name": "Name Override",
         "entity_id": "Entity ID"
@@ -641,7 +644,8 @@
     "notification_drawer": {
       "click_to_configure": "Click button to configure {entity}",
       "empty": "No Notifications",
-      "title": "Notifications"
+      "title": "Notifications",
+      "close": "Close"
     },
     "notification_toast": {
       "service_call_failed": "Failed to call service {service}.",
@@ -782,6 +786,8 @@
               "label": "Description",
               "placeholder": "Optional description"
             },
+            "edit_yaml": "Edit as YAML",
+            "edit_ui": "Edit with UI",
             "triggers": {
               "name": "Trigger",
               "header": "Triggers",
@@ -1299,6 +1305,7 @@
           "configure": "Configure",
           "none": "Nothing configured yet",
           "integration_not_found": "Integration not found.",
+          "details": "Integration details",
           "config_entry": {
             "settings_button": "Edit settings for {integration}",
             "system_options_button": "System options for {integration}",
@@ -1518,6 +1525,7 @@
           "configure_ui": "Configure UI",
           "help": "Help",
           "refresh": "Refresh",
+          "exit_edit_mode": "Exit UI edit mode",
           "close": "Close"
         },
         "editor": {
@@ -2042,7 +2050,11 @@
             "filter_attributes": "Filter attributes",
             "no_entities": "No entities",
             "more_info": "More Info",
-            "alert_entity_field": "Entity is a mandatory field"
+            "alert_entity_field": "Entity is a mandatory field",
+            "copy_entity_id": "Copy ID",
+            "copy_entity_state": "Copy state",
+            "copy_entity_attribute": "Copy attributes",
+            "copied": "Copied to clipboard"
           },
           "templates": {
             "title": "Template",

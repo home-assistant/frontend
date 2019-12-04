@@ -5,7 +5,8 @@ import "../ha-config-section";
 import "../../../components/ha-card";
 import "../../../components/ha-textarea";
 
-import Trigger from "./trigger/index";
+import "../automation/trigger/ha-automation-trigger";
+
 import Condition from "./condition/index";
 import Script from "./script/index";
 
@@ -26,8 +27,8 @@ export default class Automation extends Component<any> {
     });
   }
 
-  public triggerChanged(trigger) {
-    this.props.onChange({ ...this.props.automation, trigger });
+  public triggerChanged(ev: CustomEvent) {
+    this.props.onChange({ ...this.props.automation, trigger: ev.detail.value });
   }
 
   public conditionChanged(condition) {
@@ -90,11 +91,10 @@ export default class Automation extends Component<any> {
               )}
             </a>
           </span>
-          <Trigger
-            trigger={trigger}
-            onChange={this.triggerChanged}
+          <ha-automation-trigger
+            triggers={trigger}
+            onvalue-changed={this.triggerChanged}
             hass={hass}
-            localize={localize}
           />
         </ha-config-section>
 

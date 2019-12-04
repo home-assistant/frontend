@@ -53,7 +53,7 @@ class CardModder extends LitElement {
     for (var k in this._config.style) {
       if (window.cardTools.hasTemplate(this._config.style[k]))
         this.templated.push(k);
-      this.card.style.setProperty(k, '');
+      this.card.style.setProperty(k, "");
       target.style.setProperty(
         k,
         window.cardTools.parseTemplate(this._config.style[k])

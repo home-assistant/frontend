@@ -3,7 +3,7 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "@vaadin/vaadin-combo-box/vaadin-combo-box-light";
+import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 
 import { EventsMixin } from "../mixins/events-mixin";
 

@@ -72,12 +72,12 @@
                 "on": "オン"
             },
             "door": {
-                "off": "閉じました",
-                "on": "開けました"
+                "off": "閉鎖",
+                "on": "開放"
             },
             "garage_door": {
-                "off": "閉じました",
-                "on": "開けました"
+                "off": "閉鎖",
+                "on": "開放"
             },
             "gas": {
                 "off": "未検出",
@@ -104,7 +104,8 @@
                 "on": "検出"
             },
             "opening": {
-                "off": "閉じました"
+                "off": "閉鎖",
+                "on": "開放"
             },
             "presence": {
                 "off": "外出",
@@ -130,8 +131,8 @@
                 "on": "検出"
             },
             "window": {
-                "off": "閉じました",
-                "on": "開けました"
+                "off": "閉鎖",
+                "on": "開放"
             }
         },
         "calendar": {
@@ -159,6 +160,10 @@
             "configure": "設定",
             "configured": "設定済み"
         },
+        "cover": {
+            "closed": "閉鎖",
+            "opening": "扉"
+        },
         "default": {
             "off": "オフ",
             "on": "オン",
@@ -174,13 +179,14 @@
             "on": "オン"
         },
         "group": {
-            "closed": "閉じました",
+            "closed": "閉鎖",
             "home": "在宅",
             "locked": "ロックされました",
             "not_home": "外出",
             "off": "オフ",
             "ok": "OK",
-            "on": "オン"
+            "on": "オン",
+            "opening": "扉"
         },
         "input_boolean": {
             "off": "オフ",
@@ -280,6 +286,9 @@
             "media_player": {
                 "text_to_speak": "音声合成"
             },
+            "persistent_notification": {
+                "dismiss": "消去"
+            },
             "scene": {
                 "activate": "有効化"
             },
@@ -325,7 +334,9 @@
         },
         "components": {
             "device-picker": {
-                "device": "デバイス"
+                "clear": "削除",
+                "device": "デバイス",
+                "show_devices": "デバイスを表示"
             },
             "entity": {
                 "entity-picker": {
@@ -356,6 +367,7 @@
                 }
             },
             "more_info_settings": {
+                "entity_id": "エンティティ ID",
                 "name": "名前の上書き",
                 "save": "保存"
             },
@@ -382,12 +394,17 @@
             "log_in": "ログイン",
             "password": "パスワード"
         },
+        "notification_drawer": {
+            "empty": "通知はありません",
+            "title": "通知"
+        },
         "notification_toast": {
             "connection_lost": "切断されました。再接続中...",
             "entity_turned_off": "{entity}をオフにしました。",
             "entity_turned_on": "{entity}をオンにしました。",
             "service_call_failed": "サービス{service}の呼び出しに失敗しました。",
-            "service_called": "サービス{service}を呼び出しました。"
+            "service_called": "サービス{service}を呼び出しました。",
+            "triggered": "トリガーしました {name}"
         },
         "panel": {
             "config": {
@@ -537,7 +554,20 @@
                     }
                 },
                 "cloud": {
-                    "description_features": "自宅の外からコントロールするために、AlexaとGoogleアシスタントに統合します。"
+                    "account": {
+                        "google": {
+                            "devices_pin": "セキュリティデバイス PIN",
+                            "enter_pin_hint": "セキュリティデバイスを使用するには PIN を入力してください",
+                            "security_devices": "セキュリティデバイス"
+                        }
+                    },
+                    "description_features": "自宅の外からコントロールするために、AlexaとGoogleアシスタントに統合します。",
+                    "dialog_certificate": {
+                        "close": "閉じる"
+                    },
+                    "dialog_cloudhook": {
+                        "close": "閉じる"
+                    }
                 },
                 "core": {
                     "caption": "一般",
@@ -689,6 +719,18 @@
                         "title": "ユーザー"
                     }
                 },
+                "zha": {
+                    "add_device_page": {
+                        "search_again": "もう一度検索"
+                    },
+                    "common": {
+                        "add_devices": "デバイスを追加",
+                        "devices": "デバイス"
+                    },
+                    "node_management": {
+                        "header": "デバイス管理"
+                    }
+                },
                 "zwave": {
                     "caption": "Z-Wave",
                     "common": {
@@ -788,10 +830,18 @@
             },
             "profile": {
                 "advanced_mode": {
+                    "hint_enable": "設定オプションが見つかりませんか？アドバイスモードを有効にしてください。",
                     "link_profile_page": "プロフィールページ"
                 },
+                "mfa_setup": {
+                    "close": "閉じる"
+                },
                 "push_notifications": {
-                    "description": "このデバイスに通知を送信します。"
+                    "description": "このデバイスに通知を送信します。",
+                    "error_use_https": "Frontend で SSL を有効になっている必要があります。",
+                    "header": "プッシュ通知",
+                    "link_promo": "もっと見る",
+                    "push_notifications": "プッシュ通知"
                 }
             },
             "shopping-list": {

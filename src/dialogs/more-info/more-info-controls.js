@@ -16,13 +16,14 @@ import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const";
 import { EventsMixin } from "../../mixins/events-mixin";
+import LocalizeMixin from "../../mixins/localize-mixin";
 import { computeRTL } from "../../common/util/compute_rtl";
 
 const DOMAINS_NO_INFO = ["camera", "configurator", "history_graph"];
 /*
  * @appliesMixin EventsMixin
  */
-class MoreInfoControls extends EventsMixin(PolymerElement) {
+class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
   static get template() {
     return html`
       <style include="ha-style-dialog">
@@ -68,7 +69,7 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
 
       <app-toolbar>
         <paper-icon-button
-          aria-label="Dismiss dialog"
+          aria-label$="[[localize('ui.dialogs.more_info_control.dismiss')]]"
           icon="hass:close"
           dialog-dismiss
         ></paper-icon-button>
@@ -77,6 +78,7 @@ class MoreInfoControls extends EventsMixin(PolymerElement) {
         </div>
         <template is="dom-if" if="[[canConfigure]]">
           <paper-icon-button
+            aria-label$="[[localize('ui.dialogs.more_info_control.settings')]]"
             icon="hass:settings"
             on-click="_gotoSettings"
           ></paper-icon-button>

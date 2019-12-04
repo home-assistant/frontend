@@ -11,7 +11,9 @@ import "./ha-auth-flow";
 import { AuthProvider, fetchAuthProviders } from "../data/auth";
 import { registerServiceWorker } from "../util/register-service-worker";
 
-import(/* webpackChunkName: "pick-auth-provider" */ "../auth/ha-pick-auth-provider");
+import(
+  /* webpackChunkName: "pick-auth-provider" */ "../auth/ha-pick-auth-provider"
+);
 
 interface QueryParams {
   client_id?: string;

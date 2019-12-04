@@ -1,11 +1,12 @@
-import { h, Component } from "preact";
+import { h } from "preact";
 import "@polymer/paper-input/paper-input";
 import "../../../../components/ha-textarea";
 import "../../../../components/entity/ha-entity-picker";
 
 import { onChangeEvent } from "../../../../common/preact/event";
+import { AutomationComponent } from "../automation-component";
 
-export default class NumericStateCondition extends Component<any> {
+export default class NumericStateCondition extends AutomationComponent<any> {
   private onChange: (obj: any) => void;
   constructor() {
     super();
@@ -15,6 +16,9 @@ export default class NumericStateCondition extends Component<any> {
   }
 
   public entityPicked(ev) {
+    if (!this.initialized) {
+      return;
+    }
     this.props.onChange(this.props.index, {
       ...this.props.condition,
       entity_id: ev.target.value,

@@ -24,7 +24,9 @@ import { handleAction } from "../common/handle-action";
 @customElement("hui-picture-card")
 export class HuiPictureCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(/* webpackChunkName: "hui-picture-card-editor" */ "../editor/config-elements/hui-picture-card-editor");
+    await import(
+      /* webpackChunkName: "hui-picture-card-editor" */ "../editor/config-elements/hui-picture-card-editor"
+    );
     return document.createElement("hui-picture-card-editor");
   }
   public static getStubConfig(): object {

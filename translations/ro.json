@@ -66,7 +66,7 @@
         "calendar": "Calendar",
         "config": "Configurare",
         "dev-info": "Info",
-        "developer_tools": "Instrumente de dezvoltare",
+        "developer_tools": "Instrumente pentru dezvoltatori",
         "history": "Istoric",
         "logbook": "Jurnal",
         "mailbox": "Cutie poștală",
@@ -526,6 +526,7 @@
         "components": {
             "device-picker": {
                 "clear": "Şterge",
+                "device": "Dispozitiv",
                 "show_devices": "Arata dispozitivele"
             },
             "entity": {
@@ -557,9 +558,9 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Dacă sunt dezactivate, entitățile recent descoperite nu vor fi adăugate automat la Home Assistant.",
+                "enable_new_entities_description": "Dacă sunt dezactivate, entitățile recent descoperite pentru {integration} nu vor fi adăugate automat la Home Assistant.",
                 "enable_new_entities_label": "Activează entitățile nou adăugate",
-                "title": "Setări de sistem"
+                "title": "Opțiuni de sistem pentru {integration}"
             },
             "more_info_control": {
                 "script": {
@@ -586,6 +587,10 @@
                 "success": {
                     "description": "Opțiunile salvate cu succes."
                 }
+            },
+            "voice_command": {
+                "label": "Scrieți o întrebare și apăsați „Enter”",
+                "label_voice": "Tastați și apăsați „Enter” sau atingeți microfonul pentru a vorbi"
             },
             "zha_device_info": {
                 "manuf": "de {manufacturer}",
@@ -629,7 +634,7 @@
         "panel": {
             "config": {
                 "area_registry": {
-                    "caption": "Registrul zonelor",
+                    "caption": "Zone",
                     "create_area": "CREARE ZONĂ",
                     "description": "Privire de ansamblu asupra tuturor zonelor din casa ta.",
                     "editor": {
@@ -641,7 +646,7 @@
                     "no_areas": "Se pare că nu ai nici o zonă încă!",
                     "picker": {
                         "create_area": "CREARE ZONĂ",
-                        "header": "Registrul zonelor",
+                        "header": "Zone",
                         "integrations_page": "Pagina de integrari",
                         "introduction": "Zonele sunt folosite pentru a organiza unde sunt dispozitivele. Aceste informații vor fi utilizate de către Home Assistant pentru a vă ajuta să vă organizați interfața, permisiunile și integrarea cu alte sisteme.",
                         "introduction2": "Pentru a plasa dispozitive într-o zonă, utilizați link-ul de mai jos pentru a naviga la pagina de integrare și apoi faceți clic pe o integrare configurată pentru a ajunge la cardurile dispozitivului.",
@@ -660,6 +665,7 @@
                             "header": "Acţiuni",
                             "introduction": "Acțiunile sunt cele pe care Home Assistant le va face când se declanșează automatizarea. \n\n [Aflați mai multe despre acțiuni.] (https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Aflați mai multe despre acțiuni",
+                            "name": "Acțiune",
                             "type_select": "Tip acțiune",
                             "type": {
                                 "condition": {
@@ -694,12 +700,16 @@
                             "add": "Adăugați o condiție",
                             "delete": "Șterge",
                             "delete_confirm": "Ești sigur că vrei să ștergi?",
-                            "duplicate": "Dublura",
+                            "duplicate": "Duplica",
                             "header": "Condiții",
                             "introduction": "Condițiile sunt o parte opțională a unei reguli de automatizare și pot fi folosite pentru a împiedica o acțiune să se întâmple atunci când este declanșată. Condițiile par foarte asemănătoare cu declanșatoarele, dar sunt foarte diferite. Un declanșator va privi evenimentele care se întâmplă în sistem, în timp ce o condiție va arăta numai cum arată sistemul acum. Un declanșator poate observa că un comutator este pornit. O condiție poate vedea numai dacă un comutator este în prezent pornit sau oprit. \n\n [Aflați mai multe despre condiții.] (https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Aflați mai multe despre condiții",
+                            "name": "Condiție",
                             "type_select": "Tip condiționare",
                             "type": {
+                                "and": {
+                                    "label": "Și"
+                                },
                                 "device": {
                                     "label": "Dispozitiv"
                                 },
@@ -707,10 +717,13 @@
                                     "above": "Mai mare ca:",
                                     "below": "Mai mic ca:",
                                     "label": "Status numeric",
-                                    "value_template": "Valoare sablon (optional)"
+                                    "value_template": "Valoare șablon (opțional)"
+                                },
+                                "or": {
+                                    "label": "Sau"
                                 },
                                 "state": {
-                                    "label": "Status",
+                                    "label": "Stare",
                                     "state": "Status"
                                 },
                                 "sun": {
@@ -723,8 +736,8 @@
                                     "sunset": "Apus de soare"
                                 },
                                 "template": {
-                                    "label": "Sablon",
-                                    "value_template": "Valoare sablon"
+                                    "label": "Șablon",
+                                    "value_template": "Valoare șablon"
                                 },
                                 "time": {
                                     "after": "După",
@@ -733,13 +746,17 @@
                                 },
                                 "zone": {
                                     "entity": "Entitate cu localizare",
-                                    "label": "Zone",
-                                    "zone": "Zone"
+                                    "label": "Zonă",
+                                    "zone": "Zonă"
                                 }
                             },
-                            "unsupported_condition": "Stare neacceptată: {condition}"
+                            "unsupported_condition": "Condiție neacceptată: {condition}"
                         },
                         "default_name": "Automatizare nouă",
+                        "description": {
+                            "label": "Descriere",
+                            "placeholder": "Descriere opțională"
+                        },
                         "introduction": "Utilizați automatizări pentru a vă aduce casa în viață",
                         "load_error_not_editable": "Numai automatizările din automations.yaml pot fi editate.",
                         "load_error_unknown": "Eroare la încărcarea automatizării ({err_no}).",
@@ -750,8 +767,9 @@
                             "delete_confirm": "Sigur doriți să ștergeți?",
                             "duplicate": "Dublura",
                             "header": "Declanșatoare",
-                            "introduction": "Declanșatoarele sunt cele ce încep procesarea unei reguli de automatizare. Este posibil să specificați mai multe declanșatoare pentru aceeași regulă. Odată ce începe declanșarea, Home Assistant va valida condițiile, dacă este cazul, și va apela acțiunea. \n\n [Aflați mai multe despre declanșatoare.] (Https://home-assistant.io/docs/automation/trigger/)",
+                            "introduction": "Declanșatoarele sunt cele ce încep procesarea unei reguli de automatizare. Este posibil să specificați mai multe declanșatoare pentru aceeași regulă. Odată ce începe declanșarea, Home Assistant o să valideze condițiile, dacă este cazul, și va apela acțiunea. \n\n [Aflați mai multe despre declanșatoare.] (https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Aflați mai multe despre triggeri",
+                            "name": "Activator",
                             "type_select": "Tip acțiune",
                             "type": {
                                 "device": {
@@ -824,7 +842,7 @@
                                     "event": "Eveniment",
                                     "label": "Zona",
                                     "leave": "Ieși",
-                                    "zone": "Zona"
+                                    "zone": "Zonă"
                                 }
                             },
                             "unsupported_platform": "Platformă neacceptată: {platform}"
@@ -848,7 +866,7 @@
                 },
                 "core": {
                     "caption": "General",
-                    "description": "Validați fișierul de configurare și controlați serverul",
+                    "description": "Modificarea configurației generale a Home Assistant",
                     "section": {
                         "core": {
                             "core_config": {
@@ -866,13 +884,13 @@
                                 "unit_system_imperial": "Imperial",
                                 "unit_system_metric": "Metric"
                             },
-                            "header": "Configurație și control server",
+                            "header": "Configurare generală",
                             "introduction": "Modificarea configurației poate fi un proces obositor. Noi stim. Această secțiune va încerca să vă facă viața un pic mai ușoară."
                         },
                         "server_control": {
                             "reloading": {
                                 "automation": "Refresh automatizări",
-                                "core": "Refresh procesor",
+                                "core": "Reîncărcați nucleul",
                                 "group": "Refresh grupuri",
                                 "heading": "Refresh configurații",
                                 "introduction": "Unele părți din Home Assistant se pot reîncărca fără a necesita o repornire. Apăsarea reîncărcării va descărca configurația actuală și va încărca noua configurație.",
@@ -898,16 +916,27 @@
                     "caption": "Personalizare",
                     "description": "Personalizați-vă entitățile",
                     "picker": {
-                        "header": "Personalizare",
+                        "header": "Personalizări",
                         "introduction": "Atributele per entitate. Particularizările adăugate/editate vor avea efect imediat. Particularizările eliminate vor avea efect atunci când entitatea este actualizată."
                     }
                 },
                 "devices": {
+                    "automation": {
+                        "actions": {
+                            "caption": "Când se declanșează ceva ..."
+                        },
+                        "conditions": {
+                            "caption": "Fă ceva doar dacă ..."
+                        },
+                        "triggers": {
+                            "caption": "Fă ceva când ..."
+                        }
+                    },
                     "caption": "Dispozitive",
                     "description": "Gestionați dispozitivele conectate"
                 },
                 "entity_registry": {
-                    "caption": "Registrul de entități",
+                    "caption": "Entități",
                     "description": "Prezentare generală a tuturor entităților cunoscute.",
                     "editor": {
                         "default_name": "Zonă nouă",
@@ -919,10 +948,11 @@
                         "update": "ACTUALIZAȚI"
                     },
                     "picker": {
-                        "header": "Registrul de entități",
+                        "header": "Entități",
                         "integrations_page": "Pagina de integrari",
                         "introduction": "Home Assistant păstrează un registru al fiecărei entități pe care a văzut-o vreodată, care poate fi identificată în mod unic. Fiecare dintre aceste entități va avea un ID de entitate atribuit care va fi rezervat doar pentru această entitate.",
                         "introduction2": "Utilizați registrul de entități pentru a înlocui numele, schimba identitatea entității sau a elimina înregistrarea din Home Assistant. Rețineți că eliminarea intrării din registrul entității nu va elimina entitatea. Pentru aceasta, urmați linkul de mai jos și eliminați-l din pagina de integrare.",
+                        "show_disabled": "Afișare entități dezactivate",
                         "unavailable": "(indisponibil)"
                     }
                 },
@@ -943,14 +973,19 @@
                         "via": "Conectat prin"
                     },
                     "config_flow": {
+                        "area_picker_label": "Zonă",
+                        "created_config": "Configurare creată pentru {name}.",
+                        "error_saving_area": "Imposibil de salvat zona: {error}",
                         "external_step": {
                             "description": "Acest pas necesită să vizitați un site web extern pentru a fi finalizat.",
                             "open_site": "Deschideți site-ul web"
-                        }
+                        },
+                        "failed_create_area": "Nu a reușit să creeze zona.",
+                        "name_new_area": "Numele noii zone?"
                     },
                     "configure": "Configurează",
                     "configured": "Configurat",
-                    "description": "Gestionați dispozitivele și serviciile conectate",
+                    "description": "Gestionați și configurați integrările",
                     "discovered": "Descoperit",
                     "new": "Configurați o nouă integrare",
                     "none": "Nimic nu a fost configurat încă"
@@ -966,9 +1001,41 @@
                         "name": "Nume"
                     }
                 },
+                "scene": {
+                    "activated": "Scenă activată {name}.",
+                    "caption": "Scene",
+                    "description": "Crearea și editarea scenelor",
+                    "editor": {
+                        "default_name": "Scenă nouă",
+                        "devices": {
+                            "header": "Dispozitive"
+                        },
+                        "load_error_not_editable": "Numai scenele din scene.yaml sunt editabile.",
+                        "name": "Nume",
+                        "save": "Salvează",
+                        "unsaved_confirm": "Aveți modificări nesalvate. Ești sigur că vrei să ieși?"
+                    },
+                    "picker": {
+                        "add_scene": "Adăugare scenă",
+                        "header": "Editor scenă",
+                        "learn_more": "Aflați mai multe despre scene",
+                        "pick_scene": "Alege scena pentru a edita"
+                    }
+                },
                 "script": {
                     "caption": "Scenariu",
-                    "description": "Creați și editați scenarii"
+                    "description": "Creați și editați scenarii",
+                    "editor": {
+                        "delete_script": "Ștergere script",
+                        "introduction": "Folosiți scripturi pentru a executa o secvență de acțiuni.",
+                        "link_available_actions": "Aflați mai multe despre acțiunile disponibile.",
+                        "sequence": "Secvenţă",
+                        "sequence_sentence": "Secvența acțiunilor acestui scenariu."
+                    },
+                    "picker": {
+                        "edit_script": "Editare script",
+                        "trigger_script": "Script activator"
+                    }
                 },
                 "server_control": {
                     "caption": "Control server",
@@ -976,7 +1043,7 @@
                     "section": {
                         "reloading": {
                             "automation": "Reîncarcă automatizările",
-                            "core": "Reîncărcați nucleul",
+                            "core": "Reîncărcați locația și personalizările",
                             "group": "Reîncărcați grupurile",
                             "heading": "Reîncărcarea configurației",
                             "introduction": "Unele părți din Home Assistant se pot reîncărca fără a necesita o repornire. Apăsarea reîncărcării va dezactiva configurația actuală și va încărca noua configurație.",
@@ -1090,6 +1157,13 @@
                     }
                 }
             },
+            "custom": {
+                "external_panel": {
+                    "complete_access": "Va avea acces la toate datele din asistentul principal.",
+                    "hide_message": "Verificați Docs pentru componenta panel_custom pentru a ascunde acest mesaj",
+                    "question_trust": "Aveți încredere în panoul extern {name} la {link}?"
+                }
+            },
             "developer-tools": {
                 "tabs": {
                     "events": {
@@ -1170,8 +1244,9 @@
                 "showing_entries": "Se afișează intrările pentru"
             },
             "logbook": {
+                "entries_not_found": "Nu s-au găsit intrări în jurnal.",
                 "period": "Perioadă",
-                "showing_entries": "Arata intrări pentru"
+                "showing_entries": "Arată intrări pentru"
             },
             "lovelace": {
                 "cards": {
@@ -1206,16 +1281,17 @@
                     },
                     "edit_card": {
                         "add": "Adăugare card",
-                        "delete": "Șterge",
+                        "delete": "Ștergeți cardul",
                         "edit": "Editeaza",
                         "header": "Configurare card",
-                        "move": "Muta",
+                        "move": "Mutați la Vizualizare",
                         "options": "Mai multe optiuni",
-                        "pick_card": "Alegeți cardul pe care doriți să îl adăugați.",
+                        "pick_card": "Ce card doriți să adăugați?",
                         "save": "Salvați",
                         "toggle_editor": "Activeaza editor"
                     },
                     "edit_lovelace": {
+                        "edit_title": "Editează titlul",
                         "explanation": "Acest titlu este arătat mai sus toate punctele de vedere în Lovelace.",
                         "header": "Titlul interfeței dvs. Lovelace"
                     },
@@ -1223,7 +1299,9 @@
                         "add": "Adăugați vizualizare",
                         "delete": "Ștergeți vizualizarea",
                         "edit": "Editați vizualizarea",
-                        "header": "Vizualizați configurația"
+                        "header": "Vizualizați configurația",
+                        "move_left": "Mutare vizualizare la stânga",
+                        "move_right": "Mutare vizualizare dreapta"
                     },
                     "header": "Editați interfața utilizator",
                     "menu": {
@@ -1237,6 +1315,11 @@
                         "para_no_id": "Acest element nu are un ID. Adăugați un ID la acest element în \"ui-lovelace.yaml\"."
                     },
                     "raw_editor": {
+                        "confirm_unsaved_changes": "Aveți modificări nesalvate, sunteți sigur că doriți să ieșiți?",
+                        "confirm_unsaved_comments": "Configurația dvs. conține comentarii, acestea nu vor fi salvate. Doriți să continuați?",
+                        "error_invalid_config": "Configurația dvs. nu este validă: {error}",
+                        "error_parse_yaml": "Eroare de parsare YAML: {error}",
+                        "error_save_yaml": "Imposibil de salvat YAML: {error}",
                         "header": "Editați configurația",
                         "save": "Salvați",
                         "saved": "Salvat",
@@ -1251,12 +1334,22 @@
                     }
                 },
                 "menu": {
+                    "close": "Închide",
                     "configure_ui": "Configurați interfața utilizator",
                     "help": "Ajutor",
                     "refresh": "Reîmprospătare",
                     "unused_entities": "Entități neutilizate"
                 },
                 "reload_lovelace": "Reîncarcă Lovelace",
+                "unused_entities": {
+                    "available_entities": "Acestea sunt entitățile pe care le aveți disponibile, dar nu sunt încă în UI dvs. Lovelace.",
+                    "domain": "Domeniu",
+                    "entity": "Entitate",
+                    "entity_id": "ID-ul entității",
+                    "last_changed": "Ultima modificare",
+                    "select_to_add": "Selectați entitățile pe care doriți să le adăugați pe un card, apoi faceți clic pe butonul Adăugare card.",
+                    "title": "Entități neutilizate"
+                },
                 "warning": {
                     "entity_non_numeric": "Entitatea este non-numerică: {entity}",
                     "entity_not_found": "Entitatea nu este disponibilă: {entity}"
@@ -1439,6 +1532,10 @@
                 }
             },
             "profile": {
+                "advanced_mode": {
+                    "hint_enable": "Lipsesc opțiunile de configurare? Activați modul avansat",
+                    "link_profile_page": "Pagina de profil"
+                },
                 "change_password": {
                     "confirm_new_password": "Confirmați Noua Parolă",
                     "current_password": "Parola Curentă",

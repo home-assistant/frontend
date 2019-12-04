@@ -60,7 +60,7 @@ export const applyThemesOnElement = (
     element.updateStyles(styles);
   } else if (window.ShadyCSS) {
     // implement updateStyles() method of Polymer elements
-    window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */ (element), styles);
+    window.ShadyCSS.styleSubtree(/** @type {!HTMLElement} */ element, styles);
   }
 
   if (!updateMeta) {

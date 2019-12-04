@@ -1,13 +1,15 @@
-import { h, Component } from "preact";
+import { h } from "preact";
 import "../../../../components/entity/ha-entity-picker";
 import { hasLocation } from "../../../../common/entity/has_location";
 import { computeStateDomain } from "../../../../common/entity/compute_state_domain";
+
+import { AutomationComponent } from "../automation-component";
 
 function zoneAndLocationFilter(stateObj) {
   return hasLocation(stateObj) && computeStateDomain(stateObj) !== "zone";
 }
 
-export default class ZoneCondition extends Component<any> {
+export default class ZoneCondition extends AutomationComponent<any> {
   constructor() {
     super();
 
@@ -16,6 +18,9 @@ export default class ZoneCondition extends Component<any> {
   }
 
   public entityPicked(ev) {
+    if (!this.initialized) {
+      return;
+    }
     this.props.onChange(this.props.index, {
       ...this.props.condition,
       entity_id: ev.target.value,
@@ -23,6 +28,9 @@ export default class ZoneCondition extends Component<any> {
   }
 
   public zonePicked(ev) {
+    if (!this.initialized) {
+      return;
+    }
     this.props.onChange(this.props.index, {
       ...this.props.condition,
       zone: ev.target.value,
