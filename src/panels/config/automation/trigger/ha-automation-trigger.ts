@@ -85,3 +85,9 @@ export default class HaAutomationTrigger extends LitElement {
     `;
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-trigger": HaAutomationTrigger;
+  }
+}

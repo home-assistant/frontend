@@ -3,11 +3,18 @@ import { customElement, html, LitElement, property } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import "../../../../../components/entity/ha-entity-picker";
 import { HomeAssistant } from "../../../../../types";
+import {
+  handleChangeEvent,
+  TriggerElement,
+  StateTrigger,
+  ForDict,
+} from "../ha-automation-trigger-row";
+import { PolymerChangedEvent } from "../../../../../polymer-types";
 
 @customElement("ha-automation-trigger-state")
-export class HaStateTrigger extends LitElement {
+export class HaStateTrigger extends LitElement implements TriggerElement {
   @property() public hass!: HomeAssistant;
-  @property() public trigger;
+  @property() public trigger!: StateTrigger;
 
   public static get defaultConfig() {
     return { entity_id: "" };
@@ -17,10 +24,15 @@ export class HaStateTrigger extends LitElement {
     const { entity_id, to, from } = this.trigger;
     let trgFor = this.trigger.for;
 
-    if (trgFor && (trgFor.hours || trgFor.minutes || trgFor.seconds)) {
+    if (
+      trgFor &&
+      ((trgFor as ForDict).hours ||
+        (trgFor as ForDict).minutes ||
+        (trgFor as ForDict).seconds)
+    ) {
       // If the trigger was defined using the yaml dict syntax, convert it to
       // the equivalent string format
-      let { hours = 0, minutes = 0, seconds = 0 } = trgFor;
+      let { hours = 0, minutes = 0, seconds = 0 } = trgFor as ForDict;
       hours = hours.toString();
       minutes = minutes.toString().padStart(2, "0");
       seconds = seconds.toString().padStart(2, "0");
@@ -62,29 +74,20 @@ export class HaStateTrigger extends LitElement {
     `;
   }
 
-  private _valueChanged(ev): void {
-    ev.stopPropagation();
-    const name = ev.target.name;
-    const newVal = ev.detail.value;
-
-    if ((this.trigger[name] || "") === newVal) {
-      return;
-    }
-
-    let trigger;
-    if (!newVal) {
-      trigger = { ...this.trigger };
-      delete trigger[name];
-    } else {
-      trigger = { ...this.trigger, [name]: newVal };
-    }
-    fireEvent(this, "value-changed", { value: trigger });
+  private _valueChanged(ev: CustomEvent): void {
+    handleChangeEvent(this, ev);
   }
 
-  private _entityPicked(ev: CustomEvent) {
+  private _entityPicked(ev: PolymerChangedEvent<string>) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
-      value: { ...this.trigger, entity_id: ev.target.value },
+      value: { ...this.trigger, entity_id: ev.detail.value },
     });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-trigger-state": HaStateTrigger;
   }
 }

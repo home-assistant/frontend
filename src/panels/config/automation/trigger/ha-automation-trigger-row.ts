@@ -16,8 +16,10 @@ import { dynamicContentDirective } from "../../../../common/dom/dynamic-content-
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import { HomeAssistant } from "../../../../types";
-import "./types/ha-automation-trigger-device";
+import "./types/ha-automation-trigger-mqtt";
 import "./types/ha-automation-trigger-state";
+// tslint:disable-next-line
+import { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 
 const OPTIONS = [
   "device",
@@ -35,10 +37,58 @@ const OPTIONS = [
   "zone",
 ];
 
+export interface ForDict {
+  hours?: number | string;
+  minutes?: number | string;
+  seconds?: number | string;
+}
+
+export interface StateTrigger {
+  platform: "state";
+  entity_id: string;
+  from?: string | number;
+  to?: string | number;
+  for?: string | number | ForDict;
+}
+
+export interface MqttTrigger {
+  platform: "mqtt";
+  topic: string;
+  payload?: string;
+}
+
+export type Trigger = StateTrigger | MqttTrigger;
+
+export interface TriggerElement extends LitElement {
+  trigger: Trigger;
+}
+
+export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
+  ev.stopPropagation();
+  const name = ev.target?.name;
+  if (!name) {
+    return;
+  }
+  const newVal = ev.detail.value;
+
+  if ((element.trigger[name] || "") === newVal) {
+    return;
+  }
+
+  let newTrigger: Trigger;
+  if (!newVal) {
+    newTrigger = { ...element.trigger };
+    delete newTrigger[name];
+  } else {
+    newTrigger = { ...element.trigger, [name]: newVal };
+  }
+  fireEvent(element, "value-changed", { value: newTrigger });
+};
+
 @customElement("ha-automation-trigger-row")
 export default class HaAutomationTriggerRow extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public trigger;
+  @property() public trigger!: Trigger;
   @property() private _yamlMode = false;
   @property() private _yaml = "";
   @property() private error = "";
@@ -161,8 +211,12 @@ export default class HaAutomationTriggerRow extends LitElement {
     }
   }
 
-  private _typeChanged(ev) {
-    const type = ev.target.selectedItem.platform;
+  private _typeChanged(ev: CustomEvent) {
+    const type = (ev.target as PaperListboxElement)?.selectedItem?.platform;
+
+    if (!type) {
+      return;
+    }
 
     const elClass = customElements.get(`ha-automation-trigger-${type}`);
 
@@ -178,7 +232,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   private _onYamlChange(ev: CustomEvent) {
     ev.stopPropagation();
-    let value;
+    let value: Trigger | undefined;
     try {
       value = safeLoad(ev.detail.value);
       this.error = "";
@@ -211,5 +265,11 @@ export default class HaAutomationTriggerRow extends LitElement {
         cursor: pointer;
       }
     `;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-trigger-row": HaAutomationTriggerRow;
   }
 }
