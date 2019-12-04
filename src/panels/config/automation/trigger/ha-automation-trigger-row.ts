@@ -1,8 +1,9 @@
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
+// tslint:disable-next-line
+import { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-menu-button/paper-menu-button";
-import { safeDump, safeLoad } from "js-yaml";
 import {
   css,
   CSSResult,
@@ -10,16 +11,26 @@ import {
   html,
   LitElement,
   property,
-  PropertyValues,
 } from "lit-element";
 import { dynamicContentDirective } from "../../../../common/dom/dynamic-content-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import { HomeAssistant } from "../../../../types";
-import "./types/ha-automation-trigger-mqtt";
+
+import "./types/ha-automation-trigger-device";
+import "./types/ha-automation-trigger-event";
 import "./types/ha-automation-trigger-state";
-// tslint:disable-next-line
-import { PaperListboxElement } from "@polymer/paper-listbox/paper-listbox";
+import "./types/ha-automation-trigger-geo_location";
+import "./types/ha-automation-trigger-homeassistant";
+import "./types/ha-automation-trigger-mqtt";
+import "./types/ha-automation-trigger-numeric_state";
+import "./types/ha-automation-trigger-sun";
+import "./types/ha-automation-trigger-template";
+import "./types/ha-automation-trigger-time";
+import "./types/ha-automation-trigger-time_pattern";
+import "./types/ha-automation-trigger-webhook";
+import "./types/ha-automation-trigger-zone";
+import { DeviceTrigger } from "../../../../data/device_automation";
 
 const OPTIONS = [
   "device",
@@ -57,7 +68,82 @@ export interface MqttTrigger {
   payload?: string;
 }
 
-export type Trigger = StateTrigger | MqttTrigger;
+export interface GeoLocationTrigger {
+  platform: "geo_location";
+  source: "string";
+  zone: "string";
+  event: "enter" | "leave";
+}
+
+export interface HassTrigger {
+  platform: "homeassistant";
+  event: "start" | "shutdown";
+}
+
+export interface NumericStateTrigger {
+  platform: "numeric_state";
+  entity_id: string;
+  above?: number;
+  below?: number;
+  value_template?: string;
+  for?: string | number | ForDict;
+}
+
+export interface SunTrigger {
+  platform: "sun";
+  offset: number;
+  event: "sunrise" | "sunset";
+}
+
+export interface TimePatternTrigger {
+  platform: "time_pattern";
+  hours?: number | string;
+  minutes?: number | string;
+  seconds?: number | string;
+}
+
+export interface WebhookTrigger {
+  platform: "webhook";
+  webhook_id: string;
+}
+
+export interface ZoneTrigger {
+  platform: "zone";
+  entity_id: string;
+  zone: string;
+  event: "enter" | "leave";
+}
+
+export interface TimeTrigger {
+  platform: "time";
+  at: string;
+}
+
+export interface TemplateTrigger {
+  platform: "template";
+  value_template: string;
+}
+
+export interface EventTrigger {
+  platform: "event";
+  event_type: string;
+  event_data: any;
+}
+
+export type Trigger =
+  | StateTrigger
+  | MqttTrigger
+  | GeoLocationTrigger
+  | HassTrigger
+  | NumericStateTrigger
+  | SunTrigger
+  | TimePatternTrigger
+  | WebhookTrigger
+  | ZoneTrigger
+  | TimeTrigger
+  | TemplateTrigger
+  | EventTrigger
+  | DeviceTrigger;
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -65,7 +151,7 @@ export interface TriggerElement extends LitElement {
 
 export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
   ev.stopPropagation();
-  const name = ev.target?.name;
+  const name = (ev.target as any)?.name;
   if (!name) {
     return;
   }
@@ -90,14 +176,6 @@ export default class HaAutomationTriggerRow extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public trigger!: Trigger;
   @property() private _yamlMode = false;
-  @property() private _yaml = "";
-  @property() private error = "";
-
-  protected updated(changedProps: PropertyValues) {
-    if (changedProps.has("_yamlMode") && this._yamlMode) {
-      this._yaml = safeDump(this.trigger);
-    }
-  }
 
   protected render() {
     if (!this.trigger) {
@@ -146,7 +224,6 @@ export default class HaAutomationTriggerRow extends LitElement {
               </paper-listbox>
             </paper-menu-button>
           </div>
-          ${this.error}
           ${this._yamlMode
             ? html`
                 <div style="margin-right: 24px;">
@@ -159,11 +236,10 @@ export default class HaAutomationTriggerRow extends LitElement {
                         )}
                       `
                     : ""}
-                  <ha-code-editor
-                    .value=${this._yaml}
-                    mode="yaml"
+                  <ha-yaml-editor
+                    .value=${this.trigger}
                     @value-changed=${this._onYamlChange}
-                  ></ha-code-editor>
+                  ></ha-yaml-editor>
                 </div>
               `
             : html`
@@ -189,10 +265,12 @@ export default class HaAutomationTriggerRow extends LitElement {
                     )}
                   </paper-listbox>
                 </paper-dropdown-menu-light>
-                ${dynamicContentDirective(
-                  `ha-automation-trigger-${this.trigger.platform}`,
-                  { hass: this.hass, trigger: this.trigger }
-                )}
+                <div>
+                  ${dynamicContentDirective(
+                    `ha-automation-trigger-${this.trigger.platform}`,
+                    { hass: this.hass, trigger: this.trigger }
+                  )}
+                </div>
               `}
         </div>
       </ha-card>
@@ -212,7 +290,8 @@ export default class HaAutomationTriggerRow extends LitElement {
   }
 
   private _typeChanged(ev: CustomEvent) {
-    const type = (ev.target as PaperListboxElement)?.selectedItem?.platform;
+    const type = ((ev.target as PaperListboxElement)?.selectedItem as any)
+      ?.platform;
 
     if (!type) {
       return;
@@ -232,16 +311,7 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   private _onYamlChange(ev: CustomEvent) {
     ev.stopPropagation();
-    let value: Trigger | undefined;
-    try {
-      value = safeLoad(ev.detail.value);
-      this.error = "";
-    } catch (err) {
-      this.error = err;
-    }
-    if (value) {
-      fireEvent(this, "value-changed", { value });
-    }
+    fireEvent(this, "value-changed", { value: ev.detail.value });
   }
 
   private _switchYamlMode() {
