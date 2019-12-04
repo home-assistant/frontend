@@ -157,7 +157,9 @@ class HaPanelMailbox extends EventsMixin(LocalizeMixin(PolymerElement)) {
         dialogShowEvent: "show-audio-message-dialog",
         dialogTag: "ha-dialog-show-audio-message",
         dialogImport: () =>
-          import(/* webpackChunkName: "ha-dialog-show-audio-message" */ "./ha-dialog-show-audio-message"),
+          import(
+            /* webpackChunkName: "ha-dialog-show-audio-message" */ "./ha-dialog-show-audio-message"
+          ),
       });
     }
     this.hassChanged = this.hassChanged.bind(this);

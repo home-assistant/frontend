@@ -27,6 +27,7 @@ import { PlaceholderValues } from "./ha-thingtalk-placeholders";
 import { convertThingTalk } from "../../../../data/cloud";
 
 export interface Placeholder {
+  name: string;
   index: number;
   fields: string[];
   domains: string[];
@@ -177,8 +178,21 @@ class DialogThingtalk extends LitElement {
     const placeholderValues = ev.detail.value as PlaceholderValues;
     Object.entries(placeholderValues).forEach(([type, values]) => {
       Object.entries(values).forEach(([index, placeholder]) => {
-        Object.entries(placeholder).forEach(([field, value]) => {
-          this._config[type][index][field] = value;
+        const devices = Object.values(placeholder);
+        if (devices.length === 1) {
+          Object.entries(devices[0]).forEach(([field, value]) => {
+            this._config[type][index][field] = value;
+            return;
+          });
+        }
+        const automation = { ...this._config[type][index] };
+        delete this._config[type][index];
+        devices.forEach((fields) => {
+          const newAutomation = { ...automation };
+          Object.entries(fields).forEach(([field, value]) => {
+            newAutomation[field] = value;
+          });
+          this._config[type].push(newAutomation);
         });
       });
     });

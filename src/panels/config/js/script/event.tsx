@@ -1,10 +1,12 @@
-import { h, Component } from "preact";
+import { h } from "preact";
 import "@polymer/paper-input/paper-input";
 
 import YAMLTextArea from "../yaml_textarea";
 import { onChangeEvent } from "../../../../common/preact/event";
 import { LocalizeFunc } from "../../../../common/translations/localize";
 import { EventAction } from "../../../../data/script";
+
+import { AutomationComponent } from "../automation-component";
 
 interface Props {
   index: number;
@@ -13,7 +15,7 @@ interface Props {
   onChange: (index: number, action: EventAction) => void;
 }
 
-export default class EventActionForm extends Component<Props> {
+export default class EventActionForm extends AutomationComponent<Props> {
   private onChange: (event: Event) => void;
 
   static get defaultConfig(): EventAction {
@@ -57,6 +59,9 @@ export default class EventActionForm extends Component<Props> {
   }
 
   private serviceDataChanged(eventData) {
+    if (!this.initialized) {
+      return;
+    }
     this.props.onChange(this.props.index, {
       ...this.props.action,
       event_data: eventData,

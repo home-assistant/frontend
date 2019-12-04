@@ -574,9 +574,9 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Si està desactivat, les entitats descobertes recentment no s’afegiran automàticament a Home Assistant.",
+                "enable_new_entities_description": "Si està desactivat, les entitats recentment descobertes per a {integration} no s’afegiran automàticament a Home Assistant.",
                 "enable_new_entities_label": "Activa entitats afegides recentment.",
-                "title": "Opcions de sistema"
+                "title": "Opcions del sistema per a {integration}"
             },
             "confirmation": {
                 "cancel": "Cancel·la",
@@ -869,8 +869,8 @@
                                     "event": "Esdeveniment:",
                                     "label": "Sol",
                                     "offset": "Òfset (opcional)",
-                                    "sunrise": "de l'Alba",
-                                    "sunset": "del Capvespre"
+                                    "sunrise": "a l'Alba",
+                                    "sunset": "al Capvespre"
                                 },
                                 "template": {
                                     "label": "Plantilla",

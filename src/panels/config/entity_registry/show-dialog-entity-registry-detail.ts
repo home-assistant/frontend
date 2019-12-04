@@ -6,7 +6,9 @@ export interface EntityRegistryDetailDialogParams {
 }
 
 export const loadEntityRegistryDetailDialog = () =>
-  import(/* webpackChunkName: "entity-registry-detail-dialog" */ "./dialog-entity-registry-detail");
+  import(
+    /* webpackChunkName: "entity-registry-detail-dialog" */ "./dialog-entity-registry-detail"
+  );
 
 export const showEntityRegistryDetailDialog = (
   element: HTMLElement,

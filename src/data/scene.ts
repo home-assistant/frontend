@@ -18,38 +18,6 @@ export const SCENE_IGNORED_DOMAINS = [
   "zone",
 ];
 
-export const SCENE_SAVED_ATTRIBUTES = {
-  light: [
-    "brightness",
-    "color_temp",
-    "effect",
-    "rgb_color",
-    "xy_color",
-    "hs_color",
-  ],
-  media_player: [
-    "is_volume_muted",
-    "volume_level",
-    "sound_mode",
-    "source",
-    "media_content_id",
-    "media_content_type",
-  ],
-  climate: [
-    "target_temperature",
-    "target_temperature_high",
-    "target_temperature_low",
-    "target_humidity",
-    "fan_mode",
-    "swing_mode",
-    "hvac_mode",
-    "preset_mode",
-  ],
-  vacuum: ["cleaning_mode"],
-  fan: ["speed", "current_direction"],
-  water_heather: ["temperature", "operation_mode"],
-};
-
 export interface SceneEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & { id?: string };
 }

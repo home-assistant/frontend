@@ -145,6 +145,10 @@ documentContainer.innerHTML = `<custom-style>
       --mdc-theme-on-primary: var(--text-primary-color);
       --mdc-theme-on-secondary: var(--text-primary-color);
       --mdc-theme-on-surface: var(--primary-text-color);
+
+      /* app header background color */
+      --app-header-text-color: var(--text-primary-color);
+      --app-header-background-color: var(--primary-color);
     }
   </style>
 

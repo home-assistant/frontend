@@ -19,9 +19,7 @@ export interface Stream {
 }
 
 export const computeMJPEGStreamUrl = (entity: CameraEntity) =>
-  `/api/camera_proxy_stream/${entity.entity_id}?token=${
-    entity.attributes.access_token
-  }`;
+  `/api/camera_proxy_stream/${entity.entity_id}?token=${entity.attributes.access_token}`;
 
 export const fetchThumbnailUrlWithCache = (
   hass: HomeAssistant,

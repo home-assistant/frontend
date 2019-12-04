@@ -11,7 +11,9 @@ export const setupLeafletMap = async (
     throw new Error("Cannot setup Leaflet map on disconnected element");
   }
   // tslint:disable-next-line
-  const Leaflet = (await import(/* webpackChunkName: "leaflet" */ "leaflet")) as LeafletModuleType;
+  const Leaflet = (await import(
+    /* webpackChunkName: "leaflet" */ "leaflet"
+  )) as LeafletModuleType;
   Leaflet.Icon.Default.imagePath = "/static/images/leaflet/images/";
 
   const map = Leaflet.map(mapElement);

@@ -34,7 +34,9 @@ import { classMap } from "lit-html/directives/class-map";
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
   public static async getConfigElement() {
-    await import(/* webpackChunkName: "hui-map-card-editor" */ "../editor/config-elements/hui-map-card-editor");
+    await import(
+      /* webpackChunkName: "hui-map-card-editor" */ "../editor/config-elements/hui-map-card-editor"
+    );
     return document.createElement("hui-map-card-editor");
   }
 

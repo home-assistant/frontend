@@ -6,7 +6,9 @@ export interface HaDomainTogglerDialogParams {
 }
 
 export const loadDomainTogglerDialog = () =>
-  import(/* webpackChunkName: "dialog-domain-toggler" */ "./dialog-domain-toggler");
+  import(
+    /* webpackChunkName: "dialog-domain-toggler" */ "./dialog-domain-toggler"
+  );
 
 export const showDomainTogglerDialog = (
   element: HTMLElement,

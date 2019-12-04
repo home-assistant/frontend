@@ -33,7 +33,9 @@ import { SUPPORT_BRIGHTNESS } from "../../../data/light";
 @customElement("hui-light-card")
 export class HuiLightCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(/* webpackChunkName: "hui-light-card-editor" */ "../editor/config-elements/hui-light-card-editor");
+    await import(
+      /* webpackChunkName: "hui-light-card-editor" */ "../editor/config-elements/hui-light-card-editor"
+    );
     return document.createElement("hui-light-card-editor");
   }
   public static getStubConfig(): object {
@@ -165,9 +167,9 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   }
 
   private _dragEvent(e: any): void {
-    this.shadowRoot!.querySelector(".brightness")!.innerHTML = `${
-      e.detail.value
-    } %`;
+    this.shadowRoot!.querySelector(
+      ".brightness"
+    )!.innerHTML = `${e.detail.value} %`;
     this._showBrightness();
     this._hideBrightness();
   }
