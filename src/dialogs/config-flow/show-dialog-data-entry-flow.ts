@@ -79,7 +79,9 @@ export interface DataEntryFlowDialogParams {
 }
 
 export const loadDataEntryFlowDialog = () =>
-  import(/* webpackChunkName: "dialog-config-flow" */ "./dialog-data-entry-flow");
+  import(
+    /* webpackChunkName: "dialog-config-flow" */ "./dialog-data-entry-flow"
+  );
 
 export const showFlowDialog = (
   element: HTMLElement,

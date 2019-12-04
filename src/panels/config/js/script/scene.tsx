@@ -1,7 +1,8 @@
-import { h, Component } from "preact";
+import { h } from "preact";
 import "../../../../components/entity/ha-entity-picker";
+import { AutomationComponent } from "../automation-component";
 
-export default class SceneAction extends Component<any> {
+export default class SceneAction extends AutomationComponent<any> {
   constructor() {
     super();
 

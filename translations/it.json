@@ -22,7 +22,7 @@
         "climate": "Termostato",
         "configurator": "Configuratore",
         "conversation": "Conversazione",
-        "cover": "Tapparella",
+        "cover": "Scuri",
         "device_tracker": "Tracking dispositivo",
         "fan": "Ventilatore",
         "group": "Gruppo",
@@ -402,7 +402,7 @@
             "alarm_control_panel": {
                 "arm_away": "Attiva Fuori Casa",
                 "arm_custom_bypass": "Bypass personalizzato",
-                "arm_home": "Attiva In casa",
+                "arm_home": "Attiva In Casa",
                 "arm_night": "Attiva Notte",
                 "armed_custom_bypass": "Attiva con bypass",
                 "clear_code": "Canc",
@@ -421,7 +421,7 @@
                 "away_mode": "Modalità Assente",
                 "cooling": "{name} raffreddamento",
                 "current_temperature": "{name} temperatura attuale",
-                "currently": "Attuale",
+                "currently": "Attualmente",
                 "fan_mode": "Ventilazione",
                 "heating": "{name} riscaldamento",
                 "high": "alto",
@@ -430,8 +430,8 @@
                 "operation": "Operazione",
                 "preset_mode": "Preset",
                 "swing_mode": "Modo oscillazione",
-                "target_humidity": "Umidità di riferimento",
-                "target_temperature": "Temperatura di riferimento",
+                "target_humidity": "Umidità desiderata",
+                "target_temperature": "Temperatura desiderata",
                 "target_temperature_entity": "{name} temperatura target",
                 "target_temperature_mode": "{name} temperatura target {mode}"
             },
@@ -517,16 +517,16 @@
                     "n": "N",
                     "ne": "NE",
                     "nne": "NNE",
-                    "nnw": "NNW",
-                    "nw": "NW",
+                    "nnw": "NNO",
+                    "nw": "NO",
                     "s": "S",
                     "se": "SE",
                     "sse": "SSE",
-                    "ssw": "SSW",
-                    "sw": "SW",
-                    "w": "W",
-                    "wnw": "WNW",
-                    "wsw": "WSW"
+                    "ssw": "SSO",
+                    "sw": "SO",
+                    "w": "O",
+                    "wnw": "ONO",
+                    "wsw": "OSO"
                 },
                 "forecast": "Previsioni"
             }
@@ -542,6 +542,7 @@
         "components": {
             "device-picker": {
                 "clear": "Cancella",
+                "device": "Dispositivo",
                 "show_devices": "Mostra dispositivi"
             },
             "entity": {
@@ -671,7 +672,7 @@
         "panel": {
             "config": {
                 "area_registry": {
-                    "caption": "Registro di area",
+                    "caption": "Aree",
                     "create_area": "CREA AREA",
                     "description": "Panoramica di tutte le aree della tua casa.",
                     "editor": {
@@ -683,7 +684,7 @@
                     "no_areas": "Sembra che tu non abbia ancora delle aree!",
                     "picker": {
                         "create_area": "CREA AREA",
-                        "header": "Registro di area",
+                        "header": "Aree",
                         "integrations_page": "Integrazioni",
                         "introduction": "Le aree sono utilizzate per organizzare dove sono i dispositivi. Queste informazioni saranno utilizzate in Home Assistant per aiutarti ad organizzare la tua interfaccia, permessi e integrazioni con altri sistemi.",
                         "introduction2": "Per posizionare i dispositivi in un'area, utilizzare il seguente collegamento per accedere alla pagina delle integrazioni e quindi fare clic su un'integrazione configurata per accedere alle schede del dispositivo.",
@@ -691,18 +692,19 @@
                     }
                 },
                 "automation": {
-                    "caption": "Automazione",
-                    "description": "Crea e modifica automazioni",
+                    "caption": "Automazioni",
+                    "description": "Crea e modifica Automazioni",
                     "editor": {
                         "actions": {
-                            "add": "Aggiungi azione",
+                            "add": "Aggiungi Azione",
                             "delete": "Elimina",
                             "delete_confirm": "Sicuro di voler eliminare?",
                             "duplicate": "Duplica",
                             "header": "Azioni",
                             "introduction": "Le azioni sono ciò che Home Assistant farà quando un trigger attiva un automazione. \n\n [Ulteriori informazioni sulle azioni.](Https://home-assistant.io/docs/automation/action/)",
-                            "learn_more": "Per saperne di più sulle azioni",
-                            "type_select": "Tipo di azione",
+                            "learn_more": "Per saperne di più sulle Azioni",
+                            "name": "Azione",
+                            "type_select": "Tipo di Azione",
                             "type": {
                                 "condition": {
                                     "label": "Condizione"
@@ -719,20 +721,20 @@
                                 },
                                 "event": {
                                     "event": "Evento:",
-                                    "label": "Scatena Evento",
-                                    "service_data": "Dati servizio"
+                                    "label": "Attiva Evento",
+                                    "service_data": "Dati del Servizio"
                                 },
                                 "scene": {
                                     "label": "Attivare la scena"
                                 },
                                 "service": {
-                                    "label": "Chiama servizio",
-                                    "service_data": "Dato servizio"
+                                    "label": "Chiama Servizio",
+                                    "service_data": "Dati del Servizio"
                                 },
                                 "wait_template": {
                                     "label": "Attendere",
                                     "timeout": "Timeout (opzionale)",
-                                    "wait_template": "Attendi modello"
+                                    "wait_template": "Modello di attesa"
                                 }
                             },
                             "unsupported_action": "Azione non supportata: {action}"
@@ -744,8 +746,9 @@
                             "delete_confirm": "Sicuro di voler eliminare?",
                             "duplicate": "Duplica",
                             "header": "Condizioni",
-                            "introduction": "Le condizioni sono una parte facoltativa di una regola di automazione e possono essere utilizzate per impedire che un'azione si verifichi quando viene attivata. Le condizioni sembrano molto simili ai trigger, ma sono molto diverse. Un trigger analizzerà gli eventi che si verificano nel sistema mentre una condizione analizza solo l'aspetto del sistema in questo momento. Un trigger può osservare che un interruttore è in fase di accensione. Una condizione può vedere solo se un interruttore è attivo o meno. \n\n [Ulteriori informazioni sulle condizioni.](Https://home-assistant.io/docs/scripts/conditions/)",
-                            "learn_more": "Per saperne di più sulle condizioni",
+                            "introduction": "Le Condizioni sono una parte facoltativa di una regola di automazione e possono essere utilizzate per impedire che un'Azione si verifichi quando viene attivata. Le Condizioni sembrano molto simili ai Trigger, ma sono molto diverse. Un Trigger analizzerà gli eventi che stanno accadendo nel sistema, mentre una Condizione analizza solo l'aspetto Istantaneo del sistema. Un Trigger può osservare che un interruttore è in fase di accensione. Una Condizione può solo vedere se un interruttore è attivo o meno. ",
+                            "learn_more": "Per saperne di più sulle Condizioni",
+                            "name": "Condizione",
                             "type_select": "Tipo di condizione",
                             "type": {
                                 "and": {
@@ -753,8 +756,8 @@
                                 },
                                 "device": {
                                     "extra_fields": {
-                                        "above": "Sopra",
-                                        "below": "Sotto",
+                                        "above": "Maggiore di",
+                                        "below": "Minore di",
                                         "for": "Durata"
                                     },
                                     "label": "Dispositivo"
@@ -774,9 +777,9 @@
                                 },
                                 "sun": {
                                     "after": "Dopo:",
-                                    "after_offset": "Dopo l'offset (opzionale)",
+                                    "after_offset": "Scostamento per Dopo (opzionale)",
                                     "before": "Prima:",
-                                    "before_offset": "Prima dell'offset (opzionale)",
+                                    "before_offset": "Scostamento per Prima (opzionale)",
                                     "label": "Sole",
                                     "sunrise": "Alba",
                                     "sunset": "Tramonto"
@@ -788,7 +791,7 @@
                                 "time": {
                                     "after": "Dopo",
                                     "before": "Prima",
-                                    "label": "Ora"
+                                    "label": "Tempo"
                                 },
                                 "zone": {
                                     "entity": "Entità con posizione",
@@ -798,36 +801,37 @@
                             },
                             "unsupported_condition": "Condizione non supportata: {condition}"
                         },
-                        "default_name": "Nuova automazione",
+                        "default_name": "Nuova Automazione",
                         "description": {
                             "label": "Descrizione",
                             "placeholder": "Descrizione facoltativa"
                         },
                         "introduction": "Usa le automazioni per dare vita alla tua casa.",
-                        "load_error_not_editable": "Solo le automazioni in automations.yaml sono modificabili.",
-                        "load_error_unknown": "Errore durante il caricamento dell'automazione ({err_no}).",
+                        "load_error_not_editable": "Solo le Automazioni in automations.yaml sono modificabili.",
+                        "load_error_unknown": "Errore durante il caricamento dell'Automazione ({err_no}).",
                         "save": "Salva",
                         "triggers": {
-                            "add": "Aggiungi trigger",
+                            "add": "Aggiungi Trigger",
                             "delete": "Elimina",
                             "delete_confirm": "Sicuro di voler eliminare?",
                             "duplicate": "Duplica",
                             "header": "Triggers",
-                            "introduction": "I trigger sono ciò che avvia l'elaborazione di una regola di automazione. È possibile specificare più trigger per la stessa regola. Una volta avviato il trigger, Home Assistant convaliderà le condizioni, se presenti, e chiamerà l'azione. \n\n [Ulteriori informazioni sui trigger.](Https://home-assistant.io/docs/automation/trigger/)",
-                            "learn_more": "Per saperne di più sui trigger",
-                            "type_select": "Tipo di trigger",
+                            "introduction": "Il Trigger avvia l'elaborazione di una regola di automazione. È possibile specificare più Trigger per una stessa regola. Una volta avviato un Trigger, Home Assistant convaliderà le Condizioni, se presenti, e chiamerà l'Azione.",
+                            "learn_more": "Per saperne di più sui Trigger",
+                            "name": "Attivazione",
+                            "type_select": "Tipo di Trigger",
                             "type": {
                                 "device": {
                                     "extra_fields": {
-                                        "above": "Sopra",
-                                        "below": "Sotto",
+                                        "above": "Maggiore di",
+                                        "below": "Minore di",
                                         "for": "Durata"
                                     },
                                     "label": "Dispositivo"
                                 },
                                 "event": {
-                                    "event_data": "Evento data",
-                                    "event_type": "Tipo di evento",
+                                    "event_data": "Dati dell'Evento",
+                                    "event_type": "Tipo di Evento",
                                     "label": "Evento"
                                 },
                                 "geo_location": {
@@ -841,17 +845,17 @@
                                 "homeassistant": {
                                     "event": "Evento:",
                                     "label": "Home Assistant",
-                                    "shutdown": "Arresto del sistema",
+                                    "shutdown": "Spegnimento",
                                     "start": "Avvio"
                                 },
                                 "mqtt": {
                                     "label": "MQTT",
-                                    "payload": "Carico (opzionale)",
+                                    "payload": "Payload (opzionale)",
                                     "topic": "Argomento"
                                 },
                                 "numeric_state": {
-                                    "above": "Superiore",
-                                    "below": "Inferiore",
+                                    "above": "Maggiore di",
+                                    "below": "Minore di",
                                     "label": "Valore numerico",
                                     "value_template": "Valore modello (opzionale)"
                                 },
@@ -864,7 +868,7 @@
                                 "sun": {
                                     "event": "Evento",
                                     "label": "Sole",
-                                    "offset": "Offset (opzionale)",
+                                    "offset": "Scostamento (opzionale)",
                                     "sunrise": "Alba",
                                     "sunset": "Tramonto"
                                 },
@@ -879,7 +883,7 @@
                                     "seconds": "Secondi"
                                 },
                                 "time": {
-                                    "at": "A",
+                                    "at": "Alle",
                                     "label": "Ora"
                                 },
                                 "webhook": {
@@ -887,7 +891,7 @@
                                     "webhook_id": "Webhook ID"
                                 },
                                 "zone": {
-                                    "enter": "Ingresso",
+                                    "enter": "Entrata",
                                     "entity": "Entità con posizione",
                                     "event": "Evento",
                                     "label": "Zona",
@@ -900,17 +904,17 @@
                         "unsaved_confirm": "Hai delle modifiche non salvate. Sei sicuro di voler uscire?"
                     },
                     "picker": {
-                        "add_automation": "Aggiungi automazione",
-                        "delete_automation": "Cancellare l'automazione",
-                        "delete_confirm": "Sei sicuro di voler eliminare questa automazione?",
-                        "edit_automation": "Modifica automazione",
-                        "header": "Editor automazione",
-                        "introduction": "L'editor di automazione consente di creare e modificare automazioni. Per favore leggi le istruzioni (https://home-assistant.io/docs/automation/editor/) per assicurarti di aver configurato correttamente Home Assistant.",
-                        "learn_more": "Per saperne di più sulle automazioni",
-                        "no_automations": "Nessuna automazione modificabile trovata",
-                        "only_editable": "Solo le automazioni definite in automations.yaml sono modificabili.",
-                        "pick_automation": "Scegli l'automazione da modificare",
-                        "show_info_automation": "Mostra informazioni sull'automazione"
+                        "add_automation": "Aggiungi Automazione",
+                        "delete_automation": "Cancellare l'Automazione",
+                        "delete_confirm": "Sei sicuro di voler eliminare questa Automazione?",
+                        "edit_automation": "Modifica Automazione",
+                        "header": "Editor di Automazione",
+                        "introduction": "L'Editor di Automazione consente di creare e modificare Automazioni. Per favore leggi le istruzioni (https://home-assistant.io/docs/automation/editor/) per assicurarti di aver configurato correttamente Home Assistant.",
+                        "learn_more": "Per saperne di più sulle Automazioni",
+                        "no_automations": "Nessuna Automazione modificabile trovata",
+                        "only_editable": "Solo le Automazioni definite in automations.yaml sono modificabili.",
+                        "pick_automation": "Scegli l'Automazione da modificare",
+                        "show_info_automation": "Mostra informazioni sull'Automazione"
                     }
                 },
                 "cloud": {
@@ -1098,18 +1102,18 @@
                         },
                         "server_control": {
                             "reloading": {
-                                "automation": "Ricarica automazioni",
-                                "core": "Ricarica core",
-                                "group": "Ricarica gruppi",
+                                "automation": "Ricarica le Automazioni",
+                                "core": "Ricarica il Nucleo",
+                                "group": "Ricarica i Gruppi",
                                 "heading": "Ricaricamento della configurazione",
                                 "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere il riavvio. Premendo scaricherà la configurazione corrente e caricherà quella nuova.",
-                                "script": "Ricarica script"
+                                "script": "Ricarica gli Script"
                             },
                             "server_management": {
-                                "heading": "Gestione del server",
-                                "introduction": "Controllare il server Home Assistant... da Home Assistant.",
+                                "heading": "Gestione del Server",
+                                "introduction": "Controlla il tuo server Home Assistant... da Home Assistant.",
                                 "restart": "Riavviare",
-                                "stop": "Stop"
+                                "stop": "Arrestare"
                             },
                             "validation": {
                                 "check_config": "Controlla la configurazione",
@@ -1127,12 +1131,12 @@
                     "attributes_outside": "I seguenti attributi sono personalizzati dall'esterno di customize.yaml",
                     "attributes_override": "Puoi sovrascriverli, se vuoi.",
                     "attributes_set": "I seguenti attributi dell'entità sono impostati a livello di codice.",
-                    "caption": "Personalizzazione",
+                    "caption": "Personalizzazioni",
                     "description": "Personalizza le tue entità",
                     "different_include": "Possibilmente tramite un dominio, un glob o un'altra inclusione.",
                     "pick_attribute": "Scegli un attributo da sovrascrivere",
                     "picker": {
-                        "header": "Personalizzazione",
+                        "header": "Personalizzazioni",
                         "introduction": "Modificare gli attributi per entità. Le personalizzazioni aggiunte / modificate avranno effetto immediato. Le personalizzazioni rimosse avranno effetto quando l'entità viene aggiornata."
                     },
                     "warning": {
@@ -1174,7 +1178,7 @@
                     "unnamed_device": "Dispositivo senza nome"
                 },
                 "entity_registry": {
-                    "caption": "Registro delle entità",
+                    "caption": "Entità",
                     "description": "Panoramica di tutte le entità conosciute.",
                     "editor": {
                         "confirm_delete": "Sei sicuro di voler eliminare questa voce?",
@@ -1189,7 +1193,7 @@
                         "update": "AGGIORNA"
                     },
                     "picker": {
-                        "header": "Registro delle entità",
+                        "header": "Entità",
                         "headers": {
                             "enabled": "Abilitato",
                             "entity_id": "ID entità",
@@ -1228,7 +1232,7 @@
                         "add_area": "Aggiungi area",
                         "area_picker_label": "Area",
                         "close": "Chiudi",
-                        "created_config": "Configurazione creata per {name} .",
+                        "created_config": "Configurazione creata per {name}.",
                         "error_saving_area": "Errore durante il salvataggio dell'area: {error}",
                         "external_step": {
                             "description": "Questo passaggio richiede di visitare un sito Web esterno per essere completato.",
@@ -1300,7 +1304,7 @@
                         },
                         "introduction": "Usa le scene per dare vita alla tua casa.",
                         "load_error_not_editable": "Solo le scene in scene.yaml sono modificabili.",
-                        "load_error_unknown": "Errore durante il caricamento della scena ( {err_no} ).",
+                        "load_error_unknown": "Errore durante il caricamento della scena ({err_no}).",
                         "name": "Nome",
                         "save": "Salva",
                         "unsaved_confirm": "Hai delle modifiche non salvate. Sei sicuro di voler uscire?"
@@ -1344,7 +1348,7 @@
                     }
                 },
                 "server_control": {
-                    "caption": "Gestione del server",
+                    "caption": "Controlli del server",
                     "description": "Riavviare e arrestare il server Home Assistant",
                     "section": {
                         "reloading": {
@@ -1362,7 +1366,7 @@
                             "heading": "Gestione del server",
                             "introduction": "Controllare il server Home Assistant... da Home Assistant.",
                             "restart": "Riavviare",
-                            "stop": "Stop"
+                            "stop": "Arrestare"
                         },
                         "validation": {
                             "check_config": "Controlla la configurazione",
@@ -2150,7 +2154,7 @@
         },
         "sidebar": {
             "external_app_configuration": "Configurazione App",
-            "log_out": "Esci",
+            "log_out": "Disconnettersi",
             "sidebar_toggle": "Attiva/disattiva la barra laterale"
         }
     }

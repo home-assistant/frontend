@@ -115,9 +115,7 @@ class HaAutomationPicker extends LitElement {
                           <a
                             href=${ifDefined(
                               automation.attributes.id
-                                ? `/config/automation/edit/${
-                                    automation.attributes.id
-                                  }`
+                                ? `/config/automation/edit/${automation.attributes.id}`
                                 : undefined
                             )}
                           >

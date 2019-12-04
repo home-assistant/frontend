@@ -8,7 +8,7 @@ import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "@vaadin/vaadin-date-picker/vaadin-date-picker";
+import "@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker";
 
 import "../../components/ha-menu-button";
 import "../../components/state-history-charts";
@@ -38,8 +38,8 @@ class HaPanelHistory extends LocalizeMixin(PolymerElement) {
 
         paper-dropdown-menu {
           max-width: 100px;
-          margin-top: 13px;
           margin-right: 16px;
+          margin-top: 5px;
           --paper-input-container-label-floating: {
             padding-bottom: 10px;
           }

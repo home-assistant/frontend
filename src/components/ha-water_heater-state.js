@@ -58,14 +58,10 @@ class HaWaterHeaterState extends LocalizeMixin(PolymerElement) {
       stateObj.attributes.target_temp_low != null &&
       stateObj.attributes.target_temp_high != null
     ) {
-      return `${stateObj.attributes.target_temp_low} - ${
-        stateObj.attributes.target_temp_high
-      } ${hass.config.unit_system.temperature}`;
+      return `${stateObj.attributes.target_temp_low} - ${stateObj.attributes.target_temp_high} ${hass.config.unit_system.temperature}`;
     }
     if (stateObj.attributes.temperature != null) {
-      return `${stateObj.attributes.temperature} ${
-        hass.config.unit_system.temperature
-      }`;
+      return `${stateObj.attributes.temperature} ${hass.config.unit_system.temperature}`;
     }
 
     return "";

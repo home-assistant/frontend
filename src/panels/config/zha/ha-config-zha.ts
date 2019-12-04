@@ -97,10 +97,9 @@ export class HaConfigZha extends LitElement {
 
   private async _fetchBindableDevices(): Promise<void> {
     if (this._selectedDevice && this.hass) {
-      this._bindableDevices = (await fetchBindableDevices(
-        this.hass,
-        this._selectedDevice!.ieee
-      )).sort(sortZHADevices);
+      this._bindableDevices = (
+        await fetchBindableDevices(this.hass, this._selectedDevice!.ieee)
+      ).sort(sortZHADevices);
     }
   }
 

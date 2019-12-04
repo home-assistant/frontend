@@ -66,7 +66,7 @@ export default class YAMLTextArea extends Component<any, any> {
     };
     return (
       <div>
-        <p>{label}</p>
+        {label && <p>{label}</p>}
         <ha-code-editor
           mode="yaml"
           style={style}

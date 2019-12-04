@@ -1,4 +1,4 @@
-import { h, Component } from "preact";
+import { h } from "preact";
 
 import "../../../../components/device/ha-device-picker";
 import "../../../../components/device/ha-device-condition-picker";
@@ -8,7 +8,10 @@ import {
   fetchDeviceConditionCapabilities,
   deviceAutomationsEqual,
 } from "../../../../data/device_automation";
-export default class DeviceCondition extends Component<any, any> {
+
+import { AutomationComponent } from "../automation-component";
+
+export default class DeviceCondition extends AutomationComponent<any, any> {
   private _origCondition;
 
   constructor() {
@@ -20,10 +23,16 @@ export default class DeviceCondition extends Component<any, any> {
   }
 
   public devicePicked(ev) {
+    if (!this.initialized) {
+      return;
+    }
     this.setState({ ...this.state, device_id: ev.target.value });
   }
 
   public deviceConditionPicked(ev) {
+    if (!this.initialized) {
+      return;
+    }
     let condition = ev.target.value;
     if (
       this._origCondition &&
@@ -74,6 +83,7 @@ export default class DeviceCondition extends Component<any, any> {
   }
 
   public componentDidMount() {
+    this.initialized = true;
     if (!this.state.capabilities) {
       this._getCapabilities();
     }
@@ -98,6 +108,9 @@ export default class DeviceCondition extends Component<any, any> {
   }
 
   private _extraFieldsChanged(ev) {
+    if (!this.initialized) {
+      return;
+    }
     this.props.onChange(this.props.index, {
       ...this.props.condition,
       ...ev.detail.value,
@@ -108,9 +121,7 @@ export default class DeviceCondition extends Component<any, any> {
     // Returns a callback for ha-form to calculate labels per schema object
     return (schema) =>
       localize(
-        `ui.panel.config.automation.editor.condition.type.device.extra_fields.${
-          schema.name
-        }`
+        `ui.panel.config.automation.editor.condition.type.device.extra_fields.${schema.name}`
       ) || schema.name;
   }
 }

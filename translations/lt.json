@@ -200,6 +200,11 @@
         "common": {
             "save": "Išsaugoti"
         },
+        "components": {
+            "device-picker": {
+                "device": "Įrenginys"
+            }
+        },
         "dialogs": {
             "more_info_control": {
                 "script": {
@@ -249,6 +254,7 @@
                             "duplicate": "Dublikuoti",
                             "header": "Veiksmai",
                             "learn_more": "Sužinokite daugiau apie veiksmus",
+                            "name": "Veiksmas",
                             "type": {
                                 "delay": {
                                     "delay": "Uždelsta"
@@ -266,6 +272,7 @@
                             "delete": "Ištrinti",
                             "duplicate": "Dubliuoti",
                             "learn_more": "Sužinokite daugiau apie sąlygas",
+                            "name": "Sąlyga",
                             "type": {
                                 "numeric_state": {
                                     "below": "žemiau"
@@ -294,6 +301,7 @@
                         "triggers": {
                             "delete": "Ištrinti",
                             "learn_more": "Sužinokite daugiau apie trigerius",
+                            "name": "Trigeris",
                             "type": {
                                 "geo_location": {
                                     "enter": "Įveskite",
@@ -399,6 +407,11 @@
                     "node_config": {
                         "set_config_parameter": "Nustatykite parametrą „Config“"
                     }
+                }
+            },
+            "custom": {
+                "external_panel": {
+                    "hide_message": "Norėdami paslėpti šį pranešimą, patikrinkite „panel_custom“ dokumentacija"
                 }
             },
             "developer-tools": {

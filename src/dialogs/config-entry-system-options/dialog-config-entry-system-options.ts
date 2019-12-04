@@ -98,9 +98,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
                           "ui.dialogs.config_entry_system_options.enable_new_entities_description",
                           "integration",
                           this.hass.localize(
-                            `component.${
-                              this._params.entry.domain
-                            }.config.title`
+                            `component.${this._params.entry.domain}.config.title`
                           ) || this._params.entry.domain
                         )}
                       </p>

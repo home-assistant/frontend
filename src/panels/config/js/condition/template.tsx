@@ -1,9 +1,10 @@
-import { h, Component } from "preact";
+import { h } from "preact";
 import "../../../../components/ha-textarea";
 
 import { onChangeEvent } from "../../../../common/preact/event";
+import { AutomationComponent } from "../automation-component";
 
-export default class TemplateCondition extends Component<any> {
+export default class TemplateCondition extends AutomationComponent<any> {
   private onChange: (obj: any) => void;
   constructor() {
     super();

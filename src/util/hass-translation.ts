@@ -105,9 +105,7 @@ async function fetchTranslation(fingerprint) {
   });
   if (!response.ok) {
     throw new Error(
-      `Fail to fetch translation ${fingerprint}: HTTP response status is ${
-        response.status
-      }`
+      `Fail to fetch translation ${fingerprint}: HTTP response status is ${response.status}`
     );
   }
   return response.json();

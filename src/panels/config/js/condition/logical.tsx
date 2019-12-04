@@ -1,29 +1,22 @@
-import { h, Component } from "preact";
+import { h } from "preact";
 
 import Condition from "./index";
+import { AutomationComponent } from "../automation-component";
 
-export default class LogicalCondition extends Component<any, any> {
-  private _mounted = false;
+export default class LogicalCondition extends AutomationComponent<any> {
   constructor() {
     super();
     this.conditionChanged = this.conditionChanged.bind(this);
   }
 
   public conditionChanged(conditions) {
-    if (this._mounted) {
-      this.props.onChange(this.props.index, {
-        ...this.props.condition,
-        conditions,
-      });
+    if (!this.initialized) {
+      return;
     }
-  }
-
-  public componentWillMount() {
-    this._mounted = true;
-  }
-
-  public componentWillUnmount() {
-    this._mounted = false;
+    this.props.onChange(this.props.index, {
+      ...this.props.condition,
+      conditions,
+    });
   }
 
   /* eslint-disable camelcase */
