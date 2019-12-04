@@ -176,6 +176,7 @@ export abstract class HaDeviceAutomationPicker<
     this.value = automation;
     setTimeout(() => {
       fireEvent(this, "change");
+      fireEvent(this, "value-changed", { value: automation });
     }, 0);
   }
 
