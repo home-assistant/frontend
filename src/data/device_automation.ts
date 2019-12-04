@@ -18,7 +18,7 @@ export interface DeviceCondition extends DeviceAutomation {
 }
 
 export interface DeviceTrigger extends DeviceAutomation {
-  platform: string;
+  platform: "device";
 }
 
 export const fetchDeviceActions = (hass: HomeAssistant, deviceId: string) =>
