@@ -984,7 +984,7 @@
                     },
                     "alexa": {
                         "banner": "由於您已經透過 configuration.yaml 設定物件過濾器、 因此編輯連結物件的介面將無法使用。",
-                        "expose": "連結至 Alexa",
+                        "expose": "與 Alexa 連結",
                         "exposed_entities": "已連結物件",
                         "not_exposed_entities": "未連結物件",
                         "title": "Alexa"
@@ -1023,7 +1023,7 @@
                     "google": {
                         "banner": "由於您已經透過 configuration.yaml 設定物件過濾器、 因此編輯連結物件的介面將無法使用。",
                         "disable_2FA": "關閉兩步驟驗證",
-                        "expose": "連結至 Google Assistant",
+                        "expose": "與 Google Assistant 連結",
                         "exposed_entities": "已連結物件",
                         "not_exposed_entities": "未連結物件",
                         "sync_to_google": "正與 Google 同步變更。",
@@ -1262,7 +1262,7 @@
                     "confirm_delete": "確定要刪除此人員？",
                     "confirm_delete2": "所有該人員所屬裝置將成為未指派狀態。",
                     "create_person": "新增人員",
-                    "description": "管理 Home Assistant 追蹤人員。",
+                    "description": "管理 Home Assistant 追蹤人員",
                     "detail": {
                         "create": "新增",
                         "delete": "刪除",
@@ -1353,7 +1353,7 @@
                     "section": {
                         "reloading": {
                             "automation": "重新載入自動化",
-                            "core": "重新載入位置與自訂化",
+                            "core": "重新載入座標與自訂化",
                             "group": "重新載入群組",
                             "heading": "正在重新載入設定",
                             "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。點選重新載入按鈕，即可重新載入最新設定。",

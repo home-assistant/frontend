@@ -975,7 +975,11 @@
                     }
                 },
                 "customize": {
+                    "attributes_customize": "Sljedeći su atributi već postavljeni u customize.yaml",
+                    "attributes_not_set": "Sljedeći atributi nisu postavljeni. Postavite ih ako želite.",
+                    "attributes_outside": "Sljedeći su atributi prilagođeni izvan customize.yaml",
                     "attributes_override": "Možete ih premostiti ako želite.",
+                    "attributes_set": "Sljedeći atributi entiteta postavljaju se programski.",
                     "caption": "Prilagodba",
                     "description": "Prilagodite entitete",
                     "pick_attribute": "Odaberite atribut za premošćenje",
@@ -1290,6 +1294,10 @@
                         "title": "Događaji"
                     },
                     "info": {
+                        "home_assistant_logo": "Logotip Home Assistanta",
+                        "license": "Objavljeno pod licencom Apache 2.0",
+                        "path_configuration": "Put do configuration.yaml: {path}",
+                        "source": "Izvorni kod:",
                         "title": "Informacije"
                     },
                     "logs": {

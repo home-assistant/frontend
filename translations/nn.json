@@ -524,6 +524,9 @@
             "successfully_saved": "Vellukka lagring"
         },
         "components": {
+            "device-picker": {
+                "device": "Enhet"
+            },
             "entity": {
                 "entity-picker": {
                     "entity": "Eining"
@@ -654,6 +657,7 @@
                             "header": "Handlingar",
                             "introduction": "Handlinga Home Assistant vil gjennomføre når automasjonen vert utløyst.",
                             "learn_more": "Lær meir om handlingar",
+                            "name": "Handling",
                             "type_select": "Handlingstype",
                             "type": {
                                 "condition": {
@@ -692,6 +696,7 @@
                             "header": "Føresetnadar",
                             "introduction": "Føresetnadar er ein valfri del av automasjonsregelen og kan brukast til å hindre at ei handling vert gjennomført når den er utløyst. Føresetnadane liknar på utløysarane, men er veldig forskjellig frå dei. Ein utløysar vil sjå på hendingar som skjer i systemet, medan ein føresetnad berre ser på korleis systemet er akkuratt no. Ein utløysar kan observere at ein brytar blir skrudt på, medan ein føresetnad berre kan sjå om brytaren er på eller av. \n\n[Lær meir om føresetnadar.](https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Lær meir om føresetnader",
+                            "name": "Betingelse",
                             "type_select": "Føresetnadstype",
                             "type": {
                                 "device": {
@@ -746,6 +751,7 @@
                             "header": "Utløysarar",
                             "introduction": "Utløysarar er det som startar ein prosess i ein automasjonsregel. Det er mogleg å spesifisere fleire utløysarar for same regel. Når ein utløysar startar, vil Home Assistant validere føresetnadane, dersom der er nokon, og så setje i gang handlinga.\n\n[Lær meir om utløysarar.](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Lær meir om utløysarar",
+                            "name": "Utløysar",
                             "type_select": "Utløysartype",
                             "type": {
                                 "device": {
@@ -835,6 +841,9 @@
                     }
                 },
                 "cloud": {
+                    "alexa": {
+                        "title": "Alexa"
+                    },
                     "caption": "Home Assistant Cloud",
                     "description_features": "Kontroller når du ikkje er heime og integrer med Alexa og Google Assistant",
                     "description_login": "Logga inn som {email}",
@@ -897,8 +906,16 @@
                     }
                 },
                 "devices": {
+                    "area_picker_label": "Område",
                     "caption": "Einingar",
-                    "description": "Administrer tilkopla einingar"
+                    "data_table": {
+                        "area": "Område",
+                        "battery": "Batteri",
+                        "manufacturer": "Produsent",
+                        "model": "Modell"
+                    },
+                    "description": "Administrer tilkopla einingar",
+                    "info": "Enhetsinformasjon"
                 },
                 "entity_registry": {
                     "caption": "Oppføringsregister",
@@ -937,10 +954,13 @@
                         "via": "Tilkopla via"
                     },
                     "config_flow": {
+                        "close": "Lukk",
                         "external_step": {
                             "description": "Ei ekstern nettside må besøkast for å fullføre dette steget.",
                             "open_site": "Opne nettside"
-                        }
+                        },
+                        "finish": "Fullfør",
+                        "submit": "Send inn"
                     },
                     "configure": "Konfigurer",
                     "configured": "Konfigurer  ",
@@ -1146,6 +1166,9 @@
                     "card": {
                         "generic": {
                             "name": "Namn"
+                        },
+                        "iframe": {
+                            "name": "iFrame"
                         }
                     },
                     "edit_card": {
@@ -1193,12 +1216,16 @@
                     }
                 },
                 "menu": {
+                    "close": "Lukk",
                     "configure_ui": "Konfigurer brukargrensesnitt",
                     "help": "Hjelp",
                     "refresh": "Oppdater",
                     "unused_entities": "Ubrukte oppføringar"
                 },
                 "reload_lovelace": "Omlast Lovelace",
+                "unused_entities": {
+                    "domain": "Domene"
+                },
                 "warning": {
                     "entity_non_numeric": "Oppføringa er ikkje numerisk: {entity}",
                     "entity_not_found": "Oppføringa er utilgjengelig: {entity}"

@@ -1141,7 +1141,8 @@
                     },
                     "warning": {
                         "include_link": "customize.yaml enthält",
-                        "include_sentence": "Et schéngt wéi wann är configuration.yaml net richteg"
+                        "include_sentence": "Et schéngt wéi wann är configuration.yaml net richteg",
+                        "not_applied": "Ännerungen hei gi gespäichert, mee nëmmen effektiv no enger Aktualiséierung vun der Konfiguratioun ausser den include ass en Place."
                     }
                 },
                 "devices": {
@@ -1290,7 +1291,8 @@
                         "devices": {
                             "add": "Apparat dobäisetzen",
                             "delete": "Apparat läschen",
-                            "header": "Apparater"
+                            "header": "Apparater",
+                            "introduction": "Setzt Apparater dobäi déi dir an der Zeene wëllt hunn. Definéiert de Status vun all Apparat den dir fir dës Zeene wënscht."
                         },
                         "entities": {
                             "add": "Entitéit dobäisetzen",
@@ -1313,6 +1315,7 @@
                         "delete_scene": "Zeen läschen",
                         "edit_scene": "Zeen änneren",
                         "header": "Zeen Editeur",
+                        "introduction": "De Zeenen Editeur erlaabt Iech Zeenen z'erstellen an z'änneren. Follegt de Link hei ënnendrënner fir d'Instruktiounen ze liese fir sécher ze stellen, datt Dir den Home Assistant richteg konfiguréiert hutt.",
                         "learn_more": "Méi iwwert Zeene léieren",
                         "no_scenes": "Keng Zeene fir ze ännere fonnt",
                         "only_editable": "Nëmme Zeene am scenes.yaml kënnen editéiert ginn.",
@@ -1523,6 +1526,7 @@
             "custom": {
                 "external_panel": {
                     "complete_access": "Et wäert Accès op all Donnéeë am Home Assistant kréien.",
+                    "hide_message": "Kuckt Dokumentatioun vun der panel_custom Komponente fir dës Noriicht ze verstoppen",
                     "question_trust": "Vertraut dir dem externe Panneau {name} op {link}?"
                 }
             },
