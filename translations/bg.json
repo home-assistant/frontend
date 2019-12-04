@@ -288,7 +288,7 @@
             "locked": "Заключена",
             "not_home": "Отсъства",
             "off": "Изключен",
-            "ok": "Добре",
+            "ok": "ОК",
             "on": "Включена",
             "open": "Отворена",
             "opening": "Отваряне",
@@ -321,7 +321,7 @@
             "not_home": "Отсъства"
         },
         "plant": {
-            "ok": "Добре",
+            "ok": "ОК",
             "problem": "Проблем"
         },
         "remote": {
@@ -423,7 +423,7 @@
                 "fan_mode": "Режим на вентилатора",
                 "on_off": "Вкл. / Изкл",
                 "operation": "Режим",
-                "preset_mode": "Предварително-зададени настройки",
+                "preset_mode": "Предварително зададени настройки",
                 "swing_mode": "Режим на люлеене",
                 "target_humidity": "Желана влажност",
                 "target_temperature": "Желана температура"
@@ -524,6 +524,9 @@
             "successfully_saved": "Успешно запазено"
         },
         "components": {
+            "device-picker": {
+                "device": "Устройство"
+            },
             "entity": {
                 "entity-picker": {
                     "entity": "Обект"
@@ -551,9 +554,9 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Ако е изключено, новооткритите устройства няма да бъдат автоматично добавени в Home Assistant",
+                "enable_new_entities_description": "Ако е изключено, новооткритите устройства за {integration} няма да бъдат автоматично добавяни в Home Assistant",
                 "enable_new_entities_label": "Активирай новодобавените устройства.",
-                "title": "Системни опции"
+                "title": "Системни опции за {integration}"
             },
             "more_info_control": {
                 "script": {
@@ -570,7 +573,7 @@
             },
             "more_info_settings": {
                 "entity_id": "Идентификация на обект",
-                "name": "Име",
+                "name": "Променя на Име",
                 "save": "Запазване"
             },
             "options_flow": {
@@ -580,6 +583,10 @@
                 "success": {
                     "description": "Опциите бяха запазени успешно."
                 }
+            },
+            "voice_command": {
+                "label": "Въведете въпрос и натиснете „Enter“",
+                "label_voice": "Въведете и натиснете „Enter“ или докоснете микрофона, за да говорите"
             },
             "zha_device_info": {
                 "manuf": "от {manufacturer}",
@@ -597,11 +604,11 @@
             }
         },
         "duration": {
-            "day": "{count}{count, plural,\n  one {ден}\n  other {дни}\n}",
+            "day": "{count} {count, plural,\n  one {ден}\n  other {дни}\n}",
             "hour": "{count} {count, plural,\n  one {час}\n  other {часа}\n}",
             "minute": "{count} {count, plural,\n  one {минута}\n  other {минути}\n}",
-            "second": "{count}{count, plural,\n  one {секунда}\n  other {секунди}\n}",
-            "week": "{count}{count, plural,\n  one {седмица}\n  other {седмици}\n}"
+            "second": "{count} {count, plural,\n  one {секунда}\n  other {секунди}\n}",
+            "week": "{count} {count, plural,\n  one {седмица}\n  other {седмици}\n}"
         },
         "login-form": {
             "log_in": "Вход",
@@ -643,7 +650,7 @@
                     }
                 },
                 "automation": {
-                    "caption": "Автоматизация",
+                    "caption": "Автоматизации",
                     "description": "Създаване и редактиране на автоматизации",
                     "editor": {
                         "actions": {
@@ -667,7 +674,7 @@
                                     "label": "Устройство"
                                 },
                                 "event": {
-                                    "event": "Събитие",
+                                    "event": "Събитие:",
                                     "label": "Стартирай събитие",
                                     "service_data": "Сервизна информация"
                                 },
@@ -765,7 +772,7 @@
                                     "zone": "Зона"
                                 },
                                 "homeassistant": {
-                                    "event": "Събитие",
+                                    "event": "Събитие:",
                                     "label": "Home Assistant",
                                     "shutdown": "Изключване",
                                     "start": "Стартиране"
@@ -788,7 +795,7 @@
                                     "to": "Във"
                                 },
                                 "sun": {
-                                    "event": "Събитие",
+                                    "event": "Събитие:",
                                     "label": "Слънце",
                                     "offset": "Офсет (незадължително)",
                                     "sunrise": "Изгрев",
@@ -815,7 +822,7 @@
                                 "zone": {
                                     "enter": "Влизане",
                                     "entity": "Обект с местоположение",
-                                    "event": "Събитие",
+                                    "event": "Събитие:",
                                     "label": "Зона",
                                     "leave": "Излизане",
                                     "zone": "Зона"
@@ -842,7 +849,7 @@
                 },
                 "core": {
                     "caption": "Общи",
-                    "description": "Проверка на конфигурацията и управление на сървъра",
+                    "description": "Променете общите настройки на Home Assistant",
                     "section": {
                         "core": {
                             "core_config": {
@@ -860,7 +867,7 @@
                                 "unit_system_imperial": "Имперски единици",
                                 "unit_system_metric": "Метрични единици"
                             },
-                            "header": "Конфигуриране и управление на сървъра",
+                            "header": "Общи настройки",
                             "introduction": "Промяната на конфигурацията може да бъде труден процес. Знаем това. Този раздел ще се опита да направи живота Ви малко по-лесен."
                         },
                         "server_control": {
@@ -944,7 +951,7 @@
                     },
                     "configure": "Конфигуриране",
                     "configured": "Конфигуриран",
-                    "description": "Управление на свързани устройства и услуги",
+                    "description": "Управление и настройка на интеграции",
                     "discovered": "Открити",
                     "new": "Настройте нова интеграция",
                     "none": "Нищо не е конфигурирано към момента"
@@ -961,7 +968,7 @@
                     }
                 },
                 "script": {
-                    "caption": "Скрипт",
+                    "caption": "Скриптове",
                     "description": "Създаване и редактиране на скриптове"
                 },
                 "server_control": {
@@ -970,7 +977,7 @@
                     "section": {
                         "reloading": {
                             "automation": "Презареждане на автоматизациите",
-                            "core": "Презареждане на ядрото",
+                            "core": "Презареждане на местоположението и персонализациите",
                             "group": "Презареждане на гурпите",
                             "heading": "Презареждане на конфигурацията",
                             "introduction": "Някои части от Home Assistant могат да се презаредят без да е необходимо рестартиране. Натискането на Презареди ще отхвърли настоящата конфигурация и ще зареди новата конфигурация.",
@@ -1105,7 +1112,7 @@
                         "title": "Състояния"
                     },
                     "templates": {
-                        "title": "Шаблони"
+                        "title": "Шаблон"
                     }
                 }
             },
@@ -1156,7 +1163,7 @@
                     },
                     "edit_card": {
                         "add": "Добавяне на карта",
-                        "delete": "Изтриване",
+                        "delete": "Изтриване на карта",
                         "edit": "Редактиране",
                         "header": "Конфигуриране на Карта",
                         "move": "Преместване",

@@ -534,8 +534,10 @@
         "common": {
             "cancel": "Annuleren",
             "loading": "Bezig met laden",
+            "no": "Nee",
             "save": "Opslaan",
-            "successfully_saved": "Succesvol opgeslagen"
+            "successfully_saved": "Succesvol opgeslagen",
+            "yes": "Ja"
         },
         "components": {
             "device-picker": {
@@ -581,6 +583,9 @@
                 "ok": "OK",
                 "title": "Weet je het zeker?"
             },
+            "domain_toggler": {
+                "title": "Domeinen in- en uitschakelen"
+            },
             "more_info_control": {
                 "script": {
                     "last_action": "Laatste actie"
@@ -608,6 +613,10 @@
                 }
             },
             "voice_command": {
+                "did_not_hear": "Home Assistant heeft niets gehoord",
+                "error": "Oeps, er is een fout opgetreden",
+                "found": "Ik heb het volgende voor je gevonden:",
+                "how_can_i_help": "Hoe kan ik helpen?",
                 "label": "Typ een vraag en druk op 'Enter'",
                 "label_voice": "Typ en druk op 'Enter' of tik op de microfoon om te spreken"
             },
@@ -896,11 +905,16 @@
                     },
                     "picker": {
                         "add_automation": "Automatisering toevoegen",
+                        "delete_automation": "Verwijder automatisering",
+                        "delete_confirm": "Weet u zeker dat u deze automatisering wilt verwijderen?",
+                        "edit_automation": "Bewerk automatisering",
                         "header": "Automatiseringsbewerker",
                         "introduction": "Met de automatiseringsbewerker kun je automatiseringen maken en bewerken. Volg de link hieronder om er zeker van te zijn dat je Home Assistant juist hebt geconfigureerd.",
                         "learn_more": "Meer informatie over automatiseringen",
                         "no_automations": "We konden geen bewerkbare automatiseringen vinden",
-                        "pick_automation": "Kies te bewerken automatisering"
+                        "only_editable": "Alleen automatiseringen in automations.yaml kunnen worden bewerkt.",
+                        "pick_automation": "Kies te bewerken automatisering",
+                        "show_info_automation": "Informatie weergeven over automatisering"
                     }
                 },
                 "cloud": {
@@ -1113,11 +1127,18 @@
                 },
                 "customize": {
                     "attributes_customize": "De volgende attributen zijn al ingesteld in adjust.yaml",
+                    "attributes_not_set": "De volgende attributen zijn nog niet ingesteld. Je kunt ze instellen als je wilt.",
+                    "attributes_override": "Je kunt ze overschrijven als je wilt.",
+                    "attributes_set": "De volgende attributen van de entiteit zijn ",
                     "caption": "Aanpassingen",
                     "description": "Pas je entiteiten aan",
+                    "pick_attribute": "Kies een attribuut om te overschrijven",
                     "picker": {
                         "header": "Aanpassingen",
                         "introduction": "Pas attributen per entiteit aan. Toegevoegde/gewijzigde aanpassingen worden onmiddellijk van kracht. Verwijderde aanpassingen worden van kracht wanneer de entiteit wordt bijgewerkt."
+                    },
+                    "warning": {
+                        "include_link": "inclusief customize.yaml"
                     }
                 },
                 "devices": {
@@ -1257,32 +1278,42 @@
                     "note_about_persons_configured_in_yaml": "Opmerking: personen die zijn geconfigureerd via configuration.yaml kunnen niet worden bewerkt via de UI."
                 },
                 "scene": {
+                    "activated": "Scène {name} geactiveerd.",
+                    "caption": "Scènes",
+                    "description": "Maak en bewerk scènes",
                     "editor": {
                         "default_name": "Nieuwe scène",
                         "devices": {
                             "add": "Apparaat toevoegen",
                             "delete": "Apparaat verwijderen",
-                            "header": "Apparaten"
+                            "header": "Apparaten",
+                            "introduction": "Voeg de apparaten toe die u in uw scène wilt opnemen. Stel alle apparaten in op de gewenste status voor deze scène."
                         },
                         "entities": {
                             "add": "Voeg een entiteit toe",
                             "delete": "Verwijderen entiteit",
                             "device_entities": "Als u een entiteit toevoegt die tot een apparaat hoort, wordt het apparaat ook toegevoegd.",
                             "header": "Entiteiten",
+                            "introduction": "Entiteiten die niet bij apparaten horen kunnen hier ingesteld worden.",
                             "without_device": "Entiteiten zonder apparaat"
                         },
                         "introduction": "Gebruik scènes om je huis tot leven te brengen.",
                         "load_error_not_editable": "Alleen scènes die zijn gedefinieerd in scenes.yaml kunnen worden bewerkt.",
                         "load_error_unknown": "Fout bij het laden van de scène {{err_no}}.",
                         "name": "Naam",
-                        "save": "Opslaan"
+                        "save": "Opslaan",
+                        "unsaved_confirm": "U heeft niet-opgeslagen wijzigingen. Weet u zeker dat u wilt afsluiten?"
                     },
                     "picker": {
                         "add_scene": "Voeg scène toe",
                         "delete_confirm": "Weet je zeker dat je deze scène wilt verwijderen?",
                         "delete_scene": "Scène verwijderen",
                         "edit_scene": "Scène bewerken",
+                        "header": "Scene Editor",
+                        "learn_more": "Meer informatie over scènes",
+                        "no_scenes": "We konden geen bewerkbare scènes vinden.",
                         "only_editable": "Alleen scènes die zijn gedefinieerd in scenes.yaml kunnen worden bewerkt.",
+                        "pick_scene": "Kies een scène om te bewerken",
                         "show_info_scene": "Informatie weergeven over scène"
                     }
                 },
@@ -1292,15 +1323,22 @@
                     "editor": {
                         "default_name": "Nieuw script",
                         "delete_confirm": "Weet je zeker dat je dit script wilt verwijderen?",
+                        "delete_script": "Verwijder script",
                         "header": "Script: {name}",
-                        "load_error_not_editable": "Alleen scripts in scripts.yaml kunnen worden bewerkt."
+                        "introduction": "Gebruik scripts om een reeks acties uit te voeren.",
+                        "link_available_actions": "Meer informatie over beschikbare acties.",
+                        "load_error_not_editable": "Alleen scripts in scripts.yaml kunnen worden bewerkt.",
+                        "sequence": "Reeks",
+                        "sequence_sentence": "De reeks van acties in dit script."
                     },
                     "picker": {
                         "add_script": "Script toevoegen",
+                        "edit_script": "Bewerk script",
                         "header": "Script Editor",
                         "introduction": "Met de editor kunt u scripts maken en bewerken. Volg de onderstaande link om de instructies te lezen om ervoor te zorgen dat u Home Assistant correct hebt geconfigureerd.",
                         "learn_more": "Meer informatie over scripts",
-                        "no_scripts": "We hebben geen bewerkbare scrips gevonden"
+                        "no_scripts": "We hebben geen bewerkbare scrips gevonden",
+                        "trigger_script": "Trigger script"
                     }
                 },
                 "server_control": {
