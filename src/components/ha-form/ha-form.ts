@@ -102,8 +102,8 @@ export class HaForm extends LitElement implements HaFormElement {
 
   public focus() {
     const input =
-      this.shadowRoot!.querySelector("ha-form") ||
-      this.shadowRoot!.getElementById("child-form");
+      this.shadowRoot!.getElementById("child-form") ||
+      this.shadowRoot!.querySelector("ha-form");
     if (!input) {
       return;
     }
