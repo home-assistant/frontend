@@ -541,10 +541,13 @@
         },
         "components": {
             "device-picker": {
+                "clear": "Törlés",
+                "device": "Eszköz",
                 "show_devices": "Eszközök megjelenítése"
             },
             "entity": {
                 "entity-picker": {
+                    "clear": "Törlés",
                     "entity": "Entitás",
                     "show_entities": "Entitások megjelenítése"
                 }
@@ -579,6 +582,9 @@
                 "cancel": "Mégse",
                 "ok": "OK",
                 "title": "Biztos?"
+            },
+            "domain_toggler": {
+                "title": "Domainek váltása"
             },
             "more_info_control": {
                 "script": {
@@ -666,7 +672,7 @@
         "panel": {
             "config": {
                 "area_registry": {
-                    "caption": "Terület Nyilvántartás",
+                    "caption": "Területek",
                     "create_area": "TERÜLET LÉTREHOZÁSA",
                     "description": "Az összes otthoni terület áttekintése",
                     "editor": {
@@ -678,7 +684,7 @@
                     "no_areas": "Úgy tűnik, nem hoztál még létre egy területet sem!",
                     "picker": {
                         "create_area": "TERÜLET LÉTREHOZÁSA",
-                        "header": "Terület Nyilvántartás",
+                        "header": "Területek",
                         "integrations_page": "Integrációk oldal",
                         "introduction": "A területekkel az eszközök elhelyezkedés szerint rendszerezhetők. Ezen információk felhasználásával a Home Assistant segíteni tud előkészíteni a felületet, a jogosultságokat és az integrációt más rendszerekkel.",
                         "introduction2": "Az eszközök területekbe történő elhelyezéséhez használd az alábbi linket az integrációs oldalra való navigáláshoz, majd kattints egy konfigurált integrációra az eszközkártyák eléréséhez.",
@@ -686,7 +692,7 @@
                     }
                 },
                 "automation": {
-                    "caption": "Automatizálás",
+                    "caption": "Automatizálások",
                     "description": "Automatizálások létrehozása és szerkesztése",
                     "editor": {
                         "actions": {
@@ -697,6 +703,7 @@
                             "header": "Műveletek",
                             "introduction": "A műveleteket hajtja végre a Home Assistant, ha egy automatizálás triggerelődik. Kattints az alábbi linkre, ha többet szeretnél megtudni a műveletekről.",
                             "learn_more": "Tudj meg többet a műveletekről",
+                            "name": "Művelet",
                             "type_select": "Művelet típusa",
                             "type": {
                                 "condition": {
@@ -741,6 +748,7 @@
                             "header": "Feltételek",
                             "introduction": "A feltételek opcionális részei az automatizálási szabályoknak és arra lehet őket használni, hogy meggátoljuk egy művelet végrehajtását, ha triggerelődik. A feltételek hasonlítanak a triggerekre, mégis teljesen máshogy működnek. A triggerek a rendszerben történő események bekövetkezését figyelik, míg a feltételek csak azt látják, hogy milyen a rendszer pillanatnyi állapota. Egy trigger például észre tudja venni, ha egy kapcsoló fel lett kapcsolva. Egy feltétel csak azt látja, hogy a kapcsoló éppen fel vagy le van kapcsolva. Kattints az alábbi linkre, ha többet szeretnél megtudni a feltételekről.",
                             "learn_more": "Tudj meg többet a feltételekről",
+                            "name": "Feltétel",
                             "type_select": "Feltétel típusa",
                             "type": {
                                 "and": {
@@ -810,6 +818,7 @@
                             "header": "Triggerek",
                             "introduction": "Az eseményindítók (triggerek) indítják el az automatizálási szabályok feldolgozását. Több triggert is meg lehet adni egy szabályhoz. Ha egy trigger elindul, akkor a Home Assistant ellenőrzi a feltételeket - ha vannak -, majd meghívja a műveletet. Kattints az alábbi linkre, ha többet szeretnél megtudni a triggerekről.",
                             "learn_more": "Tudj meg többet a triggerekről",
+                            "name": "Trigger",
                             "type_select": "Trigger típusa",
                             "type": {
                                 "device": {
@@ -903,7 +912,9 @@
                         "introduction": "Az automatizálás szerkesztő lehetővé teszi automatizálási szabályok létrehozását és szerkesztését. Kérlek, olvasd el az útmutatót az alábbi linken, hogy megbizonyosodj róla, hogy a Home Assistant helyesen van konfigurálva.",
                         "learn_more": "Tudj meg többet az automatizálásról",
                         "no_automations": "Nem találtunk szerkeszthető automatizálást",
-                        "pick_automation": "Válassz ki egy automatizálást szerkesztésre"
+                        "only_editable": "Csak az automations.yaml fájlban megadott automatizálások szerkeszthetők.",
+                        "pick_automation": "Válassz ki egy automatizálást szerkesztésre",
+                        "show_info_automation": "Információk megjelenítése az automatizálásról"
                     }
                 },
                 "cloud": {
@@ -914,6 +925,7 @@
                             "enable": "engedélyezni",
                             "enable_ha_skill": "Home Assistant készség aktiválása Alexának",
                             "enable_state_reporting": "Állapotjelentés engedélyezése",
+                            "info": "Az Alexa integrációval a Home Assistant Felhő lehetőséget nyújt minden Home Assistant eszköz vezérlésére bármely Alexa képes eszközzel.",
                             "info_state_reporting": "Ha engedélyezed az állapotjelentést, akkor a Home Assistant minden állapotváltozást el fog küldeni a feltárt entitásokról az Amazon-nak. Ez lehetővé teszi, hogy mindig láthasd a legfrissebb állapotokat az Alexa alkalmazásban, és az állapotváltozásokkal rutinokat hozhass létre.",
                             "manage_entities": "Entitások kezelése",
                             "state_reporting_error": "Nem lehet {enable_disable} az állapotjelentést.",
@@ -931,6 +943,8 @@
                             "enable_state_reporting": "Állapotjelentés engedélyezése",
                             "enter_pin_error": "A PIN-kód nem tárolható:",
                             "enter_pin_hint": "Adj meg egy PIN-kódot a biztonsági eszközök használatához",
+                            "enter_pin_info": "Kérlek, adj meg egy PIN-kódot a biztonsági eszközökkel való együttműködéshez. Biztonsági ezközök az ajtók, garázskapuk és zárak. Az ilyen eszközök vezérlésekor a Google Asszisztens kérheti ezt a kódot.",
+                            "info": "A Google Asszisztens integrációval a Home Assistant Felhő lehetőséget nyújt minden Home Assistant eszköz vezérlésére bármely Google Asszisztens képes eszközzel.",
                             "info_state_reporting": "Ha engedélyezed az állapotjelentést, akkor a Home Assistant minden állapotváltozást el fog küldeni a feltárt entitásokról a Google-nak. Ez lehetővé teszi, hogy mindig láthasd a legfrissebb állapotokat a Google alkalmazásban.",
                             "manage_entities": "Entitások kezelése",
                             "security_devices": "Biztonsági eszközök",
@@ -938,6 +952,7 @@
                             "title": "Google Asszisztens"
                         },
                         "integrations": "Integrációk",
+                        "integrations_introduction": "A Home Assistant Felhő integrációi úgy biztosítanak lehetőséget felhő szolgáltatásokhoz való csatlakozáshoz, hogy közben nem kell kinyitnod a Home Assistant rendszered publikusan az interneten.",
                         "integrations_introduction2": "Nézd meg a weboldalt a ",
                         "integrations_link_all_features": "az összes elérhető funkció",
                         "manage_account": "Fiók kezelése",
@@ -956,16 +971,19 @@
                         "thank_you_note": "Köszönjük, hogy a Home Assistant Felhő részese vagy. Az olyan emberek miatt, mint te, vagyunk képesek mindenki számára nagyszerű otthoni automatizálási élményt nyújtani. Köszönjük!",
                         "webhooks": {
                             "disable_hook_error_msg": "A webhook letiltása sikertelen:",
+                            "info": "Bármihez, ami úgy van beállítva, hogy egy webhook által elindulhasson, létrehozható egy nyilvánosan elérhető URL, ami lehetővé teszi, hogy adatokat küldhess vissza a Home Assistant számára bárhonnan, anélkül, hogy kinyitnád a rendszered az internet felé.",
                             "link_learn_more": "Tudj meg többet a webhook-alapú automatizálások létrehozásáról.",
                             "loading": "Betöltés...",
                             "manage": "Kezelés",
                             "no_hooks_yet": "Úgy tűnik, még nincs egy webhookod sem. Kezdéshez konfigurálj egy ",
-                            "no_hooks_yet_link_automation": "webhook automatizálás",
-                            "no_hooks_yet_link_integration": "webhook-alapú integráció",
+                            "no_hooks_yet_link_automation": "webhook automatizálást",
+                            "no_hooks_yet_link_integration": "webhook-alapú integrációt",
+                            "no_hooks_yet2": " vagy hozz létre egy ",
                             "title": "Webhookok"
                         }
                     },
                     "alexa": {
+                        "banner": "A feltárt entitások szerkesztése funkció le lett tiltva ezen a felületen, mert entitásszűrőket állítottál be a configuration.yaml fájlban.",
                         "expose": "Feltárás Alexának",
                         "exposed_entities": "Feltárt entitások",
                         "not_exposed_entities": "Nem feltárt entitások",
@@ -1003,6 +1021,7 @@
                         "title": "Elfelejtett jelszó"
                     },
                     "google": {
+                        "banner": "A feltárt entitások szerkesztése funkció le lett tiltva ezen a felületen, mert entitásszűrőket állítottál be a configuration.yaml fájlban.",
                         "disable_2FA": "Kétfaktoros hitelesítés letiltása",
                         "expose": "Feltárás a Google Asszisztensnek",
                         "exposed_entities": "Feltárt entitások",
@@ -1018,8 +1037,8 @@
                         "email_error_msg": "Érvénytelen email",
                         "forgot_password": "elfelejtett jelszó?",
                         "introduction": "A Home Assistant Felhő biztonságos távoli kapcsolatot nyújt a példányodhoz, miközben távol vagy. Azt is lehetővé teszi, hogy csak felhőn alapuló szolgáltatásokhoz csatlakozz: Amazon Alexa, Google Asszisztens.",
-                        "introduction2": "Ezt a szolgáltatást partnerünk üzemelteti ",
-                        "introduction2a": ", egy vállalat, amelyet a Home Assistant és a Hass.io alapítói alapítottak.",
+                        "introduction2": "Ezt a szolgáltatást partnerünk a ",
+                        "introduction2a": " vállalat üzemelteti, amelyet a Home Assistant és a Hass.io alapítói alapítottak.",
                         "introduction3": "A Home Assistant Felhő egy előfizetéses szolgáltatás egy hónapos ingyenes próbaverzióval. Nincs szükség fizetési információk megadására.",
                         "learn_more_link": "Tudj meg többet a Home Assistant Felhőről",
                         "password": "Jelszó",
@@ -1041,8 +1060,8 @@
                         "headline": "Indítsd el az ingyenes próbaidőszakot",
                         "information": "Hozz létre egy fiókot ahhoz, hogy elindíthasd az egy hónapos ingyenes Home Assistant Felhő próbaidőszakodat. Nincs szükség fizetési információk megadására.",
                         "information2": "A próbaidőszak hozzáférést biztosít a Home Assistant Felhő minden előnyéhez, beleértve a következőket:",
-                        "information3": "Ezt a szolgáltatást partnerünk üzemelteti ",
-                        "information3a": ", egy vállalat, amelyet a Home Assistant és a Hass.io alapítói alapítottak.",
+                        "information3": "Ezt a szolgáltatást partnerünk a ",
+                        "information3a": " vállalat üzemelteti, amelyet a Home Assistant és a Hass.io alapítói alapítottak.",
                         "information4": "Fiók regisztrálásával elfogadod az alábbi feltételeket.",
                         "link_privacy_policy": "Adatvédelmi irányelvek",
                         "link_terms_conditions": "Felhasználási feltételek",
@@ -1107,11 +1126,23 @@
                     }
                 },
                 "customize": {
-                    "caption": "Testreszabás",
+                    "attributes_customize": "A következő attribútumok már be vannak állítva a customize.yaml fájlban.",
+                    "attributes_not_set": "A következő attribútumok nem lettek beállítva. Állítsd be őket, ha szeretnéd.",
+                    "attributes_outside": "A következő attribútumok a customize.yaml fájlon kívül kerültek testreszabásra.",
+                    "attributes_override": "Felülbírálhatod őket, ha szeretnéd.",
+                    "attributes_set": "Az entitás következő attribútumai programozottan kerültek beállításra.",
+                    "caption": "Testreszabások",
                     "description": "Entitások testreszabása",
+                    "different_include": "Lehet domainnel, globbal vagy egy másik include fájllal.",
+                    "pick_attribute": "Válassz egy attribútumot a felülbíráláshoz",
                     "picker": {
-                        "header": "Testreszabás",
-                        "introduction": "Szabd testre az entitások tulajdonságait. A hozzáadott/szerkesztett testreszabások azonnal érvényesülnek. A testreszabások eltávolítása akkor lép életbe, amikor az entitás frissül."
+                        "header": "Testreszabások",
+                        "introduction": "Szabd testre az entitások attribútumait. A hozzáadott/szerkesztett testreszabások azonnal érvényesülnek. A testreszabások eltávolítása akkor lép életbe, amikor az entitás frissül."
+                    },
+                    "warning": {
+                        "include_link": "customize.yaml fájlra",
+                        "include_sentence": "Úgy tűnik, hogy a configuration.yaml fájlod nem megfelelően hivatkozik a",
+                        "not_applied": "Az itt elvégzett változások el lesznek mentve, de a konfiguráció újratöltése után nem kerülnek alkalmazásra, amíg a hivatkozás megfelelően be nem lesz állítva."
                     }
                 },
                 "devices": {
@@ -1124,11 +1155,12 @@
                             "caption": "Csak akkor csinálj valamit, ha a(z)..."
                         },
                         "triggers": {
-                            "caption": "Csinálj valamit, amikor a(z)..."
+                            "caption": "Kezdj el csinálni valamit, amikor a(z)..."
                         }
                     },
                     "automations": "Automatizálások",
                     "caption": "Eszközök",
+                    "confirm_rename_entity_ids": "Szeretnéd átnevezni az entitások ID-ját is?",
                     "data_table": {
                         "area": "Terület",
                         "battery": "Akkumulátor",
@@ -1146,7 +1178,7 @@
                     "unnamed_device": "Névtelen eszköz"
                 },
                 "entity_registry": {
-                    "caption": "Entitás Nyilvántartás",
+                    "caption": "Entitások",
                     "description": "Az összes ismert entitás áttekintése",
                     "editor": {
                         "confirm_delete": "Biztosan törölni szeretnéd ezt a bejegyzést?",
@@ -1161,7 +1193,7 @@
                         "update": "FRISSÍTÉS"
                     },
                     "picker": {
-                        "header": "Entitás Nyilvántartás",
+                        "header": "Entitások",
                         "headers": {
                             "enabled": "Engedélyezve",
                             "entity_id": "Entitás ID",
@@ -1191,6 +1223,8 @@
                         "no_device": "Eszköz nélküli entitások",
                         "no_devices": "Ez az integráció nem rendelkezik eszközökkel.",
                         "restart_confirm": "Indítsd újra a Home Assistant-ot az integráció törlésének befejezéséhez",
+                        "settings_button": "{integration} beállításainak szerkesztése",
+                        "system_options_button": "{integration} rendszerbeállításai",
                         "via": "Kapcsolódva"
                     },
                     "config_flow": {
@@ -1198,6 +1232,7 @@
                         "add_area": "Terület hozzáadása",
                         "area_picker_label": "Terület",
                         "close": "Bezárás",
+                        "created_config": "Konfiguráció létrehozva a következőhöz: {name}.",
                         "error_saving_area": "Hiba a terület mentésekor: {error}",
                         "external_step": {
                             "description": "Ehhez a lépéshez egy külső weboldal meglátogatása szükséges.",
@@ -1243,6 +1278,7 @@
                         "no_device_tracker_available_intro": "Ha vannak olyan eszközeid, amelyek jelzik egy személy jelenlétét, akkor itt hozzá tudod rendelni őket egy személyhez. Az első eszköz hozzáadásához válassz egy jelenlét-érzékelő integrációt az integrációk oldalon.",
                         "update": "Frissítés"
                     },
+                    "introduction": "Itt adhatod meg a Home Assistant minden érdekelt személyét.",
                     "no_persons_created_yet": "Úgy tűnik, még nem hoztál létre személyeket.",
                     "note_about_persons_configured_in_yaml": "Megjegyzés: a configuration.yaml fájlban konfigurált személyek nem szerkeszthetők a felhasználói felületen."
                 },
@@ -1255,15 +1291,19 @@
                         "devices": {
                             "add": "Eszköz hozzáadása",
                             "delete": "Eszköz törlése",
-                            "header": "Eszközök"
+                            "header": "Eszközök",
+                            "introduction": "Add hozzá a kívánt eszközöket a jelenethez. Állíts be minden eszközt olyan állapotra, amilyet ebben a jelenetben szeretnél."
                         },
                         "entities": {
                             "add": "Entitás hozzáadása",
                             "delete": "Entitás törlése",
+                            "device_entities": "Ha egy olyan entitást adsz hozzá, ami egy eszközhöz tartozik, akkor az eszköz is automatikusan hozzá lesz adva.",
                             "header": "Entitások",
                             "introduction": "Itt lehet beállítani azokat az entitásokat, amelyek nem tartoznak eszközökhöz.",
                             "without_device": "Eszköz nélküli entitások"
                         },
+                        "introduction": "Használj jeleneteket otthonod életre keltéséhez.",
+                        "load_error_not_editable": "Csak a scenes.yaml fájlban megadott jelenetek szerkeszthetők.",
                         "load_error_unknown": "Hiba a jelenet betöltésekor ({err_no}).",
                         "name": "Név",
                         "save": "Mentés",
@@ -1275,22 +1315,27 @@
                         "delete_scene": "Jelenet törlése",
                         "edit_scene": "Jelenet szerkesztése",
                         "header": "Jelenet szerkesztő",
+                        "introduction": "A jelenet szerkesztő lehetővé teszi jelenetek létrehozását és szerkesztését. Kérlek, olvasd el az útmutatót az alábbi linken, hogy megbizonyosodj róla, hogy a Home Assistant helyesen van konfigurálva.",
                         "learn_more": "Tudj meg többet a jelenetekről",
+                        "no_scenes": "Nem találtunk szerkeszthető jeleneteket",
                         "only_editable": "Csak a scenes.yaml fájlban megadott jelenetek szerkeszthetők.",
-                        "pick_scene": "Válassz jelenetet a szerkesztéshez"
+                        "pick_scene": "Válassz jelenetet a szerkesztéshez",
+                        "show_info_scene": "Információk megjelenítése a jelenetről"
                     }
                 },
                 "script": {
-                    "caption": "Szkript",
+                    "caption": "Szkriptek",
                     "description": "Szkriptek létrehozása és szerkesztése",
                     "editor": {
-                        "default_name": "Új szkript",
+                        "default_name": "Új Szkript",
                         "delete_confirm": "Biztosan törölni szeretnéd ezt a szkriptet?",
                         "delete_script": "Szkript törlése",
                         "header": "Szkript: {name}",
+                        "introduction": "Használj szkripteket műveletsorozatok végrehajtásához.",
                         "link_available_actions": "Tudj meg többet az elérhető műveletekről.",
                         "load_error_not_editable": "Csak a scripts.yaml fájlban megadott szkriptek szerkeszthetők.",
-                        "sequence": "Sorrend"
+                        "sequence": "Sorrend",
+                        "sequence_sentence": "A szkript műveleti sorrendje."
                     },
                     "picker": {
                         "add_script": "Szkript hozzáadása",
@@ -1374,12 +1419,18 @@
                         "spinner": "ZHA Zigbee eszközök keresése..."
                     },
                     "caption": "ZHA",
+                    "cluster_attributes": {
+                        "get_zigbee_attribute": "Zigbee attribútum lekérdezése",
+                        "set_zigbee_attribute": "Zigbee attribútum beállítása"
+                    },
                     "cluster_commands": {
-                        "help_command_dropdown": "Válasszon egy parancsot, amellyel kapcsolatba lép"
+                        "help_command_dropdown": "Válasszon egy parancsot, amellyel kapcsolatba lép",
+                        "issue_zigbee_command": "Zigbee parancs kiadása"
                     },
                     "common": {
                         "add_devices": "Eszközök hozzáadása",
                         "devices": "Eszközök",
+                        "manufacturer_code_override": "Gyártói kód felülbírálása",
                         "value": "Érték"
                     },
                     "description": "Zigbee Home Automation hálózat menedzsment",
@@ -1457,6 +1508,7 @@
             "custom": {
                 "external_panel": {
                     "complete_access": "Hozzáférést fog kapni a Home Assistant összes adatához.",
+                    "hide_message": "Ellenőrizd a panel_custom komponens dokumentációját ennek az üzenetnek az elrejtéséhez",
                     "question_trust": "Megbízol a(z) {name} külső panelben a következő linken: {link}?"
                 }
             },
@@ -1505,6 +1557,8 @@
                         "details": "Naplózás részletessége ({level})",
                         "load_full_log": "Teljes Home Assistant napló betöltése",
                         "loading_log": "Hibanapló betöltése...",
+                        "multiple_messages": "az üzenet először a következő időpontban fordult elő: {time}, majd később {counter} alkalommal ismétlődött",
+                        "no_errors": "Nem jelentettek hibát.",
                         "no_issues": "Nincsenek új bejegyzések!",
                         "refresh": "Frissítés",
                         "title": "Napló"
@@ -1617,7 +1671,8 @@
                         },
                         "entities": {
                             "name": "Entitások",
-                            "show_header_toggle": "Fejléc kapcsoló megjelenítése?"
+                            "show_header_toggle": "Fejléc kapcsoló megjelenítése?",
+                            "toggle": "Entitások váltása."
                         },
                         "entity-button": {
                             "name": "Entitás gomb"
@@ -1780,6 +1835,7 @@
                     },
                     "view": {
                         "panel_mode": {
+                            "description": "Ez az első kártyát teljes szélességében fogja megjeleníteni; a többi kártya nem lesz megjelenítve",
                             "title": "Panel mód?"
                         }
                     }
@@ -1798,6 +1854,7 @@
                     "entity": "Entitás",
                     "entity_id": "Entitás ID",
                     "last_changed": "Utoljára módosítva",
+                    "select_to_add": "Válaszd ki azokat az entitásokat, amelyeket hozzá akarsz adni egy kártyához, majd kattints a kártya hozzáadása gombra.",
                     "title": "Nem használt entitások"
                 },
                 "views": {

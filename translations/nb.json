@@ -22,7 +22,7 @@
         "climate": "Klima",
         "configurator": "Konfigurator",
         "conversation": "Samtale",
-        "cover": "Dekke",
+        "cover": "Cover",
         "device_tracker": "Enhetssporing",
         "fan": "Vifte",
         "group": "Gruppe",
@@ -116,7 +116,7 @@
             "triggered": "Utløs"
         },
         "default": {
-            "entity_not_found": "Enhet ikke funnet",
+            "entity_not_found": "Entitet ikke funnet",
             "error": "Feil",
             "unavailable": "Utilgj",
             "unknown": "Ukjent"
@@ -549,7 +549,7 @@
                 "entity-picker": {
                     "clear": "Tøm",
                     "entity": "Oppføring",
-                    "show_entities": "Vis enheter"
+                    "show_entities": "Vis entiteter"
                 }
             },
             "history_charts": {
@@ -584,7 +584,7 @@
                 "title": "Er du sikker?"
             },
             "domain_toggler": {
-                "title": "Veksle Domener"
+                "title": "Veksle domener"
             },
             "more_info_control": {
                 "script": {
@@ -672,7 +672,7 @@
         "panel": {
             "config": {
                 "area_registry": {
-                    "caption": "Områderegister",
+                    "caption": "Områder",
                     "create_area": "OPPRETT OMRÅDE",
                     "description": "Oversikt over alle områder i ditt hjem",
                     "editor": {
@@ -684,7 +684,7 @@
                     "no_areas": "Det ser ikke ut som om du har noen områder ennå!",
                     "picker": {
                         "create_area": "Opprett område",
-                        "header": "Områderegister",
+                        "header": "Områder",
                         "integrations_page": "Integrasjonsside",
                         "introduction": "Områder brukes til å organisere hvor enheter er. Denne informasjonen vil bli brukt gjennomgående i Home Assistant for å hjelpe deg med å organisere grensesnittet, tillatelser og integrasjoner med andre systemer.",
                         "introduction2": "For å plassere enheter i et område, bruk linken under for å navigere til integrasjonssiden og klikk deretter på en konfigurert integrasjon for å komme til enhetskortene.",
@@ -692,7 +692,7 @@
                     }
                 },
                 "automation": {
-                    "caption": "Automatisering",
+                    "caption": "Automasjoner",
                     "description": "Opprett og rediger automasjoner",
                     "editor": {
                         "actions": {
@@ -721,14 +721,14 @@
                                 },
                                 "event": {
                                     "event": "Hendelse",
-                                    "label": "Kjør hendelse",
+                                    "label": "Utfør hendelse",
                                     "service_data": "Tjenestedata"
                                 },
                                 "scene": {
                                     "label": "Aktiver scene"
                                 },
                                 "service": {
-                                    "label": "Hent tjeneste",
+                                    "label": "Kall tjeneste",
                                     "service_data": "Tjenestedata"
                                 },
                                 "wait_template": {
@@ -766,7 +766,7 @@
                                     "above": "Over",
                                     "below": "Under",
                                     "label": "Numerisk tilstand",
-                                    "value_template": "Verdi mal (valgfri)"
+                                    "value_template": "Verdi fra mal (valgfritt)"
                                 },
                                 "or": {
                                     "label": "Eller"
@@ -794,7 +794,7 @@
                                     "label": "Tid"
                                 },
                                 "zone": {
-                                    "entity": "Enhet med posisjon",
+                                    "entity": "Entitet med posisjon",
                                     "label": "Sone",
                                     "zone": "Sone"
                                 }
@@ -806,8 +806,8 @@
                             "label": "Beskrivelse",
                             "placeholder": "Valgfri beskrivelse"
                         },
-                        "introduction": "Bruk automatiseringer for å få liv i hjemmet ditt",
-                        "load_error_not_editable": "Kun automatiseringer i automations.yaml kan redigeres.",
+                        "introduction": "Bruk automasjon for å få liv i hjemmet ditt",
+                        "load_error_not_editable": "Kun automasjoner i automations.yaml kan redigeres.",
                         "load_error_unknown": "Feil ved lasting av automasjon ({err_no}).",
                         "save": "Lagre",
                         "triggers": {
@@ -857,7 +857,7 @@
                                     "above": "Over",
                                     "below": "Under",
                                     "label": "Numerisk tilstand",
-                                    "value_template": "Verdi mal (valgfritt)"
+                                    "value_template": "Verdi fra mal (valgfritt)"
                                 },
                                 "state": {
                                     "for": "For",
@@ -905,14 +905,14 @@
                     },
                     "picker": {
                         "add_automation": "Legg til automatisering",
-                        "delete_automation": "Slett automatisering",
+                        "delete_automation": "Slett automasjon",
                         "delete_confirm": "Er du sikker på at du vil slette denne automatiseringen?",
-                        "edit_automation": "Rediger automatisering",
+                        "edit_automation": "Rediger automasjon",
                         "header": "Automasjonsredigering",
                         "introduction": "Automasjonsredigeringen lar deg lage og redigere automasjoner. Vennligst les [instruksjonene](https://home-assistant.io/docs/automation/editor/) for å forsikre deg om at du har konfigurert Home Assistant riktig.",
-                        "learn_more": "Lær mer om automatisering",
+                        "learn_more": "Lær mer om automasjoner",
                         "no_automations": "Vi kunne ikke finne noen redigerbare automasjoner",
-                        "only_editable": "Bare automatiseringer definert i automations.yaml kan redigeres.",
+                        "only_editable": "Bare automasjoner definert i automations.yaml kan redigeres.",
                         "pick_automation": "Velg automasjon for å redigere",
                         "show_info_automation": "Vis informasjon om automatisering"
                     }
@@ -983,7 +983,7 @@
                         }
                     },
                     "alexa": {
-                        "banner": "Redigere hvilke enheter som vises via dette grensesnittet er deaktivert fordi du har konfigurert enhetsfiltre i configuration.yaml.",
+                        "banner": "Redigere hvilke entiteter som vises via dette grensesnittet er deaktivert fordi du har konfigurert entitetsfiltre i configuration.yaml.",
                         "expose": "Eksponer til Alexa",
                         "exposed_entities": "Eksponerte enheter",
                         "not_exposed_entities": "Ikke eksponerte enheter",
@@ -1021,7 +1021,7 @@
                         "title": "Glemt passord"
                     },
                     "google": {
-                        "banner": "Redigere hvilke enheter som vises via dette grensesnittet er deaktivert fordi du har konfigurert enhetsfiltre i configuration.yaml.",
+                        "banner": "Redigere hvilke entiteter som vises via dette grensesnittet er deaktivert fordi du har konfigurert entitetsfiltre i configuration.yaml.",
                         "disable_2FA": "Deaktiver tofaktorautentisering",
                         "expose": "Eksponer til Google Assistant",
                         "exposed_entities": "Eksponerte enheter",
@@ -1130,17 +1130,17 @@
                     "attributes_not_set": "Følgende attributter ble ikke angitt. Sett dem hvis du vil.",
                     "attributes_outside": "Følgende attributter tilpasses utenfra customize.yaml",
                     "attributes_override": "Du kan overstyre dem hvis du vil.",
-                    "attributes_set": "Følgende attributter for enheten angis programmatisk.",
-                    "caption": "Tilpasning",
+                    "attributes_set": "Følgende attributter for entiteten angis programmatisk.",
+                    "caption": "Tilpasninger",
                     "description": "Tilpass dine oppføringer",
                     "different_include": "Muligens via et domene, en glob eller noe annent som er inkluderet",
                     "pick_attribute": "Velg et attributt som skal overstyres",
                     "picker": {
-                        "header": "Tilpasning",
-                        "introduction": "Juster per-enhet attributter. Lagt til/redigert tilpasninger trer i kraft umiddelbart. Fjernede tilpasninger trer i kraft når enheten er oppdatert."
+                        "header": "Tilpasninger",
+                        "introduction": "Juster attributter per entitet. Lagt til/redigert tilpasninger trer i kraft umiddelbart. Fjernede tilpasninger trer i kraft når entiteten er oppdatert."
                     },
                     "warning": {
-                        "include_link": "inkluder customize.yaml",
+                        "include_link": "inkludér customize.yaml",
                         "include_sentence": "Det ser ut til at din configurasjon.yaml ikke er riktig",
                         "not_applied": "Endringer gjort her er skrevet i den, men vil ikke bli brukt etter en konfigurasjonsinnlasting med mindre inkluderingen er på plass."
                     }
@@ -1158,9 +1158,9 @@
                             "caption": "Gjør noe når ..."
                         }
                     },
-                    "automations": "Automatiseringer",
+                    "automations": "Automasjoner",
                     "caption": "Enheter",
-                    "confirm_rename_entity_ids": "Vil du også endre navn på enhets-ID-en for enhetene dine?",
+                    "confirm_rename_entity_ids": "Vil du også endre navn på enhets-ID-en for entitetene dine?",
                     "data_table": {
                         "area": "Område",
                         "battery": "Batteri",
@@ -1178,22 +1178,22 @@
                     "unnamed_device": "Enhet uten navn"
                 },
                 "entity_registry": {
-                    "caption": "Enhetsregister",
-                    "description": "Oversikt over alle kjente enheter",
+                    "caption": "Entiteter",
+                    "description": "Oversikt over alle kjente entiteter",
                     "editor": {
                         "confirm_delete": "Er du sikker på at du vil slette denne oppføringen?",
-                        "confirm_delete2": "Hvis du sletter en oppføring, fjernes ikke enheten fra Home Assistant. Hvis du vil gjøre dette, må du fjerne integreringen ' {Platform} ' fra Home Assistant.",
+                        "confirm_delete2": "Hvis du sletter en oppføring, fjernes ikke entiteten fra Home Assistant. Hvis du vil gjøre dette, må du fjerne integrasjonen '{Platform} ' fra Home Assistant.",
                         "default_name": "Nytt område",
                         "delete": "SLETT",
                         "enabled_cause": "Deaktivert av {cause}.",
-                        "enabled_description": "Deaktiverte enheter vil ikke bli lagt til i Home Assistant.",
-                        "enabled_label": "Aktiver enhet",
+                        "enabled_description": "Deaktiverte entiteter vil ikke bli lagt til i Home Assistant.",
+                        "enabled_label": "Aktiver entitet",
                         "note": "Merk: dette fungerer kanskje ikke ennå med alle integrasjoner.",
-                        "unavailable": "Denne enheten er ikke tilgjengelig for øyeblikket.",
+                        "unavailable": "Denne entiteten er ikke tilgjengelig for øyeblikket.",
                         "update": "OPPDATER"
                     },
                     "picker": {
-                        "header": "Enhetsregister",
+                        "header": "Entiteter",
                         "headers": {
                             "enabled": "Aktivert",
                             "entity_id": "Enhet-ID",
@@ -1201,9 +1201,9 @@
                             "name": "Navn"
                         },
                         "integrations_page": "Integrasjonsside",
-                        "introduction": "Home Assistant bygger opp et register over hver enhet den har sett som kan identifiseres unikt. Hver av disse enhetene vil ha en enhets-ID tilknyttet som vil bli reservert for bare denne enheten.",
+                        "introduction": "Home Assistant bygger opp et register over hver entitet den har sett som kan identifiseres unikt. Hver av disse entitetene vil ha en entitets-ID som er reservert kun til denne entiteten.",
                         "introduction2": "Bruk entitetsregisteret for å overskrive navnet, endre enhets ID eller fjern oppføringen fra Home Assistant. Merk at fjerning av enhetsregisteroppføringer ikke fjerner enheten. For å gjøre det, følg linken under og fjern den fra integrasjonssiden.",
-                        "show_disabled": "Vis deaktiverte enheter",
+                        "show_disabled": "Vis deaktiverte entiteter",
                         "unavailable": "(utilgjengelig)"
                     }
                 },
@@ -1246,10 +1246,10 @@
                     },
                     "configure": "Konfigurer",
                     "configured": "Konfigurert",
-                    "description": "Administrer og konfigurer integrasjoner",
+                    "description": "Administrer og konfigurér integrasjoner",
                     "discovered": "Oppdaget",
                     "home_assistant_website": "Nettsted for Home Assistant",
-                    "integration_not_found": "Integrering ikke funnet.",
+                    "integration_not_found": "Integrasjon ikke funnet.",
                     "new": "Sett opp en ny integrasjon",
                     "none": "Ingenting er konfigurert enda",
                     "note_about_integrations": "Ikke alle integrasjoner kan konfigureres via brukergrensesnittet ennå.",
@@ -1270,7 +1270,7 @@
                         "device_tracker_pick": "Velg en enhet å spore",
                         "device_tracker_picked": "Spor enhet",
                         "link_integrations_page": "Integrasjonsside",
-                        "link_presence_detection_integrations": "Integrering av tilstedeværelses deteksjon",
+                        "link_presence_detection_integrations": "Integrering av tilstedeværelsesdeteksjon",
                         "linked_user": "Koblet bruker",
                         "name": "Navn",
                         "name_error_msg": "Navn er påkrevd",
@@ -1295,12 +1295,12 @@
                             "introduction": "Legg til enhetene du vil bli inkludert i scenen din. Sett alle enhetene til tilstanden du ønsker for denne scenen."
                         },
                         "entities": {
-                            "add": "Legg til en enhet",
-                            "delete": "Slett enhet",
-                            "device_entities": "Hvis du legger til en enhet som tilhører en enhet, vil enheten bli lagt til.",
+                            "add": "Legg til en entitet",
+                            "delete": "Slett entitet",
+                            "device_entities": "Hvis du legger til en entitet som tilhører en enhet, vil enheten også bli lagt til.",
                             "header": "Enheter",
                             "introduction": "Enheter som ikke tilhører en enhet, kan angis her.",
-                            "without_device": "Enheter uten enhet"
+                            "without_device": "Oppføringer uten enhet"
                         },
                         "introduction": "Bruk scener for å gjøre hjemmet ditt mer levende.",
                         "load_error_not_editable": "Bare scener i scener.yaml kan redigeres.",
@@ -1348,12 +1348,12 @@
                     }
                 },
                 "server_control": {
-                    "caption": "Server-kontroll",
+                    "caption": "Server-kontroller",
                     "description": "Start på nytt og stopp Home Assistant-serveren",
                     "section": {
                         "reloading": {
                             "automation": "Last inn automasjoner på nytt",
-                            "core": "Last inn kjernen på nytt",
+                            "core": "Last inn lokasjon og spesialtilpassinger på nytt",
                             "group": "Last inn grupper på nytt",
                             "heading": "Konfigurasjon lastes på nytt",
                             "introduction": "Noen deler av Home Assistant kan laste inn uten å kreve omstart. Hvis du trykker last på nytt, vil du bytte den nåværende konfigurasjonen med den nye.",
@@ -1425,7 +1425,7 @@
                         "header": "Klyngeattributter",
                         "help_attribute_dropdown": "Velg en attributt for å se eller angi verdien.",
                         "help_get_zigbee_attribute": "Hent verdien for det valgte attributtet.",
-                        "help_set_zigbee_attribute": "Angi attributtverdi for den spesifiserte klyngen på den angitte enheten.",
+                        "help_set_zigbee_attribute": "Angi attributtverdi for den spesifiserte klyngen på den angitte entiteten.",
                         "introduction": "Se og rediger klyngeattributter.",
                         "set_zigbee_attribute": "Angi Zigbee-attributt"
                     },
@@ -1536,11 +1536,11 @@
                         "alert_event_type": "Hendelsestype er et obligatorisk felt",
                         "available_events": "Tilgjengelige hendelser",
                         "count_listeners": " ({count} lyttere)",
-                        "data": "Hendelses data (YAML, valgfritt)",
-                        "description": "Fire an event on the event bus.",
-                        "documentation": "Hendelses dokumentasjon.",
+                        "data": "Hendelsesdata (YAML, valgfritt)",
+                        "description": "Send ut en hendelse på hendelsesbussen",
+                        "documentation": "Hendelsesdokumentasjon.",
                         "event_fired": "Hendelse {name} avfyrt",
-                        "fire_event": "Avfyr hendlese",
+                        "fire_event": "Utfør hendelse",
                         "listen_to_events": "Lytt til hendelser",
                         "listening_to": "Lytte til",
                         "notification_event_fired": "Hendelse {type} vellykket avfyrt!",
@@ -1575,7 +1575,7 @@
                         "details": "Loggdetaljer ({level})",
                         "load_full_log": "Last inn fullstendig Home Assistant logg",
                         "loading_log": "Laster inn feillogg ...",
-                        "multiple_messages": "meldingen oppstod først ved {time} og viser {teller} ganger",
+                        "multiple_messages": "meldingen oppstod først ved {time} og vist {counter} ganger",
                         "no_errors": "Ingen feil er rapportert.",
                         "no_issues": "Det er ingen nye problemer!",
                         "refresh": "Oppdater",
@@ -1586,7 +1586,7 @@
                         "description_publish": "Publiser en pakke",
                         "listening_to": "Lytter til",
                         "message_received": "Meldingen {ID} ble mottatt på {topic} klokken {time}:",
-                        "payload": "Payload (mal tillatt)",
+                        "payload": "Nyttelast (mal tillatt)",
                         "publish": "Publiser",
                         "start_listening": "Begynn å lytte",
                         "stop_listening": "Slutt å lytte",
@@ -1596,7 +1596,7 @@
                     },
                     "services": {
                         "alert_parsing_yaml": "Feil ved parsing av YAML: {data}",
-                        "call_service": "Utfør tjeneste",
+                        "call_service": "Kall tjeneste",
                         "column_description": "Beskrivelse",
                         "column_example": "Eksempel",
                         "column_parameter": "Parameter",
@@ -1609,12 +1609,12 @@
                         "title": "Tjenester"
                     },
                     "states": {
-                        "alert_entity_field": "Enhet er et obligatorisk felt",
+                        "alert_entity_field": "Entitet er et obligatorisk felt",
                         "attributes": "Attributter",
                         "current_entities": "Gjeldende enheter",
                         "description1": "Angi representasjonen av en enhet i Home Assistant.",
                         "description2": "Dette vil ikke kommunisere med den faktiske enheten.",
-                        "entity": "Enhet",
+                        "entity": "Entitet",
                         "filter_attributes": "Filtrer attributter",
                         "filter_entities": "Filtrer enheter",
                         "filter_states": "Filtrer tilstander",
@@ -1622,7 +1622,7 @@
                         "no_entities": "Ingen enheter",
                         "set_state": "Sett tilstand",
                         "state": "Tilstand",
-                        "state_attributes": "Tilstands attributter (YAML, valgfritt)",
+                        "state_attributes": "Tilstandsattributter (YAML, valgfritt)",
                         "title": "Statuser"
                     },
                     "templates": {
@@ -1640,7 +1640,7 @@
                 "showing_entries": "Viser oppføringer for"
             },
             "logbook": {
-                "entries_not_found": "Finner ingen loggbok oppføringer.",
+                "entries_not_found": "Finner ingen loggbokoppføringer.",
                 "period": "Periode",
                 "showing_entries": "Viser oppføringer for"
             },
@@ -1693,10 +1693,10 @@
                             "toggle": "Aktiver/deaktiver enheter."
                         },
                         "entity-button": {
-                            "name": "Enhetsknapp"
+                            "name": "Entitetsknapp"
                         },
                         "entity-filter": {
-                            "name": "Enhetsfilter"
+                            "name": "Entitetsfilter"
                         },
                         "gauge": {
                             "name": "Måler",
@@ -1709,10 +1709,10 @@
                         },
                         "generic": {
                             "aspect_ratio": "Størrelsesforholdet",
-                            "camera_image": "Kameraenhet",
+                            "camera_image": "Kameraentitet",
                             "camera_view": "Kameravisning",
                             "entities": "Enheter",
-                            "entity": "Enhet",
+                            "entity": "Entitet",
                             "hold_action": "Hold nede for handling",
                             "hours_to_show": "Timer som skal vises",
                             "icon": "Ikon",
@@ -1765,7 +1765,7 @@
                             "name": "Bildeelementer"
                         },
                         "picture-entity": {
-                            "name": "Bildeenhet"
+                            "name": "Bildeoppføring"
                         },
                         "picture-glance": {
                             "name": "Bilde Glance"
@@ -1835,7 +1835,7 @@
                     },
                     "raw_editor": {
                         "confirm_unsaved_changes": "Du har ulagrede endringer, er du sikker på at du vil avslutte?",
-                        "confirm_unsaved_comments": "Konfigurasjonen din inneholder kommentar (er), disse vil ikke bli lagret. Vil du fortsette?",
+                        "confirm_unsaved_comments": "Konfigurasjonen din inneholder kommentar(er), disse vil ikke bli lagret. Vil du fortsette?",
                         "error_invalid_config": "Konfigurasjonen er ikke gyldig: {error}",
                         "error_parse_yaml": "Kan ikke analysere YAML: {error}",
                         "error_save_yaml": "Kan ikke lagre YAML: {error}",
@@ -1869,8 +1869,8 @@
                 "unused_entities": {
                     "available_entities": "Dette er enheter som du har tilgjengelig, men er ikke i Lovelace UI ennå.",
                     "domain": "Domene",
-                    "entity": "Enhet",
-                    "entity_id": "Enhet-ID",
+                    "entity": "Entitet",
+                    "entity_id": "Entitets-ID",
                     "last_changed": "Sist endret",
                     "select_to_add": "Velg enhetene du vil legge til et kort, og klikk deretter på knappen Legg til kort.",
                     "title": "Ubrukte enheter"
@@ -1880,8 +1880,8 @@
                     "existing_cards": "Du kan ikke slette en visning som har kort i den. Fjern kortene først."
                 },
                 "warning": {
-                    "entity_non_numeric": "Enheten er ikke-numerisk: {entity}",
-                    "entity_not_found": "Enhet ikke tilgjengelig: {entity}"
+                    "entity_non_numeric": "Entiteten er ikke-numerisk: {entity}",
+                    "entity_not_found": "Entitet ikke tilgjengelig: {entity}"
                 }
             },
             "mailbox": {
@@ -2020,7 +2020,7 @@
                             "mirror": "Speil",
                             "patio": "Uteområdet",
                             "right": "Høyre",
-                            "temperature_study": "Temperaturstudie",
+                            "temperature_study": "Temperatur kontor",
                             "upstairs": "Oppe"
                         },
                         "unit": {
@@ -2035,7 +2035,7 @@
                     "button_detect": "Oppdag",
                     "finish": "Neste",
                     "intro": "Hei {name}, velkommen til Home Assistant. Hva ønsker du å kalle hjemmet ditt?",
-                    "intro_location": "Vi vil gjerne vite hvor du bor. Denne informasjonen vil bidra til å vise informasjon og sette opp solbaserte automatiseringer. Denne dataen deles ikke utenfor nettverket ditt.",
+                    "intro_location": "Vi vil gjerne vite hvor du bor. Denne informasjonen vil bidra til å vise informasjon og sette opp automasjon basert på solen. Dette deles ikke ut av nettet ditt.",
                     "intro_location_detect": "Vi kan hjelpe deg med å fylle ut denne informasjonen ved å gjøre en engangsforespørsel til en ekstern tjeneste.",
                     "location_name_default": "Hjem"
                 },
@@ -2064,7 +2064,7 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant skjuler avanserte funksjoner og alternativer som standard. Du kan gjøre disse funksjonene tilgjengelige ved å merke av i denne veksleknappen. Dette er en brukerspesifikk innstilling som ikke påvirker andre brukere ved hjelp av Home Assistant.",
-                    "hint_enable": "Manglende konfigurasjonsalternativer? Aktiver avansert modus på",
+                    "hint_enable": "Manglende konfigurasjonsalternativer? Aktivér avansert modus",
                     "link_profile_page": "profilsiden din",
                     "title": "Avansert modus"
                 },
@@ -2149,7 +2149,7 @@
             "shopping-list": {
                 "add_item": "Legg til",
                 "clear_completed": "Fjerning fullført",
-                "microphone_tip": "Aktiver mikrofonen øverst til høyre og si “Add candy to my shopping list”"
+                "microphone_tip": "Aktivér mikrofonen øverst til høyre og si “Add candy to my shopping list”"
             }
         },
         "sidebar": {

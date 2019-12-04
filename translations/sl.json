@@ -672,7 +672,7 @@
         "panel": {
             "config": {
                 "area_registry": {
-                    "caption": "Register območij",
+                    "caption": "Območja",
                     "create_area": "USTVARITE OBMOČJE",
                     "description": "Pregled vseh območij v vašem domu.",
                     "editor": {
@@ -684,7 +684,7 @@
                     "no_areas": "Izgleda, da še nimate območij!",
                     "picker": {
                         "create_area": "USTVARITE OBMOČJE",
-                        "header": "Register območij",
+                        "header": "Območja",
                         "integrations_page": "Stran za integracije",
                         "introduction": "Področja se uporabljajo za organizacijo področja naprav. Te informacije bodo uporabljene v celotnem Home Assistant-u in vam bodo pomagale pri organizaciji vašega vmesnika, dovoljenj in integracij z drugimi sistemi.",
                         "introduction2": "Če želite namestiti napravo na območje, uporabite spodnjo povezavo, da se pomaknete na stran za integracije, nato pa kliknite konfigurirano integracijo, da pridete do kartic naprave.",
@@ -692,7 +692,7 @@
                     }
                 },
                 "automation": {
-                    "caption": "Avtomatizacija",
+                    "caption": "Avtomatizacije",
                     "description": "Ustvarite in uredite avtomatizacije",
                     "editor": {
                         "actions": {
@@ -1131,12 +1131,12 @@
                     "attributes_outside": "Naslednji atributi so prilagojeni zunaj customize.yaml",
                     "attributes_override": "Če jih želite, jih lahko preglasite.",
                     "attributes_set": "Naslednji atributi entitete so nastavljeni programsko.",
-                    "caption": "Prilagajanje",
+                    "caption": "Prilagoditve",
                     "description": "Prilagodite svoje entitete",
                     "different_include": "Mogoče prek domene, globusa ali drugačne vsebovanosti.",
                     "pick_attribute": "Izberite atribut, ki ga želite preglasiti",
                     "picker": {
-                        "header": "Prilagajanje",
+                        "header": "Prilagoditve",
                         "introduction": "Prilagajanja atributov na entiteti. Dodane/spremenjene prilagoditve začnejo veljati takoj. Odstranjene pa po posodobitvi entitete."
                     },
                     "warning": {
@@ -1178,7 +1178,7 @@
                     "unnamed_device": "Neimenovana naprava"
                 },
                 "entity_registry": {
-                    "caption": "Seznam entitet",
+                    "caption": "Entitete",
                     "description": "Pregled vseh znanih entitet.",
                     "editor": {
                         "confirm_delete": "Ali ste prepričani, da želite izbrisati ta vnos?",
@@ -1193,7 +1193,7 @@
                         "update": "POSODOBITEV"
                     },
                     "picker": {
-                        "header": "Seznam entitet",
+                        "header": "Entitete",
                         "headers": {
                             "enabled": "Omogočeno",
                             "entity_id": "ID subjekta",

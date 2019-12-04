@@ -524,6 +524,9 @@
             "successfully_saved": "Veiksmīgi saglabāts"
         },
         "components": {
+            "device-picker": {
+                "device": "Ierīce"
+            },
             "entity": {
                 "entity-picker": {
                     "entity": "Vienība"

@@ -538,6 +538,7 @@
         "components": {
             "device-picker": {
                 "clear": "Ryd",
+                "device": "Enhed",
                 "show_devices": "Vis enheder"
             },
             "entity": {
@@ -685,6 +686,7 @@
                             "header": "Handlinger",
                             "introduction": "Handlinger er, hvad Home Assistant skal gøre, når automatiseringen udløses. \n\n [Lær mere om handlinger.] (https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Lær om handlinger",
+                            "name": "Handling",
                             "type_select": "Begivenhedstype",
                             "type": {
                                 "condition": {
@@ -729,6 +731,7 @@
                             "header": "Betingelser",
                             "introduction": "Betingelser er en valgfri del af en automatiseringsregel og kan bruges til at forhindre, at en handling sker, når den udløses. Betingelser ligner udløsere, men er meget forskellige. En udløser vil se på begivenheder der sker i systemet, mens en tilstand kun ser på, hvordan systemet ser ud lige nu. En udløser kan observere, at der er tændt for en kontakt. En tilstand kan kun se, om en kontakt i øjeblikket er til eller fra. \n\n [Lær mere om betingelser.] (Https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Lær om betingelser",
+                            "name": "Betingelse",
                             "type_select": "Betingelsestype",
                             "type": {
                                 "and": {
@@ -798,6 +801,7 @@
                             "header": "Udløser",
                             "introduction": "Udløsere er, hvad der begynder behandlingen af en automatiseringsregel. Det er muligt at angive flere udløsere for samme regel. Når en udløser starter, vil Home Assistant validere eventuelle betingelser og udføre handlingen. \n\n [Lær mere om udløsere.] (Https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Lær om udløsere",
+                            "name": "Udløser",
                             "type_select": "Udløser type",
                             "type": {
                                 "device": {
@@ -1019,7 +1023,7 @@
                 },
                 "core": {
                     "caption": "Generelt",
-                    "description": "Administrer konfigurationen og serveren",
+                    "description": "Ændr Home Assistants generelle konfiguration",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1576,6 +1580,7 @@
                         "toggle_editor": "Skifte Editor"
                     },
                     "edit_lovelace": {
+                        "edit_title": "Rediger titel",
                         "explanation": "Denne titel vises over alle dine visninger i Lovelace.",
                         "header": "Titel på din Lovelace UI"
                     },
@@ -1596,6 +1601,7 @@
                         "para_no_id": "Dette element har ikke et id. Tilføj venligst et id til dette element i \"ui-lovelace.yaml\"."
                     },
                     "raw_editor": {
+                        "error_invalid_config": "Din konfiguration er ugyldig",
                         "header": "Rediger konfiguration",
                         "save": "Gem",
                         "saved": "Gemt",
@@ -1615,12 +1621,17 @@
                     }
                 },
                 "menu": {
+                    "close": "Luk",
                     "configure_ui": "Konfigurer UI",
                     "help": "Hjælp",
                     "refresh": "Opdater",
                     "unused_entities": "Ubrugte enheder"
                 },
                 "reload_lovelace": "Genindlæs Lovelace",
+                "unused_entities": {
+                    "domain": "Domæne",
+                    "last_changed": "Sidst ændret"
+                },
                 "views": {
                     "confirm_delete": "Er du sikker på, at du vil slette denne visning?"
                 },
@@ -1807,6 +1818,7 @@
             },
             "profile": {
                 "advanced_mode": {
+                    "link_profile_page": "din profilside",
                     "title": "Avanceret tilstand"
                 },
                 "change_password": {

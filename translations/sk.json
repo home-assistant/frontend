@@ -539,6 +539,7 @@
         "components": {
             "device-picker": {
                 "clear": "Vyčistiť",
+                "device": "Zariadenie",
                 "show_devices": "Zobraziť zariadenia"
             },
             "entity": {
