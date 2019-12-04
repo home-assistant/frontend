@@ -12,7 +12,7 @@ import {
   LitElement,
   property,
 } from "lit-element";
-import { dynamicContentDirective } from "../../../../common/dom/dynamic-content-directive";
+import { dynamicElement } from "../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import { HomeAssistant } from "../../../../types";
@@ -266,7 +266,7 @@ export default class HaAutomationTriggerRow extends LitElement {
                   </paper-listbox>
                 </paper-dropdown-menu-light>
                 <div>
-                  ${dynamicContentDirective(
+                  ${dynamicElement(
                     `ha-automation-trigger-${this.trigger.platform}`,
                     { hass: this.hass, trigger: this.trigger }
                   )}
