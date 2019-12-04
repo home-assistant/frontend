@@ -534,12 +534,15 @@
         "common": {
             "cancel": "Zrušit",
             "loading": "Načítání",
+            "no": "Ne",
             "save": "Uložit",
-            "successfully_saved": "Úspěšně uloženo"
+            "successfully_saved": "Úspěšně uloženo",
+            "yes": "Ano"
         },
         "components": {
             "device-picker": {
                 "clear": "Zrušit",
+                "device": "Zařízení",
                 "show_devices": "Zobrazit zařízení"
             },
             "entity": {
@@ -605,6 +608,10 @@
                 "success": {
                     "description": "Volby byly úspěšně uloženy."
                 }
+            },
+            "voice_command": {
+                "error": "Jejda, došlo k chybě",
+                "how_can_i_help": "Jak vám mohu pomoci?"
             },
             "zha_device_info": {
                 "buttons": {
@@ -689,6 +696,7 @@
                             "header": "Akce",
                             "introduction": "Akce jsou to, co Home Assistant provede při spuštění automatizace. \n\n [Více informací o akcích.] (Https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Další informace o akcích",
+                            "name": "Akce",
                             "type_select": "Typ akce",
                             "type": {
                                 "condition": {
@@ -733,6 +741,7 @@
                             "header": "Podmínky",
                             "introduction": "Podmínky jsou volitelnou součástí automatizačního pravidla a mohou být použity k zabránění spuštění akce. Podmínky vypadají velmi podobně jako spouštěče, ale jsou velmi odlišné. Spouštěč se podívá na události, ke kterým dochází v systému, zatímco podmínka se zabývá pouze tím, jak systém vypadá právě teď. Pro spouštěč se může jevit že je spínač zapnutý. Stav může vidět pouze tehdy, je-li přepínač aktuálně zapnutý nebo vypnutý. \n\n [Další informace o podmínkách.] (Https://home-assistant.io/docs/scripts/conditions/)",
                             "learn_more": "Další informace o podmínkách",
+                            "name": "Podmínka",
                             "type_select": "Typ podmínky",
                             "type": {
                                 "and": {
@@ -802,6 +811,7 @@
                             "header": "Spouštěče",
                             "introduction": "Spouštěče spouštějí zpracování automatizačního pravidla. Pro stejné pravidlo je možné zadat více spouštěčů. Po spuštění spouštěče ověří Home Assistant případné podmínky a zavolá akci. \n\n [Další informace o spouštěčích.] (Https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Další informace o spouštěčích",
+                            "name": "Spouštěč",
                             "type_select": "Typ spouštěče",
                             "type": {
                                 "device": {
@@ -1218,6 +1228,15 @@
                     "no_persons_created_yet": "Vypadá to, že jste dosud žádné osoby nevytvořili.",
                     "note_about_persons_configured_in_yaml": "Poznámka: Osoby konfigurované pomocí configuration.yaml nelze upravovat pomocí uživatelského rozhraní."
                 },
+                "scene": {
+                    "editor": {
+                        "default_name": "Nová scéna",
+                        "devices": {
+                            "header": "Zařízení"
+                        },
+                        "save": "Uložit"
+                    }
+                },
                 "script": {
                     "caption": "Skript",
                     "description": "Vytvářejte a upravujte skripty",
@@ -1349,7 +1368,7 @@
                         "help_node_dropdown": "Vyberte zařízení pro zobrazení možností pro jednotlivé zařízení.",
                         "hint_battery_devices": "Poznámka: Uspávající se (napájené z baterie) zařízení musí být při provádění příkazů vzhůru. Obecně můžete probudit uspávající se zařízení jeho spuštěním.",
                         "hint_wakeup": "Některá zařízení, jako jsou senzory Xiaomi, mají tlačítko probuzení, které můžete stisknout v intervalu ~ 5 sekund, které udržuje zařízení probuzené, když s nimi komunikujete.",
-                        "introduction": "Spusťte ZHA příkazy, které ovlivňují specifické zařízení. Vyberte zařízení pro zobrazení seznamu dostupných příkazů."
+                        "introduction": "Spouštějte ZHA příkazy, které ovlivňují specifické zařízení. Vyberte zařízení pro zobrazení seznamu dostupných příkazů."
                     },
                     "services": {
                         "reconfigure": "Překonfigurovat zařízení ZHA (opravit zařízení). Použijte, pokud se zařízením máte problémy. Je-li dotyčné zařízení napájené bateriemi, ujistěte se prosím, že je při používání této služby spuštěné a přijímá příkazy.",
@@ -1370,7 +1389,7 @@
                     "learn_more": "Další informace o Z-Wave",
                     "network_management": {
                         "header": "Správa sítě Z-Wave",
-                        "introduction": "Spusťte příkazy, které ovlivňují síť Z-Wave. Nebudete mít zpětnou vazbu o tom, zda většina příkazů uspěla, ale můžete se podívat na protokol OZW a pokusit se to zjistit."
+                        "introduction": "Spouštějte příkazy, které ovlivňují síť Z-Wave. Nebudete mít žádnou zpětnou vazbu o tom, zda příkazy uspěly, ale můžete se podívat do OZW protokolu, kde to můžete zjistit."
                     },
                     "network_status": {
                         "network_started": "Síť Z-Wave spuštěna",
@@ -1396,7 +1415,7 @@
                     },
                     "services": {
                         "add_node": "Přidat uzel",
-                        "add_node_secure": "Přidat zabezpečení uzlu",
+                        "add_node_secure": "Přidat zabezpečený uzel",
                         "cancel_command": "Zrušit příkaz",
                         "heal_network": "Vyléčit síť",
                         "remove_node": "Odebrat uzel",
@@ -1409,6 +1428,13 @@
                     "values": {
                         "header": "Hodnoty uzlu"
                     }
+                }
+            },
+            "custom": {
+                "external_panel": {
+                    "complete_access": "Bude mít přístup ke všem datům v Home Assistant.",
+                    "hide_message": "Chcete-li skrýt tuto zprávu, zkontrolujte v dokumentech komponentu panel_custom",
+                    "question_trust": "Důvěřujete externímu panelu {name} na {link} ?"
                 }
             },
             "developer-tools": {
@@ -1689,6 +1715,7 @@
                         "toggle_editor": "Přepnout Editor"
                     },
                     "edit_lovelace": {
+                        "edit_title": "Upravit titulek",
                         "explanation": "Tento název je zobrazen nad všemi vašimi zobrazeními v Lovelace.",
                         "header": "Název vašeho uživatelského rozhraní Lovelace"
                     },
@@ -1697,7 +1724,9 @@
                         "delete": "Odstranit pohled",
                         "edit": "Upravit pohled",
                         "header": "Zobrazit konfiguraci",
-                        "header_name": "{name} Zobrazit konfiguraci"
+                        "header_name": "{name} Zobrazit konfiguraci",
+                        "move_left": "Posunout pohled doleva",
+                        "move_right": "Posunout pohled doprava"
                     },
                     "header": "Upravit UI",
                     "menu": {
@@ -1711,6 +1740,11 @@
                         "para_no_id": "Tento prvek nemá ID. Přidejte k tomuto prvku ID v 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_unsaved_changes": "Máte neuložené změny. Opravdu chcete odejít?",
+                        "confirm_unsaved_comments": "Vaše konfigurace obsahuje komentáře, které se neuloží. Chceš pokračovat?",
+                        "error_invalid_config": "Vaše konfigurace není platná: {error}",
+                        "error_parse_yaml": "Chyba při parsování YAML: {error}",
+                        "error_save_yaml": "Nelze uložit YAML: {error}",
                         "header": "Upravit konfiguraci",
                         "save": "Uložit",
                         "saved": "Uloženo",
@@ -1731,12 +1765,19 @@
                     }
                 },
                 "menu": {
+                    "close": "Zavřít",
                     "configure_ui": "Konfigurovat UI",
                     "help": "Pomoc",
                     "refresh": "Obnovit",
                     "unused_entities": "Nepoužívané entity"
                 },
                 "reload_lovelace": "Znovu načíst Lovelace",
+                "unused_entities": {
+                    "domain": "Doména",
+                    "entity": "Entita",
+                    "entity_id": "ID entity",
+                    "last_changed": "Naposledy změněno"
+                },
                 "views": {
                     "confirm_delete": "Opravdu chcete smazat tento pohled?",
                     "existing_cards": "Nelze smazat pohled, který obsahuje karty. Nejprve karty odstraňte."
@@ -1926,6 +1967,8 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant standardně skrývá pokročilé funkce a předvolby. Zapnutím této funkce je můžete zpřístupnit. Toto nastavení je specifické pro každého uživatele a neovlivňuje ostatní uživatele Home Assistantu.",
+                    "hint_enable": "Chybí vám možnosti konfigurace? Zapněte rozšířený režim",
+                    "link_profile_page": "stránka vašeho profilu",
                     "title": "Pokročilý režim"
                 },
                 "change_password": {

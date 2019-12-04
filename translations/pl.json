@@ -1211,7 +1211,7 @@
                 "integrations": {
                     "caption": "Integracje",
                     "config_entry": {
-                        "area": "w obszarze: {area}",
+                        "area": "obszar: {area}",
                         "delete_button": "Usuń {integration}",
                         "delete_confirm": "Na pewno chcesz usunąć tę integrację?",
                         "device_unavailable": "urządzenie niedostępne",

@@ -525,6 +525,7 @@
         "components": {
             "device-picker": {
                 "clear": "Tyhjennä",
+                "device": "Laite",
                 "show_devices": "Näytä laitteet"
             },
             "entity": {
@@ -701,6 +702,7 @@
                             "header": "Ehdot",
                             "introduction": "Ehdot ovat vapaaehtoinen osa automaatiosääntöä. Niillä voidaan estää toimintoa tapahtumasta, vaikka se olisi laukaistu. Ehdot näyttävät hyvin samanlaisilta kuin laukaisimet, mutta ne ovat eri asia. Laukaisimen tehtävä on tarkkailla järjestelmän tapahtumia. Ehto kuitenkin katsoo systeemin tilaa vain ja ainoastaan yhdellä hetkellä. Laukaisin voi esimerkiksi huomata, jos jokin vipu käännetään päälle. Ehto voi nähdä vain onko vipu päällä vai pois päältä.",
                             "learn_more": "Lisätietoja ehdoista",
+                            "name": "Ehto",
                             "type_select": "Ehdon tyyppi",
                             "type": {
                                 "and": {
@@ -770,6 +772,7 @@
                             "header": "Laukaisuehdot",
                             "introduction": "Laukaisuehdot määrittelevät, milloin automaatiota aletaan suorittaa. Samassa säännössä voi olla useita laukaisuehtoja. Kun laukaisuehto täyttyy, Home Assistant varmistaa ehdot. Jos ehdot täyttyvät, toiminto suoritetaan.",
                             "learn_more": "Lisätietoja triggereistä",
+                            "name": "Laukaisuehto",
                             "type_select": "Laukaisimen tyyppi",
                             "type": {
                                 "device": {
@@ -1033,8 +1036,24 @@
                     }
                 },
                 "devices": {
+                    "area_picker_label": "Alue",
+                    "automations": "Automaatiot",
                     "caption": "Laitteet",
-                    "description": "Hallitse yhdistettyjä laitteita"
+                    "data_table": {
+                        "area": "Alue",
+                        "battery": "Akku",
+                        "device": "Laite",
+                        "integration": "Integraatio",
+                        "manufacturer": "Valmistaja",
+                        "model": "Malli"
+                    },
+                    "description": "Hallitse yhdistettyjä laitteita",
+                    "details": "Tässä ovat kaikki laitteesi tiedot.",
+                    "device_not_found": "Laitetta ei löydy.",
+                    "entities": "Kohteet",
+                    "info": "Laitteen tiedot",
+                    "unknown_error": "Tuntematon virhe",
+                    "unnamed_device": "Nimeämätön laite"
                 },
                 "entity_registry": {
                     "caption": "Olemusrekisteri",
@@ -1081,16 +1100,25 @@
                         "via": "Yhdistetty kautta"
                     },
                     "config_flow": {
+                        "aborted": "Keskeytetty",
+                        "add_area": "Lisää alue",
+                        "area_picker_label": "Alue",
+                        "close": "Sulje",
                         "external_step": {
                             "description": "Tämä vaihe edellyttää, että vierailet ulkopuolisella verkkosivustolla.",
                             "open_site": "Avaa verkkosivusto"
-                        }
+                        },
+                        "finish": "Valmis",
+                        "name_new_area": "Uuden alueen nimi?",
+                        "not_all_required_fields": "Täytä kaikki pakolliset kentät.",
+                        "submit": "Lähetä"
                     },
                     "configure": "Määrittele",
                     "configured": "Määritetty",
                     "description": "Hallitse liitettyjä laitteita ja palveluita",
                     "discovered": "Löydetty",
                     "home_assistant_website": "Home Assistant – sivusto",
+                    "integration_not_found": "Integraatiota ei löydy.",
                     "new": "Määritä uusi integraatio",
                     "none": "Mitään ei ole vielä määritetty",
                     "note_about_integrations": "Kaikkia integraatioita ei voi vielä määrittää käyttöliittymän kautta.",
@@ -1538,11 +1566,16 @@
                         "show_visual_editor": "Näytä visuaalinen editori",
                         "toggle_editor": "Vaihda editori"
                     },
+                    "edit_lovelace": {
+                        "edit_title": "Muokkaa otsikkoa"
+                    },
                     "edit_view": {
                         "add": "Lisää näkymä",
                         "delete": "Poista näkymä",
                         "edit": "Muokkaa näkymää",
-                        "header": "Näytä asetukset"
+                        "header": "Näytä asetukset",
+                        "move_left": "Siirrä näkymää vasemmalle",
+                        "move_right": "Siirrä näkymää oikealle"
                     },
                     "header": "Muokkaa käyttöliittymää",
                     "menu": {
@@ -1556,6 +1589,7 @@
                         "para_no_id": "Elementillä ei ole ID. Lisää ID elementille 'ui-lovelace.yaml'-tiedostossa."
                     },
                     "raw_editor": {
+                        "confirm_unsaved_changes": "Sinulla on tallentamattomia muutoksia. Haluatko varmasti poistua?",
                         "header": "Muokkaa asetuksia",
                         "save": "Tallenna",
                         "saved": "Tallennettu",
@@ -1570,12 +1604,16 @@
                     }
                 },
                 "menu": {
+                    "close": "Sulje",
                     "configure_ui": "Määrittele käyttöliittymä",
                     "help": "Apua",
                     "refresh": "Päivitä",
                     "unused_entities": "Käyttämättömät yksiköt"
                 },
                 "reload_lovelace": "Lataa Lovelace uudelleen",
+                "unused_entities": {
+                    "last_changed": "Viimeksi muutettu"
+                },
                 "views": {
                     "confirm_delete": "Oletko varma, että haluat poistaa tämän näkymän?",
                     "existing_cards": "Et voi poistaa näkymää, jossa on kortteja. Poista ensin kortit näkymästä."
@@ -1764,6 +1802,7 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant piilottaa lisäominaisuudet ja -asetukset oletuksena. Voit aktivoida nämä ominaisuudet painamalla tästä kytkimestä. Tämä on käyttäjäkohtainen asetus, eikä se vaikuta muihin Home Assistantia käyttäviin käyttäjiin.",
+                    "link_profile_page": "profiilisivusi",
                     "title": "Lisäasetukset"
                 },
                 "change_password": {

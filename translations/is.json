@@ -184,8 +184,8 @@
                 "on": "Blautt"
             },
             "motion": {
-                "off": "Hreinsa",
-                "on": "Uppgötvað"
+                "off": "Engin hreyfing",
+                "on": "Hreyfing"
             },
             "occupancy": {
                 "off": "Hreinsa",
@@ -545,7 +545,8 @@
             },
             "confirmation": {
                 "cancel": "Hætta við",
-                "ok": "Í lagi"
+                "ok": "Í lagi",
+                "title": "Ertu viss?"
             },
             "more_info_control": {
                 "script": {
@@ -832,6 +833,8 @@
                     },
                     "picker": {
                         "add_automation": "Bæta við sjálfvirkni",
+                        "delete_automation": "Eyða sjálfvirkni",
+                        "edit_automation": "Breyta sjálfvirkni",
                         "header": "Sjálfvirkniritill",
                         "learn_more": "Læra meira um sjálfvirkni",
                         "no_automations": "Við fundum ekki neinar sjálfvirkni-skilgreiningar sem hægt er að breyta",
@@ -879,7 +882,8 @@
                     "dialog_cloudhook": {
                         "close": "Loka",
                         "confirm_disable": "Ertu viss um að þú viljir afvirkja þennan vefkrók?",
-                        "copied_to_clipboard": "Afritað á klemmuspjald"
+                        "copied_to_clipboard": "Afritað á klemmuspjald",
+                        "view_documentation": "Skoða skjölun"
                     },
                     "forgot_password": {
                         "email": "Netfang",
@@ -970,6 +974,7 @@
                     }
                 },
                 "devices": {
+                    "area_picker_label": "Svæði",
                     "automation": {
                         "actions": {
                             "caption": "Þegar eitthvað er ræst af kveikju..."
@@ -983,11 +988,15 @@
                     },
                     "caption": "Tæki",
                     "data_table": {
+                        "area": "Svæði",
+                        "device": "Tæki",
                         "manufacturer": "Framleiðandi"
                     },
                     "description": "Stjórna tengdum tækjum",
                     "device_not_found": "Tæki fannst ekki.",
-                    "unknown_error": "Óþekkt villa"
+                    "info": "Upplýsingar um tæki",
+                    "unknown_error": "Óþekkt villa",
+                    "unnamed_device": "Ónefnt tæki"
                 },
                 "entity_registry": {
                     "caption": "Einingarskrá",
@@ -1028,10 +1037,15 @@
                         "via": "Tengt gegnum"
                     },
                     "config_flow": {
+                        "aborted": "Hætt var við",
+                        "add_area": "Bæta við svæði",
+                        "area_picker_label": "Svæði",
                         "external_step": {
                             "description": "Þetta skref krefst þess að þú heimsækir ytri vefsíðu svo hægt sé að ljúka þessu skrefi.",
                             "open_site": "Opna vefsíðu"
-                        }
+                        },
+                        "finish": "Ljúka",
+                        "submit": "Senda"
                     },
                     "configure": "Stilla",
                     "configured": "Uppsett",
@@ -1064,7 +1078,9 @@
                     }
                 },
                 "scene": {
+                    "caption": "Senur",
                     "editor": {
+                        "default_name": "Ný sena",
                         "devices": {
                             "add": "Bæta við tæki",
                             "delete": "Eyða tæki",
@@ -1072,6 +1088,13 @@
                         },
                         "name": "Nafn",
                         "save": "Vista"
+                    },
+                    "picker": {
+                        "delete_confirm": "Ertu viss um að þú viljir eyða þessari senu?",
+                        "delete_scene": "Eyða senu",
+                        "edit_scene": "Breyta senu",
+                        "pick_scene": "Veldu senu til að breyta",
+                        "show_info_scene": "Birta upplýsingar um senu"
                     }
                 },
                 "script": {
@@ -1209,6 +1232,8 @@
                         "title": "Viðburðir"
                     },
                     "info": {
+                        "icons_by": "Smátákn eftir",
+                        "remove": "Fjarlægja",
                         "title": "Upplýsingar"
                     },
                     "logs": {
@@ -1218,9 +1243,14 @@
                         "title": "MQTT"
                     },
                     "services": {
+                        "call_service": "Kalla í þjónustu",
+                        "column_description": "Lýsing",
+                        "column_example": "Dæmi",
+                        "data": "Þjónustugögn (YAML, valkvæmt)",
                         "title": "Þjónustur"
                     },
                     "states": {
+                        "more_info": "Frekari upplýsingar",
                         "title": "Stöður"
                     },
                     "templates": {
@@ -1365,6 +1395,9 @@
                         "show_code_editor": "Birta kóða ritil",
                         "show_visual_editor": "Birta sjónrænan ritil",
                         "toggle_editor": "Víxla ritli"
+                    },
+                    "edit_lovelace": {
+                        "edit_title": "Breyta titli"
                     },
                     "edit_view": {
                         "add": "Bæta við sýn",
