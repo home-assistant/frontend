@@ -3,10 +3,8 @@ import {
   LitElement,
   html,
   property,
-  query,
   CSSResult,
   css,
-  PropertyValues,
 } from "lit-element";
 
 import "./ha-form-string";
@@ -16,6 +14,7 @@ import "./ha-form-boolean";
 import "./ha-form-select";
 import "./ha-form-positive_time_period_dict";
 import { fireEvent } from "../../common/dom/fire_event";
+import { dynamicContentDirective } from "../../common/dom/dynamic-content-directive";
 
 export type HaFormSchema =
   | HaFormStringSchema
@@ -100,20 +99,14 @@ export class HaForm extends LitElement implements HaFormElement {
   @property() public computeError?: (schema: HaFormSchema, error) => string;
   @property() public computeLabel?: (schema: HaFormSchema) => string;
   @property() public computeSuffix?: (schema: HaFormSchema) => string;
-  @query("ha-form") private _childForm?: HaForm;
-  @query("#element") private _elementContainer?: HTMLDivElement;
 
   public focus() {
-    const input = this._childForm
-      ? this._childForm
-      : this._elementContainer
-      ? this._elementContainer.lastChild
-      : undefined;
-
+    const input =
+      this.shadowRoot!.querySelector("ha-form") ||
+      this.shadowRoot!.getElementById("child-form");
     if (!input) {
       return;
     }
-
     (input as HTMLElement).focus();
   }
 
@@ -151,38 +144,17 @@ export class HaForm extends LitElement implements HaFormElement {
             </div>
           `
         : ""}
-      <div id="element"></div>
+      ${dynamicContentDirective(
+        `ha-form-${this.schema.type}`,
+        {
+          schema: this.schema,
+          data: this.data,
+          label: this._computeLabel(this.schema),
+          suffix: this._computeSuffix(this.schema),
+        },
+        { id: "child-form" }
+      )}
     `;
-  }
-
-  protected updated(changedProperties: PropertyValues) {
-    const schemaChanged = changedProperties.has("schema");
-    const oldSchema = schemaChanged
-      ? changedProperties.get("schema")
-      : undefined;
-    if (
-      !Array.isArray(this.schema) &&
-      schemaChanged &&
-      (!oldSchema || (oldSchema as HaFormSchema).type !== this.schema.type)
-    ) {
-      const element = document.createElement(
-        `ha-form-${this.schema.type}`
-      ) as HaFormElement;
-      element.schema = this.schema;
-      element.data = this.data;
-      element.label = this._computeLabel(this.schema);
-      element.suffix = this._computeSuffix(this.schema);
-      if (this._elementContainer!.lastChild) {
-        this._elementContainer!.removeChild(this._elementContainer!.lastChild);
-      }
-      this._elementContainer!.appendChild(element);
-    } else if (this._elementContainer && this._elementContainer.lastChild) {
-      const element = this._elementContainer!.lastChild as HaFormElement;
-      element.schema = this.schema;
-      element.data = this.data;
-      element.label = this._computeLabel(this.schema);
-      element.suffix = this._computeSuffix(this.schema);
-    }
   }
 
   private _computeLabel(schema: HaFormSchema) {
