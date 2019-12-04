@@ -682,6 +682,7 @@
                             "header": "Condiciones",
                             "introduction": "Las condiciones son una parte opcional de una regla de automatización y se pueden usar para evitar que ocurra una acción cuando se activa. Las condiciones son muy similares a los desencadenantes pero son muy diferentes. Un activador mirará los eventos que suceden en el sistema, mientras que una condición solo mira cómo se ve el sistema en este momento. Un disparador puede observar que un interruptor se está activando. Una condición solo puede ver si un interruptor está actualmente activado o desactivado.",
                             "learn_more": "Más información sobre las condiciones",
+                            "name": "Condición",
                             "type_select": "Tipo de condición",
                             "type": {
                                 "and": {

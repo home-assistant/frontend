@@ -534,12 +534,15 @@
         "common": {
             "cancel": "Loobu",
             "loading": "Laadimine",
+            "no": "Ei",
             "save": "Salvesta",
-            "successfully_saved": "Edukalt salvestatud"
+            "successfully_saved": "Edukalt salvestatud",
+            "yes": "Jah"
         },
         "components": {
             "device-picker": {
                 "clear": "Puhasta",
+                "device": "Seade",
                 "show_devices": "Näita seadmeid"
             },
             "entity": {
@@ -605,6 +608,9 @@
                 "success": {
                     "description": "Valikud on edukalt salvestatud."
                 }
+            },
+            "voice_command": {
+                "how_can_i_help": "Kuidas ma saan aidata?"
             },
             "zha_device_info": {
                 "buttons": {
@@ -675,7 +681,7 @@
                     }
                 },
                 "automation": {
-                    "caption": "Automatiseerimine",
+                    "caption": "Automatiseeringud",
                     "description": "Loo ja redigeeri automatiseeringuid",
                     "editor": {
                         "actions": {
@@ -686,6 +692,7 @@
                             "header": "Tegevused",
                             "introduction": "Tegevused on need, mida Home Assistant teeb kui päästik käivitab automatiseeringu.",
                             "learn_more": "Lisateave tegevuste kohta",
+                            "name": "Tegevus",
                             "type_select": "Tegevuse tüüp",
                             "type": {
                                 "condition": {
@@ -730,6 +737,7 @@
                             "header": "Tingimused",
                             "introduction": "Tingimused on automatiseeringu valikuline osa ja neid saab kasutada, et vältida tegevuse käivitumist päästiku vallandumisel. Tingimused tunduvad väga sarnased päästikutele, kuid on siiski erinevad. Päästik jälgib süsteemis toimuvaid sündmusi, tingimus jälgib ainult süsteem praegust olekut. Päästik võib märgata, et lülitit ollakse parasjagu lülitamas. Tingimus võib näha ainult seda, kas lüliti on praegu sisse või välja lülitatud.",
                             "learn_more": "Lisateave tingimuste kohta",
+                            "name": "Tingimus",
                             "type_select": "Tingimuse tüüp",
                             "type": {
                                 "and": {
@@ -799,6 +807,7 @@
                             "header": "Päästikud",
                             "introduction": "Päästikud on need, millest algab automatiseeringu töö. Ühe automatiseeringu jaoks on võimalik määrata mitu päästikut. Kui päästik vallandub, kontrollib Home Assistant võimalike tingimuste täidetust ja käivitab tegevuse.",
                             "learn_more": "Lisateave päästikute kohta",
+                            "name": "Päästik",
                             "type_select": "Päästiku tüüp",
                             "type": {
                                 "device": {
@@ -885,6 +894,9 @@
                     },
                     "picker": {
                         "add_automation": "Lisa automatiseering",
+                        "delete_automation": "Kustuta automatiseering",
+                        "delete_confirm": "Oled kindel, et soovid selle automatiseeringu kustutada?",
+                        "edit_automation": "Muuda automatiseeringut",
                         "header": "Automaatika redaktor",
                         "introduction": "Automaatika redaktor võimaldab teil luua ja muuta automatiseeringuid. Palun järgige allolevat linki, veendumaks, et oled Home Assistant'i õigesti seadistanud.",
                         "learn_more": "Lisateave automatiseeringute kohta",
@@ -1050,7 +1062,7 @@
                     }
                 },
                 "customize": {
-                    "caption": "Kohandamine",
+                    "caption": "Kohandamised",
                     "description": "Kohanda oma olemeid",
                     "picker": {
                         "header": "Kohandamine",
@@ -1058,6 +1070,7 @@
                     }
                 },
                 "devices": {
+                    "area_picker_label": "Ala",
                     "automation": {
                         "actions": {
                             "caption": "Kui midagi käivitatakse ..."
@@ -1069,8 +1082,22 @@
                             "caption": "Tee midagi, kui..."
                         }
                     },
+                    "automations": "Automatiseeringud",
                     "caption": "Seadmed",
-                    "description": "Halda ühendatud seadmeid"
+                    "data_table": {
+                        "area": "Ala",
+                        "battery": "Aku",
+                        "device": "Seade",
+                        "integration": "Sidumine",
+                        "manufacturer": "Tootja",
+                        "model": "Mudel"
+                    },
+                    "description": "Halda ühendatud seadmeid",
+                    "device_not_found": "Seadet ei leitud.",
+                    "entities": "Olemid",
+                    "info": "Seadme info",
+                    "unknown_error": "Tundmatu viga",
+                    "unnamed_device": "Nimetu seade"
                 },
                 "entity_registry": {
                     "caption": "Olemite register",
@@ -1118,16 +1145,22 @@
                         "via": "Ühendatud"
                     },
                     "config_flow": {
+                        "aborted": "Katkestatud",
+                        "add_area": "Lisa ala",
+                        "area_picker_label": "Ala",
+                        "close": "Sulge",
                         "external_step": {
                             "description": "Selle etapi lõpetamine nõuab välise veebisaidi külastamist.",
                             "open_site": "Ava veebisait"
-                        }
+                        },
+                        "finish": "Lõpeta"
                     },
                     "configure": "Seadista",
                     "configured": "Seadistatud",
                     "description": "Halda ja seadista sidumisi",
                     "discovered": "Leitud",
                     "home_assistant_website": "Home Assistant veebisait",
+                    "integration_not_found": "Sidumist ei leitud.",
                     "new": "Loo uus sidumine",
                     "none": "Midagi pole veel seadistatud"
                 },
@@ -1154,18 +1187,52 @@
                     },
                     "no_persons_created_yet": "Paistab, et sa pole veel ühtegi isikut loonud."
                 },
+                "scene": {
+                    "activated": "Aktiveeritud stseen {name} .",
+                    "caption": "Stseenid",
+                    "description": "Loo ja muuda stseene",
+                    "editor": {
+                        "default_name": "Uus stseen",
+                        "devices": {
+                            "add": "Lisa seade",
+                            "delete": "Kustuta seade",
+                            "header": "Seadmed"
+                        },
+                        "entities": {
+                            "add": "Lisa olem",
+                            "delete": "Kustuta olem",
+                            "header": "Olemid"
+                        },
+                        "name": "Nimi",
+                        "save": "Salvesta",
+                        "unsaved_confirm": "Sul on salvestamata muudatusi. Oled kindel, et soovid lahkuda?"
+                    },
+                    "picker": {
+                        "add_scene": "Lisa stseen",
+                        "delete_confirm": "Oled kindel, et soovid selle stseeni kustutada?",
+                        "delete_scene": "Kustuta stseen",
+                        "edit_scene": "Muuda stseeni",
+                        "header": "Stseeniredaktor",
+                        "no_scenes": "Me ei leidnud ühtegi muudetavat stseeni",
+                        "show_info_scene": "Kuva stseeni teave"
+                    }
+                },
                 "script": {
-                    "caption": "Skript",
+                    "caption": "Skriptid",
                     "description": "Loo ja muuda skripte",
                     "editor": {
                         "default_name": "Uus skript",
                         "delete_confirm": "Oled kindel, et soovid selle skripti kustutada?",
-                        "header": "Skript: {name}"
+                        "delete_script": "Kustuta skript",
+                        "header": "Skript: {name}",
+                        "sequence": "Jada"
                     },
                     "picker": {
                         "add_script": "Lisa skript",
+                        "edit_script": "Muuda skripti",
                         "header": "Skriptiredaktor",
-                        "learn_more": "Lisateave skriptide kohta"
+                        "learn_more": "Lisateave skriptide kohta",
+                        "trigger_script": "Käivita skript"
                     }
                 },
                 "server_control": {
@@ -1546,10 +1613,10 @@
                     },
                     "edit_card": {
                         "add": "Lisa kaart",
-                        "delete": "Kustuta",
+                        "delete": "Kustuta kaart",
                         "edit": "Muuda",
                         "header": "Kaardi seadistamine",
-                        "move": "Liiguta",
+                        "move": "Liiguta vaatesse",
                         "pick_card": "Vali kaart, mida soovid lisada.",
                         "save": "Salvesta",
                         "show_code_editor": "Kuva koodiredaktor",
@@ -1557,6 +1624,7 @@
                         "toggle_editor": "Lülita redaktor sisse/välja"
                     },
                     "edit_lovelace": {
+                        "edit_title": "Muuda pealkirja",
                         "explanation": "Seda pealkirja näidatakse kõikide Lovelace'i vaadete kohal.",
                         "header": "Lovelace kasutajaliidese pealkiri"
                     },
@@ -1565,7 +1633,9 @@
                         "delete": "Kustuta vaade",
                         "edit": "Muuda vaadet",
                         "header": "Vaata seadeid",
-                        "header_name": "{name} Vaata seadeid"
+                        "header_name": "{name} Vaata seadeid",
+                        "move_left": "Liiguta vaadet vasakule",
+                        "move_right": "Liiguta vaadet paremale"
                     },
                     "header": "Muuda kasutajaliidest",
                     "menu": {
@@ -1592,12 +1662,20 @@
                     }
                 },
                 "menu": {
+                    "close": "Sulge",
                     "configure_ui": "Seadista kasutajaliidest",
                     "help": "Abi",
                     "refresh": "Värskenda",
                     "unused_entities": "Kasutamata olemid"
                 },
                 "reload_lovelace": "Taaslae Lovelace",
+                "unused_entities": {
+                    "domain": "Domeen",
+                    "entity": "Olem",
+                    "entity_id": "Olemi ID",
+                    "last_changed": "Viimati muudetud",
+                    "title": "Kasutamata olemid"
+                },
                 "views": {
                     "confirm_delete": "Oled kindel, et soovid selle vaate kustutada?"
                 },
@@ -1866,7 +1944,7 @@
             "shopping-list": {
                 "add_item": "Lisa toode",
                 "clear_completed": "Tühjenda täidetud",
-                "microphone_tip": "Puudutage paremas ülanurgas asuvat mikrofoni ikooni ja öelge: \"Add candy to my shopping list\""
+                "microphone_tip": "Puuduta paremas ülanurgas asuvat mikrofoni ikooni ja ütle: \"Add candy to my shopping list\""
             }
         },
         "sidebar": {

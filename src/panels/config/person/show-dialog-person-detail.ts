@@ -11,7 +11,9 @@ export interface PersonDetailDialogParams {
 }
 
 export const loadPersonDetailDialog = () =>
-  import(/* webpackChunkName: "person-detail-dialog" */ "./dialog-person-detail");
+  import(
+    /* webpackChunkName: "person-detail-dialog" */ "./dialog-person-detail"
+  );
 
 export const showPersonDetailDialog = (
   element: HTMLElement,

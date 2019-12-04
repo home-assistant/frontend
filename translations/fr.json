@@ -145,7 +145,7 @@
         },
         "automation": {
             "off": "Off",
-            "on": "[%key_id:state::default::on%]"
+            "on": "Actif"
         },
         "binary_sensor": {
             "battery": {
@@ -162,7 +162,7 @@
             },
             "default": {
                 "off": "Off",
-                "on": "[%key_id:state::default::on%]"
+                "on": "Actif"
             },
             "door": {
                 "off": "Fermée",
@@ -231,7 +231,7 @@
         },
         "calendar": {
             "off": "Off",
-            "on": "[%key_id:state::default::on%]"
+            "on": "Actif"
         },
         "camera": {
             "idle": "En veille",
@@ -289,7 +289,7 @@
             "not_home": "Absent",
             "off": "Off",
             "ok": "OK",
-            "on": "[%key_id:state::default::on%]",
+            "on": "Actif",
             "open": "Ouvert",
             "opening": "Ouverture",
             "problem": "Problème",
@@ -333,11 +333,11 @@
         },
         "script": {
             "off": "Off",
-            "on": "[%key_id:state::default::on%]"
+            "on": "Actif"
         },
         "sensor": {
             "off": "Off",
-            "on": "[%key_id:state::default::on%]"
+            "on": "Actif"
         },
         "sun": {
             "above_horizon": "Au-dessus de l'horizon",
@@ -692,7 +692,7 @@
                     }
                 },
                 "automation": {
-                    "caption": "Automatisation",
+                    "caption": "Automatisations",
                     "description": "Créer et modifier des automatisations.",
                     "editor": {
                         "actions": {
@@ -824,7 +824,7 @@
                                 "device": {
                                     "extra_fields": {
                                         "above": "Au-dessus de",
-                                        "below": "Au-dessous de",
+                                        "below": "En dessous de",
                                         "for": "Durée"
                                     },
                                     "label": "Équipements"
@@ -1136,7 +1136,7 @@
                     "different_include": "Peut-être via un domaine, un glob ou un autre include.",
                     "pick_attribute": "Sélectionnez un attribut à remplacer",
                     "picker": {
-                        "header": "Personnalisation",
+                        "header": "Personnalisations",
                         "introduction": "Ajuster les attributs par entité. Les personnalisations ajoutées / modifiées prendront effet immédiatement. Les personnalisations supprimées prendront effet lors de la mise à jour de l'entité."
                     },
                     "warning": {
@@ -1283,16 +1283,16 @@
                     "note_about_persons_configured_in_yaml": "Remarque: les personnes configurées via configuration.yaml ne peuvent pas être modifiées via l'interface utilisateur."
                 },
                 "scene": {
-                    "activated": "Scène activée {nom}.",
+                    "activated": "Scène activée {name}.",
                     "caption": "Scènes",
                     "description": "Créer et modifier des scènes",
                     "editor": {
-                        "default_name": "Nouvelle Scène",
+                        "default_name": "Nouvelle scène",
                         "devices": {
                             "add": "Ajouter un appareil",
                             "delete": "Supprimer l'appareil",
                             "header": "Appareils",
-                            "introduction": "Ajouter les périphériques que vous souhaitez inclure dans votre scène. Définissez tous les périphériques dans l'état que vous souhaitez pour cette scène."
+                            "introduction": "Ajoutez les périphériques que vous souhaitez inclure dans votre scène. Définissez l'état que vous souhaitez pour tous les périphériques de cette scène."
                         },
                         "entities": {
                             "add": "Ajouter une entité",
@@ -1302,7 +1302,7 @@
                             "introduction": "Les entités n'appartenant pas à un périphérique peuvent être définies ici.",
                             "without_device": "Entités sans appareil"
                         },
-                        "introduction": "Utiliser des scènes pour donner vie à votre maison.",
+                        "introduction": "Utilisez des scènes pour donner vie à votre maison.",
                         "load_error_not_editable": "Seules les scènes de scenes.yaml sont modifiables.",
                         "load_error_unknown": "Erreur de chargement de la scène ({err_no})",
                         "name": "Nom",
@@ -1324,7 +1324,7 @@
                     }
                 },
                 "script": {
-                    "caption": "Script",
+                    "caption": "Scripts",
                     "description": "Créer et modifier des scripts.",
                     "editor": {
                         "default_name": "Nouveau script",
@@ -1527,7 +1527,7 @@
                 "external_panel": {
                     "complete_access": "Il aura accès à toutes les données de Home Assistant",
                     "hide_message": "Vérifiez la documentation du composant panel_custom pour masquer ce message",
-                    "question_trust": "Faire confiance au panneau externe {name} sur {link}?"
+                    "question_trust": "Faites-vous confiance au panneau externe {name} sur {link} ?"
                 }
             },
             "developer-tools": {
@@ -1537,9 +1537,9 @@
                         "available_events": "Événements disponibles",
                         "count_listeners": " ({count} récepteurs)",
                         "data": "Données d'événement (YAML, facultatif)",
-                        "description": "Déclencher un événement dans le bus d'événement.",
+                        "description": "Déclencher un événement dans le bus événement.",
                         "documentation": "Documentation sur les événements.",
-                        "event_fired": "Evénement {name} déclenché",
+                        "event_fired": "Événement {name} déclenché",
                         "fire_event": "Déclencher l'événement",
                         "listen_to_events": "Écoutez les événements",
                         "listening_to": "Écouter",

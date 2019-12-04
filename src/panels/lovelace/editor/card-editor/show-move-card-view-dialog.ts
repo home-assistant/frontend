@@ -20,7 +20,9 @@ const registerEditCardDialog = (element: HTMLElement): Event =>
     dialogShowEvent: "show-move-card-view",
     dialogTag: "hui-dialog-move-card-view",
     dialogImport: () =>
-      import(/* webpackChunkName: "hui-dialog-move-card-view" */ "./hui-dialog-move-card-view"),
+      import(
+        /* webpackChunkName: "hui-dialog-move-card-view" */ "./hui-dialog-move-card-view"
+      ),
   });
 
 export const showMoveCardViewDialog = (

@@ -6,7 +6,7 @@ import "@polymer/paper-input/paper-input";
 import "@polymer/paper-spinner/paper-spinner";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
-import "@vaadin/vaadin-date-picker/vaadin-date-picker";
+import "@vaadin/vaadin-date-picker/theme/material/vaadin-date-picker";
 
 import "../../components/ha-menu-button";
 import "../../components/entity/ha-entity-picker";
@@ -43,9 +43,6 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
         }
 
         vaadin-date-picker {
-          --vaadin-date-picker-clear-icon: {
-            display: none;
-          }
           max-width: 200px;
           margin-right: 16px;
         }

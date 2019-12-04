@@ -574,9 +574,9 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Neu erkannte Entitäten werden nicht automatisch in Home Assistant hinzugefügt wenn sie deaktiviert sind.",
+                "enable_new_entities_description": "Wenn deaktiviert werden neu erkannte Entitäten für {integration} nicht automatisch zu Home Assistant hinzugefügt.",
                 "enable_new_entities_label": "Neu hinzugefügte Entitäten aktivieren.",
-                "title": "Systemoptionen"
+                "title": "Einstellungen für {integration}"
             },
             "confirmation": {
                 "cancel": "Abbrechen",
@@ -617,7 +617,8 @@
                 "error": "Ups, ein Fehler ist aufgetreten.",
                 "found": "Ich habe folgendes für dich gefunden:",
                 "how_can_i_help": "Wie kann ich helfen?",
-                "label": "Gib eine Frage ein und klicke auf 'Enter'."
+                "label": "Gib eine Frage ein und klicke auf 'Enter'.",
+                "label_voice": "Schreib und drück die Eingabetaste oder tippe auf das Mikrofon um zu sprechen"
             },
             "zha_device_info": {
                 "buttons": {
@@ -632,7 +633,7 @@
                 "quirk": "Eigenart",
                 "services": {
                     "reconfigure": "Konfigurieren Sie das ZHA-Gerät neu (Gerät heilen). Verwenden Sie diese Option, wenn Sie Probleme mit dem Gerät haben. Wenn es sich bei dem fraglichen Gerät um ein batteriebetriebenes Gerät handelt, vergewissern Sie sich, dass es wach ist und Befehle akzeptiert, wenn Sie diesen Dienst nutzen.",
-                    "remove": "Entfernen Sie ein Gerät aus dem ZigBee-Netzwerk.",
+                    "remove": "Ein Gerät aus dem ZigBee-Netzwerk entfernen.",
                     "updateDeviceName": "Lege einen benutzerdefinierten Namen für dieses Gerät in der Geräteregistrierung fest."
                 },
                 "unknown": "Unbekannt",
@@ -911,6 +912,7 @@
                         "introduction": "Mit dem Automationseditor können Automatisierungen erstellt und bearbeitet werden. Bitte folge dem nachfolgenden Link, um die Anleitung zu lesen, um sicherzustellen, dass du Home Assistant richtig konfiguriert hast.",
                         "learn_more": "Erfahre mehr über Automatisierungen",
                         "no_automations": "Wir konnten keine editierbaren Automatisierungen finden",
+                        "only_editable": "Nur Automatisierungen in automations.yaml sind editierbar.",
                         "pick_automation": "Wähle eine Automatisierung zum Bearbeiten",
                         "show_info_automation": "Informationen über die Automatisierung anzeigen"
                     }
@@ -1124,11 +1126,20 @@
                     }
                 },
                 "customize": {
+                    "attributes_customize": "Folgende Attribute sind bereits in customize.yaml gesetzt",
+                    "attributes_not_set": "Die folgenden Attribute wurden nicht gesetzt. Setze sie, wenn Du möchtest.",
+                    "attributes_outside": "Die folgenden Attribute werden außerhalb von customize.yaml angepasst.",
+                    "attributes_override": "Du kannst sie überschreiben, wenn du möchtest.",
+                    "attributes_set": "Die folgenden Attribute der Entität sind programmatisch festgelegt.",
                     "caption": "Anpassung",
                     "description": "Elemente anpassen",
+                    "pick_attribute": "Wähle ein Attribut zum Überschreiben aus.",
                     "picker": {
-                        "header": "Anpassung",
+                        "header": "Anpassungen",
                         "introduction": "Optimieren Sie die Entitätenattribute. Hinzugefügte / bearbeitete Anpassungen werden sofort wirksam. Entfernte Anpassungen werden wirksam, wenn die Entität aktualisiert wird."
+                    },
+                    "warning": {
+                        "include_link": "binde customize.yaml ein"
                     }
                 },
                 "devices": {
@@ -1277,12 +1288,15 @@
                         "devices": {
                             "add": "Ein Gerät hinzufügen",
                             "delete": "Gerät löschen",
-                            "header": "Geräte"
+                            "header": "Geräte",
+                            "introduction": "Füge die Geräte hinzu, die in deine Szene aufgenommen werden sollen. Stelle alle Geräte so ein, wie sie in der Szene sein sollen."
                         },
                         "entities": {
                             "add": "Eine Entität hinzufügen",
                             "delete": "Entität löschen",
+                            "device_entities": "Wenn du eine Entität hinzufügst, die zu einem Gerät gehört, wird das Gerät hinzugefügt.",
                             "header": "Entitäten",
+                            "introduction": "Entitäten, die nicht zu einem Gerät gehören, können hier festgelegt werden.",
                             "without_device": "Entitäten ohne Gerät"
                         },
                         "introduction": "Benutze Szenen, um deinem Zuhause Leben einzuhauchen",
@@ -1298,8 +1312,10 @@
                         "delete_scene": "Szene löschen",
                         "edit_scene": "Szene bearbeiten",
                         "header": "Szenen-Editor",
+                        "introduction": "Mit dem Szeneneditor können Szenen erstellt und bearbeitet werden. Bitte folgen Sie dem untenstehenden Link, um die Anleitung zu finden. Dies stellt sicher, dass Home Assistant korrekt konfiguriert ist.",
                         "learn_more": "Erfahre mehr über Szenen.",
                         "no_scenes": "Wir konnten keine editierbaren Szenen finden",
+                        "only_editable": "Nur Szenen in der scenes.yaml sind editierbar.",
                         "pick_scene": "Wähle eine Szene zum Bearbeiten aus.",
                         "show_info_scene": "Informationen über die Szene anzeigen"
                     }
@@ -1312,8 +1328,11 @@
                         "delete_confirm": "Möchten Sie dieses Skript wirklich löschen?",
                         "delete_script": "Skript löschen",
                         "header": "Skript: {name}",
+                        "introduction": "Verwende Skripte, um eine Abfolge von Aktionen auszuführen.",
+                        "link_available_actions": "Erfahre mehr über verfügbare Aktionen.",
                         "load_error_not_editable": "Nur Skripte in scripts.yaml können bearbeitet werden.",
-                        "sequence": "Sequenz"
+                        "sequence": "Sequenz",
+                        "sequence_sentence": "Die Abfolge der Aktionen dieses Skripts."
                     },
                     "picker": {
                         "add_script": "Skript hinzufügen",
@@ -1331,7 +1350,7 @@
                     "section": {
                         "reloading": {
                             "automation": "Automatisierungen neu laden",
-                            "core": "Hauptsystem neu laden",
+                            "core": "Ort & Anpassungen neu laden",
                             "group": "Gruppen neu laden",
                             "heading": "Konfiguration neu laden",
                             "introduction": "Einige Komponenten von Home Assistant können ohne einen Neustart neu geladen werden. \"Neu laden\" entlädt dabei die aktuelle Konfiguration und lädt die neue Konfiguration.",
@@ -1504,7 +1523,8 @@
             "custom": {
                 "external_panel": {
                     "complete_access": "Es wird Zugriff auf alle Daten in Home Assistant haben.",
-                    "hide_message": "Überprüfe die Dokumentation für die panel_custom Komponente, um diese Meldung auszublenden."
+                    "hide_message": "Überprüfe die Dokumentation für die panel_custom Komponente, um diese Meldung auszublenden.",
+                    "question_trust": "Vertraust du dem externen Panel {name} unter {link}?"
                 }
             },
             "developer-tools": {
@@ -1523,6 +1543,7 @@
                         "notification_event_fired": "Ereignis {type} erfolgreich ausgelöst!",
                         "start_listening": "Anfangen zuzuhören",
                         "stop_listening": "Aufhören zuzuhören",
+                        "subscribe_to": "Ereignis, welches abboniert werden soll",
                         "title": "Ereignisse",
                         "type": "Ereignistyp"
                     },
@@ -1558,6 +1579,7 @@
                         "title": "Logs"
                     },
                     "mqtt": {
+                        "description_listen": "Auf ein Thema lauschen",
                         "description_publish": "Ein Paket veröffentlichen",
                         "listening_to": "Anhören von",
                         "message_received": "Nachricht {id} empfangen auf {topic} um {time} :",
@@ -1773,7 +1795,7 @@
                         "delete": "Löschen",
                         "edit": "Bearbeiten",
                         "header": "Kartenkonfiguration",
-                        "move": "Bewegen",
+                        "move": "Zur Ansicht Bewegen",
                         "options": "Mehr Optionen",
                         "pick_card": "Karte auswählen, die hinzugefügt werden soll.",
                         "pick_card_view_title": "Welche Karte möchten Sie Ihrer {name} -Ansicht hinzufügen?",
@@ -1841,10 +1863,12 @@
                 },
                 "reload_lovelace": "Lovelace neu laden",
                 "unused_entities": {
+                    "available_entities": "Dies sind die Entitäten, die du zur Verfügung hast, die aber noch nicht in deiner Lovelace-Benutzeroberfläche enthalten sind.",
                     "domain": "Domain",
                     "entity": "Entität",
                     "entity_id": "Entitäts-ID",
                     "last_changed": "Zuletzt geändert",
+                    "select_to_add": "Wähle die Entitäten aus, die Du zur Karte hinzufügen möchtest und klicke auf den Karte hinzufügen Button.",
                     "title": "Nicht verwendete Entitäten"
                 },
                 "views": {

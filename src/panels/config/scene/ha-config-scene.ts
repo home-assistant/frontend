@@ -9,7 +9,7 @@ import {
 } from "../../../layouts/hass-router-page";
 import { property, customElement, PropertyValues } from "lit-element";
 import { HomeAssistant } from "../../../types";
-import { computeDomain } from "../../../common/entity/compute_domain";
+import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { compare } from "../../../common/string/compare";
 import { SceneEntity } from "../../../data/scene";
@@ -38,9 +38,9 @@ class HaConfigScene extends HassRouterPage {
 
   private _computeScenes = memoizeOne((states: HassEntities) => {
     const scenes: SceneEntity[] = [];
-    Object.keys(states).forEach((entityId) => {
-      if (computeDomain(entityId) === "scene") {
-        scenes.push(states[entityId] as SceneEntity);
+    Object.values(states).forEach((state) => {
+      if (computeStateDomain(state) === "scene" && !state.attributes.hidden) {
+        scenes.push(state as SceneEntity);
       }
     });
 

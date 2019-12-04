@@ -32,7 +32,9 @@ import { handleAction } from "../common/handle-action";
 @customElement("hui-picture-entity-card")
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(/* webpackChunkName: "hui-picture-entity-card-editor" */ "../editor/config-elements/hui-picture-entity-card-editor");
+    await import(
+      /* webpackChunkName: "hui-picture-entity-card-editor" */ "../editor/config-elements/hui-picture-entity-card-editor"
+    );
     return document.createElement("hui-picture-entity-card-editor");
   }
   public static getStubConfig(): object {
@@ -58,7 +60,9 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
 
     if (
       computeDomain(config.entity) !== "camera" &&
-      (!config.image && !config.state_image && !config.camera_image)
+      !config.image &&
+      !config.state_image &&
+      !config.camera_image
     ) {
       throw new Error("No image source configured.");
     }
