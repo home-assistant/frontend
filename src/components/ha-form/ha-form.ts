@@ -144,16 +144,13 @@ export class HaForm extends LitElement implements HaFormElement {
             </div>
           `
         : ""}
-      ${dynamicContentDirective(
-        `ha-form-${this.schema.type}`,
-        {
-          schema: this.schema,
-          data: this.data,
-          label: this._computeLabel(this.schema),
-          suffix: this._computeSuffix(this.schema),
-        },
-        { id: "child-form" }
-      )}
+      ${dynamicContentDirective(`ha-form-${this.schema.type}`, {
+        schema: this.schema,
+        data: this.data,
+        label: this._computeLabel(this.schema),
+        suffix: this._computeSuffix(this.schema),
+        id: "child-form",
+      })}
     `;
   }
 
