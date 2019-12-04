@@ -1,6 +1,6 @@
 import { directive, Part, NodePart } from "lit-html";
 
-export const dynamicContentDirective = directive(
+export const dynamicElement = directive(
   (tag: string, properties?: { [key: string]: any }) => (part: Part): void => {
     if (!(part instanceof NodePart)) {
       throw new Error(

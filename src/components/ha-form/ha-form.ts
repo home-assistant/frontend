@@ -14,7 +14,7 @@ import "./ha-form-boolean";
 import "./ha-form-select";
 import "./ha-form-positive_time_period_dict";
 import { fireEvent } from "../../common/dom/fire_event";
-import { dynamicContentDirective } from "../../common/dom/dynamic-content-directive";
+import { dynamicElement } from "../../common/dom/dynamic-element-directive";
 
 export type HaFormSchema =
   | HaFormStringSchema
@@ -144,7 +144,7 @@ export class HaForm extends LitElement implements HaFormElement {
             </div>
           `
         : ""}
-      ${dynamicContentDirective(`ha-form-${this.schema.type}`, {
+      ${dynamicElement(`ha-form-${this.schema.type}`, {
         schema: this.schema,
         data: this.data,
         label: this._computeLabel(this.schema),
