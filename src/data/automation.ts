@@ -29,7 +29,7 @@ export interface ForDict {
 
 export interface StateTrigger {
   platform: "state";
-  entity_id: string;
+  entity_id?: string;
   from?: string | number;
   to?: string | number;
   for?: string | number | ForDict;
