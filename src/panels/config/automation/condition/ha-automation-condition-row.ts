@@ -17,139 +17,91 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import { HomeAssistant } from "../../../../types";
 
-import "./types/ha-automation-trigger-device";
-import "./types/ha-automation-trigger-event";
-import "./types/ha-automation-trigger-state";
-import "./types/ha-automation-trigger-geo_location";
-import "./types/ha-automation-trigger-homeassistant";
-import "./types/ha-automation-trigger-mqtt";
-import "./types/ha-automation-trigger-numeric_state";
-import "./types/ha-automation-trigger-sun";
-import "./types/ha-automation-trigger-template";
-import "./types/ha-automation-trigger-time";
-import "./types/ha-automation-trigger-time_pattern";
-import "./types/ha-automation-trigger-webhook";
-import "./types/ha-automation-trigger-zone";
-import { DeviceTrigger } from "../../../../data/device_automation";
+import "./types/ha-automation-condition-device";
+import "./types/ha-automation-condition-state";
+import "./types/ha-automation-condition-numeric_state";
+import "./types/ha-automation-condition-sun";
+import "./types/ha-automation-condition-template";
+import "./types/ha-automation-condition-time";
+import "./types/ha-automation-condition-zone";
+import "./types/ha-automation-condition-and";
+import "./types/ha-automation-condition-or";
+import { DeviceCondition } from "../../../../data/device_automation";
 
 const OPTIONS = [
   "device",
-  "event",
+  "and",
+  "or",
   "state",
-  "geo_location",
-  "homeassistant",
-  "mqtt",
   "numeric_state",
   "sun",
   "template",
   "time",
-  "time_pattern",
-  "webhook",
   "zone",
 ];
 
-export interface ForDict {
-  hours?: number | string;
-  minutes?: number | string;
-  seconds?: number | string;
+export interface LogicalCondition {
+  condition: "and" | "or";
+  conditions: Condition[];
 }
 
-export interface StateTrigger {
-  platform: "state";
+export interface StateCondition {
+  condition: "state";
   entity_id: string;
-  from?: string | number;
-  to?: string | number;
-  for?: string | number | ForDict;
+  state: string | number;
 }
 
-export interface MqttTrigger {
-  platform: "mqtt";
-  topic: string;
-  payload?: string;
-}
-
-export interface GeoLocationTrigger {
-  platform: "geo_location";
-  source: "string";
-  zone: "string";
-  event: "enter" | "leave";
-}
-
-export interface HassTrigger {
-  platform: "homeassistant";
-  event: "start" | "shutdown";
-}
-
-export interface NumericStateTrigger {
-  platform: "numeric_state";
+export interface NumericStateCondition {
+  condition: "numeric_state";
   entity_id: string;
   above?: number;
   below?: number;
   value_template?: string;
-  for?: string | number | ForDict;
 }
 
-export interface SunTrigger {
-  platform: "sun";
-  offset: number;
-  event: "sunrise" | "sunset";
+export interface SunCondition {
+  condition: "sun";
+  after_offset: number;
+  before_offset: number;
+  after: "sunrise" | "sunset";
+  before: "sunrise" | "sunset";
 }
 
-export interface TimePatternTrigger {
-  platform: "time_pattern";
-  hours?: number | string;
-  minutes?: number | string;
-  seconds?: number | string;
-}
-
-export interface WebhookTrigger {
-  platform: "webhook";
-  webhook_id: string;
-}
-
-export interface ZoneTrigger {
-  platform: "zone";
+export interface ZoneCondition {
+  condition: "zone";
   entity_id: string;
   zone: string;
-  event: "enter" | "leave";
 }
 
-export interface TimeTrigger {
-  platform: "time";
-  at: string;
+export interface TimeCondition {
+  condition: "time";
+  after: string;
+  before: string;
 }
 
-export interface TemplateTrigger {
-  platform: "template";
+export interface TemplateCondition {
+  condition: "template";
   value_template: string;
 }
 
-export interface EventTrigger {
-  platform: "event";
-  event_type: string;
-  event_data: any;
+export type Condition =
+  | StateCondition
+  | NumericStateCondition
+  | SunCondition
+  | ZoneCondition
+  | TimeCondition
+  | TemplateCondition
+  | DeviceCondition
+  | LogicalCondition;
+
+export interface ConditionElement extends LitElement {
+  condition: Condition;
 }
 
-export type Trigger =
-  | StateTrigger
-  | MqttTrigger
-  | GeoLocationTrigger
-  | HassTrigger
-  | NumericStateTrigger
-  | SunTrigger
-  | TimePatternTrigger
-  | WebhookTrigger
-  | ZoneTrigger
-  | TimeTrigger
-  | TemplateTrigger
-  | EventTrigger
-  | DeviceTrigger;
-
-export interface TriggerElement extends LitElement {
-  trigger: Trigger;
-}
-
-export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
+export const handleChangeEvent = (
+  element: ConditionElement,
+  ev: CustomEvent
+) => {
   ev.stopPropagation();
   const name = (ev.target as any)?.name;
   if (!name) {
@@ -157,31 +109,31 @@ export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
   }
   const newVal = ev.detail.value;
 
-  if ((element.trigger[name] || "") === newVal) {
+  if ((element.condition[name] || "") === newVal) {
     return;
   }
 
-  let newTrigger: Trigger;
+  let newCondition: Condition;
   if (!newVal) {
-    newTrigger = { ...element.trigger };
-    delete newTrigger[name];
+    newCondition = { ...element.condition };
+    delete newCondition[name];
   } else {
-    newTrigger = { ...element.trigger, [name]: newVal };
+    newCondition = { ...element.condition, [name]: newVal };
   }
-  fireEvent(element, "value-changed", { value: newTrigger });
+  fireEvent(element, "value-changed", { value: newCondition });
 };
 
-@customElement("ha-automation-trigger-row")
-export default class HaAutomationTriggerRow extends LitElement {
+@customElement("ha-automation-condition-row")
+export default class HaAutomationConditionRow extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public trigger!: Trigger;
+  @property() public condition!: Condition;
   @property() private _yamlMode = false;
 
   protected render() {
-    if (!this.trigger) {
+    if (!this.condition) {
       return html``;
     }
-    const selected = OPTIONS.indexOf(this.trigger.platform);
+    const selected = OPTIONS.indexOf(this.condition.condition);
     if (selected === -1) {
       this._yamlMode = true;
     }
@@ -212,12 +164,12 @@ export default class HaAutomationTriggerRow extends LitElement {
                 </paper-item>
                 <paper-item disabled>
                   ${this.hass.localize(
-                    "ui.panel.config.automation.editor.triggers.duplicate"
+                    "ui.panel.config.automation.editor.conditions.duplicate"
                   )}
                 </paper-item>
                 <paper-item @click=${this._onDelete}>
                   ${this.hass.localize(
-                    "ui.panel.config.automation.editor.triggers.delete"
+                    "ui.panel.config.automation.editor.conditions.delete"
                   )}
                 </paper-item>
               </paper-listbox>
@@ -229,14 +181,14 @@ export default class HaAutomationTriggerRow extends LitElement {
                   ${selected === -1
                     ? html`
                         ${this.hass.localize(
-                          "ui.panel.config.automation.editor.triggers.unsupported_platform",
-                          "platform",
-                          this.trigger.platform
+                          "ui.panel.config.automation.editor.conditions.unsupported_condition",
+                          "condition",
+                          this.condition.condition
                         )}
                       `
                     : ""}
                   <ha-yaml-editor
-                    .value=${this.trigger}
+                    .value=${this.condition}
                     @value-changed=${this._onYamlChange}
                   ></ha-yaml-editor>
                 </div>
@@ -244,7 +196,7 @@ export default class HaAutomationTriggerRow extends LitElement {
             : html`
                 <paper-dropdown-menu-light
                   .label=${this.hass.localize(
-                    "ui.panel.config.automation.editor.triggers.type_select"
+                    "ui.panel.config.automation.editor.conditions.type_select"
                   )}
                   no-animations
                 >
@@ -255,9 +207,9 @@ export default class HaAutomationTriggerRow extends LitElement {
                   >
                     ${OPTIONS.map(
                       (opt) => html`
-                        <paper-item .platform=${opt}>
+                        <paper-item .condition=${opt}>
                           ${this.hass.localize(
-                            `ui.panel.config.automation.editor.triggers.type.${opt}.label`
+                            `ui.panel.config.automation.editor.conditions.type.${opt}.label`
                           )}
                         </paper-item>
                       `
@@ -266,8 +218,8 @@ export default class HaAutomationTriggerRow extends LitElement {
                 </paper-dropdown-menu-light>
                 <div>
                   ${dynamicElement(
-                    `ha-automation-trigger-${this.trigger.platform}`,
-                    { hass: this.hass, trigger: this.trigger }
+                    `ha-automation-condition-${this.condition.condition}`,
+                    { hass: this.hass, condition: this.condition }
                   )}
                 </div>
               `}
@@ -280,7 +232,7 @@ export default class HaAutomationTriggerRow extends LitElement {
     if (
       confirm(
         this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.delete_confirm"
+          "ui.panel.config.automation.editor.conditions.delete_confirm"
         )
       )
     ) {
@@ -290,18 +242,18 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   private _typeChanged(ev: CustomEvent) {
     const type = ((ev.target as PaperListboxElement)?.selectedItem as any)
-      ?.platform;
+      ?.condition;
 
     if (!type) {
       return;
     }
 
-    const elClass = customElements.get(`ha-automation-trigger-${type}`);
+    const elClass = customElements.get(`ha-automation-condition-${type}`);
 
-    if (type !== this.trigger.platform) {
+    if (type !== this.condition.condition) {
       fireEvent(this, "value-changed", {
         value: {
-          platform: type,
+          condition: type,
           ...elClass.defaultConfig,
         },
       });
@@ -339,6 +291,6 @@ export default class HaAutomationTriggerRow extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-automation-trigger-row": HaAutomationTriggerRow;
+    "ha-automation-condition-row": HaAutomationConditionRow;
   }
 }

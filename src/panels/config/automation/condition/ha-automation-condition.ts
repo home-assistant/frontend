@@ -12,32 +12,32 @@ import "../../../../components/ha-card";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 
-import "./ha-automation-trigger-row";
+import "./ha-automation-condition-row";
 // tslint:disable-next-line
-import { Trigger } from "./ha-automation-trigger-row";
+import { Condition } from "./ha-automation-condition-row";
 
-@customElement("ha-automation-trigger")
-export default class HaAutomationTrigger extends LitElement {
+@customElement("ha-automation-condition")
+export default class HaAutomationCondition extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public triggers!: Trigger[];
+  @property() public conditions!: Condition[];
 
   protected render() {
     return html`
-      ${this.triggers.map(
-        (trg, idx) => html`
-          <ha-automation-trigger-row
+      ${this.conditions.map(
+        (cond, idx) => html`
+          <ha-automation-condition-row
             .index=${idx}
-            .trigger=${trg}
-            @value-changed=${this._triggerChanged}
+            .condition=${cond}
+            @value-changed=${this._conditionChanged}
             .hass=${this.hass}
-          ></ha-automation-trigger-row>
+          ></ha-automation-condition-row>
         `
       )}
       <ha-card>
         <div class="card-actions add-card">
-          <mwc-button @click=${this._addTrigger}>
+          <mwc-button @click=${this._addCondition}>
             ${this.hass.localize(
-              "ui.panel.config.automation.editor.triggers.add"
+              "ui.panel.config.automation.editor.conditions.add"
             )}
           </mwc-button>
         </div>
@@ -45,33 +45,34 @@ export default class HaAutomationTrigger extends LitElement {
     `;
   }
 
-  private _addTrigger() {
-    const triggers = this.triggers.concat({
-      platform: "state",
+  private _addCondition() {
+    const conditions = this.conditions.concat({
+      condition: "state",
       entity_id: "",
+      state: "",
     });
 
-    fireEvent(this, "value-changed", { value: triggers });
+    fireEvent(this, "value-changed", { value: conditions });
   }
 
-  private _triggerChanged(ev: CustomEvent) {
+  private _conditionChanged(ev: CustomEvent) {
     ev.stopPropagation();
-    const triggers = [...this.triggers];
+    const conditions = [...this.conditions];
     const newValue = ev.detail.value;
     const index = (ev.target as any).index;
 
     if (newValue === null) {
-      triggers.splice(index, 1);
+      conditions.splice(index, 1);
     } else {
-      triggers[index] = newValue;
+      conditions[index] = newValue;
     }
 
-    fireEvent(this, "value-changed", { value: triggers });
+    fireEvent(this, "value-changed", { value: conditions });
   }
 
   static get styles(): CSSResult {
     return css`
-      ha-automation-trigger-row,
+      ha-automation-condition-row,
       ha-card {
         display: block;
         margin-top: 16px;
@@ -86,6 +87,6 @@ export default class HaAutomationTrigger extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-automation-trigger": HaAutomationTrigger;
+    "ha-automation-condition": HaAutomationCondition;
   }
 }
