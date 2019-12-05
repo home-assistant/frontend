@@ -4,7 +4,7 @@ import "@polymer/paper-input/paper-input";
 import "../ha-config-section";
 import "../../../components/ha-card";
 
-import Script from "./script/index";
+import "../automation/action/ha-automation-action";
 
 export default class ScriptEditor extends Component<{
   onChange: (...args: any[]) => any;
@@ -27,8 +27,8 @@ export default class ScriptEditor extends Component<{
     });
   }
 
-  public sequenceChanged(sequence) {
-    this.props.onChange({ ...this.props.script, sequence });
+  public sequenceChanged(ev: CustomEvent) {
+    this.props.onChange({ ...this.props.script, sequence: ev.detail.value });
   }
 
   // @ts-ignore
@@ -68,11 +68,10 @@ export default class ScriptEditor extends Component<{
               </a>
             </p>
           </span>
-          <Script
-            script={sequence}
-            onChange={this.sequenceChanged}
+          <ha-automation-action
+            actions={sequence}
+            onvalue-changed={this.sequenceChanged}
             hass={hass}
-            localize={localize}
           />
         </ha-config-section>
       </div>
