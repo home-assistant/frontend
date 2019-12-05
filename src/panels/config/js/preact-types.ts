@@ -24,6 +24,8 @@ declare global {
       "ha-service-picker": any;
       "mwc-button": any;
       "ha-automation-trigger": any;
+      "ha-automation-condition": any;
+      "ha-automation-condition-editor": any;
       "ha-device-trigger-picker": any;
       "ha-device-action-picker": any;
       "ha-form": any;

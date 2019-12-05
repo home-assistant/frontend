@@ -6,8 +6,8 @@ import "../../../components/ha-card";
 import "../../../components/ha-textarea";
 
 import "../automation/trigger/ha-automation-trigger";
+import "../automation/condition/ha-automation-condition";
 
-import Condition from "./condition/index";
 import Script from "./script/index";
 
 export default class Automation extends Component<any> {
@@ -31,8 +31,11 @@ export default class Automation extends Component<any> {
     this.props.onChange({ ...this.props.automation, trigger: ev.detail.value });
   }
 
-  public conditionChanged(condition) {
-    this.props.onChange({ ...this.props.automation, condition });
+  public conditionChanged(ev: CustomEvent) {
+    this.props.onChange({
+      ...this.props.automation,
+      condition: ev.detail.value,
+    });
   }
 
   public actionChanged(action) {
@@ -117,11 +120,10 @@ export default class Automation extends Component<any> {
               )}
             </a>
           </span>
-          <Condition
-            condition={condition || []}
-            onChange={this.conditionChanged}
+          <ha-automation-condition
+            conditions={condition || []}
+            onvalue-changed={this.conditionChanged}
             hass={hass}
-            localize={localize}
           />
         </ha-config-section>
 

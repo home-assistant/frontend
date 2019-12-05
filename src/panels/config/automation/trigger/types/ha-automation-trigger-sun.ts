@@ -6,11 +6,11 @@ import { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-g
 import { LitElement, customElement, property, html } from "lit-element";
 import { HomeAssistant } from "../../../../../types";
 import {
-  SunTrigger,
   handleChangeEvent,
   TriggerElement,
 } from "../ha-automation-trigger-row";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { SunTrigger } from "../../../../../data/automation";
 
 @customElement("ha-automation-trigger-sun")
 export class HaSunTrigger extends LitElement implements TriggerElement {

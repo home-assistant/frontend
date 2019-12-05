@@ -1,24 +1,24 @@
 import "../../../../../components/ha-textarea";
 import { LitElement, property, html, customElement } from "lit-element";
 import { HomeAssistant } from "../../../../../types";
-import { handleChangeEvent } from "../ha-automation-trigger-row";
-import { TemplateTrigger } from "../../../../../data/automation";
+import { handleChangeEvent } from "../ha-automation-condition-row";
+import { TemplateCondition } from "../../../../../data/automation";
 
-@customElement("ha-automation-trigger-template")
-export class HaTemplateTrigger extends LitElement {
+@customElement("ha-automation-condition-template")
+export class HaTemplateCondition extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public trigger!: TemplateTrigger;
+  @property() public condition!: TemplateCondition;
 
   public static get defaultConfig() {
     return { value_template: "" };
   }
 
   protected render() {
-    const { value_template } = this.trigger;
+    const { value_template } = this.condition;
     return html`
       <ha-textarea
         .label=${this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.type.template.value_template"
+          "ui.panel.config.automation.editor.conditions.type.template.value_template"
         )}
         name="value_template"
         .value=${value_template}

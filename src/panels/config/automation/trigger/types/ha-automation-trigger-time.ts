@@ -2,10 +2,10 @@ import "@polymer/paper-input/paper-input";
 import { LitElement, html, property, customElement } from "lit-element";
 import { HomeAssistant } from "../../../../../types";
 import {
-  TimeTrigger,
   handleChangeEvent,
   TriggerElement,
 } from "../ha-automation-trigger-row";
+import { TimeTrigger } from "../../../../../data/automation";
 
 @customElement("ha-automation-trigger-time")
 export class HaTimeTrigger extends LitElement implements TriggerElement {
