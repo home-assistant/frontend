@@ -28,16 +28,16 @@ import "./types/ha-automation-action-scene";
 import "./types/ha-automation-action-wait_template";
 
 const OPTIONS = [
+  "condition",
+  "delay",
   "device_id",
   "event",
-  "delay",
-  "service",
-  "condition",
   "scene",
+  "service",
   "wait_template",
 ];
 
-const getType = (action) => {
+const getType = (action: Action) => {
   return OPTIONS.find((option) => option in action);
 };
 
