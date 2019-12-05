@@ -3,9 +3,9 @@ import { LitElement, property, html, customElement } from "lit-element";
 import {
   TriggerElement,
   handleChangeEvent,
-  TimePatternTrigger,
 } from "../ha-automation-trigger-row";
 import { HomeAssistant } from "../../../../../types";
+import { TimePatternTrigger } from "../../../../../data/automation";
 
 @customElement("ha-automation-trigger-time_pattern")
 export class HaTimePatternTrigger extends LitElement implements TriggerElement {
