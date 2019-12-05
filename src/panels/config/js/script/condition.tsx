@@ -1,24 +1,32 @@
 import { h, Component } from "preact";
 
-import StateCondition from "../condition/state";
-import ConditionEdit from "../condition/condition_edit";
+import "../../automation/condition/ha-automation-condition-editor";
 
 export default class ConditionAction extends Component<any> {
+  constructor() {
+    super();
+
+    this.conditionChanged = this.conditionChanged.bind(this);
+  }
+
+  public conditionChanged(ev) {
+    this.props.onChange(this.props.index, ev.detail.value);
+  }
+
   // eslint-disable-next-line
-  public render({ action, index, onChange, hass, localize }) {
+  public render({ action, hass }) {
     return (
-      <ConditionEdit
-        condition={action}
-        onChange={onChange}
-        index={index}
-        hass={hass}
-        localize={localize}
-      />
+      <div>
+        <ha-automation-condition-editor
+          condition={action}
+          onvalue-changed={this.conditionChanged}
+          hass={hass}
+        />
+      </div>
     );
   }
 }
 
 (ConditionAction as any).defaultConfig = {
   condition: "state",
-  ...(StateCondition as any).defaultConfig,
 };

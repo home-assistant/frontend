@@ -13,41 +13,42 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 
 import "./ha-automation-trigger-row";
+import { HaStateTrigger } from "./types/ha-automation-trigger-state";
+import { Trigger } from "../../../../data/automation";
 
 @customElement("ha-automation-trigger")
 export default class HaAutomationTrigger extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public triggers;
+  @property() public triggers!: Trigger[];
 
   protected render() {
     return html`
-      <div class="triggers">
-        ${this.triggers.map(
-          (trg, idx) => html`
-            <ha-automation-trigger-row
-              .index=${idx}
-              .trigger=${trg}
-              @value-changed=${this._triggerChanged}
-              .hass=${this.hass}
-            ></ha-automation-trigger-row>
-          `
-        )}
-        <ha-card>
-          <div class="card-actions add-card">
-            <mwc-button @click=${this._addTrigger}>
-              ${this.hass.localize(
-                "ui.panel.config.automation.editor.triggers.add"
-              )}
-            </mwc-button>
-          </div>
-        </ha-card>
-      </div>
+      ${this.triggers.map(
+        (trg, idx) => html`
+          <ha-automation-trigger-row
+            .index=${idx}
+            .trigger=${trg}
+            @value-changed=${this._triggerChanged}
+            .hass=${this.hass}
+          ></ha-automation-trigger-row>
+        `
+      )}
+      <ha-card>
+        <div class="card-actions add-card">
+          <mwc-button @click=${this._addTrigger}>
+            ${this.hass.localize(
+              "ui.panel.config.automation.editor.triggers.add"
+            )}
+          </mwc-button>
+        </div>
+      </ha-card>
     `;
   }
 
   private _addTrigger() {
     const triggers = this.triggers.concat({
       platform: "state",
+      ...HaStateTrigger.defaultConfig,
     });
 
     fireEvent(this, "value-changed", { value: triggers });
@@ -70,12 +71,9 @@ export default class HaAutomationTrigger extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      .triggers,
-      .script {
-        margin-top: -16px;
-      }
-      .triggers ha-card,
-      .script ha-card {
+      ha-automation-trigger-row,
+      ha-card {
+        display: block;
         margin-top: 16px;
       }
       .add-card mwc-button {

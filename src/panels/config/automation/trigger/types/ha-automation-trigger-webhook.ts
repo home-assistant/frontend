@@ -1,10 +1,8 @@
 import "@polymer/paper-input/paper-input";
 import { LitElement, customElement, property, html } from "lit-element";
 import { HomeAssistant } from "../../../../../types";
-import {
-  WebhookTrigger,
-  handleChangeEvent,
-} from "../ha-automation-trigger-row";
+import { handleChangeEvent } from "../ha-automation-trigger-row";
+import { WebhookTrigger } from "../../../../../data/automation";
 
 @customElement("ha-automation-trigger-webhook")
 export class HaWebhookTrigger extends LitElement {
