@@ -5,10 +5,8 @@ import "../../../../../components/entity/ha-entity-picker";
 import { LitElement, html, customElement, property } from "lit-element";
 import { HomeAssistant } from "../../../../../types";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import {
-  NumericStateCondition,
-  handleChangeEvent,
-} from "../ha-automation-condition-row";
+import { handleChangeEvent } from "../ha-automation-condition-row";
+import { NumericStateCondition } from "../../../../../data/automation";
 
 @customElement("ha-automation-condition-numeric_state")
 export default class HaNumericStateCondition extends LitElement {

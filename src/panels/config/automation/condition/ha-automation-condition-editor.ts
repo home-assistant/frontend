@@ -17,7 +17,7 @@ import "./types/ha-automation-condition-time";
 import "./types/ha-automation-condition-zone";
 import "./types/ha-automation-condition-and";
 import "./types/ha-automation-condition-or";
-import { Condition } from "./ha-automation-condition-row";
+import { Condition } from "../../../../data/automation";
 
 const OPTIONS = [
   "device",
@@ -42,11 +42,9 @@ export default class HaAutomationConditionEditor extends LitElement {
       return html``;
     }
     const selected = OPTIONS.indexOf(this.condition.condition);
-    if (selected === -1) {
-      this.yamlMode = true;
-    }
+    const yamlMode = this.yamlMode || selected === -1;
     return html`
-      ${this.yamlMode
+      ${yamlMode
         ? html`
             <div style="margin-right: 24px;">
               ${selected === -1

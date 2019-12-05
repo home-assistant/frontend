@@ -6,9 +6,9 @@ import { HomeAssistant } from "../../../../../types";
 import {
   handleChangeEvent,
   ConditionElement,
-  StateCondition,
 } from "../ha-automation-condition-row";
 import { PolymerChangedEvent } from "../../../../../polymer-types";
+import { StateCondition } from "../../../../../data/automation";
 
 @customElement("ha-automation-condition-state")
 export class HaStateCondition extends LitElement implements ConditionElement {
@@ -16,7 +16,7 @@ export class HaStateCondition extends LitElement implements ConditionElement {
   @property() public condition!: StateCondition;
 
   public static get defaultConfig() {
-    return { entity_id: "" };
+    return { entity_id: "", state: "" };
   }
 
   protected render() {

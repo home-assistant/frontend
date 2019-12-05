@@ -6,11 +6,11 @@ import { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-g
 import { LitElement, customElement, property, html } from "lit-element";
 import { HomeAssistant } from "../../../../../types";
 import {
-  SunCondition,
   handleChangeEvent,
   ConditionElement,
 } from "../ha-automation-condition-row";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { SunCondition } from "../../../../../data/automation";
 
 @customElement("ha-automation-condition-sun")
 export class HaSunCondition extends LitElement implements ConditionElement {

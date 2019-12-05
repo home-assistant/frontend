@@ -14,61 +14,7 @@ import "../../../../components/ha-card";
 import { HomeAssistant } from "../../../../types";
 
 import "./ha-automation-condition-editor";
-import { DeviceCondition } from "../../../../data/device_automation";
-
-export interface LogicalCondition {
-  condition: "and" | "or";
-  conditions: Condition[];
-}
-
-export interface StateCondition {
-  condition: "state";
-  entity_id: string;
-  state: string | number;
-}
-
-export interface NumericStateCondition {
-  condition: "numeric_state";
-  entity_id: string;
-  above?: number;
-  below?: number;
-  value_template?: string;
-}
-
-export interface SunCondition {
-  condition: "sun";
-  after_offset: number;
-  before_offset: number;
-  after: "sunrise" | "sunset";
-  before: "sunrise" | "sunset";
-}
-
-export interface ZoneCondition {
-  condition: "zone";
-  entity_id: string;
-  zone: string;
-}
-
-export interface TimeCondition {
-  condition: "time";
-  after: string;
-  before: string;
-}
-
-export interface TemplateCondition {
-  condition: "template";
-  value_template: string;
-}
-
-export type Condition =
-  | StateCondition
-  | NumericStateCondition
-  | SunCondition
-  | ZoneCondition
-  | TimeCondition
-  | TemplateCondition
-  | DeviceCondition
-  | LogicalCondition;
+import { Condition } from "../../../../data/automation";
 
 export interface ConditionElement extends LitElement {
   condition: Condition;

@@ -1,11 +1,9 @@
 import { customElement, html, LitElement, property } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../../types";
-import {
-  ConditionElement,
-  LogicalCondition,
-} from "../ha-automation-condition-row";
+import { ConditionElement } from "../ha-automation-condition-row";
 import "../ha-automation-condition";
+import { LogicalCondition } from "../../../../../data/automation";
 
 @customElement("ha-automation-condition-logical")
 export class HaLogicalCondition extends LitElement implements ConditionElement {

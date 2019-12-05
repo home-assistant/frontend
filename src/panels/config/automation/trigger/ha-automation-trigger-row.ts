@@ -30,7 +30,8 @@ import "./types/ha-automation-trigger-time";
 import "./types/ha-automation-trigger-time_pattern";
 import "./types/ha-automation-trigger-webhook";
 import "./types/ha-automation-trigger-zone";
-import { DeviceTrigger } from "../../../../data/device_automation";
+
+import { Trigger } from "../../../../data/automation";
 
 const OPTIONS = [
   "device",
@@ -47,103 +48,6 @@ const OPTIONS = [
   "webhook",
   "zone",
 ];
-
-export interface ForDict {
-  hours?: number | string;
-  minutes?: number | string;
-  seconds?: number | string;
-}
-
-export interface StateTrigger {
-  platform: "state";
-  entity_id: string;
-  from?: string | number;
-  to?: string | number;
-  for?: string | number | ForDict;
-}
-
-export interface MqttTrigger {
-  platform: "mqtt";
-  topic: string;
-  payload?: string;
-}
-
-export interface GeoLocationTrigger {
-  platform: "geo_location";
-  source: "string";
-  zone: "string";
-  event: "enter" | "leave";
-}
-
-export interface HassTrigger {
-  platform: "homeassistant";
-  event: "start" | "shutdown";
-}
-
-export interface NumericStateTrigger {
-  platform: "numeric_state";
-  entity_id: string;
-  above?: number;
-  below?: number;
-  value_template?: string;
-  for?: string | number | ForDict;
-}
-
-export interface SunTrigger {
-  platform: "sun";
-  offset: number;
-  event: "sunrise" | "sunset";
-}
-
-export interface TimePatternTrigger {
-  platform: "time_pattern";
-  hours?: number | string;
-  minutes?: number | string;
-  seconds?: number | string;
-}
-
-export interface WebhookTrigger {
-  platform: "webhook";
-  webhook_id: string;
-}
-
-export interface ZoneTrigger {
-  platform: "zone";
-  entity_id: string;
-  zone: string;
-  event: "enter" | "leave";
-}
-
-export interface TimeTrigger {
-  platform: "time";
-  at: string;
-}
-
-export interface TemplateTrigger {
-  platform: "template";
-  value_template: string;
-}
-
-export interface EventTrigger {
-  platform: "event";
-  event_type: string;
-  event_data: any;
-}
-
-export type Trigger =
-  | StateTrigger
-  | MqttTrigger
-  | GeoLocationTrigger
-  | HassTrigger
-  | NumericStateTrigger
-  | SunTrigger
-  | TimePatternTrigger
-  | WebhookTrigger
-  | ZoneTrigger
-  | TimeTrigger
-  | TemplateTrigger
-  | EventTrigger
-  | DeviceTrigger;
 
 export interface TriggerElement extends LitElement {
   trigger: Trigger;
@@ -182,9 +86,8 @@ export default class HaAutomationTriggerRow extends LitElement {
       return html``;
     }
     const selected = OPTIONS.indexOf(this.trigger.platform);
-    if (selected === -1) {
-      this._yamlMode = true;
-    }
+    const yamlMode = this._yamlMode || selected === -1;
+
     return html`
       <ha-card>
         <div class="card-content">
@@ -201,8 +104,11 @@ export default class HaAutomationTriggerRow extends LitElement {
                 slot="dropdown-trigger"
               ></paper-icon-button>
               <paper-listbox slot="dropdown-content">
-                <paper-item @click=${this._switchYamlMode}>
-                  ${this._yamlMode
+                <paper-item
+                  @click=${this._switchYamlMode}
+                  .disabled=${selected === -1}
+                >
+                  ${yamlMode
                     ? this.hass.localize(
                         "ui.panel.config.automation.editor.edit_ui"
                       )
@@ -223,7 +129,7 @@ export default class HaAutomationTriggerRow extends LitElement {
               </paper-listbox>
             </paper-menu-button>
           </div>
-          ${this._yamlMode
+          ${yamlMode
             ? html`
                 <div style="margin-right: 24px;">
                   ${selected === -1

@@ -2,10 +2,10 @@ import "@polymer/paper-input/paper-input";
 import { LitElement, html, property, customElement } from "lit-element";
 import { HomeAssistant } from "../../../../../types";
 import {
-  TimeCondition,
   handleChangeEvent,
   ConditionElement,
 } from "../ha-automation-condition-row";
+import { TimeCondition } from "../../../../../data/automation";
 
 @customElement("ha-automation-condition-time")
 export class HaTimeCondition extends LitElement implements ConditionElement {

@@ -1,10 +1,8 @@
 import "../../../../../components/ha-textarea";
 import { LitElement, property, html, customElement } from "lit-element";
 import { HomeAssistant } from "../../../../../types";
-import {
-  TemplateCondition,
-  handleChangeEvent,
-} from "../ha-automation-condition-row";
+import { handleChangeEvent } from "../ha-automation-condition-row";
+import { TemplateCondition } from "../../../../../data/automation";
 
 @customElement("ha-automation-condition-template")
 export class HaTemplateCondition extends LitElement {

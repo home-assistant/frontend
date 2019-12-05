@@ -5,9 +5,9 @@ import { hasLocation } from "../../../../../common/entity/has_location";
 import { computeStateDomain } from "../../../../../common/entity/compute_state_domain";
 import { LitElement, property, html, customElement } from "lit-element";
 import { HomeAssistant } from "../../../../../types";
-import { ZoneCondition } from "../ha-automation-condition-row";
 import { PolymerChangedEvent } from "../../../../../polymer-types";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { ZoneCondition } from "../../../../../data/automation";
 
 function zoneAndLocationFilter(stateObj) {
   return hasLocation(stateObj) && computeStateDomain(stateObj) !== "zone";
