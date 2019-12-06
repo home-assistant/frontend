@@ -17,43 +17,42 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import { HomeAssistant } from "../../../../types";
 
-import "./types/ha-automation-trigger-device";
-import "./types/ha-automation-trigger-event";
-import "./types/ha-automation-trigger-state";
-import "./types/ha-automation-trigger-geo_location";
-import "./types/ha-automation-trigger-homeassistant";
-import "./types/ha-automation-trigger-mqtt";
-import "./types/ha-automation-trigger-numeric_state";
-import "./types/ha-automation-trigger-sun";
-import "./types/ha-automation-trigger-template";
-import "./types/ha-automation-trigger-time";
-import "./types/ha-automation-trigger-time_pattern";
-import "./types/ha-automation-trigger-webhook";
-import "./types/ha-automation-trigger-zone";
+import { Action } from "../../../../data/script";
 
-import { Trigger } from "../../../../data/automation";
+import "./types/ha-automation-action-service";
+import "./types/ha-automation-action-device_id";
+import "./types/ha-automation-action-delay";
+import "./types/ha-automation-action-event";
+import "./types/ha-automation-action-condition";
+import "./types/ha-automation-action-scene";
+import "./types/ha-automation-action-wait_template";
 
 const OPTIONS = [
-  "device",
+  "condition",
+  "delay",
+  "device_id",
   "event",
-  "state",
-  "geo_location",
-  "homeassistant",
-  "mqtt",
-  "numeric_state",
-  "sun",
-  "template",
-  "time",
-  "time_pattern",
-  "webhook",
-  "zone",
+  "scene",
+  "service",
+  "wait_template",
 ];
 
-export interface TriggerElement extends LitElement {
-  trigger: Trigger;
+const getType = (action: Action) => {
+  return OPTIONS.find((option) => option in action);
+};
+
+declare global {
+  // for fire event
+  interface HASSDomEvents {
+    "move-action": { direction: "up" | "down" };
+  }
 }
 
-export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
+export interface ActionElement extends LitElement {
+  action: Action;
+}
+
+export const handleChangeEvent = (element: ActionElement, ev: CustomEvent) => {
   ev.stopPropagation();
   const name = (ev.target as any)?.name;
   if (!name) {
@@ -61,34 +60,53 @@ export const handleChangeEvent = (element: TriggerElement, ev: CustomEvent) => {
   }
   const newVal = ev.detail.value;
 
-  if ((element.trigger[name] || "") === newVal) {
+  if ((element.action[name] || "") === newVal) {
     return;
   }
 
-  let newTrigger: Trigger;
+  let newAction: Action;
   if (!newVal) {
-    newTrigger = { ...element.trigger };
-    delete newTrigger[name];
+    newAction = { ...element.action };
+    delete newAction[name];
   } else {
-    newTrigger = { ...element.trigger, [name]: newVal };
+    newAction = { ...element.action, [name]: newVal };
   }
-  fireEvent(element, "value-changed", { value: newTrigger });
+  fireEvent(element, "value-changed", { value: newAction });
 };
 
-@customElement("ha-automation-trigger-row")
-export default class HaAutomationTriggerRow extends LitElement {
+@customElement("ha-automation-action-row")
+export default class HaAutomationActionRow extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public trigger!: Trigger;
+  @property() public action!: Action;
+  @property() public index!: number;
+  @property() public totalActions!: number;
   @property() private _yamlMode = false;
 
   protected render() {
-    const selected = OPTIONS.indexOf(this.trigger.platform);
+    const type = getType(this.action);
+    const selected = type ? OPTIONS.indexOf(type) : -1;
     const yamlMode = this._yamlMode || selected === -1;
 
     return html`
       <ha-card>
         <div class="card-content">
           <div class="card-menu">
+            ${this.index !== 0
+              ? html`
+                  <paper-icon-button
+                    icon="hass:arrow-up"
+                    @click=${this._moveUp}
+                  ></paper-icon-button>
+                `
+              : ""}
+            ${this.index !== this.totalActions - 1
+              ? html`
+                  <paper-icon-button
+                    icon="hass:arrow-down"
+                    @click=${this._moveDown}
+                  ></paper-icon-button>
+                `
+              : ""}
             <paper-menu-button
               no-animations
               horizontal-align="right"
@@ -115,12 +133,12 @@ export default class HaAutomationTriggerRow extends LitElement {
                 </paper-item>
                 <paper-item disabled>
                   ${this.hass.localize(
-                    "ui.panel.config.automation.editor.triggers.duplicate"
+                    "ui.panel.config.automation.editor.actions.duplicate"
                   )}
                 </paper-item>
                 <paper-item @click=${this._onDelete}>
                   ${this.hass.localize(
-                    "ui.panel.config.automation.editor.triggers.delete"
+                    "ui.panel.config.automation.editor.actions.delete"
                   )}
                 </paper-item>
               </paper-listbox>
@@ -132,14 +150,14 @@ export default class HaAutomationTriggerRow extends LitElement {
                   ${selected === -1
                     ? html`
                         ${this.hass.localize(
-                          "ui.panel.config.automation.editor.triggers.unsupported_platform",
-                          "platform",
-                          this.trigger.platform
+                          "ui.panel.config.automation.editor.actions.unsupported_action",
+                          "action",
+                          type
                         )}
                       `
                     : ""}
                   <ha-yaml-editor
-                    .value=${this.trigger}
+                    .value=${this.action}
                     @value-changed=${this._onYamlChange}
                   ></ha-yaml-editor>
                 </div>
@@ -147,7 +165,7 @@ export default class HaAutomationTriggerRow extends LitElement {
             : html`
                 <paper-dropdown-menu-light
                   .label=${this.hass.localize(
-                    "ui.panel.config.automation.editor.triggers.type_select"
+                    "ui.panel.config.automation.editor.actions.type_select"
                   )}
                   no-animations
                 >
@@ -158,9 +176,9 @@ export default class HaAutomationTriggerRow extends LitElement {
                   >
                     ${OPTIONS.map(
                       (opt) => html`
-                        <paper-item .platform=${opt}>
+                        <paper-item .action=${opt}>
                           ${this.hass.localize(
-                            `ui.panel.config.automation.editor.triggers.type.${opt}.label`
+                            `ui.panel.config.automation.editor.actions.type.${opt}.label`
                           )}
                         </paper-item>
                       `
@@ -168,10 +186,10 @@ export default class HaAutomationTriggerRow extends LitElement {
                   </paper-listbox>
                 </paper-dropdown-menu-light>
                 <div>
-                  ${dynamicElement(
-                    `ha-automation-trigger-${this.trigger.platform}`,
-                    { hass: this.hass, trigger: this.trigger }
-                  )}
+                  ${dynamicElement(`ha-automation-action-${type}`, {
+                    hass: this.hass,
+                    action: this.action,
+                  })}
                 </div>
               `}
         </div>
@@ -179,11 +197,19 @@ export default class HaAutomationTriggerRow extends LitElement {
     `;
   }
 
+  private _moveUp() {
+    fireEvent(this, "move-action", { direction: "up" });
+  }
+
+  private _moveDown() {
+    fireEvent(this, "move-action", { direction: "down" });
+  }
+
   private _onDelete() {
     if (
       confirm(
         this.hass.localize(
-          "ui.panel.config.automation.editor.triggers.delete_confirm"
+          "ui.panel.config.automation.editor.actions.delete_confirm"
         )
       )
     ) {
@@ -193,18 +219,17 @@ export default class HaAutomationTriggerRow extends LitElement {
 
   private _typeChanged(ev: CustomEvent) {
     const type = ((ev.target as PaperListboxElement)?.selectedItem as any)
-      ?.platform;
+      ?.action;
 
     if (!type) {
       return;
     }
 
-    const elClass = customElements.get(`ha-automation-trigger-${type}`);
+    if (type !== getType(this.action)) {
+      const elClass = customElements.get(`ha-automation-action-${type}`);
 
-    if (type !== this.trigger.platform) {
       fireEvent(this, "value-changed", {
         value: {
-          platform: type,
           ...elClass.defaultConfig,
         },
       });
@@ -242,6 +267,6 @@ export default class HaAutomationTriggerRow extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-automation-trigger-row": HaAutomationTriggerRow;
+    "ha-automation-action-row": HaAutomationActionRow;
   }
 }
