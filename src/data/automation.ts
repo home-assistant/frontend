@@ -5,6 +5,7 @@ import {
 import { HomeAssistant } from "../types";
 import { navigate } from "../common/navigate";
 import { DeviceCondition, DeviceTrigger } from "./device_automation";
+import { Action } from "./script";
 
 export interface AutomationEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
@@ -18,7 +19,7 @@ export interface AutomationConfig {
   description: string;
   trigger: Trigger[];
   condition?: Condition[];
-  action: any[];
+  action: Action[];
 }
 
 export interface ForDict {

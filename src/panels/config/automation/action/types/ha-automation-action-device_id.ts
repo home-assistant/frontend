@@ -1,23 +1,23 @@
 import "../../../../../components/device/ha-device-picker";
-import "../../../../../components/device/ha-device-condition-picker";
+import "../../../../../components/device/ha-device-action-picker";
 import "../../../../../components/ha-form/ha-form";
 
 import {
-  fetchDeviceConditionCapabilities,
+  fetchDeviceActionCapabilities,
   deviceAutomationsEqual,
-  DeviceCondition,
+  DeviceAction,
 } from "../../../../../data/device_automation";
 import { LitElement, customElement, property, html } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../../types";
 
-@customElement("ha-automation-condition-device")
-export class HaDeviceCondition extends LitElement {
+@customElement("ha-automation-action-device_id")
+export class HaDeviceAction extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public condition!: DeviceCondition;
+  @property() public action!: DeviceAction;
   @property() private _deviceId?: string;
   @property() private _capabilities?;
-  private _origCondition?: DeviceCondition;
+  private _origAction?: DeviceAction;
 
   public static get defaultConfig() {
     return {
@@ -28,12 +28,11 @@ export class HaDeviceCondition extends LitElement {
   }
 
   protected render() {
-    const deviceId = this._deviceId || this.condition.device_id;
-
+    const deviceId = this._deviceId || this.action.device_id;
     const extraFieldsData =
       this._capabilities && this._capabilities.extra_fields
         ? this._capabilities.extra_fields.map((item) => {
-            return { [item.name]: this.condition[item.name] };
+            return { [item.name]: this.action[item.name] };
           })
         : undefined;
 
@@ -44,13 +43,13 @@ export class HaDeviceCondition extends LitElement {
         .hass=${this.hass}
         label="Device"
       ></ha-device-picker>
-      <ha-device-condition-picker
-        .value=${this.condition}
+      <ha-device-action-picker
+        .value=${this.action}
         .deviceId=${deviceId}
-        @value-changed=${this._deviceConditionPicked}
+        @value-changed=${this._deviceActionPicked}
         .hass=${this.hass}
-        label="Condition"
-      ></ha-device-condition-picker>
+        label="Action"
+      ></ha-device-action-picker>
       ${extraFieldsData
         ? html`
             <ha-form
@@ -70,26 +69,23 @@ export class HaDeviceCondition extends LitElement {
     if (!this._capabilities) {
       this._getCapabilities();
     }
-    if (this.condition) {
-      this._origCondition = this.condition;
+    if (this.action) {
+      this._origAction = this.action;
     }
   }
 
   protected updated(changedPros) {
-    const prevCondition = changedPros.get("condition");
-    if (
-      prevCondition &&
-      !deviceAutomationsEqual(prevCondition, this.condition)
-    ) {
+    const prevAction = changedPros.get("action");
+    if (prevAction && !deviceAutomationsEqual(prevAction, this.action)) {
       this._getCapabilities();
     }
   }
 
   private async _getCapabilities() {
-    const condition = this.condition;
+    const action = this.action;
 
-    this._capabilities = condition.domain
-      ? await fetchDeviceConditionCapabilities(this.hass, condition)
+    this._capabilities = action.domain
+      ? await fetchDeviceActionCapabilities(this.hass, action)
       : null;
   }
 
@@ -98,23 +94,20 @@ export class HaDeviceCondition extends LitElement {
     this._deviceId = ev.target.value;
   }
 
-  private _deviceConditionPicked(ev) {
+  private _deviceActionPicked(ev) {
     ev.stopPropagation();
-    let condition = ev.detail.value;
-    if (
-      this._origCondition &&
-      deviceAutomationsEqual(this._origCondition, condition)
-    ) {
-      condition = this._origCondition;
+    let action = ev.detail.value;
+    if (this._origAction && deviceAutomationsEqual(this._origAction, action)) {
+      action = this._origAction;
     }
-    fireEvent(this, "value-changed", { value: condition });
+    fireEvent(this, "value-changed", { value: action });
   }
 
   private _extraFieldsChanged(ev) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
       value: {
-        ...this.condition,
+        ...this.action,
         ...ev.detail.value,
       },
     });
@@ -124,7 +117,13 @@ export class HaDeviceCondition extends LitElement {
     // Returns a callback for ha-form to calculate labels per schema object
     return (schema) =>
       localize(
-        `ui.panel.config.automation.editor.conditions.type.device.extra_fields.${schema.name}`
+        `ui.panel.config.automation.editor.actions.type.device.extra_fields.${schema.name}`
       ) || schema.name;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    "ha-automation-action-device_id": HaDeviceAction;
   }
 }

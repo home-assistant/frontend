@@ -26,6 +26,7 @@ declare global {
       "ha-automation-trigger": any;
       "ha-automation-condition": any;
       "ha-automation-condition-editor": any;
+      "ha-automation-action": any;
       "ha-device-trigger-picker": any;
       "ha-device-action-picker": any;
       "ha-form": any;
