@@ -7,8 +7,7 @@ import "../../../components/ha-textarea";
 
 import "../automation/trigger/ha-automation-trigger";
 import "../automation/condition/ha-automation-condition";
-
-import Script from "./script/index";
+import "../automation/action/ha-automation-action";
 
 export default class Automation extends Component<any> {
   constructor() {
@@ -38,8 +37,8 @@ export default class Automation extends Component<any> {
     });
   }
 
-  public actionChanged(action) {
-    this.props.onChange({ ...this.props.automation, action });
+  public actionChanged(ev: CustomEvent) {
+    this.props.onChange({ ...this.props.automation, action: ev.detail.value });
   }
 
   public render({ automation, isWide, hass, localize }) {
@@ -144,11 +143,10 @@ export default class Automation extends Component<any> {
               {localize("ui.panel.config.automation.editor.actions.learn_more")}
             </a>
           </span>
-          <Script
-            script={action}
-            onChange={this.actionChanged}
+          <ha-automation-action
+            actions={action}
+            onvalue-changed={this.actionChanged}
             hass={hass}
-            localize={localize}
           />
         </ha-config-section>
       </div>
