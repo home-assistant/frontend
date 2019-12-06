@@ -28,9 +28,7 @@ export class HaDeviceAction extends LitElement {
   }
 
   protected render() {
-    if (this._deviceId === undefined) {
-      this._deviceId = this.action.device_id;
-    }
+    const deviceId = this._deviceId || this.action.device_id;
     const extraFieldsData =
       this._capabilities && this._capabilities.extra_fields
         ? this._capabilities.extra_fields.map((item) => {
@@ -40,14 +38,14 @@ export class HaDeviceAction extends LitElement {
 
     return html`
       <ha-device-picker
-        .value=${this._deviceId}
+        .value=${deviceId}
         @value-changed=${this._devicePicked}
         .hass=${this.hass}
         label="Device"
       ></ha-device-picker>
       <ha-device-action-picker
         .value=${this.action}
-        .deviceId=${this._deviceId}
+        .deviceId=${deviceId}
         @value-changed=${this._deviceActionPicked}
         .hass=${this.hass}
         label="Action"

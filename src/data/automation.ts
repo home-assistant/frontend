@@ -5,6 +5,7 @@ import {
 import { HomeAssistant } from "../types";
 import { navigate } from "../common/navigate";
 import { DeviceCondition, DeviceTrigger } from "./device_automation";
+import { Action } from "./script";
 
 export interface AutomationEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
@@ -18,7 +19,7 @@ export interface AutomationConfig {
   description: string;
   trigger: Trigger[];
   condition?: Condition[];
-  action: any[];
+  action: Action[];
 }
 
 export interface ForDict {
@@ -171,46 +172,6 @@ export type Condition =
   | TemplateCondition
   | DeviceCondition
   | LogicalCondition;
-
-export interface EventAction {
-  event: string;
-  event_data?: { [key: string]: any };
-  event_data_template?: { [key: string]: any };
-}
-
-export interface ServiceAction {
-  service: string;
-  entity_id?: string;
-  data?: { [key: string]: any };
-}
-
-export interface DeviceAction {
-  device_id: string;
-  domain: string;
-  entity_id: string;
-}
-
-export interface DelayAction {
-  delay: number;
-}
-
-export interface SceneAction {
-  scene: string;
-}
-
-export interface WaitAction {
-  wait_template: string;
-  timeout?: number;
-}
-
-export type Action =
-  | EventAction
-  | DeviceAction
-  | ServiceAction
-  | Condition
-  | DelayAction
-  | SceneAction
-  | WaitAction;
 
 export const deleteAutomation = (hass: HomeAssistant, id: string) =>
   hass.callApi("DELETE", `config/automation/config/${id}`);

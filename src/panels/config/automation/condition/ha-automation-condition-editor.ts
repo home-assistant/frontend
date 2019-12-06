@@ -38,9 +38,6 @@ export default class HaAutomationConditionEditor extends LitElement {
   @property() public yamlMode = false;
 
   protected render() {
-    if (!this.condition) {
-      return html``;
-    }
     const selected = OPTIONS.indexOf(this.condition.condition);
     const yamlMode = this.yamlMode || selected === -1;
     return html`

@@ -82,9 +82,6 @@ export default class HaAutomationTriggerRow extends LitElement {
   @property() private _yamlMode = false;
 
   protected render() {
-    if (!this.trigger) {
-      return html``;
-    }
     const selected = OPTIONS.indexOf(this.trigger.platform);
     const yamlMode = this._yamlMode || selected === -1;
 

@@ -17,7 +17,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import "../../../../components/ha-card";
 import { HomeAssistant } from "../../../../types";
 
-import { Action } from "../../../../data/automation";
+import { Action } from "../../../../data/script";
 
 import "./types/ha-automation-action-service";
 import "./types/ha-automation-action-device_id";
@@ -83,14 +83,10 @@ export default class HaAutomationActionRow extends LitElement {
   @property() private _yamlMode = false;
 
   protected render() {
-    if (!this.action) {
-      return html``;
-    }
     const type = getType(this.action);
     const selected = type ? OPTIONS.indexOf(type) : -1;
-    if (selected === -1) {
-      this._yamlMode = true;
-    }
+    const yamlMode = this._yamlMode || selected === -1;
+
     return html`
       <ha-card>
         <div class="card-content">
@@ -123,8 +119,11 @@ export default class HaAutomationActionRow extends LitElement {
                 slot="dropdown-trigger"
               ></paper-icon-button>
               <paper-listbox slot="dropdown-content">
-                <paper-item @click=${this._switchYamlMode}>
-                  ${this._yamlMode
+                <paper-item
+                  @click=${this._switchYamlMode}
+                  .disabled=${selected === -1}
+                >
+                  ${yamlMode
                     ? this.hass.localize(
                         "ui.panel.config.automation.editor.edit_ui"
                       )
@@ -145,7 +144,7 @@ export default class HaAutomationActionRow extends LitElement {
               </paper-listbox>
             </paper-menu-button>
           </div>
-          ${this._yamlMode
+          ${yamlMode
             ? html`
                 <div style="margin-right: 24px;">
                   ${selected === -1

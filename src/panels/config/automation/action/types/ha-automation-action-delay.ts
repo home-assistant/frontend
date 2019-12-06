@@ -6,7 +6,7 @@ import "../../../../../components/ha-yaml-editor";
 import { LitElement, property, customElement, html } from "lit-element";
 import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 import { HomeAssistant } from "../../../../../types";
-import { DelayAction } from "../../../../../data/automation";
+import { DelayAction } from "../../../../../data/script";
 
 @customElement("ha-automation-action-delay")
 export class HaDelayAction extends LitElement implements ActionElement {
@@ -25,7 +25,7 @@ export class HaDelayAction extends LitElement implements ActionElement {
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.delay.delay"
         )}
-        .name=${"delay"}
+        name="delay"
         .value=${delay}
         @value-changed=${this._valueChanged}
       ></paper-input>

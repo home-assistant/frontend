@@ -5,7 +5,7 @@ import { ActionElement } from "../ha-automation-action-row";
 import { HomeAssistant } from "../../../../../types";
 import { PolymerChangedEvent } from "../../../../../polymer-types";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import { SceneAction } from "../../../../../data/automation";
+import { SceneAction } from "../../../../../data/script";
 
 @customElement("ha-automation-action-scene")
 export class HaSceneAction extends LitElement implements ActionElement {

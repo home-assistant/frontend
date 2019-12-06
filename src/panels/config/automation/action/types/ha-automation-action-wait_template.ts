@@ -4,7 +4,7 @@ import { LitElement, property, customElement } from "lit-element";
 import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 import { HomeAssistant } from "../../../../../types";
 import { html } from "lit-html";
-import { WaitAction } from "../../../../../data/automation";
+import { WaitAction } from "../../../../../data/script";
 
 @customElement("ha-automation-action-wait_template")
 export class HaWaitAction extends LitElement implements ActionElement {

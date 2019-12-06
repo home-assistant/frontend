@@ -7,7 +7,7 @@ import { LitElement, property, customElement } from "lit-element";
 import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 import { HomeAssistant } from "../../../../../types";
 import { html } from "lit-html";
-import { EventAction } from "../../../../../data/automation";
+import { EventAction } from "../../../../../data/script";
 
 @customElement("ha-automation-action-event")
 export class HaEventAction extends LitElement implements ActionElement {
@@ -26,7 +26,7 @@ export class HaEventAction extends LitElement implements ActionElement {
         .label=${this.hass.localize(
           "ui.panel.config.automation.editor.actions.type.event.event"
         )}
-        .name=${"event"}
+        name="event"
         .value=${event}
         @value-changed=${this._valueChanged}
       ></paper-input>
