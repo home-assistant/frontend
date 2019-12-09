@@ -76,7 +76,6 @@
     "chart.js": "~2.8.0",
     "chartjs-chart-timeline": "^0.3.0",
     "codemirror": "^5.49.0",
-    "copy-to-clipboard": "^1.0.9",
     "cpx": "^1.5.0",
     "deep-clone-simple": "^1.1.1",
     "es6-object-assign": "^1.1.0",
