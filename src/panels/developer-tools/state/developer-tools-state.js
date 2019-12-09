@@ -1,8 +1,6 @@
 import "@material/mwc-button";
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-input/paper-input";
-import "@polymer/paper-menu-button";
-import copy from "copy-to-clipboard";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
@@ -13,7 +11,6 @@ import "../../../components/ha-code-editor";
 import "../../../resources/ha-style";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
-import { showToast } from "../../../util/toast";
 
 const ERROR_SENTINEL = {};
 /*
@@ -63,10 +60,6 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
           height: 24px;
           padding: 0;
         }
-        .entities paper-menu-button {
-          height: 24px;
-          padding: 0;
-        }
         .entities td:nth-child(3) {
           white-space: pre-wrap;
           word-break: break-word;
@@ -74,9 +67,6 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
         .entities a {
           color: var(--primary-color);
-        }
-        paper-icon-item {
-          cursor: pointer;
         }
       </style>
 
@@ -160,56 +150,13 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
         <template is="dom-repeat" items="[[_entities]]" as="entity">
           <tr>
             <td>
-              <paper-menu-button close-on-activate>
-                <paper-icon-button
-                  icon="hass:dots-vertical"
-                  slot="dropdown-trigger"
-                  alt="menu"
-                ></paper-icon-button>
-                <paper-listbox
-                  slot="dropdown-content"
-                  role="listbox"
-                  selected="{{selectedItem}}"
-                >
-                  <paper-icon-item on-click="entityMoreInfo">
-                    <ha-icon
-                      icon="hass:information-outline"
-                      slot="item-icon"
-                    ></ha-icon>
-                    [[localize('ui.panel.developer-tools.tabs.states.more_info')]]
-                  </paper-icon-item>
-
-                  <paper-icon-item action="copyId" on-click="entityCopyValue">
-                    <ha-icon
-                      icon="hass:content-copy"
-                      slot="item-icon"
-                    ></ha-icon>
-                    [[localize('ui.panel.developer-tools.tabs.states.copy_entity_id')]]
-                  </paper-icon-item>
-
-                  <paper-icon-item
-                    action="copyState"
-                    on-click="entityCopyValue"
-                  >
-                    <ha-icon
-                      icon="hass:content-copy"
-                      slot="item-icon"
-                    ></ha-icon>
-                    [[localize('ui.panel.developer-tools.tabs.states.copy_entity_state')]]
-                  </paper-icon-item>
-
-                  <paper-icon-item
-                    action="copyAttributes"
-                    on-click="entityCopyValue"
-                  >
-                    <ha-icon
-                      icon="hass:content-copy"
-                      slot="item-icon"
-                    ></ha-icon>
-                    [[localize('ui.panel.developer-tools.tabs.states.copy_entity_attribute')]]
-                  </paper-icon-item>
-                </paper-listbox>
-              </paper-menu-button>
+              <paper-icon-button
+                on-click="entityMoreInfo"
+                icon="hass:information-outline"
+                alt="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
+                title="[[localize('ui.panel.developer-tools.tabs.states.more_info')]]"
+              >
+              </paper-icon-button>
               <a href="#" on-click="entitySelected">[[entity.entity_id]]</a>
             </td>
             <td>[[entity.state]]</td>
@@ -306,24 +253,6 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
   entityMoreInfo(ev) {
     ev.preventDefault();
     this.fire("hass-more-info", { entityId: ev.model.entity.entity_id });
-  }
-
-  entityCopyValue(ev) {
-    var action = ev.currentTarget.attributes.action.value;
-    if (action === "copyId") {
-      copy(ev.model.entity.entity_id);
-    } else if (action === "copyState") {
-      copy(ev.model.entity.state);
-    } else if (action === "copyAttributes") {
-      copy(safeDump(ev.model.entity.attributes).replace(/\n/g, "<br />"));
-    } else {
-      return;
-    }
-    showToast(this, {
-      message: this.hass.localize(
-        "ui.panel.developer-tools.tabs.states.copied"
-      ),
-    });
   }
 
   handleSetState() {
