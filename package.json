@@ -26,7 +26,7 @@
     "@material/mwc-fab": "^0.10.0",
     "@material/mwc-ripple": "^0.10.0",
     "@material/mwc-switch": "^0.10.0",
-    "@mdi/svg": "4.6.95",
+    "@mdi/svg": "4.7.95",
     "@polymer/app-layout": "^3.0.2",
     "@polymer/app-localize-behavior": "^3.0.1",
     "@polymer/app-route": "^3.0.2",
