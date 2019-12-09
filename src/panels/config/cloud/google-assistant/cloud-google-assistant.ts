@@ -335,7 +335,7 @@ class CloudGoogleAssistant extends LitElement {
       () => {
         showToast(parent, {
           message: this.hass!.localize(
-            "ui.panel.config.cloud.googe.sync_to_google"
+            "ui.panel.config.cloud.google.sync_to_google"
           ),
         });
         cloudSyncGoogleAssistant(this.hass);
