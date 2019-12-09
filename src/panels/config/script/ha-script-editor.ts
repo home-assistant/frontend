@@ -17,28 +17,24 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-fab";
 import "../../../components/ha-paper-icon-button-arrow-prev";
 import {
-  AutomationConfig,
-  AutomationEntity,
-  Condition,
-  deleteAutomation,
-  getAutomationEditorInitData,
-  Trigger,
-} from "../../../data/automation";
-import { Action } from "../../../data/script";
+  Action,
+  ScriptEntity,
+  ScriptConfig,
+  deleteScript,
+} from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialog-confirmation";
 import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import "./action/ha-automation-action";
-import "./condition/ha-automation-condition";
-import "./trigger/ha-automation-trigger";
+import "../automation/action/ha-automation-action";
+import { computeObjectId } from "../../../common/entity/compute_object_id";
 
-export class HaAutomationEditor extends LitElement {
+export class HaScriptEditor extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public automation!: AutomationEntity;
+  @property() public script!: ScriptEntity;
   @property() public isWide?: boolean;
   @property() public creatingNew?: boolean;
-  @property() private _config?: AutomationConfig;
+  @property() private _config?: ScriptConfig;
   @property() private _dirty?: boolean;
   @property() private _errors?: string;
 
@@ -51,10 +47,10 @@ export class HaAutomationEditor extends LitElement {
               @click=${this._backTapped}
             ></ha-paper-icon-button-arrow-prev>
             <div main-title>
-              ${this.automation
-                ? computeStateName(this.automation)
+              ${this.script
+                ? computeStateName(this.script)
                 : this.hass.localize(
-                    "ui.panel.config.automation.editor.default_name"
+                    "ui.panel.config.script.editor.default_name"
                   )}
             </div>
             ${this.creatingNew
@@ -62,7 +58,7 @@ export class HaAutomationEditor extends LitElement {
               : html`
                   <paper-icon-button
                     title="${this.hass.localize(
-                      "ui.panel.config.automation.picker.delete_automation"
+                      "ui.panel.config.script.editor.delete_script"
                     )}"
                     icon="hass:delete"
                     @click=${this._delete}
@@ -88,31 +84,20 @@ export class HaAutomationEditor extends LitElement {
                     <span slot="header">${this._config.alias}</span>
                     <span slot="introduction">
                       ${this.hass.localize(
-                        "ui.panel.config.automation.editor.introduction"
+                        "ui.panel.config.script.editor.introduction"
                       )}
                     </span>
                     <ha-card>
                       <div class="card-content">
                         <paper-input
                           .label=${this.hass.localize(
-                            "ui.panel.config.automation.editor.alias"
+                            "ui.panel.config.script.editor.alias"
                           )}
                           name="alias"
                           .value=${this._config.alias}
                           @value-changed=${this._valueChanged}
                         >
                         </paper-input>
-                        <ha-textarea
-                          .label=${this.hass.localize(
-                            "ui.panel.config.automation.editor.description.label"
-                          )}
-                          .placeholder=${this.hass.localize(
-                            "ui.panel.config.automation.editor.description.placeholder"
-                          )}
-                          name="description"
-                          .value=${this._config.description}
-                          @value-changed=${this._valueChanged}
-                        ></ha-textarea>
                       </div>
                     </ha-card>
                   </ha-config-section>
@@ -120,83 +105,27 @@ export class HaAutomationEditor extends LitElement {
                   <ha-config-section .isWide=${this.isWide}>
                     <span slot="header">
                       ${this.hass.localize(
-                        "ui.panel.config.automation.editor.triggers.header"
+                        "ui.panel.config.script.editor.sequence"
                       )}
                     </span>
                     <span slot="introduction">
                       <p>
                         ${this.hass.localize(
-                          "ui.panel.config.automation.editor.triggers.introduction"
+                          "ui.panel.config.script.editor.sequence_sentence"
                         )}
                       </p>
                       <a
-                        href="https://home-assistant.io/docs/automation/trigger/"
+                        href="https://home-assistant.io/docs/scripts/"
                         target="_blank"
                       >
                         ${this.hass.localize(
-                          "ui.panel.config.automation.editor.triggers.learn_more"
-                        )}
-                      </a>
-                    </span>
-                    <ha-automation-trigger
-                      .triggers=${this._config.trigger}
-                      @value-changed=${this._triggerChanged}
-                      .hass=${this.hass}
-                    ></ha-automation-trigger>
-                  </ha-config-section>
-
-                  <ha-config-section .isWide=${this.isWide}>
-                    <span slot="header">
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.conditions.header"
-                      )}
-                    </span>
-                    <span slot="introduction">
-                      <p>
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.conditions.introduction"
-                        )}
-                      </p>
-                      <a
-                        href="https://home-assistant.io/docs/scripts/conditions/"
-                        target="_blank"
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.conditions.learn_more"
-                        )}
-                      </a>
-                    </span>
-                    <ha-automation-condition
-                      .conditions=${this._config.condition || []}
-                      @value-changed=${this._conditionChanged}
-                      .hass=${this.hass}
-                    ></ha-automation-condition>
-                  </ha-config-section>
-
-                  <ha-config-section .isWide=${this.isWide}>
-                    <span slot="header">
-                      ${this.hass.localize(
-                        "ui.panel.config.automation.editor.actions.header"
-                      )}
-                    </span>
-                    <span slot="introduction">
-                      <p>
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.actions.introduction"
-                        )}
-                      </p>
-                      <a
-                        href="https://home-assistant.io/docs/automation/action/"
-                        target="_blank"
-                      >
-                        ${this.hass.localize(
-                          "ui.panel.config.automation.editor.actions.learn_more"
+                          "ui.panel.config.script.editor.link_available_actions"
                         )}
                       </a>
                     </span>
                     <ha-automation-action
-                      .actions=${this._config.action}
-                      @value-changed=${this._actionChanged}
+                      .actions=${this._config.sequence}
+                      @value-changed=${this._sequenceChanged}
                       .hass=${this.hass}
                     ></ha-automation-action>
                   </ha-config-section>
@@ -209,10 +138,8 @@ export class HaAutomationEditor extends LitElement {
           ?is-wide="${this.isWide}"
           ?dirty="${this._dirty}"
           icon="hass:content-save"
-          .title="${this.hass.localize(
-            "ui.panel.config.automation.editor.save"
-          )}"
-          @click=${this._saveAutomation}
+          .title="${this.hass.localize("ui.common.save")}"
+          @click=${this._saveScript}
           class="${classMap({
             rtl: computeRTL(this.hass),
           })}"
@@ -224,29 +151,26 @@ export class HaAutomationEditor extends LitElement {
   protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
-    const oldAutomation = changedProps.get("automation") as AutomationEntity;
+    const oldScript = changedProps.get("script") as ScriptEntity;
     if (
-      changedProps.has("automation") &&
-      this.automation &&
+      changedProps.has("script") &&
+      this.script &&
       this.hass &&
-      // Only refresh config if we picked a new automation. If same ID, don't fetch it.
-      (!oldAutomation ||
-        oldAutomation.attributes.id !== this.automation.attributes.id)
+      // Only refresh config if we picked a new script. If same ID, don't fetch it.
+      (!oldScript || oldScript.entity_id !== this.script.entity_id)
     ) {
       this.hass
-        .callApi<AutomationConfig>(
+        .callApi<ScriptConfig>(
           "GET",
-          `config/automation/config/${this.automation.attributes.id}`
+          `config/script/config/${computeObjectId(this.script.entity_id)}`
         )
         .then(
           (config) => {
-            // Normalize data: ensure trigger, action and condition are lists
-            // Happens when people copy paste their automations into the config
-            for (const key of ["trigger", "condition", "action"]) {
-              const value = config[key];
-              if (value && !Array.isArray(value)) {
-                config[key] = [value];
-              }
+            // Normalize data: ensure sequence is a list
+            // Happens when people copy paste their scripts into the config
+            const value = config.sequence;
+            if (value && !Array.isArray(value)) {
+              config.sequence = [value];
             }
             this._dirty = false;
             this._config = config;
@@ -255,10 +179,10 @@ export class HaAutomationEditor extends LitElement {
             alert(
               resp.status_code === 404
                 ? this.hass.localize(
-                    "ui.panel.config.automation.editor.load_error_not_editable"
+                    "ui.panel.config.script.editor.load_error_not_editable"
                   )
                 : this.hass.localize(
-                    "ui.panel.config.automation.editor.load_error_unknown",
+                    "ui.panel.config.script.editor.load_error_unknown",
                     "err_no",
                     resp.status_code
                   )
@@ -269,17 +193,10 @@ export class HaAutomationEditor extends LitElement {
     }
 
     if (changedProps.has("creatingNew") && this.creatingNew && this.hass) {
-      const initData = getAutomationEditorInitData();
-      this._dirty = initData ? true : false;
+      this._dirty = false;
       this._config = {
-        alias: this.hass.localize(
-          "ui.panel.config.automation.editor.default_name"
-        ),
-        description: "",
-        trigger: [{ platform: "state" }],
-        condition: [],
-        action: [{ service: "" }],
-        ...initData,
+        alias: this.hass.localize("ui.panel.config.script.editor.default_name"),
+        sequence: [{ service: "" }],
       };
     }
   }
@@ -299,23 +216,8 @@ export class HaAutomationEditor extends LitElement {
     this._dirty = true;
   }
 
-  private _triggerChanged(ev: CustomEvent): void {
-    this._config = { ...this._config!, trigger: ev.detail.value as Trigger[] };
-    this._errors = undefined;
-    this._dirty = true;
-  }
-
-  private _conditionChanged(ev: CustomEvent): void {
-    this._config = {
-      ...this._config!,
-      condition: ev.detail.value as Condition[],
-    };
-    this._errors = undefined;
-    this._dirty = true;
-  }
-
-  private _actionChanged(ev: CustomEvent): void {
-    this._config = { ...this._config!, action: ev.detail.value as Action[] };
+  private _sequenceChanged(ev: CustomEvent): void {
+    this._config = { ...this._config!, sequence: ev.detail.value as Action[] };
     this._errors = undefined;
     this._dirty = true;
   }
@@ -324,7 +226,7 @@ export class HaAutomationEditor extends LitElement {
     if (this._dirty) {
       showConfirmationDialog(this, {
         text: this.hass!.localize(
-          "ui.panel.config.automation.editor.unsaved_confirm"
+          "ui.panel.config.common.editor.confirm_unsaved"
         ),
         confirmBtnText: this.hass!.localize("ui.common.yes"),
         cancelBtnText: this.hass!.localize("ui.common.no"),
@@ -338,29 +240,25 @@ export class HaAutomationEditor extends LitElement {
   private async _delete() {
     if (
       !confirm(
-        this.hass.localize("ui.panel.config.automation.picker.delete_confirm")
+        this.hass.localize("ui.panel.config.script.editor.delete_confirm")
       )
     ) {
       return;
     }
-    await deleteAutomation(this.hass, this.automation.attributes.id!);
+    await deleteScript(this.hass, computeObjectId(this.script.entity_id));
     history.back();
   }
 
-  private _saveAutomation(): void {
+  private _saveScript(): void {
     const id = this.creatingNew
       ? "" + Date.now()
-      : this.automation.attributes.id;
-    this.hass!.callApi(
-      "POST",
-      "config/automation/config/" + id,
-      this._config
-    ).then(
+      : computeObjectId(this.script.entity_id);
+    this.hass!.callApi("POST", "config/script/config/" + id, this._config).then(
       () => {
         this._dirty = false;
 
         if (this.creatingNew) {
-          navigate(this, `/config/automation/edit/${id}`, true);
+          navigate(this, `/config/script/edit/${id}`, true);
         }
       },
       (errors) => {
@@ -421,4 +319,4 @@ export class HaAutomationEditor extends LitElement {
   }
 }
 
-customElements.define("ha-automation-editor", HaAutomationEditor);
+customElements.define("ha-script-editor", HaScriptEditor);
