@@ -2050,11 +2050,7 @@
             "filter_attributes": "Filter attributes",
             "no_entities": "No entities",
             "more_info": "More Info",
-            "alert_entity_field": "Entity is a mandatory field",
-            "copy_entity_id": "Copy ID",
-            "copy_entity_state": "Copy state",
-            "copy_entity_attribute": "Copy attributes",
-            "copied": "Copied to clipboard"
+            "alert_entity_field": "Entity is a mandatory field"
           },
           "templates": {
             "title": "Template",
