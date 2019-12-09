@@ -5,6 +5,9 @@ trigger:
   branches:
     include:
     - dev
+  paths:
+    include:
+    - translation/en.json
 pr: none
 schedules:
   - cron: "30 0 * * *"
@@ -61,7 +64,7 @@ jobs:
     displayName: 'Download Translation'
   - script: |
       git checkout dev
-      git add homeassistant
+      git add translation
       git commit -am "[ci skip] Translation update"
       git push
     displayName: 'Update translation'
