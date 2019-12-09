@@ -999,6 +999,7 @@
             "edit_script": "Edit script"
           },
           "editor": {
+            "alias": "Name",
             "introduction": "Use scripts to execute a sequence of actions.",
             "header": "Script: {name}",
             "default_name": "New Script",

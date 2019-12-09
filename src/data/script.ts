@@ -1,6 +1,21 @@
 import { HomeAssistant } from "../types";
 import { computeObjectId } from "../common/entity/compute_object_id";
 import { Condition } from "./automation";
+import {
+  HassEntityBase,
+  HassEntityAttributeBase,
+} from "home-assistant-js-websocket";
+
+export interface ScriptEntity extends HassEntityBase {
+  attributes: HassEntityAttributeBase & {
+    last_triggered: string;
+  };
+}
+
+export interface ScriptConfig {
+  alias: string;
+  sequence: Action[];
+}
 
 export interface EventAction {
   event: string;
