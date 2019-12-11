@@ -112,7 +112,7 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
               value="[[_computeEntityValue(parsedJSON)]]"
               on-change="_entityPicked"
               disabled="[[!validJSON]]"
-              include-domains="[[_computeEntityDomainFilter(hass, _domain, _service)]]"
+              include-domains="[[_computeEntityDomainFilter(_domain, _attributes)]]"
               allow-custom-entity
             ></ha-entity-picker>
           </template>
@@ -284,12 +284,14 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
     return parsedJSON === ERROR_SENTINEL ? "" : parsedJSON.entity_id;
   }
 
-  _computeEntityDomainFilter(hass, domain, service) {
-    const serviceDomains = hass.services;
-    if (domain in serviceDomains &&
-        service in serviceDomains[domain] && 
-        serviceDomains[domain][service].limit_entity_domain.length > 0) {
-      return serviceDomains[domain][service].limit_entity_domain;
+  _computeEntityDomainFilter(domain, attributes) {
+    const field = attributes.find((attribute) => attribute.key === "entity_id");
+    if (
+      field &&
+      "limit_entity_domain" in field &&
+      field.limit_entity_domain.length > 0
+    ) {
+      return field.limit_entity_domain;
     }
     return ENTITY_COMPONENT_DOMAINS.includes(domain) ? [domain] : null;
   }
