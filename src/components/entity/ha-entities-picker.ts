@@ -24,7 +24,7 @@ class HaEntitiesPickerLight extends LitElement {
   @property() public value?: string[];
   /**
    * Show entities from specific domains.
-   * @type {string}
+   * @type {Array}
    * @attr include-domains
    */
   @property({ type: Array, attribute: "include-domains" })
