@@ -286,7 +286,9 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
 
   _computeEntityDomainFilter(hass, domain, service) {
     const serviceDomains = hass.services;
-    if (serviceDomains[domain][service].limit_entity_domain.length > 0) {
+    if (domain in serviceDomains &&
+        service in serviceDomains[domain] && 
+        serviceDomains[domain][service].limit_entity_domain.length > 0) {
       return serviceDomains[domain][service].limit_entity_domain;
     }
     return ENTITY_COMPONENT_DOMAINS.includes(domain) ? [domain] : null;
