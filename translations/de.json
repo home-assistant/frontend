@@ -1685,7 +1685,7 @@
                         },
                         "entities": {
                             "name": "Elemente",
-                            "show_header_toggle": "Namen anzeigen?",
+                            "show_header_toggle": "Schalter anzeigen?",
                             "toggle": "Entitäten umschalten"
                         },
                         "entity-button": {
