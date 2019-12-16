@@ -86,6 +86,8 @@ export const handleAction = (
       forwardHaptic("light");
       break;
     default:
-      fireEvent(node, actionConfig.action, actionConfig);
+      if (actionConfig.action.includes("custom") {
+        fireEvent(node, actionConfig.action, actionConfig);
+      }
   }
 };
