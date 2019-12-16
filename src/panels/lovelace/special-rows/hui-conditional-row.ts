@@ -1,3 +1,5 @@
+import { customElement } from "lit-element";
+
 import { createRowElement } from "../common/create-row-element";
 import {
   checkConditionsMet,
@@ -6,19 +8,27 @@ import {
 import { HomeAssistant } from "../../../types";
 import { LovelaceRow, ConditionalRowConfig } from "../entity-rows/types";
 
+@customElement("hui-conditional-row")
 class HuiConditionalRow extends HTMLElement implements LovelaceRow {
   private _hass?: HomeAssistant;
   private _config?: ConditionalRowConfig;
   private _row?: LovelaceRow;
 
   public setConfig(config) {
-    if (
-      !config.row ||
-      !config.conditions ||
-      !Array.isArray(config.conditions) ||
-      !validateConditionalConfig(config.conditions)
-    ) {
-      throw new Error("Error in row configuration.");
+    if (!config.row) {
+      throw new Error("No row option configured.");
+    }
+
+    if (!config.conditions) {
+      throw new Error("No conditions option configured.");
+    }
+
+    if (!Array.isArray(config.conditions)) {
+      throw new Error("conditions option is not an array");
+    }
+
+    if (!validateConditionalConfig(config.conditions)) {
+      throw new Error("conditions option is invalid.");
     }
 
     if (this._row && this._row.parentElement) {
@@ -63,5 +73,3 @@ declare global {
     "hui-conditional-row": HuiConditionalRow;
   }
 }
-
-customElements.define("hui-conditional-row", HuiConditionalRow);
