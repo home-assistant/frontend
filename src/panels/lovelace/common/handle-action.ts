@@ -76,7 +76,7 @@ export const handleAction = (
         forwardHaptic("light");
       }
       break;
-    case "call-service": {
+    case "call-service":
       if (!actionConfig.service) {
         forwardHaptic("failure");
         return;
@@ -84,6 +84,8 @@ export const handleAction = (
       const [domain, service] = actionConfig.service.split(".", 2);
       hass.callService(domain, service, actionConfig.service_data);
       forwardHaptic("light");
-    }
+      break;
+    default:
+      fireEvent(node, actionConfig.action, actionConfig});
   }
 };
