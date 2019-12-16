@@ -19,7 +19,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-scene-entity-row")
 class HuiSceneEntityRow extends LitElement implements LovelaceRow {
-  @property() public hass?: HomeAssistant;
+  @property() public hass!: HomeAssistant;
 
   @property() private _config?: EntityConfig;
 
