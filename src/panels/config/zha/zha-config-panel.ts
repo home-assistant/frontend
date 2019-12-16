@@ -36,7 +36,9 @@ class ZHAConfigPanel extends HassRouterPage {
       groups: {
         tag: "zha-groups-dashboard",
         load: () =>
-          import(/* webpackChunkName: "zha-groups-dashboard" */ "./zha-groups-dashboard"),
+          import(
+            /* webpackChunkName: "zha-groups-dashboard" */ "./zha-groups-dashboard"
+          ),
       },
       group: {
         tag: "zha-group-page",
@@ -46,7 +48,9 @@ class ZHAConfigPanel extends HassRouterPage {
       "group-add": {
         tag: "zha-add-group-page",
         load: () =>
-          import(/* webpackChunkName: "zha-add-group-page" */ "./zha-add-group-page"),
+          import(
+            /* webpackChunkName: "zha-add-group-page" */ "./zha-add-group-page"
+          ),
       },
     },
   };
