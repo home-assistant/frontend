@@ -219,6 +219,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           icon="hass:dots-vertical"
           class="more-info"
           @click=${this._handleMoreInfo}
+          tabindex="0"
         ></paper-icon-button>
 
         <div id="controls">
