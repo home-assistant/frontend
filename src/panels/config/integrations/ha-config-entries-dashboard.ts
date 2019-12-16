@@ -23,7 +23,11 @@ import {
   loadConfigFlowDialog,
   showConfigFlowDialog,
 } from "../../../dialogs/config-flow/show-dialog-config-flow";
-import { localizeConfigFlowTitle } from "../../../data/config_flow";
+import {
+  localizeConfigFlowTitle,
+  ignoreConfigFlow,
+  DISCOVERY_SOURCES,
+} from "../../../data/config_flow";
 import {
   LitElement,
   TemplateResult,
@@ -38,6 +42,7 @@ import { ConfigEntry } from "../../../data/config_entries";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
+import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialog-confirmation";
 
 @customElement("ha-config-entries-dashboard")
 export class HaConfigManagerDashboard extends LitElement {
@@ -82,9 +87,22 @@ export class HaConfigManagerDashboard extends LitElement {
                         <paper-item-body>
                           ${localizeConfigFlowTitle(this.hass.localize, flow)}
                         </paper-item-body>
+                        ${DISCOVERY_SOURCES.includes(flow.context.source) &&
+                        flow.context.unique_id
+                          ? html`
+                              <mwc-button
+                                @click=${this._ignoreFlow}
+                                .flow=${flow}
+                              >
+                                ${this.hass.localize(
+                                  "ui.panel.config.integrations.ignore"
+                                )}
+                              </mwc-button>
+                            `
+                          : ""}
                         <mwc-button
                           @click=${this._continueFlow}
-                          data-id="${flow.flow_id}"
+                          .flowId=${flow.flow_id}
                           >${this.hass.localize(
                             "ui.panel.config.integrations.configure"
                           )}</mwc-button
@@ -176,9 +194,27 @@ export class HaConfigManagerDashboard extends LitElement {
 
   private _continueFlow(ev: Event) {
     showConfigFlowDialog(this, {
-      continueFlowId:
-        (ev.target as HTMLElement).getAttribute("data-id") || undefined,
+      continueFlowId: (ev.target! as any).flowId,
       dialogClosedCallback: () => fireEvent(this, "hass-reload-entries"),
+    });
+  }
+
+  private _ignoreFlow(ev: Event) {
+    const flow = (ev.target! as any).flow;
+    showConfirmationDialog(this, {
+      title: this.hass!.localize(
+        "ui.panel.config.integrations.confirm_ignore_title",
+        "name",
+        localizeConfigFlowTitle(this.hass.localize, flow)
+      ),
+      text: this.hass!.localize("ui.panel.config.integrations.confirm_ignore"),
+      confirmBtnText: this.hass!.localize(
+        "ui.panel.config.integrations.ignore"
+      ),
+      confirm: () => {
+        ignoreConfigFlow(this.hass, flow.flow_id);
+        fireEvent(this, "hass-reload-entries");
+      },
     });
   }
 
@@ -203,8 +239,7 @@ export class HaConfigManagerDashboard extends LitElement {
         overflow: hidden;
       }
       mwc-button {
-        top: 3px;
-        margin-right: -0.57em;
+        align-self: center;
       }
       .config-entry-row {
         display: flex;
@@ -228,6 +263,9 @@ export class HaConfigManagerDashboard extends LitElement {
       ha-fab[rtl] {
         right: auto;
         left: 16px;
+      }
+      .overflow {
+        width: 56px;
       }
     `;
   }

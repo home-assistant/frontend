@@ -4,6 +4,8 @@ import { debounce } from "../common/util/debounce";
 import { getCollection, Connection } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "../common/translations/localize";
 
+export const DISCOVERY_SOURCES = ["homekit", "ssdp"];
+
 export const createConfigFlow = (hass: HomeAssistant, handler: string) =>
   hass.callApi<DataEntryFlowStep>("POST", "config/config_entries/flow", {
     handler,
@@ -25,6 +27,9 @@ export const handleConfigFlowStep = (
     `config/config_entries/flow/${flowId}`,
     data
   );
+
+export const ignoreConfigFlow = (hass: HomeAssistant, flowId: string) =>
+  hass.callWS({ type: "config_entries/ignore_flow", flow_id: flowId });
 
 export const deleteConfigFlow = (hass: HomeAssistant, flowId: string) =>
   hass.callApi("DELETE", `config/config_entries/flow/${flowId}`);
