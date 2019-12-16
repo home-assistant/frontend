@@ -98,9 +98,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
           <ha-markdown
             allowsvg
             .content=${this.localize(
-              `ui.panel.page-authorize.form.providers.${
-                step.handler[0]
-              }.abort.${step.reason}`
+              `ui.panel.page-authorize.form.providers.${step.handler[0]}.abort.${step.reason}`
             )}
           ></ha-markdown>
         `;
@@ -119,6 +117,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
             .error=${step.errors}
             .computeLabel=${this._computeLabelCallback(step)}
             .computeError=${this._computeErrorCallback(step)}
+            @value-changed=${this._stepDataChanged}
           ></ha-form>
         `;
       default:
@@ -223,10 +222,12 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     }, 100);
   }
 
+  private _stepDataChanged(ev: CustomEvent) {
+    this._stepData = ev.detail.value;
+  }
+
   private _computeStepDescription(step: DataEntryFlowStepForm) {
-    const resourceKey = `ui.panel.page-authorize.form.providers.${
-      step.handler[0]
-    }.step.${step.step_id}.description`;
+    const resourceKey = `ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${step.step_id}.description`;
     const args: string[] = [];
     const placeholders = step.description_placeholders || {};
     Object.keys(placeholders).forEach((key) => {
@@ -240,9 +241,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     // Returns a callback for ha-form to calculate labels per schema object
     return (schema) =>
       this.localize(
-        `ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${
-          step.step_id
-        }.data.${schema.name}`
+        `ui.panel.page-authorize.form.providers.${step.handler[0]}.step.${step.step_id}.data.${schema.name}`
       );
   }
 
@@ -250,9 +249,7 @@ class HaAuthFlow extends litLocalizeLiteMixin(LitElement) {
     // Returns a callback for ha-form to calculate error messages
     return (error) =>
       this.localize(
-        `ui.panel.page-authorize.form.providers.${
-          step.handler[0]
-        }.error.${error}`
+        `ui.panel.page-authorize.form.providers.${step.handler[0]}.error.${error}`
       );
   }
 

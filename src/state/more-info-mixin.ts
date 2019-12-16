@@ -19,7 +19,9 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       this.addEventListener("hass-more-info", (e) => this._handleMoreInfo(e));
 
       // Load it once we are having the initial rendering done.
-      import(/* webpackChunkName: "more-info-dialog" */ "../dialogs/ha-more-info-dialog");
+      import(
+        /* webpackChunkName: "more-info-dialog" */ "../dialogs/ha-more-info-dialog"
+      );
     }
 
     private async _handleMoreInfo(ev) {

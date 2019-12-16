@@ -1,52 +1,192 @@
 {
-    "panel": {
-        "config": "Конфігурація",
-        "states": "Огляд",
-        "map": "Мапа",
-        "logbook": "Журнал",
-        "history": "Історія",
+    "attribute": {
+        "weather": {
+            "humidity": "Вологість",
+            "visibility": "Видимість",
+            "wind_speed": "Швидкість вітру"
+        }
+    },
+    "config_entry": {
+        "disabled_by": {
+            "config_entry": "Запис",
+            "integration": "Інтеграція",
+            "user": "Користувач"
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "Панель керування сигналізацією",
+        "automation": "Автоматизація",
+        "binary_sensor": "Бінарний датчик",
+        "calendar": "Календар",
+        "camera": "Камера",
+        "climate": "Клімат",
+        "configurator": "Конфігуратор",
+        "conversation": "Розмова",
+        "cover": "Заголовок",
+        "device_tracker": "Трекер пристрою",
+        "fan": "Вентилятор",
+        "group": "Група",
+        "hassio": "Hass.io",
+        "history_graph": "Графік історії",
+        "homeassistant": "Home Assistant",
+        "image_processing": "Обробка зображень",
+        "input_boolean": "Введення логічного значення",
+        "input_datetime": "Введення дати",
+        "input_number": "Введіть номер",
+        "input_select": "Вибрати",
+        "input_text": "Введення тексту",
+        "light": "Освітлення",
+        "lock": "Замок",
+        "lovelace": "Lovelace",
         "mailbox": "Поштова скринька",
-        "shopping_list": "Список покупок",
+        "media_player": "Медіа плеєр",
+        "notify": "Повідомлення",
+        "person": "Людина",
+        "plant": "Рослина",
+        "proximity": "Відстань",
+        "remote": "Пульт ДУ",
+        "scene": "Сцена",
+        "script": "Сценарій",
+        "sensor": "Датчик",
+        "sun": "Сонце",
+        "switch": "Перемикач",
+        "system_health": "Безпека системи",
+        "updater": "Оновлення",
+        "vacuum": "Пилосос",
+        "weblink": "Посилання",
+        "zha": "ZHA",
+        "zwave": "Z-Wave"
+    },
+    "groups": {
+        "system-admin": "Адміністратори",
+        "system-read-only": "Користувачі лише для читання",
+        "system-users": "Користувачі"
+    },
+    "panel": {
+        "calendar": "Календар",
+        "config": "Конфігурація",
         "dev-info": "Інформація",
         "developer_tools": "Інструменти для розробників",
-        "calendar": "Календар",
-        "profile": "Профіль"
+        "history": "Історія",
+        "logbook": "Журнал",
+        "mailbox": "Поштова скринька",
+        "map": "Мапа",
+        "profile": "Профіль",
+        "shopping_list": "Список покупок",
+        "states": "Огляд"
     },
-    "state": {
-        "default": {
-            "off": "Вимкнено",
-            "on": "Увімкнено",
-            "unknown": "Невідомо",
-            "unavailable": "Недоступний"
-        },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "auto": "Авто",
+                "off": "Вимкнений",
+                "on": "Увімкнений"
+            },
+            "hvac_action": {
+                "cooling": "Охолодження",
+                "drying": "Осушення",
+                "fan": "Вентилятор",
+                "heating": "Опалення",
+                "idle": "Очікування",
+                "off": "Вимкнено"
+            },
+            "preset_mode": {
+                "activity": "Діяльність",
+                "away": "Відсутній",
+                "boost": "Підвищення",
+                "comfort": "Комфорт",
+                "eco": "Еко",
+                "home": "Вдома",
+                "none": "Немає",
+                "sleep": "Сон"
+            }
+        }
+    },
+    "state_badge": {
         "alarm_control_panel": {
             "armed": "Охорона",
-            "disarmed": "Знято",
-            "armed_home": "Будинкова охорона",
-            "armed_away": "Охорона (не вдома)",
-            "armed_night": "Нічна охорона",
-            "pending": "Очікую",
-            "arming": "Ставлю на охорону",
+            "armed_away": "Охорона",
+            "armed_custom_bypass": "Охорона",
+            "armed_home": "Охорона",
+            "armed_night": "Охорона",
+            "arming": "Ставлю",
+            "disarmed": "Знято з охорони",
             "disarming": "Зняття",
-            "triggered": "Тривога",
-            "armed_custom_bypass": "Охорона з винятками"
+            "pending": "Очікування",
+            "triggered": "Тривога"
+        },
+        "default": {
+            "entity_not_found": "Об'єкт не знайдено",
+            "error": "Помилка",
+            "unavailable": "Недоступно",
+            "unknown": "Невід"
+        },
+        "device_tracker": {
+            "home": "Вдома",
+            "not_home": "Відсутній"
+        },
+        "person": {
+            "home": "Вдома",
+            "not_home": "Не вдома"
+        }
+    },
+    "state": {
+        "alarm_control_panel": {
+            "armed": "Охорона",
+            "armed_away": "Охорона (не вдома)",
+            "armed_custom_bypass": "Охорона з винятками",
+            "armed_home": "Будинкова охорона",
+            "armed_night": "Нічна охорона",
+            "arming": "Ставлю на охорону",
+            "disarmed": "Знято",
+            "disarming": "Зняття",
+            "pending": "Очікую",
+            "triggered": "Тривога"
         },
         "automation": {
             "off": "Вимкнено",
             "on": "Увімкнено"
         },
         "binary_sensor": {
+            "battery": {
+                "off": "Нормальний",
+                "on": "Низький"
+            },
+            "cold": {
+                "off": "Норма",
+                "on": "Охолодження"
+            },
+            "connectivity": {
+                "off": "Відключено",
+                "on": "Підключено"
+            },
             "default": {
                 "off": "Вимкнено",
                 "on": "Увімкнено"
             },
-            "moisture": {
-                "off": "Сухо",
-                "on": "Волого"
+            "door": {
+                "off": "Зачинені",
+                "on": "Відчинені"
+            },
+            "garage_door": {
+                "off": "ЗачиненІ",
+                "on": "Відкриті"
             },
             "gas": {
                 "off": "Чисто",
                 "on": "Виявлено газ"
+            },
+            "heat": {
+                "off": "Норма",
+                "on": "Нагрівання"
+            },
+            "lock": {
+                "off": "Заблоковано",
+                "on": "Розблоковано"
+            },
+            "moisture": {
+                "off": "Сухо",
+                "on": "Волого"
             },
             "motion": {
                 "off": "Немає руху",
@@ -55,6 +195,22 @@
             "occupancy": {
                 "off": "Чисто",
                 "on": "Виявлено присутність"
+            },
+            "opening": {
+                "off": "Закрито",
+                "on": "Відкритий"
+            },
+            "presence": {
+                "off": "Не вдома",
+                "on": "Вдома"
+            },
+            "problem": {
+                "off": "ОК",
+                "on": "Проблема"
+            },
+            "safety": {
+                "off": "Безпечно",
+                "on": "Небезпечно"
             },
             "smoke": {
                 "off": "Чисто",
@@ -68,53 +224,9 @@
                 "off": "Не виявлено",
                 "on": "Виявлена вібрація"
             },
-            "opening": {
-                "off": "Закрито",
-                "on": "Відкритий"
-            },
-            "safety": {
-                "off": "Безпечно",
-                "on": "Небезпечно"
-            },
-            "presence": {
-                "off": "Не вдома",
-                "on": "Вдома"
-            },
-            "battery": {
-                "off": "Нормальний",
-                "on": "Низький"
-            },
-            "problem": {
-                "off": "ОК",
-                "on": "Проблема"
-            },
-            "connectivity": {
-                "off": "Відключено",
-                "on": "Підключено"
-            },
-            "cold": {
-                "off": "Норма",
-                "on": "Охолодження"
-            },
-            "door": {
-                "off": "Зачинені",
-                "on": "Відчинені"
-            },
-            "garage_door": {
-                "off": "ЗачиненІ",
-                "on": "Відкриті"
-            },
-            "heat": {
-                "off": "Норма",
-                "on": "Нагрівання"
-            },
             "window": {
                 "off": "Зачинене",
                 "on": "Відчинене"
-            },
-            "lock": {
-                "off": "Заблоковано",
-                "on": "Розблоковано"
             }
         },
         "calendar": {
@@ -122,38 +234,44 @@
             "on": "Увімкнено"
         },
         "camera": {
+            "idle": "Очікування",
             "recording": "Запис",
-            "streaming": "Трансляція",
-            "idle": "Очікування"
+            "streaming": "Трансляція"
         },
         "climate": {
-            "off": "Вимкнено",
-            "on": "Увімкнено",
-            "heat": "Обігрівання",
-            "cool": "Охолодження",
-            "idle": "Очікування",
             "auto": "Автоматичний",
+            "cool": "Охолодження",
             "dry": "Осушення",
-            "fan_only": "Лише вентилятор",
             "eco": "Еко",
             "electric": "Електро",
-            "performance": "Продуктивність",
-            "high_demand": "Велике споживання",
-            "heat_pump": "Тепловий насос",
+            "fan_only": "Лише вентилятор",
             "gas": "Газ",
+            "heat": "Обігрівання",
+            "heat_cool": "Опалення/Охолодження",
+            "heat_pump": "Тепловий насос",
+            "high_demand": "Велике споживання",
+            "idle": "Очікування",
             "manual": "Вручну",
-            "heat_cool": "Опалення\/Охолодження"
+            "off": "Вимкнено",
+            "on": "Увімкнено",
+            "performance": "Продуктивність"
         },
         "configurator": {
             "configure": "Налаштувати",
             "configured": "Налаштовано"
         },
         "cover": {
-            "open": "Відчинено",
-            "opening": "Відкривається",
             "closed": "Зачинено",
             "closing": "Закривається",
+            "open": "Відчинено",
+            "opening": "Відкривається",
             "stopped": "Призупинено"
+        },
+        "default": {
+            "off": "Вимкнено",
+            "on": "Увімкнено",
+            "unavailable": "Недоступний",
+            "unknown": "Невідомо"
         },
         "device_tracker": {
             "home": "Вдома",
@@ -164,19 +282,19 @@
             "on": "Увімкнено"
         },
         "group": {
-            "off": "Вимкнено",
-            "on": "Увімкнено",
-            "home": "Вдома",
-            "not_home": "Не вдома",
-            "open": "Відчинено",
-            "opening": "Відкривається",
             "closed": "Зачинено",
             "closing": "Закривається",
-            "stopped": "Призупинено",
+            "home": "Вдома",
             "locked": "Заблоковано",
-            "unlocked": "Розблоковано",
+            "not_home": "Не вдома",
+            "off": "Вимкнено",
             "ok": "ОК",
-            "problem": "Халепа"
+            "on": "Увімкнено",
+            "open": "Відчинено",
+            "opening": "Відкривається",
+            "problem": "Халепа",
+            "stopped": "Призупинено",
+            "unlocked": "Розблоковано"
         },
         "input_boolean": {
             "off": "Вимкнено",
@@ -191,12 +309,16 @@
             "unlocked": "Розблоковано"
         },
         "media_player": {
+            "idle": "Бездіяльність",
             "off": "Вимкнено",
             "on": "Увімкнено",
-            "playing": "Програвання",
             "paused": "Призупинено",
-            "idle": "Бездіяльність",
+            "playing": "Програвання",
             "standby": "Очікування"
+        },
+        "person": {
+            "home": "Вдома",
+            "not_home": "Відсутній"
         },
         "plant": {
             "ok": "ТАК",
@@ -225,34 +347,10 @@
             "off": "Вимкнено",
             "on": "Увімкнено"
         },
-        "zwave": {
-            "default": {
-                "initializing": "Ініціалізація",
-                "dead": "Неробоча",
-                "sleeping": "Сплячка",
-                "ready": "Готовий"
-            },
-            "query_stage": {
-                "initializing": "Ініціалізація ( {query_stage} )",
-                "dead": "Неробоча ({query_stage})"
-            }
-        },
-        "weather": {
-            "clear-night": "Ясно, ніч",
-            "cloudy": "Хмарно",
-            "fog": "Туман",
-            "hail": "Град",
-            "lightning": "Блискавка",
-            "lightning-rainy": "Блискавка, дощ",
-            "partlycloudy": "Невелика хмарність",
-            "pouring": "Злива",
-            "rainy": "Дощова",
-            "snowy": "Сніжно",
-            "snowy-rainy": "Сніг, дощ",
-            "sunny": "Сонячно",
-            "windy": "Вітряно",
-            "windy-variant": "Вітряно",
-            "exceptional": "Попередження"
+        "timer": {
+            "active": "активний",
+            "idle": "очікування",
+            "paused": "на паузі"
         },
         "vacuum": {
             "cleaning": "Прибирання",
@@ -264,277 +362,378 @@
             "paused": "Призупинено",
             "returning": "Повернення до дока"
         },
-        "timer": {
-            "active": "активний",
-            "idle": "очікування",
-            "paused": "на паузі"
+        "weather": {
+            "clear-night": "Ясно, ніч",
+            "cloudy": "Хмарно",
+            "exceptional": "Попередження",
+            "fog": "Туман",
+            "hail": "Град",
+            "lightning": "Блискавка",
+            "lightning-rainy": "Блискавка, дощ",
+            "partlycloudy": "Невелика хмарність",
+            "pouring": "Злива",
+            "rainy": "Дощова",
+            "snowy": "Сніжно",
+            "snowy-rainy": "Сніг, дощ",
+            "sunny": "Сонячно",
+            "windy": "Вітряно",
+            "windy-variant": "Вітряно"
         },
-        "person": {
-            "home": "Вдома",
-            "not_home": "Відсутній"
-        }
-    },
-    "state_badge": {
-        "default": {
-            "unknown": "Невід",
-            "unavailable": "Недоступно",
-            "error": "Помилка",
-            "entity_not_found": "Об'єкт не знайдено"
-        },
-        "alarm_control_panel": {
-            "armed": "Охорона",
-            "disarmed": "Знято з охорони",
-            "armed_home": "Охорона",
-            "armed_away": "Охорона",
-            "armed_night": "Охорона",
-            "pending": "Очікування",
-            "arming": "Ставлю",
-            "disarming": "Зняття",
-            "triggered": "Тривога",
-            "armed_custom_bypass": "Охорона"
-        },
-        "device_tracker": {
-            "home": "Вдома",
-            "not_home": "Відсутній"
-        },
-        "person": {
-            "home": "Вдома",
-            "not_home": "Не вдома"
+        "zwave": {
+            "default": {
+                "dead": "Неробоча",
+                "initializing": "Ініціалізація",
+                "ready": "Готовий",
+                "sleeping": "Сплячка"
+            },
+            "query_stage": {
+                "dead": "Неробоча ({query_stage})",
+                "initializing": "Ініціалізація ( {query_stage} )"
+            }
         }
     },
     "ui": {
-        "panel": {
-            "shopping-list": {
-                "clear_completed": "Очистити позначені елементи",
-                "add_item": "Додати елемент",
-                "microphone_tip": "Торкніться мікрофона у верхньому правому куті та скажіть \"Add candy to my shopping list\""
+        "auth_store": {
+            "ask": "Ви хочете зберегти цей логін?",
+            "confirm": "Зберегти логін",
+            "decline": "Ні, дякую"
+        },
+        "card": {
+            "alarm_control_panel": {
+                "arm_away": "Охорона (не вдома)",
+                "arm_custom_bypass": "Користувацький обхід",
+                "arm_home": "Поставити на охорону",
+                "arm_night": "Нічна охорона",
+                "armed_custom_bypass": "Користувацький обхід",
+                "clear_code": "Очистити",
+                "code": "Код",
+                "disarm": "Зняття з охорони"
             },
-            "developer-tools": {
-                "tabs": {
-                    "services": {
-                        "title": "Сервіси"
-                    },
-                    "states": {
-                        "title": "Стан"
-                    },
-                    "events": {
-                        "title": "Події"
-                    },
-                    "templates": {
-                        "title": "Шаблон"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
-                    },
-                    "info": {
-                        "title": "Інформація"
-                    },
-                    "logs": {
-                        "title": "Лог"
-                    }
+            "automation": {
+                "last_triggered": "Спрацьовано",
+                "trigger": "Тригер"
+            },
+            "camera": {
+                "not_available": "Зображення недоступне"
+            },
+            "climate": {
+                "aux_heat": "Aux тепла",
+                "away_mode": "Режиму очікування",
+                "currently": "В даний час",
+                "fan_mode": "Режим вентилятора",
+                "on_off": "Вкл / викл",
+                "operation": "Режим",
+                "preset_mode": "Режим",
+                "swing_mode": "Режим гойдання",
+                "target_humidity": "Цільова вологість",
+                "target_temperature": "Задана температура"
+            },
+            "cover": {
+                "position": "Положення",
+                "tilt_position": "Положення нахилу"
+            },
+            "fan": {
+                "direction": "Напрямок",
+                "forward": "Від себе",
+                "oscillate": "Коливання",
+                "reverse": "На себе",
+                "speed": "Швидкість"
+            },
+            "light": {
+                "brightness": "Яскравість",
+                "color_temperature": "Температура кольору",
+                "effect": "Ефект",
+                "white_value": "Значення білого"
+            },
+            "lock": {
+                "code": "Код",
+                "lock": "Блокувати",
+                "unlock": "Розблокувати"
+            },
+            "media_player": {
+                "sound_mode": "Режим звуку",
+                "source": "Джерело",
+                "text_to_speak": "Текст для відтворення"
+            },
+            "persistent_notification": {
+                "dismiss": "Відхилити"
+            },
+            "scene": {
+                "activate": "Активувати"
+            },
+            "script": {
+                "execute": "Виконати"
+            },
+            "timer": {
+                "actions": {
+                    "cancel": "Скасувати",
+                    "finish": "Готово",
+                    "pause": "Пауза",
+                    "start": "Запуск"
                 }
             },
-            "history": {
-                "showing_entries": "Показані записи для",
-                "period": "Період"
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "Відновити очищення",
+                    "return_to_base": "Повернутись до дока",
+                    "start_cleaning": "Почати очищення",
+                    "turn_off": "Вимкнути",
+                    "turn_on": "Ввімкнути"
+                }
             },
-            "logbook": {
-                "showing_entries": "Відображення записів за",
-                "period": "Період"
+            "water_heater": {
+                "away_mode": "Режиму очікування",
+                "currently": "В даний час",
+                "on_off": "Вкл / викл",
+                "operation": "Операція",
+                "target_temperature": "Задана температура"
             },
-            "mailbox": {
-                "empty": "У вас немає повідомлень",
-                "playback_title": "Відтворення повідомлення",
-                "delete_prompt": "Видалити це повідомлення?",
-                "delete_button": "Видалити"
-            },
-            "config": {
-                "header": "Налаштуваня Home Assistant",
-                "introduction": "Тут можна налаштувати свої компоненти та Home Assistant. Не все можна налаштувати з інтерфейсу користувача, але ми працюємо над цим.",
-                "core": {
-                    "caption": "Основні",
-                    "description": "Змініть загальну конфігурацію Home Assistant",
-                    "section": {
-                        "core": {
-                            "header": "Конфігурація та керування сервером",
-                            "introduction": "Зміна вашої конфігурації може бути неабияким процесом. Ми знаємо. Цей розділ намагатиметься полегшити ваше життя.",
-                            "core_config": {
-                                "edit_requires_storage": "Редактор відключено, оскільки конфігурація вже збережена у configuration.yaml.",
-                                "location_name": "Заголовок для вашого Home Assistant",
-                                "latitude": "Широта",
-                                "longitude": "Довгота",
-                                "elevation": "Висота",
-                                "elevation_meters": "метрів",
-                                "time_zone": "Часовий пояс",
-                                "unit_system": "Система одиниць",
-                                "unit_system_imperial": "Імперська",
-                                "unit_system_metric": "Метрична",
-                                "imperial_example": "Фаренгейти, фунти",
-                                "metric_example": "Цельсії, кілограми",
-                                "save_button": "Зберегти"
-                            }
-                        },
-                        "server_control": {
-                            "validation": {
-                                "heading": "Перевірка конфігурації",
-                                "introduction": "Перевірте вашу конфігурацію, якщо ви нещодавно внесли деякі зміни у вашу конфігурацію та хочете переконатися, що вона є дійсною",
-                                "check_config": "Перевірте конфігурацію",
-                                "valid": "Конфігурація дійсна!",
-                                "invalid": "Конфігурація недійсна"
-                            },
-                            "reloading": {
-                                "heading": "Перезавантаження конфігурації",
-                                "introduction": "Деякі частини Home Assistant можна оновити без необхідності перезавантаження. Натискання перезавантаження вивантажить поточну конфігурацію та завантажить нову.",
-                                "core": "Перезавантажити ядро",
-                                "group": "Перезавантажити групи",
-                                "automation": "Перезавантажити автоматизації",
-                                "script": "Перезавантажити скрипти"
-                            },
-                            "server_management": {
-                                "heading": "Управління сервером",
-                                "introduction": "Контролюйте сервер Home Assistant ... з Home Assistant",
-                                "restart": "Перезапустити",
-                                "stop": "Зупинити"
-                            }
-                        }
-                    }
+            "weather": {
+                "attributes": {
+                    "air_pressure": "Тиск повітря",
+                    "humidity": "Вологість",
+                    "temperature": "Температура",
+                    "visibility": "Видимість",
+                    "wind_speed": "Швидкість вітру"
                 },
-                "customize": {
-                    "caption": "Налаштування",
-                    "description": "Налаштуйте свої об'єкти",
+                "cardinal_direction": {
+                    "e": "E",
+                    "ene": "ENE",
+                    "ese": "ESE",
+                    "n": "N",
+                    "ne": "NE",
+                    "nne": "NNE",
+                    "nnw": "NNW",
+                    "nw": "NW",
+                    "s": "S",
+                    "se": "SE",
+                    "sse": "SSE",
+                    "ssw": "SSW",
+                    "sw": "SW",
+                    "w": "W",
+                    "wnw": "WNW",
+                    "wsw": "WSW"
+                },
+                "forecast": "Прогноз"
+            }
+        },
+        "common": {
+            "cancel": "Скасувати",
+            "loading": "Завантаження",
+            "no": "Ні",
+            "save": "Зберегти",
+            "successfully_saved": "Успішно збережено",
+            "yes": "Так"
+        },
+        "components": {
+            "device-picker": {
+                "clear": "Очистити",
+                "show_devices": "Показати пристрої"
+            },
+            "entity": {
+                "entity-picker": {
+                    "clear": "Очистити",
+                    "entity": "Об'єкт",
+                    "show_entities": "Показати об'єкти"
+                }
+            },
+            "history_charts": {
+                "loading_history": "Завантаження історії стану ...",
+                "no_history_found": "Немає історії станів."
+            },
+            "relative_time": {
+                "duration": {
+                    "day": "{count} {count, plural,\n  one {д.}\n  other {д.}\n}",
+                    "hour": "{count} {count, plural,\n  one {год.}\n  other {год.}\n}",
+                    "minute": "{count} {count, plural,\n  one {хв.}\n  other {хв.}\n}",
+                    "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
+                    "week": "{count} {count, plural,\n  one {тиж.}\n  other {тиж.}\n}"
+                },
+                "future": "{time} тому",
+                "never": "Ніколи",
+                "past": "{time} тому"
+            },
+            "service-picker": {
+                "service": "Сервіс"
+            }
+        },
+        "dialogs": {
+            "config_entry_system_options": {
+                "enable_new_entities_description": "Якщо вимкнено, нововиявлені об'єкти для {integration} не будуть автоматично додані до Home Assistant.",
+                "enable_new_entities_label": "Додавати нові об'єкти.",
+                "title": "Параметри системи для {integration}"
+            },
+            "confirmation": {
+                "cancel": "Скасувати",
+                "title": "Ви впевнені?"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "Остання дія"
+                },
+                "sun": {
+                    "elevation": "Висота",
+                    "rising": "Схід сонця",
+                    "setting": "Захід сонця"
+                },
+                "updater": {
+                    "title": "Інструкції по оновленню"
+                }
+            },
+            "more_info_settings": {
+                "entity_id": "Ідентифікатор об'єкта",
+                "name": "Назва",
+                "save": "Зберегти"
+            },
+            "options_flow": {
+                "form": {
+                    "header": "Параметри"
+                },
+                "success": {
+                    "description": "Параметри успішно збережені."
+                }
+            },
+            "zha_device_info": {
+                "manuf": "Виробник: {manufacturer}",
+                "no_area": "Не вказано",
+                "services": {
+                    "reconfigure": "Перенастроювання пристрою ZHA. Використовуйте цю службу, якщо у Вас є проблеми з пристроєм. Якщо даний пристрій працює від батареї, будь ласка, переконайтеся, що воно не знаходиться в режимі сну і приймає команди, коли ви запускаєте цю службу.",
+                    "remove": "Видалити пристрій з мережі Zigbee.",
+                    "updateDeviceName": "Встановіть ім'я для цього пристрою в реєстрі пристроїв."
+                },
+                "zha_device_card": {
+                    "area_picker_label": "Приміщення",
+                    "device_name_placeholder": "Логін",
+                    "update_name_button": "Оновити назву"
+                }
+            }
+        },
+        "duration": {
+            "day": "{count} {count, plural,\n  one {д.}\n  other {д.}\n}",
+            "hour": "{count} {count, plural,\n  one {год.}\n  other {год.}\n}",
+            "minute": "{count} {count, plural,\n  one {хв.}\n  other {хв.}\n}",
+            "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
+            "week": "{count} {count, plural,\n  one {тиж.}\n  other {тиж.}\n}"
+        },
+        "login-form": {
+            "log_in": "Ввійти",
+            "password": "Пароль",
+            "remember": "Запам'ятати"
+        },
+        "notification_drawer": {
+            "click_to_configure": "Натисніть кнопку, щоб налаштувати {entity}",
+            "empty": "Немає сповіщень",
+            "title": "Сповіщення"
+        },
+        "notification_toast": {
+            "connection_lost": "З'єднання втрачено. Повторне підключення...",
+            "entity_turned_off": "Вимкнено {entity}.",
+            "entity_turned_on": "Увімкнено {entity}.",
+            "service_call_failed": "Не вдалося викликати сервіс {service}.",
+            "service_called": "Служба {service} викликається."
+        },
+        "panel": {
+            "config": {
+                "area_registry": {
+                    "caption": "Реєстр зони",
+                    "create_area": "СТВОРИТИ ЗОНУ",
+                    "description": "Огляд всіх областей у вашому домі.",
+                    "editor": {
+                        "create": "СТВОРИТИ",
+                        "default_name": "Нова зона",
+                        "delete": "ВИДАЛИТИ",
+                        "update": "ОНОВИТИ"
+                    },
+                    "no_areas": "Схоже, що у вас ще немає зон!",
                     "picker": {
-                        "header": "Налаштування",
-                        "introduction": "Налаштування атрибутів на об'єкт. Додані \/ відредаговані налаштування набудуть чинності негайно. Видалені налаштування набудуть чинності після оновлення об'єкта."
+                        "create_area": "СТВОРИТИ ЗОНУ",
+                        "header": "Реєстр зон",
+                        "integrations_page": "Сторінка інтеграцій ",
+                        "introduction": "Області використовуються для організації пристроїв. Ця інформація буде використовуватися Home Assistant, щоб допомогти вам організувати ваш інтерфейс, дозволи та інтеграції з іншими системами.",
+                        "introduction2": "Щоб розмістити пристрої в області, скористайтеся посиланням нижче, щоб перейти до сторінки інтеграції, а потім натисніть налаштовану інтеграцію, щоб дістатися до карток пристрою.",
+                        "no_areas": "Схоже, що у вас ще немає створених зон!"
                     }
                 },
                 "automation": {
                     "caption": "Автоматизація",
                     "description": "Створення та редагування автоматизації",
-                    "picker": {
-                        "header": "Редактор автоматизації",
-                        "introduction": "Редактор автоматизації дозволяє створювати та редагувати автоматизації. Будь ласка, прочитайте [інструкції] (https:\/\/home-assistant.io\/docs\/automation\/editor\/), щоб переконатися, що ви правильно налаштували Home Assistant.",
-                        "pick_automation": "Оберіть автоматизацію для редагування",
-                        "no_automations": "Ми не знайшли автоматизації для редагування",
-                        "add_automation": "Додати автоматизацію",
-                        "learn_more": "Докладніше про автоматизації"
-                    },
                     "editor": {
-                        "introduction": "Використовуйте автоматизацію, щоб оживити ваш будинок",
-                        "default_name": "Нова автоматизація",
-                        "save": "Зберегти",
-                        "unsaved_confirm": "У вас є незбережені зміни. Ви впевнені, що хочете вийти?",
-                        "alias": "Назва",
-                        "triggers": {
-                            "header": "Тригери",
-                            "introduction": "Тригери - це те, що починає обробляти правило автоматизації. Можна вказати декілька тригерів для одного і того ж правила. Після запуску тригера, Home Assistant перевірить умови, якщо такі є, і викликає дію. \n\n [Докладніше про тригери.] (https:\/\/home-assistant.io\/docs\/automation\/trigger\/)",
-                            "add": "Додати тригер",
-                            "duplicate": "Дублювати",
+                        "actions": {
+                            "add": "Додати дію",
                             "delete": "Видалити",
                             "delete_confirm": "Ви впевнені, що хочете видалити?",
-                            "unsupported_platform": "Непідтримувана платформа: {platform}",
-                            "type_select": "Тип тригера",
+                            "duplicate": "Дублювати",
+                            "header": "Дії",
+                            "introduction": "Що Home Assistant буде робити, коли автоматизація спрацьовує. \n\n [Докладніше про дії.] (https://home-assistant.io/docs/automation/action/)",
+                            "learn_more": "Докладніше про дії",
+                            "type_select": "Тип дії",
                             "type": {
+                                "condition": {
+                                    "label": "Умова"
+                                },
+                                "delay": {
+                                    "delay": "Затримка",
+                                    "label": "Затримка"
+                                },
+                                "device_id": {
+                                    "extra_fields": {
+                                        "code": "Код"
+                                    },
+                                    "label": "Пристрій"
+                                },
                                 "event": {
-                                    "label": "Подія:",
-                                    "event_type": "Тип події",
-                                    "event_data": "Дані події"
-                                },
-                                "state": {
-                                    "label": "Статус",
-                                    "from": "Від",
-                                    "to": "До",
-                                    "for": "Протягом"
-                                },
-                                "homeassistant": {
-                                    "label": "Home Assistant",
                                     "event": "Подія:",
-                                    "start": "Початок",
-                                    "shutdown": "Завершення роботи"
+                                    "label": "Викликати подію",
+                                    "service_data": "Дані сервісу"
                                 },
-                                "mqtt": {
-                                    "label": "MQTT",
-                                    "topic": "Тема",
-                                    "payload": "Корисне навантаження (необов'язково)"
+                                "service": {
+                                    "label": "Викликати сервіс",
+                                    "service_data": "Дані сервісу"
                                 },
-                                "numeric_state": {
-                                    "label": "Числовий стан",
-                                    "above": "Вище",
-                                    "below": "Нижче",
-                                    "value_template": "Значення шаблону (необов'язково)"
-                                },
-                                "sun": {
-                                    "label": "Сонце",
-                                    "event": "Подія:",
-                                    "sunrise": "Схід сонця",
-                                    "sunset": "Захід сонця",
-                                    "offset": "Зміщення (необов'язково)"
-                                },
-                                "template": {
-                                    "label": "Шаблон",
-                                    "value_template": "Значення шаблону"
-                                },
-                                "time": {
-                                    "label": "Час",
-                                    "at": "У"
-                                },
-                                "zone": {
-                                    "label": "Зона",
-                                    "entity": "Місце розташування об'єкту",
-                                    "zone": "Зона:",
-                                    "event": "Подія:",
-                                    "enter": "Увійшов",
-                                    "leave": "Залишив"
-                                },
-                                "webhook": {
-                                    "label": "Webhook",
-                                    "webhook_id": "Webhook ID"
-                                },
-                                "time_pattern": {
-                                    "label": "Шаблон часу",
-                                    "hours": "Годин",
-                                    "minutes": "Хвилин",
-                                    "seconds": "Секунд"
-                                },
-                                "geo_location": {
-                                    "label": "Геолокація",
-                                    "source": "Джерело",
-                                    "zone": "Зона",
-                                    "event": "Подія:",
-                                    "enter": "Увійти",
-                                    "leave": "Залишити"
+                                "wait_template": {
+                                    "label": "Чекати",
+                                    "timeout": "Тайм-аут (необов'язково)",
+                                    "wait_template": "Шаблон Wait"
+                                }
+                            },
+                            "unsupported_action": "Непідтримувана дія: {action}"
+                        },
+                        "alias": "Назва",
+                        "conditions": {
+                            "add": "Додати умову",
+                            "delete": "Видалити",
+                            "delete_confirm": "Ви впевнені, що хочете видалити?",
+                            "duplicate": "Дублювати",
+                            "header": "Умови",
+                            "introduction": "Умови є необов'язковою частиною правила автоматизації і можуть використовуватися для запобігання дії, що відбувається під час запуску. Умови виглядають дуже схоже на тригери, але вони різні. Тригер буде дивитися на події, що відбуваються в системі, в той час як умова тільки дивиться на те, як система виглядає зараз. Тригер може спостерігати, що перемикач включений. Умова може бачити тільки, якщо перемикач ввімкнено або вимкнено. \n\n [Докладніше про умови.] (https://home-assistant.io/docs/scripts/conditions/)",
+                            "learn_more": "Докладніше про умови",
+                            "type_select": "Тип умови",
+                            "type": {
+                                "and": {
+                                    "label": "Та"
                                 },
                                 "device": {
                                     "label": "Пристрій"
-                                }
-                            },
-                            "learn_more": "Докладніше про тригери"
-                        },
-                        "conditions": {
-                            "header": "Умови",
-                            "introduction": "Умови є необов'язковою частиною правила автоматизації і можуть використовуватися для запобігання дії, що відбувається під час запуску. Умови виглядають дуже схоже на тригери, але вони різні. Тригер буде дивитися на події, що відбуваються в системі, в той час як умова тільки дивиться на те, як система виглядає зараз. Тригер може спостерігати, що перемикач включений. Умова може бачити тільки, якщо перемикач ввімкнено або вимкнено. \n\n [Докладніше про умови.] (https:\/\/home-assistant.io\/docs\/scripts\/conditions\/)",
-                            "add": "Додати умову",
-                            "duplicate": "Дублювати",
-                            "delete": "Видалити",
-                            "delete_confirm": "Ви впевнені, що хочете видалити?",
-                            "unsupported_condition": "Непідтримувана умова: {condition}",
-                            "type_select": "Тип умови",
-                            "type": {
+                                },
+                                "numeric_state": {
+                                    "above": "Над",
+                                    "below": "Нижче",
+                                    "label": "Числовий статус",
+                                    "value_template": "Значення шаблону (не обов'язково)"
+                                },
+                                "or": {
+                                    "label": "Або"
+                                },
                                 "state": {
                                     "label": "Статус",
                                     "state": "Статус"
                                 },
-                                "numeric_state": {
-                                    "label": "Числовий статус",
-                                    "above": "Над",
-                                    "below": "Нижче",
-                                    "value_template": "Значення шаблону (не обов'язково)"
-                                },
                                 "sun": {
-                                    "label": "Сонце",
-                                    "before": "Перед:",
                                     "after": "Після:",
-                                    "before_offset": "Перед зміщенням (необов'язково)",
                                     "after_offset": "Після зміщення (опціонально)",
+                                    "before": "Перед:",
+                                    "before_offset": "Перед зміщенням (необов'язково)",
+                                    "label": "Сонце",
                                     "sunrise": "Схід",
                                     "sunset": "Захід"
                                 },
@@ -543,561 +742,575 @@
                                     "value_template": "Значення шаблону"
                                 },
                                 "time": {
-                                    "label": "Час",
                                     "after": "Після",
-                                    "before": "До"
+                                    "before": "До",
+                                    "label": "Час"
                                 },
                                 "zone": {
-                                    "label": "Зона",
                                     "entity": "Об'єкт з місцем розташування",
+                                    "label": "Зона",
                                     "zone": "Зона"
-                                },
+                                }
+                            },
+                            "unsupported_condition": "Непідтримувана умова: {condition}"
+                        },
+                        "default_name": "Нова автоматизація",
+                        "description": {
+                            "label": "Опис"
+                        },
+                        "introduction": "Використовуйте автоматизацію, щоб оживити ваш будинок",
+                        "load_error_not_editable": "Можна редагувати лише секцію automations у файлі automations.yaml",
+                        "load_error_unknown": "Помилка під час завантаження автоматизації ({err_no}).",
+                        "save": "Зберегти",
+                        "triggers": {
+                            "add": "Додати тригер",
+                            "delete": "Видалити",
+                            "delete_confirm": "Ви впевнені, що хочете видалити?",
+                            "duplicate": "Дублювати",
+                            "header": "Тригери",
+                            "introduction": "Тригери - це те, що починає обробляти правило автоматизації. Можна вказати декілька тригерів для одного і того ж правила. Після запуску тригера, Home Assistant перевірить умови, якщо такі є, і викликає дію. \n\n [Докладніше про тригери.] (https://home-assistant.io/docs/automation/trigger/)",
+                            "learn_more": "Докладніше про тригери",
+                            "type_select": "Тип тригера",
+                            "type": {
                                 "device": {
                                     "label": "Пристрій"
                                 },
-                                "and": {
-                                    "label": "Та"
-                                },
-                                "or": {
-                                    "label": "Або"
-                                }
-                            },
-                            "learn_more": "Докладніше про умови"
-                        },
-                        "actions": {
-                            "header": "Дії",
-                            "introduction": "Що Home Assistant буде робити, коли автоматизація спрацьовує. \n\n [Докладніше про дії.] (https:\/\/home-assistant.io\/docs\/automation\/action\/)",
-                            "add": "Додати дію",
-                            "duplicate": "Дублювати",
-                            "delete": "Видалити",
-                            "delete_confirm": "Ви впевнені, що хочете видалити?",
-                            "unsupported_action": "Непідтримувана дія: {action}",
-                            "type_select": "Тип дії",
-                            "type": {
-                                "service": {
-                                    "label": "Викликати сервіс",
-                                    "service_data": "Дані сервісу"
-                                },
-                                "delay": {
-                                    "label": "Затримка",
-                                    "delay": "Затримка"
-                                },
-                                "wait_template": {
-                                    "label": "Чекати",
-                                    "wait_template": "Шаблон Wait",
-                                    "timeout": "Тайм-аут (необов'язково)"
-                                },
-                                "condition": {
-                                    "label": "Умова"
-                                },
                                 "event": {
-                                    "label": "Викликати подію",
-                                    "event": "Подія:",
-                                    "service_data": "Дані сервісу"
+                                    "event_data": "Дані події",
+                                    "event_type": "Тип події",
+                                    "label": "Подія:"
                                 },
-                                "device_id": {
-                                    "label": "Пристрій"
+                                "geo_location": {
+                                    "enter": "Увійти",
+                                    "event": "Подія:",
+                                    "label": "Геолокація",
+                                    "leave": "Залишити",
+                                    "source": "Джерело",
+                                    "zone": "Зона"
+                                },
+                                "homeassistant": {
+                                    "event": "Подія:",
+                                    "label": "Home Assistant",
+                                    "shutdown": "Завершення роботи",
+                                    "start": "Початок"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "payload": "Корисне навантаження (необов'язково)",
+                                    "topic": "Тема"
+                                },
+                                "numeric_state": {
+                                    "above": "Вище",
+                                    "below": "Нижче",
+                                    "label": "Числовий стан",
+                                    "value_template": "Значення шаблону (необов'язково)"
+                                },
+                                "state": {
+                                    "for": "Протягом",
+                                    "from": "Від",
+                                    "label": "Статус",
+                                    "to": "До"
+                                },
+                                "sun": {
+                                    "event": "Подія:",
+                                    "label": "Сонце",
+                                    "offset": "Зміщення (необов'язково)",
+                                    "sunrise": "Схід сонця",
+                                    "sunset": "Захід сонця"
+                                },
+                                "template": {
+                                    "label": "Шаблон",
+                                    "value_template": "Значення шаблону"
+                                },
+                                "time_pattern": {
+                                    "hours": "Годин",
+                                    "label": "Шаблон часу",
+                                    "minutes": "Хвилин",
+                                    "seconds": "Секунд"
+                                },
+                                "time": {
+                                    "at": "У",
+                                    "label": "Час"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
+                                },
+                                "zone": {
+                                    "enter": "Увійшов",
+                                    "entity": "Місце розташування об'єкту",
+                                    "event": "Подія:",
+                                    "label": "Зона",
+                                    "leave": "Залишив",
+                                    "zone": "Зона:"
                                 }
                             },
-                            "learn_more": "Докладніше про дії"
+                            "unsupported_platform": "Непідтримувана платформа: {platform}"
                         },
-                        "load_error_not_editable": "Можна редагувати лише секцію automations у файлі automations.yaml",
-                        "load_error_unknown": "Помилка під час завантаження автоматизації ({err_no}).",
-                        "description": {
-                            "label": "Опис"
+                        "unsaved_confirm": "У вас є незбережені зміни. Ви впевнені, що хочете вийти?"
+                    },
+                    "picker": {
+                        "add_automation": "Додати автоматизацію",
+                        "header": "Редактор автоматизації",
+                        "introduction": "Редактор автоматизації дозволяє створювати та редагувати автоматизації. Будь ласка, прочитайте [інструкції] (https://home-assistant.io/docs/automation/editor/), щоб переконатися, що ви правильно налаштували Home Assistant.",
+                        "learn_more": "Докладніше про автоматизації",
+                        "no_automations": "Ми не знайшли автоматизації для редагування",
+                        "pick_automation": "Оберіть автоматизацію для редагування"
+                    }
+                },
+                "cloud": {
+                    "caption": "Хмара Home Assistant",
+                    "description_features": "Керуйте далеко від дому, інтегруйтеся з Alexa та Google Assistant.",
+                    "description_login": "Увійшли в систему як {email}",
+                    "description_not_login": "Не ввійшли в систему",
+                    "dialog_cloudhook": {
+                        "close": "Закрити"
+                    }
+                },
+                "core": {
+                    "caption": "Основні",
+                    "description": "Змініть загальну конфігурацію Home Assistant",
+                    "section": {
+                        "core": {
+                            "core_config": {
+                                "edit_requires_storage": "Редактор відключено, оскільки конфігурація вже збережена у configuration.yaml.",
+                                "elevation": "Висота",
+                                "elevation_meters": "метрів",
+                                "imperial_example": "Фаренгейти, фунти",
+                                "latitude": "Широта",
+                                "location_name": "Заголовок для вашого Home Assistant",
+                                "longitude": "Довгота",
+                                "metric_example": "Цельсії, кілограми",
+                                "save_button": "Зберегти",
+                                "time_zone": "Часовий пояс",
+                                "unit_system": "Система одиниць",
+                                "unit_system_imperial": "Імперська",
+                                "unit_system_metric": "Метрична"
+                            },
+                            "header": "Конфігурація та керування сервером",
+                            "introduction": "Зміна вашої конфігурації може бути неабияким процесом. Ми знаємо. Цей розділ намагатиметься полегшити ваше життя."
+                        },
+                        "server_control": {
+                            "reloading": {
+                                "automation": "Перезавантажити автоматизації",
+                                "core": "Перезавантажити ядро",
+                                "group": "Перезавантажити групи",
+                                "heading": "Перезавантаження конфігурації",
+                                "introduction": "Деякі частини Home Assistant можна оновити без необхідності перезавантаження. Натискання перезавантаження вивантажить поточну конфігурацію та завантажить нову.",
+                                "script": "Перезавантажити скрипти"
+                            },
+                            "server_management": {
+                                "heading": "Управління сервером",
+                                "introduction": "Контролюйте сервер Home Assistant ... з Home Assistant",
+                                "restart": "Перезапустити",
+                                "stop": "Зупинити"
+                            },
+                            "validation": {
+                                "check_config": "Перевірте конфігурацію",
+                                "heading": "Перевірка конфігурації",
+                                "introduction": "Перевірте вашу конфігурацію, якщо ви нещодавно внесли деякі зміни у вашу конфігурацію та хочете переконатися, що вона є дійсною",
+                                "invalid": "Конфігурація недійсна",
+                                "valid": "Конфігурація дійсна!"
+                            }
+                        }
+                    }
+                },
+                "customize": {
+                    "attributes_customize": "Наступні атрибути вже встановлені в customize.yaml",
+                    "attributes_not_set": "Наступні атрибути не встановлені. Встановіть їх, якщо хочете.",
+                    "attributes_outside": "Наступні атрибути налаштовані поза межами customize.yaml",
+                    "attributes_override": "Ви можете їх замінити, якщо хочете.",
+                    "attributes_set": "Наступні атрибути сутності задаються програмно.",
+                    "caption": "Налаштування",
+                    "description": "Налаштуйте свої об'єкти",
+                    "pick_attribute": "Виберіть атрибут, який слід замінити",
+                    "picker": {
+                        "header": "Налаштування",
+                        "introduction": "Налаштування атрибутів на об'єкт. Додані / відредаговані налаштування набудуть чинності негайно. Видалені налаштування набудуть чинності після оновлення об'єкта."
+                    },
+                    "warning": {
+                        "include_link": "включити customize.yaml",
+                        "include_sentence": "Здається, що ваш config.yaml не працює належним чином"
+                    }
+                },
+                "devices": {
+                    "automation": {
+                        "conditions": {
+                            "caption": "Робити щось, тільки якщо..."
+                        },
+                        "triggers": {
+                            "caption": "Зроби щось, коли..."
+                        }
+                    },
+                    "automations": "Автоматизації",
+                    "caption": "Пристрої",
+                    "data_table": {
+                        "area": "Область",
+                        "battery": "Акумулятор",
+                        "device": "Пристрій",
+                        "integration": "Інтеграція",
+                        "manufacturer": "Виробник",
+                        "model": "Модель"
+                    },
+                    "description": "Керування підключеними пристроями",
+                    "details": "Тут ви знайдете всі деталі вашого пристрою.",
+                    "device_not_found": "Пристрій не знайдено",
+                    "entities": "Об'єкти",
+                    "info": "Інформація про пристрій"
+                },
+                "entity_registry": {
+                    "caption": "Реєстр об'єктів",
+                    "description": "Огляд всіх відомих об'єктів.",
+                    "editor": {
+                        "default_name": "Нова зона",
+                        "delete": "ВИДАЛИТИ",
+                        "enabled_cause": "Відключено: {cause}.",
+                        "enabled_description": "Відключені об'єкти не будуть додані в Home Assistant.",
+                        "enabled_label": "Увімкнути об'єкт",
+                        "note": "Примітка: це може не працювати ще з усіма інтеграціями.",
+                        "unavailable": "Цей об'єкт наразі недоступний.",
+                        "update": "ОНОВИТИ"
+                    },
+                    "picker": {
+                        "header": "Реєстр об'єктів",
+                        "headers": {
+                            "enabled": "Увімкнено",
+                            "integration": "Інтеграція",
+                            "name": "Назва"
+                        },
+                        "integrations_page": "Сторінка інтеграцій",
+                        "introduction": "Home Assistant зберігає реєстр кожного об'єкта, який він коли-небудь бачив, який може бути унікально ідентифікований. Кожному з цих об'єктів буде призначений ідентифікатор, який буде зарезервований тільки для цього об'єкта.",
+                        "introduction2": "Використовуйте реєстр об'єктів, щоб перевизначити ім'я, змінити ідентифікатор об'єкта або видалити запис з Home Assistant. Примітка: видалення запису реєстру не видалить об'єкт. Щоб зробити це, перейдіть за наведеним нижче посиланням і видаліть його з сторінки інтеграції.",
+                        "unavailable": "(недоступно)"
+                    }
+                },
+                "header": "Налаштуваня Home Assistant",
+                "integrations": {
+                    "caption": "Інтеграція",
+                    "config_entry": {
+                        "delete_confirm": "Ви впевнені, що хочете видалити цю інтеграцію?",
+                        "device_unavailable": "пристрій недоступний",
+                        "entity_unavailable": "Недоступний",
+                        "firmware": "Прошивка: {version}",
+                        "hub": "Підключено через",
+                        "manuf": "створено: {manufacturer}",
+                        "no_area": "Немає області",
+                        "no_device": "Об'єкти без пристроїв",
+                        "no_devices": "Ця інтеграція не має пристроїв.",
+                        "restart_confirm": "Перезавантажте Home Assistant, щоб завершити видалення цієї інтеграції",
+                        "via": "Підключено через"
+                    },
+                    "config_flow": {
+                        "aborted": "Скасовано",
+                        "add_area": "Додати область",
+                        "area_picker_label": "Область",
+                        "close": "Закрити",
+                        "created_config": "Створено конфігурацію для {name} .",
+                        "error_saving_area": "Помилка збереження області: {error}",
+                        "external_step": {
+                            "description": "На цьому кроці необхідно відвідати зовнішній веб-сайт.",
+                            "open_site": "Відкрити веб-сайт"
+                        },
+                        "failed_create_area": "Не вдалося створити область.",
+                        "finish": "Закінчити",
+                        "name_new_area": "Назва нової області?",
+                        "submit": "Надіслати"
+                    },
+                    "configure": "Налаштувати",
+                    "configured": "Налаштовано",
+                    "description": "Управління та налаштування інтеграцій",
+                    "discovered": "Виявлено",
+                    "home_assistant_website": "Веб-сайт Home Assistant",
+                    "integration_not_found": "Інтеграція не знайдена.",
+                    "new": "Налаштуйте нову інтеграцію",
+                    "none": "Ще нічого не налаштовано",
+                    "note_about_integrations": "Ще не всі інтеграції можна налаштувати через інтерфейс користувача.",
+                    "note_about_website_reference": "Більше можна знайти на"
+                },
+                "introduction": "Тут можна налаштувати свої компоненти та Home Assistant. Не все можна налаштувати з інтерфейсу користувача, але ми працюємо над цим.",
+                "person": {
+                    "add_person": "Додати Людини",
+                    "caption": "Особи",
+                    "confirm_delete": "Ви впевнені, що хочете видалити цю людину?",
+                    "confirm_delete2": "Усі пристрої, які належать цій особі, стануть непризначеними.",
+                    "create_person": "Створити Людину",
+                    "description": "Керуйте особами, які відстежуються Home Assistant.",
+                    "detail": {
+                        "create": "Створити",
+                        "delete": "Видалити",
+                        "device_tracker_intro": "Виберіть пристрої, які належать цій людині.",
+                        "device_tracker_pick": "Виберіть пристрій для відстеження",
+                        "device_tracker_picked": "Пристрій для відстеження",
+                        "link_integrations_page": "Сторінка інтеграцій",
+                        "link_presence_detection_integrations": "Інтеграції виявлення присутності",
+                        "linked_user": "Пов'язаний користувач",
+                        "name": "Ім'я",
+                        "name_error_msg": "Ім'я є обов'язковим",
+                        "new_person": "Нова людина",
+                        "no_device_tracker_available_intro": "Коли у вас будуть пристрої, які вказують на присутність людини, ви зможете призначити їх людині тут. Ви можете додати свій перший пристрій, додавши інтеграцію виявлення присутності на сторінці інтеграції.",
+                        "update": "Оновити"
+                    },
+                    "no_persons_created_yet": "Схоже, ви ще не створили жодної людини.",
+                    "note_about_persons_configured_in_yaml": "Примітка: люди, налаштовані за допомогою config.yaml, не можуть редагуватися через інтерфейс користувача."
+                },
+                "scene": {
+                    "editor": {
+                        "devices": {
+                            "delete": "Видалити пристрій"
                         }
                     }
                 },
                 "script": {
                     "caption": "Сценарій",
-                    "description": "Створення та редагування скриптів"
-                },
-                "zwave": {
-                    "caption": "Z-Wave",
-                    "description": "Керуйте мережею Z-Wave",
-                    "network_management": {
-                        "header": "Керування мережею Z-Wave",
-                        "introduction": "Керуйте мережею Z-Wave за допомогою представлених команд. Інформацію про результат виконаних команд Ви можете отримати в журналі OZW."
-                    },
-                    "network_status": {
-                        "network_stopped": "Мережа Z-Wave вимкнена",
-                        "network_starting": "Запуск мережі Z-Wave ...",
-                        "network_starting_note": "Це може зайняти деякий час в залежності від розміру Вашої мережі.",
-                        "network_started": "Мережа Z-Wave працює",
-                        "network_started_note_some_queried": "Активні вузли були опитані. Сплячі вузли будуть опитані, коли вийдуть з режиму сну.",
-                        "network_started_note_all_queried": "Всі вузли були опитані."
-                    },
-                    "services": {
-                        "start_network": "Увімкнути",
-                        "stop_network": "Вимкнути",
-                        "heal_network": "Виправити мережу",
-                        "test_network": "Тестувати",
-                        "soft_reset": "Скидання",
-                        "save_config": "Зберегти конфігурацію",
-                        "add_node_secure": "Додати захищений вузол",
-                        "add_node": "Додати вузол",
-                        "remove_node": "Видалити вузол",
-                        "cancel_command": "Скасувати команду"
-                    },
-                    "common": {
-                        "value": "Значення",
-                        "instance": "Екземпляр",
-                        "index": "Індекс",
-                        "unknown": "невідомо",
-                        "wakeup_interval": "Інтервал пробудження"
-                    },
-                    "values": {
-                        "header": "Значення вузлів"
-                    },
-                    "node_config": {
-                        "header": "Параметри конфігурації вузла",
-                        "seconds": "секунд",
-                        "set_wakeup": "Встановити інтервал пробудження",
-                        "config_parameter": "Параметр конфігурації",
-                        "config_value": "Значення параметра",
-                        "true": "Істина",
-                        "false": "Брехня",
-                        "set_config_parameter": "Встановити параметр налаштування"
-                    }
-                },
-                "users": {
-                    "caption": "Користувачі",
-                    "description": "Управління користувачами",
-                    "picker": {
-                        "title": "Користувачі"
-                    },
+                    "description": "Створення та редагування скриптів",
                     "editor": {
-                        "rename_user": "Перейменувати користувача",
-                        "change_password": "Змінити пароль",
-                        "activate_user": "Активувати користувача",
-                        "deactivate_user": "Деактивувати користувача",
-                        "delete_user": "Видалити користувача",
-                        "caption": "Переглянути користувача"
+                        "default_name": "Новий Скрипт",
+                        "delete_confirm": "Ви впевнені, що хочете видалити цей скрипт?",
+                        "header": "Скрипт: {name}",
+                        "load_error_not_editable": "Тільки скрипти всередині scripts.yaml доступні для редагування"
                     },
-                    "add_user": {
-                        "caption": "Додати користувача",
-                        "name": "Ім'я",
-                        "username": "Ім'я користувача",
-                        "password": "Пароль",
-                        "create": "Створити"
-                    }
-                },
-                "cloud": {
-                    "caption": "Хмара Home Assistant",
-                    "description_login": "Увійшли в систему як {email}",
-                    "description_not_login": "Не ввійшли в систему",
-                    "description_features": "Керуйте далеко від дому, інтегруйтеся з Alexa та Google Assistant."
-                },
-                "integrations": {
-                    "caption": "Інтеграція",
-                    "description": "Управління та налаштування інтеграцій",
-                    "discovered": "Виявлено",
-                    "configured": "Налаштовано",
-                    "new": "Налаштуйте нову інтеграцію",
-                    "configure": "Налаштувати",
-                    "none": "Ще нічого не налаштовано",
-                    "config_entry": {
-                        "no_devices": "Ця інтеграція не має пристроїв.",
-                        "no_device": "Об'єкти без пристроїв",
-                        "delete_confirm": "Ви впевнені, що хочете видалити цю інтеграцію?",
-                        "restart_confirm": "Перезавантажте Home Assistant, щоб завершити видалення цієї інтеграції",
-                        "manuf": "створено: {manufacturer}",
-                        "via": "Підключено через",
-                        "firmware": "Прошивка: {version}",
-                        "device_unavailable": "пристрій недоступний",
-                        "entity_unavailable": "Недоступний",
-                        "no_area": "Немає області",
-                        "hub": "Підключено через"
-                    },
-                    "config_flow": {
-                        "external_step": {
-                            "description": "На цьому кроці необхідно відвідати зовнішній веб-сайт.",
-                            "open_site": "Відкрити веб-сайт"
-                        }
-                    }
-                },
-                "zha": {
-                    "caption": "ZHA",
-                    "description": "Управління мережею домашньої автоматизації Zigbee",
-                    "services": {
-                        "reconfigure": "Переконфігуруйте пристрій ZHA. Використовуйте це, якщо у вас виникли проблеми з пристроєм. Якщо пристрій, про який йде мова, живиться від батареї, будь ласка, переконайтеся, що він працює і приймає команди.",
-                        "updateDeviceName": "Встановіть зручну назву для цього пристрою у реєстрі.",
-                        "remove": "Видалити пристрій із мережі Zigbee."
-                    },
-                    "device_card": {
-                        "device_name_placeholder": "Ім'я",
-                        "area_picker_label": "Зона",
-                        "update_name_button": "Змінити ім'я"
-                    },
-                    "add_device_page": {
-                        "header": "Розумні пристрої на базі Zigbee - додавання пристроїв",
-                        "spinner": "Пошук пристроїв ZHA Zigbee ...",
-                        "discovery_text": "Тут будуть показані автоматично виявлені пристрої. Дотримуйтесь вказівок на  ваший пристроях і переведіть пристрої в режим з'єднання."
-                    }
-                },
-                "area_registry": {
-                    "caption": "Реєстр зони",
-                    "description": "Огляд всіх областей у вашому домі.",
                     "picker": {
-                        "header": "Реєстр зон",
-                        "introduction": "Області використовуються для організації пристроїв. Ця інформація буде використовуватися Home Assistant, щоб допомогти вам організувати ваш інтерфейс, дозволи та інтеграції з іншими системами.",
-                        "introduction2": "Щоб розмістити пристрої в області, скористайтеся посиланням нижче, щоб перейти до сторінки інтеграції, а потім натисніть налаштовану інтеграцію, щоб дістатися до карток пристрою.",
-                        "integrations_page": "Сторінка інтеграцій ",
-                        "no_areas": "Схоже, що у вас ще немає створених зон!",
-                        "create_area": "СТВОРИТИ ЗОНУ"
-                    },
-                    "no_areas": "Схоже, що у вас ще немає зон!",
-                    "create_area": "СТВОРИТИ ЗОНУ",
-                    "editor": {
-                        "default_name": "Нова зона",
-                        "delete": "ВИДАЛИТИ",
-                        "update": "ОНОВИТИ",
-                        "create": "СТВОРИТИ"
-                    }
-                },
-                "entity_registry": {
-                    "caption": "Реєстр об'єктів",
-                    "description": "Огляд всіх відомих об'єктів.",
-                    "picker": {
-                        "header": "Реєстр об'єктів",
-                        "unavailable": "(недоступно)",
-                        "introduction": "Home Assistant зберігає реєстр кожного об'єкта, який він коли-небудь бачив, який може бути унікально ідентифікований. Кожному з цих об'єктів буде призначений ідентифікатор, який буде зарезервований тільки для цього об'єкта.",
-                        "introduction2": "Використовуйте реєстр об'єктів, щоб перевизначити ім'я, змінити ідентифікатор об'єкта або видалити запис з Home Assistant. Примітка: видалення запису реєстру не видалить об'єкт. Щоб зробити це, перейдіть за наведеним нижче посиланням і видаліть його з сторінки інтеграції.",
-                        "integrations_page": "Сторінка інтеграцій"
-                    },
-                    "editor": {
-                        "unavailable": "Цей об'єкт наразі недоступний.",
-                        "default_name": "Нова зона",
-                        "delete": "ВИДАЛИТИ",
-                        "update": "ОНОВИТИ",
-                        "enabled_label": "Увімкнути об'єкт",
-                        "enabled_cause": "Відключено: {cause}.",
-                        "enabled_description": "Відключені об'єкти не будуть додані в Home Assistant."
-                    }
-                },
-                "person": {
-                    "caption": "Особи",
-                    "description": "Керуйте особами, які відстежуються Home Assistant.",
-                    "detail": {
-                        "name": "Ім'я",
-                        "device_tracker_intro": "Виберіть пристрої, які належать цій людині.",
-                        "device_tracker_picked": "Пристрій для відстеження",
-                        "device_tracker_pick": "Виберіть пристрій для відстеження"
+                        "add_script": "Додати скрипт",
+                        "header": "Редактор Скриптів ",
+                        "introduction": "Редактор скриптів дозволяє створювати та редагувати скрипти. Перейдіть за посиланням нижче, щоб прочитати вказівки, щоб переконатися, що ви правильно налаштували Home Assistant.",
+                        "learn_more": "Дізнатися більше про скрипти"
                     }
                 },
                 "server_control": {
                     "caption": "Керування сервером",
                     "description": "Перезавантаження та зупинення сервера Home Assistant",
                     "section": {
-                        "validation": {
-                            "heading": "Перевірка конфігурації",
-                            "introduction": "Перевірте вашу конфігурацію, якщо ви нещодавно внесли деякі зміни у вашу конфігурацію та хочете переконатися, що вона є дійсною",
-                            "check_config": "Перевірити конфігурацію",
-                            "valid": "Конфігурація дійсна!",
-                            "invalid": "Конфігурація недійсна"
-                        },
                         "reloading": {
-                            "heading": "Перезавантаження конфігурації",
-                            "introduction": "Деякі частини Home Assistant можна оновити без необхідності перезавантаження. Натискання перезавантаження вивантажить поточну конфігурацію та завантажить нову.",
+                            "automation": "Перезавантаження автоматизації",
                             "core": "Перезавантажити ядро",
                             "group": "Перезавантажити групи",
-                            "automation": "Перезавантаження автоматизації",
-                            "script": "Перезавантажити скрипти",
-                            "scene": "Перезавантажити сцени"
+                            "heading": "Перезавантаження конфігурації",
+                            "introduction": "Деякі частини Home Assistant можна оновити без необхідності перезавантаження. Натискання перезавантаження вивантажить поточну конфігурацію та завантажить нову.",
+                            "scene": "Перезавантажити сцени",
+                            "script": "Перезавантажити скрипти"
                         },
                         "server_management": {
+                            "confirm_restart": "Ви впевнені, що хочете перезапустити Home Assistant?",
+                            "confirm_stop": "Ви впевнені, що хочете зупинити Home Assistant?",
                             "heading": "Управління сервером",
                             "introduction": "Контролюйте сервер Home Assistant ... з Home Assistant",
                             "restart": "Перезапустити",
-                            "stop": "Зупинити",
-                            "confirm_restart": "Ви впевнені, що хочете перезапустити Home Assistant?",
-                            "confirm_stop": "Ви впевнені, що хочете зупинити Home Assistant?"
+                            "stop": "Зупинити"
+                        },
+                        "validation": {
+                            "check_config": "Перевірити конфігурацію",
+                            "heading": "Перевірка конфігурації",
+                            "introduction": "Перевірте вашу конфігурацію, якщо ви нещодавно внесли деякі зміни у вашу конфігурацію та хочете переконатися, що вона є дійсною",
+                            "invalid": "Конфігурація недійсна",
+                            "valid": "Конфігурація дійсна!"
                         }
                     }
                 },
-                "devices": {
-                    "caption": "Пристрої",
-                    "description": "Керування підключеними пристроями",
-                    "automation": {
-                        "triggers": {
-                            "caption": "Зроби щось, коли..."
-                        },
-                        "conditions": {
-                            "caption": "Робити щось, тільки якщо..."
-                        }
-                    }
-                }
-            },
-            "profile": {
-                "push_notifications": {
-                    "header": "Push-Повідомлення",
-                    "description": "Надіслати сповіщення на цей пристрій.",
-                    "error_load_platform": "Налаштувати notify.html5.",
-                    "error_use_https": "Потрібно ввімкнути SSL для інтерфейсу.",
-                    "push_notifications": "Push-повідомлення",
-                    "link_promo": "Дізнатися більше"
-                },
-                "language": {
-                    "header": "Мова",
-                    "link_promo": "Допомога в перекладі",
-                    "dropdown_label": "Мова"
-                },
-                "themes": {
-                    "header": "Тема",
-                    "error_no_theme": "Немає доступних тем.",
-                    "link_promo": "Дізнайтеся про теми",
-                    "dropdown_label": "Тема"
-                },
-                "refresh_tokens": {
-                    "header": "Токени оновлення",
-                    "description": "Кожен токен оновлення відображає сеанс входу в систему. Токени оновлення автоматично видалятимуться, коли ви натиснете вийти. Наступні токени оновлення доступні для вашого облікового запису.",
-                    "token_title": "Оновити токен для {clientId}",
-                    "created_at": "Створений в {date}",
-                    "confirm_delete": "Ви впевнені, що хочете видалити токен оновлення для {name} ?",
-                    "delete_failed": "Не вдалося видалити токен оновлення.",
-                    "last_used": "Останнє використання в {date} з {location}",
-                    "not_used": "Ніколи не використовувався",
-                    "current_token_tooltip": "Неможливо видалити поточний токен оновлення"
-                },
-                "long_lived_access_tokens": {
-                    "header": "Токени довготермінового доступу",
-                    "description": "Створюйте довгоживі токени доступу, щоб ваші сценарії могли взаємодіяти з Home Assistant. Кожен токен буде дійсним протягом 10 років. Наступні довгоживучі токени доступу наразі активні.",
-                    "learn_auth_requests": "Дізнайтеся, як зробити аутентифіковані запити.",
-                    "created_at": "Створено в {date}",
-                    "confirm_delete": "Ви впевнені, що хочете видалити токен доступу для {name} ?",
-                    "delete_failed": "Не вдалося видалити токен доступу.",
-                    "create": "Створити токен",
-                    "create_failed": "Не вдалося створити токен доступу.",
-                    "prompt_name": "Назва",
-                    "prompt_copy_token": "Скопіюйте ваш токен доступу. Знову він не буде показаний.",
-                    "empty_state": "У вас немає довгоіснуючих токенів доступу.",
-                    "last_used": "Останнє використання в {date} з {location}",
-                    "not_used": "Ніколи не використовувався"
-                },
-                "current_user": "Ви ввійшли як {fullName}.",
-                "is_owner": "Ви є власником.",
-                "change_password": {
-                    "header": "Змінити пароль",
-                    "current_password": "Поточний пароль",
-                    "new_password": "Новий пароль",
-                    "confirm_new_password": "Підтвердіть новий пароль",
-                    "error_required": "Необхідно",
-                    "submit": "Відправити"
-                },
-                "mfa": {
-                    "header": "Багатофакторна перевірка справжності модулів",
-                    "disable": "Вимкнути",
-                    "enable": "Увімкнути",
-                    "confirm_disable": "Ви впевнені, що хочете вимкнути {name} ?"
-                },
-                "mfa_setup": {
-                    "title_aborted": "Скасовано",
-                    "title_success": "Успішно!",
-                    "step_done": "Налаштування виконано для {step}",
-                    "close": "Закрити",
-                    "submit": "Відправити"
-                },
-                "logout": "Вийти",
-                "force_narrow": {
-                    "header": "Завжди приховувати бічну панель",
-                    "description": "Це дозволить приховати бічну панель за замовчуванням, як і для мобільних пристроїв."
-                },
-                "advanced_mode": {
-                    "title": "Розширений режим"
-                }
-            },
-            "page-authorize": {
-                "initializing": "Ініціалізація",
-                "authorizing_client": "Ви збираєтеся надати {clientId} доступ до Home Assistant.",
-                "logging_in_with": "Вхід з **{authProviderName}**.",
-                "pick_auth_provider": "Або увійти з",
-                "abort_intro": "Логін скасовано",
-                "form": {
-                    "working": "Будь ласка, зачекайте",
-                    "unknown_error": "Щось пішло не так",
-                    "providers": {
-                        "homeassistant": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "username": "Ім'я користувача",
-                                        "password": "Пароль"
-                                    }
-                                },
-                                "mfa": {
-                                    "data": {
-                                        "code": "Двофакторний ідентифікаційний код"
-                                    },
-                                    "description": "Відкрийте **{mfa_module_name}** на своєму пристрої, щоб переглянути свій двофакторний код автентифікації та підтвердити свою особу:"
-                                }
-                            },
-                            "error": {
-                                "invalid_auth": "Неправильне ім'я користувача або пароль",
-                                "invalid_code": "Невірний код автентифікації"
-                            },
-                            "abort": {
-                                "login_expired": "Сесія закінчилася, увійдіть знову."
-                            }
-                        },
-                        "legacy_api_password": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "password": "Пароль API"
-                                    },
-                                    "description": "Будь ласка, введіть пароль API в ваш http конфіг:"
-                                },
-                                "mfa": {
-                                    "data": {
-                                        "code": "Двофакторний ідентифікаційний код"
-                                    },
-                                    "description": "Відкрийте **{mfa_module_name}** на своєму пристрої, щоб переглянути свій двофакторний код автентифікації та підтвердити свою особу:"
-                                }
-                            },
-                            "error": {
-                                "invalid_auth": "Невірний пароль API",
-                                "invalid_code": "Невірний код авторизації"
-                            },
-                            "abort": {
-                                "no_api_password_set": "Ви не маєте налаштованого пароля API.",
-                                "login_expired": "Термін дії сессії закінчився, авторизуйтесь ще раз"
-                            }
-                        },
-                        "trusted_networks": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "user": "Користувач"
-                                    },
-                                    "description": "Будь-ласка, виберіть користувача, яким ви хочете увійти:"
-                                }
-                            },
-                            "abort": {
-                                "not_whitelisted": "Ваш комп'ютер не включений в білий список."
-                            }
-                        },
-                        "command_line": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "username": "Логін",
-                                        "password": "Пароль"
-                                    }
-                                },
-                                "mfa": {
-                                    "data": {
-                                        "code": "Код двофакторної аутентифікації"
-                                    },
-                                    "description": "Відкрийте **{mfa_module_name}** на своєму пристрої, щоб переглянути свій двофакторний код автентифікації та підтвердити свою особу:"
-                                }
-                            },
-                            "error": {
-                                "invalid_auth": "Неправильне ім'я користувача або пароль",
-                                "invalid_code": "Невірний код аутентифікації"
-                            },
-                            "abort": {
-                                "login_expired": "Сесія закінчилася, увійдіть знову."
-                            }
-                        }
-                    }
-                }
-            },
-            "page-onboarding": {
-                "intro": "Ви готові розбудити свій будинок, повернути вашу конфіденційність і приєднатися до світової спільноти майстрів?",
-                "user": {
-                    "intro": "Давайте почнемо з створення облікового запису користувача.",
-                    "required_field": "Необхідні",
-                    "data": {
+                "users": {
+                    "add_user": {
+                        "caption": "Додати користувача",
+                        "create": "Створити",
                         "name": "Ім'я",
-                        "username": "Імя користувача",
                         "password": "Пароль",
-                        "password_confirm": "Підтвердити пароль"
+                        "username": "Ім'я користувача"
                     },
-                    "create_account": "Створити обліковий запис",
-                    "error": {
-                        "required_fields": "Заповніть усі необхідні поля",
-                        "password_not_match": "Паролі не збігаються"
+                    "caption": "Користувачі",
+                    "description": "Управління користувачами",
+                    "editor": {
+                        "activate_user": "Активувати користувача",
+                        "active": "Активний",
+                        "caption": "Переглянути користувача",
+                        "change_password": "Змінити пароль",
+                        "confirm_user_deletion": "Справді видалити {name} ?",
+                        "deactivate_user": "Деактивувати користувача",
+                        "delete_user": "Видалити користувача",
+                        "enter_new_name": "Введіть нове ім'я",
+                        "group": "Група",
+                        "group_update_failed": "Помилка оновлення групи:",
+                        "owner": "Власник",
+                        "rename_user": "Перейменувати користувача",
+                        "system_generated": "Системний",
+                        "system_generated_users_not_removable": "Не вдається видалити користувачів, створених системою.",
+                        "unnamed_user": "Безіменний користувач",
+                        "user_rename_failed": "Помилка перейменування користувача:"
+                    },
+                    "picker": {
+                        "system_generated": "Системний",
+                        "title": "Користувачі"
                     }
                 },
-                "integration": {
-                    "intro": "Пристрої та послуги в Home Assistant, які вимагають інтеграції з зовнішніми джерелами. Ви можете їх налаштувати зараз або зробити це пізніше на екрані конфігурації.",
-                    "more_integrations": "Більше",
-                    "finish": "Завершити"
+                "zha": {
+                    "add_device_page": {
+                        "discovery_text": "Тут будуть показані автоматично виявлені пристрої. Дотримуйтесь вказівок на  ваший пристроях і переведіть пристрої в режим з'єднання.",
+                        "header": "Розумні пристрої на базі Zigbee - додавання пристроїв",
+                        "spinner": "Пошук пристроїв ZHA Zigbee ..."
+                    },
+                    "caption": "ZHA",
+                    "description": "Управління мережею домашньої автоматизації Zigbee",
+                    "device_card": {
+                        "area_picker_label": "Зона",
+                        "device_name_placeholder": "Ім'я",
+                        "update_name_button": "Змінити ім'я"
+                    },
+                    "services": {
+                        "reconfigure": "Переконфігуруйте пристрій ZHA. Використовуйте це, якщо у вас виникли проблеми з пристроєм. Якщо пристрій, про який йде мова, живиться від батареї, будь ласка, переконайтеся, що він працює і приймає команди.",
+                        "remove": "Видалити пристрій із мережі Zigbee.",
+                        "updateDeviceName": "Встановіть зручну назву для цього пристрою у реєстрі."
+                    }
                 },
-                "core-config": {
-                    "intro": "Привіт {name}, Ласкаво просимо до Home Assistant. Як би ви хотіли назвати свій дім?",
-                    "intro_location": "Ми хотіли б знати, де ви живете. Ця інформація допоможе нам відображати інформацію та налаштування, базуючись положенні сонця. Ці дані ніколи не передаються за межі вашої локальної мережі.",
-                    "intro_location_detect": "Ми можемо допомогти вам заповнити цю інформацію, зробивши одноразовий запит до зовнішньої служби.",
-                    "location_name_default": "Головна",
-                    "button_detect": "Виявити",
-                    "finish": "Далі"
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "common": {
+                        "index": "Індекс",
+                        "instance": "Екземпляр",
+                        "unknown": "невідомо",
+                        "value": "Значення",
+                        "wakeup_interval": "Інтервал пробудження"
+                    },
+                    "description": "Керуйте мережею Z-Wave",
+                    "network_management": {
+                        "header": "Керування мережею Z-Wave",
+                        "introduction": "Керуйте мережею Z-Wave за допомогою представлених команд. Інформацію про результат виконаних команд Ви можете отримати в журналі OZW."
+                    },
+                    "network_status": {
+                        "network_started": "Мережа Z-Wave працює",
+                        "network_started_note_all_queried": "Всі вузли були опитані.",
+                        "network_started_note_some_queried": "Активні вузли були опитані. Сплячі вузли будуть опитані, коли вийдуть з режиму сну.",
+                        "network_starting": "Запуск мережі Z-Wave ...",
+                        "network_starting_note": "Це може зайняти деякий час в залежності від розміру Вашої мережі.",
+                        "network_stopped": "Мережа Z-Wave вимкнена"
+                    },
+                    "node_config": {
+                        "config_parameter": "Параметр конфігурації",
+                        "config_value": "Значення параметра",
+                        "false": "Брехня",
+                        "header": "Параметри конфігурації вузла",
+                        "seconds": "секунд",
+                        "set_config_parameter": "Встановити параметр налаштування",
+                        "set_wakeup": "Встановити інтервал пробудження",
+                        "true": "Істина"
+                    },
+                    "services": {
+                        "add_node": "Додати вузол",
+                        "add_node_secure": "Додати захищений вузол",
+                        "cancel_command": "Скасувати команду",
+                        "heal_network": "Виправити мережу",
+                        "remove_node": "Видалити вузол",
+                        "save_config": "Зберегти конфігурацію",
+                        "soft_reset": "Скидання",
+                        "start_network": "Увімкнути",
+                        "stop_network": "Вимкнути",
+                        "test_network": "Тестувати"
+                    },
+                    "values": {
+                        "header": "Значення вузлів"
+                    }
                 }
+            },
+            "developer-tools": {
+                "tabs": {
+                    "events": {
+                        "title": "Події"
+                    },
+                    "info": {
+                        "built_using": "Побудований за допомогою",
+                        "developed_by": "Розроблена купою дивовижних людей.",
+                        "frontend_version": "Версія Frontend: {version} - {type}",
+                        "icons_by": "Ікони від",
+                        "license": "Опубліковано під ліцензією Apache 2.0",
+                        "path_configuration": "Шлях до config.yaml: {path}",
+                        "remove": "Видалити",
+                        "set": "Встановити",
+                        "source": "Джерело:",
+                        "title": "Інформація"
+                    },
+                    "logs": {
+                        "details": "Деталі журналу ({level})",
+                        "load_full_log": "Завантажте повний журнал Home Assistant",
+                        "multiple_messages": "повідомлення вперше виникло в {time} і показується {counter} раз",
+                        "title": "Лог"
+                    },
+                    "mqtt": {
+                        "description_listen": "Слухати тему",
+                        "description_publish": "Опублікувати пакет",
+                        "listening_to": "Слухати",
+                        "message_received": "Повідомлення {id} отримане в {topic} о {time} :",
+                        "publish": "Опублікувати",
+                        "start_listening": "Почати прослуховування",
+                        "stop_listening": "Припинити прослуховування",
+                        "subscribe_to": "Тема для підписки",
+                        "title": "MQTT",
+                        "topic": "тема"
+                    },
+                    "services": {
+                        "call_service": "Викликати службу",
+                        "column_description": "Опис",
+                        "column_example": "Приклад",
+                        "column_parameter": "Параметр",
+                        "data": "Дані служби (YAML, необов'язково)",
+                        "description": "Сервіс dev Tool дозволяє викликати будь-яку доступну службу в Home Assistant.",
+                        "fill_example_data": "Заповнити дані прикладом",
+                        "no_description": "Опис відсутній",
+                        "no_parameters": "Ця служба не приймає ніяких параметрів.",
+                        "select_service": "Виберіть службу, щоб переглянути опис",
+                        "title": "Сервіси"
+                    },
+                    "states": {
+                        "attributes": "Атрибути",
+                        "entity": "Об'єкт",
+                        "filter_attributes": "Фільтрувати атрибути",
+                        "more_info": "Більше інформації",
+                        "no_entities": "Немає об'єктів",
+                        "set_state": "Встановити стан",
+                        "state": "Статус",
+                        "title": "Стан"
+                    },
+                    "templates": {
+                        "description": "Шаблони відтворюються за допомогою механізму шаблонів Jinja2 з деякими розширеннями Home Assistant.",
+                        "editor": "Редактор шаблонів",
+                        "jinja_documentation": "Документація щодо шаблону Jinja2",
+                        "template_extensions": "Розширення шаблонів Home Assistant",
+                        "title": "Шаблон",
+                        "unknown_error_template": "Невідома помилка відтворення шаблону"
+                    }
+                }
+            },
+            "history": {
+                "period": "Період",
+                "showing_entries": "Показані записи для"
+            },
+            "logbook": {
+                "entries_not_found": "Не знайдено записів журналу.",
+                "period": "Період",
+                "showing_entries": "Відображення записів за"
             },
             "lovelace": {
                 "cards": {
-                    "shopping-list": {
-                        "checked_items": "Позначені елементи",
-                        "clear_items": "Очистити позначені елементи",
-                        "add_item": "Додати елемент"
-                    },
+                    "confirm_delete": "Ви впевнені, що хочете видалити цю карту?",
                     "empty_state": {
-                        "title": "Ласкаво просимо додому",
+                        "go_to_integrations_page": "Перейти на сторінку інтеграцій.",
                         "no_devices": "Ця сторінка дозволяє керувати пристроями, однак, схоже, у вас ще немає налаштованих пристроїв. Щоб почати, перейдіть на сторінку інтеграції.",
-                        "go_to_integrations_page": "Перейти на сторінку інтеграцій."
+                        "title": "Ласкаво просимо додому"
                     },
                     "picture-elements": {
-                        "hold": "Утримуйте:",
-                        "tap": "Торкніться:",
-                        "navigate_to": "Перейти до {location}",
-                        "toggle": "Переключити {name}",
                         "call_service": "Звернутись до сервісу {name}",
-                        "more_info": "Показати більше: {name}"
+                        "hold": "Утримуйте:",
+                        "more_info": "Показати більше: {name}",
+                        "navigate_to": "Перейти до {location}",
+                        "tap": "Торкніться:",
+                        "toggle": "Переключити {name}"
+                    },
+                    "shopping-list": {
+                        "add_item": "Додати елемент",
+                        "checked_items": "Позначені елементи",
+                        "clear_items": "Очистити позначені елементи"
                     }
                 },
+                "changed_toast": {
+                    "message": "Конфігурацію Lovelace було оновлено, хочете оновити?",
+                    "refresh": "Оновити"
+                },
                 "editor": {
-                    "edit_card": {
-                        "header": "Конфігурація картки",
-                        "save": "Зберегти",
-                        "toggle_editor": "Перемкнути редактор",
-                        "pick_card": "Виберіть картку, яку хочете додати.",
-                        "add": "Додати картку",
-                        "edit": "Редагувати",
-                        "delete": "Видалити",
-                        "move": "Переміщення"
-                    },
-                    "migrate": {
-                        "header": "Конфігурація несумісна",
-                        "para_no_id": "Цей елемент не має ID. Додайте ID до цього елемента в 'ui-lovelace.yaml'.",
-                        "para_migrate": "Домашній помічник може автоматично додавати ідентифікатори ID до всіх ваших карт і переглядів, натиснувши кнопку \"Перенести налаштування\".",
-                        "migrate": "Перенесення конфігурації"
-                    },
-                    "header": "Редагування інтерфейсу",
-                    "edit_view": {
-                        "header": "Перегляд Конфігурації",
-                        "add": "Додати вигляд",
-                        "edit": "Редагувати вигляд",
-                        "delete": "Видалити вигляд"
-                    },
-                    "save_config": {
-                        "header": "Візьміть під свій контроль Lovelace UI",
-                        "para": "За замовчуванням Home Assistant буде підтримувати ваш інтерфейс, оновлюючи його, коли з'являться нові об'єкти або компоненти Lovelace. Якщо ви візьмете під контроль, ми більше не будемо автоматично вносити зміни для вас.",
-                        "para_sure": "Ви впевнені, що хочете взяти під свій контроль інтерфейс?",
-                        "cancel": "Неважливо",
-                        "save": "Взяти під контроль"
-                    },
-                    "menu": {
-                        "raw_editor": "Текстовий редактор"
-                    },
-                    "raw_editor": {
-                        "header": "Редагувати конфігурацію",
-                        "save": "Зберегти",
-                        "unsaved_changes": "Незбережені зміни",
-                        "saved": "Збережено"
-                    },
-                    "edit_lovelace": {
-                        "header": "Заголовок для Lovelace",
-                        "explanation": "Цей заголовок буде показаний над вашими картками в Lovelace"
-                    },
                     "card": {
                         "light": {
                             "name": "Освітлення"
@@ -1120,388 +1333,355 @@
                         "weather-forecast": {
                             "name": "Прогноз погоди"
                         }
+                    },
+                    "edit_card": {
+                        "add": "Додати картку",
+                        "delete": "Видалити",
+                        "edit": "Редагувати",
+                        "header": "Конфігурація картки",
+                        "move": "Переміщення",
+                        "options": "Більше опцій",
+                        "pick_card": "Виберіть картку, яку хочете додати.",
+                        "save": "Зберегти",
+                        "toggle_editor": "Перемкнути редактор"
+                    },
+                    "edit_lovelace": {
+                        "edit_title": "Редагувати назву",
+                        "explanation": "Цей заголовок буде показаний над вашими картками в Lovelace",
+                        "header": "Заголовок для Lovelace"
+                    },
+                    "edit_view": {
+                        "add": "Додати вигляд",
+                        "delete": "Видалити вигляд",
+                        "edit": "Редагувати вигляд",
+                        "header": "Перегляд Конфігурації",
+                        "move_left": "Перемістити перегляд ліворуч",
+                        "move_right": "Перемістити перегляд праворуч"
+                    },
+                    "header": "Редагування інтерфейсу",
+                    "menu": {
+                        "open": "Відкрийте меню Lovelace",
+                        "raw_editor": "Текстовий редактор"
+                    },
+                    "migrate": {
+                        "header": "Конфігурація несумісна",
+                        "migrate": "Перенесення конфігурації",
+                        "para_migrate": "Домашній помічник може автоматично додавати ідентифікатори ID до всіх ваших карт і переглядів, натиснувши кнопку \"Перенести налаштування\".",
+                        "para_no_id": "Цей елемент не має ID. Додайте ID до цього елемента в 'ui-lovelace.yaml'."
+                    },
+                    "raw_editor": {
+                        "confirm_unsaved_changes": "У вас є незбережені зміни, ви впевнені, що хочете вийти?",
+                        "confirm_unsaved_comments": "Ваша конфігурація містить коментарі, вони не будуть збережені. Ви хочете продовжити?",
+                        "error_invalid_config": "Ваш конфігурація недійсна: {error}",
+                        "error_parse_yaml": "Неможливо розібрати YAML: {error}",
+                        "error_save_yaml": "Неможливо зберегти YAML: {error}",
+                        "header": "Редагувати конфігурацію",
+                        "save": "Зберегти",
+                        "saved": "Збережено",
+                        "unsaved_changes": "Незбережені зміни"
+                    },
+                    "save_config": {
+                        "cancel": "Неважливо",
+                        "header": "Візьміть під свій контроль Lovelace UI",
+                        "para": "За замовчуванням Home Assistant буде підтримувати ваш інтерфейс, оновлюючи його, коли з'являться нові об'єкти або компоненти Lovelace. Якщо ви візьмете під контроль, ми більше не будемо автоматично вносити зміни для вас.",
+                        "para_sure": "Ви впевнені, що хочете взяти під свій контроль інтерфейс?",
+                        "save": "Взяти під контроль"
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "title": "Панельний режим?"
+                        }
                     }
                 },
                 "menu": {
+                    "close": "Закрити",
                     "configure_ui": "Налаштувати інтерфейс користувача",
-                    "unused_entities": "Незадіяні об'єкти",
                     "help": "Допомога",
-                    "refresh": "Оновити"
+                    "refresh": "Оновити",
+                    "unused_entities": "Незадіяні об'єкти"
+                },
+                "reload_lovelace": "Перезавантажити Lovelace",
+                "unused_entities": {
+                    "domain": "Домен",
+                    "entity": "Об'єкт",
+                    "entity_id": "ID об'єкту",
+                    "last_changed": "Востаннє змінено",
+                    "title": "Незадіяні об'єкти"
+                },
+                "views": {
+                    "confirm_delete": "Ви впевнені, що хочете видалити цей вид?"
                 },
                 "warning": {
-                    "entity_not_found": "Об'єкт не доступний: {entity}",
-                    "entity_non_numeric": "Об'єкт не є числовим: {entity}"
+                    "entity_non_numeric": "Об'єкт не є числовим: {entity}",
+                    "entity_not_found": "Об'єкт не доступний: {entity}"
+                }
+            },
+            "mailbox": {
+                "delete_button": "Видалити",
+                "delete_prompt": "Видалити це повідомлення?",
+                "empty": "У вас немає повідомлень",
+                "playback_title": "Відтворення повідомлення"
+            },
+            "page-authorize": {
+                "abort_intro": "Логін скасовано",
+                "authorizing_client": "Ви збираєтеся надати {clientId} доступ до Home Assistant.",
+                "form": {
+                    "providers": {
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "Сесія закінчилася, увійдіть знову."
+                            },
+                            "error": {
+                                "invalid_auth": "Неправильне ім'я користувача або пароль",
+                                "invalid_code": "Невірний код аутентифікації"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Пароль",
+                                        "username": "Логін"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Код двофакторної аутентифікації"
+                                    },
+                                    "description": "Відкрийте **{mfa_module_name}** на своєму пристрої, щоб переглянути свій двофакторний код автентифікації та підтвердити свою особу:"
+                                }
+                            }
+                        },
+                        "homeassistant": {
+                            "abort": {
+                                "login_expired": "Сесія закінчилася, увійдіть знову."
+                            },
+                            "error": {
+                                "invalid_auth": "Неправильне ім'я користувача або пароль",
+                                "invalid_code": "Невірний код автентифікації"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Пароль",
+                                        "username": "Ім'я користувача"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Двофакторний ідентифікаційний код"
+                                    },
+                                    "description": "Відкрийте **{mfa_module_name}** на своєму пристрої, щоб переглянути свій двофакторний код автентифікації та підтвердити свою особу:"
+                                }
+                            }
+                        },
+                        "legacy_api_password": {
+                            "abort": {
+                                "login_expired": "Термін дії сессії закінчився, авторизуйтесь ще раз",
+                                "no_api_password_set": "Ви не маєте налаштованого пароля API."
+                            },
+                            "error": {
+                                "invalid_auth": "Невірний пароль API",
+                                "invalid_code": "Невірний код авторизації"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Пароль API"
+                                    },
+                                    "description": "Будь ласка, введіть пароль API в ваш http конфіг:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Двофакторний ідентифікаційний код"
+                                    },
+                                    "description": "Відкрийте **{mfa_module_name}** на своєму пристрої, щоб переглянути свій двофакторний код автентифікації та підтвердити свою особу:"
+                                }
+                            }
+                        },
+                        "trusted_networks": {
+                            "abort": {
+                                "not_whitelisted": "Ваш комп'ютер не включений в білий список."
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "Користувач"
+                                    },
+                                    "description": "Будь-ласка, виберіть користувача, яким ви хочете увійти:"
+                                }
+                            }
+                        }
+                    },
+                    "unknown_error": "Щось пішло не так",
+                    "working": "Будь ласка, зачекайте"
                 },
-                "changed_toast": {
-                    "message": "Конфігурацію Lovelace було оновлено, хочете оновити?",
-                    "refresh": "Оновити"
-                },
-                "reload_lovelace": "Перезавантажити Lovelace"
+                "initializing": "Ініціалізація",
+                "logging_in_with": "Вхід з **{authProviderName}**.",
+                "pick_auth_provider": "Або увійти з"
             },
             "page-demo": {
                 "cards": {
                     "demo": {
                         "demo_by": "створено: {name}",
-                        "next_demo": "Наступний дизайн",
                         "introduction": "Ласкаво просимо додому! Ви знаходитесь на сторінці демонстрації системи Home Assistant. Тут ви зможете переглянути найкращі інтерфейси користувача, створені нашою спільнотою.",
-                        "learn_more": "Дізнайтеся більше про Home Assistant"
+                        "learn_more": "Дізнайтеся більше про Home Assistant",
+                        "next_demo": "Наступний дизайн"
                     }
                 },
                 "config": {
                     "arsaboo": {
-                        "names": {
-                            "upstairs": "Нагорі",
-                            "family_room": "Вітальня",
-                            "kitchen": "Кухня",
-                            "patio": "Зона відпочинку",
-                            "hallway": "Коридор",
-                            "master_bedroom": "Головна спальня",
-                            "left": "Ліворуч",
-                            "right": "Праворуч",
-                            "mirror": "Дзеркало"
-                        },
                         "labels": {
-                            "lights": "Фари",
-                            "information": "Інформація",
-                            "morning_commute": "Їхати на роботу",
+                            "activity": "Діяльність",
+                            "air": "Повітря",
                             "commute_home": "Їхати додому",
                             "entertainment": "Розваги",
-                            "activity": "Діяльність",
                             "hdmi_input": "HDMI-вхід",
                             "hdmi_switcher": "HDMI-перемикач",
-                            "volume": "Гучність",
+                            "information": "Інформація",
+                            "lights": "Фари",
+                            "morning_commute": "Їхати на роботу",
                             "total_tv_time": "Сумарний час перегляду",
                             "turn_tv_off": "Вимкнути телевізор",
-                            "air": "Повітря"
+                            "volume": "Гучність"
+                        },
+                        "names": {
+                            "family_room": "Вітальня",
+                            "hallway": "Коридор",
+                            "kitchen": "Кухня",
+                            "left": "Ліворуч",
+                            "master_bedroom": "Головна спальня",
+                            "mirror": "Дзеркало",
+                            "patio": "Зона відпочинку",
+                            "right": "Праворуч",
+                            "upstairs": "Нагорі"
                         },
                         "unit": {
-                            "watching": "спостерігати",
-                            "minutes_abbr": "хв"
+                            "minutes_abbr": "хв",
+                            "watching": "спостерігати"
                         }
                     }
                 }
+            },
+            "page-onboarding": {
+                "core-config": {
+                    "button_detect": "Виявити",
+                    "finish": "Далі",
+                    "intro": "Привіт {name}, Ласкаво просимо до Home Assistant. Як би ви хотіли назвати свій дім?",
+                    "intro_location": "Ми хотіли б знати, де ви живете. Ця інформація допоможе нам відображати інформацію та налаштування, базуючись положенні сонця. Ці дані ніколи не передаються за межі вашої локальної мережі.",
+                    "intro_location_detect": "Ми можемо допомогти вам заповнити цю інформацію, зробивши одноразовий запит до зовнішньої служби.",
+                    "location_name_default": "Головна"
+                },
+                "integration": {
+                    "finish": "Завершити",
+                    "intro": "Пристрої та послуги в Home Assistant, які вимагають інтеграції з зовнішніми джерелами. Ви можете їх налаштувати зараз або зробити це пізніше на екрані конфігурації.",
+                    "more_integrations": "Більше"
+                },
+                "intro": "Ви готові розбудити свій будинок, повернути вашу конфіденційність і приєднатися до світової спільноти майстрів?",
+                "user": {
+                    "create_account": "Створити обліковий запис",
+                    "data": {
+                        "name": "Ім'я",
+                        "password": "Пароль",
+                        "password_confirm": "Підтвердити пароль",
+                        "username": "Імя користувача"
+                    },
+                    "error": {
+                        "password_not_match": "Паролі не збігаються",
+                        "required_fields": "Заповніть усі необхідні поля"
+                    },
+                    "intro": "Давайте почнемо з створення облікового запису користувача.",
+                    "required_field": "Необхідні"
+                }
+            },
+            "profile": {
+                "advanced_mode": {
+                    "hint_enable": "Відсутні параметри конфігурації? Увімкнути розширений режим",
+                    "link_profile_page": "сторінка вашого профілю",
+                    "title": "Розширений режим"
+                },
+                "change_password": {
+                    "confirm_new_password": "Підтвердіть новий пароль",
+                    "current_password": "Поточний пароль",
+                    "error_required": "Необхідно",
+                    "header": "Змінити пароль",
+                    "new_password": "Новий пароль",
+                    "submit": "Відправити"
+                },
+                "current_user": "Ви ввійшли як {fullName}.",
+                "force_narrow": {
+                    "description": "Це дозволить приховати бічну панель за замовчуванням, як і для мобільних пристроїв.",
+                    "header": "Завжди приховувати бічну панель"
+                },
+                "is_owner": "Ви є власником.",
+                "language": {
+                    "dropdown_label": "Мова",
+                    "header": "Мова",
+                    "link_promo": "Допомога в перекладі"
+                },
+                "logout": "Вийти",
+                "long_lived_access_tokens": {
+                    "confirm_delete": "Ви впевнені, що хочете видалити токен доступу для {name} ?",
+                    "create": "Створити токен",
+                    "create_failed": "Не вдалося створити токен доступу.",
+                    "created_at": "Створено в {date}",
+                    "delete_failed": "Не вдалося видалити токен доступу.",
+                    "description": "Створюйте довгоживі токени доступу, щоб ваші сценарії могли взаємодіяти з Home Assistant. Кожен токен буде дійсним протягом 10 років. Наступні довгоживучі токени доступу наразі активні.",
+                    "empty_state": "У вас немає довгоіснуючих токенів доступу.",
+                    "header": "Токени довготермінового доступу",
+                    "last_used": "Останнє використання в {date} з {location}",
+                    "learn_auth_requests": "Дізнайтеся, як зробити аутентифіковані запити.",
+                    "not_used": "Ніколи не використовувався",
+                    "prompt_copy_token": "Скопіюйте ваш токен доступу. Знову він не буде показаний.",
+                    "prompt_name": "Назва"
+                },
+                "mfa_setup": {
+                    "close": "Закрити",
+                    "step_done": "Налаштування виконано для {step}",
+                    "submit": "Відправити",
+                    "title_aborted": "Скасовано",
+                    "title_success": "Успішно!"
+                },
+                "mfa": {
+                    "confirm_disable": "Ви впевнені, що хочете вимкнути {name} ?",
+                    "disable": "Вимкнути",
+                    "enable": "Увімкнути",
+                    "header": "Багатофакторна перевірка справжності модулів"
+                },
+                "push_notifications": {
+                    "description": "Надіслати сповіщення на цей пристрій.",
+                    "error_load_platform": "Налаштувати notify.html5.",
+                    "error_use_https": "Потрібно ввімкнути SSL для інтерфейсу.",
+                    "header": "Push-Повідомлення",
+                    "link_promo": "Дізнатися більше",
+                    "push_notifications": "Push-повідомлення"
+                },
+                "refresh_tokens": {
+                    "confirm_delete": "Ви впевнені, що хочете видалити токен оновлення для {name} ?",
+                    "created_at": "Створений в {date}",
+                    "current_token_tooltip": "Неможливо видалити поточний токен оновлення",
+                    "delete_failed": "Не вдалося видалити токен оновлення.",
+                    "description": "Кожен токен оновлення відображає сеанс входу в систему. Токени оновлення автоматично видалятимуться, коли ви натиснете вийти. Наступні токени оновлення доступні для вашого облікового запису.",
+                    "header": "Токени оновлення",
+                    "last_used": "Останнє використання в {date} з {location}",
+                    "not_used": "Ніколи не використовувався",
+                    "token_title": "Оновити токен для {clientId}"
+                },
+                "themes": {
+                    "dropdown_label": "Тема",
+                    "error_no_theme": "Немає доступних тем.",
+                    "header": "Тема",
+                    "link_promo": "Дізнайтеся про теми"
+                }
+            },
+            "shopping-list": {
+                "add_item": "Додати елемент",
+                "clear_completed": "Очистити позначені елементи",
+                "microphone_tip": "Торкніться мікрофона у верхньому правому куті та скажіть \"Add candy to my shopping list\""
             }
         },
         "sidebar": {
+            "external_app_configuration": "Конфігурація застосунку",
             "log_out": "Вийти",
-            "external_app_configuration": "Конфігурація застосунку"
-        },
-        "common": {
-            "loading": "Завантаження",
-            "cancel": "Скасувати",
-            "save": "Зберегти",
-            "successfully_saved": "Успішно збережено"
-        },
-        "duration": {
-            "day": "{count} {count, plural,\n  one {д.}\n  other {д.}\n}",
-            "week": "{count} {count, plural,\n  one {тиж.}\n  other {тиж.}\n}",
-            "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
-            "minute": "{count} {count, plural,\n  one {хв.}\n  other {хв.}\n}",
-            "hour": "{count} {count, plural,\n  one {год.}\n  other {год.}\n}"
-        },
-        "login-form": {
-            "password": "Пароль",
-            "remember": "Запам'ятати",
-            "log_in": "Ввійти"
-        },
-        "card": {
-            "camera": {
-                "not_available": "Зображення недоступне"
-            },
-            "persistent_notification": {
-                "dismiss": "Відхилити"
-            },
-            "scene": {
-                "activate": "Активувати"
-            },
-            "script": {
-                "execute": "Виконати"
-            },
-            "weather": {
-                "attributes": {
-                    "air_pressure": "Тиск повітря",
-                    "humidity": "Вологість",
-                    "temperature": "Температура",
-                    "visibility": "Видимість",
-                    "wind_speed": "Швидкість вітру"
-                },
-                "cardinal_direction": {
-                    "e": "E",
-                    "ene": "ENE",
-                    "ese": "ESE",
-                    "n": "N",
-                    "ne": "NE",
-                    "nne": "NNE",
-                    "nw": "NW",
-                    "nnw": "NNW",
-                    "s": "S",
-                    "se": "SE",
-                    "sse": "SSE",
-                    "ssw": "SSW",
-                    "sw": "SW",
-                    "w": "W",
-                    "wnw": "WNW",
-                    "wsw": "WSW"
-                },
-                "forecast": "Прогноз"
-            },
-            "alarm_control_panel": {
-                "code": "Код",
-                "clear_code": "Очистити",
-                "disarm": "Зняття з охорони",
-                "arm_home": "Поставити на охорону",
-                "arm_away": "Охорона (не вдома)",
-                "arm_night": "Нічна охорона",
-                "armed_custom_bypass": "Користувацький обхід",
-                "arm_custom_bypass": "Користувацький обхід"
-            },
-            "automation": {
-                "last_triggered": "Спрацьовано",
-                "trigger": "Тригер"
-            },
-            "cover": {
-                "position": "Положення",
-                "tilt_position": "Положення нахилу"
-            },
-            "fan": {
-                "speed": "Швидкість",
-                "oscillate": "Коливання",
-                "direction": "Напрямок",
-                "forward": "Від себе",
-                "reverse": "На себе"
-            },
-            "light": {
-                "brightness": "Яскравість",
-                "color_temperature": "Температура кольору",
-                "white_value": "Значення білого",
-                "effect": "Ефект"
-            },
-            "media_player": {
-                "text_to_speak": "Текст для відтворення",
-                "source": "Джерело",
-                "sound_mode": "Режим звуку"
-            },
-            "climate": {
-                "currently": "В даний час",
-                "on_off": "Вкл \/ викл",
-                "target_temperature": "Задана температура",
-                "target_humidity": "Цільова вологість",
-                "operation": "Режим",
-                "fan_mode": "Режим вентилятора",
-                "swing_mode": "Режим гойдання",
-                "away_mode": "Режиму очікування",
-                "aux_heat": "Aux тепла",
-                "preset_mode": "Режим"
-            },
-            "lock": {
-                "code": "Код",
-                "lock": "Блокувати",
-                "unlock": "Розблокувати"
-            },
-            "vacuum": {
-                "actions": {
-                    "resume_cleaning": "Відновити очищення",
-                    "return_to_base": "Повернутись до дока",
-                    "start_cleaning": "Почати очищення",
-                    "turn_on": "Ввімкнути",
-                    "turn_off": "Вимкнути"
-                }
-            },
-            "water_heater": {
-                "currently": "В даний час",
-                "on_off": "Вкл \/ викл",
-                "target_temperature": "Задана температура",
-                "operation": "Операція",
-                "away_mode": "Режиму очікування"
-            },
-            "timer": {
-                "actions": {
-                    "start": "Запуск",
-                    "pause": "Пауза",
-                    "cancel": "Скасувати",
-                    "finish": "Готово"
-                }
-            }
-        },
-        "components": {
-            "entity": {
-                "entity-picker": {
-                    "entity": "Об'єкт"
-                }
-            },
-            "service-picker": {
-                "service": "Сервіс"
-            },
-            "relative_time": {
-                "past": "{time} тому",
-                "future": "{time} тому",
-                "never": "Ніколи",
-                "duration": {
-                    "second": "{count} {count, plural,\n  one {сек.}\n  other {сек.}\n}",
-                    "minute": "{count} {count, plural,\n  one {хв.}\n  other {хв.}\n}",
-                    "hour": "{count} {count, plural,\n  one {год.}\n  other {год.}\n}",
-                    "day": "{count} {count, plural,\n  one {д.}\n  other {д.}\n}",
-                    "week": "{count} {count, plural,\n  one {тиж.}\n  other {тиж.}\n}"
-                }
-            },
-            "history_charts": {
-                "loading_history": "Завантаження історії стану ...",
-                "no_history_found": "Немає історії станів."
-            }
-        },
-        "notification_toast": {
-            "entity_turned_on": "Увімкнено {entity}.",
-            "entity_turned_off": "Вимкнено {entity}.",
-            "service_called": "Служба {service} викликається.",
-            "service_call_failed": "Не вдалося викликати сервіс {service}.",
-            "connection_lost": "З'єднання втрачено. Повторне підключення..."
-        },
-        "dialogs": {
-            "more_info_settings": {
-                "save": "Зберегти",
-                "name": "Назва",
-                "entity_id": "Ідентифікатор об'єкта"
-            },
-            "more_info_control": {
-                "script": {
-                    "last_action": "Остання дія"
-                },
-                "sun": {
-                    "elevation": "Висота",
-                    "rising": "Схід сонця",
-                    "setting": "Захід сонця"
-                },
-                "updater": {
-                    "title": "Інструкції по оновленню"
-                }
-            },
-            "options_flow": {
-                "form": {
-                    "header": "Параметри"
-                },
-                "success": {
-                    "description": "Параметри успішно збережені."
-                }
-            },
-            "config_entry_system_options": {
-                "title": "Системні налаштування",
-                "enable_new_entities_label": "Додавати нові об'єкти.",
-                "enable_new_entities_description": "Автоматично додавати в Home Assistant знову виявлені об'єкти."
-            },
-            "zha_device_info": {
-                "manuf": "Виробник: {manufacturer}",
-                "no_area": "Не вказано",
-                "services": {
-                    "reconfigure": "Перенастроювання пристрою ZHA. Використовуйте цю службу, якщо у Вас є проблеми з пристроєм. Якщо даний пристрій працює від батареї, будь ласка, переконайтеся, що воно не знаходиться в режимі сну і приймає команди, коли ви запускаєте цю службу.",
-                    "updateDeviceName": "Встановіть ім'я для цього пристрою в реєстрі пристроїв.",
-                    "remove": "Видалити пристрій з мережі Zigbee."
-                },
-                "zha_device_card": {
-                    "device_name_placeholder": "Логін",
-                    "area_picker_label": "Приміщення",
-                    "update_name_button": "Оновити назву"
-                }
-            }
-        },
-        "auth_store": {
-            "ask": "Ви хочете зберегти цей логін?",
-            "decline": "Ні, дякую",
-            "confirm": "Зберегти логін"
-        },
-        "notification_drawer": {
-            "click_to_configure": "Натисніть кнопку, щоб налаштувати {entity}",
-            "empty": "Немає сповіщень",
-            "title": "Сповіщення"
-        }
-    },
-    "domain": {
-        "alarm_control_panel": "Панель керування сигналізацією",
-        "automation": "Автоматизація",
-        "binary_sensor": "Бінарний датчик",
-        "calendar": "Календар",
-        "camera": "Камера",
-        "climate": "Клімат",
-        "configurator": "Конфігуратор",
-        "conversation": "Розмова",
-        "cover": "Заголовок",
-        "device_tracker": "Трекер пристрою",
-        "fan": "Вентилятор",
-        "history_graph": "Графік історії",
-        "group": "Група",
-        "image_processing": "Обробка зображень",
-        "input_boolean": "Введення логічного значення",
-        "input_datetime": "Введення дати",
-        "input_select": "Вибрати",
-        "input_number": "Введіть номер",
-        "input_text": "Введення тексту",
-        "light": "Освітлення",
-        "lock": "Замок",
-        "mailbox": "Поштова скринька",
-        "media_player": "Медіа плеєр",
-        "notify": "Повідомлення",
-        "plant": "Рослина",
-        "proximity": "Відстань",
-        "remote": "Пульт ДУ",
-        "scene": "Сцена",
-        "script": "Сценарій",
-        "sensor": "Датчик",
-        "sun": "Сонце",
-        "switch": "Перемикач",
-        "updater": "Оновлення",
-        "weblink": "Посилання",
-        "zwave": "Z-Wave",
-        "vacuum": "Пилосос",
-        "zha": "ZHA",
-        "hassio": "Hass.io",
-        "homeassistant": "Home Assistant",
-        "lovelace": "Lovelace",
-        "system_health": "Безпека системи",
-        "person": "Людина"
-    },
-    "attribute": {
-        "weather": {
-            "humidity": "Вологість",
-            "visibility": "Видимість",
-            "wind_speed": "Швидкість вітру"
-        }
-    },
-    "state_attributes": {
-        "climate": {
-            "fan_mode": {
-                "off": "Вимкнений",
-                "on": "Увімкнений",
-                "auto": "Авто"
-            },
-            "preset_mode": {
-                "none": "Немає",
-                "eco": "Еко",
-                "away": "Відсутній",
-                "boost": "Підвищення",
-                "comfort": "Комфорт",
-                "home": "Вдома",
-                "sleep": "Сон",
-                "activity": "Діяльність"
-            },
-            "hvac_action": {
-                "off": "Вимкнено",
-                "heating": "Опалення",
-                "cooling": "Охолодження",
-                "drying": "Осушення",
-                "idle": "Очікування",
-                "fan": "Вентилятор"
-            }
-        }
-    },
-    "groups": {
-        "system-admin": "Адміністратори",
-        "system-users": "Користувачі",
-        "system-read-only": "Користувачі лише для читання"
-    },
-    "config_entry": {
-        "disabled_by": {
-            "user": "Користувач",
-            "integration": "Інтеграція",
-            "config_entry": "Запис"
+            "sidebar_toggle": "Переключити бічну панель"
         }
     }
 }

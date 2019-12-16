@@ -5,6 +5,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../components/entity/state-info";
 import LocalizeMixin from "../mixins/localize-mixin";
+import { activateScene } from "../data/scene";
 
 /*
  * @appliesMixin LocalizeMixin
@@ -23,7 +24,7 @@ class StateCardScene extends LocalizeMixin(PolymerElement) {
 
       <div class="horizontal justified layout">
         ${this.stateInfoTemplate}
-        <mwc-button on-click="activateScene"
+        <mwc-button on-click="_activateScene"
           >[[localize('ui.card.scene.activate')]]</mwc-button
         >
       </div>
@@ -51,11 +52,9 @@ class StateCardScene extends LocalizeMixin(PolymerElement) {
     };
   }
 
-  activateScene(ev) {
+  _activateScene(ev) {
     ev.stopPropagation();
-    this.hass.callService("scene", "turn_on", {
-      entity_id: this.stateObj.entity_id,
-    });
+    activateScene(this.hass, this.stateObj.entity_id);
   }
 }
 customElements.define("state-card-scene", StateCardScene);

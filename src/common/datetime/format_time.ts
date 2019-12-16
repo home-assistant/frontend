@@ -10,10 +10,10 @@ function toLocaleTimeStringSupportsOptions() {
   return false;
 }
 
-export default (toLocaleTimeStringSupportsOptions()
+export default toLocaleTimeStringSupportsOptions()
   ? (dateObj: Date, locales: string) =>
       dateObj.toLocaleTimeString(locales, {
         hour: "numeric",
         minute: "2-digit",
       })
-  : (dateObj: Date) => fecha.format(dateObj, "shortTime"));
+  : (dateObj: Date) => fecha.format(dateObj, "shortTime");

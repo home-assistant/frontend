@@ -6,8 +6,9 @@ import {
   MDCDataTableFoundation,
 } from "@material/data-table";
 
+import { classMap } from "lit-html/directives/class-map";
+
 import {
-  BaseElement,
   html,
   query,
   queryAll,
@@ -15,10 +16,11 @@ import {
   css,
   customElement,
   property,
-  classMap,
   TemplateResult,
   PropertyValues,
-} from "@material/mwc-base/base-element";
+} from "lit-element";
+
+import { BaseElement } from "@material/mwc-base/base-element";
 
 // eslint-disable-next-line import/no-webpack-loader-syntax
 // @ts-ignore

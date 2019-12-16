@@ -45,11 +45,10 @@ function recursiveFlatten(prefix, data) {
   let output = {};
   Object.keys(data).forEach(function(key) {
     if (typeof data[key] === "object") {
-      output = Object.assign(
-        {},
-        output,
-        recursiveFlatten(prefix + key + ".", data[key])
-      );
+      output = {
+        ...output,
+        ...recursiveFlatten(prefix + key + ".", data[key]),
+      };
     } else {
       output[prefix + key] = data[key];
     }
@@ -99,18 +98,16 @@ function recursiveEmpty(data) {
  * @link https://docs.lokalise.co/article/KO5SZWLLsy-key-referencing
  */
 const re_key_reference = /\[%key:([^%]+)%\]/;
-function lokalise_transform(data, original) {
+function lokaliseTransform(data, original, file) {
   const output = {};
   Object.entries(data).forEach(([key, value]) => {
     if (value instanceof Object) {
-      output[key] = lokalise_transform(value, original);
+      output[key] = lokaliseTransform(value, original, file);
     } else {
       output[key] = value.replace(re_key_reference, (match, key) => {
         const replace = key.split("::").reduce((tr, k) => tr[k], original);
         if (typeof replace !== "string") {
-          throw Error(
-            `Invalid key placeholder ${key} in src/translations/en.json`
-          );
+          throw Error(`Invalid key placeholder ${key} in ${file.path}`);
         }
         return replace;
       });
@@ -183,7 +180,7 @@ gulp.task(
       .src("src/translations/en.json")
       .pipe(
         transform(function(data, file) {
-          return lokalise_transform(data, data);
+          return lokaliseTransform(data, data, file);
         })
       )
       .pipe(rename("translationMaster.json"))
@@ -198,6 +195,11 @@ gulp.task(
   gulp.series("build-master-translation", function() {
     return gulp
       .src([inDir + "/*.json", workDir + "/test.json"], { allowEmpty: true })
+      .pipe(
+        transform(function(data, file) {
+          return lokaliseTransform(data, data, file);
+        })
+      )
       .pipe(
         foreach(function(stream, file) {
           // For each language generate a merged json file. It begins with the master

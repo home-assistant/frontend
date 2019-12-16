@@ -1,6 +1,9 @@
 import "../../../../components/ha-card";
 
-import { DeviceRegistryEntry } from "../../../../data/device_registry";
+import {
+  DeviceRegistryEntry,
+  computeDeviceName,
+} from "../../../../data/device_registry";
 import { loadDeviceRegistryDetailDialog } from "../../../../dialogs/device-registry-detail/show-dialog-device-registry-detail";
 import {
   LitElement,
@@ -93,14 +96,10 @@ export class HaDeviceCard extends LitElement {
     return areas.find((area) => area.area_id === device.area_id).name;
   }
 
-  private _deviceName(device) {
-    return device.name_by_user || device.name;
-  }
-
   private _computeDeviceName(devices, deviceId) {
     const device = devices.find((dev) => dev.id === deviceId);
     return device
-      ? this._deviceName(device)
+      ? computeDeviceName(device, this.hass)
       : `(${this.hass.localize(
           "ui.panel.config.integrations.config_entry.device_unavailable"
         )})`;

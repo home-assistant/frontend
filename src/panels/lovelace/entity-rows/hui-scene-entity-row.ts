@@ -16,6 +16,7 @@ import "../components/hui-warning";
 import { HomeAssistant } from "../../../types";
 import { LovelaceRow, EntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { activateScene } from "../../../data/scene";
 
 @customElement("hui-scene-entity-row")
 class HuiSceneEntityRow extends LitElement implements LovelaceRow {
@@ -79,11 +80,9 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
     `;
   }
 
-  private _callService(ev): void {
+  private _callService(ev: Event): void {
     ev.stopPropagation();
-    this.hass!.callService("scene", "turn_on", {
-      entity_id: this._config!.entity,
-    });
+    activateScene(this.hass, this._config!.entity);
   }
 }
 

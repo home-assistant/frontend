@@ -64,7 +64,7 @@ export class HuiGaugeCardEditor extends LitElement
   }
 
   get _min(): number {
-    return this._config!.number || 0;
+    return this._config!.min || 0;
   }
 
   get _max(): number {
@@ -92,7 +92,7 @@ export class HuiGaugeCardEditor extends LitElement
           .hass="${this.hass}"
           .value="${this._entity}"
           .configValue=${"entity"}
-          domain-filter="sensor"
+          include-domains='["sensor"]'
           @change="${this._valueChanged}"
           allow-custom-entity
         ></ha-entity-picker>

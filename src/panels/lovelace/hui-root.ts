@@ -93,6 +93,9 @@ class HUIRoot extends LitElement {
             ? html`
                 <app-toolbar class="edit-mode">
                   <paper-icon-button
+                    aria-label="${this.hass!.localize(
+                      "ui.panel.lovelace.menu.exit_edit_mode"
+                    )}"
                     title="${this.hass!.localize(
                       "ui.panel.lovelace.menu.close"
                     )}"
@@ -103,6 +106,9 @@ class HUIRoot extends LitElement {
                     ${this.config.title ||
                       this.hass!.localize("ui.panel.lovelace.editor.header")}
                     <paper-icon-button
+                      aria-label="${this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_lovelace.edit_title"
+                      )}"
                       title="${this.hass!.localize(
                         "ui.panel.lovelace.editor.edit_lovelace.edit_title"
                       )}"
@@ -182,6 +188,12 @@ class HUIRoot extends LitElement {
                     horizontal-offset="-5"
                   >
                     <paper-icon-button
+                      aria-label=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.menu.open"
+                      )}
+                      title="${this.hass!.localize(
+                        "ui.panel.lovelace.editor.menu.open"
+                      )}"
                       icon="hass:dots-vertical"
                       slot="dropdown-trigger"
                     ></paper-icon-button>
@@ -650,20 +662,20 @@ class HUIRoot extends LitElement {
     if (viewIndex === "hass-unused-entities") {
       const unusedEntities = document.createElement("hui-unused-entities");
       // Wait for promise to resolve so that the element has been upgraded.
-      import(/* webpackChunkName: "hui-unused-entities" */ "./editor/unused-entities/hui-unused-entities").then(
-        () => {
-          unusedEntities.hass = this.hass!;
-          unusedEntities.lovelace = this.lovelace!;
-          unusedEntities.narrow = this.narrow;
-        }
-      );
+      import(
+        /* webpackChunkName: "hui-unused-entities" */ "./editor/unused-entities/hui-unused-entities"
+      ).then(() => {
+        unusedEntities.hass = this.hass!;
+        unusedEntities.lovelace = this.lovelace!;
+        unusedEntities.narrow = this.narrow;
+      });
       if (this.config.background) {
         unusedEntities.style.setProperty(
           "--lovelace-background",
           this.config.background
         );
       }
-      root.append(unusedEntities);
+      root.appendChild(unusedEntities);
       return;
     }
 
@@ -698,7 +710,7 @@ class HUIRoot extends LitElement {
       view.style.setProperty("--lovelace-background", configBackground);
     }
 
-    root.append(view);
+    root.appendChild(view);
   }
 }
 

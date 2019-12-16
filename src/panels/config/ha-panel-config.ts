@@ -31,77 +31,114 @@ class HaPanelConfig extends HassRouterPage {
       area_registry: {
         tag: "ha-config-area-registry",
         load: () =>
-          import(/* webpackChunkName: "panel-config-area-registry" */ "./area_registry/ha-config-area-registry"),
+          import(
+            /* webpackChunkName: "panel-config-area-registry" */ "./area_registry/ha-config-area-registry"
+          ),
       },
       automation: {
         tag: "ha-config-automation",
         load: () =>
-          import(/* webpackChunkName: "panel-config-automation" */ "./automation/ha-config-automation"),
+          import(
+            /* webpackChunkName: "panel-config-automation" */ "./automation/ha-config-automation"
+          ),
       },
       cloud: {
         tag: "ha-config-cloud",
         load: () =>
-          import(/* webpackChunkName: "panel-config-cloud" */ "./cloud/ha-config-cloud"),
+          import(
+            /* webpackChunkName: "panel-config-cloud" */ "./cloud/ha-config-cloud"
+          ),
       },
       core: {
         tag: "ha-config-core",
         load: () =>
-          import(/* webpackChunkName: "panel-config-core" */ "./core/ha-config-core"),
+          import(
+            /* webpackChunkName: "panel-config-core" */ "./core/ha-config-core"
+          ),
       },
       devices: {
         tag: "ha-config-devices",
         load: () =>
-          import(/* webpackChunkName: "panel-config-devices" */ "./devices/ha-config-devices"),
+          import(
+            /* webpackChunkName: "panel-config-devices" */ "./devices/ha-config-devices"
+          ),
       },
       server_control: {
         tag: "ha-config-server-control",
         load: () =>
-          import(/* webpackChunkName: "panel-config-server-control" */ "./server_control/ha-config-server-control"),
+          import(
+            /* webpackChunkName: "panel-config-server-control" */ "./server_control/ha-config-server-control"
+          ),
       },
       customize: {
         tag: "ha-config-customize",
         load: () =>
-          import(/* webpackChunkName: "panel-config-customize" */ "./customize/ha-config-customize"),
+          import(
+            /* webpackChunkName: "panel-config-customize" */ "./customize/ha-config-customize"
+          ),
       },
       dashboard: {
         tag: "ha-config-dashboard",
         load: () =>
-          import(/* webpackChunkName: "panel-config-dashboard" */ "./dashboard/ha-config-dashboard"),
+          import(
+            /* webpackChunkName: "panel-config-dashboard" */ "./dashboard/ha-config-dashboard"
+          ),
       },
       entity_registry: {
         tag: "ha-config-entity-registry",
         load: () =>
-          import(/* webpackChunkName: "panel-config-entity-registry" */ "./entity_registry/ha-config-entity-registry"),
+          import(
+            /* webpackChunkName: "panel-config-entity-registry" */ "./entity_registry/ha-config-entity-registry"
+          ),
       },
       integrations: {
         tag: "ha-config-integrations",
         load: () =>
-          import(/* webpackChunkName: "panel-config-integrations" */ "./integrations/ha-config-integrations"),
+          import(
+            /* webpackChunkName: "panel-config-integrations" */ "./integrations/ha-config-integrations"
+          ),
       },
       person: {
         tag: "ha-config-person",
         load: () =>
-          import(/* webpackChunkName: "panel-config-person" */ "./person/ha-config-person"),
+          import(
+            /* webpackChunkName: "panel-config-person" */ "./person/ha-config-person"
+          ),
       },
       script: {
         tag: "ha-config-script",
         load: () =>
-          import(/* webpackChunkName: "panel-config-script" */ "./script/ha-config-script"),
+          import(
+            /* webpackChunkName: "panel-config-script" */ "./script/ha-config-script"
+          ),
+      },
+      scene: {
+        tag: "ha-config-scene",
+        load: () =>
+          import(
+            /* webpackChunkName: "panel-config-scene" */ "./scene/ha-config-scene"
+          ),
       },
       users: {
         tag: "ha-config-users",
         load: () =>
-          import(/* webpackChunkName: "panel-config-users" */ "./users/ha-config-users"),
+          import(
+            /* webpackChunkName: "panel-config-users" */ "./users/ha-config-users"
+          ),
       },
       zha: {
         tag: "zha-config-panel",
         load: () =>
-          import(/* webpackChunkName: "panel-config-zha" */ "./zha/zha-config-panel"),
+          import(
+            /* webpackChunkName: "panel-config-zha" */ "./zha/zha-config-panel"
+          ),
       },
       zwave: {
         tag: "ha-config-zwave",
         load: () =>
-          import(/* webpackChunkName: "panel-config-zwave" */ "./zwave/ha-config-zwave"),
+          import(
+            /* webpackChunkName: "panel-config-zwave" */ "./zwave/ha-config-zwave"
+          ),
       },
     },
   };

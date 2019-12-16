@@ -23,7 +23,9 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(/* webpackChunkName: "hui-entities-card-editor" */ "../editor/config-elements/hui-entities-card-editor");
+    await import(
+      /* webpackChunkName: "hui-entities-card-editor" */ "../editor/config-elements/hui-entities-card-editor"
+    );
     return document.createElement("hui-entities-card-editor");
   }
 

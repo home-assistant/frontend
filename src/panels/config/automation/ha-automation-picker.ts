@@ -23,9 +23,15 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { AutomationEntity } from "../../../data/automation";
+import {
+  AutomationEntity,
+  showAutomationEditor,
+  AutomationConfig,
+} from "../../../data/automation";
 import format_date_time from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
+import { showThingtalkDialog } from "./show-dialog-thingtalk";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 @customElement("ha-automation-picker")
 class HaAutomationPicker extends LitElement {
@@ -109,9 +115,7 @@ class HaAutomationPicker extends LitElement {
                           <a
                             href=${ifDefined(
                               automation.attributes.id
-                                ? `/config/automation/edit/${
-                                    automation.attributes.id
-                                  }`
+                                ? `/config/automation/edit/${automation.attributes.id}`
                                 : undefined
                             )}
                           >
@@ -141,8 +145,7 @@ class HaAutomationPicker extends LitElement {
                 )}
           </ha-card>
         </ha-config-section>
-
-        <a href="/config/automation/new">
+        <div>
           <ha-fab
             slot="fab"
             ?is-wide=${this.isWide}
@@ -151,8 +154,9 @@ class HaAutomationPicker extends LitElement {
               "ui.panel.config.automation.picker.add_automation"
             )}
             ?rtl=${computeRTL(this.hass)}
-          ></ha-fab
-        ></a>
+            @click=${this._createNew}
+          ></ha-fab>
+        </div>
       </hass-subpage>
     `;
   }
@@ -160,6 +164,17 @@ class HaAutomationPicker extends LitElement {
   private _showInfo(ev) {
     const entityId = ev.currentTarget.automation.entity_id;
     fireEvent(this, "hass-more-info", { entityId });
+  }
+
+  private _createNew() {
+    if (!isComponentLoaded(this.hass, "cloud")) {
+      showAutomationEditor(this);
+      return;
+    }
+    showThingtalkDialog(this, {
+      callback: (config: Partial<AutomationConfig> | undefined) =>
+        showAutomationEditor(this, config),
+    });
   }
 
   static get styles(): CSSResultArray {
@@ -198,6 +213,7 @@ class HaAutomationPicker extends LitElement {
           bottom: 16px;
           right: 16px;
           z-index: 1;
+          cursor: pointer;
         }
 
         ha-fab[is-wide] {

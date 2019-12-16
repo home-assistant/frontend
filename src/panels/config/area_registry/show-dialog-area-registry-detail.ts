@@ -14,7 +14,9 @@ export interface AreaRegistryDetailDialogParams {
 }
 
 export const loadAreaRegistryDetailDialog = () =>
-  import(/* webpackChunkName: "area-registry-detail-dialog" */ "./dialog-area-registry-detail");
+  import(
+    /* webpackChunkName: "area-registry-detail-dialog" */ "./dialog-area-registry-detail"
+  );
 
 export const showAreaRegistryDetailDialog = (
   element: HTMLElement,

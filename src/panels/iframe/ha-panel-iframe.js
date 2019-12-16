@@ -13,6 +13,7 @@ class HaPanelIframe extends PolymerElement {
           border: 0;
           width: 100%;
           height: calc(100% - 64px);
+          background-color: var(--primary-background-color);
         }
       </style>
       <app-toolbar>
