@@ -1,49 +1,84 @@
 {
+    "attribute": {
+        "weather": {
+            "humidity": "नमी",
+            "visibility": "दृश्यता",
+            "wind_speed": "हवा की गति"
+        }
+    },
+    "domain": {
+        "automation": "स्वचालन",
+        "binary_sensor": "बाइनरी सेंसर",
+        "climate": "जलवायु",
+        "device_tracker": "डिवाइस ट्रैकर",
+        "fan": "पंखा",
+        "group": "समूह",
+        "history_graph": "इतिहास ग्राफ",
+        "image_processing": "इमेज प्रोसेसिंग",
+        "input_boolean": "इनपुट बूलियन",
+        "input_datetime": "इनपुट दिनांक समय",
+        "input_number": "इनपुट संख्या",
+        "input_select": "इनपुट का चयन करें",
+        "input_text": "इनपुट टेक्स्ट",
+        "light": "रोशनी",
+        "lock": "ताला",
+        "mailbox": "मेलबॉक्स",
+        "media_player": "मीडिया प्लेयर",
+        "notify": "सूचित",
+        "proximity": "निकटता",
+        "remote": "रिमोट",
+        "scene": "दृश्य",
+        "script": "स्क्रिप्ट",
+        "sensor": "सेंसर",
+        "sun": "सूरज",
+        "switch": "स्विच",
+        "weblink": "वेब लिंक",
+        "zwave": "Z-Wave"
+    },
     "panel": {
         "config": "कॉंफ़िगरेशन",
-        "states": "स्थिति",
-        "map": "नक्शा",
-        "logbook": "रिपोर्ट",
-        "history": "इतिहास",
-        "mailbox": "मेलबॉक्स",
-        "shopping_list": "खरीदारी की सूची",
         "dev-info": "जानकारी",
-        "developer_tools": "डेवलपर उपकरण"
+        "developer_tools": "डेवलपर उपकरण",
+        "history": "इतिहास",
+        "logbook": "रिपोर्ट",
+        "mailbox": "मेलबॉक्स",
+        "map": "नक्शा",
+        "shopping_list": "खरीदारी की सूची",
+        "states": "स्थिति"
+    },
+    "state_badge": {
+        "alarm_control_panel": {
+            "pending": "अपूर्ण"
+        },
+        "default": {
+            "entity_not_found": "Entità non trovata",
+            "error": "Errore",
+            "unavailable": "अनुपलब्ध",
+            "unknown": "अज्ञात"
+        },
+        "device_tracker": {
+            "home": "घर"
+        }
     },
     "state": {
-        "default": {
-            "off": "बंद",
-            "unknown": "अनजान",
-            "unavailable": "अनुपलब्ध"
-        },
         "automation": {
             "off": "बंद"
         },
         "binary_sensor": {
-            "default": {
-                "off": "बंद"
-            },
-            "motion": {
-                "off": "विशद",
-                "on": "अनुसन्धानित"
-            },
-            "opening": {
-                "on": "खुला"
-            },
-            "presence": {
-                "on": "घर"
-            },
             "battery": {
                 "off": "साधारण",
                 "on": "कम"
+            },
+            "cold": {
+                "off": "साधारण",
+                "on": "सर्दी"
             },
             "connectivity": {
                 "off": "डिस्कनेक्ट किया गया",
                 "on": "जुड़े हुए"
             },
-            "cold": {
-                "off": "साधारण",
-                "on": "सर्दी"
+            "default": {
+                "off": "बंद"
             },
             "door": {
                 "off": "बंद",
@@ -55,6 +90,16 @@
             },
             "heat": {
                 "on": "गर्म"
+            },
+            "motion": {
+                "off": "विशद",
+                "on": "अनुसन्धानित"
+            },
+            "opening": {
+                "on": "खुला"
+            },
+            "presence": {
+                "on": "घर"
             },
             "window": {
                 "off": "बंद",
@@ -68,11 +113,16 @@
             "recording": "रिकॉर्डिंग"
         },
         "climate": {
-            "off": "बंद",
-            "heat": "गर्मी",
             "cool": "ठंडा",
             "dry": "सूखा",
-            "manual": "गाइड"
+            "heat": "गर्मी",
+            "manual": "गाइड",
+            "off": "बंद"
+        },
+        "default": {
+            "off": "बंद",
+            "unavailable": "अनुपलब्ध",
+            "unknown": "अनजान"
         },
         "device_tracker": {
             "home": "घर"
@@ -82,9 +132,9 @@
             "on": "चालू"
         },
         "group": {
+            "home": "घर",
             "off": "बंद",
             "on": "चालू",
-            "home": "घर",
             "problem": "समस्या"
         },
         "input_boolean": {
@@ -129,68 +179,52 @@
         },
         "zwave": {
             "default": {
-                "sleeping": "सोया हुआ",
-                "ready": "तैयार"
+                "ready": "तैयार",
+                "sleeping": "सोया हुआ"
             },
             "query_stage": {
-                "initializing": "आरंभ ({query_stage})",
-                "dead": " ( {query_stage} )"
+                "dead": " ( {query_stage} )",
+                "initializing": "आरंभ ({query_stage})"
             }
         }
     },
-    "state_badge": {
-        "default": {
-            "unknown": "अज्ञात",
-            "unavailable": "अनुपलब्ध",
-            "error": "Errore",
-            "entity_not_found": "Entità non trovata"
-        },
-        "alarm_control_panel": {
-            "pending": "अपूर्ण"
-        },
-        "device_tracker": {
-            "home": "घर"
-        }
-    },
     "ui": {
+        "duration": {
+            "day": "{count} {count, plural,\n  one {दिन}\n  other {दिन}\n}",
+            "week": "{count} {count, plural,\n  one {हफ़्ता}\n  other {हफ़्ते}\n}"
+        },
+        "notification_drawer": {
+            "empty": "सूचनाएँ नहीं हैं",
+            "title": "सूचनाएँ"
+        },
         "panel": {
-            "shopping-list": {
-                "add_item": "आइटम जोड़ें",
-                "microphone_tip": "ऊपर दाईं ओर माइक्रोफ़ोन टैप करें और \"मेरी खरीदारी सूची में कैंडी जोड़ें\" कहें"
-            },
-            "developer-tools": {
-                "tabs": {
-                    "services": {
-                        "title": "सेवाएं"
-                    },
-                    "events": {
-                        "title": "घटनाओं"
-                    },
-                    "templates": {
-                        "title": "टेम्पलेट्स"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
-                    },
-                    "logs": {
-                        "title": "लॉग्स"
-                    }
-                }
-            },
             "config": {
-                "zwave": {
-                    "caption": "Z-Wave",
-                    "node_config": {
-                        "set_config_parameter": "कॉन्फ़िगरेशन पैरामीटर सेट करें"
+                "area_registry": {
+                    "picker": {
+                        "create_area": "Crea un area"
                     }
                 },
                 "automation": {
                     "editor": {
+                        "conditions": {
+                            "type": {
+                                "sun": {
+                                    "after": "बाद:",
+                                    "before": "पहले:",
+                                    "sunrise": "सूर्योदय",
+                                    "sunset": "सूर्यास्त"
+                                },
+                                "time": {
+                                    "after": "बाद",
+                                    "before": "पहले"
+                                }
+                            }
+                        },
                         "triggers": {
                             "type": {
                                 "homeassistant": {
-                                    "start": "शुरू",
-                                    "shutdown": "शटडाउन"
+                                    "shutdown": "शटडाउन",
+                                    "start": "शुरू"
                                 },
                                 "mqtt": {
                                     "label": "MQTT",
@@ -206,41 +240,47 @@
                                     "sunset": "सूर्यास्त"
                                 }
                             }
-                        },
-                        "conditions": {
-                            "type": {
-                                "sun": {
-                                    "before": "पहले:",
-                                    "after": "बाद:",
-                                    "sunrise": "सूर्योदय",
-                                    "sunset": "सूर्यास्त"
-                                },
-                                "time": {
-                                    "after": "बाद",
-                                    "before": "पहले"
-                                }
-                            }
                         }
                     }
                 },
-                "area_registry": {
-                    "picker": {
-                        "create_area": "Crea un area"
-                    }
-                },
                 "zha": {
-                    "services": {
-                        "updateDeviceName": "Imposta un nome personalizzato per questo dispositivo nel registro del dispositivo."
+                    "add_device_page": {
+                        "discovery_text": "I dispositivi rilevati verranno visualizzati qui. Seguire le istruzioni per il / i dispositivo / i e posizionare il / i dispositivo / i in modalità accoppiamento.",
+                        "header": "Zigbee Home Automation - Aggiungi dispositivi",
+                        "spinner": "Ricerca di dispositivi ZHA Zigbee ..."
                     },
                     "device_card": {
-                        "device_name_placeholder": "Nome assegnato dall'utente",
                         "area_picker_label": "Area",
+                        "device_name_placeholder": "Nome assegnato dall'utente",
                         "update_name_button": "Aggiorna Nome"
                     },
-                    "add_device_page": {
-                        "header": "Zigbee Home Automation - Aggiungi dispositivi",
-                        "spinner": "Ricerca di dispositivi ZHA Zigbee ...",
-                        "discovery_text": "I dispositivi rilevati verranno visualizzati qui. Seguire le istruzioni per il \/ i dispositivo \/ i e posizionare il \/ i dispositivo \/ i in modalità accoppiamento."
+                    "services": {
+                        "updateDeviceName": "Imposta un nome personalizzato per questo dispositivo nel registro del dispositivo."
+                    }
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "node_config": {
+                        "set_config_parameter": "कॉन्फ़िगरेशन पैरामीटर सेट करें"
+                    }
+                }
+            },
+            "developer-tools": {
+                "tabs": {
+                    "events": {
+                        "title": "घटनाओं"
+                    },
+                    "logs": {
+                        "title": "लॉग्स"
+                    },
+                    "mqtt": {
+                        "title": "MQTT"
+                    },
+                    "services": {
+                        "title": "सेवाएं"
+                    },
+                    "templates": {
+                        "title": "टेम्पलेट्स"
                     }
                 }
             },
@@ -266,54 +306,14 @@
                         "password_not_match": "Password non trovata"
                     }
                 }
+            },
+            "shopping-list": {
+                "add_item": "आइटम जोड़ें",
+                "microphone_tip": "ऊपर दाईं ओर माइक्रोफ़ोन टैप करें और \"मेरी खरीदारी सूची में कैंडी जोड़ें\" कहें"
             }
         },
         "sidebar": {
             "log_out": "लॉग आउट"
-        },
-        "duration": {
-            "day": "{count} {count, plural,\n  one {दिन}\n  other {दिन}\n}",
-            "week": "{count} {count, plural,\n  one {हफ़्ता}\n  other {हफ़्ते}\n}"
-        },
-        "notification_drawer": {
-            "empty": "सूचनाएँ नहीं हैं",
-            "title": "सूचनाएँ"
-        }
-    },
-    "domain": {
-        "automation": "स्वचालन",
-        "binary_sensor": "बाइनरी सेंसर",
-        "climate": "जलवायु",
-        "device_tracker": "डिवाइस ट्रैकर",
-        "fan": "पंखा",
-        "history_graph": "इतिहास ग्राफ",
-        "group": "समूह",
-        "image_processing": "इमेज प्रोसेसिंग",
-        "input_boolean": "इनपुट बूलियन",
-        "input_datetime": "इनपुट दिनांक समय",
-        "input_select": "इनपुट का चयन करें",
-        "input_number": "इनपुट संख्या",
-        "input_text": "इनपुट टेक्स्ट",
-        "light": "रोशनी",
-        "lock": "ताला",
-        "mailbox": "मेलबॉक्स",
-        "media_player": "मीडिया प्लेयर",
-        "notify": "सूचित",
-        "proximity": "निकटता",
-        "remote": "रिमोट",
-        "scene": "दृश्य",
-        "script": "स्क्रिप्ट",
-        "sensor": "सेंसर",
-        "sun": "सूरज",
-        "switch": "स्विच",
-        "weblink": "वेब लिंक",
-        "zwave": "Z-Wave"
-    },
-    "attribute": {
-        "weather": {
-            "humidity": "नमी",
-            "visibility": "दृश्यता",
-            "wind_speed": "हवा की गति"
         }
     }
 }

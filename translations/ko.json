@@ -1,52 +1,192 @@
 {
-    "panel": {
-        "config": "설정",
-        "states": "둘러보기",
-        "map": "지도",
-        "logbook": "로그북",
-        "history": "기록 그래프",
+    "attribute": {
+        "weather": {
+            "humidity": "습도",
+            "visibility": "시정",
+            "wind_speed": "풍속"
+        }
+    },
+    "config_entry": {
+        "disabled_by": {
+            "config_entry": "구성 항목",
+            "integration": "통합 구성요소",
+            "user": "사용자"
+        }
+    },
+    "domain": {
+        "alarm_control_panel": "알람제어판",
+        "automation": "자동화",
+        "binary_sensor": "이진센서",
+        "calendar": "일정",
+        "camera": "카메라",
+        "climate": "공조기기",
+        "configurator": "구성",
+        "conversation": "대화",
+        "cover": "여닫이",
+        "device_tracker": "추적 기기",
+        "fan": "송풍기",
+        "group": "그룹",
+        "hassio": "Hass.io",
+        "history_graph": "기록 그래프",
+        "homeassistant": "Home Assistant",
+        "image_processing": "이미지처리",
+        "input_boolean": "논리입력",
+        "input_datetime": "날짜/시간입력",
+        "input_number": "숫자입력",
+        "input_select": "선택입력",
+        "input_text": "문자입력",
+        "light": "전등",
+        "lock": "잠김",
+        "lovelace": "Lovelace",
         "mailbox": "메일함",
-        "shopping_list": "장보기목록",
+        "media_player": "미디어재생기",
+        "notify": "알림",
+        "person": "구성원",
+        "plant": "식물",
+        "proximity": "근접",
+        "remote": "원격",
+        "scene": "씬",
+        "script": "스크립트",
+        "sensor": "센서",
+        "sun": "태양",
+        "switch": "스위치",
+        "system_health": "시스템 상태",
+        "updater": "업데이터",
+        "vacuum": "청소기",
+        "weblink": "웹링크",
+        "zha": "ZHA",
+        "zwave": "Z-Wave"
+    },
+    "groups": {
+        "system-admin": "관리자",
+        "system-read-only": "읽기 전용 사용자",
+        "system-users": "사용자"
+    },
+    "panel": {
+        "calendar": "캘린더",
+        "config": "설정",
         "dev-info": "정보",
         "developer_tools": "개발자 도구",
-        "calendar": "캘린더",
-        "profile": "프로필"
+        "history": "기록 그래프",
+        "logbook": "로그북",
+        "mailbox": "메일함",
+        "map": "지도",
+        "profile": "프로필",
+        "shopping_list": "장보기목록",
+        "states": "둘러보기"
     },
-    "state": {
-        "default": {
-            "off": "꺼짐",
-            "on": "켜짐",
-            "unknown": "알수없음",
-            "unavailable": "사용불가"
-        },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "auto": "자동",
+                "off": "꺼짐",
+                "on": "켜짐"
+            },
+            "hvac_action": {
+                "cooling": "냉방",
+                "drying": "제습",
+                "fan": "송풍",
+                "heating": "난방",
+                "idle": "대기",
+                "off": "전원 끄기"
+            },
+            "preset_mode": {
+                "activity": "활동",
+                "away": "외출",
+                "boost": "쾌속",
+                "comfort": "쾌적",
+                "eco": "절전",
+                "home": "재실",
+                "none": "없음",
+                "sleep": "취침"
+            }
+        }
+    },
+    "state_badge": {
         "alarm_control_panel": {
             "armed": "경비중",
-            "disarmed": "해제됨",
-            "armed_home": "경비중(재실)",
-            "armed_away": "경비중(외출)",
-            "armed_night": "경비중(야간)",
-            "pending": "보류중",
+            "armed_away": "경비중",
+            "armed_custom_bypass": "경비중",
+            "armed_home": "경비중",
+            "armed_night": "경비중",
             "arming": "경비중",
+            "disarmed": "해제",
+            "disarming": "해제",
+            "pending": "지연",
+            "triggered": "작동됨"
+        },
+        "default": {
+            "entity_not_found": "구성요소를 찾을 수 없음",
+            "error": "오류",
+            "unavailable": "사용불가",
+            "unknown": "알수없음"
+        },
+        "device_tracker": {
+            "home": "재실",
+            "not_home": "외출"
+        },
+        "person": {
+            "home": "재실",
+            "not_home": "외출"
+        }
+    },
+    "state": {
+        "alarm_control_panel": {
+            "armed": "경비중",
+            "armed_away": "경비중(외출)",
+            "armed_custom_bypass": "경비중(사용자 우회)",
+            "armed_home": "경비중(재실)",
+            "armed_night": "경비중(야간)",
+            "arming": "경비중",
+            "disarmed": "해제됨",
             "disarming": "해제중",
-            "triggered": "작동됨",
-            "armed_custom_bypass": "경비중(사용자 우회)"
+            "pending": "보류중",
+            "triggered": "작동됨"
         },
         "automation": {
             "off": "꺼짐",
             "on": "켜짐"
         },
         "binary_sensor": {
+            "battery": {
+                "off": "보통",
+                "on": "낮음"
+            },
+            "cold": {
+                "off": "보통",
+                "on": "저온"
+            },
+            "connectivity": {
+                "off": "연결해제됨",
+                "on": "연결됨"
+            },
             "default": {
                 "off": "꺼짐",
                 "on": "켜짐"
             },
-            "moisture": {
-                "off": "건조함",
-                "on": "습함"
+            "door": {
+                "off": "닫힘",
+                "on": "열림"
+            },
+            "garage_door": {
+                "off": "닫힘",
+                "on": "열림"
             },
             "gas": {
                 "off": "이상없음",
                 "on": "감지됨"
+            },
+            "heat": {
+                "off": "보통",
+                "on": "고온"
+            },
+            "lock": {
+                "off": "잠김",
+                "on": "해제"
+            },
+            "moisture": {
+                "off": "건조함",
+                "on": "습함"
             },
             "motion": {
                 "off": "이상없음",
@@ -55,6 +195,22 @@
             "occupancy": {
                 "off": "이상없음",
                 "on": "감지됨"
+            },
+            "opening": {
+                "off": "닫힘",
+                "on": "열림"
+            },
+            "presence": {
+                "off": "외출",
+                "on": "재실"
+            },
+            "problem": {
+                "off": "문제없음",
+                "on": "문제있음"
+            },
+            "safety": {
+                "off": "안전",
+                "on": "위험"
             },
             "smoke": {
                 "off": "이상없음",
@@ -68,53 +224,9 @@
                 "off": "이상없음",
                 "on": "감지됨"
             },
-            "opening": {
-                "off": "닫힘",
-                "on": "열림"
-            },
-            "safety": {
-                "off": "안전",
-                "on": "위험"
-            },
-            "presence": {
-                "off": "외출",
-                "on": "재실"
-            },
-            "battery": {
-                "off": "보통",
-                "on": "낮음"
-            },
-            "problem": {
-                "off": "문제없음",
-                "on": "문제있음"
-            },
-            "connectivity": {
-                "off": "연결해제됨",
-                "on": "연결됨"
-            },
-            "cold": {
-                "off": "보통",
-                "on": "저온"
-            },
-            "door": {
-                "off": "닫힘",
-                "on": "열림"
-            },
-            "garage_door": {
-                "off": "닫힘",
-                "on": "열림"
-            },
-            "heat": {
-                "off": "보통",
-                "on": "고온"
-            },
             "window": {
                 "off": "닫힘",
                 "on": "열림"
-            },
-            "lock": {
-                "off": "잠김",
-                "on": "해제"
             }
         },
         "calendar": {
@@ -122,38 +234,44 @@
             "on": "켜짐"
         },
         "camera": {
+            "idle": "대기중",
             "recording": "녹화중",
-            "streaming": "스트리밍",
-            "idle": "대기중"
+            "streaming": "스트리밍"
         },
         "climate": {
-            "off": "꺼짐",
-            "on": "켜짐",
-            "heat": "난방",
-            "cool": "냉방",
-            "idle": "대기중",
             "auto": "자동",
+            "cool": "냉방",
             "dry": "제습",
-            "fan_only": "송풍",
             "eco": "절전",
             "electric": "전기",
-            "performance": "고효율",
-            "high_demand": "고성능",
-            "heat_pump": "순환펌프",
+            "fan_only": "송풍",
             "gas": "가스",
+            "heat": "난방",
+            "heat_cool": "냉난방",
+            "heat_pump": "순환펌프",
+            "high_demand": "고성능",
+            "idle": "대기중",
             "manual": "수동",
-            "heat_cool": "냉난방"
+            "off": "꺼짐",
+            "on": "켜짐",
+            "performance": "고효율"
         },
         "configurator": {
             "configure": "설정",
             "configured": "설정됨"
         },
         "cover": {
-            "open": "열림",
-            "opening": "여는중",
             "closed": "닫힘",
             "closing": "닫는중",
+            "open": "열림",
+            "opening": "여는중",
             "stopped": "멈춤"
+        },
+        "default": {
+            "off": "꺼짐",
+            "on": "켜짐",
+            "unavailable": "사용불가",
+            "unknown": "알수없음"
         },
         "device_tracker": {
             "home": "재실",
@@ -164,19 +282,19 @@
             "on": "켜짐"
         },
         "group": {
-            "off": "꺼짐",
-            "on": "켜짐",
-            "home": "재실",
-            "not_home": "외출",
-            "open": "열림",
-            "opening": "여는중",
             "closed": "닫힘",
             "closing": "닫는중",
-            "stopped": "멈춤",
+            "home": "재실",
             "locked": "잠김",
-            "unlocked": "해제",
+            "not_home": "외출",
+            "off": "꺼짐",
             "ok": "문제없음",
-            "problem": "문제있음"
+            "on": "켜짐",
+            "open": "열림",
+            "opening": "여는중",
+            "problem": "문제있음",
+            "stopped": "멈춤",
+            "unlocked": "해제"
         },
         "input_boolean": {
             "off": "꺼짐",
@@ -191,12 +309,16 @@
             "unlocked": "해제"
         },
         "media_player": {
+            "idle": "대기중",
             "off": "꺼짐",
             "on": "켜짐",
-            "playing": "재생중",
             "paused": "일시중지",
-            "idle": "대기중",
+            "playing": "재생중",
             "standby": "준비중"
+        },
+        "person": {
+            "home": "재실",
+            "not_home": "외출"
         },
         "plant": {
             "ok": "문제없음",
@@ -225,34 +347,10 @@
             "off": "꺼짐",
             "on": "켜짐"
         },
-        "zwave": {
-            "default": {
-                "initializing": "초기화중",
-                "dead": "응답없음",
-                "sleeping": "절전모드",
-                "ready": "준비"
-            },
-            "query_stage": {
-                "initializing": "초기화중 ({query_stage})",
-                "dead": "응답없음 ({query_stage})"
-            }
-        },
-        "weather": {
-            "clear-night": "맑음 (밤)",
-            "cloudy": "흐림",
-            "fog": "안개",
-            "hail": "우박",
-            "lightning": "번개",
-            "lightning-rainy": "뇌우",
-            "partlycloudy": "대체로 흐림",
-            "pouring": "호우",
-            "rainy": "비",
-            "snowy": "눈",
-            "snowy-rainy": "진눈개비",
-            "sunny": "맑음",
-            "windy": "바람",
-            "windy-variant": "바람",
-            "exceptional": "예외사항"
+        "timer": {
+            "active": "활성화",
+            "idle": "대기중",
+            "paused": "일시중지됨"
         },
         "vacuum": {
             "cleaning": "청소중",
@@ -264,130 +362,746 @@
             "paused": "일시중지됨",
             "returning": "충전 복귀 중"
         },
-        "timer": {
-            "active": "활성화",
-            "idle": "대기중",
-            "paused": "일시중지됨"
+        "weather": {
+            "clear-night": "맑음 (밤)",
+            "cloudy": "흐림",
+            "exceptional": "예외사항",
+            "fog": "안개",
+            "hail": "우박",
+            "lightning": "번개",
+            "lightning-rainy": "뇌우",
+            "partlycloudy": "대체로 흐림",
+            "pouring": "호우",
+            "rainy": "비",
+            "snowy": "눈",
+            "snowy-rainy": "진눈개비",
+            "sunny": "맑음",
+            "windy": "바람",
+            "windy-variant": "바람"
         },
-        "person": {
-            "home": "재실",
-            "not_home": "외출"
-        }
-    },
-    "state_badge": {
-        "default": {
-            "unknown": "알수없음",
-            "unavailable": "사용불가",
-            "error": "오류",
-            "entity_not_found": "구성요소를 찾을 수 없음"
-        },
-        "alarm_control_panel": {
-            "armed": "경비중",
-            "disarmed": "해제",
-            "armed_home": "경비중",
-            "armed_away": "경비중",
-            "armed_night": "경비중",
-            "pending": "지연",
-            "arming": "경비중",
-            "disarming": "해제",
-            "triggered": "작동됨",
-            "armed_custom_bypass": "경비중"
-        },
-        "device_tracker": {
-            "home": "재실",
-            "not_home": "외출"
-        },
-        "person": {
-            "home": "재실",
-            "not_home": "외출"
+        "zwave": {
+            "default": {
+                "dead": "응답없음",
+                "initializing": "초기화중",
+                "ready": "준비",
+                "sleeping": "절전모드"
+            },
+            "query_stage": {
+                "dead": "응답없음 ({query_stage})",
+                "initializing": "초기화중 ({query_stage})"
+            }
         }
     },
     "ui": {
-        "panel": {
-            "shopping-list": {
-                "clear_completed": "완료항목삭제",
-                "add_item": "항목추가",
-                "microphone_tip": "우상단 마이크를 탭하고 \"Add candy to my shopping list\"라고 말해보세요"
+        "auth_store": {
+            "ask": "현재 로그인을 저장 하시겠습니까?",
+            "confirm": "로그인 저장하기",
+            "decline": "아니요, 괜찮습니다"
+        },
+        "card": {
+            "alarm_control_panel": {
+                "arm_away": "외출 경비",
+                "arm_custom_bypass": "사용자 우회",
+                "arm_home": "재실 경비",
+                "arm_night": "야간 경비",
+                "armed_custom_bypass": "사용자 우회",
+                "clear_code": "지움",
+                "code": "비밀번호",
+                "disarm": "경비 해제"
             },
-            "developer-tools": {
-                "tabs": {
-                    "services": {
-                        "title": "서비스"
-                    },
-                    "states": {
-                        "title": "상태"
-                    },
-                    "events": {
-                        "title": "이벤트"
-                    },
-                    "templates": {
-                        "title": "템플릿"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
-                    },
-                    "info": {
-                        "title": "정보"
-                    },
-                    "logs": {
-                        "title": "로그"
-                    }
+            "automation": {
+                "last_triggered": "최근 트리거 됨",
+                "trigger": "트리거"
+            },
+            "camera": {
+                "not_available": "이미지 사용 불가"
+            },
+            "climate": {
+                "aux_heat": "보조 히터",
+                "away_mode": "외출 모드",
+                "cooling": "{name} 냉방중",
+                "current_temperature": "{name} 현재 온도",
+                "currently": "현재 온도",
+                "fan_mode": "송풍 모드",
+                "heating": "{name} 난방중",
+                "high": "높음",
+                "low": "낮음",
+                "on_off": "켜기 / 끄기",
+                "operation": "운전 모드",
+                "preset_mode": "프리셋",
+                "swing_mode": "회전 모드",
+                "target_humidity": "희망 습도",
+                "target_temperature": "희망 온도",
+                "target_temperature_entity": "{name} 희망 온도",
+                "target_temperature_mode": "{name} 희망 온도 {mode}"
+            },
+            "counter": {
+                "actions": {
+                    "decrement": "감소",
+                    "increment": "증가",
+                    "reset": "초기화"
                 }
             },
-            "history": {
-                "showing_entries": "다음 날짜의 항목을 표시",
-                "period": "기간"
+            "cover": {
+                "position": "위치",
+                "tilt_position": "기울기"
             },
-            "logbook": {
-                "showing_entries": "다음 날짜의 항목을 표시",
-                "period": "기간"
+            "fan": {
+                "direction": "방향",
+                "forward": "앞으로",
+                "oscillate": "회전",
+                "reverse": "뒤로",
+                "speed": "속도"
             },
-            "mailbox": {
-                "empty": "메시지가 존재하지 않습니다",
-                "playback_title": "메시지 재생",
-                "delete_prompt": "이 메시지를 삭제 하시겠습니까?",
-                "delete_button": "삭제"
+            "light": {
+                "brightness": "밝기",
+                "color_temperature": "색온도",
+                "effect": "효과",
+                "white_value": "흰색 값"
             },
+            "lock": {
+                "code": "비밀번호",
+                "lock": "잠금",
+                "unlock": "잠금 해제"
+            },
+            "media_player": {
+                "sound_mode": "사운드 모드",
+                "source": "입력 소스",
+                "text_to_speak": "음성합성 내용 입력 (TTS)"
+            },
+            "persistent_notification": {
+                "dismiss": "해제"
+            },
+            "scene": {
+                "activate": "활성화"
+            },
+            "script": {
+                "execute": "실행"
+            },
+            "timer": {
+                "actions": {
+                    "cancel": "취소",
+                    "finish": "완료",
+                    "pause": "일시정지",
+                    "start": "시작"
+                }
+            },
+            "vacuum": {
+                "actions": {
+                    "resume_cleaning": "청소 재개",
+                    "return_to_base": "충전 복귀",
+                    "start_cleaning": "청소 시작",
+                    "turn_off": "켜기",
+                    "turn_on": "끄기"
+                }
+            },
+            "water_heater": {
+                "away_mode": "외출 모드",
+                "currently": "현재 온도",
+                "on_off": "켜기 / 끄기",
+                "operation": "운전",
+                "target_temperature": "희망 온도"
+            },
+            "weather": {
+                "attributes": {
+                    "air_pressure": "기압",
+                    "humidity": "습도",
+                    "temperature": "기온",
+                    "visibility": "시정",
+                    "wind_speed": "풍속"
+                },
+                "cardinal_direction": {
+                    "e": "동",
+                    "ene": "동북동",
+                    "ese": "동남동",
+                    "n": "북",
+                    "ne": "북동",
+                    "nne": "북북동",
+                    "nnw": "북북서",
+                    "nw": "북서",
+                    "s": "남",
+                    "se": "남동",
+                    "sse": "남남동",
+                    "ssw": "남남서",
+                    "sw": "남서",
+                    "w": "서",
+                    "wnw": "서북서",
+                    "wsw": "서남서"
+                },
+                "forecast": "일기 예보"
+            }
+        },
+        "common": {
+            "cancel": "취소",
+            "loading": "읽는 중",
+            "no": "아니오",
+            "save": "저장",
+            "successfully_saved": "성공적으로 저장되었습니다",
+            "yes": "예"
+        },
+        "components": {
+            "device-picker": {
+                "clear": "지우기",
+                "device": "기기",
+                "show_devices": "기기 표시"
+            },
+            "entity": {
+                "entity-picker": {
+                    "clear": "지우기",
+                    "entity": "구성요소",
+                    "show_entities": "구성요소 표시"
+                }
+            },
+            "history_charts": {
+                "loading_history": "상태 기록 내용 읽는 중...",
+                "no_history_found": "상태 기록 내용이 없습니다."
+            },
+            "relative_time": {
+                "duration": {
+                    "day": "{count} {count, plural,\none {일}\nother {일}\n}",
+                    "hour": "{count} {count, plural,\none {시간}\nother {시간}\n}",
+                    "minute": "{count} {count, plural,\none {분}\nother {분}\n}",
+                    "second": "{count} {count, plural,\none {초}\nother {초}\n}",
+                    "week": "{count} {count, plural,\none {주}\nother {주}\n}"
+                },
+                "future": "{time} 후",
+                "never": "해당없음",
+                "past": "{time} 전"
+            },
+            "service-picker": {
+                "service": "서비스"
+            }
+        },
+        "dialogs": {
+            "config_entry_system_options": {
+                "enable_new_entities_description": "비활성화한 경우 새로 검색된 {integration} 구성요소는 Home Assistant 에 자동으로 추가되지 않습니다.",
+                "enable_new_entities_label": "새로 추가된 구성요소를 활성화합니다.",
+                "title": "{integration} 시스템 옵션"
+            },
+            "confirmation": {
+                "cancel": "취소",
+                "ok": "확인",
+                "title": "다시 한번 확인해주세요"
+            },
+            "domain_toggler": {
+                "title": "도메인 토글"
+            },
+            "more_info_control": {
+                "script": {
+                    "last_action": "최근 동작"
+                },
+                "sun": {
+                    "elevation": "고도",
+                    "rising": "해돋이",
+                    "setting": "해넘이"
+                },
+                "updater": {
+                    "title": "업데이트 방법"
+                }
+            },
+            "more_info_settings": {
+                "entity_id": "구성요소 ID",
+                "name": "대체 이름",
+                "save": "저장"
+            },
+            "options_flow": {
+                "form": {
+                    "header": "옵션"
+                },
+                "success": {
+                    "description": "옵션이 성공적으로 저장되었습니다."
+                }
+            },
+            "voice_command": {
+                "did_not_hear": "Home Assistant 가 아무 소리도 듣지 못했습니다",
+                "error": "이런, 오류가 발생했습니다",
+                "found": "다음을 찾았습니다:",
+                "how_can_i_help": "무엇을 도와드릴까요?",
+                "label": "질문을 입력하고 'Enter' 를 눌러주세요",
+                "label_voice": "질문을 입력하고 'Enter' 를 누르거나 마이크를 탭하여 말씀해보세요"
+            },
+            "zha_device_info": {
+                "buttons": {
+                    "add": "기기 추가",
+                    "reconfigure": "기기 재설정",
+                    "remove": "기기 제거"
+                },
+                "last_seen": "마지막 확인",
+                "manuf": "{manufacturer} 제조",
+                "no_area": "영역 없음",
+                "power_source": "전원",
+                "quirk": "규격외 사양 표준화(Quirk)",
+                "services": {
+                    "reconfigure": "ZHA 기기를 다시 구성 합니다. (기기 복구). 기기에 문제가 있는 경우 사용해주세요. 기기가 배터리로 작동하는 경우, 이 서비스를 사용할 때 기기가 켜져있고 통신이 가능한 상태인지 확인해주세요.",
+                    "remove": "Zigbee 네트워크에서 기기를 제거해주세요.",
+                    "updateDeviceName": "이 기기의 사용자 정의 이름을 기기 레지스트리에 설정합니다."
+                },
+                "unknown": "알 수 없슴",
+                "zha_device_card": {
+                    "area_picker_label": "영역",
+                    "device_name_placeholder": "사용자 지정 이름",
+                    "update_name_button": "이름 업데이트"
+                }
+            }
+        },
+        "duration": {
+            "day": "{count} {count, plural,\none {일}\nother {일}\n}",
+            "hour": "{count} {count, plural,\none {시간}\nother {시간}\n}",
+            "minute": "{count} {count, plural,\none {분}\nother {분}\n}",
+            "second": "{count} {count, plural,\none {초}\nother {초}\n}",
+            "week": "{count} {count, plural,\none {주}\nother {주}\n}"
+        },
+        "login-form": {
+            "log_in": "로그인",
+            "password": "비밀번호",
+            "remember": "자동로그인"
+        },
+        "notification_drawer": {
+            "click_to_configure": "버튼을 클릭하여 {entity} 을(를) 구성",
+            "empty": "알림 내용이 없습니다.",
+            "title": "알림"
+        },
+        "notification_toast": {
+            "connection_lost": "서버와 연결이 끊어졌습니다. 다시 연결 중...",
+            "entity_turned_off": "{entity} 이(가) 꺼졌습니다.",
+            "entity_turned_on": "{entity} 이(가) 켜졌습니다.",
+            "service_call_failed": "{service} 서비스를 호출하지 못했습니다.",
+            "service_called": "{service} 서비스가 호출되었습니다.",
+            "triggered": "{name} 트리거됨"
+        },
+        "panel": {
             "config": {
-                "header": "Home Assistant 설정",
-                "introduction": "여기에서 구성요소와  Home Assistant 를 설정 할 수 있습니다. 아직 여기서 모두 설정 할 수는 없지만, 모든 내용을 설정 할 수 있도록 작업 중입니다.",
+                "area_registry": {
+                    "caption": "영역",
+                    "create_area": "영역 만들기",
+                    "description": "영역을 만들고 편집합니다",
+                    "editor": {
+                        "create": "만들기",
+                        "default_name": "새로운 영역",
+                        "delete": "삭제",
+                        "update": "업데이트"
+                    },
+                    "no_areas": "등록된 영역이 없습니다. 거실, 침실과 같이 영역을 등록해보세요!",
+                    "picker": {
+                        "create_area": "영역 만들기",
+                        "header": "영역",
+                        "integrations_page": "통합 구성요소 페이지",
+                        "introduction": "영역은 기기가 있는 위치를 설정하는데 사용합니다. 이 정보는 인터페이스와 권한 그리고 다른 시스템과의 연동을 구성하는 데 도움이 되도록 Home Assistant 에 사용됩니다.",
+                        "introduction2": "특정 영역에 기기를 배치하려면 아래 링크를 따라 통합 구성요소 페이지로 이동 한 다음, 설정된 구성요소의 기기를 클릭하여 영역을 설정해주세요.",
+                        "no_areas": "등록된 영역이 없습니다. 거실, 침실과 같이 영역을 등록해보세요!"
+                    }
+                },
+                "automation": {
+                    "caption": "자동화",
+                    "description": "자동화를 만들고 편집합니다",
+                    "editor": {
+                        "actions": {
+                            "add": "동작 추가",
+                            "delete": "삭제",
+                            "delete_confirm": "정말 삭제하시겠습니까?",
+                            "duplicate": "복제",
+                            "header": "동작",
+                            "introduction": "동작은 자동화가 트리거 될 때 Home Assistant 가 수행할 작업입니다.",
+                            "learn_more": "동작에 대해 더 알아보기",
+                            "name": "동작",
+                            "type_select": "동작 유형",
+                            "type": {
+                                "condition": {
+                                    "label": "조건"
+                                },
+                                "delay": {
+                                    "delay": "지연",
+                                    "label": "지연"
+                                },
+                                "device_id": {
+                                    "extra_fields": {
+                                        "code": "코드"
+                                    },
+                                    "label": "기기"
+                                },
+                                "event": {
+                                    "event": "이벤트:",
+                                    "label": "이벤트 발생",
+                                    "service_data": "서비스 데이터"
+                                },
+                                "scene": {
+                                    "label": "씬 활성화"
+                                },
+                                "service": {
+                                    "label": "서비스 호출",
+                                    "service_data": "서비스 데이터"
+                                },
+                                "wait_template": {
+                                    "label": "대기",
+                                    "timeout": "제한 시간 (선택 사항)",
+                                    "wait_template": "대기 템플릿"
+                                }
+                            },
+                            "unsupported_action": "미지원 동작: {action}"
+                        },
+                        "alias": "이름",
+                        "conditions": {
+                            "add": "조건 추가",
+                            "delete": "삭제",
+                            "delete_confirm": "정말 삭제하시겠습니까?",
+                            "duplicate": "복제",
+                            "header": "조건",
+                            "introduction": "조건은 자동화 규칙의 선택사항이며 트리거 될 때 발생하는 동작을 방지하는 데 사용할 수 있습니다. 조건은 트리거와 비슷해 보이지만 매우 다릅니다. 트리거는 시스템에서 발생하는 이벤트를 검사하고 조건은 시스템의 현재 상태를 검사합니다. 스위치를 예로 들면, 트리거는 스위치가 켜지는 것(이벤트)을, 조건은 스위치가 현재 켜져 있는지 혹은 꺼져 있는지(상태)를 검사합니다.",
+                            "learn_more": "조건에 대해 더 알아보기",
+                            "name": "조건",
+                            "type_select": "조건 유형",
+                            "type": {
+                                "and": {
+                                    "label": "다중조건 (그리고)"
+                                },
+                                "device": {
+                                    "extra_fields": {
+                                        "above": "이상",
+                                        "below": "이하",
+                                        "for": "동안"
+                                    },
+                                    "label": "기기"
+                                },
+                                "numeric_state": {
+                                    "above": "이상",
+                                    "below": "이하",
+                                    "label": "수치 상태",
+                                    "value_template": "값 템플릿 (선택 사항)"
+                                },
+                                "or": {
+                                    "label": "다중조건 (또는)"
+                                },
+                                "state": {
+                                    "label": "상태",
+                                    "state": "상태"
+                                },
+                                "sun": {
+                                    "after": "이후:",
+                                    "after_offset": "이후 오프셋 (선택 사항)",
+                                    "before": "이전:",
+                                    "before_offset": "이전 오프셋 (선택 사항)",
+                                    "label": "태양",
+                                    "sunrise": "해돋이",
+                                    "sunset": "해넘이"
+                                },
+                                "template": {
+                                    "label": "템플릿",
+                                    "value_template": "값 템플릿"
+                                },
+                                "time": {
+                                    "after": "이후",
+                                    "before": "이전",
+                                    "label": "시간"
+                                },
+                                "zone": {
+                                    "entity": "위치기반 구성요소",
+                                    "label": "구역",
+                                    "zone": "구역"
+                                }
+                            },
+                            "unsupported_condition": "미지원 조건: {condition}"
+                        },
+                        "default_name": "새로운 자동화",
+                        "description": {
+                            "label": "설명",
+                            "placeholder": "부가 설명"
+                        },
+                        "introduction": "자동화를 사용하여 집에 생기를 불어넣으세요",
+                        "load_error_not_editable": "automations.yaml 의 자동화만 편집할 수 있습니다.",
+                        "load_error_unknown": "자동화를 읽어오는 도중 오류가 발생했습니다 ({err_no}).",
+                        "save": "저장하기",
+                        "triggers": {
+                            "add": "트리거 추가",
+                            "delete": "삭제",
+                            "delete_confirm": "정말 삭제하시겠습니까?",
+                            "duplicate": "복제",
+                            "header": "트리거",
+                            "introduction": "트리거는 자동화 규칙을 처리하는 시작점 입니다. 같은 자동화 규칙에 여러 개의 트리거를 지정할 수 있습니다. 트리거가 발동되면 Home Assistant 는 조건을 확인하고 동작을 호출합니다.",
+                            "learn_more": "트리거에 대해 더 알아보기",
+                            "name": "트리거",
+                            "type_select": "트리거 유형",
+                            "type": {
+                                "device": {
+                                    "extra_fields": {
+                                        "above": "이상",
+                                        "below": "이하",
+                                        "for": "동안"
+                                    },
+                                    "label": "기기"
+                                },
+                                "event": {
+                                    "event_data": "이벤트 데이터",
+                                    "event_type": "이벤트 유형",
+                                    "label": "이벤트"
+                                },
+                                "geo_location": {
+                                    "enter": "입장",
+                                    "event": "이벤트:",
+                                    "label": "위치정보",
+                                    "leave": "퇴장",
+                                    "source": "소스",
+                                    "zone": "구역"
+                                },
+                                "homeassistant": {
+                                    "event": "이벤트:",
+                                    "label": "Home Assistant",
+                                    "shutdown": "종료",
+                                    "start": "시작"
+                                },
+                                "mqtt": {
+                                    "label": "MQTT",
+                                    "payload": "페이로드 (선택 사항)",
+                                    "topic": "토픽"
+                                },
+                                "numeric_state": {
+                                    "above": "이상",
+                                    "below": "이하",
+                                    "label": "수치 상태",
+                                    "value_template": "값 템플릿 (선택 사항)"
+                                },
+                                "state": {
+                                    "for": "경과 시간",
+                                    "from": "이전",
+                                    "label": "상태",
+                                    "to": "이후"
+                                },
+                                "sun": {
+                                    "event": "이벤트:",
+                                    "label": "태양",
+                                    "offset": "오프셋 (선택 사항)",
+                                    "sunrise": "해돋이",
+                                    "sunset": "해넘이"
+                                },
+                                "template": {
+                                    "label": "템플릿",
+                                    "value_template": "값 템플릿"
+                                },
+                                "time_pattern": {
+                                    "hours": "시",
+                                    "label": "시간 패턴",
+                                    "minutes": "분",
+                                    "seconds": "초"
+                                },
+                                "time": {
+                                    "at": "시각",
+                                    "label": "시간"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
+                                },
+                                "zone": {
+                                    "enter": "입장",
+                                    "entity": "위치기반 구성요소",
+                                    "event": "이벤트:",
+                                    "label": "구역",
+                                    "leave": "퇴장",
+                                    "zone": "구역"
+                                }
+                            },
+                            "unsupported_platform": "미지원 플랫폼: {platform}"
+                        },
+                        "unsaved_confirm": "변경된 내용을 저장하지 않았습니다. 정말 이 페이지를 떠나시겠습니까?"
+                    },
+                    "picker": {
+                        "add_automation": "자동화 추가하기",
+                        "header": "자동화 편집",
+                        "introduction": "자동화 편집기를 사용하여 자동화를 작성하고 편집할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
+                        "learn_more": "자동화에 대해 더 알아보기",
+                        "no_automations": "편집 가능한 자동화를 찾을 수 없습니다",
+                        "pick_automation": "편집할 자동화 선택"
+                    }
+                },
+                "cloud": {
+                    "account": {
+                        "alexa": {
+                            "config_documentation": "설정 문서 보기",
+                            "disable": "비활성화",
+                            "enable": "활성화",
+                            "enable_ha_skill": "Alexa 에 Home Assistant 스킬 사용하기",
+                            "enable_state_reporting": "상태 보고 활성화",
+                            "info": "Home Assistant Cloud 의 Alexa 연동 기능으로 Alexa 가 지원하는 기기로서 Home Assistant 기기를 제어 할 수 있습니다.",
+                            "info_state_reporting": "상태 보고를 활성화하면 Home Assistant 는 노출된 구성요소의 모든 상태 변경 사항을 Amazon 에 보냅니다. 이를 통해 Alexa 앱에서 언제든지 구성요소의 최신 상태를 확인할 수 있으며, 상태 변경을 사용하여 루틴을 만들 수 있습니다.",
+                            "manage_entities": "구성요소 관리",
+                            "state_reporting_error": "상태 보고를 {enable_disable}할 수 없습니다.",
+                            "sync_entities": "구성요소 동기화",
+                            "sync_entities_error": "구성요소 동기화를 하지 못했습니다:",
+                            "title": "Alexa"
+                        },
+                        "connected": "연결됨",
+                        "connection_status": "클라우드 연결 상태",
+                        "fetching_subscription": "구독 정보를 가져오는 중…",
+                        "google": {
+                            "config_documentation": "설정 문서 보기",
+                            "devices_pin": "보안 기기 PIN",
+                            "enable_ha_skill": "Google 어시스턴트에 Home Assistant 스킬 사용하기",
+                            "enable_state_reporting": "상태 보고 활성화",
+                            "enter_pin_error": "PIN 을 저장할 수 없습니다:",
+                            "enter_pin_hint": "보안 기기 사용 PIN 입력",
+                            "enter_pin_info": "보안 기기를 제어하기 위한 PIN 을 설정해주세요. 보안 기기란 현관문, 차고문, 도어락과 같은 기기입니다. Google 어시스턴트를 통해 이러한 기기를 제어할 때 PIN 을 입력하거나 말씀해주셔야 합니다.",
+                            "info": "Home Assistant Cloud 의 Google 어시스턴트 연동 기능으로 Google 어시스턴트가 지원하는 기기로서 Home Assistant 기기를 제어 할 수 있습니다.",
+                            "info_state_reporting": "상태 보고를 활성화하면 Home Assistant 는 노출된 구성요소의 모든 상태 변경 사항을 Google 에 보냅니다. 이를 통해 Google 앱에서 언제든지 구성요소의 최신 상태를 확인할 수 있습니다.",
+                            "manage_entities": "구성요소 관리",
+                            "security_devices": "보안 기기",
+                            "sync_entities": "구성요소를 Google 에 동기화",
+                            "title": "Google 어시스턴트"
+                        },
+                        "integrations": "서비스 연동",
+                        "integrations_introduction": "Home Assistant Cloud 연동을 통해 Home Assistant 구성요소를 인터넷상에 공개 노출시키지 않고도 클라우드의 서비스에 연결시킬 수 있습니다.",
+                        "integrations_introduction2": "웹사이트를 방문하여 다음을 확인해보세요. ",
+                        "integrations_link_all_features": "사용 가능한 모든 기능",
+                        "manage_account": "계정 관리",
+                        "nabu_casa_account": "Nabu Casa 계정",
+                        "not_connected": "연결되지 않음",
+                        "remote": {
+                            "access_is_being_prepared": "원격 액세스가 준비 중입니다. 준비가 되면 알려드리겠습니다.",
+                            "certificate_info": "인증서 정보",
+                            "info": "Home Assistant Cloud 는 집 밖에서도 구성요소에 대한 안전한 원격 연결을 제공해드립니다.",
+                            "instance_is_available": "구성요소는 다음의 주소에서 사용할 수 있습니다.",
+                            "instance_will_be_available": "토글을 활성화하여 다음의 주소에서 구성요소를 사용해보세요.",
+                            "link_learn_how_it_works": "작동 방식에 대해 알아보기",
+                            "title": "원격 제어"
+                        },
+                        "sign_out": "로그 아웃",
+                        "thank_you_note": "Home Assistant Cloud 를 이용해주셔서 감사합니다. 여러분 덕분에 저희는 모든 분들에게 더 나은 홈 자동화를 제공해드릴 수 있습니다. 감사합니다!",
+                        "webhooks": {
+                            "disable_hook_error_msg": "Webhook 를 비활성화하지 못했습니다:",
+                            "info": "Webhook 에 의해 트리거 되도록 구성된 모든 구성요소를 인터넷상에 공개 노출시키지 않고도 어디서나 Home Assistant 로 데이터를 보낼 수 있는 공개된 액세스가 가능한 URL 을 제공해드립니다.",
+                            "link_learn_more": "Webhook 기반 자동화 생성에 대해 더 알아보기.",
+                            "loading": "읽는 중 ...",
+                            "manage": "관리",
+                            "no_hooks_yet": "아직 Webhook 가 없는 것 같습니다. 다음을 구성하여 시작하실 수 있습니다. ",
+                            "no_hooks_yet_link_automation": "Webhook 자동화",
+                            "no_hooks_yet_link_integration": "Webhook 기반 연동",
+                            "no_hooks_yet2": " 또는 다음을 작성할 수 있습니다. ",
+                            "title": "Webhooks"
+                        }
+                    },
+                    "alexa": {
+                        "banner": "configuration.yaml 에서 구성요소 필터를 구성했기 때문에 UI 를 통해 노출된 구성요소를 편집 할 수 없습니다.",
+                        "expose": "Alexa 에 노출",
+                        "exposed_entities": "노출된 구성요소",
+                        "not_exposed_entities": "노출되지 않은 구성요소",
+                        "title": "Alexa"
+                    },
+                    "caption": "Home Assistant Cloud",
+                    "description_features": "Alexa 및 Google 어시스턴트를 통해 집 밖에서도 집을 관리하세요.",
+                    "description_login": "{email} 로(으로) 로그인 되어있습니다",
+                    "description_not_login": "로그인이 되어있지 않습니다",
+                    "dialog_certificate": {
+                        "certificate_expiration_date": "인증서 만료 날짜",
+                        "certificate_information": "인증서 정보",
+                        "close": "닫기",
+                        "fingerprint": "인증서 지문:",
+                        "will_be_auto_renewed": "인증서는 자동으로 갱신됩니다"
+                    },
+                    "dialog_cloudhook": {
+                        "available_at": "Webhook 는 다음의 URL 을 사용해 주세요:",
+                        "close": "닫기",
+                        "confirm_disable": "이 Webhook 를 비활성화 하시겠습니까?",
+                        "copied_to_clipboard": "클립보드에 복사됨",
+                        "info_disable_webhook": "이 Webhook 를 더 이상 사용하지 않으려면, 다음을 해보세요: ",
+                        "link_disable_webhook": "비활성화",
+                        "managed_by_integration": "이 Webhook 는 통합 구성요소에 의해 관리되고 있어 비활성화할 수 없습니다.",
+                        "view_documentation": "관련문서 보기",
+                        "webhook_for": "{name} Webhook"
+                    },
+                    "forgot_password": {
+                        "check_your_email": "비밀번호를 재설정하는 방법은 보내드린 이메일을 확인해주세요.",
+                        "email": "이메일",
+                        "email_error_msg": "잘못된 이메일 형식",
+                        "instructions": "이메일 주소를 입력하시면 비밀번호를 재설정 할 수 있는 링크를 보내드립니다.",
+                        "send_reset_email": "재설정 이메일 보내기",
+                        "subtitle": "비밀번호 재설정 하기",
+                        "title": "비밀번호 찾기"
+                    },
+                    "google": {
+                        "banner": "configuration.yaml 에서 구성요소 필터를 구성했기 때문에 UI 를 통해 노출된 구성요소를 편집 할 수 없습니다.",
+                        "disable_2FA": "2단계 인증 비활성화",
+                        "expose": "Google 어시스턴트에 노출",
+                        "exposed_entities": "노출된 구성요소",
+                        "not_exposed_entities": "노출되지 않은 구성요소",
+                        "sync_to_google": "변경 사항을 Google 에 동기화하는 중.",
+                        "title": "Google 어시스턴트"
+                    },
+                    "login": {
+                        "alert_email_confirm_necessary": "로그인하기 전에 검증 이메일을 확인해야 합니다.",
+                        "alert_password_change_required": "로그인하기 전에 비밀번호를 변경해야 합니다.",
+                        "dismiss": "로그인 취소",
+                        "email": "이메일",
+                        "email_error_msg": "잘못된 이메일 형식",
+                        "forgot_password": "비밀번호가 기억나지 않으세요?",
+                        "introduction": "Home Assistant Cloud 는 집 밖에서도 구성요소에 대한 안전한 원격 연결을 제공해드립니다. 또한 Amazon Alexa 및 Google 어시스턴트와 같은 클라우드 전용 서비스에 연결할 수 있습니다.",
+                        "introduction2": "이 서비스는 Home Assistant 와 Hass.io 의 설립자가 설립한 회사인 ",
+                        "introduction2a": " 에 의해 운영되고 있습니다.",
+                        "introduction3": "Home Assistant Cloud 는 1개월 무료 평가판이 포함된 구독 서비스입니다. 결제 정보는 필요하지 않습니다.",
+                        "learn_more_link": "Home Assistant Cloud 에 대해 더 알아보기",
+                        "password": "비밀번호",
+                        "password_error_msg": "비밀번호는 최소 8자 이상입니다",
+                        "sign_in": "로그인",
+                        "start_trial": "1개월 무료 평가판 사용해 보기",
+                        "title": "클라우드 로그인",
+                        "trial_info": "결제 정보는 필요하지 않습니다"
+                    },
+                    "register": {
+                        "account_created": "계정이 생성되었습니다! 계정을 활성화 하는 방법은 보내드린 이메일을 확인해주세요.",
+                        "create_account": "계정 만들기",
+                        "email_address": "이메일 주소",
+                        "email_error_msg": "잘못된 이메일 형식",
+                        "feature_amazon_alexa": "Amazon Alexa 연동",
+                        "feature_google_home": "Google 어시스턴트 연동",
+                        "feature_remote_control": "집 밖에서 Home Assistant 를 제어",
+                        "feature_webhook_apps": "OwnTracks 와 같은 Webhook 기반 앱과 쉬운 연동",
+                        "headline": "1개월 무료 평가판 사용해 보기",
+                        "information": "1개월간 무료로 사용해 볼 수 있는 Home Assistant Cloud 계정을 만들어보세요. 결제 정보는 필요하지 않습니다.",
+                        "information2": "평가판을 사용하면 다음을 포함하는 Home Assistant Cloud 의 모든 기능을 이용해 볼 수 있습니다:",
+                        "information3": "이 서비스는 Home Assistant 와 Hass.io 의 설립자가 설립한 회사인 ",
+                        "information3a": " 에 의해 운영되고 있습니다.",
+                        "information4": "계정 등록은 다음 이용 약관의 동의를 포함합니다.",
+                        "link_privacy_policy": "개인 정보 정책",
+                        "link_terms_conditions": "이용 약관",
+                        "password": "비밀번호",
+                        "password_error_msg": "비밀번호는 최소 8자 이상입니다",
+                        "resend_confirm_email": "검증 이메일 다시보내기",
+                        "start_trial": "무료 평가판 시작",
+                        "title": "계정 만들기"
+                    }
+                },
+                "common": {
+                    "editor": {
+                        "confirm_unsaved": "변경된 내용을 저장하지 않았습니다. 정말로 이 페이지를 떠나시겠습니까?"
+                    }
+                },
                 "core": {
                     "caption": "일반",
                     "description": "Home Assistant 일반 구성 내용을 편집합니다",
                     "section": {
                         "core": {
-                            "header": "일반 구성",
-                            "introduction": "구성 내용의 설정을 변경하는 것은 때때로 난해하고 귀찮은 작업입니다. 여기서 설정 변경을 좀 더 쉽게 하실 수 있습니다.",
                             "core_config": {
                                 "edit_requires_storage": "구성내용이 configuration.yaml 에 저장되어 있기 때문에 편집기가 비활성화 되었습니다.",
-                                "location_name": "Home Assistant 이름",
-                                "latitude": "위도",
-                                "longitude": "경도",
                                 "elevation": "고도",
                                 "elevation_meters": "미터",
+                                "imperial_example": "화씨, 파운드",
+                                "latitude": "위도",
+                                "location_name": "Home Assistant 이름",
+                                "longitude": "경도",
+                                "metric_example": "섭씨, 킬로그램",
+                                "save_button": "저장",
                                 "time_zone": "시간대",
                                 "unit_system": "단위",
                                 "unit_system_imperial": "야드파운드법",
-                                "unit_system_metric": "미터법",
-                                "imperial_example": "화씨, 파운드",
-                                "metric_example": "섭씨, 킬로그램",
-                                "save_button": "저장"
-                            }
+                                "unit_system_metric": "미터법"
+                            },
+                            "header": "일반 구성",
+                            "introduction": "구성 내용의 설정을 변경하는 것은 때때로 난해하고 귀찮은 작업입니다. 여기서 설정 변경을 좀 더 쉽게 하실 수 있습니다."
                         },
                         "server_control": {
-                            "validation": {
-                                "heading": "구성 내용 유효성 검사",
-                                "introduction": "최근에 구성 내용을 추가 혹은 변경하셨다면, 구성 내용 확인 버튼을 눌러 구성 내용이 올바른지 검사하고 Home Assistant 가 정상 작동 되는지 확인하실 수 있습니다.",
-                                "check_config": "구성 내용 확인",
-                                "valid": "구성 내용이 모두 올바릅니다!",
-                                "invalid": "구성 내용이 잘못되었습니다"
-                            },
                             "reloading": {
-                                "heading": "구성 내용 새로고침",
-                                "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어들일 수 있습니다. 새로고침을 누르면 현재 구성 내용을 내리고 새로운 구성 내용을 읽어들입니다.",
+                                "automation": "자동화 새로고침",
                                 "core": "코어 새로고침",
                                 "group": "그룹 새로고침",
-                                "automation": "자동화 새로고침",
+                                "heading": "구성 내용 새로고침",
+                                "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어들일 수 있습니다. 새로고침을 누르면 현재 구성 내용을 내리고 새로운 구성 내용을 읽어들입니다.",
                                 "script": "스크립트 새로고침"
                             },
                             "server_management": {
@@ -395,6 +1109,13 @@
                                 "introduction": "Home Assistant 서버를 제어합니다.",
                                 "restart": "재시작",
                                 "stop": "중지"
+                            },
+                            "validation": {
+                                "check_config": "구성 내용 확인",
+                                "heading": "구성 내용 유효성 검사",
+                                "introduction": "최근에 구성 내용을 추가 혹은 변경하셨다면, 구성 내용 확인 버튼을 눌러 구성 내용이 올바른지 검사하고 Home Assistant 가 정상 작동 되는지 확인하실 수 있습니다.",
+                                "invalid": "구성 내용이 잘못되었습니다",
+                                "valid": "구성 내용이 모두 올바릅니다!"
                             }
                         }
                     }
@@ -405,502 +1126,75 @@
                     "picker": {
                         "header": "사용자화",
                         "introduction": "구성요소의 속성값을 입맛에 맞게 변경할 수 있습니다. 추가 혹은 수정된 사용자 정의 내용은 즉시 적용되지만, 제거된 내용은 구성요소가 업데이트 될 때 적용됩니다."
+                    },
+                    "warning": {
+                        "include_link": "customize.yaml 포함",
+                        "include_sentence": "configuration.yaml 이 올바르지 않은 것 같습니다"
                     }
                 },
-                "automation": {
-                    "caption": "자동화",
-                    "description": "자동화를 만들고 편집합니다",
-                    "picker": {
-                        "header": "자동화 편집",
-                        "introduction": "자동화 편집기를 사용하여 자동화를 작성하고 편집할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
-                        "pick_automation": "편집할 자동화 선택",
-                        "no_automations": "편집 가능한 자동화를 찾을 수 없습니다",
-                        "add_automation": "자동화 추가하기",
-                        "learn_more": "자동화에 대해 더 알아보기"
-                    },
-                    "editor": {
-                        "introduction": "자동화를 사용하여 집에 생기를 불어넣으세요",
-                        "default_name": "새로운 자동화",
-                        "save": "저장하기",
-                        "unsaved_confirm": "변경된 내용을 저장하지 않았습니다. 정말 이 페이지를 떠나시겠습니까?",
-                        "alias": "이름",
-                        "triggers": {
-                            "header": "트리거",
-                            "introduction": "트리거는 자동화 규칙을 처리하는 시작점 입니다. 같은 자동화 규칙에 여러 개의 트리거를 지정할 수 있습니다. 트리거가 발동되면 Home Assistant 는 조건을 확인하고 동작을 호출합니다.",
-                            "add": "트리거 추가",
-                            "duplicate": "복제",
-                            "delete": "삭제",
-                            "delete_confirm": "정말 삭제하시겠습니까?",
-                            "unsupported_platform": "미지원 플랫폼: {platform}",
-                            "type_select": "트리거 유형",
-                            "type": {
-                                "event": {
-                                    "label": "이벤트",
-                                    "event_type": "이벤트 유형",
-                                    "event_data": "이벤트 데이터"
-                                },
-                                "state": {
-                                    "label": "상태",
-                                    "from": "이전",
-                                    "to": "이후",
-                                    "for": "경과 시간"
-                                },
-                                "homeassistant": {
-                                    "label": "Home Assistant",
-                                    "event": "이벤트:",
-                                    "start": "시작",
-                                    "shutdown": "종료"
-                                },
-                                "mqtt": {
-                                    "label": "MQTT",
-                                    "topic": "토픽",
-                                    "payload": "페이로드 (선택 사항)"
-                                },
-                                "numeric_state": {
-                                    "label": "수치 상태",
-                                    "above": "이상",
-                                    "below": "이하",
-                                    "value_template": "값 템플릿 (선택 사항)"
-                                },
-                                "sun": {
-                                    "label": "태양",
-                                    "event": "이벤트:",
-                                    "sunrise": "해돋이",
-                                    "sunset": "해넘이",
-                                    "offset": "오프셋 (선택 사항)"
-                                },
-                                "template": {
-                                    "label": "템플릿",
-                                    "value_template": "값 템플릿"
-                                },
-                                "time": {
-                                    "label": "시간",
-                                    "at": "시각"
-                                },
-                                "zone": {
-                                    "label": "구역",
-                                    "entity": "위치기반 구성요소",
-                                    "zone": "구역",
-                                    "event": "이벤트:",
-                                    "enter": "입장",
-                                    "leave": "퇴장"
-                                },
-                                "webhook": {
-                                    "label": "Webhook",
-                                    "webhook_id": "Webhook ID"
-                                },
-                                "time_pattern": {
-                                    "label": "시간 패턴",
-                                    "hours": "시",
-                                    "minutes": "분",
-                                    "seconds": "초"
-                                },
-                                "geo_location": {
-                                    "label": "위치정보",
-                                    "source": "소스",
-                                    "zone": "구역",
-                                    "event": "이벤트:",
-                                    "enter": "입장",
-                                    "leave": "퇴장"
-                                },
-                                "device": {
-                                    "label": "기기",
-                                    "extra_fields": {
-                                        "above": "이상",
-                                        "below": "이하",
-                                        "for": "동안"
-                                    }
-                                }
-                            },
-                            "learn_more": "트리거에 대해 더 알아보기"
+                "devices": {
+                    "automation": {
+                        "actions": {
+                            "caption": "뭔가 트리거 되었을 때...."
                         },
                         "conditions": {
-                            "header": "조건",
-                            "introduction": "조건은 자동화 규칙의 선택사항이며 트리거 될 때 발생하는 동작을 방지하는 데 사용할 수 있습니다. 조건은 트리거와 비슷해 보이지만 매우 다릅니다. 트리거는 시스템에서 발생하는 이벤트를 검사하고 조건은 시스템의 현재 상태를 검사합니다. 스위치를 예로 들면, 트리거는 스위치가 켜지는 것(이벤트)을, 조건은 스위치가 현재 켜져 있는지 혹은 꺼져 있는지(상태)를 검사합니다.",
-                            "add": "조건 추가",
-                            "duplicate": "복제",
-                            "delete": "삭제",
-                            "delete_confirm": "정말 삭제하시겠습니까?",
-                            "unsupported_condition": "미지원 조건: {condition}",
-                            "type_select": "조건 유형",
-                            "type": {
-                                "state": {
-                                    "label": "상태",
-                                    "state": "상태"
-                                },
-                                "numeric_state": {
-                                    "label": "수치 상태",
-                                    "above": "이상",
-                                    "below": "이하",
-                                    "value_template": "값 템플릿 (선택 사항)"
-                                },
-                                "sun": {
-                                    "label": "태양",
-                                    "before": "이전:",
-                                    "after": "이후:",
-                                    "before_offset": "이전 오프셋 (선택 사항)",
-                                    "after_offset": "이후 오프셋 (선택 사항)",
-                                    "sunrise": "해돋이",
-                                    "sunset": "해넘이"
-                                },
-                                "template": {
-                                    "label": "템플릿",
-                                    "value_template": "값 템플릿"
-                                },
-                                "time": {
-                                    "label": "시간",
-                                    "after": "이후",
-                                    "before": "이전"
-                                },
-                                "zone": {
-                                    "label": "구역",
-                                    "entity": "위치기반 구성요소",
-                                    "zone": "구역"
-                                },
-                                "device": {
-                                    "label": "기기",
-                                    "extra_fields": {
-                                        "above": "이상",
-                                        "below": "이하",
-                                        "for": "동안"
-                                    }
-                                },
-                                "and": {
-                                    "label": "다중조건 (그리고)"
-                                },
-                                "or": {
-                                    "label": "다중조건 (또는)"
-                                }
-                            },
-                            "learn_more": "조건에 대해 더 알아보기"
+                            "caption": "...인 경우 뭔가를 실행"
                         },
-                        "actions": {
-                            "header": "동작",
-                            "introduction": "동작은 자동화가 트리거 될 때 Home Assistant 가 수행할 작업입니다.",
-                            "add": "동작 추가",
-                            "duplicate": "복제",
-                            "delete": "삭제",
-                            "delete_confirm": "정말 삭제하시겠습니까?",
-                            "unsupported_action": "미지원 동작: {action}",
-                            "type_select": "동작 유형",
-                            "type": {
-                                "service": {
-                                    "label": "서비스 호출",
-                                    "service_data": "서비스 데이터"
-                                },
-                                "delay": {
-                                    "label": "지연",
-                                    "delay": "지연"
-                                },
-                                "wait_template": {
-                                    "label": "대기",
-                                    "wait_template": "대기 템플릿",
-                                    "timeout": "제한 시간 (선택 사항)"
-                                },
-                                "condition": {
-                                    "label": "조건"
-                                },
-                                "event": {
-                                    "label": "이벤트 발생",
-                                    "event": "이벤트:",
-                                    "service_data": "서비스 데이터"
-                                },
-                                "device_id": {
-                                    "label": "기기"
-                                },
-                                "scene": {
-                                    "label": "씬 활성화"
-                                }
-                            },
-                            "learn_more": "동작에 대해 더 알아보기"
-                        },
-                        "load_error_not_editable": "automations.yaml 의 자동화만 편집할 수 있습니다.",
-                        "load_error_unknown": "자동화를 읽어오는 도중 오류가 발생했습니다 ({err_no}).",
-                        "description": {
-                            "label": "설명",
-                            "placeholder": "부가설명"
-                        }
-                    }
-                },
-                "script": {
-                    "caption": "스크립트",
-                    "description": "스크립트를 만들고 편집합니다",
-                    "picker": {
-                        "header": "스크립트 편집기",
-                        "introduction": "스크립트 편집기를 사용하여 스크립트를 작성하고 편집 할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
-                        "learn_more": "스크립트에 대해 더 알아보기",
-                        "no_scripts": "편집 가능한 스크립트를 찾을 수 없습니다",
-                        "add_script": "스크립트 추가"
-                    },
-                    "editor": {
-                        "header": "스크립트: {name}",
-                        "default_name": "새로운 스크립트",
-                        "load_error_not_editable": "scripts.yaml 의 스크립트만 편집할 수 있습니다.",
-                        "delete_confirm": "이 스크립트를 삭제 하시겠습니까?"
-                    }
-                },
-                "zwave": {
-                    "caption": "Z-Wave",
-                    "description": "Z-Wave 네트워크를 관리합니다",
-                    "network_management": {
-                        "header": "Z-Wave 네트워크 관리",
-                        "introduction": "Z-Wave 네트워크에 명령을 실행해주세요. 대부분의 명령이 성공했는지에 대한 피드백은 받을 수 없지만, OZW 로그를 통해 확인해 볼 수 있습니다."
-                    },
-                    "network_status": {
-                        "network_stopped": "Z-Wave 네트워크 중지됨",
-                        "network_starting": "Z-Wave 네트워크 시작 중...",
-                        "network_starting_note": "네트워크 규모에 따라 다소 시간이 걸릴 수 있습니다.",
-                        "network_started": "Z-Wave 네트워크 시작됨",
-                        "network_started_note_some_queried": "절전모드 해제 노드가 쿼리되었습니다. 절전모드 노드는 절전모드 해제 상태일 때 쿼리됩니다.",
-                        "network_started_note_all_queried": "모든 노드가 쿼리되었습니다."
-                    },
-                    "services": {
-                        "start_network": "네트워크 시작",
-                        "stop_network": "네트워크 중지",
-                        "heal_network": "네트워크 새로고침",
-                        "test_network": "네트워크 테스트",
-                        "soft_reset": "소프트 리셋",
-                        "save_config": "설정 저장",
-                        "add_node_secure": "노드 보안 추가",
-                        "add_node": "노드 추가",
-                        "remove_node": "노드 제거",
-                        "cancel_command": "명령 취소"
-                    },
-                    "common": {
-                        "value": "값",
-                        "instance": "인스턴스",
-                        "index": "색인",
-                        "unknown": "알 수 없음",
-                        "wakeup_interval": "절전모드 해제 간격"
-                    },
-                    "values": {
-                        "header": "노드 값"
-                    },
-                    "node_config": {
-                        "header": "노드 구성 옵션",
-                        "seconds": "초",
-                        "set_wakeup": "절전모드 해제 간격 설정",
-                        "config_parameter": "구성 파라메터",
-                        "config_value": "구성 값",
-                        "true": "참",
-                        "false": "거짓",
-                        "set_config_parameter": "구성 파라메터 설정"
-                    },
-                    "learn_more": "Z-Wave 에 대해 더 알아보기",
-                    "ozw_log": {
-                        "header": "OZW 로그",
-                        "introduction": "로그를 봐주세요. 0은 최소값(전체 로그 로드)이고 1000은 최대값입니다. 로드는 정적 로그를 보여주며 로그의 마지막은 최근 지정된 로그의 행으로 자동으로 업데이트됩니다."
-                    }
-                },
-                "users": {
-                    "caption": "사용자",
-                    "description": "사용자를 관리합니다",
-                    "picker": {
-                        "title": "사용자",
-                        "system_generated": "시스템 자동 생성"
-                    },
-                    "editor": {
-                        "rename_user": "사용자 이름 변경",
-                        "change_password": "비밀번호 변경",
-                        "activate_user": "사용자 활성화",
-                        "deactivate_user": "사용자 비활성화",
-                        "delete_user": "사용자 삭제",
-                        "caption": "사용자 보기",
-                        "id": "ID",
-                        "owner": "소유자",
-                        "group": "그룹",
-                        "active": "활성화",
-                        "system_generated": "시스템 자동 생성",
-                        "system_generated_users_not_removable": "시스템 자동 생성 사용자는 제거 할 수 없습니다.",
-                        "unnamed_user": "이름이 없는 사용자",
-                        "enter_new_name": "새로운 이름을 입력해주세요",
-                        "user_rename_failed": "사용자 이름 변경이 실패했습니다:",
-                        "group_update_failed": "그룹 업데이트가 실패했습니다:",
-                        "confirm_user_deletion": "{name} 을(를) 삭제 하시겠습니까?"
-                    },
-                    "add_user": {
-                        "caption": "사용자 계정 만들기",
-                        "name": "이름",
-                        "username": "사용자 이름 (계정명)",
-                        "password": "비밀번호",
-                        "create": "만들기"
-                    }
-                },
-                "cloud": {
-                    "caption": "Home Assistant Cloud",
-                    "description_login": "{email} 로(으로) 로그인 되어있습니다",
-                    "description_not_login": "로그인이 되어있지 않습니다",
-                    "description_features": "Alexa 및 Google 어시스턴트를 통해 집 밖에서도 집을 관리하세요.",
-                    "login": {
-                        "title": "클라우드 로그인",
-                        "introduction": "Home Assistant Cloud 는 집 밖에서도 구성요소에 대해 안전한 원격 연결을 제공합니다. 또한 Amazon Alexa 및 Google 어시스턴트와 같은 클라우드 전용 서비스에 연결할 수 있습니다.",
-                        "introduction2": "이 서비스는 Home Assistant 와 Hass.io 의 설립자가 설립한 회사인 ",
-                        "introduction2a": " 에 의해 운영되고 있습니다.",
-                        "introduction3": "Home Assistant Cloud 는 1개월 무료 평가판이 포함된 구독 서비스입니다. 결제 정보는 필요하지 않습니다.",
-                        "learn_more_link": "Home Assistant Cloud 에 대해 더 알아보기",
-                        "dismiss": "로그인 취소",
-                        "sign_in": "로그인",
-                        "email": "이메일",
-                        "email_error_msg": "잘못된 이메일 형식",
-                        "password": "비밀번호",
-                        "password_error_msg": "비밀번호는 최소 8자 이상입니다",
-                        "forgot_password": "비밀번호가 기억나지 않으세요?",
-                        "start_trial": "1개월 무료 평가판 사용해 보기",
-                        "trial_info": "결제 정보는 필요하지 않습니다",
-                        "alert_password_change_required": "로그인하기 전에 비밀번호를 변경해야 합니다.",
-                        "alert_email_confirm_necessary": "로그인하기 전에 검증 이메일을 확인해야 합니다."
-                    },
-                    "forgot_password": {
-                        "title": "비밀번호 찾기",
-                        "subtitle": "비밀번호 재설정 하기",
-                        "instructions": "이메일 주소를 입력하시면 비밀번호를 재설정 할 수 있는 링크를 보내드립니다.",
-                        "email": "이메일",
-                        "email_error_msg": "잘못된 이메일 형식",
-                        "send_reset_email": "재설정 이메일 보내기",
-                        "check_your_email": "비밀번호를 재설정하는 방법은 보내드린 이메일을 확인해주세요."
-                    },
-                    "register": {
-                        "title": "계정 만들기",
-                        "headline": "1개월 무료 평가판 사용해 보기",
-                        "information": "1개월간 무료로 사용해 볼 수 있는 Home Assistant Cloud 계정을 만들어보세요. 결제 정보는 필요하지 않습니다.",
-                        "information2": "평가판을 사용하면 다음을 포함하는 Home Assistant Cloud 의 모든 기능을 이용해 볼 수 있습니다:",
-                        "feature_remote_control": "집 밖에서 Home Assistant 를 제어",
-                        "feature_google_home": "Google 어시스턴트 연동",
-                        "feature_amazon_alexa": "Amazon Alexa 연동",
-                        "feature_webhook_apps": "OwnTracks 와 같은 Webhook 기반 앱과 쉬운 연동",
-                        "information3": "이 서비스는 Home Assistant 와 Hass.io 의 설립자가 설립한 회사인 ",
-                        "information3a": " 에 의해 운영되고 있습니다.",
-                        "information4": "계정을 등록하시면 다음과 같이 이용 약관에 동의하게 됩니다.",
-                        "link_terms_conditions": "이용 약관",
-                        "link_privacy_policy": "개인 정보 정책",
-                        "create_account": "계정 만들기",
-                        "email_address": "이메일 주소",
-                        "email_error_msg": "잘못된 이메일 형식",
-                        "password": "비밀번호",
-                        "password_error_msg": "비밀번호는 최소 8자 이상입니다",
-                        "start_trial": "무료 평가판 시작",
-                        "resend_confirm_email": "검증 이메일 다시보내기",
-                        "account_created": "계정이 생성되었습니다! 계정을 활성화 하는 방법은 보내드린 이메일을 확인해주세요."
-                    },
-                    "account": {
-                        "thank_you_note": "Home Assistant Cloud 를 이용해주셔서 감사합니다. 여러분 덕분에 저희는 모든 사람에게 더 나은 홈 자동화를 제공해드릴 수 있습니다. 감사합니다!",
-                        "nabu_casa_account": "Nabu Casa 계정",
-                        "connection_status": "클라우드 연결 상태",
-                        "manage_account": "계정 관리",
-                        "sign_out": "로그 아웃",
-                        "integrations": "서비스 연동",
-                        "integrations_introduction": "Home Assistant Cloud 연동을 통해 Home Assistant 구성요소를 인터넷상에 공개 노출시키지 않고도 클라우드의 서비스에 연결시킬 수 있습니다.",
-                        "integrations_introduction2": "웹사이트를 통해 다음을 확인해보세요. ",
-                        "integrations_link_all_features": "사용 가능한 모든 기능",
-                        "connected": "연결됨",
-                        "not_connected": "연결되지 않음",
-                        "fetching_subscription": "구독 정보를 가져오는 중…",
-                        "remote": {
-                            "title": "원격 제어",
-                            "access_is_being_prepared": "원격 액세스가 준비 중입니다. 준비가 되면 알려드리겠습니다.",
-                            "info": "Home Assistant Cloud 는 집을 비운 상태에서도 구성요소에 대한 안전한 원격 연결을 제공합니다.",
-                            "instance_is_available": "구성요소는 다음의 서비스에서 사용이 가능합니다.",
-                            "instance_will_be_available": "구성요소는 다음의 서비스에서 제공 예정입니다.",
-                            "link_learn_how_it_works": "작동 방식에 대해 알아보기",
-                            "certificate_info": "인증서 정보"
-                        },
-                        "alexa": {
-                            "title": "Alexa",
-                            "info": "Home Assistant Cloud 의 Alexa 연동 기능으로 Alexa 가 지원하는 기기로서 Home Assistant 기기를 제어 할 수 있습니다.",
-                            "enable_ha_skill": "Alexa 에 Home Assistant 스킬 사용하기",
-                            "config_documentation": "설정 문서 보기",
-                            "enable_state_reporting": "상태 보고 활성화",
-                            "info_state_reporting": "상태 보고를 활성화하면 Home Assistant 는 노출된 구성요소의 모든 상태 변경 사항을 Amazon 에 보냅니다. 이를 통해 Alexa 앱에서 언제든지 구성요소의 최신 상태를 확인할 수 있으며, 상태 변경을 사용하여 루틴을 만들 수 있습니다.",
-                            "sync_entities": "구성요소 동기화",
-                            "manage_entities": "구성요소 관리",
-                            "sync_entities_error": "구성요소 동기화를 하지 못했습니다:",
-                            "state_reporting_error": "상태 보고를 {enable_disable}할 수 없습니다.",
-                            "enable": "활성화",
-                            "disable": "비활성화"
-                        },
-                        "google": {
-                            "title": "Google 어시스턴트",
-                            "info": "Home Assistant Cloud 의 Google 어시스턴트 연동 기능으로 Google 어시스턴트가 지원하는 기기로서 Home Assistant 기기를 제어 할 수 있습니다.",
-                            "enable_ha_skill": "Google 어시스턴트에 Home Assistant 스킬 사용하기",
-                            "config_documentation": "설정 문서 보기",
-                            "enable_state_reporting": "상태 보고 활성화",
-                            "info_state_reporting": "상태 보고를 활성화하면 Home Assistant 는 노출된 구성요소의 모든 상태 변경 사항을 Google 에 보냅니다. 이를 통해 Google 앱에서 언제든지 구성요소의 최신 상태를 확인할 수 있습니다.",
-                            "security_devices": "보안 기기",
-                            "enter_pin_info": "보안 기기를 제어하기 위한 PIN 을 설정해주세요. 보안 기기란 현관문, 차고문, 도어락과 같은 기기입니다. Google 어시스턴트를 통해 이러한 기기를 제어할 때 PIN 을 입력하거나 말씀해주셔야 합니다.",
-                            "devices_pin": "보안 기기 PIN",
-                            "enter_pin_hint": "보안 기기를 사용하시려면 PIN 을 입력해주세요",
-                            "sync_entities": "구성요소를 Google 에 동기화",
-                            "manage_entities": "구성요소 관리",
-                            "enter_pin_error": "PIN 을 저장할 수 없습니다:"
-                        },
-                        "webhooks": {
-                            "title": "Webhooks",
-                            "info": "Webhook 에 의해 트리거 되도록 구성된 모든 구성요소를 인터넷상에 공개 노출시키지 않고도 어디서나 Home Assistant 로 데이터를 보낼 수 있는 공개된 액세스가 가능한 URL 을 제공해드립니다.",
-                            "no_hooks_yet": "아직 Webhook 가 없는 것 같습니다. 다음을 구성하여 시작하실 수 있습니다. ",
-                            "no_hooks_yet_link_integration": "Webhook 기반 연동",
-                            "no_hooks_yet2": " 또는 다음을 작성할 수 있습니다. ",
-                            "no_hooks_yet_link_automation": "Webhook 자동화",
-                            "link_learn_more": "Webhook 기반 자동화 생성에 대해 더 알아보기.",
-                            "loading": "읽는 중 ...",
-                            "manage": "관리",
-                            "disable_hook_error_msg": "Webhook 를 비활성화하지 못했습니다:"
+                        "triggers": {
+                            "caption": "...일 때 뭔가를 실행"
                         }
                     },
-                    "alexa": {
-                        "title": "Alexa",
-                        "banner": "configuration.yaml 에서 구성요소 필터를 구성했기 때문에 UI 를 통해 노출된 구성요소를 편집 할 수 없습니다.",
-                        "exposed_entities": "노출된 구성요소",
-                        "not_exposed_entities": "노출되지 않은 구성요소",
-                        "expose": "Alexa 에 노출"
+                    "caption": "기기",
+                    "description": "연결된 기기를 관리합니다"
+                },
+                "entity_registry": {
+                    "caption": "구성요소",
+                    "description": "등록된 구성요소를 편집합니다",
+                    "editor": {
+                        "confirm_delete": "이 구성요소를 제거 하시겠습니까?",
+                        "confirm_delete2": "구성요소 항목을 제거해도 Home Assistant 에서 실제로 구성요소가 제거되는것은 아닙니다. 완전히 제거하려면, Home Assistant 에서 '{platform}' 통합 구성요소를 제거해주세요.",
+                        "default_name": "새로운 영역",
+                        "delete": "삭제",
+                        "enabled_cause": "{cause} 에 의해 비활성화 되었습니다.",
+                        "enabled_description": "비활성화 된 구성요소는 Home Assistant 에 추가되지 않습니다.",
+                        "enabled_label": "구성요소 활성화",
+                        "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
+                        "update": "업데이트"
                     },
-                    "dialog_certificate": {
-                        "certificate_information": "인증서 정보",
-                        "certificate_expiration_date": "인증서 만료 날짜",
-                        "will_be_auto_renewed": "인증서는 자동으로 갱신됩니다",
-                        "fingerprint": "인증서 지문:",
-                        "close": "닫기"
-                    },
-                    "google": {
-                        "title": "Google 어시스턴트",
-                        "expose": "Google 어시스턴트에 노출",
-                        "disable_2FA": "2단계 인증 비활성화",
-                        "banner": "configuration.yaml 에서 구성요소 필터를 구성했기 때문에 UI 를 통해 노출된 구성요소를 편집 할 수 없습니다.",
-                        "exposed_entities": "노출된 구성요소",
-                        "not_exposed_entities": "노출되지 않은 구성요소",
-                        "sync_to_google": "변경 사항을 Google 에 동기화하는 중."
-                    },
-                    "dialog_cloudhook": {
-                        "webhook_for": "{name} Webhook",
-                        "available_at": "Webhook 는 다음의 URL 을 사용해 주세요:",
-                        "managed_by_integration": "이 Webhook 는 통합 구성요소에 의해 관리되며 비활성화할 수 없습니다.",
-                        "info_disable_webhook": "이 Webhook 를 더 이상 사용하지 않으려면, 다음을 해보세요: ",
-                        "link_disable_webhook": "비활성화",
-                        "view_documentation": "관련문서 보기",
-                        "close": "닫기",
-                        "confirm_disable": "이 Webhook 를 비활성화 하시겠습니까?",
-                        "copied_to_clipboard": "클립보드에 복사됨"
+                    "picker": {
+                        "header": "구성요소",
+                        "headers": {
+                            "enabled": "활성화됨",
+                            "entity_id": "구성요소 ID",
+                            "integration": "통합 구성요소",
+                            "name": "이름"
+                        },
+                        "integrations_page": "통합 구성요소 페이지",
+                        "introduction": "Home Assistant 는 구성요소의 식별을 위해 모든 구성요소에 고유한 레지스트리를 부여합니다. 각각의 구성요소들은 자신만의 고유한 구성요소 ID 를 가집니다.",
+                        "introduction2": "구성요소를 편집하여 이름을 대체하거나 구성요소 ID를 변경하고 Home Assistant 에서 항목을 제거할 수 있습니다. 단, 구성요소 편집창에서 구성요소를 삭제해도 구성요소가 완전히 제거되는 것은 아닙니다. 완전히 제거하려면, 아래 링크를 따라 통합 구성요소 페이지에서 제거해주세요.",
+                        "show_disabled": "비활성화 된 구성요소 표시",
+                        "unavailable": "(사용불가)"
                     }
                 },
+                "header": "Home Assistant 설정",
                 "integrations": {
                     "caption": "통합 구성요소",
-                    "description": "통합 구성요소를 관리하고 설정합니다",
-                    "discovered": "발견된 구성요소",
-                    "configured": "설정된 구성요소",
-                    "new": "새로운 통합 구성요소 설정",
-                    "configure": "설정하기",
-                    "none": "설정된 구성요소가 없습니다",
                     "config_entry": {
-                        "no_devices": "이 통합 구성요소는 설정해야 할 기기가 없습니다.",
-                        "no_device": "기기가 없는 구성요소",
+                        "area": "{area}에 위치",
+                        "delete_button": "{integration} 삭제",
                         "delete_confirm": "이 통합 구성요소를 제거 하시겠습니까?",
-                        "restart_confirm": "통합 구성요소 제거 완료를 위해 Home Assistant 웹 페이지를 다시 불러옵니다",
-                        "manuf": "{manufacturer} 제조",
-                        "via": "연결 경유 대상",
-                        "firmware": "펌웨어: {version}",
                         "device_unavailable": "기기 사용불가",
                         "entity_unavailable": "구성요소 사용불가",
+                        "firmware": "펌웨어: {version}",
+                        "hub": "연결 경유 대상",
+                        "manuf": "{manufacturer} 제조",
                         "no_area": "영역 없음",
-                        "hub": "연결 경유 대상"
+                        "no_device": "기기가 없는 구성요소",
+                        "no_devices": "이 통합 구성요소는 설정해야 할 기기가 없습니다.",
+                        "restart_confirm": "통합 구성요소 제거 완료를 위해 Home Assistant 웹 페이지를 다시 불러옵니다",
+                        "settings_button": "{integration} 설정 편집",
+                        "system_options_button": "{integration} 시스템 옵션",
+                        "via": "연결 경유 대상"
                     },
                     "config_flow": {
                         "external_step": {
@@ -908,28 +1202,151 @@
                             "open_site": "웹사이트 열기"
                         }
                     },
+                    "configure": "설정하기",
+                    "configured": "설정된 구성요소",
+                    "description": "통합 구성요소를 관리하고 설정합니다",
+                    "discovered": "발견된 구성요소",
+                    "home_assistant_website": "Home Assistant 웹 사이트",
+                    "new": "새로운 통합 구성요소 설정",
+                    "none": "설정된 구성요소가 없습니다",
                     "note_about_integrations": "아직 UI 에서 모든 통합 구성요소를 구성할 수 있는것은 아닙니다.",
-                    "note_about_website_reference": "더 많은 구성요소는 다음에서 살펴 봐주세요. ",
-                    "home_assistant_website": "Home Assistant 웹 사이트"
+                    "note_about_website_reference": "더 많은 구성요소는 다음에서 살펴 봐주세요. "
+                },
+                "introduction": "여기에서 구성요소와  Home Assistant 를 설정 할 수 있습니다. 아직 여기서 모두 설정 할 수는 없지만, 모든 내용을 설정 할 수 있도록 작업 중입니다.",
+                "person": {
+                    "add_person": "구성원 추가하기",
+                    "caption": "구성원",
+                    "confirm_delete": "이 구성원을 삭제 하시겠습니까?",
+                    "confirm_delete2": "이 구성원에게 속한 모든 기기는 비할당 상태로 남게됩니다.",
+                    "create_person": "구성원 만들기",
+                    "description": "Home Assistant 가 추적하는 구성원을 관리합니다",
+                    "detail": {
+                        "create": "만들기",
+                        "delete": "삭제",
+                        "device_tracker_intro": "이 구성원에게 속한 기기를 선택해주세요.",
+                        "device_tracker_pick": "추적 할 기기 선택",
+                        "device_tracker_picked": "추적 대상 기기",
+                        "link_integrations_page": "통합 구성요소 페이지",
+                        "link_presence_detection_integrations": "재실 감지 통합 구성요소",
+                        "linked_user": "사용자 계정 연결",
+                        "name": "이름",
+                        "name_error_msg": "이름은 필수 요소입니다",
+                        "new_person": "새로운 구성원",
+                        "no_device_tracker_available_intro": "구성원의 재실 여부를 알려주는 기기가 있다면 구성원을 해당 기기에 할당할 수 있습니다. 통합 구성요소 페이지에서 재실 감지 통합 구성요소를 추가해서 기기를 구성해보세요.",
+                        "update": "업데이트"
+                    },
+                    "introduction": "Home Assistant 에서 추적 할 구성원을 정의 할 수 있습니다.",
+                    "no_persons_created_yet": "아직 생성된 구성원이 없는 것 같습니다.",
+                    "note_about_persons_configured_in_yaml": "참고: configuration.yaml 에서 구성된 구성원은 UI 를 통해 편집 할 수 없습니다."
+                },
+                "script": {
+                    "caption": "스크립트",
+                    "description": "스크립트를 만들고 편집합니다",
+                    "editor": {
+                        "default_name": "새로운 스크립트",
+                        "delete_confirm": "이 스크립트를 삭제 하시겠습니까?",
+                        "header": "스크립트: {name}",
+                        "load_error_not_editable": "scripts.yaml 의 스크립트만 편집할 수 있습니다."
+                    },
+                    "picker": {
+                        "add_script": "스크립트 추가",
+                        "header": "스크립트 편집기",
+                        "introduction": "스크립트 편집기를 사용하여 스크립트를 작성하고 편집 할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
+                        "learn_more": "스크립트에 대해 더 알아보기",
+                        "no_scripts": "편집 가능한 스크립트를 찾을 수 없습니다"
+                    }
+                },
+                "server_control": {
+                    "caption": "서버 제어",
+                    "description": "Home Assistant 서버를 재시작 또는 중지합니다",
+                    "section": {
+                        "reloading": {
+                            "automation": "자동화 새로고침",
+                            "core": "위치 및 사용자화 새로고침",
+                            "group": "그룹 새로고침",
+                            "heading": "구성 내용 새로고침",
+                            "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어들일 수 있습니다. 새로고침을 누르면 현재 구성 내용을 내리고 새로운 구성 내용을 읽어들입니다.",
+                            "scene": "씬 다시읽기",
+                            "script": "스크립트 새로고침"
+                        },
+                        "server_management": {
+                            "confirm_restart": "Home Assistant 를 재시작 하시겠습니까?",
+                            "confirm_stop": "Home Assistant 를 중지 하시겠습니까?",
+                            "heading": "서버 관리",
+                            "introduction": "Home Assistant 서버를 제어합니다.",
+                            "restart": "재시작",
+                            "stop": "중지"
+                        },
+                        "validation": {
+                            "check_config": "구성 내용 확인",
+                            "heading": "구성 내용 유효성 검사",
+                            "introduction": "최근에 구성 내용을 추가 혹은 변경하셨다면, 구성 내용 확인 버튼을 눌러 구성 내용이 올바른지 검사하고 Home Assistant 가 정상 작동 되는지 확인하실 수 있습니다.",
+                            "invalid": "구성 내용이 잘못되었습니다",
+                            "valid": "구성 내용이 모두 올바릅니다!"
+                        }
+                    }
+                },
+                "users": {
+                    "add_user": {
+                        "caption": "사용자 계정 만들기",
+                        "create": "만들기",
+                        "name": "이름",
+                        "password": "비밀번호",
+                        "username": "사용자 이름 (계정명)"
+                    },
+                    "caption": "사용자",
+                    "description": "사용자를 관리합니다",
+                    "editor": {
+                        "activate_user": "사용자 활성화",
+                        "active": "활성화",
+                        "caption": "사용자 보기",
+                        "change_password": "비밀번호 변경",
+                        "confirm_user_deletion": "{name} 을(를) 삭제 하시겠습니까?",
+                        "deactivate_user": "사용자 비활성화",
+                        "delete_user": "사용자 삭제",
+                        "enter_new_name": "새로운 이름을 입력해주세요",
+                        "group": "그룹",
+                        "group_update_failed": "그룹 업데이트가 실패했습니다:",
+                        "id": "ID",
+                        "owner": "소유자",
+                        "rename_user": "사용자 이름 변경",
+                        "system_generated": "시스템 자동 생성",
+                        "system_generated_users_not_removable": "시스템 자동 생성 사용자는 제거 할 수 없습니다.",
+                        "unnamed_user": "이름이 없는 사용자",
+                        "user_rename_failed": "사용자 이름 변경이 실패했습니다:"
+                    },
+                    "picker": {
+                        "system_generated": "시스템 자동 생성",
+                        "title": "사용자"
+                    }
                 },
                 "zha": {
-                    "caption": "ZHA",
-                    "description": "Zigbee 홈 자동화 네트워크 관리",
-                    "services": {
-                        "reconfigure": "ZHA 기기를 다시 구성 합니다. (기기 복구). 기기에 문제가 있는 경우 사용해주세요. 기기가 배터리로 작동하는 경우, 이 서비스를 사용할 때 기기가 켜져있고 통신이 가능한 상태인지 확인해주세요.",
-                        "updateDeviceName": "이 기기의 사용자 정의 이름을 기기 레지스트리에 설정합니다.",
-                        "remove": "Zigbee 네트워크에서 기기 제거"
-                    },
-                    "device_card": {
-                        "device_name_placeholder": "사용자 지정 이름",
-                        "area_picker_label": "영역",
-                        "update_name_button": "이름 업데이트"
-                    },
                     "add_device_page": {
-                        "header": "Zigbee 홈 자동화 - 기기 추가",
-                        "spinner": "ZHA Zigbee 기기를 찾고있습니다...",
                         "discovery_text": "발견된 기기가 여기에 표시됩니다. 기기의 설명서를 참고하여 기기를 페어링 모드로 설정해주세요.",
-                        "search_again": "다시 검색"
+                        "header": "Zigbee 홈 자동화 - 기기 추가",
+                        "search_again": "다시 검색",
+                        "spinner": "ZHA Zigbee 기기를 찾고있습니다..."
+                    },
+                    "caption": "ZHA",
+                    "cluster_attributes": {
+                        "attributes_of_cluster": "선택된 클러스터의 속성",
+                        "get_zigbee_attribute": "Zigbee 속성 가져오기",
+                        "header": "클러스터 속성",
+                        "help_attribute_dropdown": "설정된 값을 보거나 설정하려면 속성을 선택해주세요.",
+                        "help_get_zigbee_attribute": "선택한 속성의 값을 가져옵니다.",
+                        "help_set_zigbee_attribute": "지정된 구성요소에서 지정된 클러스터의 속성 값을 설정합니다.",
+                        "introduction": "클러스터 속성을 보고 편집합니다.",
+                        "set_zigbee_attribute": "Zigbee 속성 설정하기"
+                    },
+                    "cluster_commands": {
+                        "commands_of_cluster": "선택된 클러스터의 명령",
+                        "header": "클러스터 명령",
+                        "help_command_dropdown": "제어할 명령을 선택합니다.",
+                        "introduction": "클러스터 명령을 보고 실행합니다.",
+                        "issue_zigbee_command": "Zigbee 명령 실행"
+                    },
+                    "clusters": {
+                        "help_cluster_dropdown": "속성과 명령을 보려면 클러스터를 선택해주세요."
                     },
                     "common": {
                         "add_devices": "기기 추가",
@@ -938,466 +1355,265 @@
                         "manufacturer_code_override": "제조업체 코드 재정의",
                         "value": "값"
                     },
+                    "description": "Zigbee 홈 자동화 네트워크 관리",
+                    "device_card": {
+                        "area_picker_label": "영역",
+                        "device_name_placeholder": "사용자 지정 이름",
+                        "update_name_button": "이름 업데이트"
+                    },
                     "network_management": {
                         "header": "네트워크 관리",
                         "introduction": "전체 네트워크에 영향을 미치는 명령"
                     },
                     "node_management": {
                         "header": "기기 관리",
-                        "introduction": "단일 기기에 영향을 주는 ZHA 명령을 실행합니다. 사용 가능한 명령 목록을 보려면 기기를 선택해주세요.",
+                        "help_node_dropdown": "기기별 옵션을 보려면 기기를 선택해주세요.",
                         "hint_battery_devices": "참고: 절전(배터리 구동) 기기는 명령을 실행할 때 절전 모드가 해제되어 있어야 합니다. 일반적으로 절전 기기는 트리거해서 절전 모드를 해제할 수 있습니다.",
-                        "hint_wakeup": "Xiaomi 센서와 같은 일부 기기는 상호 작용하는 동안 기기의 절전 모드를 해제할 수 있는 최대 5초 간격으로 누를 수 있는 절전 해제 버튼이 있습니다.",
-                        "help_node_dropdown": "기기별 옵션을 보려면 기기를 선택해주세요."
+                        "hint_wakeup": "Xiaomi 센서와 같은 일부 기기는 상호 작용하는 동안 기기의 절전 모드 해제가 가능한 약 5초 동안 누를 수 있는 절전 해제 버튼이 있습니다.",
+                        "introduction": "단일 기기에 영향을 주는 ZHA 명령을 실행합니다. 사용 가능한 명령 목록을 보려면 기기를 선택해주세요."
                     },
-                    "clusters": {
-                        "help_cluster_dropdown": "속성과 명령을 보려면 클러스터를 선택해주세요."
-                    },
-                    "cluster_attributes": {
-                        "header": "클러스터 속성",
-                        "introduction": "클러스터 속성을 보고 편집합니다.",
-                        "attributes_of_cluster": "선택된 클러스터의 속성",
-                        "get_zigbee_attribute": "Zigbee 속성 가져오기",
-                        "set_zigbee_attribute": "Zigbee 속성 설정하기",
-                        "help_attribute_dropdown": "설정된 값을 보거나 설정하려면 속성을 선택해주세요.",
-                        "help_get_zigbee_attribute": "선택한 속성의 값을 가져옵니다.",
-                        "help_set_zigbee_attribute": "지정된 구성요소에서 지정된 클러스터의 속성 값을 설정합니다."
-                    },
-                    "cluster_commands": {
-                        "header": "클러스터 명령",
-                        "introduction": "클러스터 명령을 보고 실행합니다.",
-                        "commands_of_cluster": "선택된 클러스터의 명령",
-                        "issue_zigbee_command": "Zigbee 명령 실행",
-                        "help_command_dropdown": "제어할 명령을 선택합니다."
+                    "services": {
+                        "reconfigure": "ZHA 기기를 다시 구성 합니다. (기기 복구). 기기에 문제가 있는 경우 사용해주세요. 기기가 배터리로 작동하는 경우, 이 서비스를 사용할 때 기기가 켜져있고 통신이 가능한 상태인지 확인해주세요.",
+                        "remove": "Zigbee 네트워크에서 기기 제거",
+                        "updateDeviceName": "이 기기의 사용자 정의 이름을 기기 레지스트리에 설정합니다."
                     }
                 },
-                "area_registry": {
-                    "caption": "영역",
-                    "description": "영역을 만들고 편집합니다",
-                    "picker": {
-                        "header": "영역 등록",
-                        "introduction": "영역은 기기가 있는 위치를 설정하는데 사용합니다. 이 정보는 인터페이스와 권한 그리고 다른 시스템과의 통합을 구성하는 데 도움이 되도록 Home Assistant 에 사용됩니다.",
-                        "introduction2": "특정 영역에 기기를 배치하려면 아래 링크를 따라 통합 구성요소 페이지로 이동 한 다음, 설정된 구성요소의 기기를 클릭하여 영역을 설정해주세요.",
-                        "integrations_page": "통합 구성요소 페이지",
-                        "no_areas": "등록된 영역이 없습니다. 거실, 침실과 같이 영역을 등록해보세요!",
-                        "create_area": "영역 만들기"
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "common": {
+                        "index": "색인",
+                        "instance": "인스턴스",
+                        "unknown": "알 수 없음",
+                        "value": "값",
+                        "wakeup_interval": "절전모드 해제 간격"
                     },
-                    "no_areas": "등록된 영역이 없습니다. 거실, 침실과 같이 영역을 등록해보세요!",
-                    "create_area": "영역 만들기",
-                    "editor": {
-                        "default_name": "새로운 영역",
-                        "delete": "삭제",
-                        "update": "업데이트",
-                        "create": "만들기"
-                    }
-                },
-                "entity_registry": {
-                    "caption": "구성요소",
-                    "description": "등록된 구성요소를 편집합니다",
-                    "picker": {
-                        "header": "구성요소",
-                        "unavailable": "(사용불가)",
-                        "introduction": "Home Assistant 는 구성요소의 식별을 위해 모든 구성요소에 고유한 레지스트리를 부여합니다. 각각의 구성요소들은 자신만의 고유한 구성요소 ID 를 가집니다.",
-                        "introduction2": "구성요소를 편집하여 이름을 대체하거나 구성요소 ID를 변경하고 Home Assistant 에서 항목을 제거할 수 있습니다. 단, 구성요소 편집창에서 구성요소를 삭제해도 구성요소가 완전히 제거되는 것은 아닙니다. 완전히 제거하려면, 아래 링크를 따라 통합 구성요소 페이지에서 제거해주세요.",
-                        "integrations_page": "통합 구성요소 페이지",
-                        "show_disabled": "비활성화 된 구성요소 표시",
-                        "headers": {
-                            "name": "이름",
-                            "entity_id": "구성요소 ID",
-                            "integration": "통합 구성요소",
-                            "enabled": "활성화됨"
-                        }
+                    "description": "Z-Wave 네트워크를 관리합니다",
+                    "learn_more": "Z-Wave 에 대해 더 알아보기",
+                    "network_management": {
+                        "header": "Z-Wave 네트워크 관리",
+                        "introduction": "Z-Wave 네트워크에 명령을 실행해주세요. 대부분의 명령이 성공했는지에 대한 피드백은 받을 수 없지만, OZW 로그를 통해 확인해 볼 수 있습니다."
                     },
-                    "editor": {
-                        "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
-                        "default_name": "새로운 영역",
-                        "delete": "삭제",
-                        "update": "업데이트",
-                        "enabled_label": "구성요소 활성화",
-                        "enabled_cause": "{cause} 에 의해 비활성화 되었습니다.",
-                        "enabled_description": "비활성화 된 구성요소는 Home Assistant 에 추가되지 않습니다.",
-                        "confirm_delete": "이 구성요소를 제거 하시겠습니까?",
-                        "confirm_delete2": "구성요소 항목을 제거해도 Home Assistant 에서 실제로 구성요소가 제거되는것은 아닙니다. 완전히 제거하려면, Home Assistant 에서 '{platform}' 통합 구성요소를 제거해주세요."
-                    }
-                },
-                "person": {
-                    "caption": "구성원",
-                    "description": "Home Assistant 가 추적하는 구성원을 관리합니다",
-                    "detail": {
-                        "name": "이름",
-                        "device_tracker_intro": "이 구성원에게 속한 기기를 선택해주세요.",
-                        "device_tracker_picked": "추적 대상 기기",
-                        "device_tracker_pick": "추적 할 기기 선택",
-                        "new_person": "새로운 구성원",
-                        "name_error_msg": "이름은 필수 요소입니다",
-                        "linked_user": "사용자 계정 연결",
-                        "no_device_tracker_available_intro": "구성원의 재실 여부를 알려주는 기기가 있다면 구성원을 해당 기기에 할당할 수 있습니다. 통합 구성요소 페이지에서 재실 감지 통합 구성요소를 추가해서 기기를 구성해보세요.",
-                        "link_presence_detection_integrations": "재실 감지 통합 구성요소",
-                        "link_integrations_page": "통합 구성요소 페이지",
-                        "delete": "삭제",
-                        "create": "만들기",
-                        "update": "업데이트"
+                    "network_status": {
+                        "network_started": "Z-Wave 네트워크 시작됨",
+                        "network_started_note_all_queried": "모든 노드가 쿼리되었습니다.",
+                        "network_started_note_some_queried": "절전모드 해제 노드가 쿼리되었습니다. 절전모드 노드는 절전모드 해제 상태일 때 쿼리됩니다.",
+                        "network_starting": "Z-Wave 네트워크 시작 중...",
+                        "network_starting_note": "네트워크 규모에 따라 다소 시간이 걸릴 수 있습니다.",
+                        "network_stopped": "Z-Wave 네트워크 중지됨"
                     },
-                    "introduction": "Home Assistant 에서 추적 할 구성원을 정의 할 수 있습니다.",
-                    "note_about_persons_configured_in_yaml": "참고: configuration.yaml 에서 구성된 구성원은 UI 를 통해 편집 할 수 없습니다.",
-                    "no_persons_created_yet": "아직 생성된 구성원이 없는 것 같습니다.",
-                    "create_person": "구성원 만들기",
-                    "add_person": "구성원 추가하기",
-                    "confirm_delete": "이 구성원을 삭제 하시겠습니까?",
-                    "confirm_delete2": "이 구성원에게 속한 모든 기기는 비할당 상태로 남게됩니다."
-                },
-                "server_control": {
-                    "caption": "서버 제어",
-                    "description": "Home Assistant 서버를 재시작 또는 중지합니다",
-                    "section": {
-                        "validation": {
-                            "heading": "구성 내용 유효성 검사",
-                            "introduction": "최근에 구성 내용을 추가 혹은 변경하셨다면, 구성 내용 확인 버튼을 눌러 구성 내용이 올바른지 검사하고 Home Assistant 가 정상 작동 되는지 확인하실 수 있습니다.",
-                            "check_config": "구성 내용 확인",
-                            "valid": "구성 내용이 모두 올바릅니다!",
-                            "invalid": "구성 내용이 잘못되었습니다"
-                        },
-                        "reloading": {
-                            "heading": "구성 내용 새로고침",
-                            "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어들일 수 있습니다. 새로고침을 누르면 현재 구성 내용을 내리고 새로운 구성 내용을 읽어들입니다.",
-                            "core": "코어 새로고침",
-                            "group": "그룹 새로고침",
-                            "automation": "자동화 새로고침",
-                            "script": "스크립트 새로 고침",
-                            "scene": "씬 다시읽기"
-                        },
-                        "server_management": {
-                            "heading": "서버 관리",
-                            "introduction": "Home Assistant 서버를 제어합니다.",
-                            "restart": "재시작",
-                            "stop": "중지",
-                            "confirm_restart": "Home Assistant 를 재시작 하시겠습니까?",
-                            "confirm_stop": "Home Assistant 를 중지 하시겠습니까?"
-                        }
-                    }
-                },
-                "devices": {
-                    "caption": "기기",
-                    "description": "연결된 기기를 관리합니다",
-                    "automation": {
-                        "triggers": {
-                            "caption": "...일 때 뭔가를 실행"
-                        },
-                        "conditions": {
-                            "caption": "...인 경우 뭔가를 실행"
-                        },
-                        "actions": {
-                            "caption": "뭔가 트리거 되었을 때...."
-                        }
-                    }
-                },
-                "common": {
-                    "editor": {
-                        "confirm_unsaved": "변경된 내용을 저장하지 않았습니다. 정말로 이 페이지를 떠나시겠습니까?"
+                    "node_config": {
+                        "config_parameter": "구성 파라메터",
+                        "config_value": "구성 값",
+                        "false": "거짓",
+                        "header": "노드 구성 옵션",
+                        "seconds": "초",
+                        "set_config_parameter": "구성 파라메터 설정",
+                        "set_wakeup": "절전모드 해제 간격 설정",
+                        "true": "참"
+                    },
+                    "ozw_log": {
+                        "header": "OZW 로그",
+                        "introduction": "로그를 봐주세요. 최소값은 0(전체 로그를 불러올 때)이고 최대값은 1000 입니다. 로드된 로그는 정적 로그를 보여주며 로그의 끝 부분은 최근 기록된 로그의 행으로 자동으로 업데이트됩니다."
+                    },
+                    "services": {
+                        "add_node": "노드 추가",
+                        "add_node_secure": "노드 보안 추가",
+                        "cancel_command": "명령 취소",
+                        "heal_network": "네트워크 새로고침",
+                        "remove_node": "노드 제거",
+                        "save_config": "설정 저장",
+                        "soft_reset": "소프트 리셋",
+                        "start_network": "네트워크 시작",
+                        "stop_network": "네트워크 중지",
+                        "test_network": "네트워크 테스트"
+                    },
+                    "values": {
+                        "header": "노드 값"
                     }
                 }
             },
-            "profile": {
-                "push_notifications": {
-                    "header": "푸시 알림",
-                    "description": "이 기기에 알림을 보냅니다.",
-                    "error_load_platform": "notify.html5 를 구성해주세요.",
-                    "error_use_https": "SSL 을 통한 보안 연결된 환경이 필요합니다.",
-                    "push_notifications": "푸시 알림",
-                    "link_promo": "알림에 대해 더 알아보기"
-                },
-                "language": {
-                    "header": "언어",
-                    "link_promo": "번역 도와주기",
-                    "dropdown_label": "언어"
-                },
-                "themes": {
-                    "header": "테마",
-                    "error_no_theme": "사용할 수 있는 테마가 없습니다.",
-                    "link_promo": "테마에 대해 더 알아보기",
-                    "dropdown_label": "테마"
-                },
-                "refresh_tokens": {
-                    "header": "리프레시 토큰",
-                    "description": "각 리프레시 토큰은 로그인 세션을 나타냅니다. 로그아웃을 클릭하면 리프레시 토큰은 자동으로 제거됩니다. 다음의 리프레시 토큰이 현재 접속한 계정에 대해 활성화 되어 있습니다.",
-                    "token_title": "{clientId} 의 리프레시 토큰",
-                    "created_at": "{date} 에 생성 됨",
-                    "confirm_delete": "{name} 의 리프레시 토큰을 삭제 하시겠습니까?",
-                    "delete_failed": "리프레시 토큰을 삭제할 수 없습니다.",
-                    "last_used": "{date} 에  {location} 에서 마지막으로 사용됨",
-                    "not_used": "사용된 적이 없음",
-                    "current_token_tooltip": "현재 리프레시 토큰을 삭제할 수 없음"
-                },
-                "long_lived_access_tokens": {
-                    "header": "장기 액세스 토큰",
-                    "description": "스크립트가 Home Assistant 구성요소와 상호 작용할 수 있도록 장기 액세스 토큰을 생성하세요. 각 토큰은 생성 후 10년 동안 유효합니다. 현재 활성 상태인 장기 액세스 토큰은 다음과 같습니다.",
-                    "learn_auth_requests": "인증 요청을 생성하는 방법에 대해 알아 보세요.",
-                    "created_at": "{date} 에 생성 됨",
-                    "confirm_delete": "{name} 액세스 토큰을 삭제 하시겠습니까?",
-                    "delete_failed": "액세스 토큰을 삭제할 수 없습니다.",
-                    "create": "토큰 만들기",
-                    "create_failed": "액세스 토큰을 생성을 할 수 없습니다.",
-                    "prompt_name": "토큰 이름을 지어주세요.",
-                    "prompt_copy_token": "Ctrl + C 를 눌러 액세스 토큰을 복사하세요. 이 안내는 다시 표시되지 않습니다.",
-                    "empty_state": "장기 액세스 토큰이 없습니다.",
-                    "last_used": "{date} 에  {location} 에서 마지막으로 사용됨",
-                    "not_used": "사용된 적이 없음"
-                },
-                "current_user": "현재 {fullName} 로(으로) 로그인 한 상태 입니다.",
-                "is_owner": "관리자 계정 입니다.",
-                "change_password": {
-                    "header": "비밀번호 변경",
-                    "current_password": "현재 비밀번호",
-                    "new_password": "새 비밀번호",
-                    "confirm_new_password": "새 비밀번호 확인",
-                    "error_required": "필수 요소",
-                    "submit": "변경하기"
-                },
-                "mfa": {
-                    "header": "다단계 인증 모듈",
-                    "disable": "비활성화",
-                    "enable": "활성화",
-                    "confirm_disable": "{name} 을(를) 비활성화 하시겠습니까?"
-                },
-                "mfa_setup": {
-                    "title_aborted": "취소됨",
-                    "title_success": "성공!",
-                    "step_done": "{step} 설정 완료",
-                    "close": "닫기",
-                    "submit": "구성하기"
-                },
-                "logout": "로그아웃",
-                "force_narrow": {
-                    "header": "항상 사이드바 숨기기",
-                    "description": "모바일 환경과 마찬가지로 기본적으로 사이드 바가 숨겨집니다."
-                },
-                "vibrate": {
-                    "header": "진동효과",
-                    "description": "기기를 제어 할 때 이 기기에서 진동을 활성화 또는 비활성화합니다."
-                },
-                "advanced_mode": {
-                    "title": "고급 모드",
-                    "description": "Home Assistant 의 고급 기능과 옵션은 기본적으로 숨겨져 있으며 토글을 활성화하여 이러한 기능을 사용하실 수 있습니다. 이 설정은 사용자별 설정이며 Home Assistant 를 사용하는 다른 사용자에게 영향을 미치지 않습니다."
+            "custom": {
+                "external_panel": {
+                    "complete_access": "Home Assistant 의 모든 데이터에 액세스 할 수 있습니다.",
+                    "hide_message": "이 메시지를 숨기려면 panel_custom 구성요소에 대한 문서를 확인해주세요",
+                    "question_trust": "{link} 의 외부 패널 {name} 을(를) 신뢰하십니까?"
                 }
             },
-            "page-authorize": {
-                "initializing": "초기화 중",
-                "authorizing_client": "{clientId} 에 Home Assistant 구성요소에 대한 액세스 권한을 부여하려고 합니다.",
-                "logging_in_with": "**{authProviderName}** 로(으로) 로그인 합니다.",
-                "pick_auth_provider": "또는 다음으로 로그인하세요",
-                "abort_intro": "로그인이 중단되었습니다",
-                "form": {
-                    "working": "잠시 기다려주세요",
-                    "unknown_error": "문제가 발생했습니다",
-                    "providers": {
-                        "homeassistant": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "username": "사용자 이름",
-                                        "password": "비밀번호"
-                                    }
-                                },
-                                "mfa": {
-                                    "data": {
-                                        "code": "2단계 인증 코드"
-                                    },
-                                    "description": "2단계 인증 코드 및 신원을 확인하기 위해 기기에서 **{mfa_module_name}** 을(를) 열어주세요:"
-                                }
-                            },
-                            "error": {
-                                "invalid_auth": "사용자 이름 또는 비밀번호가 잘못되었습니다",
-                                "invalid_code": "잘못된 인증 코드"
-                            },
-                            "abort": {
-                                "login_expired": "세션이 만료되었습니다. 다시 로그인 해주세요."
-                            }
-                        },
-                        "legacy_api_password": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "password": "API 비밀번호"
-                                    },
-                                    "description": "configuration.yaml 에 설정한 api_password 를 입력해주세요:"
-                                },
-                                "mfa": {
-                                    "data": {
-                                        "code": "2단계 인증 코드"
-                                    },
-                                    "description": "2단계 인증 코드 및 신원을 확인하기 위해 기기에서 **{mfa_module_name}** 을(를) 열어주세요:"
-                                }
-                            },
-                            "error": {
-                                "invalid_auth": "API 비밀번호가 잘못되었습니다",
-                                "invalid_code": "잘못된 인증 코드"
-                            },
-                            "abort": {
-                                "no_api_password_set": "API 비밀번호를 설정하지 않았습니다.",
-                                "login_expired": "세션이 만료되었습니다. 다시 로그인 해주세요."
-                            }
-                        },
-                        "trusted_networks": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "user": "사용자"
-                                    },
-                                    "description": "로그인하려는 사용자를 선택해주세요:"
-                                }
-                            },
-                            "abort": {
-                                "not_whitelisted": "이 컴퓨터는 허용 목록에 등록되어 있지 않습니다."
-                            }
-                        },
-                        "command_line": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "username": "사용자 이름",
-                                        "password": "비밀번호"
-                                    }
-                                },
-                                "mfa": {
-                                    "data": {
-                                        "code": "2단계 인증 코드"
-                                    },
-                                    "description": "2단계 인증 코드 및 신원을 확인하기 위해 기기에서 **{mfa_module_name}** 을(를) 열어주세요:"
-                                }
-                            },
-                            "error": {
-                                "invalid_auth": "사용자 이름 또는 비밀번호가 잘못되었습니다",
-                                "invalid_code": "잘못된 인증 코드"
-                            },
-                            "abort": {
-                                "login_expired": "세션이 만료되었습니다. 다시 로그인 해주세요."
-                            }
-                        }
-                    }
-                }
-            },
-            "page-onboarding": {
-                "intro": "잠들어 있는 집을 깨우고 개인정보를 보호하며 전세계의 공돌이 커뮤니티에 가입 할 준비가 되셨나요?",
-                "user": {
-                    "intro": "사용자 계정을 만들어 시작합니다.",
-                    "required_field": "필수 요소",
-                    "data": {
-                        "name": "이름",
-                        "username": "사용자 이름",
-                        "password": "비밀번호",
-                        "password_confirm": "비밀번호 확인"
+            "developer-tools": {
+                "tabs": {
+                    "events": {
+                        "alert_event_type": "이벤트 유형은 필수 필드입니다",
+                        "available_events": "사용 가능한 이벤트",
+                        "count_listeners": " ({count} 청취객체)",
+                        "data": "이벤트 데이터 (YAML, 선택 사항)",
+                        "description": "이벤트 버스에서 이벤트를 발행합니다.",
+                        "documentation": "이벤트 문서 보기.",
+                        "event_fired": "{name} 이벤트가 발행됨",
+                        "fire_event": "이벤트 발행",
+                        "listen_to_events": "이벤트 내용 들어보기",
+                        "listening_to": "이벤트 청취 중",
+                        "notification_event_fired": "{type} 이벤트가 성공적으로 발행되었습니다!",
+                        "start_listening": "청취 시작",
+                        "stop_listening": "그만 듣기",
+                        "subscribe_to": "청취할 이벤트",
+                        "title": "이벤트",
+                        "type": "이벤트 유형"
                     },
-                    "create_account": "계정 만들기",
-                    "error": {
-                        "required_fields": "필수 입력란을 모두 채워주세요",
-                        "password_not_match": "비밀번호가 일치하지 않습니다"
+                    "info": {
+                        "built_using": "다음을 사용하여 제작",
+                        "custom_uis": "사용자 UI :",
+                        "default_ui": "{name} 을(를) 이 기기에서 기본 UI 로 {action}",
+                        "developed_by": "Home Assistant 는 수많은 멋진 사람들에 의해 개발되었습니다.",
+                        "frontend": "프런트엔드-UI",
+                        "frontend_version": "프런트엔드 버전: {version} - {type}",
+                        "home_assistant_logo": "Home Assistant 로고",
+                        "icons_by": "아이콘 출처",
+                        "license": "Apache 2.0 License 에 따라 게시",
+                        "lovelace_ui": "Lovelace UI 보러가기",
+                        "path_configuration": "configuration.yaml 의 위치: {path}",
+                        "remove": "설정 해제",
+                        "server": "서버",
+                        "set": "설정",
+                        "source": "소스:",
+                        "states_ui": "일반 UI 보러가기",
+                        "system_health_error": "시스템 상태보기 구성요소가 로드되지 않았습니다. configuration.yaml 에 'system_health:' 를 추가해주세요.",
+                        "title": "정보"
+                    },
+                    "logs": {
+                        "clear": "지우기",
+                        "details": "로그 상세정보 ({level})",
+                        "load_full_log": "Home Assistant 로그 전부 불러오기",
+                        "loading_log": "오류 로그를 읽는 중...",
+                        "multiple_messages": "{time} 에 처음 발생했으며, {counter} 번 발생했습니다.",
+                        "no_errors": "보고된 오류가 없습니다.",
+                        "no_issues": "새롭게 보고된 문제가 없습니다!",
+                        "refresh": "새로고침",
+                        "title": "로그"
+                    },
+                    "mqtt": {
+                        "description_listen": "토픽 내용 들어보기",
+                        "description_publish": "패킷 발행",
+                        "listening_to": "토픽 청취 중",
+                        "message_received": "{time} 에 {id} 메시지가 {topic} 에 수신되었습니다.",
+                        "payload": "페이로드 (템플릿 허용)",
+                        "publish": "발행",
+                        "start_listening": "청취 시작",
+                        "stop_listening": "그만 듣기",
+                        "subscribe_to": "청취할 토픽",
+                        "title": "MQTT",
+                        "topic": "토픽"
+                    },
+                    "services": {
+                        "alert_parsing_yaml": "YAML 구문 분석 오류: {data}",
+                        "call_service": "서비스 호출",
+                        "column_description": "상세정보",
+                        "column_example": "예제",
+                        "column_parameter": "파라메터",
+                        "data": "서비스 데이터 (YAML, 선택 사항)",
+                        "description": "서비스 개발 도구를 사용하면 Home Assistant 에서 사용 가능한 서비스를 호출할 수 있습니다.",
+                        "fill_example_data": "예제 데이터를 필드에 넣기",
+                        "no_description": "상세정보가 없습니다",
+                        "no_parameters": "이 서비스에는 파라메터가 필요 없습니다.",
+                        "select_service": "상세정보를 보려면 서비스를 선택해주세요",
+                        "title": "서비스"
+                    },
+                    "states": {
+                        "alert_entity_field": "구성요소는 필수 필드입니다",
+                        "attributes": "속성",
+                        "current_entities": "구성요소 현재 상태",
+                        "description1": "Home Assistant 구성요소의 상태를 설정합니다.",
+                        "description2": "Home Assistant 내에서만 설정되며, 실제 장치와 통신하는것은 아닙니다.",
+                        "entity": "구성요소",
+                        "filter_attributes": "속성 필터",
+                        "filter_entities": "구성요소 필터",
+                        "filter_states": "상태 필터",
+                        "more_info": "정보 더보기",
+                        "no_entities": "구성요소가 없습니다",
+                        "set_state": "상태 설정",
+                        "state": "상태",
+                        "state_attributes": "상태 속성 (YAML, 선택 사항)",
+                        "title": "상태"
+                    },
+                    "templates": {
+                        "description": "템플릿은 Home Assistant 의 특정 확장기능의 일부로써, Jinja2 템플릿 엔진을 사용하여 구성됩니다.",
+                        "editor": "템플릿 편집기",
+                        "jinja_documentation": "Jinja2 템플릿 문서 보기",
+                        "template_extensions": "Home Assistant 템플릿 확장기능 문서 보기",
+                        "title": "템플릿",
+                        "unknown_error_template": "템플릿 구성 중 알 수 없는 오류가 발생했습니다"
                     }
-                },
-                "integration": {
-                    "intro": "기기 및 서비스는 Home Assistant 에서 통합 구성요소로 표시됩니다. 지금 구성하거나 나중에 설정 화면에서 구성할 수 있습니다.",
-                    "more_integrations": "더보기",
-                    "finish": "완료"
-                },
-                "core-config": {
-                    "intro": "{name} 님, 안녕하세요! Home Assistant 에 오신 것을 환영합니다. 집에 어떤 이름을 지어주시겠어요?",
-                    "intro_location": "현재 살고 계시는 위치를 알려주세요. 이는 태양 위치를 기반으로 하는 자동화를 설정하는데 도움이 됩니다. 위치 정보는 외부 네트워크와 절대 공유되지 않습니다.",
-                    "intro_location_detect": "외부 서비스에 일회성 요청을 해서 위치 정보를 넣는데 도움을 드릴 수 있습니다.",
-                    "location_name_default": "집",
-                    "button_detect": "탐색",
-                    "finish": "다음"
                 }
+            },
+            "history": {
+                "period": "기간",
+                "showing_entries": "다음 날짜의 항목을 표시"
+            },
+            "logbook": {
+                "period": "기간",
+                "showing_entries": "다음 날짜의 항목을 표시"
             },
             "lovelace": {
                 "cards": {
-                    "shopping-list": {
-                        "checked_items": "선택한 항목",
-                        "clear_items": "선택한 항목 삭제",
-                        "add_item": "항목 추가"
-                    },
+                    "confirm_delete": "이 카드를 삭제 하시겠습니까?",
                     "empty_state": {
-                        "title": "집에 오신 것을 환영합니다",
+                        "go_to_integrations_page": "통합 페이지로 이동하기.",
                         "no_devices": "이 페이지에서 기기를 제어 할 수 있지만, 기기가 아직 설정되지 않은 것 같습니다. 시작하려면 통합 페이지로 이동해주세요.",
-                        "go_to_integrations_page": "통합 페이지로 이동하기."
+                        "title": "집에 오신 것을 환영합니다"
                     },
                     "picture-elements": {
-                        "hold": "누르고 있기:",
-                        "tap": "탭:",
-                        "navigate_to": "{location} 로(으로) 이동",
-                        "toggle": "{name} 토글",
                         "call_service": "{name} 서비스 호출",
+                        "hold": "누르고 있기:",
                         "more_info": "추가 정보 표시: {name}",
+                        "navigate_to": "{location} 로(으로) 이동",
+                        "tap": "탭:",
+                        "toggle": "{name} 토글",
                         "url": "{url_path} 창 열기"
+                    },
+                    "shopping-list": {
+                        "add_item": "항목 추가",
+                        "checked_items": "선택한 항목",
+                        "clear_items": "선택한 항목 삭제"
                     }
                 },
+                "changed_toast": {
+                    "message": "Lovelace 구성이 업데이트되었습니다. 새로고침 하시겠습니까?",
+                    "refresh": "새로고침"
+                },
                 "editor": {
-                    "edit_card": {
-                        "header": "카드 구성",
-                        "save": "저장하기",
-                        "toggle_editor": "에디터 전환",
-                        "pick_card": "추가하려는 카드를 선택해주세요",
-                        "add": "카드 추가하기",
-                        "edit": "편집",
-                        "delete": "삭제",
-                        "move": "이동",
-                        "show_visual_editor": "비주얼 편집기 보기",
-                        "show_code_editor": "코드 편집기 보기"
-                    },
-                    "migrate": {
-                        "header": "구성 내용이 호환되지 않습니다",
-                        "para_no_id": "이 구성요소에는 ID가 없습니다. 'ui-lovelace.yaml' 에 구성요소의 ID를 추가해주세요.",
-                        "para_migrate": "Home Assistant 는 '설정 마이그레이션' 버튼을 눌러 자동으로 모든 카드와 보기에 ID를 추가 할 수 있습니다.",
-                        "migrate": "설정 마이그레이션"
-                    },
-                    "header": "UI 편집",
-                    "edit_view": {
-                        "header": "구성 보기",
-                        "add": "뷰 추가",
-                        "edit": "뷰 편집",
-                        "delete": "뷰 삭제"
-                    },
-                    "save_config": {
-                        "header": "Lovelace UI 직접 관리하기",
-                        "para": "기본적으로 Home Assistant 는 사용자 인터페이스를 유지 관리하고, 사용할 수 있는 새로운 구성요소 또는 Lovelace 구성요소가 있을 때 업데이트를 합니다. 사용자가 직접 관리하는 경우 Home Assistant 는 더 이상 자동으로 변경하지 않습니다.",
-                        "para_sure": "사용자 인터페이스를 직접 관리하시겠습니까?",
-                        "cancel": "아닙니다",
-                        "save": "직접 관리할게요"
-                    },
-                    "menu": {
-                        "raw_editor": "구성 코드 편집기"
-                    },
-                    "raw_editor": {
-                        "header": "구성 코드 편집",
-                        "save": "저장하기",
-                        "unsaved_changes": "저장되지 않은 변경사항",
-                        "saved": "저장되었습니다"
-                    },
-                    "edit_lovelace": {
-                        "header": "Lovelace UI 의 제목",
-                        "explanation": "이 제목은 Lovelace 의 모든 화면의 상단에 표시됩니다."
-                    },
                     "card": {
                         "alarm_panel": {
                             "available_states": "사용 가능한 상태요소"
                         },
+                        "alarm-panel": {
+                            "available_states": "사용 가능한 상태요소",
+                            "name": "알람 패널"
+                        },
+                        "conditional": {
+                            "name": "조건부"
+                        },
                         "config": {
-                            "required": "필수 요소",
-                            "optional": "선택사항"
+                            "optional": "선택 사항",
+                            "required": "필수 요소"
                         },
                         "entities": {
+                            "name": "구성요소",
                             "show_header_toggle": "헤더 토글 표시",
-                            "name": "구성요소"
+                            "toggle": "구성요소 토글"
+                        },
+                        "entity-button": {
+                            "name": "구성요소 버튼"
+                        },
+                        "entity-filter": {
+                            "name": "구성요소 필터"
                         },
                         "gauge": {
+                            "name": "게이지",
                             "severity": {
                                 "define": "게이지 구간 정의하기",
                                 "green": "초록",
                                 "red": "빨강",
                                 "yellow": "노랑"
-                            },
-                            "name": "게이지"
-                        },
-                        "glance": {
-                            "columns": "열",
-                            "name": "한눈에 보기"
+                            }
                         },
                         "generic": {
                             "aspect_ratio": "종횡비",
@@ -1418,39 +1634,14 @@
                             "show_name": "이름 표시",
                             "show_state": "상태 표시",
                             "tap_action": "탭 동작",
-                            "title": "제목",
                             "theme": "테마",
+                            "title": "제목",
                             "unit": "단위",
-                            "url": "Url"
+                            "url": "URL"
                         },
-                        "map": {
-                            "geo_location_sources": "위치정보 소스",
-                            "dark_mode": "어둡게 표시",
-                            "default_zoom": "기본 확대",
-                            "source": "소스",
-                            "name": "지도"
-                        },
-                        "markdown": {
-                            "content": "내용",
-                            "name": "마크다운"
-                        },
-                        "sensor": {
-                            "graph_detail": "그래프 세부묘사 정도",
-                            "graph_type": "그래프 유형",
-                            "name": "센서"
-                        },
-                        "alarm-panel": {
-                            "name": "알람 패널",
-                            "available_states": "사용 가능한 상태요소"
-                        },
-                        "conditional": {
-                            "name": "조건부"
-                        },
-                        "entity-button": {
-                            "name": "구성요소 버튼"
-                        },
-                        "entity-filter": {
-                            "name": "구성요소 필터"
+                        "glance": {
+                            "columns": "열",
+                            "name": "한눈에 보기"
                         },
                         "history-graph": {
                             "name": "기록 그래프"
@@ -1464,11 +1655,19 @@
                         "light": {
                             "name": "조명"
                         },
+                        "map": {
+                            "dark_mode": "어둡게 표시",
+                            "default_zoom": "기본 확대",
+                            "geo_location_sources": "위치정보 소스",
+                            "name": "지도",
+                            "source": "소스"
+                        },
+                        "markdown": {
+                            "content": "내용",
+                            "name": "마크다운"
+                        },
                         "media-control": {
                             "name": "미디어 컨트롤"
-                        },
-                        "picture": {
-                            "name": "그림"
                         },
                         "picture-elements": {
                             "name": "그림 복합요소"
@@ -1479,8 +1678,16 @@
                         "picture-glance": {
                             "name": "그림 한눈에 보기"
                         },
+                        "picture": {
+                            "name": "그림"
+                        },
                         "plant-status": {
                             "name": "식물 상태"
+                        },
+                        "sensor": {
+                            "graph_detail": "그래프 세부묘사 정도",
+                            "graph_type": "그래프 유형",
+                            "name": "센서"
                         },
                         "shopping-list": {
                             "name": "장보기목록"
@@ -1494,398 +1701,350 @@
                         "weather-forecast": {
                             "name": "날씨 예보"
                         }
+                    },
+                    "edit_card": {
+                        "add": "카드 추가하기",
+                        "delete": "카드 삭제",
+                        "edit": "편집",
+                        "header": "카드 구성",
+                        "move": "보기로 이동",
+                        "options": "옵션 더보기",
+                        "pick_card": "어떤 카드를 추가 하시겠습니까?",
+                        "pick_card_view_title": "{name} 뷰에 어떤 카드를 추가 하시겠습니까?",
+                        "save": "저장하기",
+                        "show_code_editor": "코드 편집기 보기",
+                        "show_visual_editor": "비주얼 편집기 보기",
+                        "toggle_editor": "에디터 전환"
+                    },
+                    "edit_lovelace": {
+                        "explanation": "이 제목은 Lovelace 의 모든 화면의 상단에 표시됩니다.",
+                        "header": "Lovelace UI 의 제목"
+                    },
+                    "edit_view": {
+                        "add": "뷰 추가",
+                        "delete": "뷰 삭제",
+                        "edit": "뷰 편집",
+                        "header": "구성 보기",
+                        "header_name": "{name} 뷰 구성"
+                    },
+                    "header": "UI 편집",
+                    "menu": {
+                        "open": "Lovelace 메뉴 열기",
+                        "raw_editor": "구성 코드 편집기"
+                    },
+                    "migrate": {
+                        "header": "구성 내용이 호환되지 않습니다",
+                        "migrate": "설정 마이그레이션",
+                        "para_migrate": "Home Assistant 는 '설정 마이그레이션' 버튼을 눌러 자동으로 모든 카드와 보기에 ID를 추가 할 수 있습니다.",
+                        "para_no_id": "이 구성요소에는 ID가 없습니다. 'ui-lovelace.yaml' 에 구성요소의 ID를 추가해주세요."
+                    },
+                    "raw_editor": {
+                        "header": "구성 코드 편집",
+                        "save": "저장하기",
+                        "saved": "저장되었습니다",
+                        "unsaved_changes": "저장되지 않은 변경사항"
+                    },
+                    "save_config": {
+                        "cancel": "아닙니다",
+                        "header": "Lovelace UI 직접 관리하기",
+                        "para": "기본적으로 Home Assistant 는 사용자 인터페이스를 유지 관리하고, 사용할 수 있는 새로운 구성요소 또는 Lovelace 구성요소가 있을 때 업데이트를 합니다. 사용자가 직접 관리하는 경우 Home Assistant 는 더 이상 자동으로 변경하지 않습니다.",
+                        "para_sure": "사용자 인터페이스를 직접 관리하시겠습니까?",
+                        "save": "직접 관리할게요"
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "description": "패널 모드는 첫 번째 카드를 전체 너비로 보여줍니다. 이 뷰에서는 다른 카드는 보여지지 않습니다.",
+                            "title": "패널 모드"
+                        }
                     }
                 },
                 "menu": {
                     "configure_ui": "UI 구성",
-                    "unused_entities": "미사용 구성요소",
                     "help": "도움말",
-                    "refresh": "새로고침"
+                    "refresh": "새로고침",
+                    "unused_entities": "미사용 구성요소"
+                },
+                "reload_lovelace": "Lovelace 새로고침",
+                "views": {
+                    "confirm_delete": "이 뷰를 삭제 하시겠습니까?",
+                    "existing_cards": "카드가 포함된 뷰는 삭제할 수 없습니다. 먼저 카드를 제거해주세요."
                 },
                 "warning": {
-                    "entity_not_found": "구성요소를 사용할 수 없습니다: {entity}",
-                    "entity_non_numeric": "구성요소가 숫자형식이 아닙니다: {entity}"
+                    "entity_non_numeric": "구성요소가 숫자형식이 아닙니다: {entity}",
+                    "entity_not_found": "구성요소를 사용할 수 없습니다: {entity}"
+                }
+            },
+            "mailbox": {
+                "delete_button": "삭제",
+                "delete_prompt": "이 메시지를 삭제 하시겠습니까?",
+                "empty": "메시지가 존재하지 않습니다",
+                "playback_title": "메시지 재생"
+            },
+            "page-authorize": {
+                "abort_intro": "로그인이 중단되었습니다",
+                "authorizing_client": "{clientId} 에 Home Assistant 구성요소에 대한 액세스 권한을 부여하려고 합니다.",
+                "form": {
+                    "providers": {
+                        "command_line": {
+                            "abort": {
+                                "login_expired": "세션이 만료되었습니다. 다시 로그인 해주세요."
+                            },
+                            "error": {
+                                "invalid_auth": "사용자 이름 또는 비밀번호가 잘못되었습니다",
+                                "invalid_code": "잘못된 인증 코드"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "비밀번호",
+                                        "username": "사용자 이름"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "2단계 인증 코드"
+                                    },
+                                    "description": "2단계 인증 코드 및 신원을 확인하기 위해 기기에서 **{mfa_module_name}** 을(를) 열어주세요:"
+                                }
+                            }
+                        },
+                        "homeassistant": {
+                            "abort": {
+                                "login_expired": "세션이 만료되었습니다. 다시 로그인 해주세요."
+                            },
+                            "error": {
+                                "invalid_auth": "사용자 이름 또는 비밀번호가 잘못되었습니다",
+                                "invalid_code": "잘못된 인증 코드"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "비밀번호",
+                                        "username": "사용자 이름"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "2단계 인증 코드"
+                                    },
+                                    "description": "2단계 인증 코드 및 신원을 확인하기 위해 기기에서 **{mfa_module_name}** 을(를) 열어주세요:"
+                                }
+                            }
+                        },
+                        "legacy_api_password": {
+                            "abort": {
+                                "login_expired": "세션이 만료되었습니다. 다시 로그인 해주세요.",
+                                "no_api_password_set": "API 비밀번호를 설정하지 않았습니다."
+                            },
+                            "error": {
+                                "invalid_auth": "API 비밀번호가 잘못되었습니다",
+                                "invalid_code": "잘못된 인증 코드"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API 비밀번호"
+                                    },
+                                    "description": "configuration.yaml 에 설정한 api_password 를 입력해주세요:"
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "2단계 인증 코드"
+                                    },
+                                    "description": "2단계 인증 코드 및 신원을 확인하기 위해 기기에서 **{mfa_module_name}** 을(를) 열어주세요:"
+                                }
+                            }
+                        },
+                        "trusted_networks": {
+                            "abort": {
+                                "not_whitelisted": "이 컴퓨터는 허용 목록에 등록되어 있지 않습니다."
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "사용자"
+                                    },
+                                    "description": "로그인하려는 사용자를 선택해주세요:"
+                                }
+                            }
+                        }
+                    },
+                    "unknown_error": "문제가 발생했습니다",
+                    "working": "잠시 기다려주세요"
                 },
-                "changed_toast": {
-                    "message": "Lovelace 구성이 업데이트되었습니다. 새로고침 하시겠습니까?",
-                    "refresh": "새로고침"
-                },
-                "reload_lovelace": "Lovelace 새로고침"
+                "initializing": "초기화 중",
+                "logging_in_with": "**{authProviderName}** 로(으로) 로그인 합니다.",
+                "pick_auth_provider": "또는 다음으로 로그인하세요"
             },
             "page-demo": {
                 "cards": {
                     "demo": {
                         "demo_by": "{name} 님이 만듦",
-                        "next_demo": "다음 데모",
                         "introduction": "집에 오신 것을 환영합니다! 커뮤니티에서 만든 최고의 UI 가 적용된 Home Assistant 를 소개합니다.",
-                        "learn_more": "Home Assistant 에 대해 더 알아보기"
+                        "learn_more": "Home Assistant 에 대해 더 알아보기",
+                        "next_demo": "다음 데모"
                     }
                 },
                 "config": {
                     "arsaboo": {
-                        "names": {
-                            "upstairs": "위층",
-                            "family_room": "가족실",
-                            "kitchen": "주방",
-                            "patio": "마당",
-                            "hallway": "현관",
-                            "master_bedroom": "안방",
-                            "left": "왼쪽",
-                            "right": "오른쪽",
-                            "mirror": "거울"
-                        },
                         "labels": {
-                            "lights": "조명",
-                            "information": "정보",
-                            "morning_commute": "아침 출근",
+                            "activity": "활동",
+                            "air": "공조기",
                             "commute_home": "집으로 퇴근",
                             "entertainment": "엔터테인먼트",
-                            "activity": "활동",
                             "hdmi_input": "HDMI 입력",
                             "hdmi_switcher": "HDMI 선택기",
-                            "volume": "음량",
+                            "information": "정보",
+                            "lights": "조명",
+                            "morning_commute": "아침 출근",
                             "total_tv_time": "총 TV 시청",
                             "turn_tv_off": "TV 끄기",
-                            "air": "공조기"
+                            "volume": "음량"
+                        },
+                        "names": {
+                            "family_room": "가족실",
+                            "hallway": "현관",
+                            "kitchen": "주방",
+                            "left": "왼쪽",
+                            "master_bedroom": "안방",
+                            "mirror": "거울",
+                            "patio": "마당",
+                            "right": "오른쪽",
+                            "temperature_study": "온도 학습",
+                            "upstairs": "위층"
                         },
                         "unit": {
-                            "watching": "시청중",
-                            "minutes_abbr": "분"
+                            "minutes_abbr": "분",
+                            "watching": "시청중"
                         }
                     }
                 }
+            },
+            "page-onboarding": {
+                "core-config": {
+                    "button_detect": "탐색",
+                    "finish": "다음",
+                    "intro": "{name} 님, 안녕하세요! Home Assistant 에 오신 것을 환영합니다. 집에 어떤 이름을 지어주시겠어요?",
+                    "intro_location": "현재 살고 계시는 위치를 알려주세요. 이는 태양 위치를 기반으로 하는 자동화를 설정하는데 도움이 됩니다. 위치 정보는 외부 네트워크와 절대 공유되지 않습니다.",
+                    "intro_location_detect": "외부 서비스에 일회성 요청을 해서 위치 정보를 넣는데 도움을 드릴 수 있습니다.",
+                    "location_name_default": "집"
+                },
+                "integration": {
+                    "finish": "완료",
+                    "intro": "기기 및 서비스는 Home Assistant 에서 통합 구성요소로 표시됩니다. 지금 구성하거나 나중에 설정 화면에서 구성할 수 있습니다.",
+                    "more_integrations": "더보기"
+                },
+                "intro": "잠들어 있는 집을 깨우고 개인정보를 보호하며 전세계의 공돌이 커뮤니티에 가입 할 준비가 되셨나요?",
+                "user": {
+                    "create_account": "계정 만들기",
+                    "data": {
+                        "name": "이름",
+                        "password": "비밀번호",
+                        "password_confirm": "비밀번호 확인",
+                        "username": "사용자 이름"
+                    },
+                    "error": {
+                        "password_not_match": "비밀번호가 일치하지 않습니다",
+                        "required_fields": "필수 입력란을 모두 채워주세요"
+                    },
+                    "intro": "사용자 계정을 만들어 시작합니다.",
+                    "required_field": "필수 요소"
+                }
+            },
+            "profile": {
+                "advanced_mode": {
+                    "description": "Home Assistant 의 고급 기능과 옵션은 기본적으로 숨겨져 있으며 토글을 활성화하여 이러한 기능을 사용하실 수 있습니다. 이 설정은 사용자별 설정이며 Home Assistant 를 사용하는 다른 사용자에게 영향을 미치지 않습니다.",
+                    "link_profile_page": "프로필 페이지",
+                    "title": "고급 모드"
+                },
+                "change_password": {
+                    "confirm_new_password": "새 비밀번호 확인",
+                    "current_password": "현재 비밀번호",
+                    "error_required": "필수 요소",
+                    "header": "비밀번호 변경",
+                    "new_password": "새 비밀번호",
+                    "submit": "변경하기"
+                },
+                "current_user": "현재 {fullName} 로(으로) 로그인 한 상태 입니다.",
+                "force_narrow": {
+                    "description": "모바일 환경과 마찬가지로 기본적으로 사이드 바가 숨겨집니다.",
+                    "header": "항상 사이드바 숨기기"
+                },
+                "is_owner": "관리자 계정 입니다.",
+                "language": {
+                    "dropdown_label": "언어",
+                    "header": "언어",
+                    "link_promo": "번역 도와주기"
+                },
+                "logout": "로그아웃",
+                "long_lived_access_tokens": {
+                    "confirm_delete": "{name} 액세스 토큰을 삭제 하시겠습니까?",
+                    "create": "토큰 만들기",
+                    "create_failed": "액세스 토큰을 생성을 할 수 없습니다.",
+                    "created_at": "{date} 에 생성 됨",
+                    "delete_failed": "액세스 토큰을 삭제할 수 없습니다.",
+                    "description": "스크립트가 Home Assistant 구성요소와 상호 작용할 수 있도록 장기 액세스 토큰을 생성하세요. 각 토큰은 생성 후 10년 동안 유효합니다. 현재 활성 상태인 장기 액세스 토큰은 다음과 같습니다.",
+                    "empty_state": "장기 액세스 토큰이 없습니다.",
+                    "header": "장기 액세스 토큰",
+                    "last_used": "{date} 에  {location} 에서 마지막으로 사용됨",
+                    "learn_auth_requests": "인증 요청을 생성하는 방법에 대해 알아 보세요.",
+                    "not_used": "사용된 적이 없음",
+                    "prompt_copy_token": "Ctrl + C 를 눌러 액세스 토큰을 복사하세요. 이 안내는 다시 표시되지 않습니다.",
+                    "prompt_name": "토큰 이름을 지어주세요."
+                },
+                "mfa_setup": {
+                    "close": "닫기",
+                    "step_done": "{step} 설정 완료",
+                    "submit": "구성하기",
+                    "title_aborted": "취소됨",
+                    "title_success": "성공!"
+                },
+                "mfa": {
+                    "confirm_disable": "{name} 을(를) 비활성화 하시겠습니까?",
+                    "disable": "비활성화",
+                    "enable": "활성화",
+                    "header": "다단계 인증 모듈"
+                },
+                "push_notifications": {
+                    "description": "이 기기에 알림을 보냅니다.",
+                    "error_load_platform": "notify.html5 를 구성해주세요.",
+                    "error_use_https": "SSL 을 통한 보안 연결된 환경이 필요합니다.",
+                    "header": "푸시 알림",
+                    "link_promo": "알림에 대해 더 알아보기",
+                    "push_notifications": "푸시 알림"
+                },
+                "refresh_tokens": {
+                    "confirm_delete": "{name} 의 리프레시 토큰을 삭제 하시겠습니까?",
+                    "created_at": "{date} 에 생성 됨",
+                    "current_token_tooltip": "현재 리프레시 토큰을 삭제할 수 없음",
+                    "delete_failed": "리프레시 토큰을 삭제할 수 없습니다.",
+                    "description": "각 리프레시 토큰은 로그인 세션을 나타냅니다. 로그아웃을 클릭하면 리프레시 토큰은 자동으로 제거됩니다. 다음의 리프레시 토큰이 현재 접속한 계정에 대해 활성화 되어 있습니다.",
+                    "header": "리프레시 토큰",
+                    "last_used": "{date} 에  {location} 에서 마지막으로 사용됨",
+                    "not_used": "사용된 적이 없음",
+                    "token_title": "{clientId} 의 리프레시 토큰"
+                },
+                "themes": {
+                    "dropdown_label": "테마",
+                    "error_no_theme": "사용할 수 있는 테마가 없습니다.",
+                    "header": "테마",
+                    "link_promo": "테마에 대해 더 알아보기"
+                },
+                "vibrate": {
+                    "description": "기기를 제어 할 때 이 기기에서 진동을 활성화 또는 비활성화합니다.",
+                    "header": "진동효과"
+                }
+            },
+            "shopping-list": {
+                "add_item": "항목추가",
+                "clear_completed": "완료항목삭제",
+                "microphone_tip": "우상단 마이크를 탭하고 \"Add candy to my shopping list\" 라고 말하거나 입력해보세요"
             }
         },
         "sidebar": {
+            "external_app_configuration": "앱 구성",
             "log_out": "로그아웃",
-            "external_app_configuration": "앱 구성"
-        },
-        "common": {
-            "loading": "읽는 중",
-            "cancel": "취소",
-            "save": "저장",
-            "successfully_saved": "성공적으로 저장되었습니다"
-        },
-        "duration": {
-            "day": "{count} {count, plural,\none {일}\nother {일}\n}",
-            "week": "{count} {count, plural,\none {주}\nother {주}\n}",
-            "second": "{count} {count, plural,\none {초}\nother {초}\n}",
-            "minute": "{count} {count, plural,\none {분}\nother {분}\n}",
-            "hour": "{count} {count, plural,\none {시간}\nother {시간}\n}"
-        },
-        "login-form": {
-            "password": "비밀번호",
-            "remember": "자동로그인",
-            "log_in": "로그인"
-        },
-        "card": {
-            "camera": {
-                "not_available": "이미지 사용 불가"
-            },
-            "persistent_notification": {
-                "dismiss": "해제"
-            },
-            "scene": {
-                "activate": "활성화"
-            },
-            "script": {
-                "execute": "실행"
-            },
-            "weather": {
-                "attributes": {
-                    "air_pressure": "기압",
-                    "humidity": "습도",
-                    "temperature": "기온",
-                    "visibility": "시정",
-                    "wind_speed": "풍속"
-                },
-                "cardinal_direction": {
-                    "e": "동",
-                    "ene": "동북동",
-                    "ese": "동남동",
-                    "n": "북",
-                    "ne": "북동",
-                    "nne": "북북동",
-                    "nw": "북서",
-                    "nnw": "북북서",
-                    "s": "남",
-                    "se": "남동",
-                    "sse": "남남동",
-                    "ssw": "남남서",
-                    "sw": "남서",
-                    "w": "서",
-                    "wnw": "서북서",
-                    "wsw": "서남서"
-                },
-                "forecast": "일기 예보"
-            },
-            "alarm_control_panel": {
-                "code": "비밀번호",
-                "clear_code": "지움",
-                "disarm": "경비 해제",
-                "arm_home": "재실 경비",
-                "arm_away": "외출 경비",
-                "arm_night": "야간 경비",
-                "armed_custom_bypass": "사용자 우회",
-                "arm_custom_bypass": "사용자 우회"
-            },
-            "automation": {
-                "last_triggered": "최근 트리거 됨",
-                "trigger": "트리거"
-            },
-            "cover": {
-                "position": "위치",
-                "tilt_position": "기울기"
-            },
-            "fan": {
-                "speed": "속도",
-                "oscillate": "회전",
-                "direction": "방향",
-                "forward": "앞으로",
-                "reverse": "뒤로"
-            },
-            "light": {
-                "brightness": "밝기",
-                "color_temperature": "색온도",
-                "white_value": "흰색 값",
-                "effect": "효과"
-            },
-            "media_player": {
-                "text_to_speak": "음성합성 내용 입력 (TTS)",
-                "source": "입력 소스",
-                "sound_mode": "사운드 모드"
-            },
-            "climate": {
-                "currently": "현재 온도",
-                "on_off": "켜기 \/ 끄기",
-                "target_temperature": "희망 온도",
-                "target_humidity": "희망 습도",
-                "operation": "운전 모드",
-                "fan_mode": "송풍 모드",
-                "swing_mode": "회전 모드",
-                "away_mode": "외출 모드",
-                "aux_heat": "보조 히터",
-                "preset_mode": "프리셋"
-            },
-            "lock": {
-                "code": "비밀번호",
-                "lock": "잠금",
-                "unlock": "잠금 해제"
-            },
-            "vacuum": {
-                "actions": {
-                    "resume_cleaning": "청소 재개",
-                    "return_to_base": "충전 복귀",
-                    "start_cleaning": "청소 시작",
-                    "turn_on": "끄기",
-                    "turn_off": "켜기"
-                }
-            },
-            "water_heater": {
-                "currently": "현재 온도",
-                "on_off": "켜기 \/ 끄기",
-                "target_temperature": "희망 온도",
-                "operation": "운전",
-                "away_mode": "외출 모드"
-            },
-            "timer": {
-                "actions": {
-                    "start": "시작",
-                    "pause": "일시정지",
-                    "cancel": "취소",
-                    "finish": "완료"
-                }
-            }
-        },
-        "components": {
-            "entity": {
-                "entity-picker": {
-                    "entity": "구성요소"
-                }
-            },
-            "service-picker": {
-                "service": "서비스"
-            },
-            "relative_time": {
-                "past": "{time} 전",
-                "future": "{time} 후",
-                "never": "해당없음",
-                "duration": {
-                    "second": "{count} {count, plural,\none {초}\nother {초}\n}",
-                    "minute": "{count} {count, plural,\none {분}\nother {분}\n}",
-                    "hour": "{count} {count, plural,\none {시간}\nother {시간}\n}",
-                    "day": "{count} {count, plural,\none {일}\nother {일}\n}",
-                    "week": "{count} {count, plural,\none {주}\nother {주}\n}"
-                }
-            },
-            "history_charts": {
-                "loading_history": "상태 기록 내용 읽는 중...",
-                "no_history_found": "상태 기록 내용이 없습니다."
-            }
-        },
-        "notification_toast": {
-            "entity_turned_on": "{entity} 이(가) 켜졌습니다.",
-            "entity_turned_off": "{entity} 이(가) 꺼졌습니다.",
-            "service_called": "{service} 서비스가 호출되었습니다.",
-            "service_call_failed": "{service} 서비스를 호출하지 못했습니다.",
-            "connection_lost": "서버와 연결이 끊어졌습니다. 다시 연결 중...",
-            "triggered": "{name} 트리거됨"
-        },
-        "dialogs": {
-            "more_info_settings": {
-                "save": "저장",
-                "name": "대체 이름",
-                "entity_id": "구성요소 ID"
-            },
-            "more_info_control": {
-                "script": {
-                    "last_action": "최근 동작"
-                },
-                "sun": {
-                    "elevation": "고도",
-                    "rising": "해돋이",
-                    "setting": "해넘이"
-                },
-                "updater": {
-                    "title": "업데이트 방법"
-                }
-            },
-            "options_flow": {
-                "form": {
-                    "header": "옵션"
-                },
-                "success": {
-                    "description": "옵션이 성공적으로 저장되었습니다."
-                }
-            },
-            "config_entry_system_options": {
-                "title": "시스템 옵션",
-                "enable_new_entities_label": "새로 추가된 구성요소를 활성화합니다.",
-                "enable_new_entities_description": "비활성화한 경우 새로 검색된 구성요소는 Home Assistant 에 자동으로 추가되지 않습니다."
-            },
-            "zha_device_info": {
-                "manuf": "{manufacturer} 제조",
-                "no_area": "영역 없음",
-                "services": {
-                    "reconfigure": "ZHA 기기를 다시 구성 합니다. (기기 복구). 기기에 문제가 있는 경우 사용해주세요. 기기가 배터리로 작동하는 경우, 이 서비스를 사용할 때 기기가 켜져있고 통신이 가능한 상태인지 확인해주세요.",
-                    "updateDeviceName": "이 기기의 사용자 정의 이름을 기기 레지스트리에 설정합니다.",
-                    "remove": "Zigbee 네트워크에서 기기를 제거해주세요."
-                },
-                "zha_device_card": {
-                    "device_name_placeholder": "사용자 지정 이름",
-                    "area_picker_label": "영역",
-                    "update_name_button": "이름 업데이트"
-                },
-                "buttons": {
-                    "add": "기기 추가",
-                    "remove": "기기 제거",
-                    "reconfigure": "기기 재설정"
-                },
-                "quirk": "습관",
-                "last_seen": "마지막 확인",
-                "power_source": "전원",
-                "unknown": "알 수 없슴"
-            }
-        },
-        "auth_store": {
-            "ask": "현재 로그인을 저장 하시겠습니까?",
-            "decline": "아니요, 괜찮습니다",
-            "confirm": "로그인 저장하기"
-        },
-        "notification_drawer": {
-            "click_to_configure": "버튼을 클릭하여 {entity} 을(를) 구성",
-            "empty": "알림 내용이 없습니다.",
-            "title": "알림"
-        }
-    },
-    "domain": {
-        "alarm_control_panel": "알람제어판",
-        "automation": "자동화",
-        "binary_sensor": "이진센서",
-        "calendar": "일정",
-        "camera": "카메라",
-        "climate": "공조기기",
-        "configurator": "구성",
-        "conversation": "대화",
-        "cover": "여닫이",
-        "device_tracker": "추적 기기",
-        "fan": "송풍기",
-        "history_graph": "기록 그래프",
-        "group": "그룹",
-        "image_processing": "이미지처리",
-        "input_boolean": "논리입력",
-        "input_datetime": "날짜\/시간입력",
-        "input_select": "선택입력",
-        "input_number": "숫자입력",
-        "input_text": "문자입력",
-        "light": "전등",
-        "lock": "잠김",
-        "mailbox": "메일함",
-        "media_player": "미디어재생기",
-        "notify": "알림",
-        "plant": "식물",
-        "proximity": "근접",
-        "remote": "원격",
-        "scene": "씬",
-        "script": "스크립트",
-        "sensor": "센서",
-        "sun": "태양",
-        "switch": "스위치",
-        "updater": "업데이터",
-        "weblink": "웹링크",
-        "zwave": "Z-Wave",
-        "vacuum": "청소기",
-        "zha": "ZHA",
-        "hassio": "Hass.io",
-        "homeassistant": "Home Assistant",
-        "lovelace": "Lovelace",
-        "system_health": "시스템 상태",
-        "person": "구성원"
-    },
-    "attribute": {
-        "weather": {
-            "humidity": "습도",
-            "visibility": "시정",
-            "wind_speed": "풍속"
-        }
-    },
-    "state_attributes": {
-        "climate": {
-            "fan_mode": {
-                "off": "꺼짐",
-                "on": "켜짐",
-                "auto": "자동"
-            },
-            "preset_mode": {
-                "none": "없음",
-                "eco": "절전",
-                "away": "외출",
-                "boost": "쾌속",
-                "comfort": "쾌적",
-                "home": "재실",
-                "sleep": "취침",
-                "activity": "활동"
-            },
-            "hvac_action": {
-                "off": "전원 끄기",
-                "heating": "난방",
-                "cooling": "냉방",
-                "drying": "제습",
-                "idle": "대기",
-                "fan": "송풍"
-            }
-        }
-    },
-    "groups": {
-        "system-admin": "관리자",
-        "system-users": "사용자",
-        "system-read-only": "읽기 전용 사용자"
-    },
-    "config_entry": {
-        "disabled_by": {
-            "user": "사용자",
-            "integration": "통합 구성요소",
-            "config_entry": "구성 항목"
+            "sidebar_toggle": "사이드바 토글"
         }
     }
 }

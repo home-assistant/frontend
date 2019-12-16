@@ -33,6 +33,7 @@ module.exports.babelLoaderConfig = ({ latestBuild }) => {
               pragma: "h",
             },
           ],
+          "@babel/plugin-proposal-optional-chaining",
           [
             require("@babel/plugin-proposal-decorators").default,
             { decoratorsBeforeExport: true },

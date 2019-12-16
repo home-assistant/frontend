@@ -2,7 +2,7 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
-import "@vaadin/vaadin-combo-box/vaadin-combo-box-light";
+import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 import memoizeOne from "memoize-one";
 
 import "./state-badge";
@@ -21,6 +21,7 @@ import { HomeAssistant } from "../../types";
 import { HassEntity } from "home-assistant-js-websocket";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { fireEvent } from "../../common/dom/fire_event";
+import { computeDomain } from "../../common/entity/compute_domain";
 
 export type HaEntityPickerEntityFilterFunc = (entityId: HassEntity) => boolean;
 
@@ -60,7 +61,27 @@ class HaEntityPicker extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public label?: string;
   @property() public value?: string;
-  @property({ attribute: "domain-filter" }) public domainFilter?: string;
+  /**
+   * Show entities from specific domains.
+   * @type {Array}
+   * @attr include-domains
+   */
+  @property({ type: Array, attribute: "include-domains" })
+  public includeDomains?: string[];
+  /**
+   * Show no entities of these domains.
+   * @type {Array}
+   * @attr exclude-domains
+   */
+  @property({ type: Array, attribute: "exclude-domains" })
+  public excludeDomains?: string[];
+  /**
+   * Show only entities of these device classes.
+   * @type {Array}
+   * @attr include-device-classes
+   */
+  @property({ type: Array, attribute: "include-device-classes" })
+  public includeDeviceClasses?: string[];
   @property() public entityFilter?: HaEntityPickerEntityFilterFunc;
   @property({ type: Boolean }) private _opened?: boolean;
   @property() private _hass?: HomeAssistant;
@@ -68,8 +89,10 @@ class HaEntityPicker extends LitElement {
   private _getStates = memoizeOne(
     (
       hass: this["hass"],
-      domainFilter: this["domainFilter"],
-      entityFilter: this["entityFilter"]
+      includeDomains: this["includeDomains"],
+      excludeDomains: this["excludeDomains"],
+      entityFilter: this["entityFilter"],
+      includeDeviceClasses: this["includeDeviceClasses"]
     ) => {
       let states: HassEntity[] = [];
 
@@ -78,13 +101,29 @@ class HaEntityPicker extends LitElement {
       }
       let entityIds = Object.keys(hass.states);
 
-      if (domainFilter) {
+      if (includeDomains) {
+        entityIds = entityIds.filter((eid) =>
+          includeDomains.includes(computeDomain(eid))
+        );
+      }
+
+      if (excludeDomains) {
         entityIds = entityIds.filter(
-          (eid) => eid.substr(0, eid.indexOf(".")) === domainFilter
+          (eid) => !excludeDomains.includes(computeDomain(eid))
         );
       }
 
       states = entityIds.sort().map((key) => hass!.states[key]);
+
+      if (includeDeviceClasses) {
+        states = states.filter(
+          (stateObj) =>
+            // We always want to include the entity of the current value
+            stateObj.entity_id === this.value ||
+            (stateObj.attributes.device_class &&
+              includeDeviceClasses.includes(stateObj.attributes.device_class))
+        );
+      }
 
       if (entityFilter) {
         states = states.filter(
@@ -93,6 +132,7 @@ class HaEntityPicker extends LitElement {
             stateObj.entity_id === this.value || entityFilter!(stateObj)
         );
       }
+
       return states;
     }
   );
@@ -108,8 +148,10 @@ class HaEntityPicker extends LitElement {
   protected render(): TemplateResult | void {
     const states = this._getStates(
       this._hass,
-      this.domainFilter,
-      this.entityFilter
+      this.includeDomains,
+      this.excludeDomains,
+      this.entityFilter,
+      this.includeDeviceClasses
     );
 
     return html`
@@ -145,6 +187,7 @@ class HaEntityPicker extends LitElement {
                   slot="suffix"
                   class="clear-button"
                   icon="hass:close"
+                  @click=${this._clearValue}
                   no-ripple
                 >
                   Clear
@@ -170,6 +213,11 @@ class HaEntityPicker extends LitElement {
     `;
   }
 
+  private _clearValue(ev: Event) {
+    ev.stopPropagation();
+    this._setValue("");
+  }
+
   private get _value() {
     return this.value || "";
   }
@@ -181,12 +229,16 @@ class HaEntityPicker extends LitElement {
   private _valueChanged(ev: PolymerChangedEvent<string>) {
     const newValue = ev.detail.value;
     if (newValue !== this._value) {
-      this.value = ev.detail.value;
-      setTimeout(() => {
-        fireEvent(this, "value-changed", { value: this.value });
-        fireEvent(this, "change");
-      }, 0);
+      this._setValue(newValue);
     }
+  }
+
+  private _setValue(value: string) {
+    this.value = value;
+    setTimeout(() => {
+      fireEvent(this, "value-changed", { value });
+      fireEvent(this, "change");
+    }, 0);
   }
 
   static get styles(): CSSResult {

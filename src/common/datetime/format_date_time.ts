@@ -10,7 +10,7 @@ function toLocaleStringSupportsOptions() {
   return false;
 }
 
-export default (toLocaleStringSupportsOptions()
+export default toLocaleStringSupportsOptions()
   ? (dateObj: Date, locales: string) =>
       dateObj.toLocaleString(locales, {
         year: "numeric",
@@ -19,4 +19,4 @@ export default (toLocaleStringSupportsOptions()
         hour: "numeric",
         minute: "2-digit",
       })
-  : (dateObj: Date) => fecha.format(dateObj, "haDateTime"));
+  : (dateObj: Date) => fecha.format(dateObj, "haDateTime");

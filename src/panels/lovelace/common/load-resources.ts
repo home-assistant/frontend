@@ -32,9 +32,9 @@ export const loadLovelaceResources = (
         break;
 
       case "html":
-        import(/* webpackChunkName: "import-href-polyfill" */ "../../../resources/html-import/import-href").then(
-          ({ importHref }) => importHref(normalizedUrl)
-        );
+        import(
+          /* webpackChunkName: "import-href-polyfill" */ "../../../resources/html-import/import-href"
+        ).then(({ importHref }) => importHref(normalizedUrl));
         break;
 
       default:

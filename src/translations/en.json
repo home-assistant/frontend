@@ -323,9 +323,7 @@
         "comfort": "Comfort",
         "home": "Home",
         "sleep": "Sleep",
-        "activity": "Activity",
-        "Frost Guard": "Frost Guard",
-        "Schedule": "Schedule"
+        "activity": "Activity"
       },
       "hvac_action": {
         "off": "Off",
@@ -519,6 +517,8 @@
       "loading": "Loading",
       "cancel": "Cancel",
       "save": "Save",
+      "yes": "Yes",
+      "no": "No",
       "successfully_saved": "Successfully saved"
     },
     "components": {
@@ -531,7 +531,8 @@
       },
       "device-picker": {
         "clear": "Clear",
-        "show_devices": "Show devices"
+        "show_devices": "Show devices",
+        "device": "Device"
       },
       "relative_time": {
         "past": "{time} ago",
@@ -556,9 +557,11 @@
     "dialogs": {
       "voice_command": {
         "did_not_hear": "Home Assistant did not hear anything",
+        "found": "I found the following for you:",
+        "error": "Oops, an error has occurred",
         "how_can_i_help": "How can I help?",
-        "label": "Type a question and press <Enter>",
-        "label_voice": "Type and press <Enter> or tap the microphone icon to speak"
+        "label": "Type a question and press 'Enter'",
+        "label_voice": "Type and press 'Enter' or tap the microphone to speak"
       },
       "confirmation": {
         "cancel": "Cancel",
@@ -566,6 +569,8 @@
         "title": "Are you sure?"
       },
       "more_info_control": {
+        "dismiss": "Dismiss dialog",
+        "settings": "Entity settings",
         "script": {
           "last_action": "Last Action"
         },
@@ -579,6 +584,7 @@
         }
       },
       "more_info_settings": {
+        "back": "Go back",
         "save": "Save",
         "name": "Name Override",
         "entity_id": "Entity ID"
@@ -638,7 +644,8 @@
     "notification_drawer": {
       "click_to_configure": "Click button to configure {entity}",
       "empty": "No Notifications",
-      "title": "Notifications"
+      "title": "Notifications",
+      "close": "Close"
     },
     "notification_toast": {
       "service_call_failed": "Failed to call service {service}.",
@@ -659,10 +666,10 @@
           }
         },
         "area_registry": {
-          "caption": "Area Registry",
+          "caption": "Areas",
           "description": "Overview of all areas in your home.",
           "picker": {
-            "header": "Area Registry",
+            "header": "Areas",
             "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
             "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards.",
             "integrations_page": "Integrations page",
@@ -702,7 +709,7 @@
           }
         },
         "server_control": {
-          "caption": "Server Control",
+          "caption": "Server Controls",
           "description": "Restart and stop the Home Assistant server",
           "section": {
             "validation": {
@@ -715,7 +722,7 @@
             "reloading": {
               "heading": "Configuration reloading",
               "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.",
-              "core": "Reload core",
+              "core": "Reload location & customizations",
               "group": "Reload groups",
               "automation": "Reload automations",
               "script": "Reload scripts",
@@ -732,10 +739,10 @@
           }
         },
         "customize": {
-          "caption": "Customization",
+          "caption": "Customizations",
           "description": "Customize your entities",
           "picker": {
-            "header": "Customization",
+            "header": "Customizations",
             "introduction": "Tweak per-entity attributes. Added/edited customizations will take effect immediately. Removed customizations will take effect when the entity is updated."
           },
           "warning": {
@@ -752,7 +759,7 @@
           "pick_attribute": "Pick an attribute to override"
         },
         "automation": {
-          "caption": "Automation",
+          "caption": "Automations",
           "description": "Create and edit automations",
           "picker": {
             "header": "Automation Editor",
@@ -779,7 +786,10 @@
               "label": "Description",
               "placeholder": "Optional description"
             },
+            "edit_yaml": "Edit as YAML",
+            "edit_ui": "Edit with UI",
             "triggers": {
+              "name": "Trigger",
               "header": "Triggers",
               "introduction": "Triggers are what starts the processing of an automation rule. It is possible to specify multiple triggers for the same rule. Once a trigger starts, Home Assistant will validate the conditions, if any, and call the action.",
               "learn_more": "Learn more about triggers",
@@ -870,6 +880,7 @@
               }
             },
             "conditions": {
+              "name": "Condition",
               "header": "Conditions",
               "introduction": "Conditions are an optional part of an automation rule and can be used to prevent an action from happening when triggered. Conditions look very similar to triggers but are very different. A trigger will look at events happening in the system while a condition only looks at how the system looks right now. A trigger can observe that a switch is being turned on. A condition can only see if a switch is currently on or off.",
               "learn_more": "Learn more about conditions",
@@ -930,6 +941,7 @@
               }
             },
             "actions": {
+              "name": "Action",
               "header": "Actions",
               "introduction": "The actions are what Home Assistant will do when the automation is triggered.",
               "learn_more": "Learn more about actions",
@@ -975,7 +987,7 @@
           }
         },
         "script": {
-          "caption": "Script",
+          "caption": "Scripts",
           "description": "Create and edit scripts",
           "picker": {
             "header": "Script Editor",
@@ -987,6 +999,7 @@
             "edit_script": "Edit script"
           },
           "editor": {
+            "alias": "Name",
             "introduction": "Use scripts to execute a sequence of actions.",
             "header": "Script: {name}",
             "default_name": "New Script",
@@ -996,6 +1009,47 @@
             "sequence": "Sequence",
             "sequence_sentence": "The sequence of actions of this script.",
             "link_available_actions": "Learn more about available actions."
+          }
+        },
+        "scene": {
+          "caption": "Scenes",
+          "description": "Create and edit scenes",
+          "activated": "Activated scene {name}.",
+          "picker": {
+            "header": "Scene Editor",
+            "introduction": "The scene editor allows you to create and edit scenes. Please follow the link below to read the instructions to make sure that you have configured Home Assistant correctly.",
+            "learn_more": "Learn more about scenes",
+            "pick_scene": "Pick scene to edit",
+            "no_scenes": "We couldn’t find any editable scenes",
+            "add_scene": "Add scene",
+            "only_editable": "Only scenes defined in scenes.yaml are editable.",
+            "edit_scene": "Edit scene",
+            "show_info_scene": "Show info about scene",
+            "delete_scene": "Delete scene",
+            "delete_confirm": "Are you sure you want to delete this scene?"
+          },
+          "editor": {
+            "introduction": "Use scenes to bring your home alive.",
+            "default_name": "New Scene",
+            "load_error_not_editable": "Only scenes in scenes.yaml are editable.",
+            "load_error_unknown": "Error loading scene ({err_no}).",
+            "save": "Save",
+            "unsaved_confirm": "You have unsaved changes. Are you sure you want to leave?",
+            "name": "Name",
+            "devices": {
+              "header": "Devices",
+              "introduction": "Add the devices that you want to be included in your scene. Set all the devices to the state you want for this scene.",
+              "add": "Add a device",
+              "delete": "Delete device"
+            },
+            "entities": {
+              "header": "Entities",
+              "introduction": "Entities that do not belong to a devices can be set here.",
+              "without_device": "Entities without device",
+              "device_entities": "If you add an entity that belongs to a device, the device will be added.",
+              "add": "Add an entity",
+              "delete": "Delete entity"
+            }
           }
         },
         "cloud": {
@@ -1186,10 +1240,10 @@
           }
         },
         "entity_registry": {
-          "caption": "Entity Registry",
+          "caption": "Entities",
           "description": "Overview of all known entities.",
           "picker": {
-            "header": "Entity Registry",
+            "header": "Entities",
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
             "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant. Note, removing the entity registry entry won't remove the entity. To do that, follow the link below and remove it from the integrations page.",
             "integrations_page": "Integrations page",
@@ -1252,6 +1306,7 @@
           "configure": "Configure",
           "none": "Nothing configured yet",
           "integration_not_found": "Integration not found.",
+          "details": "Integration details",
           "config_entry": {
             "settings_button": "Edit settings for {integration}",
             "system_options_button": "System options for {integration}",
@@ -1269,6 +1324,17 @@
             "no_area": "No Area"
           },
           "config_flow": {
+            "aborted": "Aborted",
+            "close": "Close",
+            "finish": "Finish",
+            "submit": "Submit",
+            "not_all_required_fields": "Not all required fields are filled in.",
+            "add_area": "Add Area",
+            "area_picker_label": "Area",
+            "failed_create_area": "Failed to create area.",
+            "error_saving_area": "Error saving area: {error}",
+            "name_new_area": "Name of the new area?",
+            "created_config": "Created config for {name}.",
             "external_step": {
               "description": "This step requires you to visit an external website to be completed.",
               "open_site": "Open website"
@@ -1460,6 +1526,7 @@
           "configure_ui": "Configure UI",
           "help": "Help",
           "refresh": "Refresh",
+          "exit_edit_mode": "Exit UI edit mode",
           "close": "Close"
         },
         "editor": {

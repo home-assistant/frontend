@@ -1,28 +1,70 @@
 {
+    "domain": {
+        "hassio": "Hass.io",
+        "homeassistant": "Home Assistant",
+        "lovelace": "Lovelace",
+        "person": "Asmuo",
+        "system_health": "Sistemos sveikata",
+        "zwave": "Z-Wave"
+    },
+    "groups": {
+        "system-admin": "Administratoriai",
+        "system-read-only": "Tik skaitymo privilegija",
+        "system-users": "Vartotojai"
+    },
     "panel": {
         "config": "Konfigūracija",
-        "states": "Valdymas",
-        "map": "Žemėlapis",
-        "logbook": "Veiksmų žurnalas",
         "history": "Istorija",
+        "logbook": "Veiksmų žurnalas",
         "mailbox": "Pašto dėžutė",
+        "map": "Žemėlapis",
+        "profile": "Vartotojo profilis",
         "shopping_list": "Pirkinių sąrašas",
-        "profile": "Vartotojo profilis"
+        "states": "Valdymas"
     },
-    "state": {
-        "default": {
-            "off": "Išjungta",
-            "on": "Įjungta",
-            "unknown": "Nežinoma",
-            "unavailable": "(nepasiekiamas)"
-        },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "auto": "Automatinis",
+                "off": "Išjungta",
+                "on": "Įjungta"
+            }
+        }
+    },
+    "state_badge": {
         "alarm_control_panel": {
             "armed": "Užrakinta",
+            "armed_away": "Užrakinta",
+            "armed_custom_bypass": "Užrakinta",
+            "armed_home": "Užrakinta",
+            "armed_night": "Užrakinta",
+            "arming": "Užrakinama",
             "disarmed": "Atrakinta",
+            "disarming": "Atrakinti"
+        },
+        "default": {
+            "entity_not_found": "Objektas nerastas",
+            "error": "Klaida",
+            "unavailable": "Nežin",
+            "unknown": "Nžn"
+        },
+        "device_tracker": {
+            "home": "Namie",
+            "not_home": "Išvykęs"
+        },
+        "person": {
+            "home": "Namuose",
+            "not_home": "Išvykęs"
+        }
+    },
+    "state": {
+        "alarm_control_panel": {
+            "armed": "Užrakinta",
             "armed_home": "Namų apsauga įjungta",
-            "pending": "Laukiama",
             "arming": "Saugojimo režimo įjungimas",
+            "disarmed": "Atrakinta",
             "disarming": "Saugojimo režimo išjungimas",
+            "pending": "Laukiama",
             "triggered": "Aktyvinta"
         },
         "automation": {
@@ -34,13 +76,21 @@
                 "off": "Išjungta",
                 "on": "Įjungta"
             },
-            "moisture": {
-                "off": "Sausa",
-                "on": "Šlapia"
+            "door": {
+                "off": "Uždaryta",
+                "on": "Atidaryta"
+            },
+            "garage_door": {
+                "off": "Uždaryta",
+                "on": "Atidaryta"
             },
             "gas": {
                 "off": "Neaptikta",
                 "on": "Aptikta"
+            },
+            "moisture": {
+                "off": "Sausa",
+                "on": "Šlapia"
             },
             "motion": {
                 "off": "Nejuda",
@@ -49,6 +99,14 @@
             "occupancy": {
                 "off": "Laisva",
                 "on": "Užimta"
+            },
+            "opening": {
+                "off": "Uždaryta",
+                "on": "Atidaryta"
+            },
+            "safety": {
+                "off": "Saugu",
+                "on": "Nesaugu"
             },
             "smoke": {
                 "off": "Neaptikta",
@@ -62,22 +120,6 @@
                 "off": "Neaptikta",
                 "on": "Aptikta"
             },
-            "opening": {
-                "off": "Uždaryta",
-                "on": "Atidaryta"
-            },
-            "safety": {
-                "off": "Saugu",
-                "on": "Nesaugu"
-            },
-            "door": {
-                "off": "Uždaryta",
-                "on": "Atidaryta"
-            },
-            "garage_door": {
-                "off": "Uždaryta",
-                "on": "Atidaryta"
-            },
             "window": {
                 "off": "Uždaryta",
                 "on": "Atidaryta"
@@ -88,14 +130,20 @@
             "on": "Įjungta"
         },
         "camera": {
+            "idle": "Laukimo režimas",
             "recording": "Įrašymas",
-            "streaming": "Transliuojama",
-            "idle": "Laukimo režimas"
+            "streaming": "Transliuojama"
         },
         "climate": {
+            "manual": "Rankinis",
+            "off": "Išjungta",
+            "on": "Įjungta"
+        },
+        "default": {
             "off": "Išjungta",
             "on": "Įjungta",
-            "manual": "Rankinis"
+            "unavailable": "(nepasiekiamas)",
+            "unknown": "Nežinoma"
         },
         "fan": {
             "off": "Išjungta",
@@ -103,14 +151,18 @@
         },
         "group": {
             "off": "Išjungta",
-            "on": "Įjungta",
-            "ok": "Ok"
+            "ok": "Ok",
+            "on": "Įjungta"
         },
         "input_boolean": {
             "on": "Įjungta"
         },
         "media_player": {
             "on": "Įjungta"
+        },
+        "person": {
+            "home": "Namuose",
+            "not_home": "Išvykęs"
         },
         "remote": {
             "off": "Išjungta",
@@ -128,352 +180,30 @@
             "off": "Išjungta",
             "on": "Įjungta"
         },
-        "zwave": {
-            "query_stage": {
-                "initializing": " ( {query_stage} )",
-                "dead": " ({query_stage})"
-            }
-        },
         "timer": {
             "active": "aktyvus",
             "paused": "pristabdytas"
         },
-        "person": {
-            "home": "Namuose",
-            "not_home": "Išvykęs"
-        }
-    },
-    "state_badge": {
-        "default": {
-            "unknown": "Nžn",
-            "unavailable": "Nežin",
-            "error": "Klaida",
-            "entity_not_found": "Objektas nerastas"
-        },
-        "alarm_control_panel": {
-            "armed": "Užrakinta",
-            "disarmed": "Atrakinta",
-            "armed_home": "Užrakinta",
-            "armed_away": "Užrakinta",
-            "armed_night": "Užrakinta",
-            "arming": "Užrakinama",
-            "disarming": "Atrakinti",
-            "armed_custom_bypass": "Užrakinta"
-        },
-        "device_tracker": {
-            "home": "Namie",
-            "not_home": "Išvykęs"
-        },
-        "person": {
-            "home": "Namuose",
-            "not_home": "Išvykęs"
+        "zwave": {
+            "query_stage": {
+                "dead": " ({query_stage})",
+                "initializing": " ( {query_stage} )"
+            }
         }
     },
     "ui": {
-        "sidebar": {
-            "log_out": "Atsijungti"
-        },
-        "panel": {
-            "developer-tools": {
-                "tabs": {
-                    "mqtt": {
-                        "title": "MQTT"
-                    }
-                }
-            },
-            "config": {
-                "zwave": {
-                    "caption": "Z-Wave",
-                    "node_config": {
-                        "set_config_parameter": "Nustatykite parametrą „Config“"
-                    }
-                },
-                "automation": {
-                    "editor": {
-                        "triggers": {
-                            "delete": "Ištrinti",
-                            "type": {
-                                "sun": {
-                                    "event": "Ivykis"
-                                },
-                                "zone": {
-                                    "zone": "Vieta",
-                                    "event": "Įvykis"
-                                },
-                                "webhook": {
-                                    "label": "Webhook",
-                                    "webhook_id": "Webhook ID"
-                                },
-                                "time_pattern": {
-                                    "label": "Laiko modelis",
-                                    "hours": "Valandos",
-                                    "minutes": "Minutes",
-                                    "seconds": "Sekundės"
-                                },
-                                "geo_location": {
-                                    "label": "Geolokacija",
-                                    "source": "Šaltinis",
-                                    "zone": "Zona",
-                                    "event": "Įvykis:",
-                                    "enter": "Įveskite",
-                                    "leave": "Palikite"
-                                }
-                            },
-                            "learn_more": "Sužinokite daugiau apie trigerius"
-                        },
-                        "conditions": {
-                            "duplicate": "Dubliuoti",
-                            "delete": "Ištrinti",
-                            "type": {
-                                "numeric_state": {
-                                    "below": "žemiau"
-                                },
-                                "sun": {
-                                    "label": "Saulė",
-                                    "before": "Prieš:",
-                                    "after": "Po:",
-                                    "sunrise": "Saulėtekis",
-                                    "sunset": "Saulėlydis"
-                                },
-                                "template": {
-                                    "label": "Šablonas"
-                                },
-                                "time": {
-                                    "label": "Laikas",
-                                    "after": "Po",
-                                    "before": "Prieš"
-                                },
-                                "zone": {
-                                    "label": "Vieta",
-                                    "zone": "Vieta"
-                                }
-                            },
-                            "learn_more": "Sužinokite daugiau apie sąlygas"
-                        },
-                        "actions": {
-                            "header": "Veiksmai",
-                            "add": "Pridėti veiksmą",
-                            "duplicate": "Dublikuoti",
-                            "delete": "Trinti",
-                            "delete_confirm": "Ar tikrai norite ištrinti?",
-                            "type": {
-                                "delay": {
-                                    "delay": "Uždelsta"
-                                },
-                                "wait_template": {
-                                    "label": "Laukti"
-                                },
-                                "event": {
-                                    "label": "Sukurti įvykį",
-                                    "event": "Įvykiai"
-                                }
-                            },
-                            "learn_more": "Sužinokite daugiau apie veiksmus"
-                        }
-                    },
-                    "picker": {
-                        "learn_more": "Sužinokite daugiau apie automatizavimą"
-                    }
-                },
-                "cloud": {
-                    "caption": "Home Assistant Cloud"
-                },
-                "zha": {
-                    "description": "„Zigbee Home Automation“ tinklo valdymas",
-                    "services": {
-                        "updateDeviceName": "Nustatyti pasirinktinį pavadinimą šiam įrenginiu, prietaisų registre.",
-                        "remove": "Pašalinkite įrenginį iš „Zigbee“ tinklo."
-                    },
-                    "device_card": {
-                        "device_name_placeholder": "Vartotojo suteiktas vardas",
-                        "area_picker_label": "Sritis",
-                        "update_name_button": "Atnaujinti pavadinimą"
-                    },
-                    "add_device_page": {
-                        "header": "„Zigbee“ namų automatika - pridėti įrenginių",
-                        "spinner": "Ieškoma ZHA Zigbee įrenginių...",
-                        "discovery_text": "Čia bus rodomi atrasti įrenginiai. Vadovaukitės jūsų įtaiso instrukcijomis ir nustatykite jį suporavimo režimui."
-                    }
-                },
-                "area_registry": {
-                    "caption": "Sričių registras",
-                    "description": "Visų jūsų namų sričių apžvalga.",
-                    "picker": {
-                        "header": "Sričių registras",
-                        "integrations_page": "Integracijų puslapis",
-                        "no_areas": "Atrodo, kad dar neturite registruotų erdvių!",
-                        "create_area": "SUKURTI ERDVĘ"
-                    },
-                    "no_areas": "Atrodo, kad dar neturite registruotų sričių!",
-                    "create_area": "SUKURTI SRITĮ",
-                    "editor": {
-                        "default_name": "Nauja sritis",
-                        "delete": "IŠTRINTI",
-                        "update": "ATNAUJINTI",
-                        "create": "SUKURTI"
-                    }
-                },
-                "entity_registry": {
-                    "caption": "Subjektų registras",
-                    "description": "Visų žinomų subjektų apžvalga.",
-                    "picker": {
-                        "header": "Subjektų registras",
-                        "unavailable": "(nepasiekiamas)",
-                        "introduction2": "Naudokite subjekto registrą, kad perrašytumėte pavadinimą, pakeiskite subjekto ID arba pašalintumėte įrašą iš namų asistento. Atminkite, kad pašalindami registro įrašą tai nepanaikins pačio subjekto. Norėdami tai padaryti, sekite toliau pateiktą nuorodą ir pašalinkite ją iš integracijos puslapio.",
-                        "integrations_page": "Integracijų puslapis"
-                    },
-                    "editor": {
-                        "unavailable": "Šiuo metu šis subjektas nepasiekiamas.",
-                        "default_name": "Nauja sritis",
-                        "delete": "IŠTRINTI",
-                        "update": "ATNAUJINTI"
-                    }
-                },
-                "customize": {
-                    "picker": {
-                        "header": "Pritaikymas"
-                    }
-                },
-                "person": {
-                    "caption": "Asmenys",
-                    "detail": {
-                        "name": "Vardas",
-                        "device_tracker_intro": "Pasirinkite įrenginius, priklausančius šiam asmeniui.",
-                        "device_tracker_picked": "Stebėti įrenginį",
-                        "device_tracker_pick": "Pasirinkite įrenginį, kurį norite stebėti"
-                    }
-                },
-                "integrations": {
-                    "config_entry": {
-                        "no_area": "Nėra srities"
-                    }
-                },
-                "users": {
-                    "editor": {
-                        "caption": "Peržiūrėti vartotoją"
-                    },
-                    "add_user": {
-                        "caption": "Pridėti vartotoją",
-                        "name": "Vardas",
-                        "username": "Vartotojo vardas",
-                        "password": "Slaptažodis",
-                        "create": "Sukurti"
-                    }
-                }
-            },
-            "profile": {
-                "push_notifications": {
-                    "description": "Siųsti pranešimus į šį įrenginį."
-                },
-                "change_password": {
-                    "header": "Keisti slaptažodį",
-                    "current_password": "Dabartinis slaptažodis",
-                    "new_password": "Naujas slaptažodis"
-                },
-                "mfa_setup": {
-                    "title_aborted": "Nutraukta",
-                    "close": "Uždaryti"
-                }
-            },
-            "lovelace": {
-                "editor": {
-                    "edit_card": {
-                        "save": "Išsaugoti",
-                        "pick_card": "Pasirinkite kortelę, kurią norite pridėti.",
-                        "add": "Pridėti kortelę",
-                        "edit": "Redaguoti",
-                        "delete": "Ištrinti",
-                        "move": "Perkelti"
-                    },
-                    "migrate": {
-                        "migrate": "Perkelti konfigūraciją"
-                    },
-                    "header": "Redaguoti UI",
-                    "edit_view": {
-                        "header": "Peržiūrėti konfigūraciją",
-                        "add": "Pridėti rodinį",
-                        "edit": "Redaguoti rodinį",
-                        "delete": "Ištrinti rodinį"
-                    },
-                    "save_config": {
-                        "header": "Valdykite savo „Lovelace“ vartotojo sąsają",
-                        "para_sure": "Ar tikrai norite kontroliuoti savo vartotojo sąsają?",
-                        "cancel": "Nesvarbu",
-                        "save": "Kontroliuoti"
-                    },
-                    "menu": {
-                        "raw_editor": "Konfigūracijos redaktorius"
-                    },
-                    "raw_editor": {
-                        "header": "Redaguoti konfigūraciją",
-                        "save": "Išsaugoti",
-                        "unsaved_changes": "Neišsaugoti pakeitimai",
-                        "saved": "Išsaugota"
-                    }
-                },
-                "menu": {
-                    "configure_ui": "Konfigūruoti UI",
-                    "unused_entities": "Nepanaudoti elementai",
-                    "help": "Pagalba",
-                    "refresh": "Atnaujinti"
-                },
-                "cards": {
-                    "empty_state": {
-                        "title": "Sveiki sugrįžę namo",
-                        "go_to_integrations_page": "Į integracijų puslapį"
-                    }
-                },
-                "warning": {
-                    "entity_not_found": "Subjektas nepasiekiamas: {entity}",
-                    "entity_non_numeric": "Subjektas nėra skaitinis: {entity}"
-                }
-            },
-            "logbook": {
-                "period": "Laikotarpis"
-            },
-            "page-authorize": {
-                "form": {
-                    "providers": {
-                        "command_line": {
-                            "step": {
-                                "init": {
-                                    "data": {
-                                        "username": "Vartotojo vardas",
-                                        "password": "Slaptažodis"
-                                    }
-                                },
-                                "mfa": {
-                                    "data": {
-                                        "code": "Dvieju lygiu autentifikacija"
-                                    }
-                                }
-                            },
-                            "error": {
-                                "invalid_auth": "Netinkamas vartotojo vardas arba slaptažodis",
-                                "invalid_code": "Netinkamas autentifikacijos kodas"
-                            }
-                        }
-                    }
-                }
-            },
-            "page-onboarding": {
-                "user": {
-                    "data": {
-                        "password_confirm": "Patvirtinti slaptažodį"
-                    },
-                    "error": {
-                        "password_not_match": "Slaptažodžiai nesutampa"
-                    }
-                }
+        "card": {
+            "alarm_control_panel": {
+                "arm_custom_bypass": "Individualizuotas apėjimas"
             }
-        },
-        "duration": {
-            "day": "{count} {count, plural,\n  one {diena}\n  other {dienos}\n}",
-            "week": "{count} {count, plural,\n  one {savaitė}\n  other {savaitės}\n}",
-            "second": "{count} {count, plural,\n  one {sekundė}\n  other {sekundės}\n}"
         },
         "common": {
             "save": "Išsaugoti"
+        },
+        "components": {
+            "device-picker": {
+                "device": "Įrenginys"
+            }
         },
         "dialogs": {
             "more_info_control": {
@@ -490,32 +220,315 @@
                 }
             }
         },
-        "card": {
-            "alarm_control_panel": {
-                "arm_custom_bypass": "Individualizuotas apėjimas"
+        "duration": {
+            "day": "{count} {count, plural,\n  one {diena}\n  other {dienos}\n}",
+            "second": "{count} {count, plural,\n  one {sekundė}\n  other {sekundės}\n}",
+            "week": "{count} {count, plural,\n  one {savaitė}\n  other {savaitės}\n}"
+        },
+        "panel": {
+            "config": {
+                "area_registry": {
+                    "caption": "Sričių registras",
+                    "create_area": "SUKURTI SRITĮ",
+                    "description": "Visų jūsų namų sričių apžvalga.",
+                    "editor": {
+                        "create": "SUKURTI",
+                        "default_name": "Nauja sritis",
+                        "delete": "IŠTRINTI",
+                        "update": "ATNAUJINTI"
+                    },
+                    "no_areas": "Atrodo, kad dar neturite registruotų sričių!",
+                    "picker": {
+                        "create_area": "SUKURTI ERDVĘ",
+                        "header": "Sričių registras",
+                        "integrations_page": "Integracijų puslapis",
+                        "no_areas": "Atrodo, kad dar neturite registruotų erdvių!"
+                    }
+                },
+                "automation": {
+                    "editor": {
+                        "actions": {
+                            "add": "Pridėti veiksmą",
+                            "delete": "Trinti",
+                            "delete_confirm": "Ar tikrai norite ištrinti?",
+                            "duplicate": "Dublikuoti",
+                            "header": "Veiksmai",
+                            "learn_more": "Sužinokite daugiau apie veiksmus",
+                            "name": "Veiksmas",
+                            "type": {
+                                "delay": {
+                                    "delay": "Uždelsta"
+                                },
+                                "event": {
+                                    "event": "Įvykiai",
+                                    "label": "Sukurti įvykį"
+                                },
+                                "wait_template": {
+                                    "label": "Laukti"
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "delete": "Ištrinti",
+                            "duplicate": "Dubliuoti",
+                            "learn_more": "Sužinokite daugiau apie sąlygas",
+                            "name": "Sąlyga",
+                            "type": {
+                                "numeric_state": {
+                                    "below": "žemiau"
+                                },
+                                "sun": {
+                                    "after": "Po:",
+                                    "before": "Prieš:",
+                                    "label": "Saulė",
+                                    "sunrise": "Saulėtekis",
+                                    "sunset": "Saulėlydis"
+                                },
+                                "template": {
+                                    "label": "Šablonas"
+                                },
+                                "time": {
+                                    "after": "Po",
+                                    "before": "Prieš",
+                                    "label": "Laikas"
+                                },
+                                "zone": {
+                                    "label": "Vieta",
+                                    "zone": "Vieta"
+                                }
+                            }
+                        },
+                        "triggers": {
+                            "delete": "Ištrinti",
+                            "learn_more": "Sužinokite daugiau apie trigerius",
+                            "name": "Trigeris",
+                            "type": {
+                                "geo_location": {
+                                    "enter": "Įveskite",
+                                    "event": "Įvykis:",
+                                    "label": "Geolokacija",
+                                    "leave": "Palikite",
+                                    "source": "Šaltinis",
+                                    "zone": "Zona"
+                                },
+                                "sun": {
+                                    "event": "Ivykis"
+                                },
+                                "time_pattern": {
+                                    "hours": "Valandos",
+                                    "label": "Laiko modelis",
+                                    "minutes": "Minutes",
+                                    "seconds": "Sekundės"
+                                },
+                                "webhook": {
+                                    "label": "Webhook",
+                                    "webhook_id": "Webhook ID"
+                                },
+                                "zone": {
+                                    "event": "Įvykis",
+                                    "zone": "Vieta"
+                                }
+                            }
+                        }
+                    },
+                    "picker": {
+                        "learn_more": "Sužinokite daugiau apie automatizavimą"
+                    }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud"
+                },
+                "customize": {
+                    "picker": {
+                        "header": "Pritaikymas"
+                    }
+                },
+                "entity_registry": {
+                    "caption": "Subjektų registras",
+                    "description": "Visų žinomų subjektų apžvalga.",
+                    "editor": {
+                        "default_name": "Nauja sritis",
+                        "delete": "IŠTRINTI",
+                        "unavailable": "Šiuo metu šis subjektas nepasiekiamas.",
+                        "update": "ATNAUJINTI"
+                    },
+                    "picker": {
+                        "header": "Subjektų registras",
+                        "integrations_page": "Integracijų puslapis",
+                        "introduction2": "Naudokite subjekto registrą, kad perrašytumėte pavadinimą, pakeiskite subjekto ID arba pašalintumėte įrašą iš namų asistento. Atminkite, kad pašalindami registro įrašą tai nepanaikins pačio subjekto. Norėdami tai padaryti, sekite toliau pateiktą nuorodą ir pašalinkite ją iš integracijos puslapio.",
+                        "unavailable": "(nepasiekiamas)"
+                    }
+                },
+                "integrations": {
+                    "config_entry": {
+                        "no_area": "Nėra srities"
+                    }
+                },
+                "person": {
+                    "caption": "Asmenys",
+                    "detail": {
+                        "device_tracker_intro": "Pasirinkite įrenginius, priklausančius šiam asmeniui.",
+                        "device_tracker_pick": "Pasirinkite įrenginį, kurį norite stebėti",
+                        "device_tracker_picked": "Stebėti įrenginį",
+                        "name": "Vardas"
+                    }
+                },
+                "users": {
+                    "add_user": {
+                        "caption": "Pridėti vartotoją",
+                        "create": "Sukurti",
+                        "name": "Vardas",
+                        "password": "Slaptažodis",
+                        "username": "Vartotojo vardas"
+                    },
+                    "editor": {
+                        "caption": "Peržiūrėti vartotoją"
+                    }
+                },
+                "zha": {
+                    "add_device_page": {
+                        "discovery_text": "Čia bus rodomi atrasti įrenginiai. Vadovaukitės jūsų įtaiso instrukcijomis ir nustatykite jį suporavimo režimui.",
+                        "header": "„Zigbee“ namų automatika - pridėti įrenginių",
+                        "spinner": "Ieškoma ZHA Zigbee įrenginių..."
+                    },
+                    "description": "„Zigbee Home Automation“ tinklo valdymas",
+                    "device_card": {
+                        "area_picker_label": "Sritis",
+                        "device_name_placeholder": "Vartotojo suteiktas vardas",
+                        "update_name_button": "Atnaujinti pavadinimą"
+                    },
+                    "services": {
+                        "remove": "Pašalinkite įrenginį iš „Zigbee“ tinklo.",
+                        "updateDeviceName": "Nustatyti pasirinktinį pavadinimą šiam įrenginiu, prietaisų registre."
+                    }
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "node_config": {
+                        "set_config_parameter": "Nustatykite parametrą „Config“"
+                    }
+                }
+            },
+            "custom": {
+                "external_panel": {
+                    "hide_message": "Norėdami paslėpti šį pranešimą, patikrinkite „panel_custom“ dokumentacija"
+                }
+            },
+            "developer-tools": {
+                "tabs": {
+                    "mqtt": {
+                        "title": "MQTT"
+                    }
+                }
+            },
+            "logbook": {
+                "period": "Laikotarpis"
+            },
+            "lovelace": {
+                "cards": {
+                    "empty_state": {
+                        "go_to_integrations_page": "Į integracijų puslapį",
+                        "title": "Sveiki sugrįžę namo"
+                    }
+                },
+                "editor": {
+                    "edit_card": {
+                        "add": "Pridėti kortelę",
+                        "delete": "Ištrinti",
+                        "edit": "Redaguoti",
+                        "move": "Perkelti",
+                        "pick_card": "Pasirinkite kortelę, kurią norite pridėti.",
+                        "save": "Išsaugoti"
+                    },
+                    "edit_view": {
+                        "add": "Pridėti rodinį",
+                        "delete": "Ištrinti rodinį",
+                        "edit": "Redaguoti rodinį",
+                        "header": "Peržiūrėti konfigūraciją"
+                    },
+                    "header": "Redaguoti UI",
+                    "menu": {
+                        "raw_editor": "Konfigūracijos redaktorius"
+                    },
+                    "migrate": {
+                        "migrate": "Perkelti konfigūraciją"
+                    },
+                    "raw_editor": {
+                        "header": "Redaguoti konfigūraciją",
+                        "save": "Išsaugoti",
+                        "saved": "Išsaugota",
+                        "unsaved_changes": "Neišsaugoti pakeitimai"
+                    },
+                    "save_config": {
+                        "cancel": "Nesvarbu",
+                        "header": "Valdykite savo „Lovelace“ vartotojo sąsają",
+                        "para_sure": "Ar tikrai norite kontroliuoti savo vartotojo sąsają?",
+                        "save": "Kontroliuoti"
+                    }
+                },
+                "menu": {
+                    "configure_ui": "Konfigūruoti UI",
+                    "help": "Pagalba",
+                    "refresh": "Atnaujinti",
+                    "unused_entities": "Nepanaudoti elementai"
+                },
+                "warning": {
+                    "entity_non_numeric": "Subjektas nėra skaitinis: {entity}",
+                    "entity_not_found": "Subjektas nepasiekiamas: {entity}"
+                }
+            },
+            "page-authorize": {
+                "form": {
+                    "providers": {
+                        "command_line": {
+                            "error": {
+                                "invalid_auth": "Netinkamas vartotojo vardas arba slaptažodis",
+                                "invalid_code": "Netinkamas autentifikacijos kodas"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "Slaptažodis",
+                                        "username": "Vartotojo vardas"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "Dvieju lygiu autentifikacija"
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            },
+            "page-onboarding": {
+                "user": {
+                    "data": {
+                        "password_confirm": "Patvirtinti slaptažodį"
+                    },
+                    "error": {
+                        "password_not_match": "Slaptažodžiai nesutampa"
+                    }
+                }
+            },
+            "profile": {
+                "change_password": {
+                    "current_password": "Dabartinis slaptažodis",
+                    "header": "Keisti slaptažodį",
+                    "new_password": "Naujas slaptažodis"
+                },
+                "mfa_setup": {
+                    "close": "Uždaryti",
+                    "title_aborted": "Nutraukta"
+                },
+                "push_notifications": {
+                    "description": "Siųsti pranešimus į šį įrenginį."
+                }
             }
+        },
+        "sidebar": {
+            "log_out": "Atsijungti"
         }
-    },
-    "domain": {
-        "zwave": "Z-Wave",
-        "hassio": "Hass.io",
-        "homeassistant": "Home Assistant",
-        "lovelace": "Lovelace",
-        "system_health": "Sistemos sveikata",
-        "person": "Asmuo"
-    },
-    "state_attributes": {
-        "climate": {
-            "fan_mode": {
-                "off": "Išjungta",
-                "on": "Įjungta",
-                "auto": "Automatinis"
-            }
-        }
-    },
-    "groups": {
-        "system-admin": "Administratoriai",
-        "system-users": "Vartotojai",
-        "system-read-only": "Tik skaitymo privilegija"
     }
 }
