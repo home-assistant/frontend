@@ -83,13 +83,19 @@ export interface RestrictionConfig {
   user: string;
 }
 
+export interface CardActionConfig extends BaseActionConfig {
+  action: "card";
+  card: LovelaceCardConfig;
+}
+
 export type ActionConfig =
   | ToggleActionConfig
   | CallServiceActionConfig
   | NavigateActionConfig
   | UrlActionConfig
   | MoreInfoActionConfig
-  | NoActionConfig;
+  | NoActionConfig
+  | CardActionConfig;
 
 export const fetchConfig = (
   conn: Connection,
