@@ -1,5 +1,5 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Lovelace } from "../../types";
+import { LovelaceConfig } from "../../../../data/lovelace";
 
 declare global {
   // for fire event
@@ -13,7 +13,8 @@ const dialogShowEvent = "show-edit-card";
 const dialogTag = "hui-dialog-edit-card";
 
 export interface EditCardDialogParams {
-  lovelace: Lovelace;
+  lovelaceConfig: LovelaceConfig;
+  saveConfig: (config: LovelaceConfig) => void;
   path: [number] | [number, number];
   entities?: string[]; // We can pass entity id's that will be added to the config when a card is picked
 }

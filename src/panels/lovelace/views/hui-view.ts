@@ -240,7 +240,8 @@ export class HUIView extends LitElement {
 
   private _addCard(): void {
     showEditCardDialog(this, {
-      lovelace: this.lovelace!,
+      lovelaceConfig: this.lovelace!.config,
+      saveConfig: this.lovelace!.saveConfig,
       path: [this.index!],
     });
   }

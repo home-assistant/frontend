@@ -208,14 +208,15 @@ export class HuiUnusedEntities extends LitElement {
 
   private _selectView(): void {
     showSelectViewDialog(this, {
-      lovelace: this.lovelace!,
+      lovelaceConfig: this.lovelace!.config,
       viewSelectedCallback: (view) => this._addCard(view),
     });
   }
 
   private _addCard(view: number): void {
     showEditCardDialog(this, {
-      lovelace: this.lovelace!,
+      lovelaceConfig: this.lovelace!.config,
+      saveConfig: this.lovelace!.saveConfig,
       path: [view],
       entities: this._selectedEntities,
     });

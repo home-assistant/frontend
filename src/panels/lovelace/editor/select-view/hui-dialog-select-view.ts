@@ -30,8 +30,8 @@ export class HuiDialogSelectView extends LitElement {
     toggleAttribute(
       this,
       "hide-icons",
-      this._params!.lovelace!.config
-        ? !this._params!.lovelace!.config.views.some((view) => view.icon)
+      this._params?.lovelaceConfig
+        ? !this._params.lovelaceConfig.views.some((view) => view.icon)
         : true
     );
   }
@@ -48,7 +48,7 @@ export class HuiDialogSelectView extends LitElement {
       >
         <h2>Choose a view</h2>
         <hui-views-list 
-        .lovelaceConfig=${this._params!.lovelace.config} 
+        .lovelaceConfig=${this._params!.lovelaceConfig}
         @view-selected=${this._selectView}>
         </hui-view-list>
       </ha-paper-dialog>

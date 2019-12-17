@@ -1228,6 +1228,7 @@
           "info": "Device info",
           "details": "Here are all the details of your device.",
           "entities": "Entities",
+          "add_entities_lovelace": "Add all device entities to Lovelace",
           "automations": "Automations",
           "confirm_rename_entity_ids": "Do you also want to rename the entity id's of your entities?",
           "data_table": {

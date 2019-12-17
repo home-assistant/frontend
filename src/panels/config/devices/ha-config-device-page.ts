@@ -45,6 +45,13 @@ import {
 import { compare } from "../../../common/string/compare";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { createValidEntityId } from "../../../common/entity/valid_entity_id";
+import { showSelectViewDialog } from "../../lovelace/editor/select-view/show-select-view-dialog";
+import { showEditCardDialog } from "../../lovelace/editor/card-editor/show-edit-card-dialog";
+import {
+  saveConfig,
+  fetchConfig,
+  LovelaceConfig,
+} from "../../../data/lovelace";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string;
@@ -158,6 +165,11 @@ export class HaConfigDevicePage extends LitElement {
                 <div class="header">
                   ${this.hass.localize("ui.panel.config.devices.entities")}
                 </div>
+                <mwc-button @click=${this._addToLovelaceView}>
+                  ${this.hass.localize(
+                    "ui.panel.config.devices.add_entities_lovelace"
+                  )}
+                </mwc-button>
                 <ha-device-entities-card
                   .hass=${this.hass}
                   .entities=${entities}
@@ -268,6 +280,46 @@ export class HaConfigDevicePage extends LitElement {
         });
         await Promise.all(updateProms);
       },
+    });
+  }
+
+  private async _addToLovelaceView(): Promise<void> {
+    if ((this.hass!.panels.lovelace?.config as any)?.mode !== "storage") {
+      alert(
+        "You can only use this function when using Lovelace in storage mode."
+      );
+      return;
+    }
+    let lovelaceConfig;
+    try {
+      lovelaceConfig = await fetchConfig(this.hass.connection, false);
+    } catch {
+      alert("You can only use this function when you use ");
+      return;
+    }
+    showSelectViewDialog(this, {
+      lovelaceConfig,
+      viewSelectedCallback: (view) => this._addCard(lovelaceConfig, view),
+    });
+  }
+
+  private async _addCard(
+    lovelaceConfig: LovelaceConfig,
+    view: number
+  ): Promise<void> {
+    showEditCardDialog(this, {
+      lovelaceConfig,
+      saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
+        try {
+          await saveConfig(this.hass!, newConfig);
+        } catch {
+          alert("Saving Lovelace config failed.");
+        }
+      },
+      path: [view],
+      entities: this._entities(this.deviceId, this.entities).map(
+        (entity) => entity.entity_id
+      ),
     });
   }
 
