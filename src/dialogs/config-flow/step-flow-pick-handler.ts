@@ -101,6 +101,13 @@ class StepFlowPickHandler extends LitElement {
     `;
   }
 
+  protected firstUpdated() {
+    setTimeout(
+      () => this.shadowRoot!.querySelector("search-input")!.focus(),
+      0
+    );
+  }
+
   protected updated(changedProps) {
     super.updated(changedProps);
     // Store the width so that when we search, box doesn't jump
