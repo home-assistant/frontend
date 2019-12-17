@@ -5,6 +5,12 @@ import { toggleEntity } from "./entity/toggle-entity";
 import { ActionConfig } from "../../../data/lovelace";
 import { forwardHaptic } from "../../../data/haptics";
 
+declare global {
+  interface HASSDomEvents {
+    custom: ActionConfig;
+  }
+}
+
 export const handleAction = (
   node: HTMLElement,
   hass: HomeAssistant,
@@ -85,9 +91,7 @@ export const handleAction = (
       hass.callService(domain, service, actionConfig.service_data);
       forwardHaptic("light");
       break;
-    default:
-      if (actionConfig.action.includes("custom")) {
-        fireEvent(node, actionConfig.action, actionConfig);
-      }
+    case "custom":
+      fireEvent(node, "custom", actionConfig);
   }
 };
