@@ -50,6 +50,7 @@ class LovelacePanel extends LitElement {
   private mqls?: MediaQueryList[];
 
   private _ignoreNextUpdateEvent = false;
+  private _fetchConfigOnConnect = false;
 
   constructor() {
     super();
@@ -160,6 +161,9 @@ class LovelacePanel extends LitElement {
       // to the states panel to make sure new entities are shown.
       this._state = "loading";
       this._regenerateConfig();
+    } else if (this._fetchConfigOnConnect) {
+      // Config was changed when we where not at the lovelace panel
+      this._fetchConfig(false);
     }
   }
 
@@ -191,6 +195,12 @@ class LovelacePanel extends LitElement {
       this._ignoreNextUpdateEvent = false;
       return;
     }
+    if (!this.isConnected) {
+      // We can't fire events from an element that is connected
+      // Make sure we fetch the config as soon as the user goes back to Lovelace
+      this._fetchConfigOnConnect = true;
+      return;
+    }
     showToast(this, {
       message: this.hass!.localize("ui.panel.lovelace.changed_toast.message"),
       action: {
@@ -206,7 +216,7 @@ class LovelacePanel extends LitElement {
     this._fetchConfig(true);
   }
 
-  private async _fetchConfig(forceDiskRefresh) {
+  private async _fetchConfig(forceDiskRefresh: boolean) {
     let conf: LovelaceConfig;
     let confMode: Lovelace["mode"] = this.panel!.config.mode;
     let confProm: Promise<LovelaceConfig>;
