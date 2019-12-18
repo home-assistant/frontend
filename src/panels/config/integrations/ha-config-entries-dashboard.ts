@@ -94,8 +94,8 @@ export class HaConfigManagerDashboard extends LitElement {
             <paper-item @click=${this._toggleShowIgnored}>
               ${this.hass.localize(
                 this._showIgnored
-                  ? "ui.panel.config.integrations.hide_ignored"
-                  : "ui.panel.config.integrations.show_ignored"
+                  ? "ui.panel.config.integrations.ignore.hide_ignored"
+                  : "ui.panel.config.integrations.ignore.show_ignored"
               )}
             </paper-item>
           </paper-listbox>
@@ -106,7 +106,7 @@ export class HaConfigManagerDashboard extends LitElement {
               <ha-config-section>
                 <span slot="header"
                   >${this.hass.localize(
-                    "ui.panel.config.integrations.ignored"
+                    "ui.panel.config.integrations.ignore.ignored"
                   )}</span
                 >
                 <ha-card>
@@ -158,7 +158,7 @@ export class HaConfigManagerDashboard extends LitElement {
                                 .flow=${flow}
                               >
                                 ${this.hass.localize(
-                                  "ui.panel.config.integrations.ignore"
+                                  "ui.panel.config.integrations.ignore.ignore"
                                 )}
                               </mwc-button>
                             `
@@ -268,13 +268,15 @@ export class HaConfigManagerDashboard extends LitElement {
     const flow = (ev.target! as any).flow;
     showConfirmationDialog(this, {
       title: this.hass!.localize(
-        "ui.panel.config.integrations.confirm_ignore_title",
+        "ui.panel.config.integrations.ignore.confirm_ignore_title",
         "name",
         localizeConfigFlowTitle(this.hass.localize, flow)
       ),
-      text: this.hass!.localize("ui.panel.config.integrations.confirm_ignore"),
+      text: this.hass!.localize(
+        "ui.panel.config.integrations.ignore.confirm_ignore"
+      ),
       confirmBtnText: this.hass!.localize(
-        "ui.panel.config.integrations.ignore"
+        "ui.panel.config.integrations.ignore.ignore"
       ),
       confirm: () => {
         ignoreConfigFlow(this.hass, flow.flow_id);
@@ -291,15 +293,15 @@ export class HaConfigManagerDashboard extends LitElement {
     const entry = (ev.target! as any).entry;
     showConfirmationDialog(this, {
       title: this.hass!.localize(
-        "ui.panel.config.integrations.confirm_delete_ignore_title",
+        "ui.panel.config.integrations.ignore.confirm_delete_ignore_title",
         "name",
         this.hass.localize(`component.${entry.domain}.config.title`)
       ),
       text: this.hass!.localize(
-        "ui.panel.config.integrations.confirm_delete_ignore"
+        "ui.panel.config.integrations.ignore.confirm_delete_ignore"
       ),
       confirmBtnText: this.hass!.localize(
-        "ui.panel.config.integrations.stop_ignore"
+        "ui.panel.config.integrations.ignore.stop_ignore"
       ),
       confirm: async () => {
         const result = await deleteConfigEntry(this.hass, entry.entry_id);
