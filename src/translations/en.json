@@ -1307,6 +1307,17 @@
           "none": "Nothing configured yet",
           "integration_not_found": "Integration not found.",
           "details": "Integration details",
+          "ignore": {
+            "ignore": "Ignore",
+            "confirm_ignore_title": "Ignore discovery of {name}?",
+            "confirm_ignore": "Are you sure you don't want to setup this integration? You can undo this by clicking the 'Show ignored integrations' in the overflow menu on the top right.",
+            "show_ignored": "Show ignored integrations",
+            "hide_ignored": "Hide ignored integrations",
+            "ignored": "Ignored",
+            "confirm_delete_ignore_title": "Stop ignoring {name}?",
+            "confirm_delete_ignore": "This will make the integration appear in your discovered integrations again when it gets discovered. This might require a restart or take some time.",
+            "stop_ignore": "Stop ignoring"
+          },
           "config_entry": {
             "settings_button": "Edit settings for {integration}",
             "system_options_button": "System options for {integration}",
