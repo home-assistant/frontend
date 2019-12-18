@@ -167,7 +167,7 @@ export class HaConfigDevicePage extends LitElement {
                 </div>
                 <mwc-button @click=${this._addToLovelaceView}>
                   ${this.hass.localize(
-                    "ui.panel.config.devices.add_entities_lovelace"
+                    "ui.panel.config.devices.add_lovelace.add_entities"
                   )}
                 </mwc-button>
                 <ha-device-entities-card
@@ -284,9 +284,11 @@ export class HaConfigDevicePage extends LitElement {
   }
 
   private async _addToLovelaceView(): Promise<void> {
-    if ((this.hass!.panels.lovelace?.config as any)?.mode !== "storage") {
+    if ((this.hass!.panels.lovelace?.config as any)?.mode === "yaml") {
       alert(
-        "You can only use this function when using Lovelace in storage mode."
+        this.hass.localize(
+          "ui.panel.config.devices.add_lovelace.yaml_unsupported"
+        )
       );
       return;
     }
@@ -294,7 +296,11 @@ export class HaConfigDevicePage extends LitElement {
     try {
       lovelaceConfig = await fetchConfig(this.hass.connection, false);
     } catch {
-      alert("You can only use this function when you use ");
+      alert(
+        this.hass.localize(
+          "ui.panel.config.devices.add_lovelace.generated_unsupported"
+        )
+      );
       return;
     }
     showSelectViewDialog(this, {
@@ -303,17 +309,18 @@ export class HaConfigDevicePage extends LitElement {
     });
   }
 
-  private async _addCard(
-    lovelaceConfig: LovelaceConfig,
-    view: number
-  ): Promise<void> {
+  private _addCard(lovelaceConfig: LovelaceConfig, view: number): void {
     showEditCardDialog(this, {
       lovelaceConfig,
       saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
         try {
           await saveConfig(this.hass!, newConfig);
         } catch {
-          alert("Saving Lovelace config failed.");
+          alert(
+            this.hass.localize(
+              "ui.panel.config.devices.add_lovelace.saving_failed"
+            )
+          );
         }
       },
       path: [view],
