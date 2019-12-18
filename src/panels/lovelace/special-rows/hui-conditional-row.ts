@@ -63,7 +63,7 @@ class HuiConditionalRow extends HTMLElement implements LovelaceRow {
     } else if (this._row.parentElement) {
       this.removeChild(this._row);
     }
-    // This will hide the complete card so it won't get styled by parent
+    // This will hide the complete row so it won't get styled by parent
     this.style.setProperty("display", visible ? "" : "none");
   }
 }
