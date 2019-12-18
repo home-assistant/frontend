@@ -162,7 +162,7 @@ class LovelacePanel extends LitElement {
       this._state = "loading";
       this._regenerateConfig();
     } else if (this._fetchConfigOnConnect) {
-      // Config was changed when we where not at the lovelace panel
+      // Config was changed when we were not at the lovelace panel
       this._fetchConfig(false);
     }
   }
