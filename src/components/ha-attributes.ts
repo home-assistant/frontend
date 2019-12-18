@@ -21,15 +21,13 @@ class HaAttributes extends LitElement {
       return html``;
     }
 
-    const items = this.computeDisplayAttributes(
-      Object.keys(hassAttributeUtil.LOGIC_STATE_ATTRIBUTES).concat(
-        this.extraFilters ? this.extraFilters.split(",") : []
-      )
-    );
-
     return html`
       <div>
-        ${items.map(
+        ${this.computeDisplayAttributes(
+          Object.keys(hassAttributeUtil.LOGIC_STATE_ATTRIBUTES).concat(
+            this.extraFilters ? this.extraFilters.split(",") : []
+          )
+        ).map(
           (attribute) => html`
             <div class="data-entry">
               <div class="key">${attribute.replace(/_/g, " ")}</div>
