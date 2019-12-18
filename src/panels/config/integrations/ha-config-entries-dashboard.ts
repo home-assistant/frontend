@@ -2,6 +2,7 @@ import "@polymer/iron-flex-layout/iron-flex-layout-classes";
 import "@polymer/paper-tooltip/paper-tooltip";
 import "@material/mwc-button";
 import "@polymer/iron-icon/iron-icon";
+import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 
@@ -23,7 +24,11 @@ import {
   loadConfigFlowDialog,
   showConfigFlowDialog,
 } from "../../../dialogs/config-flow/show-dialog-config-flow";
-import { localizeConfigFlowTitle } from "../../../data/config_flow";
+import {
+  localizeConfigFlowTitle,
+  ignoreConfigFlow,
+  DISCOVERY_SOURCES,
+} from "../../../data/config_flow";
 import {
   LitElement,
   TemplateResult,
@@ -34,10 +39,11 @@ import {
   CSSResult,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
-import { ConfigEntry } from "../../../data/config_entries";
+import { ConfigEntry, deleteConfigEntry } from "../../../data/config_entries";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
+import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialog-confirmation";
 
 @customElement("ha-config-entries-dashboard")
 export class HaConfigManagerDashboard extends LitElement {
@@ -56,6 +62,7 @@ export class HaConfigManagerDashboard extends LitElement {
    * For example, can be discovered devices that require more config.
    */
   @property() private configEntriesInProgress!: DataEntryFlowProgress[];
+  @property() private _showIgnored = false;
 
   public connectedCallback() {
     super.connectedCallback();
@@ -67,6 +74,67 @@ export class HaConfigManagerDashboard extends LitElement {
       <hass-subpage
         header=${this.hass.localize("ui.panel.config.integrations.caption")}
       >
+        <paper-menu-button
+          close-on-activate
+          no-animations
+          horizontal-align="right"
+          horizontal-offset="-5"
+          slot="toolbar-icon"
+        >
+          <paper-icon-button
+            icon="hass:dots-vertical"
+            slot="dropdown-trigger"
+            alt="menu"
+          ></paper-icon-button>
+          <paper-listbox
+            slot="dropdown-content"
+            role="listbox"
+            selected="{{selectedItem}}"
+          >
+            <paper-item @click=${this._toggleShowIgnored}>
+              ${this.hass.localize(
+                this._showIgnored
+                  ? "ui.panel.config.integrations.ignore.hide_ignored"
+                  : "ui.panel.config.integrations.ignore.show_ignored"
+              )}
+            </paper-item>
+          </paper-listbox>
+        </paper-menu-button>
+
+        ${this._showIgnored
+          ? html`
+              <ha-config-section>
+                <span slot="header"
+                  >${this.hass.localize(
+                    "ui.panel.config.integrations.ignore.ignored"
+                  )}</span
+                >
+                <ha-card>
+                  ${this.configEntries
+                    .filter((item) => item.source === "ignore")
+                    .map(
+                      (item: ConfigEntry) => html`
+                        <paper-item>
+                          <paper-item-body>
+                            ${this.hass.localize(
+                              `component.${item.domain}.config.title`
+                            )}
+                          </paper-item-body>
+                          <paper-icon-button
+                            @click=${this._removeIgnoredIntegration}
+                            .entry=${item}
+                            icon="hass:delete"
+                            aria-label=${this.hass.localize(
+                              "ui.panel.config.integrations.details"
+                            )}
+                          ></paper-icon-button>
+                        </paper-item>
+                      `
+                    )}
+                </ha-card>
+              </ha-config-section>
+            `
+          : ""}
         ${this.configEntriesInProgress.length
           ? html`
               <ha-config-section>
@@ -82,9 +150,22 @@ export class HaConfigManagerDashboard extends LitElement {
                         <paper-item-body>
                           ${localizeConfigFlowTitle(this.hass.localize, flow)}
                         </paper-item-body>
+                        ${DISCOVERY_SOURCES.includes(flow.context.source) &&
+                        flow.context.unique_id
+                          ? html`
+                              <mwc-button
+                                @click=${this._ignoreFlow}
+                                .flow=${flow}
+                              >
+                                ${this.hass.localize(
+                                  "ui.panel.config.integrations.ignore.ignore"
+                                )}
+                              </mwc-button>
+                            `
+                          : ""}
                         <mwc-button
                           @click=${this._continueFlow}
-                          data-id="${flow.flow_id}"
+                          .flowId=${flow.flow_id}
                           >${this.hass.localize(
                             "ui.panel.config.integrations.configure"
                           )}</mwc-button
@@ -98,49 +179,51 @@ export class HaConfigManagerDashboard extends LitElement {
           : ""}
 
         <ha-config-section class="configured">
-          <span slot="header"
-            >${this.hass.localize(
-              "ui.panel.config.integrations.configured"
-            )}</span
-          >
+          <span slot="header">
+            ${this.hass.localize("ui.panel.config.integrations.configured")}
+          </span>
           <ha-card>
             ${this.entityRegistryEntries.length
-              ? this.configEntries.map(
-                  (item: any, idx) => html`
-                    <a
-                      href="/config/integrations/config_entry/${item.entry_id}"
-                    >
-                      <paper-item data-index=${idx}>
-                        <paper-item-body two-line>
-                          <div>
-                            ${this.hass.localize(
-                              `component.${item.domain}.config.title`
-                            )}:
-                            ${item.title}
-                          </div>
-                          <div secondary>
-                            ${this._getEntities(item).map(
-                              (entity) => html`
-                                <span>
-                                  <ha-state-icon
-                                    .stateObj=${entity}
-                                  ></ha-state-icon>
-                                  <paper-tooltip position="bottom"
-                                    >${computeStateName(entity)}</paper-tooltip
-                                  >
-                                </span>
-                              `
-                            )}
-                          </div>
-                        </paper-item-body>
-                        <ha-icon-next
-                          aria-label=${this.hass.localize(
-                            "ui.panel.config.integrations.details"
-                          )}
-                        ></ha-icon-next>
-                      </paper-item>
-                    </a>
-                  `
+              ? this.configEntries.map((item: any, idx) =>
+                  item.source === "ignore"
+                    ? ""
+                    : html`
+                        <a
+                          href="/config/integrations/config_entry/${item.entry_id}"
+                        >
+                          <paper-item data-index=${idx}>
+                            <paper-item-body two-line>
+                              <div>
+                                ${this.hass.localize(
+                                  `component.${item.domain}.config.title`
+                                )}:
+                                ${item.title}
+                              </div>
+                              <div secondary>
+                                ${this._getEntities(item).map(
+                                  (entity) => html`
+                                    <span>
+                                      <ha-state-icon
+                                        .stateObj=${entity}
+                                      ></ha-state-icon>
+                                      <paper-tooltip position="bottom"
+                                        >${computeStateName(
+                                          entity
+                                        )}</paper-tooltip
+                                      >
+                                    </span>
+                                  `
+                                )}
+                              </div>
+                            </paper-item-body>
+                            <ha-icon-next
+                              aria-label=${this.hass.localize(
+                                "ui.panel.config.integrations.details"
+                              )}
+                            ></ha-icon-next>
+                          </paper-item>
+                        </a>
+                      `
                 )
               : html`
                   <div class="config-entry-row">
@@ -176,9 +259,61 @@ export class HaConfigManagerDashboard extends LitElement {
 
   private _continueFlow(ev: Event) {
     showConfigFlowDialog(this, {
-      continueFlowId:
-        (ev.target as HTMLElement).getAttribute("data-id") || undefined,
+      continueFlowId: (ev.target! as any).flowId,
       dialogClosedCallback: () => fireEvent(this, "hass-reload-entries"),
+    });
+  }
+
+  private _ignoreFlow(ev: Event) {
+    const flow = (ev.target! as any).flow;
+    showConfirmationDialog(this, {
+      title: this.hass!.localize(
+        "ui.panel.config.integrations.ignore.confirm_ignore_title",
+        "name",
+        localizeConfigFlowTitle(this.hass.localize, flow)
+      ),
+      text: this.hass!.localize(
+        "ui.panel.config.integrations.ignore.confirm_ignore"
+      ),
+      confirmBtnText: this.hass!.localize(
+        "ui.panel.config.integrations.ignore.ignore"
+      ),
+      confirm: () => {
+        ignoreConfigFlow(this.hass, flow.flow_id);
+        fireEvent(this, "hass-reload-entries");
+      },
+    });
+  }
+
+  private _toggleShowIgnored() {
+    this._showIgnored = !this._showIgnored;
+  }
+
+  private async _removeIgnoredIntegration(ev: Event) {
+    const entry = (ev.target! as any).entry;
+    showConfirmationDialog(this, {
+      title: this.hass!.localize(
+        "ui.panel.config.integrations.ignore.confirm_delete_ignore_title",
+        "name",
+        this.hass.localize(`component.${entry.domain}.config.title`)
+      ),
+      text: this.hass!.localize(
+        "ui.panel.config.integrations.ignore.confirm_delete_ignore"
+      ),
+      confirmBtnText: this.hass!.localize(
+        "ui.panel.config.integrations.ignore.stop_ignore"
+      ),
+      confirm: async () => {
+        const result = await deleteConfigEntry(this.hass, entry.entry_id);
+        if (result.require_restart) {
+          alert(
+            this.hass.localize(
+              "ui.panel.config.integrations.config_entry.restart_confirm"
+            )
+          );
+        }
+        fireEvent(this, "hass-reload-entries");
+      },
     });
   }
 
@@ -203,8 +338,7 @@ export class HaConfigManagerDashboard extends LitElement {
         overflow: hidden;
       }
       mwc-button {
-        top: 3px;
-        margin-right: -0.57em;
+        align-self: center;
       }
       .config-entry-row {
         display: flex;
@@ -228,6 +362,9 @@ export class HaConfigManagerDashboard extends LitElement {
       ha-fab[rtl] {
         right: auto;
         left: 16px;
+      }
+      .overflow {
+        width: 56px;
       }
     `;
   }
