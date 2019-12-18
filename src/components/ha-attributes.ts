@@ -8,7 +8,6 @@ import {
   customElement,
 } from "lit-element";
 import { HassEntity } from "home-assistant-js-websocket";
-import { repeat } from "lit-html/directives/repeat";
 
 import hassAttributeUtil from "../util/hass-attributes-util";
 
@@ -29,12 +28,10 @@ class HaAttributes extends LitElement {
     );
 
     return html`
-      <div class="layout vertical">
-        ${repeat(
-          items,
-          (attribute) => attribute,
+      <div>
+        ${items.map(
           (attribute) => html`
-            <div class="data-entry layout justified horizontal">
+            <div class="data-entry">
               <div class="key">${attribute.replace(/_/g, " ")}</div>
               <div class="value">
                 ${this.formatAttributeValue(attribute)}
@@ -55,6 +52,11 @@ class HaAttributes extends LitElement {
 
   static get styles(): CSSResult {
     return css`
+      .data-entry {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+      }
       .data-entry .value {
         max-width: 200px;
         overflow-wrap: break-word;
