@@ -4,7 +4,7 @@ import { debounce } from "../common/util/debounce";
 import { getCollection, Connection } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "../common/translations/localize";
 
-export const DISCOVERY_SOURCES = ["homekit", "ssdp"];
+export const DISCOVERY_SOURCES = ["homekit", "ssdp", "zeroconf"];
 
 export const createConfigFlow = (hass: HomeAssistant, handler: string) =>
   hass.callApi<DataEntryFlowStep>("POST", "config/config_entries/flow", {
