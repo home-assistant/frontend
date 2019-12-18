@@ -69,6 +69,10 @@ export interface NoActionConfig extends BaseActionConfig {
   action: "none";
 }
 
+export interface CustomActionConfig extends BaseActionConfig {
+  action: "fire-dom-event";
+}
+
 export interface BaseActionConfig {
   confirmation?: ConfirmationRestrictionConfig;
 }
@@ -88,7 +92,8 @@ export type ActionConfig =
   | NavigateActionConfig
   | UrlActionConfig
   | MoreInfoActionConfig
-  | NoActionConfig;
+  | NoActionConfig
+  | CustomActionConfig;
 
 export const fetchConfig = (
   conn: Connection,
