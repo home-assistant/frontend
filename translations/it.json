@@ -14,7 +14,7 @@
         }
     },
     "domain": {
-        "alarm_control_panel": "Pannello di controllo allarme",
+        "alarm_control_panel": "Pannello di controllo degli allarmi",
         "automation": "Automazione",
         "binary_sensor": "Sensore binario",
         "calendar": "Calendario",
@@ -23,11 +23,11 @@
         "configurator": "Configuratore",
         "conversation": "Conversazione",
         "cover": "Scuri",
-        "device_tracker": "Tracking dispositivo",
+        "device_tracker": "Tracciatore dispositivo",
         "fan": "Ventilatore",
         "group": "Gruppo",
         "hassio": "Hass.io",
-        "history_graph": "Storico",
+        "history_graph": "Grafico cronologico",
         "homeassistant": "Home Assistant",
         "image_processing": "Elaborazione delle immagini",
         "input_boolean": "Input booleano",
@@ -39,7 +39,7 @@
         "lock": "Serratura",
         "lovelace": "Lovelace",
         "mailbox": "Messaggi",
-        "media_player": "Media Player",
+        "media_player": "Lettore multimediale",
         "notify": "Notifica",
         "person": "Persona",
         "plant": "Pianta",
@@ -51,7 +51,7 @@
         "sun": "Sole",
         "switch": "Interruttore",
         "system_health": "Salute del sistema",
-        "updater": "Updater",
+        "updater": "Aggiornamento",
         "vacuum": "Aspirapolvere",
         "weblink": "Link Web",
         "zha": "ZHA",
@@ -66,7 +66,7 @@
         "calendar": "Calendario",
         "config": "Impostazioni",
         "dev-info": "Informazioni",
-        "developer_tools": "Strumenti per gli sviluppatori",
+        "developer_tools": "Strumenti per Sviluppatori",
         "history": "Storico",
         "logbook": "Registro",
         "mailbox": "Posta",
@@ -113,7 +113,7 @@
             "disarmed": "Disattiva",
             "disarming": "Disattiva",
             "pending": "In attesa",
-            "triggered": "Innescato"
+            "triggered": "Attiv."
         },
         "default": {
             "entity_not_found": "Entità non trovata!",
@@ -587,9 +587,11 @@
                 "title": "Attiva/disattiva domini"
             },
             "more_info_control": {
+                "dismiss": "Chiudi finestra di dialogo",
                 "script": {
                     "last_action": "Ultima azione"
                 },
+                "settings": "Impostazioni dell'entità",
                 "sun": {
                     "elevation": "Elevazione",
                     "rising": "Alba",
@@ -600,6 +602,7 @@
                 }
             },
             "more_info_settings": {
+                "back": "Torna indietro",
                 "entity_id": "ID Entità",
                 "name": "Sovrascrittura del nome",
                 "save": "Salva"
@@ -658,6 +661,7 @@
         },
         "notification_drawer": {
             "click_to_configure": "Fare clic sul pulsante per configurare {entity}",
+            "close": "Chiudi",
             "empty": "Nessuna notifica",
             "title": "Notifiche"
         },
@@ -701,7 +705,7 @@
                             "delete_confirm": "Sicuro di voler eliminare?",
                             "duplicate": "Duplica",
                             "header": "Azioni",
-                            "introduction": "Le azioni sono ciò che Home Assistant farà quando un trigger attiva un automazione. \n\n [Ulteriori informazioni sulle azioni.](Https://home-assistant.io/docs/automation/action/)",
+                            "introduction": "Le Azioni sono ciò che Home Assistant eseguirà quando una Attivazione (o Trigger) avvia una Automazione.",
                             "learn_more": "Per saperne di più sulle Azioni",
                             "name": "Azione",
                             "type_select": "Tipo di Azione",
@@ -741,15 +745,15 @@
                         },
                         "alias": "Nome",
                         "conditions": {
-                            "add": "Aggiungi condizione",
+                            "add": "Aggiungi Condizione",
                             "delete": "Elimina",
                             "delete_confirm": "Sicuro di voler eliminare?",
                             "duplicate": "Duplica",
                             "header": "Condizioni",
-                            "introduction": "Le Condizioni sono una parte facoltativa di una regola di automazione e possono essere utilizzate per impedire che un'Azione si verifichi quando viene attivata. Le Condizioni sembrano molto simili ai Trigger, ma sono molto diverse. Un Trigger analizzerà gli eventi che stanno accadendo nel sistema, mentre una Condizione analizza solo l'aspetto Istantaneo del sistema. Un Trigger può osservare che un interruttore è in fase di accensione. Una Condizione può solo vedere se un interruttore è attivo o meno. ",
+                            "introduction": "Le Condizioni sono una parte facoltativa di una regola di automazione e possono essere utilizzate per impedire che un'Azione si verifichi quando viene attivata. Le Condizioni sembrano molto simili alle Attivazioni (o Triggers), ma in realtà sono molto diverse. Una Attivazione (o Trigger) analizzerà gli eventi che stanno accadendo nel sistema, mentre una Condizione analizza solo l'aspetto istantaneo del sistema. Una Attivazione (o Trigger) può osservare che un interruttore è in fase di accensione. Una Condizione può solo vedere se un interruttore è acceso o meno.",
                             "learn_more": "Per saperne di più sulle Condizioni",
                             "name": "Condizione",
-                            "type_select": "Tipo di condizione",
+                            "type_select": "Tipo di Condizione",
                             "type": {
                                 "and": {
                                     "label": "E"
@@ -806,20 +810,22 @@
                             "label": "Descrizione",
                             "placeholder": "Descrizione facoltativa"
                         },
+                        "edit_ui": "Modifica con l'Interfaccia Utente",
+                        "edit_yaml": "Modifica come YAML",
                         "introduction": "Usa le automazioni per dare vita alla tua casa.",
                         "load_error_not_editable": "Solo le Automazioni in automations.yaml sono modificabili.",
                         "load_error_unknown": "Errore durante il caricamento dell'Automazione ({err_no}).",
                         "save": "Salva",
                         "triggers": {
-                            "add": "Aggiungi Trigger",
+                            "add": "Aggiungi Attivazione (o Trigger)",
                             "delete": "Elimina",
                             "delete_confirm": "Sicuro di voler eliminare?",
                             "duplicate": "Duplica",
-                            "header": "Triggers",
-                            "introduction": "Il Trigger avvia l'elaborazione di una regola di automazione. È possibile specificare più Trigger per una stessa regola. Una volta avviato un Trigger, Home Assistant convaliderà le Condizioni, se presenti, e chiamerà l'Azione.",
-                            "learn_more": "Per saperne di più sui Trigger",
-                            "name": "Attivazione",
-                            "type_select": "Tipo di Trigger",
+                            "header": "Attivazioni (o Triggers)",
+                            "introduction": "L'Attivazione (o Trigger) avvia l'elaborazione di una regola di automazione. È possibile specificare più Attivazioni (o Triggers) per una stessa regola di automazione. Una volta avviata una Attivazione (o Trigger), Home Assistant convaliderà la/e Condizione/i, se presente/i, ed eseguirà l'Azione.",
+                            "learn_more": "Per saperne di più sulle Attivazioni (o Triggers)",
+                            "name": "Attivazione (o Trigger)",
+                            "type_select": "Tipo di Attivazione (o Trigger)",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -909,7 +915,7 @@
                         "delete_confirm": "Sei sicuro di voler eliminare questa Automazione?",
                         "edit_automation": "Modifica Automazione",
                         "header": "Editor di Automazione",
-                        "introduction": "L'Editor di Automazione consente di creare e modificare Automazioni. Per favore leggi le istruzioni (https://home-assistant.io/docs/automation/editor/) per assicurarti di aver configurato correttamente Home Assistant.",
+                        "introduction": "L'Editor di Automazione consente di creare e modificare Automazioni. Seguire il collegamento seguente per leggere le istruzioni e assicurarsi di aver configurato correttamente Home Assistant.",
                         "learn_more": "Per saperne di più sulle Automazioni",
                         "no_automations": "Nessuna Automazione modificabile trovata",
                         "only_editable": "Solo le Automazioni definite in automations.yaml sono modificabili.",
@@ -971,7 +977,7 @@
                         "thank_you_note": "Grazie per far parte di Home Assistant Cloud. È grazie a persone come te che siamo in grado di creare un'ottima esperienza domotica per tutti. Grazie!",
                         "webhooks": {
                             "disable_hook_error_msg": "Impossibile disabilitare webhook:",
-                            "info": "Tutto ciò che è configurato per essere attivato da un webhook può essere dotato di un URL accessibile pubblicamente per consentire di inviare i dati all'Home Assistant da qualsiasi luogo, senza esporre la vostra istanza a Internet.",
+                            "info": "Tutto ciò che è configurato per essere attivato da un webhook può essere dotato di un URL accessibile pubblicamente per consentire d'inviare i dati ad Home Assistant da qualsiasi luogo, senza esporre la vostra istanza a Internet.",
                             "link_learn_more": "Ulteriori informazioni sulla creazione di automazioni basate su webhook.",
                             "loading": "Caricamento in corso ...",
                             "manage": "Gestire",
@@ -1097,7 +1103,7 @@
                                 "unit_system_imperial": "Imperiale",
                                 "unit_system_metric": "Metrico"
                             },
-                            "header": "Configurazione e controllo del server",
+                            "header": "Configurazione e controllo del Server",
                             "introduction": "Cambiare la configurazione può essere un processo faticoso. Lo sappiamo. Questa sezione cercherà di semplificarti la vita."
                         },
                         "server_control": {
@@ -1105,20 +1111,20 @@
                                 "automation": "Ricarica le Automazioni",
                                 "core": "Ricarica il Nucleo",
                                 "group": "Ricarica i Gruppi",
-                                "heading": "Ricaricamento della configurazione",
-                                "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere il riavvio. Premendo scaricherà la configurazione corrente e caricherà quella nuova.",
+                                "heading": "Aggiornamento della Configurazione",
+                                "introduction": "Alcune parti di Home Assistant possono essere aggiornate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro configurazione attuale e si caricherà la versione aggiornata.",
                                 "script": "Ricarica gli Script"
                             },
                             "server_management": {
                                 "heading": "Gestione del Server",
-                                "introduction": "Controlla il tuo server Home Assistant... da Home Assistant.",
+                                "introduction": "Controlla il tuo Server Home Assistant... da Home Assistant.",
                                 "restart": "Riavviare",
                                 "stop": "Arrestare"
                             },
                             "validation": {
-                                "check_config": "Controlla la configurazione",
-                                "heading": "Convalida della configurazione",
-                                "introduction": "Convalidare la configurazione se di recente sono state apportate alcune modifiche alla configurazione e si desidera assicurarsi che sia tutto valido",
+                                "check_config": "Controlla la Configurazione",
+                                "heading": "Convalida della Configurazione",
+                                "introduction": "Convalidare la Configurazione se di recente sono state apportate alcune modifiche alla stessa e si desidera assicurarsi che sia tutto valido",
                                 "invalid": "Configurazione non valida",
                                 "valid": "Configurazione valida!"
                             }
@@ -1247,6 +1253,7 @@
                     "configure": "Configura",
                     "configured": "Configurato",
                     "description": "Gestire e configurare le integrazioni",
+                    "details": "Dettagli dell'integrazione",
                     "discovered": "Scoperto",
                     "home_assistant_website": "Sito Web di Home Assistant",
                     "integration_not_found": "Integrazione non trovata.",
@@ -1255,7 +1262,7 @@
                     "note_about_integrations": "Non tutte le integrazioni possono ancora essere configurate tramite l'interfaccia utente.",
                     "note_about_website_reference": "Ulteriori informazioni sono disponibili su "
                 },
-                "introduction": "Qui è possibile configurare i componenti e Home Assistant. Non è ancora possibile configurare tutto dall'interfaccia utente, ma ci stiamo lavorando.",
+                "introduction": "Qui è possibile configurare i componenti e Home Assistant. Non è ancora possibile configurare tutto dall'Interfaccia Utente, ma ci stiamo lavorando.",
                 "person": {
                     "add_person": "Aggiungi persona",
                     "caption": "Persone",
@@ -1292,7 +1299,7 @@
                             "add": "Aggiungi un dispositivo",
                             "delete": "Cancella dispositivo",
                             "header": "Dispositivi",
-                            "introduction": "Aggiungere i dispositivi che si desidera includere nella scena. Impostare tutti i dispositivi sullo stato desiderato per questa scena."
+                            "introduction": "Aggiungere i dispositivi che si desidera includere nella Scena. Impostare tutti i dispositivi sullo stato desiderato per questa Scena."
                         },
                         "entities": {
                             "add": "Aggiungi un'entità",
@@ -1314,8 +1321,8 @@
                         "delete_confirm": "Sei sicuro di voler cancellare questa scena?",
                         "delete_scene": "Cancella scena",
                         "edit_scene": "Modifica scena",
-                        "header": "Editor di scene",
-                        "introduction": "L'editor di scene ti consente di creare e modificare scene. Seguire il collegamento seguente per leggere le istruzioni per assicurarsi di aver configurato correttamente Home Assistant.",
+                        "header": "Editor di Scene",
+                        "introduction": "L'Editor di Scene ti consente di creare e modificare Scene. Seguire il collegamento seguente per leggere le istruzioni e assicurarsi di aver configurato correttamente Home Assistant.",
                         "learn_more": "Ulteriori informazioni sulle scene",
                         "no_scenes": "Impossibile trovare scene modificabili",
                         "only_editable": "Solo le scene definite in scenes.yaml sono modificabili.",
@@ -1325,7 +1332,7 @@
                 },
                 "script": {
                     "caption": "Script",
-                    "description": "Crea e modifica script",
+                    "description": "Crea e modifica Script",
                     "editor": {
                         "default_name": "Nuovo Script",
                         "delete_confirm": "Sei sicuro di voler eliminare questo script?",
@@ -1340,25 +1347,25 @@
                     "picker": {
                         "add_script": "Aggiungi script",
                         "edit_script": "Modifica script",
-                        "header": "Editor di script",
-                        "introduction": "L'editor di script consente di creare e modificare script. Seguire il collegamento seguente per leggere le istruzioni per assicurarsi di aver configurato correttamente Home Assistant.",
+                        "header": "Editor di Script",
+                        "introduction": "L'Editor di Script consente di creare e modificare Script. Seguire il collegamento seguente per leggere le istruzioni e assicurarsi di aver configurato correttamente Home Assistant.",
                         "learn_more": "Ulteriori informazioni sugli script",
                         "no_scripts": "Non è stato possibile trovare alcuno script modificabile",
                         "trigger_script": "Attiva Script"
                     }
                 },
                 "server_control": {
-                    "caption": "Controlli del server",
+                    "caption": "Controlli del Server",
                     "description": "Riavviare e arrestare il server Home Assistant",
                     "section": {
                         "reloading": {
-                            "automation": "Ricarica automazioni",
-                            "core": "Ricarica posizione e personalizzazioni",
-                            "group": "Ricarica i gruppi",
-                            "heading": "Ricaricamento della configurazione",
-                            "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere il riavvio. Cliccando su ricarica si rimuoverà la loro configurazione attuale e si caricherà la versione aggiornata.",
-                            "scene": "Ricarica le scene",
-                            "script": "Ricarica script"
+                            "automation": "Ricarica le Automazioni",
+                            "core": "Ricarica la Posizione e le Personalizzazioni",
+                            "group": "Ricarica i Gruppi",
+                            "heading": "Aggiornamento della Configurazione",
+                            "introduction": "Alcune parti di Home Assistant possono essere aggiornate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro configurazione attuale e si caricherà la versione aggiornata.",
+                            "scene": "Ricarica le Scene",
+                            "script": "Ricarica gli Script"
                         },
                         "server_management": {
                             "confirm_restart": "Sei sicuro di voler riavviare Home Assistant?",
@@ -1459,7 +1466,7 @@
                     "node_management": {
                         "header": "Gestione dei dispositivi",
                         "help_node_dropdown": "Selezionare un dispositivo per visualizzare le opzioni per dispositivo.",
-                        "hint_battery_devices": "Nota: i dispositivi sleepy (alimentati a batteria) devono essere svegli durante l'esecuzione di comandi contro di essi. Generalmente è possibile riattivare un dispositivo dormiente attivandolo.",
+                        "hint_battery_devices": "Nota: i dispositivi dormienti (alimentati a batteria) devono essere svegli durante l'esecuzione di comandi su di essi. Generalmente è possibile riattivare un dispositivo dormiente attivandolo.",
                         "hint_wakeup": "Alcuni dispositivi, come i sensori Xiaomi, hanno un pulsante di riattivazione che è possibile premere a intervalli di 5 secondi che mantengono i dispositivi svegli mentre si interagisce con loro.",
                         "introduction": "Eseguire i comandi ZHA che interessano un singolo dispositivo. Scegliere un dispositivo per visualizzare un elenco di comandi disponibili."
                     },
@@ -1565,7 +1572,7 @@
                         "remove": "Rimuovere",
                         "server": "server",
                         "set": "Impostare",
-                        "source": "Fonte:",
+                        "source": "Sorgenti:",
                         "states_ui": "Vai all'Interfaccia Utente degli Stati",
                         "system_health_error": "Il componente System Health non è caricato. Aggiungere 'system_health:' a configuration.yaml",
                         "title": "Informazioni"
@@ -1611,6 +1618,10 @@
                     "states": {
                         "alert_entity_field": "Entità è un campo obbligatorio",
                         "attributes": "Attributi",
+                        "copied": "Copiato negli appunti",
+                        "copy_entity_attribute": "Copia attributi",
+                        "copy_entity_id": "Copia ID",
+                        "copy_entity_state": "Copia stato",
                         "current_entities": "Entità correnti",
                         "description1": "Impostare la rappresentazione di un dispositivo all'interno di Home Assistant.",
                         "description2": "Questo non comunicherà con il dispositivo attuale.",
@@ -1825,7 +1836,7 @@
                     "header": "Modifica dell'interfaccia utente",
                     "menu": {
                         "open": "Apri il menu Lovelace",
-                        "raw_editor": "Editor di configurazione grezzo"
+                        "raw_editor": "Editor di Configurazione testuale"
                     },
                     "migrate": {
                         "header": "Configurazione incompatibile",
@@ -1860,7 +1871,8 @@
                 },
                 "menu": {
                     "close": "Chiudi",
-                    "configure_ui": "Configurare l'interfaccia utente",
+                    "configure_ui": "Configurare l'Interfaccia Utente",
+                    "exit_edit_mode": "Esci dalla modalità di modifica dell'Interfaccia Utente",
                     "help": "Aiuto",
                     "refresh": "Aggiorna",
                     "unused_entities": "Entità non utilizzate"

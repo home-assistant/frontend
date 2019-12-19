@@ -79,7 +79,7 @@
         "climate": {
             "fan_mode": {
                 "auto": "Auto",
-                "off": "Off",
+                "off": "Inactif",
                 "on": "Actif"
             },
             "hvac_action": {
@@ -144,7 +144,7 @@
             "triggered": "Déclenché"
         },
         "automation": {
-            "off": "Off",
+            "off": "Inactif",
             "on": "Actif"
         },
         "binary_sensor": {
@@ -161,7 +161,7 @@
                 "on": "Connecté"
             },
             "default": {
-                "off": "Off",
+                "off": "Inactif",
                 "on": "Actif"
             },
             "door": {
@@ -230,7 +230,7 @@
             }
         },
         "calendar": {
-            "off": "Off",
+            "off": "Inactif",
             "on": "Actif"
         },
         "camera": {
@@ -252,7 +252,7 @@
             "high_demand": "Forte demande",
             "idle": "Inactif",
             "manual": "Manuel",
-            "off": "Off",
+            "off": "Inactif",
             "on": "Marche",
             "performance": "Performance"
         },
@@ -268,7 +268,7 @@
             "stopped": "Arrêté"
         },
         "default": {
-            "off": "Off",
+            "off": "Inactif",
             "on": "Actif",
             "unavailable": "Indisponible",
             "unknown": "Inconnu"
@@ -287,7 +287,7 @@
             "home": "Présent",
             "locked": "Verrouillé",
             "not_home": "Absent",
-            "off": "Off",
+            "off": "Inactif",
             "ok": "OK",
             "on": "Actif",
             "open": "Ouvert",
@@ -332,11 +332,11 @@
             "scening": "Scénario"
         },
         "script": {
-            "off": "Off",
+            "off": "Inactif",
             "on": "Actif"
         },
         "sensor": {
-            "off": "Off",
+            "off": "Inactif",
             "on": "Actif"
         },
         "sun": {
@@ -344,7 +344,7 @@
             "below_horizon": "Sous l’horizon"
         },
         "switch": {
-            "off": "Off",
+            "off": "Inactif",
             "on": "On"
         },
         "timer": {
@@ -587,9 +587,11 @@
                 "title": "Changer de domaine"
             },
             "more_info_control": {
+                "dismiss": "Fermer la fenêtre de dialogue",
                 "script": {
                     "last_action": "Dernière action"
                 },
+                "settings": "Paramètres de l'entité",
                 "sun": {
                     "elevation": "Élévation",
                     "rising": "Lever",
@@ -600,6 +602,7 @@
                 }
             },
             "more_info_settings": {
+                "back": "Retour",
                 "entity_id": "ID de l'entité",
                 "name": "Outrepasser le nom",
                 "save": "Sauvegarder"
@@ -658,6 +661,7 @@
         },
         "notification_drawer": {
             "click_to_configure": "Cliquez sur le bouton pour configurer {entity}",
+            "close": "Fermer",
             "empty": "Aucune notification",
             "title": "Notifications"
         },
@@ -806,6 +810,8 @@
                             "label": "Description",
                             "placeholder": "Description optionnelle"
                         },
+                        "edit_ui": "Modifier avec l'interface utilisateur",
+                        "edit_yaml": "Modifier en tant que YAML",
                         "introduction": "Utilisez les automatisations pour donner vie à votre maison",
                         "load_error_not_editable": "Seules les automatisations dans automations.yaml sont modifiables.",
                         "load_error_unknown": "Erreur lors du chargement de l'automatisation ( {err_no} ).",
@@ -860,7 +866,7 @@
                                     "value_template": "Contenu du template (optionnel)"
                                 },
                                 "state": {
-                                    "for": "Pour",
+                                    "for": "Pendant",
                                     "from": "De",
                                     "label": "État",
                                     "to": "À"
@@ -1247,6 +1253,7 @@
                     "configure": "Configurer",
                     "configured": "Configuré",
                     "description": "Gérer les appareils et services connectés",
+                    "details": "Détails de l'intégration",
                     "discovered": "Découvert",
                     "home_assistant_website": "site web de Home Assistant",
                     "integration_not_found": "Intégration non trouvée.",
@@ -1611,6 +1618,10 @@
                     "states": {
                         "alert_entity_field": "L'entité est un champ obligatoire",
                         "attributes": "Attributs",
+                        "copied": "Copié dans le presse-papiers",
+                        "copy_entity_attribute": "Copier les attributs",
+                        "copy_entity_id": "Copier l'identifiant",
+                        "copy_entity_state": "Copier l'état",
                         "current_entities": "Entités actuelles",
                         "description1": "Définir la représentation d'un périphérique dans Home Assistant.",
                         "description2": "Cela ne communiquera pas avec le périphérique réel.",
@@ -1861,6 +1872,7 @@
                 "menu": {
                     "close": "Fermer",
                     "configure_ui": "Configurer l'interface utilisateur",
+                    "exit_edit_mode": "Quitter le mode d'édition de l'interface utilisateur",
                     "help": "Aide",
                     "refresh": "Actualiser",
                     "unused_entities": "Entités inutilisées"

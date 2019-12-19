@@ -55,6 +55,15 @@
         "shopping_list": "షాపింగ్ జాబితా",
         "states": "టూకీగా"
     },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "auto": "దానంతట అదే",
+                "off": "ఆఫ్",
+                "on": "ఆన్"
+            }
+        }
+    },
     "state_badge": {
         "alarm_control_panel": {
             "armed": "భద్రంగా ఉంది",
@@ -614,6 +623,7 @@
                             "step": {
                                 "init": {
                                     "data": {
+                                        "password": "పాస్వర్డ్",
                                         "username": "యూజర్ పేరు"
                                     }
                                 }

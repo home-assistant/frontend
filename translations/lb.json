@@ -587,9 +587,11 @@
                 "title": "Domäner ëmschalten"
             },
             "more_info_control": {
+                "dismiss": "Dialog ofbriechen",
                 "script": {
                     "last_action": "Läscht Aktioun"
                 },
+                "settings": "Astellunge vun der Entitéit",
                 "sun": {
                     "elevation": "Héicht",
                     "rising": "Sonnenopgank",
@@ -600,6 +602,7 @@
                 }
             },
             "more_info_settings": {
+                "back": "Géi zréck",
                 "entity_id": "Entitéit ID",
                 "name": "Numm iwwerschreiwen",
                 "save": "Späicheren"
@@ -658,6 +661,7 @@
         },
         "notification_drawer": {
             "click_to_configure": "Dréck de Knäppchen fir {entity} ze konfiguréieren",
+            "close": "Zoumaachen",
             "empty": "Keng Notifikatioune",
             "title": "Notifikatioune"
         },
@@ -806,6 +810,8 @@
                             "label": "Beschreiwung",
                             "placeholder": "Optional Beschreiwung"
                         },
+                        "edit_ui": "Mam Benotzer Inteface änneren",
+                        "edit_yaml": "Als YAML änneren",
                         "introduction": "Benotzt Automatismen fir däin Haus zum Liewen ze bréngen",
                         "load_error_not_editable": "Nëmmen Automatiounen am automations.yaml kënnen editéiert ginn.",
                         "load_error_unknown": "Feeler beim luede vun der Automatioun ({err_no}).",
@@ -1247,6 +1253,7 @@
                     "configure": "Astellen",
                     "configured": "Konfiguréiert",
                     "description": "Verwalt verbonnen Apparater an Servicen",
+                    "details": "Detailer vun der Integratioun",
                     "discovered": "Entdeckt",
                     "home_assistant_website": "Home Assistant Websäit",
                     "integration_not_found": "Integratioun net fonnt.",
@@ -1611,6 +1618,10 @@
                     "states": {
                         "alert_entity_field": "Entitéit ass e obligatorescht Feld",
                         "attributes": "Attributer",
+                        "copied": "An de Tëschespäicher kopéiert",
+                        "copy_entity_attribute": "Attributer kopéieren",
+                        "copy_entity_id": "ID kopéieren",
+                        "copy_entity_state": "Zoustand kopéieren",
                         "current_entities": "Aktuell Entitéiten",
                         "description1": "Setzt d'Representatioun vun engem Apparat am Home Assistant.",
                         "description2": "Dëst wäert net mam aktuellen Apparat kommunizéieren.",
@@ -1861,6 +1872,7 @@
                 "menu": {
                     "close": "Zoumaachen",
                     "configure_ui": "UI konfiguréieren",
+                    "exit_edit_mode": "Benotzer Interface Editéierungsmodus verloossen",
                     "help": "Hëllef",
                     "refresh": "Erneieren",
                     "unused_entities": "Onbenotzt Entitéiten"

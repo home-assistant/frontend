@@ -587,9 +587,11 @@
                 "title": "Domänen umschalten"
             },
             "more_info_control": {
+                "dismiss": "Ausblenden",
                 "script": {
                     "last_action": "Letzte Aktion"
                 },
+                "settings": "Entitätseinstellungen",
                 "sun": {
                     "elevation": "Höhe",
                     "rising": "Aufgang",
@@ -600,6 +602,7 @@
                 }
             },
             "more_info_settings": {
+                "back": "Zurück",
                 "entity_id": "Entitäts-ID",
                 "name": "Name",
                 "save": "Speichern"
@@ -658,6 +661,7 @@
         },
         "notification_drawer": {
             "click_to_configure": "Klicke auf die Schaltfläche, um {entity} zu konfigurieren.",
+            "close": "Schließen",
             "empty": "Keine Benachrichtigungen",
             "title": "Benachrichtigungen"
         },
@@ -684,7 +688,7 @@
                     "no_areas": "Sieht aus, als hättest du noch keine Bereiche!",
                     "picker": {
                         "create_area": "BEREICH ERSTELLEN",
-                        "header": "Bereichsregister",
+                        "header": "Bereiche",
                         "integrations_page": "Integrationsseite",
                         "introduction": "In Bereichen wird festgelegt, wo sich Geräte befinden. Diese Informationen werden in Home Assistant verwendet, um dich bei der Organisation deiner Benutzeroberfläche, Berechtigungen und Integrationen mit anderen Systemen zu unterstützen.",
                         "introduction2": "Um Geräte in einem Bereich zu platzieren, navigieren Sie mit dem Link unten zur Integrationsseite und klicken Sie dann auf eine konfigurierte Integration, um zu den Gerätekarten zu gelangen.",
@@ -806,6 +810,8 @@
                             "label": "Beschreibung",
                             "placeholder": "Optionale Beschreibung"
                         },
+                        "edit_ui": "Bearbeiten Sie mit der Benutzeroberfläche",
+                        "edit_yaml": "Als YAML bearbeiten",
                         "introduction": "Benutze Automatisierungen, um deinem Zuhause Leben einzuhauchen",
                         "load_error_not_editable": "Nur Automatisierungen in automations.yaml sind editierbar.",
                         "load_error_unknown": "Fehler beim Laden der Automatisierung ({err_no}).",
@@ -1133,13 +1139,16 @@
                     "attributes_set": "Die folgenden Attribute der Entität sind programmatisch festgelegt.",
                     "caption": "Anpassung",
                     "description": "Elemente anpassen",
+                    "different_include": "Möglich über eine Domain, einen Glob oder ",
                     "pick_attribute": "Wähle ein Attribut zum Überschreiben aus.",
                     "picker": {
                         "header": "Anpassungen",
                         "introduction": "Optimieren Sie die Entitätenattribute. Hinzugefügte / bearbeitete Anpassungen werden sofort wirksam. Entfernte Anpassungen werden wirksam, wenn die Entität aktualisiert wird."
                     },
                     "warning": {
-                        "include_link": "binde customize.yaml ein"
+                        "include_link": "binde customize.yaml ein",
+                        "include_sentence": "Es scheint, dass Ihre configuration.yaml nicht korrekt ist.",
+                        "not_applied": "Die hier vorgenommenen Änderungen werden eingetragen, aber erst nach einem erneuten Laden der Konfiguration angewendet, wenn das Include vorhanden ist."
                     }
                 },
                 "devices": {
@@ -1190,7 +1199,7 @@
                         "update": "UPDATE"
                     },
                     "picker": {
-                        "header": "Entitätsregister",
+                        "header": "Entitäten",
                         "headers": {
                             "enabled": "Aktiviert",
                             "entity_id": "Entitäts-ID",
@@ -1243,7 +1252,8 @@
                     },
                     "configure": "Konfigurieren",
                     "configured": "Konfiguriert",
-                    "description": "Verwalte verbundene Geräte und Dienste",
+                    "description": "Verwalte verbundene Integrationen",
+                    "details": "Details zur Integration",
                     "discovered": "Entdeckt",
                     "home_assistant_website": "Home Assistant Website",
                     "integration_not_found": "Integration nicht gefunden.",
@@ -1598,6 +1608,7 @@
                         "column_example": "Beispiel",
                         "column_parameter": "Parameter",
                         "data": "Servicedaten (YAML, optional)",
+                        "description": "Mit dem Dienstentwicklungstool können Sie jeden verfügbaren Dienst in Home Assistant aufrufen.",
                         "fill_example_data": "Mit Beispieldaten füllen",
                         "no_description": "Es ist keine Beschreibung verfügbar",
                         "no_parameters": "Dieser Dienst benötigt keine Parameter.",
@@ -1607,6 +1618,10 @@
                     "states": {
                         "alert_entity_field": "Die Entität ist ein Pflichtfeld",
                         "attributes": "Attribute",
+                        "copied": "In die Zwischenablage kopiert",
+                        "copy_entity_attribute": "Attribute in die Zwischenablage kopieren",
+                        "copy_entity_id": "ID in die Zwischenablage kopieren",
+                        "copy_entity_state": "Status in die Zwischenablage kopieren",
                         "current_entities": "Aktuelle Entitäten",
                         "description1": "Stellen Sie die Darstellung eines Geräts in Home Assistant ein.",
                         "description2": "Dies führt nicht zur Kommunikation mit dem eigentlichen Gerät.",
@@ -1685,7 +1700,7 @@
                         },
                         "entities": {
                             "name": "Elemente",
-                            "show_header_toggle": "Namen anzeigen?",
+                            "show_header_toggle": "Schalter anzeigen?",
                             "toggle": "Entitäten umschalten"
                         },
                         "entity-button": {
@@ -1857,6 +1872,7 @@
                 "menu": {
                     "close": "Schließen",
                     "configure_ui": "Benutzeroberfläche konfigurieren",
+                    "exit_edit_mode": "Schließe den UI-Bearbeitungsmodus",
                     "help": "Hilfe",
                     "refresh": "Aktualisieren",
                     "unused_entities": "Ungenutzte Elemente"

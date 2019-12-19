@@ -587,9 +587,11 @@
                 "title": "切換區域"
             },
             "more_info_control": {
+                "dismiss": "忽略對話",
                 "script": {
                     "last_action": "上次觸發"
                 },
+                "settings": "物件設定",
                 "sun": {
                     "elevation": "海拔",
                     "rising": "日升",
@@ -600,6 +602,7 @@
                 }
             },
             "more_info_settings": {
+                "back": "上一步",
                 "entity_id": "物件 ID",
                 "name": "名稱覆寫",
                 "save": "儲存"
@@ -658,6 +661,7 @@
         },
         "notification_drawer": {
             "click_to_configure": "點擊按鈕以設定{entity}",
+            "close": "關閉",
             "empty": "沒有通知",
             "title": "通知提示"
         },
@@ -806,6 +810,8 @@
                             "label": "說明",
                             "placeholder": "選項說明"
                         },
+                        "edit_ui": "以 UI 編輯",
+                        "edit_yaml": "以 YAML 編輯",
                         "introduction": "使用自動化來讓你的智能家居更有魅力吧。",
                         "load_error_not_editable": "僅有 automations.yaml 內的自動化方能編輯。",
                         "load_error_unknown": "載入自動化錯誤（{err_no}）。",
@@ -1247,6 +1253,7 @@
                     "configure": "設定",
                     "configured": "已設定整合",
                     "description": "管理已連線設備與整合",
+                    "details": "整合詳細資訊",
                     "discovered": "已掃描",
                     "home_assistant_website": "Home Assistant 網站",
                     "integration_not_found": "找不到整合。",
@@ -1611,6 +1618,10 @@
                     "states": {
                         "alert_entity_field": "物件為必填欄位",
                         "attributes": "屬性",
+                        "copied": "複製至剪貼簿",
+                        "copy_entity_attribute": "複製屬性",
+                        "copy_entity_id": "複製 ID",
+                        "copy_entity_state": "複製狀態",
                         "current_entities": "目前物件",
                         "description1": "設定 Home Assistant 裝置代表。",
                         "description2": "將不會與實際設備進行通訊。",
@@ -1861,6 +1872,7 @@
                 "menu": {
                     "close": "關閉",
                     "configure_ui": "介面設定",
+                    "exit_edit_mode": "退出 UI 編輯模式",
                     "help": "說明",
                     "refresh": "更新",
                     "unused_entities": "未顯示物件"
