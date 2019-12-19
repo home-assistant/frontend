@@ -587,9 +587,11 @@
                 "title": "Domeinen in- en uitschakelen"
             },
             "more_info_control": {
+                "dismiss": "Dialoogvenster sluiten",
                 "script": {
                     "last_action": "Laatste actie"
                 },
+                "settings": "Entiteit instellingen",
                 "sun": {
                     "elevation": "Hoogtehoek",
                     "rising": "Opkomst",
@@ -600,6 +602,7 @@
                 }
             },
             "more_info_settings": {
+                "back": "Ga terug",
                 "entity_id": "Entiteits-ID",
                 "name": "Naam overschrijven",
                 "save": "Opslaan"
@@ -658,6 +661,7 @@
         },
         "notification_drawer": {
             "click_to_configure": "Klik op de knop om {entity} te configureren",
+            "close": "Sluiten",
             "empty": "Geen notificaties",
             "title": "Notificaties"
         },
@@ -806,6 +810,8 @@
                             "label": "Beschrijving",
                             "placeholder": "Optionele beschrijving"
                         },
+                        "edit_ui": "Bewerken met UI",
+                        "edit_yaml": "Bewerken als YAML",
                         "introduction": "Gebruik automatiseringen om je huis tot leven te brengen.",
                         "load_error_not_editable": "Alleen automatiseringen in automations.yaml kunnen worden bewerkt.",
                         "load_error_unknown": "Fout bij laden van automatisering ({err_no}).",
@@ -1138,7 +1144,9 @@
                         "introduction": "Pas attributen per entiteit aan. Toegevoegde/gewijzigde aanpassingen worden onmiddellijk van kracht. Verwijderde aanpassingen worden van kracht wanneer de entiteit wordt bijgewerkt."
                     },
                     "warning": {
-                        "include_link": "inclusief customize.yaml"
+                        "include_link": "inclusief customize.yaml",
+                        "include_sentence": "Het lijkt erop dat uw configuratie.yaml niet correct werkt",
+                        "not_applied": "Wijzigingen die hier zijn aangebracht, worden erin geschreven, maar worden niet toegepast totdat de configuratie opnieuw is geladen, tenzij de include al is geïnstalleerd."
                     }
                 },
                 "devices": {
@@ -1242,6 +1250,7 @@
                     "configure": "Configureer",
                     "configured": "Geconfigureerd",
                     "description": "Beheer en installeer integraties",
+                    "details": "Integratiedetails",
                     "discovered": "Ontdekt",
                     "home_assistant_website": "Home Assistant-website",
                     "integration_not_found": "Integratie niet gevonden.",
@@ -1605,6 +1614,10 @@
                     "states": {
                         "alert_entity_field": "Entiteit is een verplicht veld",
                         "attributes": "Attributen",
+                        "copied": "Gekopieerd naar het klembord",
+                        "copy_entity_attribute": "Attributen kopiëren",
+                        "copy_entity_id": "ID kopiëren",
+                        "copy_entity_state": "Toestand kopiëren",
                         "current_entities": "Huidige entiteiten",
                         "description1": "Stelt de weergave van een apparaat in Home Assistant in.",
                         "description2": "Er vindt geen communicatie met het daadwerkelijke apparaat plaat.",
@@ -1855,6 +1868,7 @@
                 "menu": {
                     "close": "Sluiten",
                     "configure_ui": "Configureer UI",
+                    "exit_edit_mode": "UI-bewerkingsmodus afsluiten",
                     "help": "Help",
                     "refresh": "Vernieuwen",
                     "unused_entities": "Ongebruikte entiteiten"
@@ -2059,7 +2073,7 @@
                 "advanced_mode": {
                     "description": "Home Assistant verbergt standaard geavanceerde functies en opties. U kunt deze functies toegankelijk maken door deze schakelaar aan te zetten. Dit is een gebruikersspecifieke instelling en heeft geen invloed op andere gebruikers die Home Assistant gebruiken.",
                     "hint_enable": "Ontbrekende configuratie-opties? Schakel geavanceerde modus in",
-                    "link_profile_page": "Je profielpagina",
+                    "link_profile_page": "je profielpagina",
                     "title": "Geavanceerde modus"
                 },
                 "change_password": {

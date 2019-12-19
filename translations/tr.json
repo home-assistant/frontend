@@ -57,6 +57,15 @@
         "shopping_list": "Alışveriş listesi",
         "states": "Genel durum"
     },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "auto": "Otomatik",
+                "off": "Kapalı",
+                "on": "Açık"
+            }
+        }
+    },
     "state_badge": {
         "alarm_control_panel": {
             "armed": "Etkin",
@@ -400,11 +409,24 @@
             "loading": "Yükleniyor",
             "save": "Kaydet"
         },
+        "components": {
+            "device-picker": {
+                "device": "Cihaz"
+            },
+            "entity": {
+                "entity-picker": {
+                    "clear": "Temizle",
+                    "show_entities": "Varlıkları göster"
+                }
+            }
+        },
         "dialogs": {
             "more_info_control": {
+                "dismiss": "İletişim kutusunu kapat",
                 "script": {
                     "last_action": "Son Eylem"
                 },
+                "settings": "Varlık ayarları",
                 "sun": {
                     "elevation": "Yükseklik",
                     "rising": "Yükseliyor",
@@ -415,6 +437,7 @@
                 }
             },
             "more_info_settings": {
+                "back": "Geri dön",
                 "name": "Ad",
                 "save": "Kaydet"
             }
@@ -430,6 +453,7 @@
             "remember": "Hatırla"
         },
         "notification_drawer": {
+            "close": "Kapat",
             "empty": "Bildirim bulunmamakta",
             "title": "Bildirimler"
         },
@@ -443,6 +467,7 @@
                             "delete": "Sil",
                             "delete_confirm": "Silmek istediğinize emin misiniz?",
                             "duplicate": "Kopya",
+                            "name": "Aksiyon",
                             "type": {
                                 "condition": {
                                     "label": "Durum"
@@ -462,6 +487,7 @@
                             "delete": "Sil",
                             "delete_confirm": "Silmek istediğinizden emin misiniz?",
                             "duplicate": "Kopya",
+                            "name": "Şart",
                             "type": {
                                 "numeric_state": {
                                     "above": "Üzerinde",
@@ -497,9 +523,12 @@
                             },
                             "unsupported_condition": "Desteklenmeyen durum: {condition}"
                         },
+                        "edit_ui": "UI ile düzenle",
+                        "edit_yaml": "YAML olarak düzenle",
                         "save": "Kaydet",
                         "triggers": {
                             "delete": "Sil",
+                            "name": "Tetik",
                             "type": {
                                 "state": {
                                     "for": "Süre"
@@ -588,17 +617,74 @@
                         "restart_confirm": "Bu entegrasyonu kaldırmaya devam etmek için Home Assistant'ı yeniden başlatın",
                         "via": "Şununla bağlı:"
                     },
+                    "config_flow": {
+                        "aborted": "İptal edildi",
+                        "add_area": "Alan Ekle ",
+                        "area_picker_label": "Alan",
+                        "close": "Kapat",
+                        "created_config": "{name} için ayar oluşturuldu.",
+                        "error_saving_area": "Alan kayıt etme hatası: {error}",
+                        "failed_create_area": "Alan oluşturulamadı.",
+                        "finish": "Bitir",
+                        "name_new_area": "Yeni alanın adı?",
+                        "not_all_required_fields": "Gerekli alanların tümü doldurulmamış.",
+                        "submit": "Gönder"
+                    },
                     "configure": "Yapılandır",
                     "configured": "Yapılandırıldı",
                     "description": "Bağlı aygıtları ve hizmetleri yönetin",
+                    "details": "Entegrasyon detayları",
                     "discovered": "Bulundu",
+                    "integration_not_found": "Entegrasyon bulunamadı.",
                     "new": "Yeni bir entegrasyon kur",
                     "none": "Henüz hiçbir şey yapılandırılmamış"
                 },
                 "introduction": "Buradan bileşenlerinizi ve Home Assistant'ınızı yapılandırabilirsiniz. Herşeyi kullanıcı arayüzü ile ayarlamak henüz mümkün değil fakat üzerinde çalışıyoruz",
+                "scene": {
+                    "activated": "Etkin sahne {name} .",
+                    "caption": "Sahneler",
+                    "description": "Sahneler oluşturun ve düzenleyin",
+                    "editor": {
+                        "default_name": "Yeni Sahne",
+                        "devices": {
+                            "add": "Cihaz ekle",
+                            "delete": "Cihazı sil",
+                            "header": "Cihazlar",
+                            "introduction": "Sahnenize dahil edilmesini istediğiniz cihazları ekleyin. Tüm aygıtları bu sahne için istediğiniz duruma ayarlayın."
+                        },
+                        "entities": {
+                            "device_entities": "Bir aygıta ait bir varlık eklerseniz, aygıt eklenecektir.",
+                            "header": "Varlıklar",
+                            "introduction": "Bir cihaza ait olmayan varlıklar buradan ayarlanabilir.",
+                            "without_device": "Cihazı olmayan varlıklar"
+                        },
+                        "introduction": "Evinizi canlandırmak için sahneleri kullanın.",
+                        "load_error_not_editable": "Sadece scenes.yaml içindeki sahneler düzenlenebilinir.",
+                        "load_error_unknown": "Sahne yüklenirken hata oluştu ( {err_no} ).",
+                        "name": "Ad",
+                        "save": "Kaydet",
+                        "unsaved_confirm": "Kaydedilmemiş değişiklikleriniz mevcut. Ayrılmak istediğinden emin misin?"
+                    },
+                    "picker": {
+                        "add_scene": "Sahne ekle",
+                        "delete_confirm": "Bu sahneyi silmek istediğinize emin misiniz?",
+                        "delete_scene": "Sahneyi sil",
+                        "edit_scene": "Sahneyi düzenle",
+                        "header": "Sahne Düzenleyicisi",
+                        "introduction": "Sahne düzenleyici, sahneler oluşturmanıza ve düzenlemenize olanak sağlar. Home Assistant'ı doğru yapılandırdığınızdan emin olmak ve talimatları okumak için lütfen aşağıdaki bağlantıyı izleyin.",
+                        "learn_more": "Sahneler hakkında daha fazla bilgi edinin",
+                        "no_scenes": "Düzenlenebilir sahne bulamadık",
+                        "only_editable": "Sadece scenes.yaml içinde belirlenmiş sahneler düzenlenebilinir.",
+                        "pick_scene": "Düzenlenecek sahneyi seç",
+                        "show_info_scene": "Sahne hakkında bilgi göster"
+                    }
+                },
                 "script": {
                     "caption": "Senaryo",
-                    "description": "Senaryoları oluşturun ve düzenleyin"
+                    "description": "Senaryoları oluşturun ve düzenleyin",
+                    "editor": {
+                        "link_available_actions": "Kullanılabilir aksiyonlar hakkında daha fazla bilgi edinin."
+                    }
                 },
                 "server_control": {
                     "section": {
@@ -638,22 +724,87 @@
                     }
                 }
             },
+            "custom": {
+                "external_panel": {
+                    "complete_access": "Home Assistant'taki tüm verilere erişebilecek.",
+                    "hide_message": "Bu mesajı gizlemek için dökümantasyondaki panel_custom bileşenine bakınız",
+                    "question_trust": "{link} adresindeki {name} dış panele güveniyor musunuz?"
+                }
+            },
             "developer-tools": {
                 "tabs": {
                     "events": {
+                        "description": "Etkinlik otobüsünde bir etkinlik başlat.",
+                        "documentation": "Olaylar Dökümantasyonu.",
                         "title": "Olaylar"
+                    },
+                    "info": {
+                        "built_using": "Kullanılan oluşturma",
+                        "custom_uis": "Özel kullanıcı arayüzleri:",
+                        "developed_by": "Bir sürü harika insan tarafından geliştirildi.",
+                        "frontend": "ön uç-ui",
+                        "frontend_version": "Ön uç versiyonu: {version} - {type}",
+                        "home_assistant_logo": "Home Assistant Logosu",
+                        "icons_by": "Simgelerin orijni",
+                        "license": "Apache 2.0 lisansı altında yayınlandı",
+                        "path_configuration": "configuration.yaml lokasyonu: {path}",
+                        "server": "sunucu",
+                        "source": "Kaynak:",
+                        "system_health_error": "Sistem Sağlığı bileşeni yüklü değil. configuration.yaml içine 'system_health:' ekleyin"
+                    },
+                    "logs": {
+                        "clear": "Temizle",
+                        "details": "Günlük Ayrıntıları ( {level} )",
+                        "load_full_log": "Tam Home Assistant Günlüğünü Yükle",
+                        "loading_log": "Hata günlüğü yükleniyor ...",
+                        "multiple_messages": "ileti ilk önce {time} meydana geldi ve {counter} kez gösterildi",
+                        "no_errors": "Herhangi bir hata rapor edilmiştir.",
+                        "no_issues": "Yeni bir sorun yok!",
+                        "refresh": "Yenile"
                     },
                     "mqtt": {
                         "title": "MQTT"
                     },
                     "services": {
+                        "alert_parsing_yaml": "YAML alınamadı: {data}",
+                        "call_service": "Arama Servisi",
+                        "column_description": "Açıklama",
+                        "column_example": "Örnek",
+                        "column_parameter": "Parametre",
+                        "fill_example_data": "Örnek Verileri Doldur",
+                        "no_description": "Açıklama mevcut değil",
+                        "no_parameters": "Bu servis parametre almaz.",
+                        "select_service": "Açıklamasını görmek için bir servis seçin",
                         "title": "Servisler"
                     },
                     "states": {
+                        "alert_entity_field": "Varlık zorunlu bir alandır",
+                        "attributes": "Nitelikler",
+                        "copied": "Panoya kopyalandı",
+                        "copy_entity_attribute": "Özellikleri kopyala",
+                        "copy_entity_id": "Kimliği kopyala",
+                        "copy_entity_state": "Durumu kopyala",
+                        "current_entities": "Mevcut varlıklar",
+                        "description1": "Home Assistant içersindeki bir cihazın görünümü ayarlayın.",
+                        "description2": "Bu, gerçek cihaz ile iletişim kurmayacaktır.",
+                        "entity": "Varlık",
+                        "filter_attributes": "Nitelikleri filtrele",
+                        "filter_entities": "Varlıkları filtrele",
+                        "filter_states": "Durumları filtrele",
+                        "more_info": "Daha fazla bilgi",
+                        "no_entities": "Varlık yok",
+                        "set_state": "Durumu Ayarla",
+                        "state": "Durum",
+                        "state_attributes": "Durum nitelikleri (YAML, isteğe bağlı)",
                         "title": "Durumlar"
                     },
                     "templates": {
-                        "title": "Taslaklar"
+                        "description": "Taslaklar Jinja2 taslak motoru ve bazı Home Assistant eklentileri ile görüntülenmektedir.",
+                        "editor": "Taslak düzenleyicisi",
+                        "jinja_documentation": "Jinja2 taslak dökümantasyonu",
+                        "template_extensions": "Home Assistant taslak eklentileri",
+                        "title": "Taslaklar",
+                        "unknown_error_template": "Bilinmeyen taslak gösterim hatası"
                     }
                 }
             },
@@ -662,6 +813,7 @@
                 "showing_entries": "Gösterilen girişler"
             },
             "logbook": {
+                "entries_not_found": "Kayıt defteri girişi bulunamadı.",
                 "showing_entries": "Gösterilen girişler"
             },
             "lovelace": {
@@ -682,11 +834,16 @@
                         "save": "Kaydet",
                         "toggle_editor": "Düzenleyiciye Geçiş"
                     },
+                    "edit_lovelace": {
+                        "edit_title": "Başlığı düzenle"
+                    },
                     "edit_view": {
                         "add": "Görünüm ekle",
                         "delete": "Görünümü sil",
                         "edit": "Görünümü düzenle",
-                        "header": "Ayarları görüntüle"
+                        "header": "Ayarları görüntüle",
+                        "move_left": "Görünümü sola taşı",
+                        "move_right": "Görünümü sağa taşı"
                     },
                     "header": "Kullanıcı arayüzünü düzenle",
                     "migrate": {
@@ -694,6 +851,13 @@
                         "migrate": "Ayarları aktar",
                         "para_migrate": "'Ayarları aktar' düğmesine bastığınız zaman Home Assistant tüm kartlarınıza ve görünümlerinize otomatik olarak kimlik atayabilir.",
                         "para_no_id": "Bu öğenin bir kimliği yok. Lütfen 'ui-lovelace.yaml' dosyasında bu elemente bir kimlik ekleyin."
+                    },
+                    "raw_editor": {
+                        "confirm_unsaved_changes": "Kaydedilmemiş değişiklikleriniz var, çıkmak istediğinize emin misiniz?",
+                        "confirm_unsaved_comments": "Yapılandırmanız yorumlar içeriyor, bunlar kaydedilmeyecek. Devam etmek istiyor musun?",
+                        "error_invalid_config": "Yapılandırmanız geçerli değil: {error}",
+                        "error_parse_yaml": "YAML alınamadı: {error}",
+                        "error_save_yaml": "YAML kaydedilemiyor: {error}"
                     },
                     "save_config": {
                         "cancel": "Boşver",
@@ -704,7 +868,18 @@
                     }
                 },
                 "menu": {
-                    "configure_ui": "Kullanıcı arayüzünü ayarla"
+                    "close": "Kapat",
+                    "configure_ui": "Kullanıcı arayüzünü ayarla",
+                    "exit_edit_mode": "UI düzenleme modundan çık"
+                },
+                "unused_entities": {
+                    "available_entities": "Bunlar sizin elinizde olan ama henüz Lovelace UI'nızda olmayan varlıklardır.",
+                    "domain": "Alan adı",
+                    "entity": "Varlık",
+                    "entity_id": "Varlık kimliği",
+                    "last_changed": "Son değiştirilen",
+                    "select_to_add": "Karta eklemek istediğiniz varlıkları seçin ve ardından kart ekle tuşuna basınız.",
+                    "title": "Kullanılmayan varlıklar"
                 }
             },
             "mailbox": {
@@ -722,12 +897,19 @@
                                 "login_expired": "Oturum süresi doldu, lütfen tekrar giriş yapın."
                             },
                             "error": {
-                                "invalid_auth": "Geçersiz kullanıcı adı ya da parola"
+                                "invalid_auth": "Geçersiz kullanıcı adı ya da parola",
+                                "invalid_code": "Geçersiz kimlik doğrulama kodu"
                             },
                             "step": {
                                 "init": {
                                     "data": {
+                                        "password": "Parola",
                                         "username": "Kullanıcı Adı"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "İki adımlı kimlik doğrulama kodu"
                                     }
                                 }
                             }
@@ -807,6 +989,10 @@
                 }
             },
             "profile": {
+                "advanced_mode": {
+                    "hint_enable": "Eksik yapılandırma seçenekleri? Gelişmiş modunu etkinleştir ",
+                    "link_profile_page": "profil sayfanız"
+                },
                 "change_password": {
                     "confirm_new_password": "Yeni Parolayı Onaylayın",
                     "current_password": "Güncel Parola",

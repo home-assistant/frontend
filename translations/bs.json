@@ -47,6 +47,15 @@
         "shopping_list": "Spisak za kupovinu",
         "states": "Pregled"
     },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "auto": "Auto",
+                "off": "Isključen",
+                "on": "Uključen"
+            }
+        }
+    },
     "state_badge": {
         "alarm_control_panel": {
             "armed": "Aktiviran",
