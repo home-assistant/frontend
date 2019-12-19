@@ -27,6 +27,13 @@ import { domainIcon } from "../../../../common/entity/domain_icon";
 // tslint:disable-next-line
 import { HaSwitch } from "../../../../components/ha-switch";
 import { EntityRegistryStateEntry } from "../ha-config-device-page";
+import {
+  fetchConfig,
+  LovelaceConfig,
+  saveConfig,
+} from "../../../../data/lovelace";
+import { showSelectViewDialog } from "../../../lovelace/editor/select-view/show-select-view-dialog";
+import { showEditCardDialog } from "../../../lovelace/editor/card-editor/show-edit-card-dialog";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
@@ -49,51 +56,60 @@ export class HaDeviceEntitiesCard extends LitElement {
           </ha-switch>
         </paper-item>
         ${this.entities.length
-          ? this.entities.map((entry: EntityRegistryStateEntry) => {
-              if (!this._showDisabled && entry.disabled_by) {
-                return "";
-              }
-              const stateObj = this.hass.states[entry.entity_id];
-              return html`
-                <paper-icon-item
-                  .entry=${entry}
-                  class=${classMap({ "disabled-entry": !!entry.disabled_by })}
-                >
-                  ${stateObj
-                    ? html`
-                        <state-badge
-                          @click=${this._openMoreInfo}
-                          .stateObj=${stateObj}
-                          slot="item-icon"
-                        ></state-badge>
-                      `
-                    : html`
-                        <ha-icon
-                          slot="item-icon"
-                          .icon=${domainIcon(computeDomain(entry.entity_id))}
-                        ></ha-icon>
-                      `}
-                  <paper-item-body two-line @click=${this._openMoreInfo}>
-                    <div class="name">${entry.stateName}</div>
-                    <div class="secondary entity-id">${entry.entity_id}</div>
-                  </paper-item-body>
-                  <div class="buttons">
+          ? html`
+              ${this.entities.map((entry: EntityRegistryStateEntry) => {
+                if (!this._showDisabled && entry.disabled_by) {
+                  return "";
+                }
+                const stateObj = this.hass.states[entry.entity_id];
+                return html`
+                  <paper-icon-item
+                    .entry=${entry}
+                    class=${classMap({ "disabled-entry": !!entry.disabled_by })}
+                  >
                     ${stateObj
                       ? html`
-                          <paper-icon-button
+                          <state-badge
                             @click=${this._openMoreInfo}
-                            icon="hass:information-outline"
-                          ></paper-icon-button>
+                            .stateObj=${stateObj}
+                            slot="item-icon"
+                          ></state-badge>
                         `
-                      : ""}
-                    <paper-icon-button
-                      @click=${this._openEditEntry}
-                      icon="hass:settings"
-                    ></paper-icon-button>
-                  </div>
-                </paper-icon-item>
-              `;
-            })
+                      : html`
+                          <ha-icon
+                            slot="item-icon"
+                            .icon=${domainIcon(computeDomain(entry.entity_id))}
+                          ></ha-icon>
+                        `}
+                    <paper-item-body two-line @click=${this._openMoreInfo}>
+                      <div class="name">${entry.stateName}</div>
+                      <div class="secondary entity-id">${entry.entity_id}</div>
+                    </paper-item-body>
+                    <div class="buttons">
+                      ${stateObj
+                        ? html`
+                            <paper-icon-button
+                              @click=${this._openMoreInfo}
+                              icon="hass:information-outline"
+                            ></paper-icon-button>
+                          `
+                        : ""}
+                      <paper-icon-button
+                        @click=${this._openEditEntry}
+                        icon="hass:settings"
+                      ></paper-icon-button>
+                    </div>
+                  </paper-icon-item>
+                `;
+              })}
+              <div class="card-actions">
+                <mwc-button @click=${this._addToLovelaceView}>
+                  ${this.hass.localize(
+                    "ui.panel.config.devices.add_lovelace.add_entities"
+                  )}
+                </mwc-button>
+              </div>
+            `
           : html`
               <div class="config-entry-row">
                 <paper-item-body two-line>
@@ -123,6 +139,51 @@ export class HaDeviceEntitiesCard extends LitElement {
   private _openMoreInfo(ev: MouseEvent) {
     const entry = (ev.currentTarget! as any).closest("paper-icon-item").entry;
     fireEvent(this, "hass-more-info", { entityId: entry.entity_id });
+  }
+
+  private async _addToLovelaceView(): Promise<void> {
+    if ((this.hass!.panels.lovelace?.config as any)?.mode === "yaml") {
+      alert(
+        this.hass.localize(
+          "ui.panel.config.devices.add_lovelace.yaml_unsupported"
+        )
+      );
+      return;
+    }
+    let lovelaceConfig;
+    try {
+      lovelaceConfig = await fetchConfig(this.hass.connection, false);
+    } catch {
+      alert(
+        this.hass.localize(
+          "ui.panel.config.devices.add_lovelace.generated_unsupported"
+        )
+      );
+      return;
+    }
+    showSelectViewDialog(this, {
+      lovelaceConfig,
+      viewSelectedCallback: (view) => this._addCard(lovelaceConfig, view),
+    });
+  }
+
+  private _addCard(lovelaceConfig: LovelaceConfig, view: number): void {
+    showEditCardDialog(this, {
+      lovelaceConfig,
+      saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
+        try {
+          await saveConfig(this.hass!, newConfig);
+        } catch {
+          alert(
+            this.hass.localize(
+              "ui.panel.config.devices.add_lovelace.saving_failed"
+            )
+          );
+        }
+      },
+      path: [view],
+      entities: this.entities.map((entity) => entity.entity_id),
+    });
   }
 
   static get styles(): CSSResult {
