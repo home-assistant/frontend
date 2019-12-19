@@ -587,9 +587,11 @@
                 "title": "Alternar dominios"
             },
             "more_info_control": {
+                "dismiss": "Descartar diálogo",
                 "script": {
                     "last_action": "Última acción"
                 },
+                "settings": "Configuración de la entidad",
                 "sun": {
                     "elevation": "Elevación",
                     "rising": "Salida del sol",
@@ -600,6 +602,7 @@
                 }
             },
             "more_info_settings": {
+                "back": "Volver",
                 "entity_id": "Identificación de la entidad",
                 "name": "Cambio de nombre",
                 "save": "Guardar"
@@ -658,6 +661,7 @@
         },
         "notification_drawer": {
             "click_to_configure": "Haz clic en el botón para configurar {entity}",
+            "close": "Cerrar",
             "empty": "Sin Notificaciones",
             "title": "Notificaciones"
         },
@@ -806,6 +810,8 @@
                             "label": "Descripción",
                             "placeholder": "Descripción opcional"
                         },
+                        "edit_ui": "Editar con la interfaz de usuario",
+                        "edit_yaml": "Editar como YAML",
                         "introduction": "Utiliza automatizaciones para darle vida a tu hogar.",
                         "load_error_not_editable": "Solo las automatizaciones en automations.yaml son editables.",
                         "load_error_unknown": "Error al cargar la automatización ({err_no}).",
@@ -1247,6 +1253,7 @@
                     "configure": "Configurar",
                     "configured": "Configurado",
                     "description": "Administrar y configurar integraciones",
+                    "details": "Detalles de la integración",
                     "discovered": "Descubierto",
                     "home_assistant_website": "Sitio web de Home Assistant",
                     "integration_not_found": "Integración no encontrada.",
@@ -1611,6 +1618,10 @@
                     "states": {
                         "alert_entity_field": "Entidad es un campo obligatorio",
                         "attributes": "Atributos",
+                        "copied": "Copiado al portapapeles",
+                        "copy_entity_attribute": "Copiar atributos",
+                        "copy_entity_id": "Copiar ID",
+                        "copy_entity_state": "Copiar estado",
                         "current_entities": "Entidades actuales",
                         "description1": "Establecer la representación de un dispositivo dentro de Home Assistant.",
                         "description2": "Esto no se comunicará con el dispositivo actual.",
@@ -1861,6 +1872,7 @@
                 "menu": {
                     "close": "Cerrar",
                     "configure_ui": "Configurar la interfaz de usuario",
+                    "exit_edit_mode": "Salir del modo de edición de la interfaz de usuario",
                     "help": "Ayuda",
                     "refresh": "Actualizar",
                     "unused_entities": "Entidades no utilizadas"
