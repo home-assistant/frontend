@@ -574,7 +574,7 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Hvis den er deaktivert, blir ikke nyoppdagede enheter for {integration} automatisk lagt til i Home Assistant.",
+                "enable_new_entities_description": "Hvis den er deaktivert, blir ikke nyoppdagede entiteter for {integration} automatisk lagt til i Home Assistant.",
                 "enable_new_entities_label": "Aktiver enheter som nylig er lagt til.",
                 "title": "Systemalternativer for {integration}"
             },
@@ -587,9 +587,11 @@
                 "title": "Veksle domener"
             },
             "more_info_control": {
+                "dismiss": "Avvis dialogboksen",
                 "script": {
                     "last_action": "Siste handling"
                 },
+                "settings": "Entitetsinnstillinger",
                 "sun": {
                     "elevation": "Elevasjon",
                     "rising": "Soloppgang",
@@ -600,6 +602,7 @@
                 }
             },
             "more_info_settings": {
+                "back": "Gå tilbake",
                 "entity_id": "Oppføring ID",
                 "name": "Navn",
                 "save": "Lagre"
@@ -658,6 +661,7 @@
         },
         "notification_drawer": {
             "click_to_configure": "Klikk på knappen for å konfigurere {entity}",
+            "close": "Lukk",
             "empty": "Ingen varsler",
             "title": "Varsler"
         },
@@ -704,7 +708,7 @@
                             "introduction": "Handling(ene) er hva Home Assistant vil utføre når en automasjon utløses.",
                             "learn_more": "Lær mer om handlinger",
                             "name": "Handling",
-                            "type_select": "Handlingstype",
+                            "type_select": "Handling",
                             "type": {
                                 "condition": {
                                     "label": "Betingelse"
@@ -749,7 +753,7 @@
                             "introduction": "Betingelser er en valgfri del av en automasjonsregel og kan brukes til å forhindre at en handling skjer når den blir aktivert. \nBetingelsene ser veldig ut som utløsere, men er veldig forskjellige. \nEn utløser vil se på hendelser som skjer i systemet, mens en betingelse bare ser på hvordan systemet ser ut akkurat nå. En utløser kan observere at en bryter er slått på. En betingelse kan bare se om en bryter for øyeblikket er på eller av.",
                             "learn_more": "Lær mer om betingelser",
                             "name": "Betingelse",
-                            "type_select": "Type Betingelse",
+                            "type_select": "Betingelse",
                             "type": {
                                 "and": {
                                     "label": "Og"
@@ -806,6 +810,8 @@
                             "label": "Beskrivelse",
                             "placeholder": "Valgfri beskrivelse"
                         },
+                        "edit_ui": "Rediger med UI",
+                        "edit_yaml": "Rediger som YAML",
                         "introduction": "Bruk automasjon for å få liv i hjemmet ditt",
                         "load_error_not_editable": "Kun automasjoner i automations.yaml kan redigeres.",
                         "load_error_unknown": "Feil ved lasting av automasjon ({err_no}).",
@@ -819,7 +825,7 @@
                             "introduction": "Utløsere er det som starter en automatiseringsregel. Det er mulig å spesifisere flere utløsere for samme regel. Når en utløser aktiveres, vil Home Assistant bekrefte vilkårene, hvis noen, og kjøre handlingen. \n\n[Lær mer om utløsere.](https://home-assistant.io/docs/automation/trigger/)",
                             "learn_more": "Lær mer om utløsere",
                             "name": "Utløse",
-                            "type_select": "Utløser type",
+                            "type_select": "Utløser",
                             "type": {
                                 "device": {
                                     "extra_fields": {
@@ -909,7 +915,7 @@
                         "delete_confirm": "Er du sikker på at du vil slette denne automatiseringen?",
                         "edit_automation": "Rediger automasjon",
                         "header": "Automasjonsredigering",
-                        "introduction": "Automasjonsredigeringen lar deg lage og redigere automasjoner. Vennligst les [instruksjonene](https://home-assistant.io/docs/automation/editor/) for å forsikre deg om at du har konfigurert Home Assistant riktig.",
+                        "introduction": "Automasjonsredigeringen lar deg lage og redigere automasjoner. Følg lenken under for å forsikre deg om at du har konfigurert Home Assistant riktig.",
                         "learn_more": "Lær mer om automasjoner",
                         "no_automations": "Vi kunne ikke finne noen redigerbare automasjoner",
                         "only_editable": "Bare automasjoner definert i automations.yaml kan redigeres.",
@@ -927,10 +933,10 @@
                             "enable_state_reporting": "Aktiver tilstandsrapportering",
                             "info": "Med Alexa-integrasjonen for Home Assistant Cloud vil du kunne kontrollere alle dine Home Assistant-enheter via hvilken som helst Alexa-aktivert enhet.",
                             "info_state_reporting": "Hvis du aktiverer tilstandsrapportering, vil Home Assistant sende alle tilstandsendringer av utsatte enheter til Amazon. Dette lar deg alltid se de siste tilstandene i Alexa-appen og bruke tilstandsendringene til å lage rutiner.",
-                            "manage_entities": "Administrer enheter",
+                            "manage_entities": "Håndtér entiteter",
                             "state_reporting_error": "Kan ikke {enable_disable} rapportere status.",
-                            "sync_entities": "Synkroniser enheter",
-                            "sync_entities_error": "Kunne ikke synkronisere enheter:",
+                            "sync_entities": "Synkronisér entiteter",
+                            "sync_entities_error": "Kunne ikke synkronisere entiteter:",
                             "title": "Alexa"
                         },
                         "connected": "Tilkoblet",
@@ -946,9 +952,9 @@
                             "enter_pin_info": "Angi en PIN-kode for å samhandle med sikkerhetsenheter. Sikkerhetsanordninger er dører, garasjeporter og låser. Du vil bli bedt om å si/angi denne PIN-koden når du samhandler med slike enheter via Google Assistant.",
                             "info": "Med Google Assistant-integrasjonen for Home Assistant Cloud vil du kunne kontrollere alle dine Home Assistant-enheter via hvilken som helst Google Assistant-aktivert enhet.",
                             "info_state_reporting": "Hvis du aktiverer tilstandsrapportering, vil Home Assistant sende alle tilstandsendringer av utsatte enheter til Google. Dette lar deg alltid se de nyeste delene av Google-appen.",
-                            "manage_entities": "Administrer enheter",
+                            "manage_entities": "Håndtér entiteter",
                             "security_devices": "Sikkerhetsenheter",
-                            "sync_entities": "Synkroniser enheter til Google",
+                            "sync_entities": "Synkronisér entiteter til Google",
                             "title": "Google Assistant"
                         },
                         "integrations": "Integrasjoner",
@@ -985,8 +991,8 @@
                     "alexa": {
                         "banner": "Redigere hvilke entiteter som vises via dette grensesnittet er deaktivert fordi du har konfigurert entitetsfiltre i configuration.yaml.",
                         "expose": "Eksponer til Alexa",
-                        "exposed_entities": "Eksponerte enheter",
-                        "not_exposed_entities": "Ikke eksponerte enheter",
+                        "exposed_entities": "Eksponerte entiteter",
+                        "not_exposed_entities": "Ikke-eksponerte entiteter",
                         "title": "Alexa"
                     },
                     "caption": "Home Assistant Cloud",
@@ -1024,8 +1030,8 @@
                         "banner": "Redigere hvilke entiteter som vises via dette grensesnittet er deaktivert fordi du har konfigurert entitetsfiltre i configuration.yaml.",
                         "disable_2FA": "Deaktiver tofaktorautentisering",
                         "expose": "Eksponer til Google Assistant",
-                        "exposed_entities": "Eksponerte enheter",
-                        "not_exposed_entities": "Ikke eksponerte enheter",
+                        "exposed_entities": "Eksponerte entiteter",
+                        "not_exposed_entities": "Ikke-eksponerte entiteter",
                         "sync_to_google": "Synkroniserer endringer til Google.",
                         "title": "Google Assistant"
                     },
@@ -1160,7 +1166,7 @@
                     },
                     "automations": "Automasjoner",
                     "caption": "Enheter",
-                    "confirm_rename_entity_ids": "Vil du også endre navn på enhets-ID-en for entitetene dine?",
+                    "confirm_rename_entity_ids": "Vil du også endre navn på entitets-ID-en for entitetene dine?",
                     "data_table": {
                         "area": "Område",
                         "battery": "Batteri",
@@ -1172,7 +1178,7 @@
                     "description": "Administrer tilkoblede enheter",
                     "details": "Her er alle detaljer for enheten.",
                     "device_not_found": "Enhet ikke funnet",
-                    "entities": "Enheter",
+                    "entities": "Entiteter",
                     "info": "Enhetsinformasjon",
                     "unknown_error": "Ukjent feil",
                     "unnamed_device": "Enhet uten navn"
@@ -1196,13 +1202,13 @@
                         "header": "Entiteter",
                         "headers": {
                             "enabled": "Aktivert",
-                            "entity_id": "Enhet-ID",
+                            "entity_id": "Entitets-ID",
                             "integration": "Integrering",
                             "name": "Navn"
                         },
                         "integrations_page": "Integrasjonsside",
                         "introduction": "Home Assistant bygger opp et register over hver entitet den har sett som kan identifiseres unikt. Hver av disse entitetene vil ha en entitets-ID som er reservert kun til denne entiteten.",
-                        "introduction2": "Bruk entitetsregisteret for å overskrive navnet, endre enhets ID eller fjern oppføringen fra Home Assistant. Merk at fjerning av enhetsregisteroppføringer ikke fjerner enheten. For å gjøre det, følg linken under og fjern den fra integrasjonssiden.",
+                        "introduction2": "Bruk entitetsregisteret for å overskrive navnet, endre entitets-ID eller fjern oppføringen fra Home Assistant. Merk at fjerning av entitetsregisteroppføringer ikke fjerner entiteten. For å gjøre det, følg linken under og fjern den fra integrasjonssiden.",
                         "show_disabled": "Vis deaktiverte entiteter",
                         "unavailable": "(utilgjengelig)"
                     }
@@ -1247,6 +1253,7 @@
                     "configure": "Konfigurer",
                     "configured": "Konfigurert",
                     "description": "Administrer og konfigurér integrasjoner",
+                    "details": "Integrasjonsdetaljer",
                     "discovered": "Oppdaget",
                     "home_assistant_website": "Nettsted for Home Assistant",
                     "integration_not_found": "Integrasjon ikke funnet.",
@@ -1275,7 +1282,7 @@
                         "name": "Navn",
                         "name_error_msg": "Navn er påkrevd",
                         "new_person": "Ny person",
-                        "no_device_tracker_available_intro": "Når du har enheter som indikerer tilstedeværelsen av en person, vil du kunne tilordne dem til en person her. Du kan legge til den første enheten ved å legge til en integrering av tilstedeværelses gjenkjenning fra integrerings siden.",
+                        "no_device_tracker_available_intro": "Når du har enheter som indikerer en persons tilstedeværelse, vil du kunne tilordne dem til en person her. Du kan legge til den første enheten ved å legge til en integrering av tilstedeværelses gjenkjenning fra integrerings siden.",
                         "update": "Oppdater"
                     },
                     "introduction": "Her kan du definere hver person av interesse i Home Assistant.",
@@ -1298,9 +1305,9 @@
                             "add": "Legg til en entitet",
                             "delete": "Slett entitet",
                             "device_entities": "Hvis du legger til en entitet som tilhører en enhet, vil enheten også bli lagt til.",
-                            "header": "Enheter",
-                            "introduction": "Enheter som ikke tilhører en enhet, kan angis her.",
-                            "without_device": "Oppføringer uten enhet"
+                            "header": "Entiteter",
+                            "introduction": "Entiteter som ikke tilhører en enhet, kan angis her.",
+                            "without_device": "Entiteter uten enhet"
                         },
                         "introduction": "Bruk scener for å gjøre hjemmet ditt mer levende.",
                         "load_error_not_editable": "Bare scener i scener.yaml kan redigeres.",
@@ -1335,7 +1342,7 @@
                         "link_available_actions": "Finn ut mer om tilgjengelige handlinger.",
                         "load_error_not_editable": "Bare skript inne i skript.yaml kan redigeres.",
                         "sequence": "Sekvens",
-                        "sequence_sentence": "Handlingssekvensen til dette skriptet."
+                        "sequence_sentence": "Sekvensen av handlingene til dette skriptet."
                     },
                     "picker": {
                         "add_script": "Legg til skript",
@@ -1611,15 +1618,19 @@
                     "states": {
                         "alert_entity_field": "Entitet er et obligatorisk felt",
                         "attributes": "Attributter",
-                        "current_entities": "Gjeldende enheter",
+                        "copied": "Kopiert til utklippstavle",
+                        "copy_entity_attribute": "Kopier attributter",
+                        "copy_entity_id": "Kopier ID",
+                        "copy_entity_state": "Kopier tilstand",
+                        "current_entities": "Gjeldende entiteter",
                         "description1": "Angi representasjonen av en enhet i Home Assistant.",
                         "description2": "Dette vil ikke kommunisere med den faktiske enheten.",
                         "entity": "Entitet",
                         "filter_attributes": "Filtrer attributter",
-                        "filter_entities": "Filtrer enheter",
+                        "filter_entities": "Filtrér entiteter",
                         "filter_states": "Filtrer tilstander",
                         "more_info": "Mer info",
-                        "no_entities": "Ingen enheter",
+                        "no_entities": "Ingen entiteter",
                         "set_state": "Sett tilstand",
                         "state": "Tilstand",
                         "state_attributes": "Tilstandsattributter (YAML, valgfritt)",
@@ -1688,9 +1699,9 @@
                             "required": "Nødvendig"
                         },
                         "entities": {
-                            "name": "Enheter",
+                            "name": "Entiteter",
                             "show_header_toggle": "Vise topptekst veksling?",
-                            "toggle": "Aktiver/deaktiver enheter."
+                            "toggle": "Aktivér/deaktivér entiteter."
                         },
                         "entity-button": {
                             "name": "Entitetsknapp"
@@ -1711,7 +1722,7 @@
                             "aspect_ratio": "Størrelsesforholdet",
                             "camera_image": "Kameraentitet",
                             "camera_view": "Kameravisning",
-                            "entities": "Enheter",
+                            "entities": "Entiteter",
                             "entity": "Entitet",
                             "hold_action": "Hold nede for handling",
                             "hours_to_show": "Timer som skal vises",
@@ -1728,7 +1739,7 @@
                             "tap_action": "Trykk for handling",
                             "theme": "Tema",
                             "title": "Tittel",
-                            "unit": "Enhet",
+                            "unit": "Betegnelse",
                             "url": "Url"
                         },
                         "glance": {
@@ -1861,9 +1872,10 @@
                 "menu": {
                     "close": "Lukk",
                     "configure_ui": "Konfigurer brukergrensesnitt",
+                    "exit_edit_mode": "Avslutt UI redigeringsmodus",
                     "help": "Hjelp",
                     "refresh": "Oppdater",
-                    "unused_entities": "Ubrukte enheter"
+                    "unused_entities": "Ubrukte entiteter"
                 },
                 "reload_lovelace": "Laste Lovelace på nytt",
                 "unused_entities": {
@@ -1873,7 +1885,7 @@
                     "entity_id": "Entitets-ID",
                     "last_changed": "Sist endret",
                     "select_to_add": "Velg enhetene du vil legge til et kort, og klikk deretter på knappen Legg til kort.",
-                    "title": "Ubrukte enheter"
+                    "title": "Ubrukte entiteter"
                 },
                 "views": {
                     "confirm_delete": "Er du sikker på at du vil slette denne visningen?",
@@ -2148,7 +2160,7 @@
             },
             "shopping-list": {
                 "add_item": "Legg til",
-                "clear_completed": "Fjerning fullført",
+                "clear_completed": "Fjern fullførte",
                 "microphone_tip": "Aktivér mikrofonen øverst til høyre og si “Add candy to my shopping list”"
             }
         },

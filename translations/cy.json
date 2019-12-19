@@ -440,9 +440,11 @@
         },
         "dialogs": {
             "more_info_control": {
+                "dismiss": "Gwrthod deialog",
                 "script": {
                     "last_action": "Gweithrediad diwethaf"
                 },
+                "settings": "Gosodiadau endid",
                 "sun": {
                     "elevation": "Uchder",
                     "rising": "Cynyddu",
@@ -453,6 +455,7 @@
                 }
             },
             "more_info_settings": {
+                "back": "Mynd yn ôl",
                 "name": "Gwrthwneud Enw"
             },
             "voice_command": {
@@ -467,6 +470,9 @@
             "log_in": "Mewngofnodi",
             "password": "Cyfrinair",
             "remember": "Cofiwch"
+        },
+        "notification_drawer": {
+            "close": "Cau"
         },
         "panel": {
             "config": {
@@ -502,6 +508,7 @@
                             "header": "Camau gweithredu",
                             "introduction": "Y camau gweithredu yw'r hyn mae Home Assistant yn gwneud pan mae'r awtomeiddio yn cael ei sbarduno\n\n[Dysgwch mwy am weithred.](https://home-assistant.io/docs/automation/action/)",
                             "learn_more": "Dysgu mwy am gamau gweithredu",
+                            "name": "Gweithredu",
                             "type_select": "Math weithrediad",
                             "type": {
                                 "condition": {
@@ -577,6 +584,8 @@
                             "unsupported_condition": "Cyflwr heb gymorth: {condition}"
                         },
                         "default_name": "Awtomeiddiad Newydd",
+                        "edit_ui": "Golygu gyda UI",
+                        "edit_yaml": "Golygu fel YAML",
                         "introduction": "Defnyddiwch awtomeiddio i ddod â'ch cartref yn fyw",
                         "load_error_not_editable": "Dim ond awtomiadau yn 'automations. yaml' y gellir golygu.",
                         "load_error_unknown": "Gwall wrth lwytho awtomeiddad ( {err_no} ).",
@@ -809,6 +818,7 @@
                     "configure": "Ffurfweddu",
                     "configured": "Wedi'i ffurfweddu",
                     "description": "Rheoli dyfeisiau a gwasanaethau cysylltiedig",
+                    "details": "Manylion integreiddio",
                     "discovered": "Darganfuwyd",
                     "integration_not_found": "Heb ganfod integreiddiad",
                     "new": "Sefydlu integreiddiad newydd",
@@ -965,6 +975,10 @@
                         "title": "Gwasanaethau"
                     },
                     "states": {
+                        "copied": "Wedi copïo i'r clipfwrdd",
+                        "copy_entity_attribute": "Copïo priodoleddau",
+                        "copy_entity_id": "Copi ID",
+                        "copy_entity_state": "Copïo cyflwr",
                         "title": "Cyflerau"
                     },
                     "templates": {
@@ -1137,6 +1151,7 @@
                 "menu": {
                     "close": "Cau",
                     "configure_ui": "Ffurfweddu rhyngwyneb defnyddiwr",
+                    "exit_edit_mode": "Gadael modd golygu UI",
                     "help": "Help",
                     "refresh": "Adnewyddu",
                     "unused_entities": "Endidau heb ei ddefnyddio"
