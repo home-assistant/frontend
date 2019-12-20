@@ -14,16 +14,19 @@ import "../../../components/ha-card";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { HomeAssistant } from "../../../types";
 import { classMap } from "lit-html/directives/class-map";
-import { handleClick } from "../common/handle-click";
-import { longPress } from "../common/directives/long-press-directive";
 import { PictureCardConfig } from "./types";
-import { hasDoubleClick } from "../common/has-double-click";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { hasAction } from "../common/has-action";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { handleAction } from "../common/handle-action";
 
 @customElement("hui-picture-card")
 export class HuiPictureCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(/* webpackChunkName: "hui-picture-card-editor" */ "../editor/config-elements/hui-picture-card-editor");
+    await import(
+      /* webpackChunkName: "hui-picture-card-editor" */ "../editor/config-elements/hui-picture-card-editor"
+    );
     return document.createElement("hui-picture-card-editor");
   }
   public static getStubConfig(): object {
@@ -78,11 +81,10 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
-        @ha-click=${this._handleClick}
-        @ha-hold=${this._handleHold}
-        @ha-dblclick=${this._handleDblClick}
-        .longPress=${longPress({
-          hasDoubleClick: hasDoubleClick(this._config!.double_tap_action),
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config!.hold_action),
+          hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
         class="${classMap({
           clickable: Boolean(
@@ -112,16 +114,8 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  private _handleClick() {
-    handleClick(this, this.hass!, this._config!, false, false);
-  }
-
-  private _handleHold() {
-    handleClick(this, this.hass!, this._config!, true, false);
-  }
-
-  private _handleDblClick() {
-    handleClick(this, this.hass!, this._config!, false, true);
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 }
 

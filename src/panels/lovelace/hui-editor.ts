@@ -157,7 +157,11 @@ class LovelaceFullConfigEditor extends LitElement {
   private _closeEditor() {
     if (this._changed) {
       if (
-        !confirm("You have unsaved changes, are you sure you want to exit?")
+        !confirm(
+          this.hass.localize(
+            "ui.panel.lovelace.editor.raw_editor.confirm_unsaved_changes"
+          )
+        )
       ) {
         return;
       }
@@ -174,7 +178,9 @@ class LovelaceFullConfigEditor extends LitElement {
     if (this.yamlEditor.hasComments) {
       if (
         !confirm(
-          "Your config contains comment(s), these will not be saved. Do you want to continue?"
+          this.hass.localize(
+            "ui.panel.lovelace.editor.raw_editor.confirm_unsaved_comments"
+          )
         )
       ) {
         return;
@@ -185,20 +191,38 @@ class LovelaceFullConfigEditor extends LitElement {
     try {
       value = safeLoad(this.yamlEditor.value);
     } catch (err) {
-      alert(`Unable to parse YAML: ${err}`);
+      alert(
+        this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.error_parse_yaml",
+          "error",
+          err
+        )
+      );
       this._saving = false;
       return;
     }
     try {
       value = lovelaceStruct(value);
     } catch (err) {
-      alert(`Your config is not valid: ${err}`);
+      alert(
+        this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.error_invalid_config",
+          "error",
+          err
+        )
+      );
       return;
     }
     try {
       await this.lovelace!.saveConfig(value);
     } catch (err) {
-      alert(`Unable to save YAML: ${err}`);
+      alert(
+        this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.error_save_yaml",
+          "error",
+          err
+        )
+      );
     }
     this._generation = this.yamlEditor
       .codemirror!.getDoc()

@@ -1,7 +1,7 @@
 import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
-import "@vaadin/vaadin-combo-box/vaadin-combo-box-light";
+import "@vaadin/vaadin-combo-box/theme/material/vaadin-combo-box-light";
 import "@polymer/paper-listbox/paper-listbox";
 import memoizeOne from "memoize-one";
 import {
@@ -21,6 +21,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
+  computeDeviceName,
 } from "../../data/device_registry";
 import { compare } from "../../common/string/compare";
 import { PolymerChangedEvent } from "../../polymer-types";
@@ -33,7 +34,7 @@ import {
   EntityRegistryEntry,
   subscribeEntityRegistry,
 } from "../../data/entity_registry";
-import { computeStateName } from "../../common/entity/compute_state_name";
+import { computeDomain } from "../../common/entity/compute_domain";
 
 interface Device {
   name: string;
@@ -64,20 +65,45 @@ const rowRenderer = (root: HTMLElement, _owner, model: { item: Device }) => {
 };
 
 @customElement("ha-device-picker")
-class HaDevicePicker extends SubscribeMixin(LitElement) {
+export class HaDevicePicker extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
   @property() public label?: string;
   @property() public value?: string;
   @property() public devices?: DeviceRegistryEntry[];
   @property() public areas?: AreaRegistryEntry[];
   @property() public entities?: EntityRegistryEntry[];
-  @property({ type: Boolean }) private _opened?: boolean;
+  /**
+   * Show only devices with entities from specific domains.
+   * @type {Array}
+   * @attr include-domains
+   */
+  @property({ type: Array, attribute: "include-domains" })
+  public includeDomains?: string[];
+  /**
+   * Show no devices with entities of these domains.
+   * @type {Array}
+   * @attr exclude-domains
+   */
+  @property({ type: Array, attribute: "exclude-domains" })
+  public excludeDomains?: string[];
+  /**
+   * Show only deviced with entities of these device classes.
+   * @type {Array}
+   * @attr include-device-classes
+   */
+  @property({ type: Array, attribute: "include-device-classes" })
+  public includeDeviceClasses?: string[];
+  @property({ type: Boolean })
+  private _opened?: boolean;
 
   private _getDevices = memoizeOne(
     (
       devices: DeviceRegistryEntry[],
       areas: AreaRegistryEntry[],
-      entities: EntityRegistryEntry[]
+      entities: EntityRegistryEntry[],
+      includeDomains: this["includeDomains"],
+      excludeDomains: this["excludeDomains"],
+      includeDeviceClasses: this["includeDeviceClasses"]
     ): Device[] => {
       if (!devices.length) {
         return [];
@@ -99,14 +125,60 @@ class HaDevicePicker extends SubscribeMixin(LitElement) {
         areaLookup[area.area_id] = area;
       }
 
-      const outputDevices = devices.map((device) => {
+      let inputDevices = [...devices];
+
+      if (includeDomains) {
+        inputDevices = inputDevices.filter((device) => {
+          const devEntities = deviceEntityLookup[device.id];
+          if (!devEntities || !devEntities.length) {
+            return false;
+          }
+          return deviceEntityLookup[device.id].some((entity) =>
+            includeDomains.includes(computeDomain(entity.entity_id))
+          );
+        });
+      }
+
+      if (excludeDomains) {
+        inputDevices = inputDevices.filter((device) => {
+          const devEntities = deviceEntityLookup[device.id];
+          if (!devEntities || !devEntities.length) {
+            return true;
+          }
+          return entities.every(
+            (entity) =>
+              !excludeDomains.includes(computeDomain(entity.entity_id))
+          );
+        });
+      }
+
+      if (includeDeviceClasses) {
+        inputDevices = inputDevices.filter((device) => {
+          const devEntities = deviceEntityLookup[device.id];
+          if (!devEntities || !devEntities.length) {
+            return false;
+          }
+          return deviceEntityLookup[device.id].some((entity) => {
+            const stateObj = this.hass.states[entity.entity_id];
+            if (!stateObj) {
+              return false;
+            }
+            return (
+              stateObj.attributes.device_class &&
+              includeDeviceClasses.includes(stateObj.attributes.device_class)
+            );
+          });
+        });
+      }
+
+      const outputDevices = inputDevices.map((device) => {
         return {
           id: device.id,
-          name:
-            device.name_by_user ||
-            device.name ||
-            this._fallbackDeviceName(device.id, deviceEntityLookup) ||
-            "No name",
+          name: computeDeviceName(
+            device,
+            this.hass,
+            deviceEntityLookup[device.id]
+          ),
           area: device.area_id ? areaLookup[device.area_id].name : "No area",
         };
       });
@@ -135,7 +207,14 @@ class HaDevicePicker extends SubscribeMixin(LitElement) {
     if (!this.devices || !this.areas || !this.entities) {
       return;
     }
-    const devices = this._getDevices(this.devices, this.areas, this.entities);
+    const devices = this._getDevices(
+      this.devices,
+      this.areas,
+      this.entities,
+      this.includeDomains,
+      this.excludeDomains,
+      this.includeDeviceClasses
+    );
     return html`
       <vaadin-combo-box-light
         item-value-path="id"
@@ -148,7 +227,9 @@ class HaDevicePicker extends SubscribeMixin(LitElement) {
         @value-changed=${this._deviceChanged}
       >
         <paper-input
-          .label=${this.label}
+          .label=${this.label === undefined && this.hass
+            ? this.hass.localize("ui.components.device-picker.device")
+            : this.label}
           class="input"
           autocapitalize="none"
           autocomplete="off"
@@ -164,6 +245,7 @@ class HaDevicePicker extends SubscribeMixin(LitElement) {
                   slot="suffix"
                   class="clear-button"
                   icon="hass:close"
+                  @click=${this._clearValue}
                   no-ripple
                 >
                   Clear
@@ -189,6 +271,11 @@ class HaDevicePicker extends SubscribeMixin(LitElement) {
     `;
   }
 
+  private _clearValue(ev: Event) {
+    ev.stopPropagation();
+    this._setValue("");
+  }
+
   private get _value() {
     return this.value || "";
   }
@@ -201,26 +288,16 @@ class HaDevicePicker extends SubscribeMixin(LitElement) {
     const newValue = ev.detail.value;
 
     if (newValue !== this._value) {
-      this.value = newValue;
-      setTimeout(() => {
-        fireEvent(this, "value-changed", { value: newValue });
-        fireEvent(this, "change");
-      }, 0);
+      this._setValue(newValue);
     }
   }
 
-  private _fallbackDeviceName(
-    deviceId: string,
-    deviceEntityLookup: DeviceEntityLookup
-  ): string | undefined {
-    for (const entity of deviceEntityLookup[deviceId] || []) {
-      const stateObj = this.hass.states[entity.entity_id];
-      if (stateObj) {
-        return computeStateName(stateObj);
-      }
-    }
-
-    return undefined;
+  private _setValue(value: string) {
+    this.value = value;
+    setTimeout(() => {
+      fireEvent(this, "value-changed", { value });
+      fireEvent(this, "change");
+    }, 0);
   }
 
   static get styles(): CSSResult {

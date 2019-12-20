@@ -18,13 +18,15 @@ import {
   DataTableRowData,
 } from "../../../components/data-table/ha-data-table";
 // tslint:disable-next-line
-import { DeviceRegistryEntry } from "../../../data/device_registry";
+import {
+  DeviceRegistryEntry,
+  computeDeviceName,
+} from "../../../data/device_registry";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import { AreaRegistryEntry } from "../../../data/area_registry";
 import { navigate } from "../../../common/navigate";
 import { LocalizeFunc } from "../../../common/translations/localize";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 
 export interface DeviceRowData extends DeviceRegistryEntry {
   device?: DeviceRowData;
@@ -99,11 +101,11 @@ export class HaDevicesDataTable extends LitElement {
       outputDevices = outputDevices.map((device) => {
         return {
           ...device,
-          name:
-            device.name_by_user ||
-            device.name ||
-            this._fallbackDeviceName(device.id, deviceEntityLookup) ||
-            "No name",
+          name: computeDeviceName(
+            device,
+            this.hass,
+            deviceEntityLookup[device.id]
+          ),
           model: device.model || "<unknown>",
           manufacturer: device.manufacturer || "<unknown>",
           area: device.area_id ? areaLookup[device.area_id].name : "No area",
@@ -133,7 +135,6 @@ export class HaDevicesDataTable extends LitElement {
             name: {
               title: "Device",
               sortable: true,
-              filterKey: "name",
               filterable: true,
               direction: "asc",
               template: (name, device: DataTableRowData) => {
@@ -159,33 +160,45 @@ export class HaDevicesDataTable extends LitElement {
           }
         : {
             name: {
-              title: "Device",
+              title: this.hass.localize(
+                "ui.panel.config.devices.data_table.device"
+              ),
               sortable: true,
               filterable: true,
               direction: "asc",
             },
             manufacturer: {
-              title: "Manufacturer",
+              title: this.hass.localize(
+                "ui.panel.config.devices.data_table.manufacturer"
+              ),
               sortable: true,
               filterable: true,
             },
             model: {
-              title: "Model",
+              title: this.hass.localize(
+                "ui.panel.config.devices.data_table.model"
+              ),
               sortable: true,
               filterable: true,
             },
             area: {
-              title: "Area",
+              title: this.hass.localize(
+                "ui.panel.config.devices.data_table.area"
+              ),
               sortable: true,
               filterable: true,
             },
             integration: {
-              title: "Integration",
+              title: this.hass.localize(
+                "ui.panel.config.devices.data_table.integration"
+              ),
               sortable: true,
               filterable: true,
             },
             battery_entity: {
-              title: "Battery",
+              title: this.hass.localize(
+                "ui.panel.config.devices.data_table.battery"
+              ),
               sortable: true,
               type: "numeric",
               template: (batteryEntity: string) => {
@@ -236,20 +249,6 @@ export class HaDevicesDataTable extends LitElement {
     );
 
     return batteryEntity ? batteryEntity.entity_id : undefined;
-  }
-
-  private _fallbackDeviceName(
-    deviceId: string,
-    deviceEntityLookup: DeviceEntityLookup
-  ): string | undefined {
-    for (const entity of deviceEntityLookup[deviceId] || []) {
-      const stateObj = this.hass.states[entity.entity_id];
-      if (stateObj) {
-        return computeStateName(stateObj);
-      }
-    }
-
-    return undefined;
   }
 
   private _handleRowClicked(ev: CustomEvent) {

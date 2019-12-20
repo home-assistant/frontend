@@ -1,15 +1,45 @@
 {
+    "domain": {
+        "person": "Особа",
+        "zwave": "Z-Wave"
+    },
     "panel": {
+        "calendar": "Kalendar",
         "config": "Конфигурација",
-        "states": "Преглед",
-        "map": "Мапа",
-        "logbook": "Дневник",
         "history": "Историја",
+        "logbook": "Дневник",
         "mailbox": "Поштанско сандуче",
+        "map": "Мапа",
         "shopping_list": "Листа за куповину",
-        "calendar": "Kalendar"
+        "states": "Преглед"
+    },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "auto": "Аутоматски",
+                "off": "Искључен",
+                "on": "Укључен"
+            }
+        }
+    },
+    "state_badge": {
+        "alarm_control_panel": {
+            "arming": "Aktiviranje",
+            "disarming": "Deaktiviraj"
+        },
+        "default": {
+            "entity_not_found": "Вредност није пронађена",
+            "error": "Грешка"
+        },
+        "person": {
+            "home": "Кући",
+            "not_home": "Одсутан"
+        }
     },
     "state": {
+        "climate": {
+            "manual": "Упутство"
+        },
         "sun": {
             "above_horizon": "Iznad horizonta",
             "below_horizon": "Ispod horizonta"
@@ -18,80 +48,51 @@
             "off": "Isključen",
             "on": "Uključen"
         },
+        "timer": {
+            "active": "укључен",
+            "idle": "неактна чекању"
+        },
         "zwave": {
             "default": {
                 "ready": "Spreman"
             },
             "query_stage": {
-                "initializing": " ( {query_stage} )",
-                "dead": " ({query_stage})"
+                "dead": " ({query_stage})",
+                "initializing": " ( {query_stage} )"
             }
-        },
-        "climate": {
-            "manual": "Упутство"
-        },
-        "timer": {
-            "active": "укључен",
-            "idle": "неактна чекању"
-        }
-    },
-    "state_badge": {
-        "alarm_control_panel": {
-            "arming": "Aktiviranje",
-            "disarming": "Deaktiviraj"
-        },
-        "person": {
-            "home": "Кући",
-            "not_home": "Одсутан"
-        },
-        "default": {
-            "error": "Грешка",
-            "entity_not_found": "Вредност није пронађена"
         }
     },
     "ui": {
-        "sidebar": {
-            "log_out": "Одјавити се"
+        "card": {
+            "lock": {
+                "lock": "Zaključaj",
+                "unlock": "Otključaj"
+            },
+            "media_player": {
+                "sound_mode": "Režim zvuka",
+                "source": "Izvor"
+            }
+        },
+        "dialogs": {
+            "more_info_settings": {
+                "name": "Naziv",
+                "save": "Sačuvaj"
+            }
         },
         "panel": {
-            "developer-tools": {
-                "tabs": {
-                    "mqtt": {
-                        "title": "MQTT"
-                    }
-                }
-            },
             "config": {
-                "zwave": {
-                    "caption": "Z-Wave",
-                    "node_config": {
-                        "set_config_parameter": "Подесите параметар Цонфиг"
-                    }
-                },
-                "cloud": {
-                    "caption": "Home Assistant Cloud"
-                },
-                "users": {
-                    "editor": {
-                        "caption": "Прикажи корисника"
-                    },
-                    "add_user": {
-                        "caption": "Додај корисника",
-                        "name": "Име",
-                        "username": "Корисничко име",
-                        "password": "Лозинка",
-                        "create": "Направите"
-                    }
-                },
                 "automation": {
-                    "picker": {
-                        "learn_more": "Сазнајте више о аутоматизацијама"
-                    },
                     "editor": {
                         "triggers": {
                             "learn_more": "Сазнајте више о окидачима"
                         }
+                    },
+                    "picker": {
+                        "learn_more": "Сазнајте више о аутоматизацијама"
                     }
+                },
+                "cloud": {
+                    "caption": "Home Assistant Cloud"
                 },
                 "integrations": {
                     "config_flow": {
@@ -100,9 +101,51 @@
                             "open_site": "Отворите сајт"
                         }
                     }
+                },
+                "users": {
+                    "add_user": {
+                        "caption": "Додај корисника",
+                        "create": "Направите",
+                        "name": "Име",
+                        "password": "Лозинка",
+                        "username": "Корисничко име"
+                    },
+                    "editor": {
+                        "caption": "Прикажи корисника"
+                    }
+                },
+                "zwave": {
+                    "caption": "Z-Wave",
+                    "node_config": {
+                        "set_config_parameter": "Подесите параметар Цонфиг"
+                    }
+                }
+            },
+            "developer-tools": {
+                "tabs": {
+                    "mqtt": {
+                        "title": "MQTT"
+                    },
+                    "states": {
+                        "copied": "копирано у међуспремник"
+                    }
+                }
+            },
+            "lovelace": {
+                "cards": {
+                    "picture-elements": {
+                        "hold": "Придржи:",
+                        "more_info": "Покажи више информација: {name}",
+                        "navigate_to": "Отиђите на {location}",
+                        "tap": "Додирни",
+                        "toggle": "Укључи {name}"
+                    }
                 }
             },
             "page-onboarding": {
+                "integration": {
+                    "finish": "Крај"
+                },
                 "user": {
                     "data": {
                         "password_confirm": "Потврда лозинке"
@@ -110,51 +153,11 @@
                     "error": {
                         "password_not_match": "Лозинке се не подударају"
                     }
-                },
-                "integration": {
-                    "finish": "Крај"
-                }
-            },
-            "lovelace": {
-                "cards": {
-                    "picture-elements": {
-                        "hold": "Придржи:",
-                        "tap": "Додирни",
-                        "navigate_to": "Отиђите на {location}",
-                        "toggle": "Укључи {name}",
-                        "more_info": "Покажи више информација: {name}"
-                    }
                 }
             }
         },
-        "card": {
-            "lock": {
-                "lock": "Zaključaj",
-                "unlock": "Otključaj"
-            },
-            "media_player": {
-                "source": "Izvor",
-                "sound_mode": "Režim zvuka"
-            }
-        },
-        "dialogs": {
-            "more_info_settings": {
-                "save": "Sačuvaj",
-                "name": "Naziv"
-            }
-        }
-    },
-    "domain": {
-        "zwave": "Z-Wave",
-        "person": "Особа"
-    },
-    "state_attributes": {
-        "climate": {
-            "fan_mode": {
-                "off": "Искључен",
-                "on": "Укључен",
-                "auto": "Аутоматски"
-            }
+        "sidebar": {
+            "log_out": "Одјавити се"
         }
     }
 }

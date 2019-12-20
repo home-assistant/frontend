@@ -22,7 +22,7 @@ import scrollToTarget from "../../common/dom/scroll-to-target";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant, Route } from "../../types";
 import { navigate } from "../../common/navigate";
-import isComponentLoaded from "../../common/config/is_component_loaded";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
 
 @customElement("ha-panel-developer-tools")
 class PanelDeveloperTools extends LitElement {

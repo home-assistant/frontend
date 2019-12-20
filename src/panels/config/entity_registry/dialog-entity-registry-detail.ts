@@ -130,7 +130,9 @@ class DialogEntityRegistryDetail extends LitElement {
                     ${this.hass.localize(
                       "ui.panel.config.entity_registry.editor.enabled_description"
                     )}
-                    <br />Note: this might not work yet with all integrations.
+                    <br />${this.hass.localize(
+                      "ui.panel.config.entity_registry.editor.note"
+                    )}
                   </div>
                 </div>
               </ha-switch>
@@ -224,6 +226,9 @@ class DialogEntityRegistryDetail extends LitElement {
     return [
       haStyleDialog,
       css`
+        :host {
+          --paper-font-title_-_white-space: normal;
+        }
         ha-paper-dialog {
           min-width: 400px;
           max-width: 450px;

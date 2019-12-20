@@ -78,13 +78,23 @@ export class HaPanelCustom extends UpdatingElement {
       !["localhost", "127.0.0.1", location.hostname].includes(tempA.hostname)
     ) {
       if (
-        !confirm(`Do you trust the external panel "${config.name}" at "${
-          tempA.href
-        }"?
+        !confirm(
+          `${this.hass.localize(
+            "ui.panel.custom.external_panel.question_trust",
+            "name",
+            config.name,
+            "link",
+            tempA.href
+          )}
 
-It will have access to all data in Home Assistant.
+           ${this.hass.localize(
+             "ui.panel.custom.external_panel.complete_access"
+           )}
 
-(Check docs for the panel_custom component to hide this message)`)
+           (${this.hass.localize(
+             "ui.panel.custom.external_panel.hide_message"
+           )})`
+        )
       ) {
         return;
       }
@@ -119,6 +129,7 @@ It will have access to all data in Home Assistant.
         width: 100%;
         height: 100%;
         display: block;
+        background-color: var(--primary-background-color);
       }
     </style>
     <iframe></iframe>

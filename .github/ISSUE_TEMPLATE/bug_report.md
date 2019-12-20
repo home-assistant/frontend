@@ -41,7 +41,32 @@ Provide details about what browser (and version) you are seeing the issue in. An
 **Description of problem:**
 
 <!--
-Explain what the issue is, and how things should look/behave. If possible provide a screenshot with a description.
+Explain what the issue is, and what is the current behaviour. If possible provide a screenshot with a description.
+-->
+
+**Expected behaviour:**
+
+<!--
+Explain how things should look/behave. If possible provide a screenshot with a description.
+-->
+
+**Relevant config:**
+
+<!--
+Give the config of both the integration that is used, the Lovelace config, scene, automation or otherwise relevant configuration.
+-->
+
+**Steps to reproduce this problem:**
+
+<!--
+Sum up all steps that are necesarry to reproduce this bug.
+For example:
+1. Add a climate integration
+2. Navigate to Lovelace
+3. Click more info of the climate entity
+4. Set the hvac action to heat
+5. Set the temperature higher than the current temperature
+6. Set the hvac action to cool
 -->
 
 **Javascript errors shown in the web inspector (if applicable):**

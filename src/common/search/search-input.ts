@@ -16,6 +16,10 @@ import "@material/mwc-button";
 class SearchInput extends LitElement {
   @property() private filter?: string;
 
+  public focus() {
+    this.shadowRoot!.querySelector("paper-input")!.focus();
+  }
+
   protected render(): TemplateResult | void {
     return html`
       <div class="search-container">

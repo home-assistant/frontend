@@ -9,7 +9,7 @@ import "../../../resources/ha-style";
 
 import "../ha-config-section";
 
-import isComponentLoaded from "../../../common/config/is_component_loaded";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import LocalizeMixin from "../../../mixins/localize-mixin";
 
 /*
@@ -107,35 +107,47 @@ class HaConfigSectionServerControl extends LocalizeMixin(PolymerElement) {
                 service="reload_core_config"
                 >[[localize('ui.panel.config.server_control.section.reloading.core')]]
               </ha-call-service-button>
-              <ha-call-service-button
-                hass="[[hass]]"
-                domain="group"
-                service="reload"
-                hidden$="[[!groupLoaded(hass)]]"
-                >[[localize('ui.panel.config.server_control.section.reloading.group')]]
-              </ha-call-service-button>
-              <ha-call-service-button
-                hass="[[hass]]"
-                domain="automation"
-                service="reload"
-                hidden$="[[!automationLoaded(hass)]]"
-                >[[localize('ui.panel.config.server_control.section.reloading.automation')]]
-              </ha-call-service-button>
-              <ha-call-service-button
-                hass="[[hass]]"
-                domain="script"
-                service="reload"
-                hidden$="[[!scriptLoaded(hass)]]"
-                >[[localize('ui.panel.config.server_control.section.reloading.script')]]
-              </ha-call-service-button>
-              <ha-call-service-button
-                hass="[[hass]]"
-                domain="scene"
-                service="reload"
-                hidden$="[[!sceneLoaded(hass)]]"
-                >[[localize('ui.panel.config.server_control.section.reloading.scene')]]
-              </ha-call-service-button>
             </div>
+            <template is="dom-if" if="[[groupLoaded(hass)]]">
+              <div class="card-actions">
+                <ha-call-service-button
+                  hass="[[hass]]"
+                  domain="group"
+                  service="reload"
+                  >[[localize('ui.panel.config.server_control.section.reloading.group')]]
+                </ha-call-service-button>
+              </div>
+            </template>
+            <template is="dom-if" if="[[automationLoaded(hass)]]">
+              <div class="card-actions">
+                <ha-call-service-button
+                  hass="[[hass]]"
+                  domain="automation"
+                  service="reload"
+                  >[[localize('ui.panel.config.server_control.section.reloading.automation')]]
+                </ha-call-service-button>
+              </div>
+            </template>
+            <template is="dom-if" if="[[scriptLoaded(hass)]]">
+              <div class="card-actions">
+                <ha-call-service-button
+                  hass="[[hass]]"
+                  domain="script"
+                  service="reload"
+                  >[[localize('ui.panel.config.server_control.section.reloading.script')]]
+                </ha-call-service-button>
+              </div>
+            </template>
+            <template is="dom-if" if="[[sceneLoaded(hass)]]">
+              <div class="card-actions">
+                <ha-call-service-button
+                  hass="[[hass]]"
+                  domain="scene"
+                  service="reload"
+                  >[[localize('ui.panel.config.server_control.section.reloading.scene')]]
+                </ha-call-service-button>
+              </div>
+            </template>
           </ha-card>
         </template>
         <ha-card

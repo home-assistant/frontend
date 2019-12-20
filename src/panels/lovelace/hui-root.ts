@@ -24,7 +24,6 @@ import "@polymer/paper-tabs/paper-tabs";
 import scrollToTarget from "../../common/dom/scroll-to-target";
 
 import "../../layouts/ha-app-layout";
-import "../../components/ha-start-voice-button";
 import "../../components/ha-paper-icon-button-arrow-next";
 import "../../components/ha-paper-icon-button-arrow-prev";
 import "../../components/ha-icon";
@@ -49,9 +48,12 @@ import { afterNextRender } from "../../common/util/render-status";
 import { haStyle } from "../../resources/styles";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { loadLovelaceResources } from "./common/load-resources";
+import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
+import { isComponentLoaded } from "../../common/config/is_component_loaded";
+import memoizeOne from "memoize-one";
 
 class HUIRoot extends LitElement {
-  @property() public hass?: HomeAssistant;
+  @property() public hass!: HomeAssistant;
   @property() public lovelace?: Lovelace;
   @property() public columns?: number;
   @property() public narrow?: boolean;
@@ -61,6 +63,10 @@ class HUIRoot extends LitElement {
   private _viewCache?: { [viewId: string]: HUIView };
 
   private _debouncedConfigChanged: () => void;
+
+  private _conversation = memoizeOne((_components) =>
+    isComponentLoaded(this.hass, "conversation")
+  );
 
   constructor() {
     super();
@@ -87,6 +93,12 @@ class HUIRoot extends LitElement {
             ? html`
                 <app-toolbar class="edit-mode">
                   <paper-icon-button
+                    aria-label="${this.hass!.localize(
+                      "ui.panel.lovelace.menu.exit_edit_mode"
+                    )}"
+                    title="${this.hass!.localize(
+                      "ui.panel.lovelace.menu.close"
+                    )}"
                     icon="hass:close"
                     @click="${this._editModeDisable}"
                   ></paper-icon-button>
@@ -94,6 +106,12 @@ class HUIRoot extends LitElement {
                     ${this.config.title ||
                       this.hass!.localize("ui.panel.lovelace.editor.header")}
                     <paper-icon-button
+                      aria-label="${this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_lovelace.edit_title"
+                      )}"
+                      title="${this.hass!.localize(
+                        "ui.panel.lovelace.editor.edit_lovelace.edit_title"
+                      )}"
                       icon="hass:pencil"
                       class="edit-icon"
                       @click="${this._editLovelace}"
@@ -101,7 +119,9 @@ class HUIRoot extends LitElement {
                   </div>
                   <paper-icon-button
                     icon="hass:help-circle"
-                    title="Help"
+                    title="${this.hass!.localize(
+                      "ui.panel.lovelace.menu.help"
+                    )}"
                     @click="${this._handleHelp}"
                   ></paper-icon-button>
                   <paper-menu-button
@@ -113,6 +133,9 @@ class HUIRoot extends LitElement {
                       aria-label=${this.hass!.localize(
                         "ui.panel.lovelace.editor.menu.open"
                       )}
+                      title="${this.hass!.localize(
+                        "ui.panel.lovelace.editor.menu.open"
+                      )}"
                       icon="hass:dots-vertical"
                       slot="dropdown-trigger"
                     ></paper-icon-button>
@@ -125,12 +148,12 @@ class HUIRoot extends LitElement {
                         : html`
                             <paper-item
                               aria-label=${this.hass!.localize(
-                                "ui.panel.lovelace.menu.unused_entities"
+                                "ui.panel.lovelace.unused_entities.title"
                               )}
                               @tap="${this._handleUnusedEntities}"
                             >
                               ${this.hass!.localize(
-                                "ui.panel.lovelace.menu.unused_entities"
+                                "ui.panel.lovelace.unused_entities.title"
                               )}
                             </paper-item>
                           `}
@@ -150,15 +173,27 @@ class HUIRoot extends LitElement {
                     .narrow=${this.narrow}
                   ></ha-menu-button>
                   <div main-title>${this.config.title || "Home Assistant"}</div>
-                  <ha-start-voice-button
-                    .hass="${this.hass}"
-                  ></ha-start-voice-button>
+                  ${this._conversation(this.hass.config.components)
+                    ? html`
+                        <paper-icon-button
+                          aria-label="Start conversation"
+                          icon="hass:microphone"
+                          @click=${this._showVoiceCommandDialog}
+                        ></paper-icon-button>
+                      `
+                    : ""}
                   <paper-menu-button
                     no-animations
                     horizontal-align="right"
                     horizontal-offset="-5"
                   >
                     <paper-icon-button
+                      aria-label=${this.hass!.localize(
+                        "ui.panel.lovelace.editor.menu.open"
+                      )}
+                      title="${this.hass!.localize(
+                        "ui.panel.lovelace.editor.menu.open"
+                      )}"
                       icon="hass:dots-vertical"
                       slot="dropdown-trigger"
                     ></paper-icon-button>
@@ -180,12 +215,12 @@ class HUIRoot extends LitElement {
                             </paper-item>
                             <paper-item
                               aria-label=${this.hass!.localize(
-                                "ui.panel.lovelace.menu.unused_entities"
+                                "ui.panel.lovelace.unused_entities.title"
                               )}
                               @tap="${this._handleUnusedEntities}"
                             >
                               ${this.hass!.localize(
-                                "ui.panel.lovelace.menu.unused_entities"
+                                "ui.panel.lovelace.unused_entities.title"
                               )}
                             </paper-item>
                           `
@@ -247,7 +282,9 @@ class HUIRoot extends LitElement {
                           ${this._editMode
                             ? html`
                                 <ha-paper-icon-button-arrow-prev
-                                  title="Move view left"
+                                  title="${this.hass!.localize(
+                                    "ui.panel.lovelace.editor.edit_view.move_left"
+                                  )}"
                                   class="edit-icon view"
                                   @click="${this._moveViewLeft}"
                                   ?disabled="${this._curView === 0}"
@@ -265,13 +302,17 @@ class HUIRoot extends LitElement {
                           ${this._editMode
                             ? html`
                                 <ha-icon
-                                  title="Edit view"
+                                  title="${this.hass!.localize(
+                                    "ui.panel.lovelace.editor.edit_view.edit"
+                                  )}"
                                   class="edit-icon view"
                                   icon="hass:pencil"
                                   @click="${this._editView}"
                                 ></ha-icon>
                                 <ha-paper-icon-button-arrow-next
-                                  title="Move view right"
+                                  title="${this.hass!.localize(
+                                    "ui.panel.lovelace.editor.edit_view.move_right"
+                                  )}"
                                   class="edit-icon view"
                                   @click="${this._moveViewRight}"
                                   ?disabled="${(this._curView! as number) +
@@ -529,6 +570,10 @@ class HUIRoot extends LitElement {
     ev.target.selected = null;
   }
 
+  private _showVoiceCommandDialog(): void {
+    showVoiceCommandDialog(this);
+  }
+
   private _handleHelp(): void {
     window.open("https://www.home-assistant.io/lovelace/", "_blank");
   }
@@ -617,20 +662,20 @@ class HUIRoot extends LitElement {
     if (viewIndex === "hass-unused-entities") {
       const unusedEntities = document.createElement("hui-unused-entities");
       // Wait for promise to resolve so that the element has been upgraded.
-      import(/* webpackChunkName: "hui-unused-entities" */ "./editor/unused-entities/hui-unused-entities").then(
-        () => {
-          unusedEntities.hass = this.hass!;
-          unusedEntities.lovelace = this.lovelace!;
-          unusedEntities.narrow = this.narrow;
-        }
-      );
+      import(
+        /* webpackChunkName: "hui-unused-entities" */ "./editor/unused-entities/hui-unused-entities"
+      ).then(() => {
+        unusedEntities.hass = this.hass!;
+        unusedEntities.lovelace = this.lovelace!;
+        unusedEntities.narrow = this.narrow;
+      });
       if (this.config.background) {
         unusedEntities.style.setProperty(
           "--lovelace-background",
           this.config.background
         );
       }
-      root.append(unusedEntities);
+      root.appendChild(unusedEntities);
       return;
     }
 
@@ -665,7 +710,7 @@ class HUIRoot extends LitElement {
       view.style.setProperty("--lovelace-background", configBackground);
     }
 
-    root.append(view);
+    root.appendChild(view);
   }
 }
 

@@ -6,7 +6,9 @@ const JS_CACHE = {};
 export const loadCustomPanel = (panelConfig): Promise<unknown> => {
   if (panelConfig.html_url) {
     const toLoad = [
-      import(/* webpackChunkName: "import-href-polyfill" */ "../../resources/html-import/import-href"),
+      import(
+        /* webpackChunkName: "import-href-polyfill" */ "../../resources/html-import/import-href"
+      ),
     ];
 
     if (!panelConfig.embed_iframe) {

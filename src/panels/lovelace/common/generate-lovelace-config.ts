@@ -287,9 +287,10 @@ const generateViewConfig = (
   splitted.groups.forEach((groupEntity) => {
     cards = cards.concat(
       computeCards(
-        groupEntity.attributes.entity_id.map(
-          (entityId): [string, HassEntity] => [entityId, entities[entityId]]
-        ),
+        groupEntity.attributes.entity_id.map((entityId): [
+          string,
+          HassEntity
+        ] => [entityId, entities[entityId]]),
         {
           title: computeStateName(groupEntity),
           show_header_toggle: groupEntity.attributes.control !== "hidden",
@@ -303,9 +304,10 @@ const generateViewConfig = (
     .forEach((domain) => {
       cards = cards.concat(
         computeCards(
-          ungroupedEntitites[domain].map(
-            (entityId): [string, HassEntity] => [entityId, entities[entityId]]
-          ),
+          ungroupedEntitites[domain].map((entityId): [string, HassEntity] => [
+            entityId,
+            entities[entityId],
+          ]),
           {
             title: localize(`domain.${domain}`),
           }
@@ -418,7 +420,9 @@ export const generateLovelaceConfigFromData = async (
 
   // User has no entities
   if (views.length === 1 && views[0].cards!.length === 0) {
-    import(/* webpackChunkName: "hui-empty-state-card" */ "../cards/hui-empty-state-card");
+    import(
+      /* webpackChunkName: "hui-empty-state-card" */ "../cards/hui-empty-state-card"
+    );
     views[0].cards!.push({
       type: "custom:hui-empty-state-card",
     });

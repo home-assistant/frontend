@@ -87,14 +87,17 @@ class StepFlowForm extends LitElement {
                 <mwc-button
                   @click=${this._submitStep}
                   .disabled=${!allRequiredInfoFilledIn}
-                >
-                  Submit
+                  >${this.hass.localize(
+                    "ui.panel.config.integrations.config_flow.submit"
+                  )}
                 </mwc-button>
 
                 ${!allRequiredInfoFilledIn
                   ? html`
-                      <paper-tooltip position="left">
-                        Not all required fields are filled in.
+                      <paper-tooltip position="left"
+                        >${this.hass.localize(
+                          "ui.panel.config.integrations.config_flow.not_all_required_fields"
+                        )}
                       </paper-tooltip>
                     `
                   : html``}
@@ -106,6 +109,7 @@ class StepFlowForm extends LitElement {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
+    setTimeout(() => this.shadowRoot!.querySelector("ha-form")!.focus(), 0);
     this.addEventListener("keypress", (ev) => {
       if (ev.keyCode === 13) {
         this._submitStep();

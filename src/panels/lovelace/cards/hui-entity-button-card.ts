@@ -24,16 +24,19 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 
 import { HomeAssistant, LightEntity } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
-import { longPress } from "../common/directives/long-press-directive";
-import { handleClick } from "../common/handle-click";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { EntityButtonCardConfig } from "./types";
-import { hasDoubleClick } from "../common/has-double-click";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { hasAction } from "../common/has-action";
+import { handleAction } from "../common/handle-action";
+import { ActionHandlerEvent } from "../../../data/lovelace";
 
 @customElement("hui-entity-button-card")
 class HuiEntityButtonCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
-    await import(/* webpackChunkName: "hui-entity-button-card-editor" */ "../editor/config-elements/hui-entity-button-card-editor");
+    await import(
+      /* webpackChunkName: "hui-entity-button-card-editor" */ "../editor/config-elements/hui-entity-button-card-editor"
+    );
     return document.createElement("hui-entity-button-card-editor");
   }
 
@@ -126,11 +129,10 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card
-        @ha-click=${this._handleClick}
-        @ha-hold=${this._handleHold}
-        @ha-dblclick=${this._handleDblClick}
-        .longPress=${longPress({
-          hasDoubleClick: hasDoubleClick(this._config!.double_tap_action),
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config!.hold_action),
+          hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
       >
         ${this._config.show_icon
@@ -232,16 +234,8 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     return `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
   }
 
-  private _handleClick() {
-    handleClick(this, this.hass!, this._config!, false, false);
-  }
-
-  private _handleHold() {
-    handleClick(this, this.hass!, this._config!, true, false);
-  }
-
-  private _handleDblClick() {
-    handleClick(this, this.hass!, this._config!, false, true);
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
   }
 }
 

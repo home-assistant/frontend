@@ -71,9 +71,7 @@ export const showConfigFlowDialog = (
 
     renderShowFormStepFieldLabel(hass, step, field) {
       return hass.localize(
-        `component.${step.handler}.config.step.${step.step_id}.data.${
-          field.name
-        }`
+        `component.${step.handler}.config.step.${step.step_id}.data.${field.name}`
       );
     },
 
@@ -122,7 +120,13 @@ export const showConfigFlowDialog = (
               <ha-markdown allowsvg .content=${description}></ha-markdown>
             `
           : ""}
-        <p>Created config for ${step.title}.</p>
+        <p>
+          ${hass.localize(
+            "ui.panel.config.integrations.config_flow.created_config",
+            "name",
+            step.title
+          )}
+        </p>
       `;
     },
   });

@@ -74,20 +74,23 @@ export const provideHass = (
     restResponses.push([path, callback]);
   }
 
-  mockAPI(new RegExp("states/.+"), (
-    // @ts-ignore
-    method,
-    path,
-    parameters
-  ) => {
-    const [domain, objectId] = path.substr(7).split(".", 2);
-    if (!domain || !objectId) {
-      return;
+  mockAPI(
+    new RegExp("states/.+"),
+    (
+      // @ts-ignore
+      method,
+      path,
+      parameters
+    ) => {
+      const [domain, objectId] = path.substr(7).split(".", 2);
+      if (!domain || !objectId) {
+        return;
+      }
+      addEntities(
+        getEntity(domain, objectId, parameters.state, parameters.attributes)
+      );
     }
-    addEntities(
-      getEntity(domain, objectId, parameters.state, parameters.attributes)
-    );
-  });
+  );
 
   const localLanguage = getLocalLanguage();
 
@@ -117,9 +120,7 @@ export const provideHass = (
           ? callback(msg)
           : Promise.reject({
               code: "command_not_mocked",
-              message: `WS Command ${
-                msg.type
-              } is not implemented in provide_hass.`,
+              message: `WS Command ${msg.type} is not implemented in provide_hass.`,
             });
       },
       subscribeMessage: async (onChange, msg) => {
@@ -128,9 +129,7 @@ export const provideHass = (
           ? callback(msg, onChange)
           : Promise.reject({
               code: "command_not_mocked",
-              message: `WS Command ${
-                msg.type
-              } is not implemented in provide_hass.`,
+              message: `WS Command ${msg.type} is not implemented in provide_hass.`,
             });
       },
       subscribeEvents: async (
@@ -180,6 +179,7 @@ export const provideHass = (
     dockedSidebar: "auto",
     vibrate: true,
     moreInfoEntityId: null as any,
+    // @ts-ignore
     async callService(domain, service, data) {
       if (data && "entity_id" in data) {
         await Promise.all(
