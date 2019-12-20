@@ -27,13 +27,6 @@ import { domainIcon } from "../../../../common/entity/domain_icon";
 // tslint:disable-next-line
 import { HaSwitch } from "../../../../components/ha-switch";
 import { EntityRegistryStateEntry } from "../ha-config-device-page";
-import {
-  fetchConfig,
-  LovelaceConfig,
-  saveConfig,
-} from "../../../../data/lovelace";
-import { showSelectViewDialog } from "../../../lovelace/editor/select-view/show-select-view-dialog";
-import { showEditCardDialog } from "../../../lovelace/editor/card-editor/show-edit-card-dialog";
 import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities-to-view";
 
 @customElement("ha-device-entities-card")
