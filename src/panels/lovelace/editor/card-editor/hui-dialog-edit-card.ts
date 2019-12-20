@@ -131,6 +131,7 @@ export class HuiDialogEditCard extends LitElement {
                   id="switch-GUIMode"
                   ?disabled="${this._isDisabled}"
                   @click="${this._toggleMode}"
+                  @guiMode-changed="${this._eventReceived}"
                 >
                   ${this.hass!.localize(
                     this._cardEditorEl == null || this._cardEditorEl!.GUImode
@@ -160,6 +161,11 @@ export class HuiDialogEditCard extends LitElement {
         </div>
       </ha-paper-dialog>
     `;
+  }
+
+  private _eventReceived(ev) {
+    ev.stopPropagation();
+    console.log("Event received");
   }
 
   private get _isDisabled(): boolean {

@@ -33,6 +33,9 @@ declare global {
       config: LovelaceCardConfig;
       error?: string;
     };
+    "guiMode-changed": {
+      GUImode: boolean;
+    };
   }
 }
 
@@ -102,6 +105,10 @@ export class HuiCardEditor extends LitElement {
 
   public toggleMode() {
     this._GUImode = !this._GUImode;
+    console.log("Firing event");
+    fireEvent(this as HTMLElement, "guiMode-changed", {
+      GUImode: this._GUImode,
+    });
   }
 
   public connectedCallback() {
