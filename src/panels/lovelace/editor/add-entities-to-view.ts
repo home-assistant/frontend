@@ -5,7 +5,7 @@ import {
   saveConfig,
 } from "../../../data/lovelace";
 import { showSelectViewDialog } from "./select-view/show-select-view-dialog";
-import { showEditCardDialog } from "./card-editor/show-edit-card-dialog";
+import { showSuggestCardDialog } from "./card-editor/show-suggest-card-dialog";
 
 export const addEntitiesToLovelaceView = async (
   element: HTMLElement,
@@ -15,9 +15,9 @@ export const addEntitiesToLovelaceView = async (
   saveConfigFunc?: (newConfig: LovelaceConfig) => void
 ) => {
   if ((hass!.panels.lovelace?.config as any)?.mode === "yaml") {
-    alert(
-      hass.localize("ui.panel.lovelace.editor.add_entities.yaml_unsupported")
-    );
+    showSuggestCardDialog(element, {
+      entities,
+    });
     return;
   }
   if (!lovelaceConfig) {
@@ -49,7 +49,7 @@ export const addEntitiesToLovelaceView = async (
         };
       }
 
-      showEditCardDialog(element, {
+      showSuggestCardDialog(element, {
         lovelaceConfig: lovelaceConfig!,
         saveConfig: saveConfigFunc,
         path: [view],

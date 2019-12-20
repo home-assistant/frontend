@@ -24,6 +24,7 @@ import { addCard, replaceCard } from "../config-util";
 
 import "../../../../components/dialog/ha-paper-dialog";
 import { haStyleDialog } from "../../../../resources/styles";
+import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 
 declare global {
   // for fire event
@@ -38,7 +39,7 @@ declare global {
 
 @customElement("hui-dialog-edit-card")
 export class HuiDialogEditCard extends LitElement {
-  @property() protected hass?: HomeAssistant;
+  @property() protected hass!: HomeAssistant;
 
   @property() private _params?: EditCardDialogParams;
 
@@ -298,6 +299,7 @@ export class HuiDialogEditCard extends LitElement {
           )
     );
     this._saving = false;
+    showSaveSuccessToast(this, this.hass);
     this._close();
   }
 }

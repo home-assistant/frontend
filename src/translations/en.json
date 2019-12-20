@@ -516,6 +516,7 @@
     "common": {
       "loading": "Loading",
       "cancel": "Cancel",
+      "close": "Close",
       "save": "Save",
       "yes": "Yes",
       "no": "No",
@@ -1581,6 +1582,11 @@
             "delete": "Delete Card",
             "move": "Move to View",
             "options": "More options"
+          },
+          "suggest_card": {
+            "header": "We created a suggestion for you",
+            "create_own": "Create your own",
+            "add": "Add to Lovelace"
           },
           "save_config": {
             "header": "Take control of your Lovelace UI",
