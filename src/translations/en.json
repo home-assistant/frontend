@@ -1227,12 +1227,10 @@
           "device_not_found": "Device not found.",
           "info": "Device info",
           "details": "Here are all the details of your device.",
-          "entities": "Entities",
-          "add_lovelace": {
-            "add_entities": "Add all device entities to Lovelace",
-            "yaml_unsupported": "You can not use this function when using Lovelace in YAML mode.",
-            "generated_unsupported": "You can only use this function when you have taken control of Lovelace.",
-            "saving_failed": "Saving Lovelace config failed."
+          "entities": {
+            "entities": "Entities",
+            "add_entities_lovelace": "Add all device entities to Lovelace",
+            "none": "This device has no entities"
           },
           "automations": "Automations",
           "confirm_rename_entity_ids": "Do you also want to rename the entity id's of your entities?",
@@ -1523,6 +1521,11 @@
           "entity_id": "Entity ID",
           "domain": "Domain",
           "last_changed": "Last Changed"
+        },
+        "add_entities": {
+          "yaml_unsupported": "You can not use this function when using Lovelace in YAML mode.",
+          "generated_unsupported": "You can only use this function when you have taken control of Lovelace.",
+          "saving_failed": "Saving Lovelace config failed."
         },
         "views": {
           "confirm_delete": "Are you sure you want to delete this view?",

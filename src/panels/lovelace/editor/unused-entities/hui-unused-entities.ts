@@ -30,19 +30,18 @@ import { computeDomain } from "../../../../common/entity/compute_domain";
 
 import { computeRTL } from "../../../../common/util/compute_rtl";
 import { computeUnusedEntities } from "../../common/compute-unused-entities";
-import { showSelectViewDialog } from "../select-view/show-select-view-dialog";
-import { showEditCardDialog } from "../card-editor/show-edit-card-dialog";
 
 import { HomeAssistant } from "../../../../types";
 import { Lovelace } from "../../types";
 import { LovelaceConfig } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { addEntitiesToLovelaceView } from "../add-entities-to-view";
 
 @customElement("hui-unused-entities")
 export class HuiUnusedEntities extends LitElement {
   @property() public lovelace?: Lovelace;
 
-  @property() public hass?: HomeAssistant;
+  @property() public hass!: HomeAssistant;
 
   @property() public narrow?: boolean;
 
@@ -169,7 +168,7 @@ export class HuiUnusedEntities extends LitElement {
               label="${this.hass.localize(
                 "ui.panel.lovelace.editor.edit_card.add"
               )}"
-              @click="${this._selectView}"
+              @click="${this._addToLovelaceView}"
             ></ha-fab>
           `
         : ""}
@@ -206,20 +205,14 @@ export class HuiUnusedEntities extends LitElement {
     });
   }
 
-  private _selectView(): void {
-    showSelectViewDialog(this, {
-      lovelaceConfig: this.lovelace!.config,
-      viewSelectedCallback: (view) => this._addCard(view),
-    });
-  }
-
-  private _addCard(view: number): void {
-    showEditCardDialog(this, {
-      lovelaceConfig: this.lovelace!.config,
-      saveConfig: this.lovelace!.saveConfig,
-      path: [view],
-      entities: this._selectedEntities,
-    });
+  private _addToLovelaceView(): void {
+    addEntitiesToLovelaceView(
+      this,
+      this.hass,
+      this._selectedEntities,
+      this.lovelace!.config,
+      this.lovelace!.saveConfig
+    );
   }
 
   static get styles(): CSSResult {

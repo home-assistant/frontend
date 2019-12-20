@@ -34,6 +34,7 @@ import {
 } from "../../../../data/lovelace";
 import { showSelectViewDialog } from "../../../lovelace/editor/select-view/show-select-view-dialog";
 import { showEditCardDialog } from "../../../lovelace/editor/card-editor/show-edit-card-dialog";
+import { addEntitiesToLovelaceView } from "../../../lovelace/editor/add-entities-to-view";
 
 @customElement("ha-device-entities-card")
 export class HaDeviceEntitiesCard extends LitElement {
@@ -105,7 +106,7 @@ export class HaDeviceEntitiesCard extends LitElement {
               <div class="card-actions">
                 <mwc-button @click=${this._addToLovelaceView}>
                   ${this.hass.localize(
-                    "ui.panel.config.devices.add_lovelace.add_entities"
+                    "ui.panel.config.devices.entities.add_entities_lovelace"
                   )}
                 </mwc-button>
               </div>
@@ -141,49 +142,12 @@ export class HaDeviceEntitiesCard extends LitElement {
     fireEvent(this, "hass-more-info", { entityId: entry.entity_id });
   }
 
-  private async _addToLovelaceView(): Promise<void> {
-    if ((this.hass!.panels.lovelace?.config as any)?.mode === "yaml") {
-      alert(
-        this.hass.localize(
-          "ui.panel.config.devices.add_lovelace.yaml_unsupported"
-        )
-      );
-      return;
-    }
-    let lovelaceConfig;
-    try {
-      lovelaceConfig = await fetchConfig(this.hass.connection, false);
-    } catch {
-      alert(
-        this.hass.localize(
-          "ui.panel.config.devices.add_lovelace.generated_unsupported"
-        )
-      );
-      return;
-    }
-    showSelectViewDialog(this, {
-      lovelaceConfig,
-      viewSelectedCallback: (view) => this._addCard(lovelaceConfig, view),
-    });
-  }
-
-  private _addCard(lovelaceConfig: LovelaceConfig, view: number): void {
-    showEditCardDialog(this, {
-      lovelaceConfig,
-      saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
-        try {
-          await saveConfig(this.hass!, newConfig);
-        } catch {
-          alert(
-            this.hass.localize(
-              "ui.panel.config.devices.add_lovelace.saving_failed"
-            )
-          );
-        }
-      },
-      path: [view],
-      entities: this.entities.map((entity) => entity.entity_id),
-    });
+  private _addToLovelaceView(): void {
+    addEntitiesToLovelaceView(
+      this,
+      this.hass,
+      this.entities.map((entity) => entity.entity_id)
+    );
   }
 
   static get styles(): CSSResult {
