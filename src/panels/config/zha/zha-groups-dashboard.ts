@@ -61,7 +61,7 @@ export class ZHAGroupsDashboard extends LitElement {
               alt="Removing Groups"
             ></paper-spinner>
             ${this.hass!.localize(
-              "ui.panel.config.zha.common.remove_groups"
+              "ui.panel.config.zha.groups.remove_groups"
             )}</mwc-button
           >
         </div>
