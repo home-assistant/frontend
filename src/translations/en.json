@@ -1437,6 +1437,15 @@
             "commands_of_cluster": "Commands of the selected cluster",
             "issue_zigbee_command": "Issue Zigbee Command",
             "help_command_dropdown": "Select a command to interact with."
+          },
+          "groups": {
+            "zha_zigbee_groups": "ZHA Zigbee Groups",
+            "manage_groups": "Manage Zigbee Groups",
+            "groups": "Groups",
+            "group_id": "Group ID",
+            "members": "Members",
+            "header": "Zigbee Group Management",
+            "introduction": "Create and modify zigbee groups"
           }
         },
         "zwave": {
