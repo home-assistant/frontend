@@ -171,7 +171,11 @@ class DataEntryFlowDialog extends LitElement {
           : this._devices === undefined || this._areas === undefined
           ? // When it's a create entry result, we will fetch device & area registry
             html`
-              <step-flow-loading></step-flow-loading>
+              <step-flow-loading
+                .label=${this.hass.localize(
+                  "ui.panel.config.integrations.config_flow.loading_first_time"
+                )}
+              ></step-flow-loading>
             `
           : html`
               <step-flow-create-entry
