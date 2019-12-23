@@ -156,7 +156,9 @@ export class HaConfigDevicePage extends LitElement {
           ${entities.length
             ? html`
                 <div class="header">
-                  ${this.hass.localize("ui.panel.config.devices.entities")}
+                  ${this.hass.localize(
+                    "ui.panel.config.devices.entities.entities"
+                  )}
                 </div>
                 <ha-device-entities-card
                   .hass=${this.hass}
