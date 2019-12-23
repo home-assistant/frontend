@@ -16,17 +16,14 @@ import { sortZHAGroups } from "./functions";
 import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
 import "@material/mwc-button";
 import "@polymer/paper-spinner/paper-spinner";
-import { haStyleDialog } from "../../../resources/styles";
 
 @customElement("zha-groups-dashboard")
 export class ZHAGroupsDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow = false;
-  @property() public _groups!: ZHAGroup[];
-  @property() private _canRemove: boolean = false;
+  @property() public _groups: ZHAGroup[] = [];
   @property() private _processingRemove: boolean = false;
-
-  private _selectedGroupsToRemove: number[] = [];
+  @property() private _selectedGroupsToRemove: number[] = [];
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -52,13 +49,16 @@ export class ZHAGroupsDashboard extends LitElement {
         </div>
         <div class="paper-dialog-buttons">
           <mwc-button
-            ?disabled="${!this._canRemove}"
+            ?disabled="${!this._selectedGroupsToRemove.length ||
+              this._processingRemove}"
             @click="${this._removeGroup}"
             class="button"
           >
             <paper-spinner
               ?active="${this._processingRemove}"
-              alt="Removing Groups"
+              alt=${this.hass!.localize(
+                "ui.panel.config.zha.groups.removing_groups"
+              )}
             ></paper-spinner>
             ${this.hass!.localize(
               "ui.panel.config.zha.groups.remove_groups"
@@ -70,7 +70,9 @@ export class ZHAGroupsDashboard extends LitElement {
   }
 
   private async _fetchGroups() {
-    this._groups = (await fetchGroups(this.hass!)).sort(sortZHAGroups);
+    this._groups = this.hass
+      ? (await fetchGroups(this.hass)).sort(sortZHAGroups)
+      : [];
   }
 
   private _handleRemoveSelectionChanged(ev: CustomEvent): void {
@@ -84,20 +86,18 @@ export class ZHAGroupsDashboard extends LitElement {
         this._selectedGroupsToRemove.splice(index, 1);
       }
     }
-    this._canRemove = this._selectedGroupsToRemove.length > 0;
+    this._selectedGroupsToRemove = [...this._selectedGroupsToRemove];
   }
 
   private async _removeGroup(): Promise<void> {
     this._processingRemove = true;
     this._groups = await removeGroups(this.hass, this._selectedGroupsToRemove);
     this._selectedGroupsToRemove = [];
-    this._canRemove = false;
     this._processingRemove = false;
   }
 
   static get styles(): CSSResult[] {
     return [
-      haStyleDialog,
       css`
         .content {
           padding: 4px;
@@ -108,7 +108,6 @@ export class ZHAGroupsDashboard extends LitElement {
         .button {
           float: right;
         }
-
         .table {
           height: 200px;
           overflow: auto;
@@ -123,6 +122,13 @@ export class ZHAGroupsDashboard extends LitElement {
         }
         paper-spinner[active] {
           display: block;
+        }
+        .paper-dialog-buttons {
+          align-items: flex-end;
+          padding: 8px;
+        }
+        .paper-dialog-buttons .warning {
+          --mdc-theme-primary: var(--google-red-500);
         }
       `,
     ];
