@@ -12,6 +12,7 @@ import { HomeAssistant } from "../../../types";
 class ZHAConfigPanel extends HassRouterPage {
   @property() public hass!: HomeAssistant;
   @property() public isWide!: boolean;
+  @property() public narrow!: boolean;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "configuration",
@@ -32,6 +33,13 @@ class ZHAConfigPanel extends HassRouterPage {
             /* webpackChunkName: "zha-add-devices-page" */ "./zha-add-devices-page"
           ),
       },
+      groups: {
+        tag: "zha-groups-dashboard",
+        load: () =>
+          import(
+            /* webpackChunkName: "zha-groups-dashboard" */ "./zha-groups-dashboard"
+          ),
+      },
     },
   };
 
@@ -39,6 +47,7 @@ class ZHAConfigPanel extends HassRouterPage {
     el.route = this.routeTail;
     el.hass = this.hass;
     el.isWide = this.isWide;
+    el.narrow = this.narrow;
   }
 }
 
