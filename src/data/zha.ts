@@ -51,6 +51,12 @@ export interface ReadAttributeServiceData {
   manufacturer?: number;
 }
 
+export interface ZHAGroup {
+  name: string;
+  group_id: number;
+  members: ZHADevice[];
+}
+
 export const reconfigureNode = (
   hass: HomeAssistant,
   ieeeAddress: string
@@ -152,4 +158,9 @@ export const fetchClustersForZhaNode = (
   hass.callWS({
     type: "zha/devices/clusters",
     ieee: ieeeAddress,
+  });
+
+export const fetchGroups = (hass: HomeAssistant): Promise<ZHAGroup[]> =>
+  hass.callWS({
+    type: "zha/groups",
   });
