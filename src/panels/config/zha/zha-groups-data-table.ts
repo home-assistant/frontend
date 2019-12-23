@@ -29,22 +29,6 @@ export class ZHAGroupsDataTable extends LitElement {
   @property() public groups: ZHAGroup[] = [];
   @property() public selectable = false;
 
-  private _groups = memoizeOne((groups: ZHAGroup[]) => {
-    let outputGroups: GroupRowData[] = groups || [];
-
-    outputGroups = outputGroups.map((group) => {
-      return {
-        ...group,
-        name: group.name,
-        group_id: group.group_id,
-        members: group.members,
-        id: group.group_id,
-      };
-    });
-
-    return outputGroups;
-  });
-
   private _columns = memoizeOne(
     (narrow: boolean): DataTableColumnContainer =>
       narrow
@@ -71,8 +55,6 @@ export class ZHAGroupsDataTable extends LitElement {
                 `;
               },
               sortable: true,
-              filterable: true,
-              direction: "asc",
             },
             members: {
               title: this.hass.localize("ui.panel.config.zha.groups.members"),
@@ -82,8 +64,6 @@ export class ZHAGroupsDataTable extends LitElement {
                 `;
               },
               sortable: true,
-              filterable: true,
-              direction: "asc",
             },
           }
   );
@@ -92,8 +72,9 @@ export class ZHAGroupsDataTable extends LitElement {
     return html`
       <ha-data-table
         .columns=${this._columns(this.narrow)}
-        .data=${this._groups(this.groups)}
+        .data=${this.groups}
         .selectable=${this.selectable}
+        .id=${"group_id"}
       ></ha-data-table>
     `;
   }

@@ -42,7 +42,7 @@ export class ZHAGroupsTile extends LitElement {
 
         <ha-card class="content">
           <div class="card-actions">
-            <mwc-button @click=${this._onAddDevicesClick}>
+            <mwc-button @click=${this._onManageGroupsClick}>
               ${this.hass!.localize("ui.panel.config.zha.groups.manage_groups")}
             </mwc-button>
           </div>
@@ -55,7 +55,7 @@ export class ZHAGroupsTile extends LitElement {
     this._showHelp = !this._showHelp;
   }
 
-  private _onAddDevicesClick() {
+  private _onManageGroupsClick() {
     navigate(this, "groups");
   }
 

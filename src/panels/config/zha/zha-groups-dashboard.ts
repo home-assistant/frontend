@@ -11,7 +11,6 @@ import {
   css,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
-import { haStyleDialog } from "../../../resources/styles";
 import { ZHAGroup, fetchGroups } from "../../../data/zha";
 import { sortZHAGroups } from "./functions";
 
@@ -51,7 +50,6 @@ export class ZHAGroupsDashboard extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
-      haStyleDialog,
       css`
         .content {
           padding: 4px;
