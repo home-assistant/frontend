@@ -24,6 +24,7 @@ import { addCard, replaceCard } from "../config-util";
 
 import "../../../../components/dialog/ha-paper-dialog";
 import { haStyleDialog } from "../../../../resources/styles";
+import { showSaveSuccessToast } from "../../../../util/toast-saved-success";
 
 declare global {
   // for fire event
@@ -38,7 +39,7 @@ declare global {
 
 @customElement("hui-dialog-edit-card")
 export class HuiDialogEditCard extends LitElement {
-  @property() protected hass?: HomeAssistant;
+  @property() protected hass!: HomeAssistant;
 
   @property() private _params?: EditCardDialogParams;
 
@@ -51,7 +52,7 @@ export class HuiDialogEditCard extends LitElement {
   public async showDialog(params: EditCardDialogParams): Promise<void> {
     this._params = params;
     const [view, card] = params.path;
-    this._viewConfig = params.lovelace.config.views[view];
+    this._viewConfig = params.lovelaceConfig.views[view];
     this._cardConfig =
       card !== undefined ? this._viewConfig.cards![card] : undefined;
   }
@@ -283,22 +284,22 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private async _save(): Promise<void> {
-    const lovelace = this._params!.lovelace;
     this._saving = true;
-    await lovelace.saveConfig(
+    await this._params!.saveConfig(
       this._params!.path.length === 1
         ? addCard(
-            lovelace.config,
+            this._params!.lovelaceConfig,
             this._params!.path as [number],
             this._cardConfig!
           )
         : replaceCard(
-            lovelace.config,
+            this._params!.lovelaceConfig,
             this._params!.path as [number, number],
             this._cardConfig!
           )
     );
     this._saving = false;
+    showSaveSuccessToast(this, this.hass);
     this._close();
   }
 }
