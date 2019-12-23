@@ -33,7 +33,10 @@ class HaConfigCore extends LocalizeMixin(PolymerElement) {
         }
       </style>
 
-      <hass-subpage header="[[localize('ui.panel.config.core.caption')]]">
+      <hass-subpage
+        header="[[localize('ui.panel.config.core.caption')]]"
+        back="[[!isWide]]"
+      >
         <div class$="[[computeClasses(isWide)]]">
           <ha-config-section-core
             is-wide="[[isWide]]"

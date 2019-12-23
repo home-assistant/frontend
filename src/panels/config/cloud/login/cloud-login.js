@@ -72,7 +72,10 @@ class CloudLogin extends LocalizeMixin(
           color: var(--secondary-text-color);
         }
       </style>
-      <hass-subpage header="[[localize('ui.panel.config.cloud.caption')]]">
+      <hass-subpage
+        back="[[!isWide]]"
+        header="[[localize('ui.panel.config.cloud.caption')]]"
+      >
         <div class="content">
           <ha-config-section is-wide="[[isWide]]">
             <span slot="header"

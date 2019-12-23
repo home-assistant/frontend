@@ -55,65 +55,67 @@ class HaConfigDashboard extends LitElement {
 
           ${isComponentLoaded(this.hass, "cloud")
             ? html`
-          <ha-card>
-            <a href='/config/cloud' tabindex="-1">
-              <paper-item>
-                <paper-item-body two-line="">
-                ${this.hass.localize("ui.panel.config.cloud.caption")}
-                  ${
-                    this.cloudStatus.logged_in
-                      ? html`
-                          <div secondary="">
-                            ${this.hass.localize(
-                              "ui.panel.config.cloud.description_login",
-                              "email",
-                              (this.cloudStatus as CloudStatusLoggedIn).email
-                            )}
-                          </div>
-                        `
-                      : html`
-                          <div secondary="">
-                            ${this.hass.localize(
-                              "ui.panel.config.cloud.description_features"
-                            )}
-                          </div>
-                        `
-                  }
-                </paper-item-body>
-                <ha-icon-next></ha-icon-next>
-              </paper-item>
-            </ha-card>
-          </a>
-        `
+                <ha-card>
+                  <a href="/config/cloud" tabindex="-1">
+                    <paper-item>
+                      <paper-item-body two-line="">
+                        ${this.hass.localize("ui.panel.config.cloud.caption")}
+                        ${this.cloudStatus.logged_in
+                          ? html`
+                              <div secondary="">
+                                ${this.hass.localize(
+                                  "ui.panel.config.cloud.description_login",
+                                  "email",
+                                  (this.cloudStatus as CloudStatusLoggedIn)
+                                    .email
+                                )}
+                              </div>
+                            `
+                          : html`
+                              <div secondary="">
+                                ${this.hass.localize(
+                                  "ui.panel.config.cloud.description_features"
+                                )}
+                              </div>
+                            `}
+                      </paper-item-body>
+                      <ha-icon-next></ha-icon-next>
+                    </paper-item>
+                  </a>
+                </ha-card>
+              `
             : ""}
 
-          <ha-config-navigation
-            .hass=${this.hass}
-            .showAdvanced=${this.showAdvanced}
-            .pages=${[
-              { page: "integrations", core: true },
-              { page: "devices", core: true },
-              { page: "automation" },
-              { page: "script" },
-              { page: "scene" },
-            ]}
-          ></ha-config-navigation>
-
-          <ha-config-navigation
-            .hass=${this.hass}
-            .showAdvanced=${this.showAdvanced}
-            .pages=${[
-              { page: "core", core: true },
-              { page: "server_control", core: true },
-              { page: "entity_registry", core: true },
-              { page: "area_registry", core: true },
-              { page: "person" },
-              { page: "users", core: true },
-              { page: "zha" },
-              { page: "zwave" },
-              { page: "customize", core: true, advanced: true },
-            ]}
-          ></ha-config-navigation>
+          <ha-card>
+            <ha-config-navigation
+              .hass=${this.hass}
+              .showAdvanced=${this.showAdvanced}
+              .pages=${[
+                { page: "integrations", core: true },
+                { page: "devices", core: true },
+                { page: "automation" },
+                { page: "script" },
+                { page: "scene" },
+              ]}
+            ></ha-config-navigation>
+          </ha-card>
+          <ha-card>
+            <ha-config-navigation
+              .hass=${this.hass}
+              .showAdvanced=${this.showAdvanced}
+              .pages=${[
+                { page: "core", core: true },
+                { page: "server_control", core: true },
+                { page: "entity_registry", core: true },
+                { page: "area_registry", core: true },
+                { page: "person" },
+                { page: "users", core: true },
+                { page: "zha" },
+                { page: "zwave" },
+                { page: "customize", core: true, advanced: true },
+              ]}
+            ></ha-config-navigation>
+          </ha-card>
 
           ${!this.showAdvanced
             ? html`

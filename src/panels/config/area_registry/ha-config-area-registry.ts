@@ -52,6 +52,7 @@ class HaConfigAreaRegistry extends LitElement {
     return html`
       <hass-subpage
         header="${this.hass.localize("ui.panel.config.area_registry.caption")}"
+        .back=${!this.isWide}
       >
         <ha-config-section .isWide=${this.isWide}>
           <span slot="header">

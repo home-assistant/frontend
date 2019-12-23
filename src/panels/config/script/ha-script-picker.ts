@@ -35,6 +35,7 @@ class HaScriptPicker extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <hass-subpage
+        .back=${!this.isWide}
         .header=${this.hass.localize("ui.panel.config.script.caption")}
       >
         <ha-config-section .isWide=${this.isWide}>
@@ -77,7 +78,7 @@ class HaScriptPicker extends LitElement {
                         )}"
                         @click=${this._runScript}
                       ></paper-icon-button>
-                      <paper-item-body>
+                      <paper-item-body two-line>
                         <div>${computeStateName(script)}</div>
                       </paper-item-body>
                       <div class="actions">

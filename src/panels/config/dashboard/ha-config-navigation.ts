@@ -31,28 +31,25 @@ class HaConfigNavigation extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <ha-card>
-        ${this.pages.map(({ page, core, advanced }) =>
-          (core || isComponentLoaded(this.hass, page)) &&
-          (!advanced || this.showAdvanced)
-            ? html`
-                <a href=${`/config/${page}`}>
-                  <paper-item>
-                    <paper-item-body two-line="">
-                      ${this.hass.localize(`ui.panel.config.${page}.caption`)}
-                      <div secondary>
-                        ${this.hass.localize(
-                          `ui.panel.config.${page}.description`
-                        )}
-                      </div>
-                    </paper-item-body>
-                    <ha-icon-next></ha-icon-next>
-                  </paper-item>
-                </a>
-              `
-            : ""
-        )}
-      </ha-card>
+      ${this.pages.map(({ page, core, advanced }) =>
+        (core || isComponentLoaded(this.hass, page)) &&
+        (!advanced || this.showAdvanced)
+          ? html`
+              <a href=${`/config/${page}`}>
+                <paper-item>
+                  <paper-item-body two-line="">
+                    ${this.hass.localize(`ui.panel.config.${page}.caption`)}
+                    <div secondary>
+                      ${this.hass.localize(
+                        `ui.panel.config.${page}.description`
+                      )}
+                    </div>
+                  </paper-item-body>
+                </paper-item>
+              </a>
+            `
+          : ""
+      )}
     `;
   }
 
