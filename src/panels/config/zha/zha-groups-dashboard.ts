@@ -9,6 +9,7 @@ import {
   customElement,
   CSSResult,
   css,
+  PropertyValues,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { ZHAGroup, fetchGroups, removeGroups } from "../../../data/zha";
@@ -21,13 +22,24 @@ import "@polymer/paper-spinner/paper-spinner";
 export class ZHAGroupsDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow = false;
-  @property() public _groups: ZHAGroup[] = [];
+  @property() public _groups!: ZHAGroup[];
   @property() private _processingRemove: boolean = false;
   @property() private _selectedGroupsToRemove: number[] = [];
+  private _firstUpdatedCalled: boolean = false;
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this._fetchGroups();
+    if (this.hass && this._firstUpdatedCalled) {
+      this._fetchGroups();
+    }
+  }
+
+  protected firstUpdated(changedProperties: PropertyValues): void {
+    super.firstUpdated(changedProperties);
+    if (this.hass) {
+      this._fetchGroups();
+    }
+    this._firstUpdatedCalled = true;
   }
 
   protected render(): TemplateResult {
@@ -38,14 +50,23 @@ export class ZHAGroupsDashboard extends LitElement {
         )}
       >
         <div class="content">
-          <zha-groups-data-table
-            .hass=${this.hass}
-            .narrow=${this.narrow}
-            .groups=${this._groups}
-            .selectable=${true}
-            @selection-changed=${this._handleRemoveSelectionChanged}
-            class="table"
-          ></zha-groups-data-table>
+          ${this._groups
+            ? html`
+                <zha-groups-data-table
+                  .hass=${this.hass}
+                  .narrow=${this.narrow}
+                  .groups=${this._groups}
+                  .selectable=${true}
+                  @selection-changed=${this._handleRemoveSelectionChanged}
+                  class="table"
+                ></zha-groups-data-table>
+              `
+            : html`
+                <paper-spinner
+                  ?active="${!this._groups}"
+                  alt=${this.hass!.localize("ui.common.loading")}
+                ></paper-spinner>
+              `}
         </div>
         <div class="paper-dialog-buttons">
           <mwc-button
@@ -70,9 +91,7 @@ export class ZHAGroupsDashboard extends LitElement {
   }
 
   private async _fetchGroups() {
-    this._groups = this.hass
-      ? (await fetchGroups(this.hass)).sort(sortZHAGroups)
-      : [];
+    this._groups = (await fetchGroups(this.hass!)).sort(sortZHAGroups);
   }
 
   private _handleRemoveSelectionChanged(ev: CustomEvent): void {
