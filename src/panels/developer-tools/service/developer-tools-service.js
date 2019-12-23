@@ -286,11 +286,7 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
 
   _computeEntityDomainFilter(domain, attributes) {
     const field = attributes.find((attribute) => attribute.key === "entity_id");
-    if (
-      field &&
-      "limit_entity_domain" in field &&
-      field.limit_entity_domain.length > 0
-    ) {
+    if (field?.limit_entity_domain) {
       return field.limit_entity_domain;
     }
     return ENTITY_COMPONENT_DOMAINS.includes(domain) ? [domain] : null;
