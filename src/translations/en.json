@@ -516,6 +516,7 @@
     "common": {
       "loading": "Loading",
       "cancel": "Cancel",
+      "close": "Close",
       "save": "Save",
       "yes": "Yes",
       "no": "No",
@@ -1227,7 +1228,11 @@
           "device_not_found": "Device not found.",
           "info": "Device info",
           "details": "Here are all the details of your device.",
-          "entities": "Entities",
+          "entities": {
+            "entities": "Entities",
+            "add_entities_lovelace": "Add all device entities to Lovelace",
+            "none": "This device has no entities"
+          },
           "automations": "Automations",
           "confirm_rename_entity_ids": "Do you also want to rename the entity id's of your entities?",
           "data_table": {
@@ -1529,6 +1534,11 @@
           "domain": "Domain",
           "last_changed": "Last Changed"
         },
+        "add_entities": {
+          "yaml_unsupported": "You can not use this function when using Lovelace in YAML mode.",
+          "generated_unsupported": "You can only use this function when you have taken control of Lovelace.",
+          "saving_failed": "Saving Lovelace config failed."
+        },
         "views": {
           "confirm_delete": "Are you sure you want to delete this view?",
           "existing_cards": "You can't delete a view that has cards in it. Remove the cards first."
@@ -1583,6 +1593,11 @@
             "delete": "Delete Card",
             "move": "Move to View",
             "options": "More options"
+          },
+          "suggest_card": {
+            "header": "We created a suggestion for you",
+            "create_own": "Create your own",
+            "add": "Add to Lovelace"
           },
           "save_config": {
             "header": "Take control of your Lovelace UI",
