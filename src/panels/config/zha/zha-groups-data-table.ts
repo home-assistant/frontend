@@ -27,7 +27,6 @@ export class ZHAGroupsDataTable extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow = false;
   @property() public groups: ZHAGroup[] = [];
-  @property() public selectable = false;
 
   private _columns = memoizeOne(
     (narrow: boolean): DataTableColumnContainer =>
@@ -73,7 +72,6 @@ export class ZHAGroupsDataTable extends LitElement {
       <ha-data-table
         .columns=${this._columns(this.narrow)}
         .data=${this.groups}
-        .selectable=${this.selectable}
         .id=${"group_id"}
       ></ha-data-table>
     `;
