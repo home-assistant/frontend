@@ -2,6 +2,7 @@ import "@polymer/iron-icon/iron-icon";
 // Not duplicate, this is for typing.
 // eslint-disable-next-line
 import { HaIcon } from "./ha-icon";
+import { mdiChevronRight, mdiChevronLeft } from "@mdi/js";
 
 export class HaIconNext extends HaIcon {
   public connectedCallback() {
@@ -9,10 +10,10 @@ export class HaIconNext extends HaIcon {
 
     // wait to check for direction since otherwise direction is wrong even though top level is RTL
     setTimeout(() => {
-      this.icon =
+      this.path =
         window.getComputedStyle(this).direction === "ltr"
-          ? "hass:chevron-right"
-          : "hass:chevron-left";
+          ? mdiChevronRight
+          : mdiChevronLeft;
     }, 100);
   }
 }

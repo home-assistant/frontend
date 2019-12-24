@@ -6,6 +6,7 @@ const envVars = require("../env");
 require("./clean.js");
 require("./translations.js");
 require("./gen-icons.js");
+require("./gen-icons-json.js");
 require("./gather-static.js");
 require("./compress.js");
 require("./webpack.js");
@@ -21,7 +22,7 @@ gulp.task(
     "clean",
     gulp.parallel(
       "gen-service-worker-dev",
-      gulp.parallel("gen-icons-app", "gen-icons-mdi"),
+      gulp.parallel("gen-icons-app", "gen-icons-mdi", "gen-icons-json"),
       "gen-pages-dev",
       "gen-index-app-dev",
       "build-translations"
@@ -38,7 +39,12 @@ gulp.task(
       process.env.NODE_ENV = "production";
     },
     "clean",
-    gulp.parallel("gen-icons-app", "gen-icons-mdi", "build-translations"),
+    gulp.parallel(
+      "gen-icons-app",
+      "gen-icons-mdi",
+      "gen-icons-json",
+      "build-translations"
+    ),
     "copy-static",
     "webpack-prod-app",
     ...// Don't compress running tests

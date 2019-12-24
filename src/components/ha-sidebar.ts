@@ -1,3 +1,4 @@
+import { mdiBell, mdiCellphoneSettingsVariant } from "@mdi/js";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-icon-item";
@@ -207,7 +208,7 @@ class HaSidebar extends LitElement {
                 <paper-icon-item>
                   <ha-icon
                     slot="item-icon"
-                    icon="hass:cellphone-settings-variant"
+                    .path=${mdiCellphoneSettingsVariant}
                   ></ha-icon>
                   <span class="item-text">
                     ${hass.localize("ui.sidebar.external_app_configuration")}
@@ -230,7 +231,7 @@ class HaSidebar extends LitElement {
           aria-role="option"
           @click=${this._handleShowNotificationDrawer}
         >
-          <ha-icon slot="item-icon" icon="hass:bell"></ha-icon>
+          <ha-icon slot="item-icon" .path=${mdiBell}></ha-icon>
           ${!this.expanded && notificationCount > 0
             ? html`
                 <span class="notification-badge" slot="item-icon">

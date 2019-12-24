@@ -1882,6 +1882,11 @@
   dependencies:
     "@material/feature-targeting" "^5.0.0"
 
+"@mdi/js@4.9.95":
+  version "4.9.95"
+  resolved "https://registry.yarnpkg.com/@mdi/js/-/js-4.9.95.tgz#8984c2ac04c89913a3ff2bbe4d91f4ab51d8ef4f"
+  integrity sha512-6zKTCqZUCuDWJThdRcjdFTqp2BXfYwXI1UlYa68A1/kmCcy1ijpbpRbrJcUdZ+9WojencCh1DOGFqhj/x8I/eQ==
+
 "@mdi/svg@4.9.95":
   version "4.9.95"
   resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-4.9.95.tgz#4e9d2b26b12e22f751336b35ba3cb763817e4c45"
@@ -8374,6 +8379,11 @@ iconv-lite@0.4.24, iconv-lite@^0.4.24, iconv-lite@^0.4.4:
   integrity sha512-v3MXnZAcvnywkTUEZomIActle7RXXeedOR31wwl7VlyoXO4Qi9arvSenNQWne1TcRwhCL1HwLI21bEqdpj8/rA==
   dependencies:
     safer-buffer ">= 2.1.2 < 3"
+
+idb-keyval@^3.2.0:
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/idb-keyval/-/idb-keyval-3.2.0.tgz#cbbf354deb5684b6cdc84376294fc05932845bd6"
+  integrity sha512-slx8Q6oywCCSfKgPgL0sEsXtPVnSbTLWpyiDcu6msHOyKOLari1TD1qocXVCft80umnkk3/Qqh3lwoFt8T/BPQ==
 
 ieee754@^1.1.4:
   version "1.1.13"
