@@ -1445,7 +1445,9 @@
             "group_id": "Group ID",
             "members": "Members",
             "header": "Zigbee Group Management",
-            "introduction": "Create and modify zigbee groups"
+            "introduction": "Create and modify zigbee groups",
+            "remove_groups": "Remove Groups",
+            "removing_groups": "Removing Groups"
           }
         },
         "zwave": {
