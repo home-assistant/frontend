@@ -22,7 +22,7 @@ import "@polymer/paper-spinner/paper-spinner";
 export class ZHAGroupsDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow = false;
-  @property() public _groups!: ZHAGroup[];
+  @property() public _groups?: ZHAGroup[];
   @property() private _processingRemove: boolean = false;
   @property() private _selectedGroupsToRemove: number[] = [];
   private _firstUpdatedCalled: boolean = false;
@@ -63,7 +63,7 @@ export class ZHAGroupsDashboard extends LitElement {
               `
             : html`
                 <paper-spinner
-                  ?active="${!this._groups}"
+                  active
                   alt=${this.hass!.localize("ui.common.loading")}
                 ></paper-spinner>
               `}
