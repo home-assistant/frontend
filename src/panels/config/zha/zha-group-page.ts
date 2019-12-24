@@ -19,11 +19,18 @@ import {
   ZHAGroup,
   fetchGroup,
   removeGroups,
+  fetchGroupableDevices,
+  addMembersToGroup,
+  removeMembersFromGroup,
 } from "../../../data/zha";
 import { formatAsPaddedHex } from "./functions";
 import "./zha-device-card";
+import "./zha-devices-data-table";
 import { navigate } from "../../../common/navigate";
 import "@polymer/paper-icon-button/paper-icon-button";
+import "@polymer/paper-spinner/paper-spinner";
+import "@material/mwc-button";
+import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
 
 @customElement("zha-group-page")
 export class ZHAGroupPage extends LitElement {
@@ -32,6 +39,13 @@ export class ZHAGroupPage extends LitElement {
   @property() public groupId!: number;
   @property() public narrow!: boolean;
   @property() public isWide!: boolean;
+  @property() public devices: ZHADevice[] = [];
+  @property() private _processingAdd: boolean = false;
+  @property() private _processingRemove: boolean = false;
+  @property() private _filteredDevices: ZHADevice[] = [];
+  @property() private _selectedDevicesToAdd: string[] = [];
+  @property() private _selectedDevicesToRemove: string[] = [];
+
   private _firstUpdatedCalled: boolean = false;
 
   private _members = memoizeOne(
@@ -43,6 +57,16 @@ export class ZHAGroupPage extends LitElement {
     if (this.hass && this._firstUpdatedCalled) {
       this._fetchData();
     }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    this._processingAdd = false;
+    this._processingRemove = false;
+    this._selectedDevicesToRemove = [];
+    this._selectedDevicesToAdd = [];
+    this.devices = [];
+    this._filteredDevices = [];
   }
 
   protected firstUpdated(changedProperties: PropertyValues): void {
@@ -105,6 +129,77 @@ export class ZHAGroupPage extends LitElement {
                   This group has no members
                 </p>
               `}
+          ${members.length
+            ? html`
+                <div class="header">
+                  ${this.hass.localize(
+                    "ui.panel.config.zha.groups.remove_members"
+                  )}
+                </div>
+
+                <zha-devices-data-table
+                  .hass=${this.hass}
+                  .devices=${members}
+                  .narrow=${this.narrow}
+                  .selectable=${true}
+                  @selection-changed=${this._handleRemoveSelectionChanged}
+                  class="table"
+                >
+                </zha-devices-data-table>
+
+                <div class="paper-dialog-buttons">
+                  <mwc-button
+                    ?disabled="${!this._selectedDevicesToRemove.length ||
+                      this._processingRemove}"
+                    @click="${this._removeMembersFromGroup}"
+                    class="button"
+                  >
+                    <paper-spinner
+                      ?active="${this._processingRemove}"
+                      alt=${this.hass.localize(
+                        "ui.panel.config.zha.groups.removing_members"
+                      )}
+                    ></paper-spinner>
+                    ${this.hass!.localize(
+                      "ui.panel.config.zha.groups.remove_members"
+                    )}</mwc-button
+                  >
+                </div>
+              `
+            : html``}
+
+          <div class="header">
+            ${this.hass.localize("ui.panel.config.zha.groups.add_members")}
+          </div>
+
+          <zha-devices-data-table
+            .hass=${this.hass}
+            .devices=${this._filteredDevices}
+            .narrow=${this.narrow}
+            .selectable=${true}
+            @selection-changed=${this._handleAddSelectionChanged}
+            class="table"
+          >
+          </zha-devices-data-table>
+
+          <div class="paper-dialog-buttons">
+            <mwc-button
+              ?disabled="${!this._selectedDevicesToAdd.length ||
+                this._processingAdd}"
+              @click="${this._addMembersToGroup}"
+              class="button"
+            >
+              <paper-spinner
+                ?active="${this._processingAdd}"
+                alt=${this.hass.localize(
+                  "ui.panel.config.zha.groups.adding_members"
+                )}
+              ></paper-spinner>
+              ${this.hass!.localize(
+                "ui.panel.config.zha.groups.add_members"
+              )}</mwc-button
+            >
+          </div>
         </ha-config-section>
       </hass-subpage>
     `;
@@ -114,6 +209,71 @@ export class ZHAGroupPage extends LitElement {
     if (this.groupId !== null && this.groupId !== undefined) {
       this.group = await fetchGroup(this.hass!, this.groupId);
     }
+    this.devices = await fetchGroupableDevices(this.hass!);
+    // filter the groupable devices so we only show devices that aren't already in the group
+    this._filterDevices();
+  }
+
+  private _filterDevices() {
+    // filter the groupable devices so we only show devices that aren't already in the group
+    this._filteredDevices = this.devices.filter((device) => {
+      return !(
+        this.group!.members.filter((member) => member.ieee === device.ieee)
+          .length > 0
+      );
+    });
+  }
+
+  private _handleAddSelectionChanged(ev: CustomEvent): void {
+    const changedSelection = ev.detail as SelectionChangedEvent;
+    const entity = changedSelection.id;
+    if (changedSelection.selected) {
+      this._selectedDevicesToAdd.push(entity);
+    } else {
+      const index = this._selectedDevicesToAdd.indexOf(entity);
+      if (index !== -1) {
+        this._selectedDevicesToAdd.splice(index, 1);
+      }
+    }
+    this._selectedDevicesToAdd = [...this._selectedDevicesToAdd];
+  }
+
+  private _handleRemoveSelectionChanged(ev: CustomEvent): void {
+    const changedSelection = ev.detail as SelectionChangedEvent;
+    const entity = changedSelection.id;
+    if (changedSelection.selected) {
+      this._selectedDevicesToRemove.push(entity);
+    } else {
+      const index = this._selectedDevicesToRemove.indexOf(entity);
+      if (index !== -1) {
+        this._selectedDevicesToRemove.splice(index, 1);
+      }
+    }
+    this._selectedDevicesToRemove = [...this._selectedDevicesToRemove];
+  }
+
+  private async _addMembersToGroup(): Promise<void> {
+    this._processingAdd = true;
+    this.group = await addMembersToGroup(
+      this.hass,
+      this.groupId,
+      this._selectedDevicesToAdd
+    );
+    this._filterDevices();
+    this._selectedDevicesToAdd = [];
+    this._processingAdd = false;
+  }
+
+  private async _removeMembersFromGroup(): Promise<void> {
+    this._processingRemove = true;
+    this.group = await removeMembersFromGroup(
+      this.hass,
+      this.groupId,
+      this._selectedDevicesToRemove
+    );
+    this._filterDevices();
+    this._selectedDevicesToRemove = [];
+    this._processingRemove = false;
   }
 
   private async _deleteGroup(): Promise<void> {
@@ -138,6 +298,34 @@ export class ZHAGroupPage extends LitElement {
 
         ha-config-section *:last-child {
           padding-bottom: 24px;
+        }
+
+        .button {
+          float: right;
+        }
+
+        .table {
+          height: 200px;
+          overflow: auto;
+        }
+
+        mwc-button paper-spinner {
+          width: 14px;
+          height: 14px;
+          margin-right: 20px;
+        }
+        paper-spinner {
+          display: none;
+        }
+        paper-spinner[active] {
+          display: block;
+        }
+        .paper-dialog-buttons {
+          align-items: flex-end;
+          padding: 8px;
+        }
+        .paper-dialog-buttons .warning {
+          --mdc-theme-primary: var(--google-red-500);
         }
       `,
     ];

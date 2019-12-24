@@ -1450,7 +1450,11 @@
             "removing_groups": "Removing Groups",
             "group_info": "Group Information",
             "group_details": "Here are all the details for the selected Zigbee group.",
-            "group_not_found": "Group not found!"
+            "group_not_found": "Group not found!",
+            "add_members": "Add Members",
+            "remove_members": "Remove Members",
+            "adding_members": "Adding Members",
+            "removing_members": "Removing Members"
           }
         },
         "zwave": {
