@@ -40,6 +40,11 @@ class ZHAConfigPanel extends HassRouterPage {
             /* webpackChunkName: "zha-groups-dashboard" */ "./zha-groups-dashboard"
           ),
       },
+      group: {
+        tag: "zha-group-page",
+        load: () =>
+          import(/* webpackChunkName: "zha-group-page" */ "./zha-group-page"),
+      },
     },
   };
 
@@ -48,6 +53,9 @@ class ZHAConfigPanel extends HassRouterPage {
     el.hass = this.hass;
     el.isWide = this.isWide;
     el.narrow = this.narrow;
+    if (this._currentPage === "group") {
+      el.groupId = this.routeTail.path.substr(1);
+    }
   }
 }
 
