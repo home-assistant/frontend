@@ -16,6 +16,7 @@ import { DataTableColumnContainer } from "../../../components/data-table/ha-data
 // tslint:disable-next-line
 import { ZHAGroup, ZHADevice } from "../../../data/zha";
 import { formatAsPaddedHex } from "./functions";
+import { navigate } from "../../../common/navigate";
 
 export interface GroupRowData extends ZHAGroup {
   group?: GroupRowData;
@@ -38,6 +39,11 @@ export class ZHAGroupsDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
+              template: (name) => html`
+                <div @click=${this._handleRowClicked} style="cursor: pointer;">
+                  ${name}
+                </div>
+              `,
             },
           }
         : {
@@ -46,6 +52,11 @@ export class ZHAGroupsDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
+              template: (name) => html`
+                <div @click=${this._handleRowClicked} style="cursor: pointer;">
+                  ${name}
+                </div>
+              `,
             },
             group_id: {
               title: this.hass.localize("ui.panel.config.zha.groups.group_id"),
@@ -77,6 +88,13 @@ export class ZHAGroupsDataTable extends LitElement {
         .selectable=${this.selectable}
       ></ha-data-table>
     `;
+  }
+
+  private _handleRowClicked(ev: CustomEvent) {
+    const groupId = (ev.target as HTMLElement)
+      .closest("tr")!
+      .getAttribute("data-row-id")!;
+    navigate(this, `/config/zha/group/${groupId}`);
   }
 }
 
