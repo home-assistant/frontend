@@ -31,6 +31,7 @@ export class ZHAGroupPage extends LitElement {
   @property() public group?: ZHAGroup;
   @property() public groupId!: number;
   @property() public narrow!: boolean;
+  @property() public isWide!: boolean;
   private _firstUpdatedCalled: boolean = false;
 
   private _members = memoizeOne(
@@ -72,17 +73,18 @@ export class ZHAGroupPage extends LitElement {
           icon="hass:delete"
           @click=${this._deleteGroup}
         ></paper-icon-button>
-        <ha-config-section .isWide=${!this.narrow}>
+        <ha-config-section .isWide=${this.isWide}>
           <div class="header">
             ${this.hass.localize("ui.panel.config.zha.groups.group_info")}
           </div>
-          <span slot="introduction">
+
+          <p slot="introduction">
             ${this.hass.localize("ui.panel.config.zha.groups.group_details")}
-          </span>
-          <span> <b>Name:</b> ${this.group.name} </span>
-          <span>
-            <b>Group Id:</b> ${formatAsPaddedHex(this.group.group_id)}
-          </span>
+          </p>
+
+          <p><b>Name:</b> ${this.group.name}</p>
+          <p><b>Group Id:</b> ${formatAsPaddedHex(this.group.group_id)}</p>
+
           <div class="header">
             ${this.hass.localize("ui.panel.config.zha.groups.members")}
           </div>
@@ -99,9 +101,9 @@ export class ZHAGroupPage extends LitElement {
                 `
               )
             : html`
-                <span>
+                <p>
                   This group has no members
-                </span>
+                </p>
               `}
         </ha-config-section>
       </hass-subpage>
