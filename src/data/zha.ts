@@ -173,3 +173,12 @@ export const removeGroups = (
     type: "zha/group/remove",
     group_ids: groupIdsToRemove,
   });
+
+export const fetchGroup = (
+  hass: HomeAssistant,
+  groupId: number
+): Promise<ZHAGroup> =>
+  hass.callWS({
+    type: "zha/group",
+    group_id: groupId,
+  });

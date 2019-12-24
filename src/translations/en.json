@@ -1447,7 +1447,10 @@
             "header": "Zigbee Group Management",
             "introduction": "Create and modify zigbee groups",
             "remove_groups": "Remove Groups",
-            "removing_groups": "Removing Groups"
+            "removing_groups": "Removing Groups",
+            "group_info": "Group Information",
+            "group_details": "Here are all the details for the selected Zigbee group.",
+            "group_not_found": "Group not found!"
           }
         },
         "zwave": {
