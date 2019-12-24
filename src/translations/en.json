@@ -1454,7 +1454,12 @@
             "add_members": "Add Members",
             "remove_members": "Remove Members",
             "adding_members": "Adding Members",
-            "removing_members": "Removing Members"
+            "removing_members": "Removing Members",
+            "create_group_details": "Enter the required details to create a new zigbee group",
+            "group_name_placeholder": "Group Name",
+            "create_group": "Create New ZHA Zigbee Group",
+            "create": "Create Group",
+            "creating_group": "Creating Group"
           }
         },
         "zwave": {

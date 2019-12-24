@@ -17,6 +17,8 @@ import { sortZHAGroups } from "./functions";
 import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
 import "@material/mwc-button";
 import "@polymer/paper-spinner/paper-spinner";
+import "@polymer/paper-icon-button/paper-icon-button";
+import { navigate } from "../../../common/navigate";
 
 @customElement("zha-groups-dashboard")
 export class ZHAGroupsDashboard extends LitElement {
@@ -49,6 +51,12 @@ export class ZHAGroupsDashboard extends LitElement {
           "ui.panel.config.zha.groups.zha_zigbee_groups"
         )}
       >
+        <paper-icon-button
+          slot="toolbar-icon"
+          icon="hass:plus"
+          @click=${this._addGroup}
+        ></paper-icon-button>
+
         <div class="content">
           ${this._groups
             ? html`
@@ -113,6 +121,10 @@ export class ZHAGroupsDashboard extends LitElement {
     this._groups = await removeGroups(this.hass, this._selectedGroupsToRemove);
     this._selectedGroupsToRemove = [];
     this._processingRemove = false;
+  }
+
+  private async _addGroup(): Promise<void> {
+    navigate(this, `/config/zha/group-add`);
   }
 
   static get styles(): CSSResult[] {
