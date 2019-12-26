@@ -1,29 +1,32 @@
-import "../../../layouts/hass-loading-screen";
-
-import { customElement, property } from "lit-element";
-
 import {
   HassRouterPage,
   RouterOptions,
 } from "../../../layouts/hass-router-page";
+import { customElement, property } from "lit-element";
 import { HomeAssistant } from "../../../types";
 
-@customElement("zha-config-panel")
-class ZHAConfigPanel extends HassRouterPage {
+@customElement("zha-config-dashboard-router")
+class ZHAConfigDashboardRouter extends HassRouterPage {
   @property() public hass!: HomeAssistant;
   @property() public isWide!: boolean;
   @property() public narrow!: boolean;
 
   protected routerOptions: RouterOptions = {
-    defaultPage: "configuration",
+    defaultPage: "network",
     cacheAll: true,
     preloadAll: true,
+    showLoading: true,
     routes: {
-      configuration: {
-        tag: "ha-config-zha",
+      network: {
+        tag: "zha-network",
+        load: () =>
+          import(/* webpackChunkName: "zha-network-page" */ "./zha-network"),
+      },
+      devices: {
+        tag: "zha-devices-page",
         load: () =>
           import(
-            /* webpackChunkName: "zha-configuration-page" */ "./ha-config-zha"
+            /* webpackChunkName: "zha-devices-page" */ "./zha-devices-page"
           ),
       },
       add: {
@@ -68,6 +71,6 @@ class ZHAConfigPanel extends HassRouterPage {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "zha-config-panel": ZHAConfigPanel;
+    "zha-config-dashboard-router": ZHAConfigDashboardRouter;
   }
 }

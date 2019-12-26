@@ -1,11 +1,8 @@
 import "../../../components/ha-paper-icon-button-arrow-prev";
-import "../../../layouts/hass-subpage";
 import "./zha-binding";
 import "./zha-cluster-attributes";
 import "./zha-cluster-commands";
-import "./zha-network";
 import "./zha-node";
-import "./zha-groups-tile";
 import "@polymer/paper-icon-button/paper-icon-button";
 
 import {
@@ -15,6 +12,7 @@ import {
   property,
   PropertyValues,
   TemplateResult,
+  customElement,
 } from "lit-element";
 
 import { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -24,7 +22,8 @@ import { HomeAssistant } from "../../../types";
 import { sortZHADevices } from "./functions";
 import { ZHAClusterSelectedParams, ZHADeviceSelectedParams } from "./types";
 
-export class HaConfigZha extends LitElement {
+@customElement("zha-devices-page")
+export class ZHADevicesPage extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public isWide?: boolean;
   @property() private _selectedDevice?: ZHADevice;
@@ -40,51 +39,39 @@ export class HaConfigZha extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <hass-subpage header="Zigbee Home Automation">
-        <zha-network
-          .isWide="${this.isWide}"
-          .hass="${this.hass}"
-        ></zha-network>
+      <zha-node
+        .isWide="${this.isWide}"
+        .hass="${this.hass}"
+        @zha-cluster-selected="${this._onClusterSelected}"
+        @zha-node-selected="${this._onDeviceSelected}"
+      ></zha-node>
+      ${this._selectedCluster
+        ? html`
+            <zha-cluster-attributes
+              .isWide="${this.isWide}"
+              .hass="${this.hass}"
+              .selectedNode="${this._selectedDevice}"
+              .selectedCluster="${this._selectedCluster}"
+            ></zha-cluster-attributes>
 
-        <zha-groups-tile
-          .isWide="${this.isWide}"
-          .hass="${this.hass}"
-        ></zha-groups-tile>
-
-        <zha-node
-          .isWide="${this.isWide}"
-          .hass="${this.hass}"
-          @zha-cluster-selected="${this._onClusterSelected}"
-          @zha-node-selected="${this._onDeviceSelected}"
-        ></zha-node>
-        ${this._selectedCluster
-          ? html`
-              <zha-cluster-attributes
-                .isWide="${this.isWide}"
-                .hass="${this.hass}"
-                .selectedNode="${this._selectedDevice}"
-                .selectedCluster="${this._selectedCluster}"
-              ></zha-cluster-attributes>
-
-              <zha-cluster-commands
-                .isWide="${this.isWide}"
-                .hass="${this.hass}"
-                .selectedNode="${this._selectedDevice}"
-                .selectedCluster="${this._selectedCluster}"
-              ></zha-cluster-commands>
-            `
-          : ""}
-        ${this._selectedDevice && this._bindableDevices.length > 0
-          ? html`
-              <zha-binding-control
-                .isWide="${this.isWide}"
-                .hass="${this.hass}"
-                .selectedDevice="${this._selectedDevice}"
-                .bindableDevices="${this._bindableDevices}"
-              ></zha-binding-control>
-            `
-          : ""}
-      </hass-subpage>
+            <zha-cluster-commands
+              .isWide="${this.isWide}"
+              .hass="${this.hass}"
+              .selectedNode="${this._selectedDevice}"
+              .selectedCluster="${this._selectedCluster}"
+            ></zha-cluster-commands>
+          `
+        : ""}
+      ${this._selectedDevice && this._bindableDevices.length > 0
+        ? html`
+            <zha-binding-control
+              .isWide="${this.isWide}"
+              .hass="${this.hass}"
+              .selectedDevice="${this._selectedDevice}"
+              .bindableDevices="${this._bindableDevices}"
+            ></zha-binding-control>
+          `
+        : ""}
     `;
   }
 
@@ -116,8 +103,6 @@ export class HaConfigZha extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-config-zha": HaConfigZha;
+    "zha-devices-page": ZHADevicesPage;
   }
 }
-
-customElements.define("ha-config-zha", HaConfigZha);
