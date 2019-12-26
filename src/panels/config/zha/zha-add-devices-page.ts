@@ -1,6 +1,5 @@
 import "../../../components/ha-service-description";
 import "../../../components/ha-textarea";
-import "../../../layouts/hass-subpage";
 import "./zha-device-card";
 import "@material/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
@@ -52,83 +51,77 @@ class ZHAAddDevicesPage extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <hass-subpage
-        header="${this.hass!.localize(
-          "ui.panel.config.zha.add_device_page.header"
-        )}"
-      >
-        ${this._active
-          ? html`
-              <h2>
-                <paper-spinner
-                  ?active="${this._active}"
-                  alt="Searching"
-                ></paper-spinner>
+      ${this._active
+        ? html`
+            <h2>
+              <paper-spinner
+                ?active="${this._active}"
+                alt="Searching"
+              ></paper-spinner>
+              ${this.hass!.localize(
+                "ui.panel.config.zha.add_device_page.spinner"
+              )}
+            </h2>
+          `
+        : html`
+            <div class="card-actions">
+              <mwc-button @click=${this._subscribe} class="search-button">
                 ${this.hass!.localize(
-                  "ui.panel.config.zha.add_device_page.spinner"
+                  "ui.panel.config.zha.add_device_page.search_again"
                 )}
-              </h2>
+              </mwc-button>
+              <paper-icon-button
+                class="toggle-help-icon"
+                @click="${this._onHelpTap}"
+                icon="hass:help-circle"
+              ></paper-icon-button>
+              ${this._showHelp
+                ? html`
+                    <ha-service-description
+                      .hass="${this.hass}"
+                      domain="zha"
+                      service="permit"
+                      class="help-text"
+                    />
+                  `
+                : ""}
+            </div>
+          `}
+      ${this._error
+        ? html`
+            <div class="error">${this._error}</div>
+          `
+        : ""}
+      <div class="content-header"></div>
+      <div class="content">
+        ${this._discoveredDevices.length < 1
+          ? html`
+              <div class="discovery-text">
+                <h4>
+                  ${this.hass!.localize(
+                    "ui.panel.config.zha.add_device_page.discovery_text"
+                  )}
+                </h4>
+              </div>
             `
           : html`
-              <div class="card-actions">
-                <mwc-button @click=${this._subscribe} class="search-button">
-                  ${this.hass!.localize(
-                    "ui.panel.config.zha.add_device_page.search_again"
-                  )}
-                </mwc-button>
-                <paper-icon-button
-                  class="toggle-help-icon"
-                  @click="${this._onHelpTap}"
-                  icon="hass:help-circle"
-                ></paper-icon-button>
-                ${this._showHelp
-                  ? html`
-                      <ha-service-description
-                        .hass="${this.hass}"
-                        domain="zha"
-                        service="permit"
-                        class="help-text"
-                      />
-                    `
-                  : ""}
-              </div>
+              ${this._discoveredDevices.map(
+                (device) => html`
+                  <zha-device-card
+                    class="card"
+                    .hass=${this.hass}
+                    .device=${device}
+                    .narrow=${!this.isWide}
+                    .showHelp=${this._showHelp}
+                    .showActions=${!this._active}
+                    isJoinPage
+                  ></zha-device-card>
+                `
+              )}
             `}
-        ${this._error
-          ? html`
-              <div class="error">${this._error}</div>
-            `
-          : ""}
-        <div class="content-header"></div>
-        <div class="content">
-          ${this._discoveredDevices.length < 1
-            ? html`
-                <div class="discovery-text">
-                  <h4>
-                    ${this.hass!.localize(
-                      "ui.panel.config.zha.add_device_page.discovery_text"
-                    )}
-                  </h4>
-                </div>
-              `
-            : html`
-                ${this._discoveredDevices.map(
-                  (device) => html`
-                    <zha-device-card
-                      class="card"
-                      .hass=${this.hass}
-                      .device=${device}
-                      .narrow=${!this.isWide}
-                      .showHelp=${this._showHelp}
-                      .showActions=${!this._active}
-                      isJoinPage
-                    ></zha-device-card>
-                  `
-                )}
-              `}
-        </div>
-        <ha-textarea class="events" value="${this._formattedEvents}">
-        </ha-textarea>
-      </hass-subpage>
+      </div>
+      <ha-textarea class="events" value="${this._formattedEvents}">
+      </ha-textarea>
     `;
   }
 
