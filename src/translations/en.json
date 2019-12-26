@@ -1400,6 +1400,7 @@
         },
         "zha": {
           "caption": "ZHA",
+          "title": "Zigbee Home Automation",
           "description": "Zigbee Home Automation network management",
           "common": {
             "add_devices": "Add Devices",
@@ -1426,7 +1427,9 @@
             "help_node_dropdown": "Select a device to view per-device options."
           },
           "clusters": {
-            "help_cluster_dropdown": "Select a cluster to view attributes and commands."
+            "header": "Clusters",
+            "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
+            "introduction": "Clusters are the building blocks for Zigbee functionality. They seperate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
           },
           "cluster_attributes": {
             "header": "Cluster Attributes",

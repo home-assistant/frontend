@@ -3,6 +3,7 @@ import "../../../components/ha-service-description";
 import "../../../components/ha-card";
 import "../ha-config-section";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 
@@ -41,8 +42,8 @@ const computeClusterKey = (cluster: Cluster): string => {
 export class ZHAClusters extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public isWide?: boolean;
-  @property() public showHelp = false;
   @property() public selectedDevice?: ZHADevice;
+  @property() public showHelp = false;
   @property() private _selectedClusterIndex = -1;
   @property() private _clusters: Cluster[] = [];
 
@@ -60,33 +61,54 @@ export class ZHAClusters extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <div class="node-picker">
-        <paper-dropdown-menu
-          label="${this.hass!.localize("ui.panel.config.zha.common.clusters")}"
-          class="flex"
-        >
-          <paper-listbox
-            slot="dropdown-content"
-            .selected="${this._selectedClusterIndex}"
-            @iron-select="${this._selectedClusterChanged}"
+      <ha-config-section .isWide="${this.isWide}">
+        <div style="position: relative" slot="header">
+          <span>
+            ${this.hass!.localize("ui.panel.config.zha.clusters.header")}
+          </span>
+          <paper-icon-button
+            class="toggle-help-icon"
+            @click="${this._onHelpTap}"
+            icon="hass:help-circle"
           >
-            ${this._clusters.map(
-              (entry) => html`
-                <paper-item>${computeClusterKey(entry)}</paper-item>
+          </paper-icon-button>
+        </div>
+        <span slot="introduction">
+          ${this.hass!.localize("ui.panel.config.zha.clusters.introduction")}
+        </span>
+
+        <ha-card class="content">
+          <div class="node-picker">
+            <paper-dropdown-menu
+              label="${this.hass!.localize(
+                "ui.panel.config.zha.common.clusters"
+              )}"
+              class="flex"
+            >
+              <paper-listbox
+                slot="dropdown-content"
+                .selected="${this._selectedClusterIndex}"
+                @iron-select="${this._selectedClusterChanged}"
+              >
+                ${this._clusters.map(
+                  (entry) => html`
+                    <paper-item>${computeClusterKey(entry)}</paper-item>
+                  `
+                )}
+              </paper-listbox>
+            </paper-dropdown-menu>
+          </div>
+          ${this.showHelp
+            ? html`
+                <div class="help-text">
+                  ${this.hass!.localize(
+                    "ui.panel.config.zha.clusters.help_cluster_dropdown"
+                  )}
+                </div>
               `
-            )}
-          </paper-listbox>
-        </paper-dropdown-menu>
-      </div>
-      ${this.showHelp
-        ? html`
-            <div class="help-text">
-              ${this.hass!.localize(
-                "ui.panel.config.zha.clusters.help_cluster_dropdown"
-              )}
-            </div>
-          `
-        : ""}
+            : ""}
+        </ha-card>
+      </ha-config-section>
     `;
   }
 
@@ -109,6 +131,10 @@ export class ZHAClusters extends LitElement {
     });
   }
 
+  private _onHelpTap(): void {
+    this.showHelp = !this.showHelp;
+  }
+
   static get styles(): CSSResult[] {
     return [
       haStyle,
@@ -119,6 +145,15 @@ export class ZHAClusters extends LitElement {
           flex: 1;
           -webkit-flex-basis: 0.000000001px;
           flex-basis: 0.000000001px;
+        }
+
+        .content {
+          margin-top: 24px;
+        }
+
+        ha-card {
+          margin: 0 auto;
+          max-width: 600px;
         }
 
         .node-picker {
@@ -135,6 +170,18 @@ export class ZHAClusters extends LitElement {
           padding-right: 28px;
           padding-bottom: 10px;
         }
+
+        .toggle-help-icon {
+          position: absolute;
+          top: -6px;
+          right: 0;
+          color: var(--primary-color);
+        }
+
+        [hidden] {
+          display: none;
+        }
+
         .help-text {
           color: grey;
           padding-left: 28px;

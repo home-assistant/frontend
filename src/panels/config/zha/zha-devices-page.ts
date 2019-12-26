@@ -2,6 +2,7 @@ import "../../../components/ha-paper-icon-button-arrow-prev";
 import "./zha-binding";
 import "./zha-cluster-attributes";
 import "./zha-cluster-commands";
+import "./zha-clusters";
 import "./zha-node";
 import "@polymer/paper-icon-button/paper-icon-button";
 
@@ -43,9 +44,18 @@ export class ZHADevicesPage extends LitElement {
       <zha-node
         .isWide="${this.isWide}"
         .hass="${this.hass}"
-        @zha-cluster-selected="${this._onClusterSelected}"
         @zha-node-selected="${this._onDeviceSelected}"
       ></zha-node>
+      ${this._selectedDevice
+        ? html`
+            <zha-clusters
+              .hass="${this.hass}"
+              .isWide="${this.isWide}"
+              .selectedDevice="${this._selectedDevice}"
+              @zha-cluster-selected="${this._onClusterSelected}"
+            ></zha-clusters>
+          `
+        : ""}
       ${this._selectedCluster
         ? html`
             <zha-cluster-attributes

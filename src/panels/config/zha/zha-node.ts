@@ -2,7 +2,6 @@ import "../../../components/buttons/ha-call-service-button";
 import "../../../components/ha-service-description";
 import "../../../components/ha-card";
 import "../ha-config-section";
-import "./zha-clusters";
 import "./zha-device-card";
 import "@material/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
@@ -126,19 +125,8 @@ export class ZHANode extends LitElement {
                 ></zha-device-card>
               `
             : ""}
-          ${this._selectedDevice ? this._renderClusters() : ""}
         </ha-card>
       </ha-config-section>
-    `;
-  }
-
-  private _renderClusters(): TemplateResult {
-    return html`
-      <zha-clusters
-        .hass="${this.hass}"
-        .selectedDevice="${this._selectedDevice}"
-        .showHelp="${this._showHelp}"
-      ></zha-clusters>
     `;
   }
 
