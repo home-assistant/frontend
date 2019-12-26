@@ -13,6 +13,7 @@ import {
   PropertyValues,
   TemplateResult,
   customElement,
+  css,
 } from "lit-element";
 
 import { HASSDomEvent } from "../../../common/dom/fire_event";
@@ -72,6 +73,7 @@ export class ZHADevicesPage extends LitElement {
             ></zha-binding-control>
           `
         : ""}
+      <div class="spacer" />
     `;
   }
 
@@ -97,7 +99,14 @@ export class ZHADevicesPage extends LitElement {
   }
 
   static get styles(): CSSResult[] {
-    return [haStyle];
+    return [
+      haStyle,
+      css`
+        .spacer {
+          height: 50px;
+        }
+      `,
+    ];
   }
 }
 
