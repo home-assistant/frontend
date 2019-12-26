@@ -12,7 +12,7 @@ class ZHAConfigDashboardRouter extends HassRouterPage {
   @property() public narrow!: boolean;
 
   protected routerOptions: RouterOptions = {
-    defaultPage: "network",
+    defaultPage: "devices",
     cacheAll: true,
     preloadAll: true,
     showLoading: true,
