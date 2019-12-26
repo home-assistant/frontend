@@ -90,14 +90,16 @@ export class ZHAGroupPage extends LitElement {
     const members = this._members(this.group);
 
     return html`
-      <paper-icon-button
-        slot="toolbar-icon"
-        icon="hass:delete"
-        @click=${this._deleteGroup}
-      ></paper-icon-button>
       <ha-config-section .isWide=${this.isWide}>
         <div class="header">
           ${this.hass.localize("ui.panel.config.zha.groups.group_info")}
+          <span>
+            <mwc-button
+              label="Delete Group"
+              @click=${this._deleteGroup}
+              style="float: right;"
+            ></mwc-button>
+          </span>
         </div>
 
         <p slot="introduction">

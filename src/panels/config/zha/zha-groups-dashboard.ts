@@ -45,12 +45,6 @@ export class ZHAGroupsDashboard extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <paper-icon-button
-        slot="toolbar-icon"
-        icon="hass:plus"
-        @click=${this._addGroup}
-      ></paper-icon-button>
-
       <div class="content">
         ${this._groups
           ? html`
@@ -71,6 +65,11 @@ export class ZHAGroupsDashboard extends LitElement {
             `}
       </div>
       <div class="paper-dialog-buttons">
+        <mwc-button
+          class="button"
+          label="Add Group"
+          @click=${this._addGroup}
+        ></mwc-button>
         <mwc-button
           ?disabled="${!this._selectedGroupsToRemove.length ||
             this._processingRemove}"
