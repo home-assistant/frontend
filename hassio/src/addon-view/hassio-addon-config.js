@@ -45,6 +45,7 @@ class HassioAddonConfig extends PolymerElement {
         <div class="card-actions">
           <ha-call-api-button
             class="warning"
+            confirmation="Are you sure you want to reset the configuration?"
             hass="[[hass]]"
             path="hassio/addons/[[addonSlug]]/options"
             data="[[resetData]]"
