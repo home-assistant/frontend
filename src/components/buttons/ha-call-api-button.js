@@ -2,6 +2,7 @@ import { LitElement, html } from "lit-element";
 
 import "./ha-progress-button";
 import { fireEvent } from "../../common/dom/fire_event";
+import { showConfirmationDialog } from "../../dialogs/confirmation/show-dialog-confirmation";
 
 class HaCallApiButton extends LitElement {
   render() {
@@ -31,6 +32,7 @@ class HaCallApiButton extends LitElement {
       method: String,
       data: {},
       disabled: Boolean,
+      confirmation: String,
     };
   }
 
@@ -38,7 +40,7 @@ class HaCallApiButton extends LitElement {
     return this.renderRoot.querySelector("ha-progress-button");
   }
 
-  async _buttonTapped() {
+  async callApi() {
     this.progress = true;
     const eventData = {
       method: this.method,
@@ -60,6 +62,17 @@ class HaCallApiButton extends LitElement {
     }
 
     fireEvent(this, "hass-api-called", eventData);
+  }
+
+  async _buttonTapped() {
+    if (this.confirmation) {
+      showConfirmationDialog(this, {
+        text: this.confirmation,
+        confirm: async () => await this.callApi(),
+      });
+    } else {
+      await this.callApi();
+    }
   }
 }
 
