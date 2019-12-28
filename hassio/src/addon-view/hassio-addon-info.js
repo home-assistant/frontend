@@ -373,19 +373,21 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
                 </template>
               </div>
             </template>
-            <div class="state">
-              <div>
-                Protection mode
-                <span>
-                  <iron-icon icon="hassio:information"></iron-icon>
-                  <paper-tooltip>Grant the add-on elevated system access.</paper-tooltip>
-                </span>
+            <template is="dom-if" if="[[_computeUsesProtectedOptions(addon)]]">
+              <div class="state">
+                <div>
+                  Protection mode
+                  <span>
+                    <iron-icon icon="hassio:information"></iron-icon>
+                    <paper-tooltip>Grant the add-on elevated system access.</paper-tooltip>
+                  </span>
+                </div>
+                <ha-switch
+                  on-change="protectionToggled"
+                  checked="[[addon.protected]]"
+                ></ha-switch>
               </div>
-              <ha-switch
-                on-change="protectionToggled"
-                checked="[[addon.protected]]"
-              ></ha-switch>
-            </div>
+            </template>
           </template>
         </div>
         <div class="card-actions">
@@ -608,6 +610,10 @@ class HassioAddonInfo extends EventsMixin(PolymerElement) {
 
   _computeCannotIngressSidebar(hass, addon) {
     return !addon.ingress || !this._computeHA92plus(hass);
+  }
+
+  _computeUsesProtectedOptions(addon) {
+    return addon.docker_api || addon.full_access || addon.host_pid;
   }
 
   _computeHA92plus(hass) {
