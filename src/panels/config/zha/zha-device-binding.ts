@@ -24,8 +24,8 @@ import { HomeAssistant } from "../../../types";
 import { ItemSelectedEvent } from "./types";
 import "@polymer/paper-item/paper-item";
 
-@customElement("zha-binding-control")
-export class ZHABindingControl extends LitElement {
+@customElement("zha-device-binding-control")
+export class ZHADeviceBindingControl extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public isWide?: boolean;
   @property() public selectedDevice?: ZHADevice;
@@ -204,6 +204,6 @@ export class ZHABindingControl extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "zha-binding-control": ZHABindingControl;
+    "zha-device-binding-control": ZHADeviceBindingControl;
   }
 }

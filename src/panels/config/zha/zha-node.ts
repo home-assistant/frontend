@@ -61,8 +61,9 @@ export class ZHANode extends LitElement {
           .device=${this.device}
           .narrow=${!this.isWide}
           .showHelp=${this._showHelp}
-          isJoinPage
-          showActions
+          .showHelp=${this._showHelp}
+          .showName=${false}
+          .showModelInfo=${false}
           @zha-device-removed=${this._onDeviceRemoved}
         ></zha-device-card>
       </ha-config-section>
