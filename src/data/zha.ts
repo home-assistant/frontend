@@ -126,6 +126,28 @@ export const unbindDevices = (
     target_ieee: targetIEEE,
   });
 
+export const bindDeviceToGroup = (
+  hass: HomeAssistant,
+  deviceIEEE: string,
+  groupId: number
+): Promise<void> =>
+  hass.callWS({
+    type: "zha/groups/bind",
+    source_ieee: deviceIEEE,
+    group_id: groupId,
+  });
+
+export const unbindDeviceFromGroup = (
+  hass: HomeAssistant,
+  deviceIEEE: string,
+  groupId: number
+): Promise<void> =>
+  hass.callWS({
+    type: "zha/groups/unbind",
+    source_ieee: deviceIEEE,
+    group_id: groupId,
+  });
+
 export const readAttributeValue = (
   hass: HomeAssistant,
   data: ReadAttributeServiceData
