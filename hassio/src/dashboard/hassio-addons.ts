@@ -88,7 +88,6 @@ class HassioAddons extends LitElement {
   }
 
   addonTapped(ev) {
-    console.log(ev);
     navigate(this, `/hassio/addon/${ev.currentTarget.addon.slug}`);
   }
 
