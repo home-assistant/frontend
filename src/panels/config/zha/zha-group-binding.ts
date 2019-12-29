@@ -86,7 +86,7 @@ export class ZHAGroupBindingControl extends LitElement {
           </div>
           ${this._showHelp
             ? html`
-                <div class="helpText">
+                <div class="help-text">
                   Select a group to issue a bind command.
                 </div>
               `
