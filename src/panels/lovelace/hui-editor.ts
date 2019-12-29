@@ -155,7 +155,9 @@ class LovelaceFullConfigEditor extends LitElement {
     } else if (!this._changed && window.onbeforeunload) {
       window.onbeforeunload = null;
     }
-    if (this._changed) this.requestUpdate();
+    if (this._changed) {
+      this.requestUpdate();
+    }
   }
 
   private _closeEditor() {
