@@ -19,8 +19,8 @@ class HassioAddonLogs extends PolymerElement {
           white-space: pre-wrap;
           overflow-wrap: break-word;
         }
+        ${ANSI_HTML_STYLE}
       </style>
-      ${ANSI_HTML_STYLE}
       <paper-card heading="Log">
         <div class="card-content" id="content"></div>
         <div class="card-actions">
