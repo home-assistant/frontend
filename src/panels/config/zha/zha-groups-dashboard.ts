@@ -18,6 +18,7 @@ import "@material/mwc-button";
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-icon-button/paper-icon-button";
 import { navigate } from "../../../common/navigate";
+import "../../../layouts/hass-subpage";
 
 @customElement("zha-groups-dashboard")
 export class ZHAGroupsDashboard extends LitElement {
@@ -45,48 +46,55 @@ export class ZHAGroupsDashboard extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="content">
-        ${this._groups
-          ? html`
-              <zha-groups-data-table
-                .hass=${this.hass}
-                .narrow=${this.narrow}
-                .groups=${this._groups}
-                .selectable=${true}
-                @selection-changed=${this._handleRemoveSelectionChanged}
-                class="table"
-              ></zha-groups-data-table>
-            `
-          : html`
-              <paper-spinner
-                active
-                alt=${this.hass!.localize("ui.common.loading")}
-              ></paper-spinner>
-            `}
-      </div>
-      <div class="paper-dialog-buttons">
-        <mwc-button
-          class="button"
-          label="Add Group"
+      <hass-subpage
+        header="${this.hass!.localize(
+          "ui.panel.config.zha.groups.groups-header"
+        )}"
+      >
+        <paper-icon-button
+          slot="toolbar-icon"
+          icon="hass:plus"
           @click=${this._addGroup}
-        ></mwc-button>
-        <mwc-button
-          ?disabled="${!this._selectedGroupsToRemove.length ||
-            this._processingRemove}"
-          @click="${this._removeGroup}"
-          class="button"
-        >
-          <paper-spinner
-            ?active="${this._processingRemove}"
-            alt=${this.hass!.localize(
-              "ui.panel.config.zha.groups.removing_groups"
-            )}
-          ></paper-spinner>
-          ${this.hass!.localize(
-            "ui.panel.config.zha.groups.remove_groups"
-          )}</mwc-button
-        >
-      </div>
+        ></paper-icon-button>
+
+        <div class="content">
+          ${this._groups
+            ? html`
+                <zha-groups-data-table
+                  .hass=${this.hass}
+                  .narrow=${this.narrow}
+                  .groups=${this._groups}
+                  .selectable=${true}
+                  @selection-changed=${this._handleRemoveSelectionChanged}
+                  class="table"
+                ></zha-groups-data-table>
+              `
+            : html`
+                <paper-spinner
+                  active
+                  alt=${this.hass!.localize("ui.common.loading")}
+                ></paper-spinner>
+              `}
+        </div>
+        <div class="paper-dialog-buttons">
+          <mwc-button
+            ?disabled="${!this._selectedGroupsToRemove.length ||
+              this._processingRemove}"
+            @click="${this._removeGroup}"
+            class="button"
+          >
+            <paper-spinner
+              ?active="${this._processingRemove}"
+              alt=${this.hass!.localize(
+                "ui.panel.config.zha.groups.removing_groups"
+              )}
+            ></paper-spinner>
+            ${this.hass!.localize(
+              "ui.panel.config.zha.groups.remove_groups"
+            )}</mwc-button
+          >
+        </div>
+      </hass-subpage>
     `;
   }
 

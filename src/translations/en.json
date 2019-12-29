@@ -1401,6 +1401,8 @@
         "zha": {
           "caption": "ZHA",
           "title": "Zigbee Home Automation",
+          "header": "Configure Zigbee Home Automation",
+          "introduction": "Here it is possible to configure the ZHA component. Not everything is possible to configure from the UI yet, but we're working on it.",
           "description": "Zigbee Home Automation network management",
           "common": {
             "add_devices": "Add Devices",
@@ -1418,6 +1420,16 @@
           "network_management": {
             "header": "Network Management",
             "introduction": "Commands that affect the entire network"
+          },
+          "network": {
+            "header": "Zigbee Home Automation - Network Management",
+            "caption": "Network Management",
+            "description": "Commands that affect the entire network"
+          },
+          "devices": {
+            "header": "Zigbee Home Automation - Devices",
+            "caption": "Devices",
+            "description": "Interact with Zigbee devices"
           },
           "node_management": {
             "header": "Device Management",
@@ -1449,12 +1461,16 @@
             "help_command_dropdown": "Select a command to interact with."
           },
           "groups": {
+            "caption": "Groups",
+            "description": "Create and modify zigbee groups",
             "zha_zigbee_groups": "ZHA Zigbee Groups",
             "manage_groups": "Manage Zigbee Groups",
             "groups": "Groups",
             "group_id": "Group ID",
             "members": "Members",
-            "header": "Zigbee Group Management",
+            "header": "Zigbee Home Automation - Group Management",
+            "groups-header": "Zigbee Home Automation - Group Management",
+            "group-header": "Zigbee Home Automation - Group Details",
             "introduction": "Create and modify zigbee groups",
             "remove_groups": "Remove Groups",
             "removing_groups": "Removing Groups",
@@ -1467,7 +1483,7 @@
             "removing_members": "Removing Members",
             "create_group_details": "Enter the required details to create a new zigbee group",
             "group_name_placeholder": "Group Name",
-            "create_group": "Create New ZHA Zigbee Group",
+            "create_group": "Zigbee Home Automation - Create Group",
             "create": "Create Group",
             "creating_group": "Creating Group"
           }

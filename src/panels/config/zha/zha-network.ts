@@ -4,6 +4,7 @@ import "../../../components/ha-card";
 import "../ha-config-section";
 import "@material/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
+import "../../../layouts/hass-subpage";
 
 import {
   css,
@@ -25,43 +26,47 @@ export class ZHANetwork extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <ha-config-section .isWide="${this.isWide}">
-        <div style="position: relative" slot="header">
-          <span>
+      <hass-subpage
+        header="${this.hass!.localize("ui.panel.config.zha.network.header")}"
+      >
+        <ha-config-section .isWide="${this.isWide}">
+          <div style="position: relative" slot="header">
+            <span>
+              ${this.hass!.localize(
+                "ui.panel.config.zha.network_management.header"
+              )}
+            </span>
+            <paper-icon-button
+              class="toggle-help-icon"
+              @click="${this._onHelpTap}"
+              icon="hass:help-circle"
+            ></paper-icon-button>
+          </div>
+          <span slot="introduction">
             ${this.hass!.localize(
-              "ui.panel.config.zha.network_management.header"
+              "ui.panel.config.zha.network_management.introduction"
             )}
           </span>
-          <paper-icon-button
-            class="toggle-help-icon"
-            @click="${this._onHelpTap}"
-            icon="hass:help-circle"
-          ></paper-icon-button>
-        </div>
-        <span slot="introduction">
-          ${this.hass!.localize(
-            "ui.panel.config.zha.network_management.introduction"
-          )}
-        </span>
 
-        <ha-card class="content">
-          <div class="card-actions">
-            <mwc-button @click=${this._onAddDevicesClick}>
-              ${this.hass!.localize("ui.panel.config.zha.common.add_devices")}
-            </mwc-button>
-            ${this._showHelp
-              ? html`
-                  <ha-service-description
-                    .hass="${this.hass}"
-                    domain="zha"
-                    service="permit"
-                    class="help-text2"
-                  />
-                `
-              : ""}
-          </div>
-        </ha-card>
-      </ha-config-section>
+          <ha-card class="content">
+            <div class="card-actions">
+              <mwc-button @click=${this._onAddDevicesClick}>
+                ${this.hass!.localize("ui.panel.config.zha.common.add_devices")}
+              </mwc-button>
+              ${this._showHelp
+                ? html`
+                    <ha-service-description
+                      .hass="${this.hass}"
+                      domain="zha"
+                      service="permit"
+                      class="help-text2"
+                    />
+                  `
+                : ""}
+            </div>
+          </ha-card>
+        </ha-config-section>
+      </hass-subpage>
     `;
   }
 

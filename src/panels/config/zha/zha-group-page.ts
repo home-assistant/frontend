@@ -12,6 +12,7 @@ import memoizeOne from "memoize-one";
 
 import "../../../layouts/hass-error-screen";
 import "../ha-config-section";
+import "../../../layouts/hass-subpage";
 import { HomeAssistant } from "../../../types";
 import {
   ZHADevice,
@@ -90,36 +91,60 @@ export class ZHAGroupPage extends LitElement {
     const members = this._members(this.group);
 
     return html`
-      <ha-config-section .isWide=${this.isWide}>
-        <div class="header">
-          ${this.hass.localize("ui.panel.config.zha.groups.group_info")}
-          <span>
-            <mwc-button
-              label="Delete Group"
-              @click=${this._deleteGroup}
-              style="float: right;"
-            ></mwc-button>
-          </span>
-        </div>
+      <hass-subpage
+        header="${this.hass!.localize(
+          "ui.panel.config.zha.groups.group-header"
+        )}"
+      >
+        <paper-icon-button
+          slot="toolbar-icon"
+          icon="hass:delete"
+          @click=${this._deleteGroup}
+        ></paper-icon-button>
 
-        <p slot="introduction">
-          ${this.hass.localize("ui.panel.config.zha.groups.group_details")}
-        </p>
+        <ha-config-section .isWide=${this.isWide}>
+          <div class="header">
+            ${this.hass.localize("ui.panel.config.zha.groups.group_info")}
+          </div>
 
-        <p><b>Name:</b> ${this.group.name}</p>
-        <p><b>Group Id:</b> ${formatAsPaddedHex(this.group.group_id)}</p>
+          <p slot="introduction">
+            ${this.hass.localize("ui.panel.config.zha.groups.group_details")}
+          </p>
 
-        <div class="header">
-          ${this.hass.localize("ui.panel.config.zha.groups.members")}
-        </div>
+          <p><b>Name:</b> ${this.group.name}</p>
+          <p><b>Group Id:</b> ${formatAsPaddedHex(this.group.group_id)}</p>
 
-        ${members.length
-          ? members.map(
-              (member) => html`
-                <zha-device-card
-                  class="card"
+          <div class="header">
+            ${this.hass.localize("ui.panel.config.zha.groups.members")}
+          </div>
+
+          ${members.length
+            ? members.map(
+                (member) => html`
+                  <zha-device-card
+                    class="card"
+                    .hass=${this.hass}
+                    .device=${member}
+                    .narrow=${this.narrow}
+                  ></zha-device-card>
+                `
+              )
+            : html`
+                <p>
+                  This group has no members
+                </p>
+              `}
+          ${members.length
+            ? html`
+                <div class="header">
+                  ${this.hass.localize(
+                    "ui.panel.config.zha.groups.remove_members"
+                  )}
+                </div>
+
+                <zha-devices-data-table
                   .hass=${this.hass}
-                  .device=${member}
+                  .devices=${members}
                   .narrow=${this.narrow}
                   selectable
                   @selection-changed=${this._handleRemoveSelectionChanged}
@@ -203,43 +228,63 @@ export class ZHAGroupPage extends LitElement {
                     "ui.panel.config.zha.groups.remove_members"
                   )}</mwc-button
                 >
-              </div>
-            `
-          : html``}
+                </zha-devices-data-table>
 
-        <div class="header">
-          ${this.hass.localize("ui.panel.config.zha.groups.add_members")}
-        </div>
+                <div class="paper-dialog-buttons">
+                  <mwc-button
+                    ?disabled="${!this._selectedDevicesToRemove.length ||
+                      this._processingRemove}"
+                    @click="${this._removeMembersFromGroup}"
+                    class="button"
+                  >
+                    <paper-spinner
+                      ?active="${this._processingRemove}"
+                      alt=${this.hass.localize(
+                        "ui.panel.config.zha.groups.removing_members"
+                      )}
+                    ></paper-spinner>
+                    ${this.hass!.localize(
+                      "ui.panel.config.zha.groups.remove_members"
+                    )}</mwc-button
+                  >
+                </div>
+              `
+            : html``}
 
-        <zha-devices-data-table
-          .hass=${this.hass}
-          .devices=${this._filteredDevices}
-          .narrow=${this.narrow}
-          .selectable=${true}
-          @selection-changed=${this._handleAddSelectionChanged}
-          class="table"
-        >
-        </zha-devices-data-table>
+          <div class="header">
+            ${this.hass.localize("ui.panel.config.zha.groups.add_members")}
+          </div>
 
-        <div class="paper-dialog-buttons">
-          <mwc-button
-            ?disabled="${!this._selectedDevicesToAdd.length ||
-              this._processingAdd}"
-            @click="${this._addMembersToGroup}"
-            class="button"
+          <zha-devices-data-table
+            .hass=${this.hass}
+            .devices=${this._filteredDevices}
+            .narrow=${this.narrow}
+            .selectable=${true}
+            @selection-changed=${this._handleAddSelectionChanged}
+            class="table"
           >
-            <paper-spinner
-              ?active="${this._processingAdd}"
-              alt=${this.hass.localize(
-                "ui.panel.config.zha.groups.adding_members"
-              )}
-            ></paper-spinner>
-            ${this.hass!.localize(
-              "ui.panel.config.zha.groups.add_members"
-            )}</mwc-button
-          >
-        </div>
-      </ha-config-section>
+          </zha-devices-data-table>
+
+          <div class="paper-dialog-buttons">
+            <mwc-button
+              ?disabled="${!this._selectedDevicesToAdd.length ||
+                this._processingAdd}"
+              @click="${this._addMembersToGroup}"
+              class="button"
+            >
+              <paper-spinner
+                ?active="${this._processingAdd}"
+                alt=${this.hass.localize(
+                  "ui.panel.config.zha.groups.adding_members"
+                )}
+              ></paper-spinner>
+              ${this.hass!.localize(
+                "ui.panel.config.zha.groups.add_members"
+              )}</mwc-button
+            >
+          </div>
+        </ha-config-section>
+      </hass-subpage>
     `;
   }
 

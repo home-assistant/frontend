@@ -1,3 +1,4 @@
+import "../../../layouts/hass-subpage";
 import "../../../components/ha-paper-icon-button-arrow-prev";
 import "./zha-binding";
 import "./zha-cluster-attributes";
@@ -41,49 +42,53 @@ export class ZHADevicesPage extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <zha-node
-        .isWide="${this.isWide}"
-        .hass="${this.hass}"
-        @zha-node-selected="${this._onDeviceSelected}"
-      ></zha-node>
-      ${this._selectedDevice
-        ? html`
-            <zha-clusters
-              .hass="${this.hass}"
-              .isWide="${this.isWide}"
-              .selectedDevice="${this._selectedDevice}"
-              @zha-cluster-selected="${this._onClusterSelected}"
-            ></zha-clusters>
-          `
-        : ""}
-      ${this._selectedCluster
-        ? html`
-            <zha-cluster-attributes
-              .isWide="${this.isWide}"
-              .hass="${this.hass}"
-              .selectedNode="${this._selectedDevice}"
-              .selectedCluster="${this._selectedCluster}"
-            ></zha-cluster-attributes>
+      <hass-subpage
+        header="${this.hass!.localize("ui.panel.config.zha.devices.header")}"
+      >
+        <zha-node
+          .isWide="${this.isWide}"
+          .hass="${this.hass}"
+          @zha-node-selected="${this._onDeviceSelected}"
+        ></zha-node>
+        ${this._selectedDevice
+          ? html`
+              <zha-clusters
+                .hass="${this.hass}"
+                .isWide="${this.isWide}"
+                .selectedDevice="${this._selectedDevice}"
+                @zha-cluster-selected="${this._onClusterSelected}"
+              ></zha-clusters>
+            `
+          : ""}
+        ${this._selectedCluster
+          ? html`
+              <zha-cluster-attributes
+                .isWide="${this.isWide}"
+                .hass="${this.hass}"
+                .selectedNode="${this._selectedDevice}"
+                .selectedCluster="${this._selectedCluster}"
+              ></zha-cluster-attributes>
 
-            <zha-cluster-commands
-              .isWide="${this.isWide}"
-              .hass="${this.hass}"
-              .selectedNode="${this._selectedDevice}"
-              .selectedCluster="${this._selectedCluster}"
-            ></zha-cluster-commands>
-          `
-        : ""}
-      ${this._selectedDevice && this._bindableDevices.length > 0
-        ? html`
-            <zha-binding-control
-              .isWide="${this.isWide}"
-              .hass="${this.hass}"
-              .selectedDevice="${this._selectedDevice}"
-              .bindableDevices="${this._bindableDevices}"
-            ></zha-binding-control>
-          `
-        : ""}
-      <div class="spacer" />
+              <zha-cluster-commands
+                .isWide="${this.isWide}"
+                .hass="${this.hass}"
+                .selectedNode="${this._selectedDevice}"
+                .selectedCluster="${this._selectedCluster}"
+              ></zha-cluster-commands>
+            `
+          : ""}
+        ${this._selectedDevice && this._bindableDevices.length > 0
+          ? html`
+              <zha-binding-control
+                .isWide="${this.isWide}"
+                .hass="${this.hass}"
+                .selectedDevice="${this._selectedDevice}"
+                .bindableDevices="${this._bindableDevices}"
+              ></zha-binding-control>
+            `
+          : ""}
+        <div class="spacer" />
+      </hass-subpage>
     `;
   }
 

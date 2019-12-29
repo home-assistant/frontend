@@ -12,11 +12,18 @@ class ZHAConfigDashboardRouter extends HassRouterPage {
   @property() public narrow!: boolean;
 
   protected routerOptions: RouterOptions = {
-    defaultPage: "devices",
+    defaultPage: "dashboard",
     cacheAll: true,
     preloadAll: true,
     showLoading: true,
     routes: {
+      dashboard: {
+        tag: "zha-config-dashboard",
+        load: () =>
+          import(
+            /* webpackChunkName: "zha-config-dashboard" */ "./zha-config-dashboard"
+          ),
+      },
       network: {
         tag: "zha-network",
         load: () =>
