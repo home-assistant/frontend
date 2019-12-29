@@ -73,7 +73,10 @@ class LovelaceFullConfigEditor extends LitElement {
                     "ui.panel.lovelace.editor.raw_editor.saved"
                   )}
             </div>
-            <mwc-button raised @click="${this._handleSave}"
+            <mwc-button
+              raised
+              @click="${this._handleSave}"
+              .disabled=${!this._changed}
               >${this.hass!.localize(
                 "ui.panel.lovelace.editor.raw_editor.save"
               )}</mwc-button
@@ -152,6 +155,7 @@ class LovelaceFullConfigEditor extends LitElement {
     } else if (!this._changed && window.onbeforeunload) {
       window.onbeforeunload = null;
     }
+    if (this._changed) this.requestUpdate();
   }
 
   private _closeEditor() {
@@ -230,6 +234,7 @@ class LovelaceFullConfigEditor extends LitElement {
     window.onbeforeunload = null;
     this._saving = false;
     this._changed = false;
+    this.requestUpdate();
   }
 
   private get yamlEditor(): HaCodeEditor {
