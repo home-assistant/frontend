@@ -19,7 +19,6 @@ import {
 @customElement("hassio-dashboard")
 class HassioDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
-
   @property() public supervisorInfo!: HassioSupervisorInfo;
   @property() public hassInfo!: HassioHomeAssistantInfo;
   @property() public hassOsInfo!: HassioHassOSInfo;

@@ -22,6 +22,7 @@ export interface HassioAddonInfo {
   description: string;
   repository: "core" | "local" | string;
   version: string;
+  state: "none" | "started" | "stopped";
   installed: string | undefined;
   detached: boolean;
   available: boolean;
@@ -31,7 +32,7 @@ export interface HassioAddonInfo {
   logo: boolean;
 }
 
-export interface HassioAddonDetails {
+export interface HassioAddonDetails extends HassioAddonInfo {
   name: string;
   slug: string;
   description: string;
@@ -43,10 +44,7 @@ export interface HassioAddonDetails {
   arch: "armhf" | "aarch64" | "i386" | "amd64";
   machine: any;
   homeassistant: string;
-  repository: null | string;
-  version: null | string;
   last_version: string;
-  state: "none" | "started" | "stopped";
   boot: "auto" | "manual";
   build: boolean;
   options: object;

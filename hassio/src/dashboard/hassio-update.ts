@@ -26,7 +26,6 @@ import "../components/hassio-card-content";
 @customElement("hassio-update")
 export class HassioUpdate extends LitElement {
   @property() public hass!: HomeAssistant;
-
   @property() public hassInfo: HassioHomeAssistantInfo;
   @property() public hassOsInfo?: HassioHassOSInfo;
   @property() public supervisorInfo: HassioSupervisorInfo;
