@@ -1,5 +1,14 @@
 import { css } from "lit-element";
 
+interface State {
+  bold: boolean;
+  italic: boolean;
+  underline: boolean;
+  strikethrough: boolean;
+  foregroundColor: null | string;
+  backgroundColor: null | string;
+}
+
 export const ANSI_HTML_STYLE = css`
   .bold {
     font-weight: bold;
@@ -68,7 +77,7 @@ export function parseTextToColoredPre(text) {
   const re = /\033(?:\[(.*?)[@-~]|\].*?(?:\007|\033\\))/g;
   let i = 0;
 
-  const state = {
+  const state: State = {
     bold: false,
     italic: false,
     underline: false,
@@ -100,7 +109,7 @@ export function parseTextToColoredPre(text) {
 
     if (match[1] === undefined) continue;
 
-    match[1].split(";").forEach((colorCode) => {
+    match[1].split(";").forEach((colorCode: string) => {
       switch (parseInt(colorCode)) {
         case 0:
           // reset
