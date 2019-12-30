@@ -217,7 +217,7 @@ export class ZHAGroupBindingControl extends LitElement {
         this.hass,
         this.selectedDevice!.ieee
       );
-      this._clusters
+      this._clusters = this._clusters
         .filter((cluster) => {
           return cluster.type.toLowerCase() === "out";
         })
