@@ -26,7 +26,7 @@ class HassioAddonLogs extends LitElement {
       <paper-card heading="Log">
         <div class="card-content" id="content"></div>
         <div class="card-actions">
-          <mwc-button @click=${this.refresh()}>Refresh</mwc-button>
+          <mwc-button @click=${this.refresh}>Refresh</mwc-button>
         </div>
       </paper-card>
     `;
@@ -55,14 +55,18 @@ class HassioAddonLogs extends LitElement {
   }
 
   loadData() {
-    this.hass
-      .callApi("GET", `hassio/addons/${this.addon.slug}/logs`)
-      .then((text) => {
+    this.hass.callApi("GET", `hassio/addons/${this.addon.slug}/logs`).then(
+      (text) => {
         while (this._logContet.lastChild) {
-          this._logContet.removeChild(this._logContet.lastChild);
+          this._logContet.removeChild(this._logContet.lastChild as Node);
         }
         this._logContet.appendChild(parseTextToColoredPre(text));
-      });
+      },
+      () => {
+        this._logContet.innerHTML =
+          '<span class="fg-red bold">Error fetching logs</span>';
+      }
+    );
   }
 
   refresh() {

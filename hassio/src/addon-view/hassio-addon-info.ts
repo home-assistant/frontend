@@ -691,6 +691,7 @@ class HassioAddonInfo extends LitElement {
       data
     );
     this.addon.protected = !this.addon.protected;
+    this.requestUpdate();
   }
 
   private panelToggled(): void {
