@@ -3,11 +3,7 @@ import "../../../components/ha-service-description";
 import "../../../components/ha-card";
 import "../ha-config-section";
 import "./zha-device-card";
-import "@material/mwc-button";
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@polymer/paper-input/paper-input";
-import "@polymer/paper-item/paper-item";
-import "@polymer/paper-listbox/paper-listbox";
 
 import {
   css,
@@ -19,35 +15,17 @@ import {
   TemplateResult,
 } from "lit-element";
 
-import { fireEvent } from "../../../common/dom/fire_event";
-import { fetchDevices, ZHADevice } from "../../../data/zha";
+import { ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { sortZHADevices } from "./functions";
-import { ItemSelectedEvent, ZHADeviceRemovedEvent } from "./types";
-
-declare global {
-  // for fire event
-  interface HASSDomEvents {
-    "zha-node-selected": {
-      node?: ZHADevice;
-    };
-  }
-}
+import { navigate } from "../../../common/navigate";
 
 @customElement("zha-node")
 export class ZHANode extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public isWide?: boolean;
+  @property() public device?: ZHADevice;
   @property() private _showHelp: boolean = false;
-  @property() private _selectedDeviceIndex: number = -1;
-  @property() private _selectedDevice?: ZHADevice;
-  @property() private _nodes: ZHADevice[] = [];
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this._fetchDevices();
-  }
 
   protected render(): TemplateResult | void {
     return html`
@@ -77,55 +55,16 @@ export class ZHANode extends LitElement {
             "ui.panel.config.zha.node_management.hint_wakeup"
           )}
         </span>
-        <ha-card class="content">
-          <div class="node-picker">
-            <paper-dropdown-menu
-              label="${this.hass!.localize(
-                "ui.panel.config.zha.common.devices"
-              )}"
-              class="flex"
-              id="zha-device-selector"
-            >
-              <paper-listbox
-                slot="dropdown-content"
-                @iron-select="${this._selectedDeviceChanged}"
-                .selected="${this._selectedDeviceIndex}"
-              >
-                ${this._nodes.map(
-                  (entry) => html`
-                    <paper-item
-                      >${entry.user_given_name
-                        ? entry.user_given_name
-                        : entry.name}</paper-item
-                    >
-                  `
-                )}
-              </paper-listbox>
-            </paper-dropdown-menu>
-          </div>
-          ${this._showHelp
-            ? html`
-                <div class="help-text">
-                  ${this.hass!.localize(
-                    "ui.panel.config.zha.node_management.help_node_dropdown"
-                  )}
-                </div>
-              `
-            : ""}
-          ${this._selectedDeviceIndex !== -1
-            ? html`
-                <zha-device-card
-                  class="card"
-                  .hass=${this.hass}
-                  .device=${this._selectedDevice}
-                  .narrow=${!this.isWide}
-                  .showHelp=${this._showHelp}
-                  showActions
-                  @zha-device-removed=${this._onDeviceRemoved}
-                ></zha-device-card>
-              `
-            : ""}
-        </ha-card>
+        <zha-device-card
+          class="card"
+          .hass=${this.hass}
+          .device=${this.device}
+          .narrow=${!this.isWide}
+          .showHelp=${this._showHelp}
+          isJoinPage
+          showActions
+          @zha-device-removed=${this._onDeviceRemoved}
+        ></zha-device-card>
       </ha-config-section>
     `;
   }
@@ -134,21 +73,9 @@ export class ZHANode extends LitElement {
     this._showHelp = !this._showHelp;
   }
 
-  private _selectedDeviceChanged(event: ItemSelectedEvent): void {
-    this._selectedDeviceIndex = event!.target!.selected;
-    this._selectedDevice = this._nodes[this._selectedDeviceIndex];
-    fireEvent(this, "zha-node-selected", { node: this._selectedDevice });
-  }
-
-  private async _fetchDevices() {
-    this._nodes = (await fetchDevices(this.hass!)).sort(sortZHADevices);
-  }
-
-  private _onDeviceRemoved(event: ZHADeviceRemovedEvent): void {
-    this._selectedDeviceIndex = -1;
-    this._nodes.splice(this._nodes.indexOf(event.detail!.device!), 1);
-    this._selectedDevice = undefined;
-    fireEvent(this, "zha-node-selected", { node: this._selectedDevice });
+  private _onDeviceRemoved(): void {
+    this.device = undefined;
+    navigate(this, `/config/zha`, true);
   }
 
   static get styles(): CSSResult[] {
@@ -161,10 +88,6 @@ export class ZHANode extends LitElement {
           flex: 1;
           -webkit-flex-basis: 0.000000001px;
           flex-basis: 0.000000001px;
-        }
-
-        .content {
-          margin-top: 24px;
         }
 
         .node-info {
@@ -203,14 +126,12 @@ export class ZHANode extends LitElement {
         }
 
         .card {
+          margin-top: 24px;
           box-sizing: border-box;
           display: flex;
           flex: 1 0 300px;
           min-width: 0;
           max-width: 600px;
-          padding-left: 28px;
-          padding-right: 28px;
-          padding-bottom: 10px;
           word-wrap: break-word;
         }
 

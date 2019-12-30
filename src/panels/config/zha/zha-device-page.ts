@@ -19,23 +19,29 @@ import {
 } from "lit-element";
 
 import { HASSDomEvent } from "../../../common/dom/fire_event";
-import { Cluster, fetchBindableDevices, ZHADevice } from "../../../data/zha";
+import {
+  Cluster,
+  fetchBindableDevices,
+  ZHADevice,
+  fetchZHADevice,
+} from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { sortZHADevices } from "./functions";
-import { ZHAClusterSelectedParams, ZHADeviceSelectedParams } from "./types";
+import { ZHAClusterSelectedParams } from "./types";
 
-@customElement("zha-devices-page")
-export class ZHADevicesPage extends LitElement {
+@customElement("zha-device-page")
+export class ZHADevicePage extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public isWide?: boolean;
-  @property() private _selectedDevice?: ZHADevice;
+  @property() public ieee?: string;
+  @property() public device?: ZHADevice;
   @property() private _selectedCluster?: Cluster;
   @property() private _bindableDevices: ZHADevice[] = [];
 
   protected updated(changedProperties: PropertyValues): void {
-    if (changedProperties.has("_selectedDevice")) {
-      this._fetchBindableDevices();
+    if (changedProperties.has("ieee")) {
+      this._fetchData();
     }
     super.update(changedProperties);
   }
@@ -48,41 +54,37 @@ export class ZHADevicesPage extends LitElement {
         <zha-node
           .isWide="${this.isWide}"
           .hass="${this.hass}"
-          @zha-node-selected="${this._onDeviceSelected}"
+          .device=${this.device}
         ></zha-node>
-        ${this._selectedDevice
-          ? html`
-              <zha-clusters
-                .hass="${this.hass}"
-                .isWide="${this.isWide}"
-                .selectedDevice="${this._selectedDevice}"
-                @zha-cluster-selected="${this._onClusterSelected}"
-              ></zha-clusters>
-            `
-          : ""}
+        <zha-clusters
+          .hass="${this.hass}"
+          .isWide="${this.isWide}"
+          .selectedDevice="${this.device}"
+          @zha-cluster-selected="${this._onClusterSelected}"
+        ></zha-clusters>
         ${this._selectedCluster
           ? html`
               <zha-cluster-attributes
                 .isWide="${this.isWide}"
                 .hass="${this.hass}"
-                .selectedNode="${this._selectedDevice}"
+                .selectedNode="${this.device}"
                 .selectedCluster="${this._selectedCluster}"
               ></zha-cluster-attributes>
 
               <zha-cluster-commands
                 .isWide="${this.isWide}"
                 .hass="${this.hass}"
-                .selectedNode="${this._selectedDevice}"
+                .selectedNode="${this.device}"
                 .selectedCluster="${this._selectedCluster}"
               ></zha-cluster-commands>
             `
           : ""}
-        ${this._selectedDevice && this._bindableDevices.length > 0
+        ${this._bindableDevices.length > 0
           ? html`
               <zha-binding-control
                 .isWide="${this.isWide}"
                 .hass="${this.hass}"
-                .selectedDevice="${this._selectedDevice}"
+                .selectedDevice="${this.device}"
                 .bindableDevices="${this._bindableDevices}"
               ></zha-binding-control>
             `
@@ -98,17 +100,11 @@ export class ZHADevicesPage extends LitElement {
     this._selectedCluster = selectedClusterEvent.detail.cluster;
   }
 
-  private _onDeviceSelected(
-    selectedNodeEvent: HASSDomEvent<ZHADeviceSelectedParams>
-  ): void {
-    this._selectedDevice = selectedNodeEvent.detail.node;
-    this._selectedCluster = undefined;
-  }
-
-  private async _fetchBindableDevices(): Promise<void> {
-    if (this._selectedDevice && this.hass) {
+  private async _fetchData(): Promise<void> {
+    if (this.ieee && this.hass) {
+      this.device = await fetchZHADevice(this.hass, this.ieee);
       this._bindableDevices = (
-        await fetchBindableDevices(this.hass, this._selectedDevice!.ieee)
+        await fetchBindableDevices(this.hass, this.ieee)
       ).sort(sortZHADevices);
     }
   }
@@ -127,6 +123,6 @@ export class ZHADevicesPage extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "zha-devices-page": ZHADevicesPage;
+    "zha-device-page": ZHADevicePage;
   }
 }

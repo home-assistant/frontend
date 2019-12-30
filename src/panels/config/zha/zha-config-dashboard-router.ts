@@ -24,16 +24,11 @@ class ZHAConfigDashboardRouter extends HassRouterPage {
             /* webpackChunkName: "zha-config-dashboard" */ "./zha-config-dashboard"
           ),
       },
-      network: {
-        tag: "zha-network",
-        load: () =>
-          import(/* webpackChunkName: "zha-network-page" */ "./zha-network"),
-      },
-      devices: {
-        tag: "zha-devices-page",
+      device: {
+        tag: "zha-device-page",
         load: () =>
           import(
-            /* webpackChunkName: "zha-devices-page" */ "./zha-devices-page"
+            /* webpackChunkName: "zha-devices-page" */ "./zha-device-page"
           ),
       },
       add: {
@@ -72,6 +67,8 @@ class ZHAConfigDashboardRouter extends HassRouterPage {
     el.narrow = this.narrow;
     if (this._currentPage === "group") {
       el.groupId = this.routeTail.path.substr(1);
+    } else if (this._currentPage === "device") {
+      el.ieee = this.routeTail.path.substr(1);
     }
   }
 }

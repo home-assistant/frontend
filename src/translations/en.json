@@ -1421,15 +1421,12 @@
             "header": "Network Management",
             "introduction": "Commands that affect the entire network"
           },
-          "network": {
-            "header": "Zigbee Home Automation - Network Management",
-            "caption": "Network Management",
-            "description": "Commands that affect the entire network"
+          "add": {
+            "caption": "Add Devices",
+            "description": "Add devices to the Zigbee network"
           },
           "devices": {
-            "header": "Zigbee Home Automation - Devices",
-            "caption": "Devices",
-            "description": "Interact with Zigbee devices"
+            "header": "Zigbee Home Automation - Device"
           },
           "node_management": {
             "header": "Device Management",
@@ -1462,7 +1459,7 @@
           },
           "groups": {
             "caption": "Groups",
-            "description": "Create and modify zigbee groups",
+            "description": "Create and modify Zigbee groups",
             "zha_zigbee_groups": "ZHA Zigbee Groups",
             "manage_groups": "Manage Zigbee Groups",
             "groups": "Groups",
