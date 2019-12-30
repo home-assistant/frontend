@@ -35,7 +35,6 @@ class HassioAddonView extends LitElement {
           <hassio-addon-info
             .hass=${this.hass}
             .addon=${this.addon}
-            addonSlug=${this._computeSlug}
           ></hassio-addon-info>
 
           ${this.addon && this.addon.version
@@ -43,7 +42,6 @@ class HassioAddonView extends LitElement {
                 <hassio-addon-config
                   .hass=${this.hass}
                   .addon=${this.addon}
-                  addonSlug=${this._computeSlug}
                 ></hassio-addon-config>
 
                 ${this.addon.audio
@@ -59,14 +57,13 @@ class HassioAddonView extends LitElement {
                       <hassio-addon-network
                         .hass=${this.hass}
                         .addon=${this.addon}
-                        addonSlug=${this._computeSlug}
                       ></hassio-addon-network>
                     `
                   : ""}
 
                 <hassio-addon-logs
                   .hass=${this.hass}
-                  addonSlug=${this._computeSlug}
+                  .addon=${this.addon}
                 ></hassio-addon-logs>
               `
             : ""}
@@ -141,10 +138,6 @@ class HassioAddonView extends LitElement {
         this.addon = null;
       }
     );
-  }
-
-  get _computeSlug(): string {
-    return this.route.path.substr(1);
   }
 }
 

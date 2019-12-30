@@ -11,13 +11,14 @@ import {
   query,
 } from "lit-element";
 import { HomeAssistant } from "../../../src/types";
+import { HassioAddonDetails } from "../../../src/data/hassio";
 import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../ansi-to-html";
 import { hassioStyle } from "../resources/hassio-style";
 
 @customElement("hassio-addon-logs")
 class HassioAddonLogs extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public addonSlug!: string;
+  @property() public addon!: HassioAddonDetails;
   @query("#content") private _logContet!: any;
 
   protected render(): TemplateResult | void {
@@ -55,7 +56,7 @@ class HassioAddonLogs extends LitElement {
 
   loadData() {
     this.hass
-      .callApi("GET", `hassio/addons/${this.addonSlug}/logs`)
+      .callApi("GET", `hassio/addons/${this.addon.slug}/logs`)
       .then((text) => {
         while (this._logContet.lastChild) {
           this._logContet.removeChild(this._logContet.lastChild);

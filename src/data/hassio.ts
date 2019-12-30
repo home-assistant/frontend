@@ -80,6 +80,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   discovery: string[];
   ip_address: string;
   ingress: boolean;
+  ingress_panel: boolean;
   ingress_entry: null | string;
   ingress_url: null | string;
 }
