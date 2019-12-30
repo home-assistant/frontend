@@ -1,7 +1,6 @@
 import "@material/mwc-button";
 import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-card/paper-card";
-import "@polymer/paper-spinner/paper-spinner-lite";
 import "@polymer/paper-tooltip/paper-tooltip";
 import {
   css,
@@ -85,11 +84,6 @@ class HassioAddonInfo extends LitElement {
   @property() public addon!: HassioAddonDetails;
 
   protected render(): TemplateResult | void {
-    if (!this.addon) {
-      return html`
-        <paper-spinner-lite active></paper-spinner-lite>
-      `;
-    }
     return html`
       ${
         this._computeUpdateAvailable
