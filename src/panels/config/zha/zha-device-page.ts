@@ -37,6 +37,7 @@ export class ZHADevicePage extends LitElement {
   @property() public isWide?: boolean;
   @property() public ieee?: string;
   @property() public device?: ZHADevice;
+  @property() public narrow?: boolean;
   @property() private _selectedCluster?: Cluster;
   @property() private _bindableDevices: ZHADevice[] = [];
   @property() private _groups: ZHAGroup[] = [];
@@ -113,6 +114,7 @@ export class ZHADevicePage extends LitElement {
           ? html`
               <zha-group-binding-control
                 .isWide="${this.isWide}"
+                .narrow="${this.narrow}"
                 .hass="${this.hass}"
                 .selectedDevice="${this._selectedDevice}"
                 .groups="${this._groups}"
