@@ -209,6 +209,10 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
         color: var(--paper-item-icon-active-color, #fdd835);
       }
 
+      ha-icon[data-domain="input_boolean"][data-state="on"] {
+        color: var(--paper-item-icon-active-non-electric-or-sun-color, #34befc);
+      }
+
       ha-icon[data-state="unavailable"] {
         color: var(--state-icon-unavailable-color);
       }
