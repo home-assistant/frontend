@@ -26,29 +26,32 @@ import {
   Cluster,
   fetchClustersForZhaNode,
 } from "../../../data/zha";
+import "./zha-clusters-data-table";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { ItemSelectedEvent } from "./types";
 import "@polymer/paper-item/paper-item";
-import { computeClusterKey } from "./functions";
+import { SelectionChangedEvent } from "../../../components/data-table/ha-data-table";
 
 @customElement("zha-group-binding-control")
 export class ZHAGroupBindingControl extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public isWide?: boolean;
+  @property() public narrow?: boolean;
   @property() public selectedDevice?: ZHADevice;
   @property() private _showHelp: boolean = false;
   @property() private _bindTargetIndex: number = -1;
   @property() private groups: ZHAGroup[] = [];
-  @property() private _selectedClusterIndex = -1;
+  @property() private _selectedClusters: string[] = [];
   @property() private _clusters: Cluster[] = [];
   private _groupToBind?: ZHAGroup;
-  private _clusterToBind?: Cluster;
+  private _clustersToBind?: Cluster[];
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedDevice")) {
       this._bindTargetIndex = -1;
-      this._selectedClusterIndex = -1;
+      this._selectedClusters = [];
+      this._clustersToBind = [];
       this._fetchClustersForZhaNode();
     }
     super.update(changedProperties);
@@ -92,24 +95,13 @@ export class ZHAGroupBindingControl extends LitElement {
               `
             : ""}
           <div class="command-picker">
-            <paper-dropdown-menu
-              label="${this.hass!.localize(
-                "ui.panel.config.zha.common.clusters"
-              )}"
+            <zha-clusters-data-table
+              .hass=${this.hass}
+              .narrow=${this.narrow}
+              .clusters=${this._clusters}
+              @selection-changed=${this._handleClusterSelectionChanged}
               class="flex"
-            >
-              <paper-listbox
-                slot="dropdown-content"
-                .selected="${this._selectedClusterIndex}"
-                @iron-select="${this._selectedClusterChanged}"
-              >
-                ${this._clusters.map(
-                  (entry) => html`
-                    <paper-item>${computeClusterKey(entry)}</paper-item>
-                  `
-                )}
-              </paper-listbox>
-            </paper-dropdown-menu>
+            ></zha-clusters-data-table>
           </div>
           ${this._showHelp
             ? html`
@@ -125,7 +117,8 @@ export class ZHAGroupBindingControl extends LitElement {
               @click="${this._onBindGroupClick}"
               ?disabled="${!(
                 this._groupToBind &&
-                this._clusterToBind &&
+                this._clustersToBind &&
+                this._clustersToBind?.length > 0 &&
                 this.selectedDevice
               )}"
               >Bind Group</mwc-button
@@ -141,7 +134,8 @@ export class ZHAGroupBindingControl extends LitElement {
               @click="${this._onUnbindGroupClick}"
               ?disabled="${!(
                 this._groupToBind &&
-                this._clusterToBind &&
+                this._clustersToBind &&
+                this._clustersToBind?.length > 0 &&
                 this.selectedDevice
               )}"
               >Unbind Group</mwc-button
@@ -175,14 +169,15 @@ export class ZHAGroupBindingControl extends LitElement {
     if (
       this.hass &&
       this._groupToBind &&
-      this._clusterToBind &&
+      this._clustersToBind &&
+      this._clustersToBind?.length > 0 &&
       this.selectedDevice
     ) {
       await bindDeviceToGroup(
         this.hass,
         this.selectedDevice.ieee,
         this._groupToBind.group_id,
-        [this._clusterToBind]
+        this._clustersToBind
       );
     }
   }
@@ -191,24 +186,38 @@ export class ZHAGroupBindingControl extends LitElement {
     if (
       this.hass &&
       this._groupToBind &&
-      this._clusterToBind &&
+      this._clustersToBind &&
+      this._clustersToBind?.length > 0 &&
       this.selectedDevice
     ) {
       await unbindDeviceFromGroup(
         this.hass,
         this.selectedDevice.ieee,
         this._groupToBind.group_id,
-        [this._clusterToBind]
+        this._clustersToBind
       );
     }
   }
 
-  private _selectedClusterChanged(event: ItemSelectedEvent): void {
-    this._selectedClusterIndex = event.target!.selected;
-    this._clusterToBind =
-      this._selectedClusterIndex === -1
-        ? undefined
-        : this._clusters[this._selectedClusterIndex];
+  private _handleClusterSelectionChanged(event: CustomEvent): void {
+    const changedSelection = event.detail as SelectionChangedEvent;
+    const clusterId = changedSelection.id;
+    if (changedSelection.selected) {
+      this._selectedClusters.push(clusterId);
+    } else {
+      const index = this._selectedClusters.indexOf(clusterId);
+      if (index !== -1) {
+        this._selectedClusters.splice(index, 1);
+      }
+    }
+    this._selectedClusters = [...this._selectedClusters];
+    this._clustersToBind = [];
+    for (const clusterIndex of this._selectedClusters) {
+      const selectedCluster = this._clusters.find((cluster) => {
+        return clusterIndex === cluster.endpoint_id + "-" + cluster.id;
+      });
+      this._clustersToBind.push(selectedCluster!);
+    }
   }
 
   private async _fetchClustersForZhaNode(): Promise<void> {
