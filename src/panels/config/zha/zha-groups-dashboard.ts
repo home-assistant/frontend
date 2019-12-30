@@ -105,7 +105,10 @@ export class ZHAGroupsDashboard extends LitElement {
   private _handleRemoveSelectionChanged(ev: CustomEvent): void {
     const changedSelection = ev.detail as SelectionChangedEvent;
     const groupId = Number(changedSelection.id);
-    if (changedSelection.selected) {
+    if (
+      changedSelection.selected &&
+      !this._selectedGroupsToRemove.includes(groupId)
+    ) {
       this._selectedGroupsToRemove.push(groupId);
     } else {
       const index = this._selectedGroupsToRemove.indexOf(groupId);

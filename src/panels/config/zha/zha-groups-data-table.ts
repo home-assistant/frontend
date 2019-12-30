@@ -20,7 +20,7 @@ import { navigate } from "../../../common/navigate";
 
 export interface GroupRowData extends ZHAGroup {
   group?: GroupRowData;
-  id?: number;
+  id?: string;
 }
 
 @customElement("zha-groups-data-table")
@@ -29,6 +29,19 @@ export class ZHAGroupsDataTable extends LitElement {
   @property() public narrow = false;
   @property() public groups: ZHAGroup[] = [];
   @property() public selectable = false;
+
+  private _groups = memoizeOne((groups: ZHAGroup[]) => {
+    let outputGroups: GroupRowData[] = groups;
+
+    outputGroups = outputGroups.map((group) => {
+      return {
+        ...group,
+        id: "" + group.group_id,
+      };
+    });
+
+    return outputGroups;
+  });
 
   private _columns = memoizeOne(
     (narrow: boolean): DataTableColumnContainer =>
@@ -83,8 +96,7 @@ export class ZHAGroupsDataTable extends LitElement {
     return html`
       <ha-data-table
         .columns=${this._columns(this.narrow)}
-        .data=${this.groups}
-        .id=${"group_id"}
+        .data=${this._groups(this.groups)}
         .selectable=${this.selectable}
       ></ha-data-table>
     `;

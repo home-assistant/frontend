@@ -202,7 +202,10 @@ export class ZHAGroupBindingControl extends LitElement {
   private _handleClusterSelectionChanged(event: CustomEvent): void {
     const changedSelection = event.detail as SelectionChangedEvent;
     const clusterId = changedSelection.id;
-    if (changedSelection.selected) {
+    if (
+      changedSelection.selected &&
+      !this._selectedClusters.includes(clusterId)
+    ) {
       this._selectedClusters.push(clusterId);
     } else {
       const index = this._selectedClusters.indexOf(clusterId);
