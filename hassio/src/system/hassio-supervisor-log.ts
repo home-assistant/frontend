@@ -10,10 +10,11 @@ import {
   TemplateResult,
   query,
 } from "lit-element";
-import { HomeAssistant } from "../../../src/types";
+
+import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../ansi-to-html";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
-import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../ansi-to-html";
+import { HomeAssistant } from "../../../src/types";
 
 @customElement("hassio-supervisor-log")
 class HassioSupervisorLog extends LitElement {
@@ -31,7 +32,7 @@ class HassioSupervisorLog extends LitElement {
     `;
   }
 
-  protected firstUpdated() {
+  protected firstUpdated(): void {
     this.loadData();
   }
 
@@ -48,7 +49,7 @@ class HassioSupervisorLog extends LitElement {
     ];
   }
 
-  protected loadData() {
+  protected loadData(): void {
     this.hass.callApi("GET", "hassio/supervisor/logs").then(
       (text) => {
         while (this._logContet.lastChild) {
@@ -63,7 +64,7 @@ class HassioSupervisorLog extends LitElement {
     );
   }
 
-  protected refresh() {
+  protected refresh(): void {
     this.loadData();
   }
 }

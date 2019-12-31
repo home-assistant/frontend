@@ -119,7 +119,7 @@ class HassioAddonView extends LitElement {
     ];
   }
 
-  protected firstUpdated() {
+  protected firstUpdated(): void {
     this.routeDataChanged(this.route);
     this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
   }

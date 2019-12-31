@@ -120,7 +120,7 @@ class HassioAddonAudio extends LitElement {
     ];
   }
 
-  protected update(changedProperties: PropertyValues) {
+  protected update(changedProperties: PropertyValues): void {
     super.update(changedProperties);
     if (changedProperties.has("addon")) {
       this.addonChanged();

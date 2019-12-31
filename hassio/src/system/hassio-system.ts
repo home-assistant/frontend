@@ -11,7 +11,6 @@ import {
 
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
-
 import {
   HassioSupervisorInfo,
   HassioHostInfo,

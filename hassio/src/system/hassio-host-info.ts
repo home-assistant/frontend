@@ -17,7 +17,6 @@ import {
   HassioHassOSInfo,
 } from "../../../src/data/hassio";
 import { HomeAssistant } from "../../../src/types";
-
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 
 import "../../../src/components/buttons/ha-call-api-button";
@@ -167,11 +166,11 @@ class HassioHostInfo extends LitElement {
     ];
   }
 
-  protected firstUpdated() {
+  protected firstUpdated(): void {
     this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
   }
 
-  protected apiCalled(ev) {
+  protected apiCalled(ev): void {
     if (ev.detail.success) {
       this.errors = undefined;
       return;
@@ -185,7 +184,7 @@ class HassioHostInfo extends LitElement {
         : response.body;
   }
 
-  protected _showHardware() {
+  protected _showHardware(): void {
     this.hass
       .callApi("GET", "hassio/hardware/info")
       .then(
@@ -200,7 +199,7 @@ class HassioHostInfo extends LitElement {
       });
   }
 
-  protected _objectToMarkdown(obj, indent = "") {
+  protected _objectToMarkdown(obj, indent = ""): string {
     let data = "";
     Object.keys(obj).forEach((key) => {
       if (typeof obj[key] !== "object") {
@@ -220,7 +219,7 @@ class HassioHostInfo extends LitElement {
     return data;
   }
 
-  protected _changeHostnameClicked() {
+  protected _changeHostnameClicked(): void {
     const curHostname = this.hostInfo.hostname;
     const hostname = prompt("Please enter a new hostname:", curHostname);
     if (hostname && hostname !== curHostname) {

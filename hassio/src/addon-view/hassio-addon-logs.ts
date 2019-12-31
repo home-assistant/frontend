@@ -52,11 +52,11 @@ class HassioAddonLogs extends LitElement {
     ];
   }
 
-  protected firstUpdated() {
+  protected firstUpdated(): void {
     this.loadData();
   }
 
-  protected loadData() {
+  protected loadData(): void {
     this.hass.callApi("GET", `hassio/addons/${this.addon.slug}/logs`).then(
       (text) => {
         while (this._logContet.lastChild) {
@@ -71,7 +71,7 @@ class HassioAddonLogs extends LitElement {
     );
   }
 
-  protected refresh() {
+  protected refresh(): void {
     this.loadData();
   }
 }

@@ -592,7 +592,7 @@ class HassioAddonInfo extends LitElement {
     ];
   }
 
-  private get _computeHassioApi() {
+  private get _computeHassioApi(): boolean {
     return (
       this.addon.hassio_api &&
       (this.addon.hassio_role === "manager" ||
@@ -600,7 +600,7 @@ class HassioAddonInfo extends LitElement {
     );
   }
 
-  private get _computeApparmorClassName() {
+  private get _computeApparmorClassName(): string {
     if (this.addon.apparmor === "profile") {
       return "green";
     }
@@ -610,7 +610,7 @@ class HassioAddonInfo extends LitElement {
     return "";
   }
 
-  private get _computeSecurityClassName() {
+  private get _computeSecurityClassName(): string {
     if (Number(this.addon.rating) > 4) {
       return "green";
     }
@@ -620,8 +620,8 @@ class HassioAddonInfo extends LitElement {
     return "red";
   }
 
-  private showMoreInfo(e) {
-    const id = e.target.getAttribute("id");
+  private showMoreInfo(ev): void {
+    const id = ev.target.getAttribute("id");
     showHassioMarkdownDialog(this, {
       title: PERMIS_DESC[id].title,
       content: PERMIS_DESC[id].description,

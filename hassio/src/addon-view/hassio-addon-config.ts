@@ -83,7 +83,7 @@ class HassioAddonConfig extends LitElement {
     ];
   }
 
-  protected firstUpdated() {
+  protected firstUpdated(): void {
     this.config = this.addon ? JSON.stringify(this.addon.options, null, 2) : "";
   }
 

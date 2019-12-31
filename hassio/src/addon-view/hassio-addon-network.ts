@@ -109,18 +109,18 @@ class HassioAddonNetwork extends LitElement {
     ];
   }
 
-  protected firstUpdated() {
+  protected firstUpdated(): void {
     this.setNetworkConfig();
   }
 
-  protected update(changedProperties: PropertyValues) {
+  protected update(changedProperties: PropertyValues): void {
     super.update(changedProperties);
     if (changedProperties.has("addon")) {
       this.setNetworkConfig();
     }
   }
 
-  private setNetworkConfig() {
+  private setNetworkConfig(): void {
     const network = this.addon.network || {};
     const description = this.addon.network_description || {};
     const items = Object.keys(network).map((key) => ({

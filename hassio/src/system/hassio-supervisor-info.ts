@@ -13,7 +13,6 @@ import {
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { HassioSupervisorInfo as HassioSupervisorInfoType } from "../../../src/data/hassio";
 import { HomeAssistant } from "../../../src/types";
-
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 
@@ -129,11 +128,11 @@ class HassioSupervisorInfo extends LitElement {
     ];
   }
 
-  protected firstUpdated() {
+  protected firstUpdated(): void {
     this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
   }
 
-  protected apiCalled(ev) {
+  protected apiCalled(ev): void {
     if (ev.detail.success) {
       this.errors = undefined;
       return;
