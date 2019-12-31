@@ -8,6 +8,7 @@ import {
   html,
   LitElement,
   property,
+  PropertyValues,
   TemplateResult,
 } from "lit-element";
 
@@ -22,7 +23,12 @@ class HassioAddonConfig extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
   @property() protected error?: string;
-  @property() private config!: any;
+  @property() private config!: string;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this.config = JSON.stringify(this.addon.options, null, 2);
+  }
 
   protected render(): TemplateResult | void {
     return html`
@@ -36,7 +42,7 @@ class HassioAddonConfig extends LitElement {
           <iron-autogrow-textarea
             @value-changed=${this.configChanged}
             id="config"
-            .value=${this.config}
+            value=${this.config}
           ></iron-autogrow-textarea>
         </div>
         <div class="card-actions">
@@ -83,8 +89,13 @@ class HassioAddonConfig extends LitElement {
     ];
   }
 
-  protected firstUpdated(): void {
-    this.config = this.addon ? JSON.stringify(this.addon.options, null, 2) : "";
+  protected update(changedProperties: PropertyValues): void {
+    super.update(changedProperties);
+    if (changedProperties.has("addon")) {
+      if (this._configHasChanged) {
+        this.config = JSON.stringify(this.addon.options, null, 2);
+      }
+    }
   }
 
   protected get _configHasChanged() {
@@ -101,7 +112,7 @@ class HassioAddonConfig extends LitElement {
     }
   }
 
-  protected resetTapped(): void {
+  protected callApi(options: null | object): void {
     this.error = undefined;
     const path = `hassio/addons/${this.addon.slug}/options`;
     const eventData = {
@@ -111,7 +122,7 @@ class HassioAddonConfig extends LitElement {
     };
     this.hass
       .callApi("POST", path, {
-        options: null,
+        options,
       })
       .then(
         (resp) => {
@@ -125,44 +136,25 @@ class HassioAddonConfig extends LitElement {
       )
       .then(() => {
         fireEvent(this, "hass-api-called", eventData);
-        this.config = this.addon
-          ? JSON.stringify(this.addon.options, null, 2)
-          : "";
       });
   }
 
+  protected resetTapped(): void {
+    this.callApi(null);
+  }
+
   protected saveTapped(): void {
+    let config: object | null;
     try {
-      JSON.parse(this.config);
+      config = JSON.parse(this.config);
       this.error = undefined;
     } catch (err) {
+      config = null;
       this.error = err;
     }
 
     if (!this.error) {
-      const path = `hassio/addons/${this.addon.slug}/options`;
-      const eventData = {
-        path,
-        success: false,
-        response: undefined,
-      };
-      this.hass
-        .callApi("POST", `hassio/addons/${this.addon.slug}/options`, {
-          options: JSON.parse(this.config),
-        })
-        .then(
-          (resp) => {
-            eventData.success = true;
-            eventData.response = resp as any;
-          },
-          (resp) => {
-            eventData.success = false;
-            eventData.response = resp;
-          }
-        )
-        .then(() => {
-          fireEvent(this, "hass-api-called", eventData);
-        });
+      this.callApi(config);
     }
   }
 }
