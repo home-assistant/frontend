@@ -131,7 +131,7 @@ class HassioAddonAudio extends LitElement {
     const value = ev.detail.value;
     let device: undefined | string;
     if (value) {
-      this.inputDevices!.map(function(item) {
+      this.inputDevices!.map((item) => {
         if (item.name === value) {
           device = item.device;
         }
@@ -146,7 +146,7 @@ class HassioAddonAudio extends LitElement {
     const value = ev.detail.value;
     let device: undefined | string;
     if (value) {
-      this.outputDevices!.map(function(item) {
+      this.outputDevices!.map((item) => {
         if (item.name === value) {
           device = item.device;
         }
@@ -160,7 +160,9 @@ class HassioAddonAudio extends LitElement {
   private addonChanged(): void {
     this.selectedInput = this.addon.audio_input || "null";
     this.selectedOutput = this.addon.audio_output || "null";
-    if (this.outputDevices) return;
+    if (this.outputDevices) {
+      return;
+    }
 
     const noDevice = [{ device: "null", name: "-" }];
     this.hass.callApi("GET", "hassio/hardware/audio").then(
