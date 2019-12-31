@@ -12,6 +12,7 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
+import { haStyle } from "../../../src/resources/styles";
 import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../ansi-to-html";
 
 @customElement("hassio-supervisor-log")
@@ -36,6 +37,7 @@ class HassioSupervisorLog extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
+      haStyle,
       hassioStyle,
       ANSI_HTML_STYLE,
       css`

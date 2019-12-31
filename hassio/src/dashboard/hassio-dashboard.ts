@@ -9,6 +9,7 @@ import {
 } from "lit-element";
 import "./hassio-addons";
 import "./hassio-update";
+import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import {
   HassioSupervisorInfo,
@@ -40,12 +41,15 @@ class HassioDashboard extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .content {
-        margin: 0 auto;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        .content {
+          margin: 0 auto;
+        }
+      `,
+    ];
   }
 }
 

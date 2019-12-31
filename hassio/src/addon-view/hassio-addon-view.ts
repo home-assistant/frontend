@@ -16,6 +16,7 @@ import {
 import { HomeAssistant, Route } from "../../../src/types";
 import { HassioAddonDetails } from "../../../src/data/hassio";
 import { hassioStyle } from "../resources/hassio-style";
+import { haStyle } from "../../../src/resources/styles";
 
 import "./hassio-addon-audio";
 import "./hassio-addon-config";
@@ -80,6 +81,7 @@ class HassioAddonView extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
+      haStyle,
       hassioStyle,
       css`
         :host {

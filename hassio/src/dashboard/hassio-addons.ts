@@ -13,6 +13,7 @@ import { HomeAssistant } from "../../../src/types";
 import { HassioAddonInfo } from "../../../src/data/hassio";
 import { navigate } from "../../../src/common/navigate";
 import { hassioStyle } from "../resources/hassio-style";
+import { haStyle } from "../../../src/resources/styles";
 import "../components/hassio-card-content";
 
 @customElement("hassio-addons")
@@ -60,6 +61,7 @@ class HassioAddons extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
+      haStyle,
       hassioStyle,
       css`
         paper-card {

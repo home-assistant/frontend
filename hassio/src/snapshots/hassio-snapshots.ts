@@ -17,6 +17,7 @@ import "@polymer/paper-radio-group/paper-radio-group";
 
 import "../components/hassio-card-content";
 import { hassioStyle } from "../resources/hassio-style";
+import { haStyle } from "../../../src/resources/styles";
 
 import { showHassioSnapshotDialog } from "../dialogs/snapshot/show-dialog-hassio-snapshot";
 import { HomeAssistant } from "../../../src/types";
@@ -334,6 +335,7 @@ class HassioSnapshots extends LitElement {
 
   static get styles(): CSSResultArray {
     return [
+      haStyle,
       hassioStyle,
       css`
         paper-radio-group {

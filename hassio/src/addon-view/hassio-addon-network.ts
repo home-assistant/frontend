@@ -16,6 +16,7 @@ import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { HomeAssistant } from "../../../src/types";
 import { HassioAddonDetails } from "../../../src/data/hassio";
 import { hassioStyle } from "../resources/hassio-style";
+import { haStyle } from "../../../src/resources/styles";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 
 interface NetworkItem {
@@ -77,7 +78,9 @@ class HassioAddonNetwork extends LitElement {
           </table>
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this.resetTapped}>Reset to defaults</mwc-button>
+          <mwc-button class="warning" @click=${this.resetTapped}
+            >Reset to defaults</mwc-button
+          >
           <mwc-button @click=${this.saveTapped}>Save</mwc-button>
         </div>
       </paper-card>
@@ -86,6 +89,7 @@ class HassioAddonNetwork extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
+      haStyle,
       hassioStyle,
       css`
         :host {

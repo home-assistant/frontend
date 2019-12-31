@@ -21,6 +21,7 @@ import "../components/hassio-card-content";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 import { HassioAddonDetails } from "../../../src/data/hassio";
 import { hassioStyle } from "../resources/hassio-style";
+import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { navigate } from "../../../src/common/navigate";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
@@ -484,6 +485,7 @@ class HassioAddonInfo extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
+      haStyle,
       hassioStyle,
       css`
         :host {

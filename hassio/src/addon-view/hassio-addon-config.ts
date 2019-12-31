@@ -14,6 +14,7 @@ import {
 import { HomeAssistant } from "../../../src/types";
 import { HassioAddonDetails } from "../../../src/data/hassio";
 import { hassioStyle } from "../resources/hassio-style";
+import { haStyle } from "../../../src/resources/styles";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 
 @customElement("hassio-addon-config")
@@ -39,7 +40,9 @@ class HassioAddonConfig extends LitElement {
           ></iron-autogrow-textarea>
         </div>
         <div class="card-actions">
-          <mwc-button @click=${this.resetTapped}>Reset to defaults</mwc-button>
+          <mwc-button class="warning" @click=${this.resetTapped}
+            >Reset to defaults</mwc-button
+          >
           <mwc-button
             @click=${this.saveTapped}
             .disabled=${!this._configHasChanged}
@@ -52,6 +55,7 @@ class HassioAddonConfig extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
+      haStyle,
       hassioStyle,
       css`
         :host {
@@ -124,7 +128,6 @@ class HassioAddonConfig extends LitElement {
         this.config = this.addon
           ? JSON.stringify(this.addon.options, null, 2)
           : "";
-        this.requestUpdate();
       });
   }
 
@@ -159,10 +162,6 @@ class HassioAddonConfig extends LitElement {
         )
         .then(() => {
           fireEvent(this, "hass-api-called", eventData);
-          this.config = this.addon
-            ? JSON.stringify(this.addon.options, null, 2)
-            : "";
-          this.requestUpdate();
         });
     }
   }

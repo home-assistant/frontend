@@ -14,6 +14,7 @@ import { HomeAssistant } from "../../../src/types";
 import { HassioAddonDetails } from "../../../src/data/hassio";
 import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../ansi-to-html";
 import { hassioStyle } from "../resources/hassio-style";
+import { haStyle } from "../../../src/resources/styles";
 
 @customElement("hassio-addon-logs")
 class HassioAddonLogs extends LitElement {
@@ -34,6 +35,7 @@ class HassioAddonLogs extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
+      haStyle,
       hassioStyle,
       ANSI_HTML_STYLE,
       css`

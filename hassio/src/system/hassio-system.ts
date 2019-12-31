@@ -10,6 +10,7 @@ import {
 } from "lit-element";
 
 import { hassioStyle } from "../resources/hassio-style";
+import { haStyle } from "../../../src/resources/styles";
 
 import {
   HassioSupervisorInfo,
@@ -50,6 +51,7 @@ class HassioSystem extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
+      haStyle,
       hassioStyle,
       css`
         .content {

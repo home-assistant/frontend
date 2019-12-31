@@ -11,6 +11,7 @@ import {
 } from "lit-element";
 
 import { hassioStyle } from "../resources/hassio-style";
+import { haStyle } from "../../../src/resources/styles";
 import {
   HassioHostInfo as HassioHostInfoType,
   HassioHassOSInfo,
@@ -121,6 +122,7 @@ class HassioHostInfo extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
+      haStyle,
       hassioStyle,
       css`
         paper-card {

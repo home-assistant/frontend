@@ -17,6 +17,7 @@ import {
 } from "../../../src/data/hassio";
 
 import { hassioStyle } from "../resources/hassio-style";
+import { haStyle } from "../../../src/resources/styles";
 
 import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
@@ -146,6 +147,7 @@ export class HassioUpdate extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
+      haStyle,
       hassioStyle,
       css`
         :host {

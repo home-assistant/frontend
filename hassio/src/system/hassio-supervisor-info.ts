@@ -15,6 +15,7 @@ import { HassioSupervisorInfo as HassioSupervisorInfoType } from "../../../src/d
 import { HomeAssistant } from "../../../src/types";
 
 import { hassioStyle } from "../resources/hassio-style";
+import { haStyle } from "../../../src/resources/styles";
 
 import "../../../src/components/buttons/ha-call-api-button";
 
@@ -99,6 +100,7 @@ class HassioSupervisorInfo extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
+      haStyle,
       hassioStyle,
       css`
         paper-card {
