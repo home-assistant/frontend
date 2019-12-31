@@ -71,29 +71,33 @@ class HassioAddons extends LitElement {
     ];
   }
 
-  computeIcon(addon: HassioAddonInfo) {
+  protected computeIcon(addon: HassioAddonInfo) {
     return addon.installed !== addon.version
       ? "hassio:arrow-up-bold-circle"
       : "hassio:puzzle";
   }
 
-  computeIconTitle(addon: HassioAddonInfo) {
-    if (addon.installed !== addon.version) return "New version available";
+  protected computeIconTitle(addon: HassioAddonInfo) {
+    if (addon.installed !== addon.version) {
+      return "New version available";
+    }
     return addon.state === "started"
       ? "Add-on is running"
       : "Add-on is stopped";
   }
 
-  computeIconClass(addon: HassioAddonInfo) {
-    if (addon.installed !== addon.version) return "update";
+  protected computeIconClass(addon: HassioAddonInfo) {
+    if (addon.installed !== addon.version) {
+      return "update";
+    }
     return addon.state === "started" ? "running" : "";
   }
 
-  addonTapped(ev) {
+  protected addonTapped(ev) {
     navigate(this, `/hassio/addon/${ev.currentTarget.addon.slug}`);
   }
 
-  openStore() {
+  protected openStore() {
     navigate(this, "/hassio/store");
   }
 }

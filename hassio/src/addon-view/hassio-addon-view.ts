@@ -124,10 +124,12 @@ class HassioAddonView extends LitElement {
     this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
   }
 
-  apiCalled(ev): void {
-    const path = ev.detail.path;
+  protected apiCalled(ev): void {
+    const path: string = ev.detail.path;
 
-    if (!path) return;
+    if (!path) {
+      return;
+    }
 
     if (path.substr(path.lastIndexOf("/") + 1) === "uninstall") {
       history.back();
@@ -136,7 +138,7 @@ class HassioAddonView extends LitElement {
     }
   }
 
-  routeDataChanged(routeData): void {
+  protected routeDataChanged(routeData: Route): void {
     const addon = routeData.path.substr(1);
     this.hass.callApi("GET", `hassio/addons/${addon}/info`).then(
       (info) => {

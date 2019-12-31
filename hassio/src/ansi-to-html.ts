@@ -88,29 +88,42 @@ export function parseTextToColoredPre(text) {
 
   const addSpan = (content) => {
     const span = document.createElement("span");
-    if (state.bold) span.classList.add("bold");
-    if (state.italic) span.classList.add("italic");
-    if (state.underline) span.classList.add("underline");
-    if (state.strikethrough) span.classList.add("strikethrough");
-    if (state.foregroundColor !== null)
+    if (state.bold) {
+      span.classList.add("bold");
+    }
+    if (state.italic) {
+      span.classList.add("italic");
+    }
+    if (state.underline) {
+      span.classList.add("underline");
+    }
+    if (state.strikethrough) {
+      span.classList.add("strikethrough");
+    }
+    if (state.foregroundColor !== null) {
       span.classList.add(`fg-${state.foregroundColor}`);
-    if (state.backgroundColor !== null)
+    }
+    if (state.backgroundColor !== null) {
       span.classList.add(`bg-${state.backgroundColor}`);
+    }
     span.appendChild(document.createTextNode(content));
     pre.appendChild(span);
   };
 
   /* eslint-disable no-cond-assign */
   let match;
+  // tslint:disable-next-line
   while ((match = re.exec(text)) !== null) {
-    const j = match.index;
+    const j = match!.index;
     addSpan(text.substring(i, j));
     i = j + match[0].length;
 
-    if (match[1] === undefined) continue;
+    if (match[1] === undefined) {
+      continue;
+    }
 
     match[1].split(";").forEach((colorCode: string) => {
-      switch (parseInt(colorCode)) {
+      switch (parseInt(colorCode, 10)) {
         case 0:
           // reset
           state.bold = false;

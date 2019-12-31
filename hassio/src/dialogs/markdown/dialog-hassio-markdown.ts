@@ -26,6 +26,12 @@ class HassioMarkdownDialog extends LitElement {
   @property() public content!: string;
   @query("#dialog") private _dialog!: PaperDialogElement;
 
+  public showDialog(params: HassioMarkdownDialogParams) {
+    this.title = params.title;
+    this.content = params.content;
+    this._dialog.open();
+  }
+
   protected render(): TemplateResult | void {
     return html`
       <ha-paper-dialog id="dialog" with-backdrop="">
@@ -87,12 +93,6 @@ class HassioMarkdownDialog extends LitElement {
         }
       `,
     ];
-  }
-
-  public showDialog(params: HassioMarkdownDialogParams) {
-    this.title = params.title;
-    this.content = params.content;
-    this._dialog.open();
   }
 }
 

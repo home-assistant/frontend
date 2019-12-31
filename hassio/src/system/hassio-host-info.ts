@@ -27,7 +27,7 @@ class HassioHostInfo extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public hostInfo!: HassioHostInfoType;
   @property() public hassOsInfo!: HassioHassOSInfo;
-  @property() private errors!: String | null;
+  @property() protected errors?: string;
 
   public render(): TemplateResult | void {
     return html`
@@ -57,7 +57,7 @@ class HassioHostInfo extends LitElement {
           <mwc-button raised @click=${this._showHardware} class="info">
             Hardware
           </mwc-button>
-          ${this._featureAvailable(this.hostInfo, "hostname")
+          ${this.hostInfo.features.includes("hostname")
             ? html`
                 <mwc-button
                   raised
@@ -75,7 +75,7 @@ class HassioHostInfo extends LitElement {
             : ""}
         </div>
         <div class="card-actions">
-          ${this._featureAvailable(this.hostInfo, "reboot")
+          ${this.hostInfo.features.includes("reboot")
             ? html`
                 <ha-call-api-button
                   class="warning"
@@ -85,7 +85,7 @@ class HassioHostInfo extends LitElement {
                 >
               `
             : ""}
-          ${this._featureAvailable(this.hostInfo, "shutdown")
+          ${this.hostInfo.features.includes("shutdown")
             ? html`
                 <ha-call-api-button
                   class="warning"
@@ -95,7 +95,7 @@ class HassioHostInfo extends LitElement {
                 >
               `
             : ""}
-          ${this._featureAvailable(this.hostInfo, "hassos")
+          ${this.hostInfo.features.includes("hassos")
             ? html`
                 <ha-call-api-button
                   class="warning"
@@ -106,7 +106,7 @@ class HassioHostInfo extends LitElement {
                 >
               `
             : ""}
-          ${this._computeUpdateAvailable(this.hassOsInfo)
+          ${this.hostInfo.version !== this.hostInfo.version_latest
             ? html`
                 <ha-call-api-button
                   .hass=${this.hass}
@@ -171,32 +171,21 @@ class HassioHostInfo extends LitElement {
     this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
   }
 
-  apiCalled(ev) {
+  protected apiCalled(ev) {
     if (ev.detail.success) {
-      this.errors = null;
+      this.errors = undefined;
       return;
     }
 
-    var response = ev.detail.response;
+    const response = ev.detail.response;
 
-    if (typeof response.body === "object") {
-      this.errors = response.body.message || "Unknown error";
-    } else {
-      this.errors = response.body;
-    }
+    this.errors =
+      typeof response.body === "object"
+        ? response.body.message || "Unknown error"
+        : response.body;
   }
 
-  _computeUpdateAvailable(data) {
-    return data && this.hostInfo.version !== this.hostInfo.version_latest;
-  }
-
-  _featureAvailable(data, feature) {
-    return (
-      data && this.hostInfo.features && this.hostInfo.features.includes(feature)
-    );
-  }
-
-  _showHardware() {
+  protected _showHardware() {
     this.hass
       .callApi("GET", "hassio/hardware/info")
       .then(
@@ -206,12 +195,12 @@ class HassioHostInfo extends LitElement {
       .then((content) => {
         showHassioMarkdownDialog(this, {
           title: "Hardware",
-          content: content,
+          content,
         });
       });
   }
 
-  _objectToMarkdown(obj, indent = "") {
+  protected _objectToMarkdown(obj, indent = "") {
     let data = "";
     Object.keys(obj).forEach((key) => {
       if (typeof obj[key] !== "object") {
@@ -231,7 +220,7 @@ class HassioHostInfo extends LitElement {
     return data;
   }
 
-  _changeHostnameClicked() {
+  protected _changeHostnameClicked() {
     const curHostname = this.hostInfo.hostname;
     const hostname = prompt("Please enter a new hostname:", curHostname);
     if (hostname && hostname !== curHostname) {

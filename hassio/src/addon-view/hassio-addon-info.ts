@@ -716,7 +716,7 @@ class HassioAddonInfo extends LitElement {
     }
     const path = `hassio/addons/${this.addon.slug}/uninstall`;
     const eventData = {
-      path: path,
+      path,
       success: false,
       response: undefined,
     };

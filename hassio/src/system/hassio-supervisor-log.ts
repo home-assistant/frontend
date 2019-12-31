@@ -20,10 +20,6 @@ class HassioSupervisorLog extends LitElement {
   @property() public hass!: HomeAssistant;
   @query("#content") private _logContet!: any;
 
-  protected firstUpdated() {
-    this.loadData();
-  }
-
   public render(): TemplateResult | void {
     return html`
       <paper-card>
@@ -33,6 +29,10 @@ class HassioSupervisorLog extends LitElement {
         </div>
       </paper-card>
     `;
+  }
+
+  protected firstUpdated() {
+    this.loadData();
   }
 
   static get styles(): CSSResult[] {
@@ -48,7 +48,7 @@ class HassioSupervisorLog extends LitElement {
     ];
   }
 
-  loadData() {
+  protected loadData() {
     this.hass.callApi("GET", "hassio/supervisor/logs").then(
       (text) => {
         while (this._logContet.lastChild) {
@@ -63,7 +63,7 @@ class HassioSupervisorLog extends LitElement {
     );
   }
 
-  refresh() {
+  protected refresh() {
     this.loadData();
   }
 }

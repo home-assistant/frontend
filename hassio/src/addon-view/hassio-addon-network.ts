@@ -1,5 +1,4 @@
 import "@polymer/paper-card/paper-card";
-import "@polymer/paper-input/paper-input";
 import {
   css,
   CSSResult,
@@ -33,8 +32,8 @@ interface NetworkItemInput extends PaperInputElement {
 class HassioAddonNetwork extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
-  @property() private config?: NetworkItem[];
   @property() protected error?: string;
+  @property() private config?: NetworkItem[];
 
   protected render(): TemplateResult | void {
     if (!this.config) {
@@ -136,7 +135,7 @@ class HassioAddonNetwork extends LitElement {
     this.error = undefined;
     const path = `hassio/addons/${this.addon.slug}/options`;
     const eventData = {
-      path: path,
+      path,
       success: false,
       response: undefined,
     };
@@ -160,18 +159,14 @@ class HassioAddonNetwork extends LitElement {
       });
   }
 
-  private configChanged(ev): void {
+  private configChanged(ev: Event): void {
     const target = ev.target as NetworkItemInput;
-    this.config!.map(function(item) {
+    this.config!.map((item) => {
       if (
         item.container === target.container &&
-        item.host !== parseInt(String(target.value))
+        item.host !== parseInt(String(target.value), 10)
       ) {
-        if (!target.value) {
-          item.host = null;
-        } else {
-          item.host = parseInt(String(target.value));
-        }
+        item.host = target.value ? parseInt(String(target.value), 10) : null;
       }
     });
   }
@@ -179,12 +174,12 @@ class HassioAddonNetwork extends LitElement {
   private saveTapped(): void {
     this.error = undefined;
     const data = {};
-    this.config!.forEach(function(item) {
-      data[item.container] = parseInt(String(item.host));
+    this.config!.forEach((item) => {
+      data[item.container] = parseInt(String(item.host), 10);
     });
     const path = `hassio/addons/${this.addon.slug}/options`;
     const eventData = {
-      path: path,
+      path,
       success: false,
       response: undefined,
     };

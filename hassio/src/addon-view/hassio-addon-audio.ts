@@ -190,7 +190,7 @@ class HassioAddonAudio extends LitElement {
     this.error = undefined;
     const path = `hassio/addons/${this.addon.slug}/options`;
     const eventData = {
-      path: path,
+      path,
       success: false,
       response: undefined,
     };

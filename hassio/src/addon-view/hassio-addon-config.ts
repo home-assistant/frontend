@@ -21,8 +21,8 @@ import { fireEvent } from "../../../src/common/dom/fire_event";
 class HassioAddonConfig extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
-  @property() private config!: any;
   @property() protected error?: string;
+  @property() private config!: any;
 
   protected render(): TemplateResult | void {
     return html`
@@ -105,7 +105,7 @@ class HassioAddonConfig extends LitElement {
     this.error = undefined;
     const path = `hassio/addons/${this.addon.slug}/options`;
     const eventData = {
-      path: path,
+      path,
       success: false,
       response: undefined,
     };
@@ -142,7 +142,7 @@ class HassioAddonConfig extends LitElement {
     if (!this.error) {
       const path = `hassio/addons/${this.addon.slug}/options`;
       const eventData = {
-        path: path,
+        path,
         success: false,
         response: undefined,
       };

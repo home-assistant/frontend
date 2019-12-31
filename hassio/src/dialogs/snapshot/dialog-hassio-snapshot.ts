@@ -1,7 +1,6 @@
 import "@material/mwc-button";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/iron-icon/iron-icon";
-import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-input/paper-input";
@@ -18,9 +17,11 @@ import {
   query,
 } from "lit-element";
 
-import { fetchHassioSnapshotInfo } from "../../../../src/data/hassio";
+import {
+  fetchHassioSnapshotInfo,
+  HassioSnapshotDetail,
+} from "../../../../src/data/hassio";
 import { getSignedPath } from "../../../../src/data/auth";
-import { HassioSnapshotDetail } from "../../../../src/data/hassio";
 import { HassioSnapshotDialogParams } from "./show-dialog-hassio-snapshot";
 import { haStyleDialog } from "../../../../src/resources/styles";
 import { HomeAssistant } from "../../../../src/types";
@@ -83,12 +84,28 @@ class HassioSnapshotDialog extends LitElement {
   @property() private restoreHass: boolean | null | undefined = true;
   @query("#dialog") private _dialog!: PaperDialogElement;
 
+  public async showDialog(params: HassioSnapshotDialogParams) {
+    this.snapshot = await fetchHassioSnapshotInfo(this.hass, params.slug);
+    this._folders = _computeFolders(
+      this.snapshot.folders
+    ).sort((a: FolderItem, b: FolderItem) => (a.name > b.name ? 1 : -1));
+    this._addons = _computeAddons(
+      this.snapshot.addons
+    ).sort((a: AddonItem, b: AddonItem) => (a.name > b.name ? 1 : -1));
+
+    this.dialogParams = params;
+
+    try {
+      this._dialog.open();
+    } catch {
+      await this.showDialog(params);
+    }
+  }
+
   protected render(): TemplateResult | void {
     if (!this.snapshot) {
       return html``;
     }
-    console.log(this._addons);
-    console.log(this._folders);
     return html`
       <ha-paper-dialog
         id="dialog"
@@ -293,25 +310,6 @@ class HassioSnapshotDialog extends LitElement {
 
   protected _passwordInput(ev: PolymerChangedEvent<string>) {
     this.snapshotPassword = ev.detail.value;
-  }
-
-  public async showDialog(params: HassioSnapshotDialogParams) {
-    this.snapshot = await fetchHassioSnapshotInfo(this.hass, params.slug);
-    console.log(this.snapshot);
-    this._folders = _computeFolders(
-      this.snapshot.folders
-    ).sort((a: FolderItem, b: FolderItem) => (a.name > b.name ? 1 : -1));
-    this._addons = _computeAddons(
-      this.snapshot.addons
-    ).sort((a: AddonItem, b: AddonItem) => (a.name > b.name ? 1 : -1));
-
-    this.dialogParams = params;
-
-    try {
-      this._dialog.open();
-    } catch {
-      await this.showDialog(params);
-    }
   }
 
   protected _partialRestoreClicked() {

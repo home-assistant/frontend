@@ -23,11 +23,7 @@ import "../../../src/components/buttons/ha-call-api-button";
 class HassioSupervisorInfo extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public supervisorInfo!: HassioSupervisorInfoType;
-  @property() private errors!: String | null;
-  @property() private leaveBeta!: {
-    type: Object;
-    value: { channel: "stable" };
-  };
+  @property() private errors?: string;
 
   public render(): TemplateResult | void {
     return html`
@@ -44,7 +40,7 @@ class HassioSupervisorInfo extends LitElement {
                 <td>Latest version</td>
                 <td>${this.supervisorInfo.last_version}</td>
               </tr>
-              ${!this._equals(this.supervisorInfo.channel, "stable")
+              ${this.supervisorInfo.channel !== "stable"
                 ? html`
                     <tr>
                       <td>Channel</td>
@@ -64,7 +60,7 @@ class HassioSupervisorInfo extends LitElement {
           <ha-call-api-button .hass=${this.hass} path="hassio/supervisor/reload"
             >Reload</ha-call-api-button
           >
-          ${this.computeUpdateAvailable()
+          ${this.supervisorInfo.version !== this.supervisorInfo.last_version
             ? html`
                 <ha-call-api-button
                   .hass=${this.hass}
@@ -73,17 +69,17 @@ class HassioSupervisorInfo extends LitElement {
                 >
               `
             : ""}
-          ${this._equals(this.supervisorInfo.channel, "beta")
+          ${this.supervisorInfo.channel === "beta"
             ? html`
                 <ha-call-api-button
                   .hass=${this.hass}
                   path="hassio/supervisor/options"
-                  .data=${this.leaveBeta}
+                  .data=${{ channel: "stable" }}
                   >Leave beta channel</ha-call-api-button
                 >
               `
             : ""}
-          ${this._equals(this.supervisorInfo.channel, "stable")
+          ${this.supervisorInfo.channel === "stable"
             ? html`
                 <mwc-button
                   @click=${this._joinBeta}
@@ -137,30 +133,21 @@ class HassioSupervisorInfo extends LitElement {
     this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
   }
 
-  apiCalled(ev) {
+  protected apiCalled(ev) {
     if (ev.detail.success) {
-      this.errors = null;
+      this.errors = undefined;
       return;
     }
 
-    var response = ev.detail.response;
+    const response = ev.detail.response;
 
-    if (typeof response.body === "object") {
-      this.errors = response.body.message || "Unknown error";
-    } else {
-      this.errors = response.body;
-    }
+    this.errors =
+      typeof response.body === "object"
+        ? response.body.message || "Unknown error"
+        : response.body;
   }
 
-  computeUpdateAvailable() {
-    return this.supervisorInfo.version !== this.supervisorInfo.last_version;
-  }
-
-  _equals(a, b) {
-    return a === b;
-  }
-
-  _joinBeta() {
+  protected _joinBeta() {
     if (
       !confirm(`WARNING:
 Beta releases are for testers and early adopters and can contain unstable code changes. Make sure you have backups of your data before you activate this feature.
@@ -183,9 +170,9 @@ This inludes beta releases for:
       success: boolean;
       response: unknown;
     } = {
-      method: method,
-      path: path,
-      data: data,
+      method,
+      path,
+      data,
       success: false,
       response: "",
     };

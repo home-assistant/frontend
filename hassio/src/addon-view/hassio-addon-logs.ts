@@ -56,7 +56,7 @@ class HassioAddonLogs extends LitElement {
     this.loadData();
   }
 
-  loadData() {
+  protected loadData() {
     this.hass.callApi("GET", `hassio/addons/${this.addon.slug}/logs`).then(
       (text) => {
         while (this._logContet.lastChild) {
@@ -71,7 +71,7 @@ class HassioAddonLogs extends LitElement {
     );
   }
 
-  refresh() {
+  protected refresh() {
     this.loadData();
   }
 }
