@@ -87,11 +87,11 @@ class HassioAddonConfig extends LitElement {
     this.config = this.addon ? JSON.stringify(this.addon.options, null, 2) : "";
   }
 
-  private get _configHasChanged() {
+  protected get _configHasChanged() {
     return this.config !== JSON.stringify(this.addon.options, null, 2);
   }
 
-  private configChanged(ev): void {
+  protected configChanged(ev): void {
     try {
       this.error = undefined;
       this.config = ev.detail.value;
@@ -101,7 +101,7 @@ class HassioAddonConfig extends LitElement {
     }
   }
 
-  private resetTapped(): void {
+  protected resetTapped(): void {
     this.error = undefined;
     const path = `hassio/addons/${this.addon.slug}/options`;
     const eventData = {
@@ -131,7 +131,7 @@ class HassioAddonConfig extends LitElement {
       });
   }
 
-  private saveTapped(): void {
+  protected saveTapped(): void {
     try {
       JSON.parse(this.config);
       this.error = undefined;
