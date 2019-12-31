@@ -14,8 +14,7 @@ import {
 import { HomeAssistant } from "../../../src/types";
 import { HassioAddonDetails } from "../../../src/data/hassio";
 import { hassioStyle } from "../resources/hassio-style";
-
-import "../../../src/components/buttons/ha-call-api-button";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
@@ -100,18 +99,35 @@ class HassioAddonConfig extends LitElement {
 
   private resetTapped(): void {
     this.error = undefined;
-
+    const path = `hassio/addons/${this.addon.slug}/options`;
+    const eventData = {
+      path: path,
+      success: false,
+      response: undefined,
+    };
     this.hass
-      .callApi("POST", `hassio/addons/${this.addon.slug}/options`, {
+      .callApi("POST", path, {
         options: null,
       })
+      .then(
+        (resp) => {
+          eventData.success = true;
+          eventData.response = resp as any;
+        },
+        (resp) => {
+          eventData.success = false;
+          eventData.response = resp;
+        }
+      )
       .then(() => {
+        fireEvent(this, "hass-api-called", eventData);
         this.config = this.addon
           ? JSON.stringify(this.addon.options, null, 2)
           : "";
         this.requestUpdate();
       });
   }
+
   private saveTapped(): void {
     try {
       JSON.parse(this.config);
@@ -121,12 +137,32 @@ class HassioAddonConfig extends LitElement {
     }
 
     if (!this.error) {
+      const path = `hassio/addons/${this.addon.slug}/options`;
+      const eventData = {
+        path: path,
+        success: false,
+        response: undefined,
+      };
       this.hass
         .callApi("POST", `hassio/addons/${this.addon.slug}/options`, {
           options: JSON.parse(this.config),
         })
-        .catch((resp) => {
-          this.error = resp.body.message;
+        .then(
+          (resp) => {
+            eventData.success = true;
+            eventData.response = resp as any;
+          },
+          (resp) => {
+            eventData.success = false;
+            eventData.response = resp;
+          }
+        )
+        .then(() => {
+          fireEvent(this, "hass-api-called", eventData);
+          this.config = this.addon
+            ? JSON.stringify(this.addon.options, null, 2)
+            : "";
+          this.requestUpdate();
         });
     }
   }

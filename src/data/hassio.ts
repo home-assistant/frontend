@@ -49,6 +49,7 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   build: boolean;
   options: object;
   network: null | object;
+  network_description: null | object;
   host_network: boolean;
   host_pid: boolean;
   host_ipc: boolean;
