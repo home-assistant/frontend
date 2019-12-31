@@ -34,7 +34,7 @@ class HassioAddonNetwork extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
   @property() private config?: NetworkItem[];
-  @property() private error?: string;
+  @property() protected error?: string;
 
   protected render(): TemplateResult | void {
     if (!this.config) {

@@ -38,7 +38,7 @@ class HassioAddonAudio extends LitElement {
   @property() public selectedInput!: string;
   @property() public selectedOutput!: string;
 
-  @property() private error?: string;
+  @property() protected error?: string;
 
   protected render(): TemplateResult | void {
     return html`

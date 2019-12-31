@@ -19,7 +19,6 @@ import { HassioMarkdownDialogParams } from "./show-dialog-hassio-markdown";
 
 import "../../../../src/components/dialog/ha-paper-dialog";
 import "../../../../src/components/ha-markdown";
-import "../../../../src/resources/ha-style";
 
 @customElement("dialog-hassio-markdown")
 class HassioMarkdownDialog extends LitElement {
@@ -29,7 +28,6 @@ class HassioMarkdownDialog extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <style include="ha-style-dialog"></style>
       <ha-paper-dialog id="dialog" with-backdrop="">
         <app-toolbar>
           <paper-icon-button

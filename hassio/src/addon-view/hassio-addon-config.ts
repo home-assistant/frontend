@@ -22,7 +22,7 @@ class HassioAddonConfig extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
   @property() private config!: any;
-  @property() private error?: string;
+  @property() protected error?: string;
 
   protected render(): TemplateResult | void {
     return html`

@@ -118,7 +118,7 @@ export interface HassioSnapshot {
 }
 
 export interface HassioSnapshotDetail extends HassioSnapshot {
-  size: string;
+  size: number;
   homeassistant: string;
   addons: Array<{
     slug: "ADDON_SLUG";
