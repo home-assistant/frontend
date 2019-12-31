@@ -127,7 +127,7 @@ class HassioAddonAudio extends LitElement {
     }
   }
 
-  private setInputDevice(ev: PolymerChangedEvent<string>): void {
+  protected setInputDevice(ev: PolymerChangedEvent<string>): void {
     const value = ev.detail.value;
     let device: undefined | string;
     if (value) {
@@ -142,7 +142,7 @@ class HassioAddonAudio extends LitElement {
     }
   }
 
-  private setOutputDevice(ev: PolymerChangedEvent<string>): void {
+  protected setOutputDevice(ev: PolymerChangedEvent<string>): void {
     const value = ev.detail.value;
     let device: undefined | string;
     if (value) {
@@ -157,7 +157,7 @@ class HassioAddonAudio extends LitElement {
     }
   }
 
-  private addonChanged(): void {
+  protected addonChanged(): void {
     this.selectedInput = this.addon.audio_input || "null";
     this.selectedOutput = this.addon.audio_output || "null";
     if (this.outputDevices) {
@@ -186,7 +186,7 @@ class HassioAddonAudio extends LitElement {
     );
   }
 
-  private _saveSettings(): void {
+  protected _saveSettings(): void {
     this.error = undefined;
     const path = `hassio/addons/${this.addon.slug}/options`;
     const eventData = {
