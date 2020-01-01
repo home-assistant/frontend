@@ -385,7 +385,7 @@ class ZHADeviceCard extends LitElement {
       css`
         :host(:not([narrow])) .device-entities {
           max-height: 225px;
-          overflow: auto;
+          overflow-y: auto;
           display: flex;
           flex-wrap: wrap;
           padding: 4px;
@@ -411,7 +411,11 @@ class ZHADeviceCard extends LitElement {
         }
         .manuf,
         .zha-info,
+        .name {
+          text-overflow: ellipsis;
+        }
         .entity-id {
+          text-overflow: ellipsis;
           color: var(--secondary-text-color);
         }
         .info {
@@ -435,6 +439,7 @@ class ZHADeviceCard extends LitElement {
           margin-inline-start: 20px;
         }
         paper-icon-item {
+          overflow-x: hidden;
           cursor: pointer;
           padding-top: 4px;
           padding-bottom: 4px;
