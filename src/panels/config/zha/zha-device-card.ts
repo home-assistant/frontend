@@ -418,17 +418,21 @@ class ZHADeviceCard extends LitElement {
           margin-left: 16px;
         }
         dl {
-          display: grid;
-          grid-template-columns: 125px 1fr;
+          display: flex;
+          flex-wrap: wrap;
+          width: 100%;
         }
         dl dt {
+          display: inline-block;
+          width: 30%;
           padding-left: 12px;
           float: left;
           text-align: left;
         }
         dl dd {
-          max-width: 175px;
+          width: 60%;
           overflow-wrap: break-word;
+          margin-inline-start: 20px;
         }
         paper-icon-item {
           cursor: pointer;
