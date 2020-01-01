@@ -394,7 +394,7 @@ class ZHADeviceCard extends LitElement {
         ha-card {
           flex: 1 0 100%;
           padding-bottom: 10px;
-          min-width: 425px;
+          min-width: 300px;
         }
         .device {
           width: 30%;
@@ -427,7 +427,8 @@ class ZHADeviceCard extends LitElement {
           text-align: left;
         }
         dl dd {
-          max-width: 200px;
+          max-width: 175px;
+          overflow-wrap: break-word;
         }
         paper-icon-item {
           cursor: pointer;

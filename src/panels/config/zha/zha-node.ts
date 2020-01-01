@@ -129,9 +129,7 @@ export class ZHANode extends LitElement {
           margin-top: 24px;
           box-sizing: border-box;
           display: flex;
-          flex: 1 0 300px;
-          min-width: 0;
-          max-width: 600px;
+          flex: 1;
           word-wrap: break-word;
         }
 
