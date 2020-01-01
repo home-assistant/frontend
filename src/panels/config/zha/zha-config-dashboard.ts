@@ -71,7 +71,7 @@ class ZHAConfigDashboard extends LitElement {
                 </div>
               `,
             },
-            actions: {
+            id: {
               title: "",
               sortable: false,
               filterable: false,
