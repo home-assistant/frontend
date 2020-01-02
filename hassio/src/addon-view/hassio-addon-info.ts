@@ -118,7 +118,7 @@ class HassioAddonInfo extends LitElement {
                   </ha-call-api-button>
                   ${this.addon.changelog
                     ? html`
-                        <mwc-button @click=${this.openChangelog}
+                        <mwc-button @click=${this._openChangelog}
                           >Changelog</mwc-button
                         >
                       `
@@ -137,7 +137,7 @@ class HassioAddonInfo extends LitElement {
             Protection mode on this add-on is disabled! This gives the add-on full access to the entire system, which adds security risks, and could damage your system when used incorrectly. Only disable the protection mode if you know, need AND trust the source of this add-on.
           </div>
           <div class="card-actions protection-enable">
-              <mwc-button @click=${this.protectionToggled}>Enable Protection mode</mwc-button>
+              <mwc-button @click=${this._protectionToggled}>Enable Protection mode</mwc-button>
             </div>
           </div>
         </paper-card>
@@ -195,7 +195,7 @@ class HassioAddonInfo extends LitElement {
           <div class="security">
             <ha-label-badge
               class=${this._computeSecurityClassName}
-              @click=${this.showMoreInfo}
+              @click=${this._showMoreInfo}
               id="rating"
               value=${this.addon.rating}
               label="rating"
@@ -205,7 +205,7 @@ class HassioAddonInfo extends LitElement {
               this.addon.host_network
                 ? html`
                     <ha-label-badge
-                      @click=${this.showMoreInfo}
+                      @click=${this._showMoreInfo}
                       id="host_network"
                       icon="hassio:network"
                       label="host"
@@ -219,7 +219,7 @@ class HassioAddonInfo extends LitElement {
               this.addon.full_access
                 ? html`
                     <ha-label-badge
-                      @click=${this.showMoreInfo}
+                      @click=${this._showMoreInfo}
                       id="full_access"
                       icon="hassio:chip"
                       label="hardware"
@@ -233,7 +233,7 @@ class HassioAddonInfo extends LitElement {
               this.addon.homeassistant_api
                 ? html`
                     <ha-label-badge
-                      @click=${this.showMoreInfo}
+                      @click=${this._showMoreInfo}
                       id="homeassistant_api"
                       icon="hassio:home-assistant"
                       label="hass"
@@ -247,7 +247,7 @@ class HassioAddonInfo extends LitElement {
               this._computeHassioApi
                 ? html`
                     <ha-label-badge
-                      @click=${this.showMoreInfo}
+                      @click=${this._showMoreInfo}
                       id="hassio_api"
                       icon="hassio:home-assistant"
                       label="hassio"
@@ -261,7 +261,7 @@ class HassioAddonInfo extends LitElement {
               this.addon.docker_api
                 ? html`
                     <ha-label-badge
-                      @click=${this.showMoreInfo}
+                      @click=${this._showMoreInfo}
                       id="docker_api"
                       icon="hassio:docker"
                       label="docker"
@@ -275,7 +275,7 @@ class HassioAddonInfo extends LitElement {
               this.addon.host_pid
                 ? html`
                     <ha-label-badge
-                      @click=${this.showMoreInfo}
+                      @click=${this._showMoreInfo}
                       id="host_pid"
                       icon="hassio:pound"
                       label="host pid"
@@ -289,7 +289,7 @@ class HassioAddonInfo extends LitElement {
               this.addon.apparmor
                 ? html`
                     <ha-label-badge
-                      @click=${this.showMoreInfo}
+                      @click=${this._showMoreInfo}
                       class=${this._computeApparmorClassName}
                       id="apparmor"
                       icon="hassio:shield"
@@ -304,7 +304,7 @@ class HassioAddonInfo extends LitElement {
               this.addon.auth_api
                 ? html`
                     <ha-label-badge
-                      @click=${this.showMoreInfo}
+                      @click=${this._showMoreInfo}
                       id="auth_api"
                       icon="hassio:key"
                       label="auth"
@@ -318,7 +318,7 @@ class HassioAddonInfo extends LitElement {
               this.addon.ingress
                 ? html`
                     <ha-label-badge
-                      @click=${this.showMoreInfo}
+                      @click=${this._showMoreInfo}
                       id="ingress"
                       icon="hassio:cursor-default-click-outline"
                       label="ingress"
@@ -335,14 +335,14 @@ class HassioAddonInfo extends LitElement {
                   <div class="state">
                     <div>Start on boot</div>
                     <ha-switch
-                      @change=${this.startOnBootToggled}
+                      @change=${this._startOnBootToggled}
                       .checked=${this.addon.boot === "auto"}
                     ></ha-switch>
                   </div>
                   <div class="state">
                     <div>Auto update</div>
                     <ha-switch
-                      @change=${this.autoUpdateToggled}
+                      @change=${this._autoUpdateToggled}
                       .checked=${this.addon.auto_update}
                     ></ha-switch>
                   </div>
@@ -351,7 +351,7 @@ class HassioAddonInfo extends LitElement {
                         <div class="state">
                           <div>Show in sidebar</div>
                           <ha-switch
-                            @change=${this.panelToggled}
+                            @change=${this._panelToggled}
                             .checked=${this.addon.ingress_panel}
                             .disabled=${this._computeCannotIngressSidebar}
                           ></ha-switch>
@@ -380,7 +380,7 @@ class HassioAddonInfo extends LitElement {
                             </span>
                           </div>
                           <ha-switch
-                            @change=${this.protectionToggled}
+                            @change=${this._protectionToggled}
                             .checked=${this.addon.protected}
                           ></ha-switch>
                         </div>
@@ -445,7 +445,7 @@ class HassioAddonInfo extends LitElement {
                       <mwc-button
                         tabindex="-1"
                         class="right"
-                        @click=${this.openIngress}
+                        @click=${this._openIngress}
                         >Open web UI</mwc-button
                       >
                     `
@@ -623,7 +623,7 @@ class HassioAddonInfo extends LitElement {
     return "red";
   }
 
-  private showMoreInfo(ev): void {
+  private _showMoreInfo(ev): void {
     const id = ev.target.getAttribute("id");
     showHassioMarkdownDialog(this, {
       title: PERMIS_DESC[id].title,
@@ -655,7 +655,7 @@ class HassioAddonInfo extends LitElement {
     return !this.addon.ingress && this.addon.webui && this._computeIsRunning;
   }
 
-  private openIngress(): void {
+  private _openIngress(): void {
     navigate(this, `/hassio/ingress/${this.addon.slug}`);
   }
 
@@ -678,17 +678,17 @@ class HassioAddonInfo extends LitElement {
     return Number(major) > 0 || (major === "0" && Number(minor) >= 92);
   }
 
-  private startOnBootToggled(): void {
+  private _startOnBootToggled(): void {
     const data = { boot: this.addon.boot === "auto" ? "manual" : "auto" };
     this.hass.callApi("POST", `hassio/addons/${this.addon.slug}/options`, data);
   }
 
-  private autoUpdateToggled(): void {
+  private _autoUpdateToggled(): void {
     const data = { auto_update: !this.addon.auto_update };
     this.hass.callApi("POST", `hassio/addons/${this.addon.slug}/options`, data);
   }
 
-  private protectionToggled(): void {
+  private _protectionToggled(): void {
     const data = { protected: !this.addon.protected };
     this.hass.callApi(
       "POST",
@@ -699,12 +699,12 @@ class HassioAddonInfo extends LitElement {
     this.requestUpdate();
   }
 
-  private panelToggled(): void {
+  private _panelToggled(): void {
     const data = { ingress_panel: !this.addon.ingress_panel };
     this.hass.callApi("POST", `hassio/addons/${this.addon.slug}/options`, data);
   }
 
-  private openChangelog(): void {
+  private _openChangelog(): void {
     this.hass
       .callApi("GET", `hassio/addons/${this.addon.slug}/changelog`)
       .then(

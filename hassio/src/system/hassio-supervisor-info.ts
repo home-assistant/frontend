@@ -22,7 +22,7 @@ import "../../../src/components/buttons/ha-call-api-button";
 class HassioSupervisorInfo extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public supervisorInfo!: HassioSupervisorInfoType;
-  @property() private errors?: string;
+  @property() protected errors?: string;
 
   public render(): TemplateResult | void {
     return html`
@@ -129,10 +129,10 @@ class HassioSupervisorInfo extends LitElement {
   }
 
   protected firstUpdated(): void {
-    this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
+    this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
   }
 
-  protected apiCalled(ev): void {
+  private _apiCalled(ev): void {
     if (ev.detail.success) {
       this.errors = undefined;
       return;
@@ -146,7 +146,7 @@ class HassioSupervisorInfo extends LitElement {
         : response.body;
   }
 
-  protected _joinBeta() {
+  private _joinBeta() {
     if (
       !confirm(`WARNING:
 Beta releases are for testers and early adopters and can contain unstable code changes. Make sure you have backups of your data before you activate this feature.

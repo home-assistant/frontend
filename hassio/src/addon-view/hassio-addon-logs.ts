@@ -22,12 +22,17 @@ class HassioAddonLogs extends LitElement {
   @property() public addon!: HassioAddonDetails;
   @query("#content") private _logContet!: any;
 
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._loadData();
+  }
+
   protected render(): TemplateResult | void {
     return html`
       <paper-card heading="Log">
         <div class="card-content" id="content"></div>
         <div class="card-actions">
-          <mwc-button @click=${this.refresh}>Refresh</mwc-button>
+          <mwc-button @click=${this._refresh}>Refresh</mwc-button>
         </div>
       </paper-card>
     `;
@@ -52,11 +57,7 @@ class HassioAddonLogs extends LitElement {
     ];
   }
 
-  protected firstUpdated(): void {
-    this.loadData();
-  }
-
-  protected loadData(): void {
+  private _loadData(): void {
     this.hass.callApi("GET", `hassio/addons/${this.addon.slug}/logs`).then(
       (text) => {
         while (this._logContet.lastChild) {
@@ -71,8 +72,8 @@ class HassioAddonLogs extends LitElement {
     );
   }
 
-  protected refresh(): void {
-    this.loadData();
+  private _refresh(): void {
+    this._loadData();
   }
 }
 

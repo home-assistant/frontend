@@ -167,10 +167,10 @@ class HassioHostInfo extends LitElement {
   }
 
   protected firstUpdated(): void {
-    this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
+    this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
   }
 
-  protected apiCalled(ev): void {
+  private _apiCalled(ev): void {
     if (ev.detail.success) {
       this.errors = undefined;
       return;
@@ -184,7 +184,7 @@ class HassioHostInfo extends LitElement {
         : response.body;
   }
 
-  protected _showHardware(): void {
+  private _showHardware(): void {
     this.hass
       .callApi("GET", "hassio/hardware/info")
       .then(
@@ -199,7 +199,7 @@ class HassioHostInfo extends LitElement {
       });
   }
 
-  protected _objectToMarkdown(obj, indent = ""): string {
+  private _objectToMarkdown(obj, indent = ""): string {
     let data = "";
     Object.keys(obj).forEach((key) => {
       if (typeof obj[key] !== "object") {
@@ -219,7 +219,7 @@ class HassioHostInfo extends LitElement {
     return data;
   }
 
-  protected _changeHostnameClicked(): void {
+  private _changeHostnameClicked(): void {
     const curHostname = this.hostInfo.hostname;
     const hostname = prompt("Please enter a new hostname:", curHostname);
     if (hostname && hostname !== curHostname) {

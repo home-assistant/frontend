@@ -33,10 +33,15 @@ class HassioAddonNetwork extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
   @property() protected error?: string;
-  @property() private config?: NetworkItem[];
+  @property() private _config?: NetworkItem[];
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    this._setNetworkConfig();
+  }
 
   protected render(): TemplateResult | void {
-    if (!this.config) {
+    if (!this._config) {
       return html``;
     }
 
@@ -56,13 +61,13 @@ class HassioAddonNetwork extends LitElement {
                 <th>Host</th>
                 <th>Description</th>
               </tr>
-              ${this.config!.map((item) => {
+              ${this._config!.map((item) => {
                 return html`
                   <tr>
                     <td>${item.container}</td>
                     <td>
                       <paper-input
-                        @value-changed=${this.configChanged}
+                        @value-changed=${this._configChanged}
                         placeholder="disabled"
                         .value=${item.host}
                         .container=${item.container}
@@ -77,10 +82,10 @@ class HassioAddonNetwork extends LitElement {
           </table>
         </div>
         <div class="card-actions">
-          <mwc-button class="warning" @click=${this.resetTapped}
+          <mwc-button class="warning" @click=${this._resetTapped}
             >Reset to defaults</mwc-button
           >
-          <mwc-button @click=${this.saveTapped}>Save</mwc-button>
+          <mwc-button @click=${this._saveTapped}>Save</mwc-button>
         </div>
       </paper-card>
     `;
@@ -109,18 +114,14 @@ class HassioAddonNetwork extends LitElement {
     ];
   }
 
-  protected firstUpdated(): void {
-    this.setNetworkConfig();
-  }
-
   protected update(changedProperties: PropertyValues): void {
     super.update(changedProperties);
     if (changedProperties.has("addon")) {
-      this.setNetworkConfig();
+      this._setNetworkConfig();
     }
   }
 
-  private setNetworkConfig(): void {
+  private _setNetworkConfig(): void {
     const network = this.addon.network || {};
     const description = this.addon.network_description || {};
     const items = Object.keys(network).map((key) => ({
@@ -128,10 +129,10 @@ class HassioAddonNetwork extends LitElement {
       host: network[key],
       description: description[key],
     }));
-    this.config = items.sort((a, b) => (a.container > b.container ? 1 : -1));
+    this._config = items.sort((a, b) => (a.container > b.container ? 1 : -1));
   }
 
-  private resetTapped(): void {
+  private _resetTapped(): void {
     this.error = undefined;
     const path = `hassio/addons/${this.addon.slug}/options`;
     const eventData = {
@@ -159,9 +160,9 @@ class HassioAddonNetwork extends LitElement {
       });
   }
 
-  private configChanged(ev: Event): void {
+  private _configChanged(ev: Event): void {
     const target = ev.target as NetworkItemInput;
-    this.config!.map((item) => {
+    this._config!.map((item) => {
       if (
         item.container === target.container &&
         item.host !== parseInt(String(target.value), 10)
@@ -171,10 +172,10 @@ class HassioAddonNetwork extends LitElement {
     });
   }
 
-  private saveTapped(): void {
+  private _saveTapped(): void {
     this.error = undefined;
     const data = {};
-    this.config!.forEach((item) => {
+    this._config!.forEach((item) => {
       data[item.container] = parseInt(String(item.host), 10);
     });
     const path = `hassio/addons/${this.addon.slug}/options`;

@@ -32,13 +32,11 @@ interface Device {
 class HassioAddonAudio extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
-
-  @property() public inputDevices!: Device[];
-  @property() public outputDevices!: Device[];
-  @property() public selectedInput!: string;
-  @property() public selectedOutput!: string;
-
   @property() protected error?: string;
+  @property() private _inputDevices!: Device[];
+  @property() private _outputDevices!: Device[];
+  @property() private _selectedInput!: string;
+  @property() private _selectedOutput!: string;
 
   protected render(): TemplateResult | void {
     return html`
@@ -52,15 +50,15 @@ class HassioAddonAudio extends LitElement {
 
           <paper-dropdown-menu
             label="Input"
-            @value-changed="${this.setInputDevice}"
+            @value-changed="${this._setInputDevice}"
           >
             <paper-listbox
               slot="dropdown-content"
               attr-for-selected="device"
-              selected="${this.selectedInput}"
+              selected="${this._selectedInput}"
             >
-              ${this.inputDevices &&
-                this.inputDevices.map((item) => {
+              ${this._inputDevices &&
+                this._inputDevices.map((item) => {
                   return html`
                     <paper-item device="${item.device}"
                       >${item.name}</paper-item
@@ -71,15 +69,15 @@ class HassioAddonAudio extends LitElement {
           </paper-dropdown-menu>
           <paper-dropdown-menu
             label="Output"
-            @value-changed="${this.setOutputDevice}"
+            @value-changed="${this._setOutputDevice}"
           >
             <paper-listbox
               slot="dropdown-content"
               attr-for-selected="device"
-              selected="${this.selectedOutput}"
+              selected="${this._selectedOutput}"
             >
-              ${this.outputDevices &&
-                this.outputDevices.map((item) => {
+              ${this._outputDevices &&
+                this._outputDevices.map((item) => {
                   return html`
                     <paper-item device="${item.device}"
                       >${item.name}</paper-item
@@ -123,44 +121,44 @@ class HassioAddonAudio extends LitElement {
   protected update(changedProperties: PropertyValues): void {
     super.update(changedProperties);
     if (changedProperties.has("addon")) {
-      this.addonChanged();
+      this._addonChanged();
     }
   }
 
-  protected setInputDevice(ev: PolymerChangedEvent<string>): void {
+  private _setInputDevice(ev: PolymerChangedEvent<string>): void {
     const value = ev.detail.value;
     let device: undefined | string;
     if (value) {
-      this.inputDevices!.map((item) => {
+      this._inputDevices!.map((item) => {
         if (item.name === value) {
           device = item.device;
         }
       });
     }
-    if (device && device !== this.selectedInput) {
-      this.selectedInput = device;
+    if (device && device !== this._selectedInput) {
+      this._selectedInput = device;
     }
   }
 
-  protected setOutputDevice(ev: PolymerChangedEvent<string>): void {
+  private _setOutputDevice(ev: PolymerChangedEvent<string>): void {
     const value = ev.detail.value;
     let device: undefined | string;
     if (value) {
-      this.outputDevices!.map((item) => {
+      this._outputDevices!.map((item) => {
         if (item.name === value) {
           device = item.device;
         }
       });
     }
-    if (device && device !== this.selectedOutput) {
-      this.selectedOutput = device;
+    if (device && device !== this._selectedOutput) {
+      this._selectedOutput = device;
     }
   }
 
-  protected addonChanged(): void {
-    this.selectedInput = this.addon.audio_input || "null";
-    this.selectedOutput = this.addon.audio_output || "null";
-    if (this.outputDevices) {
+  private _addonChanged(): void {
+    this._selectedInput = this.addon.audio_input || "null";
+    this._selectedOutput = this.addon.audio_output || "null";
+    if (this._outputDevices) {
       return;
     }
 
@@ -176,17 +174,17 @@ class HassioAddonAudio extends LitElement {
           device: key,
           name: dev.output[key],
         }));
-        this.inputDevices = noDevice.concat(input);
-        this.outputDevices = noDevice.concat(output);
+        this._inputDevices = noDevice.concat(input);
+        this._outputDevices = noDevice.concat(output);
       },
       () => {
-        this.inputDevices = noDevice;
-        this.outputDevices = noDevice;
+        this._inputDevices = noDevice;
+        this._outputDevices = noDevice;
       }
     );
   }
 
-  protected _saveSettings(): void {
+  private _saveSettings(): void {
     this.error = undefined;
     const path = `hassio/addons/${this.addon.slug}/options`;
     const eventData = {
@@ -196,9 +194,10 @@ class HassioAddonAudio extends LitElement {
     };
     this.hass
       .callApi("POST", path, {
-        audio_input: this.selectedInput === "null" ? null : this.selectedInput,
+        audio_input:
+          this._selectedInput === "null" ? null : this._selectedInput,
         audio_output:
-          this.selectedOutput === "null" ? null : this.selectedOutput,
+          this._selectedOutput === "null" ? null : this._selectedOutput,
       })
       .then(
         (resp) => {

@@ -79,9 +79,9 @@ class HassioSnapshotDialog extends LitElement {
   @property() private snapshot?: HassioSnapshotDetail;
   @property() private _folders!: FolderItem[];
   @property() private _addons!: AddonItem[];
-  @property() private dialogParams?: HassioSnapshotDialogParams;
-  @property() private snapshotPassword!: string;
-  @property() private restoreHass: boolean | null | undefined = true;
+  @property() private _dialogParams?: HassioSnapshotDialogParams;
+  @property() private _snapshotPassword!: string;
+  @property() private _restoreHass: boolean | null | undefined = true;
   @query("#dialog") private _dialog!: PaperDialogElement;
 
   public async showDialog(params: HassioSnapshotDialogParams) {
@@ -93,7 +93,7 @@ class HassioSnapshotDialog extends LitElement {
       this.snapshot.addons
     ).sort((a: AddonItem, b: AddonItem) => (a.name > b.name ? 1 : -1));
 
-    this.dialogParams = params;
+    this._dialogParams = params;
 
     try {
       this._dialog.open();
@@ -128,9 +128,9 @@ class HassioSnapshotDialog extends LitElement {
         </div>
         <div>Home Assistant:</div>
         <paper-checkbox
-          .checked=${this.restoreHass}
+          .checked=${this._restoreHass}
           @change="${(ev: Event) =>
-            (this.restoreHass = (ev.target as PaperCheckboxElement).checked)}"
+            (this._restoreHass = (ev.target as PaperCheckboxElement).checked)}"
         >
           Home Assistant ${this.snapshot.homeassistant}
         </paper-checkbox>
@@ -183,7 +183,7 @@ class HassioSnapshotDialog extends LitElement {
                 label="Password"
                 type="password"
                 @value-changed=${this._passwordInput}
-                .value=${this.snapshotPassword}
+                .value=${this._snapshotPassword}
               ></paper-input>
             `
           : ""}
@@ -287,10 +287,7 @@ class HassioSnapshotDialog extends LitElement {
     ];
   }
 
-  protected _updateFolders(
-    item: FolderItem,
-    value: boolean | null | undefined
-  ) {
+  private _updateFolders(item: FolderItem, value: boolean | null | undefined) {
     this._folders = this._folders.map((folder) => {
       if (folder.slug === item.slug) {
         folder.checked = value;
@@ -299,7 +296,7 @@ class HassioSnapshotDialog extends LitElement {
     });
   }
 
-  protected _updateAddons(item: AddonItem, value: boolean | null | undefined) {
+  private _updateAddons(item: AddonItem, value: boolean | null | undefined) {
     this._addons = this._addons.map((addon) => {
       if (addon.slug === item.slug) {
         addon.checked = value;
@@ -308,11 +305,11 @@ class HassioSnapshotDialog extends LitElement {
     });
   }
 
-  protected _passwordInput(ev: PolymerChangedEvent<string>) {
-    this.snapshotPassword = ev.detail.value;
+  private _passwordInput(ev: PolymerChangedEvent<string>) {
+    this._snapshotPassword = ev.detail.value;
   }
 
-  protected _partialRestoreClicked() {
+  private _partialRestoreClicked() {
     if (!confirm("Are you sure you want to restore this snapshot?")) {
       return;
     }
@@ -331,13 +328,13 @@ class HassioSnapshotDialog extends LitElement {
       folders: any;
       password?: string;
     } = {
-      homeassistant: this.restoreHass,
+      homeassistant: this._restoreHass,
       addons,
       folders,
     };
 
     if (this.snapshot!.protected) {
-      data.password = this.snapshotPassword;
+      data.password = this._snapshotPassword;
     }
 
     this.hass
@@ -358,13 +355,13 @@ class HassioSnapshotDialog extends LitElement {
       );
   }
 
-  protected _fullRestoreClicked() {
+  private _fullRestoreClicked() {
     if (!confirm("Are you sure you want to restore this snapshot?")) {
       return;
     }
 
     const data = this.snapshot!.protected
-      ? { password: this.snapshotPassword }
+      ? { password: this._snapshotPassword }
       : undefined;
 
     this.hass
@@ -384,7 +381,7 @@ class HassioSnapshotDialog extends LitElement {
       );
   }
 
-  protected _deleteClicked() {
+  private _deleteClicked() {
     if (!confirm("Are you sure you want to delete this snapshot?")) {
       return;
     }
@@ -395,7 +392,7 @@ class HassioSnapshotDialog extends LitElement {
       .then(
         () => {
           this._dialog.close();
-          this.dialogParams!.onDelete();
+          this._dialogParams!.onDelete();
         },
         (error) => {
           this.error = error.body.message;
@@ -403,7 +400,7 @@ class HassioSnapshotDialog extends LitElement {
       );
   }
 
-  protected async _downloadClicked() {
+  private async _downloadClicked() {
     let signedPath: { path: string };
     try {
       signedPath = await getSignedPath(
@@ -424,17 +421,17 @@ class HassioSnapshotDialog extends LitElement {
     this._dialog.removeChild(a);
   }
 
-  protected get _computeName() {
+  private get _computeName() {
     return this.snapshot
       ? this.snapshot.name || this.snapshot.slug
       : "Unnamed snapshot";
   }
 
-  protected get _computeSize() {
+  private get _computeSize() {
     return Math.ceil(this.snapshot!.size * 10) / 10 + " MB";
   }
 
-  protected _formatDatetime(datetime) {
+  private _formatDatetime(datetime) {
     return new Date(datetime).toLocaleDateString(navigator.language, {
       weekday: "long",
       year: "numeric",
@@ -445,10 +442,10 @@ class HassioSnapshotDialog extends LitElement {
     });
   }
 
-  protected _dialogClosed() {
-    this.dialogParams = undefined;
+  private _dialogClosed() {
+    this._dialogParams = undefined;
     this.snapshot = undefined;
-    this.snapshotPassword = "";
+    this._snapshotPassword = "";
     this._folders = [];
     this._addons = [];
   }

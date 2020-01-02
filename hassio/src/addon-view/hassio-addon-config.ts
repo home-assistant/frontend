@@ -23,11 +23,11 @@ class HassioAddonConfig extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
   @property() protected error?: string;
-  @property() private config!: string;
+  @property() private _config!: string;
 
   public connectedCallback(): void {
     super.connectedCallback();
-    this.config = JSON.stringify(this.addon.options, null, 2);
+    this._config = JSON.stringify(this.addon.options, null, 2);
   }
 
   protected render(): TemplateResult | void {
@@ -40,9 +40,9 @@ class HassioAddonConfig extends LitElement {
               `
             : ""}
           <iron-autogrow-textarea
-            @value-changed=${this.configChanged}
+            @value-changed=${this._configChanged}
             id="config"
-            value=${this.config}
+            value=${this._config}
           ></iron-autogrow-textarea>
         </div>
         <div class="card-actions">
@@ -93,26 +93,26 @@ class HassioAddonConfig extends LitElement {
     super.update(changedProperties);
     if (changedProperties.has("addon")) {
       if (this._configHasChanged) {
-        this.config = JSON.stringify(this.addon.options, null, 2);
+        this._config = JSON.stringify(this.addon.options, null, 2);
       }
     }
   }
 
-  protected get _configHasChanged() {
-    return this.config !== JSON.stringify(this.addon.options, null, 2);
+  private get _configHasChanged() {
+    return this._config !== JSON.stringify(this.addon.options, null, 2);
   }
 
-  protected configChanged(ev): void {
+  private _configChanged(ev): void {
     try {
       this.error = undefined;
-      this.config = ev.detail.value;
+      this._config = ev.detail.value;
     } catch (err) {
       this.error = err;
-      this.config = JSON.stringify(this.addon.options, null, 2);
+      this._config = JSON.stringify(this.addon.options, null, 2);
     }
   }
 
-  protected callApi(options: null | object): void {
+  private _callApi(options: null | object): void {
     this.error = undefined;
     const path = `hassio/addons/${this.addon.slug}/options`;
     const eventData = {
@@ -139,14 +139,14 @@ class HassioAddonConfig extends LitElement {
       });
   }
 
-  protected resetTapped(): void {
-    this.callApi(null);
+  private resetTapped(): void {
+    this._callApi(null);
   }
 
-  protected saveTapped(): void {
+  private saveTapped(): void {
     let config: object | null;
     try {
-      config = JSON.parse(this.config);
+      config = JSON.parse(this._config);
       this.error = undefined;
     } catch (err) {
       config = null;
@@ -154,7 +154,7 @@ class HassioAddonConfig extends LitElement {
     }
 
     if (!this.error) {
-      this.callApi(config);
+      this._callApi(config);
     }
   }
 }

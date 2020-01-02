@@ -120,11 +120,11 @@ class HassioAddonView extends LitElement {
   }
 
   protected firstUpdated(): void {
-    this.routeDataChanged(this.route);
-    this.addEventListener("hass-api-called", (ev) => this.apiCalled(ev));
+    this._routeDataChanged(this.route);
+    this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
   }
 
-  protected apiCalled(ev): void {
+  private _apiCalled(ev): void {
     const path: string = ev.detail.path;
 
     if (!path) {
@@ -134,11 +134,11 @@ class HassioAddonView extends LitElement {
     if (path.substr(path.lastIndexOf("/") + 1) === "uninstall") {
       history.back();
     } else {
-      this.routeDataChanged(this.route);
+      this._routeDataChanged(this.route);
     }
   }
 
-  protected routeDataChanged(routeData: Route): void {
+  private _routeDataChanged(routeData: Route): void {
     const addon = routeData.path.substr(1);
     this.hass.callApi("GET", `hassio/addons/${addon}/info`).then(
       (info) => {

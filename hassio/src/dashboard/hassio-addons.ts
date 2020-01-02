@@ -30,7 +30,7 @@ class HassioAddons extends LitElement {
               <paper-card>
                 <div class="card-content">
                   You don't have any add-ons installed yet. Head over to
-                  <a href="#" @click=${this.openStore}>the add-on store</a> to
+                  <a href="#" @click=${this._openStore}>the add-on store</a> to
                   get started!
                 </div>
               </paper-card>
@@ -40,16 +40,16 @@ class HassioAddons extends LitElement {
           .sort((a, b) => (a.name > b.name ? 1 : -1))
           .map(
             (addon) => html`
-              <paper-card .addon=${addon} @click=${this.addonTapped}>
+              <paper-card .addon=${addon} @click=${this._addonTapped}>
                 <div class="card-content">
                   <hassio-card-content
                     .hass=${this.hass}
                     .title=${addon.name}
                     .description=${addon.description}
                     .available=${addon.available}
-                    .icon=${this.computeIcon(addon)}
-                    .iconTitle=${this.computeIconTitle(addon)}
-                    .iconClass=${this.computeIconClass(addon)}
+                    .icon=${this._computeIcon(addon)}
+                    .iconTitle=${this._computeIconTitle(addon)}
+                    .iconClass=${this._computeIconClass(addon)}
                   ></hassio-card-content>
                 </div>
               </paper-card>
@@ -71,13 +71,13 @@ class HassioAddons extends LitElement {
     ];
   }
 
-  protected computeIcon(addon: HassioAddonInfo) {
+  private _computeIcon(addon: HassioAddonInfo) {
     return addon.installed !== addon.version
       ? "hassio:arrow-up-bold-circle"
       : "hassio:puzzle";
   }
 
-  protected computeIconTitle(addon: HassioAddonInfo) {
+  private _computeIconTitle(addon: HassioAddonInfo) {
     if (addon.installed !== addon.version) {
       return "New version available";
     }
@@ -86,18 +86,18 @@ class HassioAddons extends LitElement {
       : "Add-on is stopped";
   }
 
-  protected computeIconClass(addon: HassioAddonInfo) {
+  private _computeIconClass(addon: HassioAddonInfo) {
     if (addon.installed !== addon.version) {
       return "update";
     }
     return addon.state === "started" ? "running" : "";
   }
 
-  protected addonTapped(ev) {
+  private _addonTapped(ev) {
     navigate(this, `/hassio/addon/${ev.currentTarget.addon.slug}`);
   }
 
-  protected openStore() {
+  private _openStore() {
     navigate(this, "/hassio/store");
   }
 }
