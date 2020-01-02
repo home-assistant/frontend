@@ -217,10 +217,7 @@ export class ZHAGroupPage extends LitElement {
   private _filterDevices() {
     // filter the groupable devices so we only show devices that aren't already in the group
     this._filteredDevices = this.devices.filter((device) => {
-      return !(
-        this.group!.members.filter((member) => member.ieee === device.ieee)
-          .length > 0
-      );
+      return !this.group!.members.some((member) => member.ieee === device.ieee);
     });
   }
 
