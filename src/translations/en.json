@@ -1045,7 +1045,7 @@
             },
             "entities": {
               "header": "Entities",
-              "introduction": "Entities that do not belong to a devices can be set here.",
+              "introduction": "Entities that do not belong to a device can be set here.",
               "without_device": "Entities without device",
               "device_entities": "If you add an entity that belongs to a device, the device will be added.",
               "add": "Add an entity",
@@ -1450,7 +1450,11 @@
             "removing_groups": "Removing Groups",
             "group_info": "Group Information",
             "group_details": "Here are all the details for the selected Zigbee group.",
-            "group_not_found": "Group not found!"
+            "group_not_found": "Group not found!",
+            "add_members": "Add Members",
+            "remove_members": "Remove Members",
+            "adding_members": "Adding Members",
+            "removing_members": "Removing Members"
           }
         },
         "zwave": {

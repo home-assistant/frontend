@@ -182,3 +182,32 @@ export const fetchGroup = (
     type: "zha/group",
     group_id: groupId,
   });
+
+export const fetchGroupableDevices = (
+  hass: HomeAssistant
+): Promise<ZHADevice[]> =>
+  hass.callWS({
+    type: "zha/devices/groupable",
+  });
+
+export const addMembersToGroup = (
+  hass: HomeAssistant,
+  groupId: number,
+  membersToAdd: string[]
+): Promise<ZHAGroup> =>
+  hass.callWS({
+    type: "zha/group/members/add",
+    group_id: groupId,
+    members: membersToAdd,
+  });
+
+export const removeMembersFromGroup = (
+  hass: HomeAssistant,
+  groupId: number,
+  membersToRemove: string[]
+): Promise<ZHAGroup> =>
+  hass.callWS({
+    type: "zha/group/members/remove",
+    group_id: groupId,
+    members: membersToRemove,
+  });
