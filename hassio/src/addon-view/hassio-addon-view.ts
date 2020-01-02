@@ -28,7 +28,7 @@ import "./hassio-addon-network";
 class HassioAddonView extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public route!: Route;
-  @property() public addon!: HassioAddonDetails | null;
+  @property() public addon?: HassioAddonDetails;
 
   protected render(): TemplateResult | void {
     if (!this.addon) {
@@ -145,7 +145,7 @@ class HassioAddonView extends LitElement {
         this.addon = (info as any).data;
       },
       () => {
-        this.addon = null;
+        this.addon = undefined;
       }
     );
   }
