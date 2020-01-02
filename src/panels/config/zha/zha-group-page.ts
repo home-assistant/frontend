@@ -141,7 +141,7 @@ export class ZHAGroupPage extends LitElement {
                   .hass=${this.hass}
                   .devices=${members}
                   .narrow=${this.narrow}
-                  .selectable=${true}
+                  selectable
                   @selection-changed=${this._handleRemoveSelectionChanged}
                   class="table"
                 >
