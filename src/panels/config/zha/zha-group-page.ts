@@ -149,7 +149,7 @@ export class ZHAGroupPage extends LitElement {
 
                 <div class="paper-dialog-buttons">
                   <mwc-button
-                    ?disabled="${!this._selectedDevicesToRemove.length ||
+                    .disabled="${!this._selectedDevicesToRemove.length ||
                       this._processingRemove}"
                     @click="${this._removeMembersFromGroup}"
                     class="button"
