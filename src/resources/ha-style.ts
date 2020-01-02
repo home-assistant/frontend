@@ -149,6 +149,7 @@ documentContainer.innerHTML = `<custom-style>
       /* app header background color */
       --app-header-text-color: var(--text-primary-color);
       --app-header-background-color: var(--primary-color);
+
     }
   </style>
 
