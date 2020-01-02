@@ -184,7 +184,7 @@ export class ZHAGroupPage extends LitElement {
 
           <div class="paper-dialog-buttons">
             <mwc-button
-              ?disabled="${!this._selectedDevicesToAdd.length ||
+              .disabled="${!this._selectedDevicesToAdd.length ||
                 this._processingAdd}"
               @click="${this._addMembersToGroup}"
               class="button"
