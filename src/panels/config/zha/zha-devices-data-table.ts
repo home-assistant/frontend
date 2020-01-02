@@ -25,7 +25,7 @@ export interface DeviceRowData extends ZHADevice {
 export class ZHADevicesDataTable extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow = false;
-  @property() public selectable = false;
+  @property({ type: Boolean }) public selectable = false;
   @property() public devices: ZHADevice[] = [];
 
   private _devices = memoizeOne((devices: ZHADevice[]) => {
