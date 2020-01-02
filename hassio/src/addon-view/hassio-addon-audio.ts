@@ -27,7 +27,6 @@ import {
 import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
-import { fireEvent } from "../../../src/common/dom/fire_event";
 
 @customElement("hassio-addon-audio")
 class HassioAddonAudio extends LitElement {
@@ -156,7 +155,7 @@ class HassioAddonAudio extends LitElement {
     }
   }
 
-  private async _addonChanged() {
+  private async _addonChanged(): Promise<any> {
     this._selectedInput = this.addon.audio_input;
     this._selectedOutput = this.addon.audio_output;
     if (this._outputDevices) {
@@ -176,14 +175,14 @@ class HassioAddonAudio extends LitElement {
     }));
   }
 
-  private async _saveSettings() {
+  private async _saveSettings(): Promise<any> {
     this.error = undefined;
     const data: HassioAddonSetOptionParams = {
       audio_input: !this._selectedInput ? null : this._selectedInput,
       audio_output: !this._selectedOutput ? null : this._selectedOutput,
     };
     await setHassioAddonOption(this.hass, this.addon.slug, data).catch(() => {
-      throw new Error("Failed to fetch audio hardware");
+      throw new Error("Failed to set addon audio options");
     });
   }
 }
