@@ -162,17 +162,19 @@ class HassioAddonAudio extends LitElement {
       return;
     }
 
-    const { audio } = await fetchHassioHardwareAudio(this.hass).catch(() => {
+    try {
+      const { audio } = await fetchHassioHardwareAudio(this.hass);
+      this._inputDevices = Object.keys(audio.input).map((key) => ({
+        device: key,
+        name: audio.input[key],
+      }));
+      this._outputDevices = Object.keys(audio.output).map((key) => ({
+        device: key,
+        name: audio.output[key],
+      }));
+    } catch {
       throw new Error("Failed to fetch audio hardware");
-    });
-    this._inputDevices = Object.keys(audio.input).map((key) => ({
-      device: key,
-      name: audio.input[key],
-    }));
-    this._outputDevices = Object.keys(audio.output).map((key) => ({
-      device: key,
-      name: audio.output[key],
-    }));
+    }
   }
 
   private async _saveSettings(): Promise<any> {
@@ -181,9 +183,11 @@ class HassioAddonAudio extends LitElement {
       audio_input: !this._selectedInput ? null : this._selectedInput,
       audio_output: !this._selectedOutput ? null : this._selectedOutput,
     };
-    await setHassioAddonOption(this.hass, this.addon.slug, data).catch(() => {
+    try {
+      await setHassioAddonOption(this.hass, this.addon.slug, data);
+    } catch {
       throw new Error("Failed to set addon audio options");
-    });
+    }
   }
 }
 
