@@ -16,6 +16,15 @@ interface CreateSessionResponse {
   session: string;
 }
 
+export interface HassioHardwareAudioDevice {
+  device: string;
+  name: string;
+}
+
+interface HassioHardwareAudioList {
+  audio: { input: any; output: any };
+}
+
 export interface HassioAddonInfo {
   name: string;
   slug: string;
@@ -75,8 +84,8 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   devicetree: boolean;
   docker_api: boolean;
   audio: boolean;
-  audio_input: null | string;
-  audio_output: null | string;
+  audio_input: string;
+  audio_output: string;
   services_role: string[];
   discovery: string[];
   ip_address: string;
@@ -129,7 +138,10 @@ export interface HassioSnapshotDetail extends HassioSnapshot {
   repositories: string[];
   folders: string[];
 }
-
+export interface HassioAddonSetOptionParams {
+  audio_input?: string | null;
+  audio_output?: string | null;
+}
 export interface HassioFullSnapshotCreateParams {
   name: string;
   password?: string;
@@ -225,3 +237,17 @@ export const fetchHassioSnapshotInfo = (
       `hassio/snapshots/${snapshot}/info`
     )
     .then(hassioApiResultExtractor);
+
+export const fetchHassioHardwareAudio = (hass: HomeAssistant) =>
+  hass
+    .callApi<HassioResponse<HassioHardwareAudioList>>(
+      "GET",
+      "hassio/hardware/audio"
+    )
+    .then(hassioApiResultExtractor);
+
+export const setHassioAddonOption = (
+  hass: HomeAssistant,
+  slug: string,
+  data: HassioAddonSetOptionParams
+) => hass.callApi<unknown>("POST", `hassio/addons/${slug}/options`, data);
