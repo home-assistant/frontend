@@ -31,7 +31,7 @@ export class HassioUpdate extends LitElement {
   @property() public hassOsInfo?: HassioHassOSInfo;
   @property() public supervisorInfo: HassioSupervisorInfo;
 
-  @property() public error?: string;
+  @property() protected error?: string;
 
   protected render(): TemplateResult | void {
     const updatesAvailable: number = [

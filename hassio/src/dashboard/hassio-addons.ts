@@ -19,13 +19,13 @@ import "../components/hassio-card-content";
 @customElement("hassio-addons")
 class HassioAddons extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public addons!: HassioAddonInfo[];
+  @property() public addons?: HassioAddonInfo[];
 
   protected render(): TemplateResult | void {
     return html`
       <div class="content card-group">
         <div class="title">Add-ons</div>
-        ${!this.addons.length
+        ${!this.addons
           ? html`
               <paper-card>
                 <div class="card-content">
@@ -35,26 +35,25 @@ class HassioAddons extends LitElement {
                 </div>
               </paper-card>
             `
-          : ""}
-        ${this.addons
-          .sort((a, b) => (a.name > b.name ? 1 : -1))
-          .map(
-            (addon) => html`
-              <paper-card .addon=${addon} @click=${this._addonTapped}>
-                <div class="card-content">
-                  <hassio-card-content
-                    .hass=${this.hass}
-                    .title=${addon.name}
-                    .description=${addon.description}
-                    .available=${addon.available}
-                    .icon=${this._computeIcon(addon)}
-                    .iconTitle=${this._computeIconTitle(addon)}
-                    .iconClass=${this._computeIconClass(addon)}
-                  ></hassio-card-content>
-                </div>
-              </paper-card>
-            `
-          )}
+          : this.addons
+              .sort((a, b) => (a.name > b.name ? 1 : -1))
+              .map(
+                (addon) => html`
+                  <paper-card .addon=${addon} @click=${this._addonTapped}>
+                    <div class="card-content">
+                      <hassio-card-content
+                        .hass=${this.hass}
+                        title=${addon.name}
+                        description=${addon.description}
+                        ?available=${addon.available}
+                        icon=${this._computeIcon(addon)}
+                        .iconTitle=${this._computeIconTitle(addon)}
+                        .iconClass=${this._computeIconClass(addon)}
+                      ></hassio-card-content>
+                    </div>
+                  </paper-card>
+                `
+              )}
       </div>
     `;
   }
@@ -71,13 +70,13 @@ class HassioAddons extends LitElement {
     ];
   }
 
-  private _computeIcon(addon: HassioAddonInfo) {
+  private _computeIcon(addon: HassioAddonInfo): string {
     return addon.installed !== addon.version
       ? "hassio:arrow-up-bold-circle"
       : "hassio:puzzle";
   }
 
-  private _computeIconTitle(addon: HassioAddonInfo) {
+  private _computeIconTitle(addon: HassioAddonInfo): string {
     if (addon.installed !== addon.version) {
       return "New version available";
     }
@@ -86,18 +85,18 @@ class HassioAddons extends LitElement {
       : "Add-on is stopped";
   }
 
-  private _computeIconClass(addon: HassioAddonInfo) {
+  private _computeIconClass(addon: HassioAddonInfo): string {
     if (addon.installed !== addon.version) {
       return "update";
     }
     return addon.state === "started" ? "running" : "";
   }
 
-  private _addonTapped(ev) {
+  private _addonTapped(ev: any): void {
     navigate(this, `/hassio/addon/${ev.currentTarget.addon.slug}`);
   }
 
-  private _openStore() {
+  private _openStore(): void {
     navigate(this, "/hassio/store");
   }
 }
