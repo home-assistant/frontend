@@ -116,6 +116,11 @@ class LovelaceFullConfigEditor extends LitElement {
           color: var(--dark-text-color);
         }
 
+        mwc-button[disabled] {
+          background-color: var(--mdc-theme-on-primary);
+          border-radius: 4px;
+        }
+
         .comments {
           font-size: 16px;
         }
