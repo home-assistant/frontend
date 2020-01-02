@@ -85,7 +85,7 @@ export class ZHABindingControl extends LitElement {
           <div class="card-actions">
             <mwc-button
               @click="${this._onBindDevicesClick}"
-              ?disabled="${!(this._deviceToBind && this.selectedDevice)}"
+              .disabled="${!(this._deviceToBind && this.selectedDevice)}"
               >Bind</mwc-button
             >
             ${this._showHelp
@@ -97,7 +97,7 @@ export class ZHABindingControl extends LitElement {
               : ""}
             <mwc-button
               @click="${this._onUnbindDevicesClick}"
-              ?disabled="${!(this._deviceToBind && this.selectedDevice)}"
+              .disabled="${!(this._deviceToBind && this.selectedDevice)}"
               >Unbind</mwc-button
             >
             ${this._showHelp
