@@ -40,7 +40,7 @@ class HaCallApiButton extends LitElement {
     return this.renderRoot.querySelector("ha-progress-button");
   }
 
-  async callApi() {
+  async _callApi() {
     this.progress = true;
     const eventData = {
       method: this.method,
