@@ -1,4 +1,5 @@
 import {
+  customElement,
   LitElement,
   html,
   TemplateResult,
@@ -34,13 +35,15 @@ const lovelaceStruct = struct.interface({
   resources: struct.optional(["object"]),
 });
 
+@customElement("hui-editor")
 class LovelaceFullConfigEditor extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public lovelace?: Lovelace;
   @property() public closeEditor?: () => void;
   @property() private _saving?: boolean;
   @property() private _changed?: boolean;
-  @property() private _generation = 1;
+
+  private _generation = 1;
 
   public render(): TemplateResult | void {
     return html`
@@ -247,5 +250,3 @@ declare global {
     "hui-editor": LovelaceFullConfigEditor;
   }
 }
-
-customElements.define("hui-editor", LovelaceFullConfigEditor);
