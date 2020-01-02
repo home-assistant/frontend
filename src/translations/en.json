@@ -393,7 +393,7 @@
       },
       "automation": {
         "last_triggered": "Last triggered",
-        "trigger": "Trigger"
+        "trigger": "Execute"
       },
       "camera": {
         "not_available": "Image not available"
