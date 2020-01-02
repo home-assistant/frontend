@@ -89,7 +89,7 @@ export class ZHAAddGroupPage extends LitElement {
 
           <div class="paper-dialog-buttons">
             <mwc-button
-              ?disabled="${!this._canAdd || this._processingAdd}"
+              .disabled="${!this._canAdd || this._processingAdd}"
               @click="${this._createGroup}"
               class="button"
             >
