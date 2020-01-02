@@ -34,7 +34,7 @@ export class ZHADevicesDataTable extends LitElement {
     outputDevices = outputDevices.map((device) => {
       return {
         ...device,
-        name: device.user_given_name ? device.user_given_name : device.name,
+        name: device.user_given_name || device.name,
         model: device.model,
         manufacturer: device.manufacturer,
         id: device.ieee,
