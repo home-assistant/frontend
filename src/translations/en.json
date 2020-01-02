@@ -582,6 +582,11 @@
         },
         "updater": {
           "title": "Update Instructions"
+        },
+        "restored": {
+          "not_provided": "This entity was previously made available via an integration. It is not currently being provided.",
+          "remove_intro": "If it is no longer used, you can remove it from the entity registry by clicking the button below.",
+          "remove_action": "Remove entity"
         }
       },
       "more_info_settings": {
