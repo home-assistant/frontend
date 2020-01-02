@@ -1,4 +1,11 @@
-import { LitElement, html, TemplateResult, CSSResult, css } from "lit-element";
+import {
+  LitElement,
+  html,
+  TemplateResult,
+  CSSResult,
+  css,
+  property,
+} from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { safeDump, safeLoad } from "js-yaml";
 
@@ -28,22 +35,12 @@ const lovelaceStruct = struct.interface({
 });
 
 class LovelaceFullConfigEditor extends LitElement {
-  public hass!: HomeAssistant;
-  public lovelace?: Lovelace;
-  public closeEditor?: () => void;
-  private _saving?: boolean;
-  private _changed?: boolean;
-  private _generation = 1;
-
-  static get properties() {
-    return {
-      hass: {},
-      lovelace: {},
-      closeEditor: {},
-      _saving: {},
-      _changed: {},
-    };
-  }
+  @property() public hass!: HomeAssistant;
+  @property() public lovelace?: Lovelace;
+  @property() public closeEditor?: () => void;
+  @property() private _saving?: boolean;
+  @property() private _changed?: boolean;
+  @property() private _generation = 1;
 
   public render(): TemplateResult | void {
     return html`
@@ -155,9 +152,6 @@ class LovelaceFullConfigEditor extends LitElement {
     } else if (!this._changed && window.onbeforeunload) {
       window.onbeforeunload = null;
     }
-    if (this._changed) {
-      this.requestUpdate();
-    }
   }
 
   private _closeEditor() {
@@ -236,7 +230,6 @@ class LovelaceFullConfigEditor extends LitElement {
     window.onbeforeunload = null;
     this._saving = false;
     this._changed = false;
-    this.requestUpdate();
   }
 
   private get yamlEditor(): HaCodeEditor {
