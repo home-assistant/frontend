@@ -366,23 +366,26 @@ class HassioAddonInfo extends LitElement {
                         </div>
                       `
                     : ""}
-
-                  <div class="state">
-                    <div>
-                      Protection mode
-                      <span>
-                        <iron-icon icon="hassio:information"></iron-icon>
-                        <paper-tooltip
-                          >Grant the add-on elevated system
-                          access.</paper-tooltip
-                        >
-                      </span>
-                    </div>
-                    <ha-switch
-                      @change=${this.protectionToggled}
-                      .checked=${this.addon.protected}
-                    ></ha-switch>
-                  </div>
+                  ${this._computeUsesProtectedOptions
+                    ? html`
+                        <div class="state">
+                          <div>
+                            Protection mode
+                            <span>
+                              <iron-icon icon="hassio:information"></iron-icon>
+                              <paper-tooltip
+                                >Grant the add-on elevated system
+                                access.</paper-tooltip
+                              >
+                            </span>
+                          </div>
+                          <ha-switch
+                            @change=${this.protectionToggled}
+                            .checked=${this.addon.protected}
+                          ></ha-switch>
+                        </div>
+                      `
+                    : ""}
                 `
               : ""
           }
@@ -662,6 +665,12 @@ class HassioAddonInfo extends LitElement {
 
   private get _computeCannotIngressSidebar(): boolean {
     return !this.addon.ingress || !this._computeHA92plus;
+  }
+
+  private get _computeUsesProtectedOptions(): boolean {
+    return (
+      this.addon.docker_api || this.addon.full_access || this.addon.host_pid
+    );
   }
 
   private get _computeHA92plus(): boolean {
