@@ -68,7 +68,7 @@ class HaCallApiButton extends LitElement {
     if (this.confirmation) {
       showConfirmationDialog(this, {
         text: this.confirmation,
-        confirm: async () => await this.callApi(),
+        confirm: async () => await this._callApi(),
       });
     } else {
       await this.callApi();
