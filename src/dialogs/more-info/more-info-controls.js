@@ -20,6 +20,7 @@ import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { removeEntityRegistryEntry } from "../../data/entity_registry";
+import { showConfirmationDialog } from "../confirmation/show-dialog-confirmation";
 
 const DOMAINS_NO_INFO = ["camera", "configurator", "history_graph"];
 /*
@@ -218,7 +219,18 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _removeEntity() {
-    removeEntityRegistryEntry(this.hass, this.stateObj.entity_id);
+    showConfirmationDialog(this, {
+      title: this.localize(
+        "ui.dialogs.more_info_control.restored.confirm_remove_title"
+      ),
+      text: this.localize(
+        "ui.dialogs.more_info_control.restored.confirm_remove_text"
+      ),
+      confirmBtnText: this.localize("ui.common.yes"),
+      cancelBtnText: this.localize("ui.common.no"),
+      confirm: () =>
+        removeEntityRegistryEntry(this.hass, this.stateObj.entity_id),
+    });
   }
 
   _gotoSettings() {

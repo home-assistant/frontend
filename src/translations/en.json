@@ -586,7 +586,9 @@
         "restored": {
           "not_provided": "This entity was previously made available via an integration. It is not currently being provided.",
           "remove_intro": "If it is no longer used, you can remove it from the entity registry by clicking the button below.",
-          "remove_action": "Remove entity"
+          "remove_action": "Remove entity",
+          "confirm_remove_title": "Remove entity?",
+          "confirm_remove_text": "Are you sure you want to remove this entity?"
         }
       },
       "more_info_settings": {
