@@ -33,8 +33,8 @@ class HassioAddonAudio extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
   @property() protected error?: string;
-  @property() private _inputDevices!: Device[];
-  @property() private _outputDevices!: Device[];
+  @property() private _inputDevices?: Device[];
+  @property() private _outputDevices?: Device[];
   @property() private _selectedInput!: string;
   @property() private _selectedOutput!: string;
 
