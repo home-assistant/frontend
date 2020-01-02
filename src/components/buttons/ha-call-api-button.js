@@ -71,7 +71,7 @@ class HaCallApiButton extends LitElement {
         confirm: async () => await this._callApi(),
       });
     } else {
-      await this.callApi();
+      await this._callApi();
     }
   }
 }
