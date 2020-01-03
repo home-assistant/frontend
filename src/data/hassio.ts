@@ -17,7 +17,7 @@ interface CreateSessionResponse {
 }
 
 export interface HassioHardwareAudioDevice {
-  device: string;
+  device?: string;
   name: string;
 }
 
@@ -238,16 +238,23 @@ export const fetchHassioSnapshotInfo = (
     )
     .then(hassioApiResultExtractor);
 
-export const fetchHassioHardwareAudio = (hass: HomeAssistant) =>
-  hass
-    .callApi<HassioResponse<HassioHardwareAudioList>>(
-      "GET",
-      "hassio/hardware/audio"
-    )
-    .then(hassioApiResultExtractor);
-
-export const setHassioAddonOption = (
+export const setHassioAddonOption = async (
   hass: HomeAssistant,
   slug: string,
   data: HassioAddonSetOptionParams
-) => hass.callApi<unknown>("POST", `hassio/addons/${slug}/options`, data);
+) => {
+  const response = await hass.callApi<HassioResponse<unknown>>(
+    "POST",
+    `hassio/addons/${slug}/options`,
+    data
+  );
+  return response.data;
+};
+
+export const fetchHassioHardwareAudio = async (hass: HomeAssistant) => {
+  const response = await hass.callApi<HassioResponse<HassioHardwareAudioList>>(
+    "GET",
+    "hassio/hardware/audio"
+  );
+  return response.data;
+};
