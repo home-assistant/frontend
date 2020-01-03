@@ -584,8 +584,8 @@
           "title": "Update Instructions"
         },
         "restored": {
-          "not_provided": "This entity was previously made available via an integration. It is not currently being provided.",
-          "remove_intro": "If it is no longer used, you can remove it from the entity registry by clicking the button below.",
+          "not_provided": "This entity is currently unavailable and is an orphan to a removed, changed or dysfunctional integration or device.",
+          "remove_intro": "If the entity is no longer in use, you can clean it up by removing it.",
           "remove_action": "Remove entity",
           "confirm_remove_title": "Remove entity?",
           "confirm_remove_text": "Are you sure you want to remove this entity?"

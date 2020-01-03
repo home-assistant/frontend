@@ -60,6 +60,10 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
           padding-bottom: 16px;
         }
 
+        mwc-button.warning {
+          --mdc-theme-primary: var(--google-red-500);
+        }
+
         :host([domain="camera"]) paper-dialog-scrollable {
           margin: 0 -24px -21px;
         }
@@ -127,7 +131,7 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
         >
           [[localize('ui.dialogs.more_info_control.restored.not_provided')]] <br />
           [[localize('ui.dialogs.more_info_control.restored.remove_intro')]] <br />
-          <mwc-button on-click="_removeEntity">[[localize('ui.dialogs.more_info_control.restored.remove_action')]]</mwc-buttom>
+          <mwc-button class="warning" on-click="_removeEntity">[[localize('ui.dialogs.more_info_control.restored.remove_action')]]</mwc-buttom>
         </template>
       </paper-dialog-scrollable>
     `;
