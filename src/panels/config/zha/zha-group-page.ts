@@ -10,9 +10,9 @@ import {
 
 import memoizeOne from "memoize-one";
 
+import "../../../layouts/hass-subpage";
 import "../../../layouts/hass-error-screen";
 import "../ha-config-section";
-import "../../../layouts/hass-subpage";
 import { HomeAssistant } from "../../../types";
 import {
   ZHADevice,
@@ -91,17 +91,12 @@ export class ZHAGroupPage extends LitElement {
     const members = this._members(this.group);
 
     return html`
-      <hass-subpage
-        header="${this.hass!.localize(
-          "ui.panel.config.zha.groups.group-header"
-        )}"
-      >
+      <hass-subpage .header=${this.group.name}>
         <paper-icon-button
           slot="toolbar-icon"
           icon="hass:delete"
           @click=${this._deleteGroup}
         ></paper-icon-button>
-
         <ha-config-section .isWide=${this.isWide}>
           <div class="header">
             ${this.hass.localize("ui.panel.config.zha.groups.group_info")}
@@ -190,84 +185,6 @@ export class ZHAGroupPage extends LitElement {
           <div class="paper-dialog-buttons">
             <mwc-button
               .disabled="${!this._selectedDevicesToAdd.length ||
-                this._processingAdd}"
-              @click="${this._addMembersToGroup}"
-              class="button"
-            >
-              <paper-spinner
-                ?active="${this._processingAdd}"
-                alt=${this.hass.localize(
-                  "ui.panel.config.zha.groups.adding_members"
-                )}
-              </div>
-
-              <zha-devices-data-table
-                .hass=${this.hass}
-                .devices=${members}
-                .narrow=${this.narrow}
-                .selectable=${true}
-                @selection-changed=${this._handleRemoveSelectionChanged}
-                class="table"
-              >
-              </zha-devices-data-table>
-
-              <div class="paper-dialog-buttons">
-                <mwc-button
-                  ?disabled="${!this._selectedDevicesToRemove.length ||
-                    this._processingRemove}"
-                  @click="${this._removeMembersFromGroup}"
-                  class="button"
-                >
-                  <paper-spinner
-                    ?active="${this._processingRemove}"
-                    alt=${this.hass.localize(
-                      "ui.panel.config.zha.groups.removing_members"
-                    )}
-                  ></paper-spinner>
-                  ${this.hass!.localize(
-                    "ui.panel.config.zha.groups.remove_members"
-                  )}</mwc-button
-                >
-                </zha-devices-data-table>
-
-                <div class="paper-dialog-buttons">
-                  <mwc-button
-                    ?disabled="${!this._selectedDevicesToRemove.length ||
-                      this._processingRemove}"
-                    @click="${this._removeMembersFromGroup}"
-                    class="button"
-                  >
-                    <paper-spinner
-                      ?active="${this._processingRemove}"
-                      alt=${this.hass.localize(
-                        "ui.panel.config.zha.groups.removing_members"
-                      )}
-                    ></paper-spinner>
-                    ${this.hass!.localize(
-                      "ui.panel.config.zha.groups.remove_members"
-                    )}</mwc-button
-                  >
-                </div>
-              `
-            : html``}
-
-          <div class="header">
-            ${this.hass.localize("ui.panel.config.zha.groups.add_members")}
-          </div>
-
-          <zha-devices-data-table
-            .hass=${this.hass}
-            .devices=${this._filteredDevices}
-            .narrow=${this.narrow}
-            .selectable=${true}
-            @selection-changed=${this._handleAddSelectionChanged}
-            class="table"
-          >
-          </zha-devices-data-table>
-
-          <div class="paper-dialog-buttons">
-            <mwc-button
-              ?disabled="${!this._selectedDevicesToAdd.length ||
                 this._processingAdd}"
               @click="${this._addMembersToGroup}"
               class="button"
