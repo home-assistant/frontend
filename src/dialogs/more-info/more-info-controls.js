@@ -189,7 +189,7 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeShowRestored(stateObj) {
-    return !stateObj || stateObj.attributes.restored;
+    return stateObj && stateObj.attributes.restored;
   }
 
   _computeShowHistoryComponent(hass, stateObj) {
