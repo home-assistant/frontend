@@ -582,6 +582,13 @@
         },
         "updater": {
           "title": "Update Instructions"
+        },
+        "restored": {
+          "not_provided": "This entity is currently unavailable and is an orphan to a removed, changed or dysfunctional integration or device.",
+          "remove_intro": "If the entity is no longer in use, you can clean it up by removing it.",
+          "remove_action": "Remove entity",
+          "confirm_remove_title": "Remove entity?",
+          "confirm_remove_text": "Are you sure you want to remove this entity?"
         }
       },
       "more_info_settings": {
