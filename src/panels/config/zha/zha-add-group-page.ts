@@ -31,7 +31,6 @@ export class ZHAAddGroupPage extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
   @property() public devices: ZHADevice[] = [];
-  @property() private _canAdd: boolean = false;
   @property() private _processingAdd: boolean = false;
   @property() private _groupName: string = "";
 
@@ -89,7 +88,9 @@ export class ZHAAddGroupPage extends LitElement {
 
           <div class="paper-dialog-buttons">
             <mwc-button
-              .disabled="${!this._canAdd || this._processingAdd}"
+              .disabled="${!this._groupName ||
+                this._groupName === "" ||
+                this._processingAdd}"
               @click="${this._createGroup}"
               class="button"
             >
@@ -135,7 +136,6 @@ export class ZHAAddGroupPage extends LitElement {
       this._selectedDevicesToAdd
     );
     this._selectedDevicesToAdd = [];
-    this._canAdd = false;
     this._processingAdd = false;
     this._groupName = "";
     navigate(this, `/config/zha/group/${group.group_id}`, true);
@@ -143,12 +143,7 @@ export class ZHAAddGroupPage extends LitElement {
 
   private _handleNameChange(ev: PolymerChangedEvent<string>) {
     const target = ev.currentTarget as PaperInputElement;
-    if (target.value) {
-      this._groupName = target.value;
-      if (target.value.length > 0) {
-        this._canAdd = true;
-      }
-    }
+    this._groupName = target.value || "";
   }
 
   static get styles(): CSSResult[] {
