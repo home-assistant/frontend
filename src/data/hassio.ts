@@ -243,12 +243,11 @@ export const setHassioAddonOption = async (
   slug: string,
   data: HassioAddonSetOptionParams
 ) => {
-  const response = await hass.callApi<HassioResponse<unknown>>(
+  await hass.callApi<HassioResponse<void>>(
     "POST",
     `hassio/addons/${slug}/options`,
     data
   );
-  return response.data;
 };
 
 export const fetchHassioHardwareAudio = async (hass: HomeAssistant) => {
