@@ -155,38 +155,47 @@ class HassioAddonAudio extends LitElement {
     }
   }
 
-  private async _addonChanged(): Promise<any> {
+  private async _addonChanged(): Promise<void> {
     this._selectedInput = this.addon.audio_input;
     this._selectedOutput = this.addon.audio_output;
     if (this._outputDevices) {
       return;
     }
 
+    const noDevice: HassioHardwareAudioDevice[] = [
+      { device: undefined, name: "-" },
+    ];
+
     try {
       const { audio } = await fetchHassioHardwareAudio(this.hass);
-      this._inputDevices = Object.keys(audio.input).map((key) => ({
+      const inupt = Object.keys(audio.input).map((key) => ({
         device: key,
         name: audio.input[key],
       }));
-      this._outputDevices = Object.keys(audio.output).map((key) => ({
+      const output = Object.keys(audio.output).map((key) => ({
         device: key,
         name: audio.output[key],
       }));
+
+      this._inputDevices = noDevice.concat(inupt);
+      this._outputDevices = noDevice.concat(output);
     } catch {
-      throw new Error("Failed to fetch audio hardware");
+      this.error = "Failed to fetch audio hardware";
+      this._inputDevices = noDevice;
+      this._outputDevices = noDevice;
     }
   }
 
-  private async _saveSettings(): Promise<any> {
+  private async _saveSettings(): Promise<void> {
     this.error = undefined;
     const data: HassioAddonSetOptionParams = {
-      audio_input: !this._selectedInput ? null : this._selectedInput,
-      audio_output: !this._selectedOutput ? null : this._selectedOutput,
+      audio_input: this._selectedInput || null,
+      audio_output: this._selectedOutput || null,
     };
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);
     } catch {
-      throw new Error("Failed to set addon audio options");
+      this.error = "Failed to set addon audio device";
     }
   }
 }
