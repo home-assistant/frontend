@@ -291,7 +291,9 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
       field.limit_entity_domain &&
       field.limit_entity_domain.length
     ) {
-      return field.limit_entity_domain;
+      return Array.isArray(field.limit_entity_domain)
+        ? field.limit_entity_domain
+        : [field.limit_entity_domain];
     }
     return ENTITY_COMPONENT_DOMAINS.includes(domain) ? [domain] : null;
   }
