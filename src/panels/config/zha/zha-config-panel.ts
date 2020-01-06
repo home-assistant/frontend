@@ -45,6 +45,13 @@ class ZHAConfigPanel extends HassRouterPage {
         load: () =>
           import(/* webpackChunkName: "zha-group-page" */ "./zha-group-page"),
       },
+      "group-add": {
+        tag: "zha-add-group-page",
+        load: () =>
+          import(
+            /* webpackChunkName: "zha-add-group-page" */ "./zha-add-group-page"
+          ),
+      },
     },
   };
 
