@@ -75,7 +75,7 @@ export interface DataTableSortColumnData {
 export interface DataTableColumnData extends DataTableSortColumnData {
   title: string;
   type?: "numeric" | "icon";
-  template?: <T>(data: any, row: T) => TemplateResult;
+  template?: <T>(data: any, row: T) => TemplateResult | string;
 }
 
 export interface DataTableRowData {
@@ -173,9 +173,7 @@ export class HaDataTable extends BaseElement {
         <slot name="header">
           ${this._filterable
             ? html`
-                <div
-                  style="border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);"
-                >
+                <div class="table-header">
                   <search-input
                     @value-changed=${this._handleSearchChange}
                   ></search-input>
@@ -610,6 +608,9 @@ export class HaDataTable extends BaseElement {
       }
       .mdc-data-table__header-cell:hover.not-sorted ha-icon {
         left: 0px;
+      }
+      .table-header {
+        border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
       }
     `;
   }

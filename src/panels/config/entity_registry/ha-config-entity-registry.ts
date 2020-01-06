@@ -86,8 +86,8 @@ class HaConfigEntityRegistry extends LitElement {
         type: "icon",
         sortable: true,
         filterable: true,
-        template: (_status, entity: any) => html`
-          ${entity.unavailable || entity.disabled_by
+        template: (_status, entity: any) =>
+          entity.unavailable || entity.disabled_by
             ? html`
                 <div
                   tabindex="0"
@@ -112,8 +112,7 @@ class HaConfigEntityRegistry extends LitElement {
                   </paper-tooltip>
                 </div>
               `
-            : ""}
-        `,
+            : "",
       };
 
       if (narrow) {
@@ -143,10 +142,7 @@ class HaConfigEntityRegistry extends LitElement {
         sortable: true,
         filterable: true,
         template: (platform) =>
-          html`
-            ${this.hass.localize(`component.${platform}.config.title`) ||
-              platform}
-          `,
+          this.hass.localize(`component.${platform}.config.title`) || platform,
       };
       columns.status = statusColumn;
 
@@ -170,10 +166,8 @@ class HaConfigEntityRegistry extends LitElement {
         const unavailable =
           state && (state.state === "unavailable" || state.attributes.restored); // if there is not state it is disabled
 
-        if (!showUnavailable) {
-          if (unavailable) {
-            return result;
-          }
+        if (!showUnavailable && unavailable) {
+          return result;
         }
 
         result.push({
@@ -399,14 +393,14 @@ class HaConfigEntityRegistry extends LitElement {
     const changedSelection = ev.detail as SelectionChangedEvent;
     const entity = changedSelection.id;
     if (changedSelection.selected) {
-      this._selectedEntities.push(entity);
+      this._selectedEntities = [...this._selectedEntities, entity];
     } else {
       const index = this._selectedEntities.indexOf(entity);
       if (index !== -1) {
         this._selectedEntities.splice(index, 1);
+        this._selectedEntities = [...this._selectedEntities];
       }
     }
-    this._selectedEntities = [...this._selectedEntities];
   }
 
   private _enableSelected() {
@@ -456,11 +450,18 @@ class HaConfigEntityRegistry extends LitElement {
   }
 
   private _removeSelected() {
+    const removeableEntities: string[] = [];
+    this._selectedEntities.forEach((entity) => {
+      const stateObj = this.hass.states[entity];
+      if (stateObj?.attributes.restored) {
+        removeableEntities.push(entity);
+      }
+    });
     showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.entity_registry.picker.remove_selected.confirm_title",
         "number",
-        this._selectedEntities.length
+        removeableEntities.length
       ),
       text: this.hass.localize(
         "ui.panel.config.entity_registry.picker.remove_selected.confirm_text"
@@ -468,17 +469,12 @@ class HaConfigEntityRegistry extends LitElement {
       confirmBtnText: this.hass.localize("ui.common.yes"),
       cancelBtnText: this.hass.localize("ui.common.no"),
       confirm: () => {
-        this._selectedEntities.forEach((entity) => this._removeEntity(entity));
+        removeableEntities.forEach((entity) =>
+          removeEntityRegistryEntry(this.hass, entity)
+        );
         this._clearSelection();
       },
     });
-  }
-
-  private _removeEntity(entityId: string) {
-    const stateObj = this.hass.states[entityId];
-    if (stateObj?.attributes.restored) {
-      removeEntityRegistryEntry(this.hass, entityId);
-    }
   }
 
   private _clearSelection() {
