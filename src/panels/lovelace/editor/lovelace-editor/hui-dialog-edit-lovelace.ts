@@ -54,7 +54,7 @@ export class HuiDialogEditLovelace extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <ha-paper-dialog with-backdrop>
+      <ha-paper-dialog with-backdrop modal>
         <h2>
           ${this.hass!.localize(
             "ui.panel.lovelace.editor.edit_lovelace.header"
