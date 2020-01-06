@@ -80,7 +80,7 @@ export class ZHAAddGroupPage extends LitElement {
             .hass=${this.hass}
             .devices=${this.devices}
             .narrow=${this.narrow}
-            .selectable=${true}
+            selectable
             @selection-changed=${this._handleAddSelectionChanged}
             class="table"
           >
