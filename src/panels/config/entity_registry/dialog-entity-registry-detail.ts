@@ -143,7 +143,8 @@ class DialogEntityRegistryDetail extends LitElement {
           <mwc-button
             class="warning"
             @click="${this._confirmDeleteEntry}"
-            .disabled=${this._submitting}
+            .disabled=${this._submitting ||
+              !(stateObj && stateObj.attributes.restored)}
           >
             ${this.hass.localize(
               "ui.panel.config.entity_registry.editor.delete"
@@ -201,13 +202,8 @@ class DialogEntityRegistryDetail extends LitElement {
 
   private _confirmDeleteEntry(): void {
     showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.entity_registry.editor.confirm_delete"
-      ),
       text: this.hass.localize(
-        "ui.panel.config.entity_registry.editor.confirm_delete2",
-        "platform",
-        this._platform
+        "ui.panel.config.entity_registry.editor.confirm_delete"
       ),
       confirm: () => this._deleteEntry(),
     });

@@ -1257,14 +1257,37 @@
           "picker": {
             "header": "Entities",
             "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
-            "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant. Note, removing the entity registry entry won't remove the entity. To do that, follow the link below and remove it from the integrations page.",
-            "integrations_page": "Integrations page",
-            "show_disabled": "Show disabled entities",
+            "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant.",
+            "filter": {
+              "filter": "Filter",
+              "show_disabled": "Show disabled entities",
+              "show_unavailable": "Show unavailable entities"
+            },
+            "status": {
+              "unavailable": "Unavailable",
+              "disabled": "Disabled"
+            },
             "headers": {
               "name": "Name",
               "entity_id": "Entity ID",
               "integration": "Integration",
-              "enabled": "Enabled"
+              "status": "Status"
+            },
+            "selected": "{number} selected",
+            "enable_selected": {
+              "button": "Enable selected",
+              "confirm_title": "Do you want to enable {number} entities?",
+              "confirm_text": "This will make them available in Home Assistant again if they are now disabled."
+            },
+            "disable_selected": {
+              "button": "Disable selected",
+              "confirm_title": "Do you want to disable {number} entities?",
+              "confirm_text": "Disabled entities will not be added to Home Assistant."
+            },
+            "remove_selected": {
+              "button": "Remove selected",
+              "confirm_title": "Do you want to remove {number} entities?",
+              "confirm_text": "Entities can only be removed when the integration is no longer providing the entities."
             }
           },
           "editor": {
@@ -1275,7 +1298,6 @@
             "enabled_description": "Disabled entities will not be added to Home Assistant.",
             "delete": "DELETE",
             "confirm_delete": "Are you sure you want to delete this entry?",
-            "confirm_delete2": "Deleting an entry will not remove the entity from Home Assistant. To do this, you will need to remove the integration '{platform}' from Home Assistant.",
             "update": "UPDATE",
             "note": "Note: this might not work yet with all integrations."
           }
