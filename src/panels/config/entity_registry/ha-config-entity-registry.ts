@@ -84,6 +84,8 @@ class HaConfigEntityRegistry extends LitElement {
           "ui.panel.config.entity_registry.picker.headers.status"
         ),
         type: "icon",
+        sortable: true,
+        filterable: true,
         template: (_status, entity: any) => html`
           ${entity.unavailable || entity.disabled_by
             ? html`
@@ -181,9 +183,19 @@ class HaConfigEntityRegistry extends LitElement {
             : domainIcon(computeDomain(entry.entity_id)),
           name:
             computeEntityRegistryName(this.hass!, entry) ||
-            this.hass!.localize("state.default.unavailable"),
+            this.hass.localize("state.default.unavailable"),
           unavailable,
-          status: true,
+          status: unavailable
+            ? this.hass.localize(
+                "ui.panel.config.entity_registry.picker.status.unavailable"
+              )
+            : entry.disabled_by
+            ? this.hass.localize(
+                "ui.panel.config.entity_registry.picker.status.disabled"
+              )
+            : this.hass.localize(
+                "ui.panel.config.entity_registry.picker.status.ok"
+              ),
         });
         return result;
       }, [] as any);

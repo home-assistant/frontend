@@ -1265,7 +1265,8 @@
             },
             "status": {
               "unavailable": "Unavailable",
-              "disabled": "Disabled"
+              "disabled": "Disabled",
+              "ok": "Ok"
             },
             "headers": {
               "name": "Name",
