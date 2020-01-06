@@ -31,7 +31,6 @@ import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialo
 class DialogEntityRegistryDetail extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() private _name!: string;
-  @property() private _platform!: string;
   @property() private _entityId!: string;
   @property() private _disabledBy!: string | null;
   @property() private _error?: string;
@@ -45,7 +44,6 @@ class DialogEntityRegistryDetail extends LitElement {
     this._params = params;
     this._error = undefined;
     this._name = this._params.entry.name || "";
-    this._platform = this._params.entry.platform;
     this._origEntityId = this._params.entry.entity_id;
     this._entityId = this._params.entry.entity_id;
     this._disabledBy = this._params.entry.disabled_by;
