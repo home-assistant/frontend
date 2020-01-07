@@ -91,7 +91,7 @@ const createWebpackConfig = ({
       ),
     ].filter(Boolean),
     resolve: {
-      extensions: [".ts", ".js", ".json", ".tsx"],
+      extensions: [".ts", ".js", ".json"],
       alias: {
         react: "preact-compat",
         "react-dom": "preact-compat",

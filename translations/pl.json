@@ -587,9 +587,11 @@
                 "title": "Przełączanie domen"
             },
             "more_info_control": {
+                "dismiss": "Zamknij okno dialogowe",
                 "script": {
                     "last_action": "Ostatnia akcja"
                 },
+                "settings": "Ustawienia encji",
                 "sun": {
                     "elevation": "Wysokość",
                     "rising": "Wschód",
@@ -600,6 +602,7 @@
                 }
             },
             "more_info_settings": {
+                "back": "Wróć",
                 "entity_id": "Identyfikator encji",
                 "name": "Nadpisanie nazwy",
                 "save": "Zapisz"
@@ -658,6 +661,7 @@
         },
         "notification_drawer": {
             "click_to_configure": "Kliknij przycisk, aby skonfigurować {entity}",
+            "close": "Zamknij",
             "empty": "Brak powiadomień",
             "title": "Powiadomienia"
         },
@@ -806,6 +810,8 @@
                             "label": "Opis",
                             "placeholder": "Opcjonalny opis"
                         },
+                        "edit_ui": "Edytuj za pomocą interfejsu użytkownika",
+                        "edit_yaml": "Edycja jako YAML",
                         "introduction": "Użyj automatyzacji, aby ożywić swój dom",
                         "load_error_not_editable": "Tylko automatyzacje zdefiniowane w pliku automations.yaml są edytowalne.",
                         "load_error_unknown": "Wystąpił błąd podczas ładowania automatyzacji ({err_no}).",
@@ -1247,6 +1253,7 @@
                     "configure": "Konfiguruj",
                     "configured": "Skonfigurowane",
                     "description": "Zarządzaj integracjami",
+                    "details": "Szczegóły integracji",
                     "discovered": "Wykryte",
                     "home_assistant_website": "Home Assistant'a",
                     "integration_not_found": "Nie znaleziono integracji.",
@@ -1611,6 +1618,10 @@
                     "states": {
                         "alert_entity_field": "Encja jest polem obowiązkowym",
                         "attributes": "Atrybuty",
+                        "copied": "Skopiowano do schowka",
+                        "copy_entity_attribute": "Skopiuj atrybuty",
+                        "copy_entity_id": "Skopiuj identyfikator",
+                        "copy_entity_state": "Skopiuj status encji",
                         "current_entities": "Bieżące encje",
                         "description1": "Ustaw stany encji urządzeń Home Assistant'a.",
                         "description2": "Nie wpłynie to na rzeczywiste urządzenia.",
@@ -1861,6 +1872,7 @@
                 "menu": {
                     "close": "Zamknij",
                     "configure_ui": "Konfiguracja interfejsu użytkownika",
+                    "exit_edit_mode": "Wyjdź z trybu edycji interfejsu użytkownika",
                     "help": "Pomoc",
                     "refresh": "Wczytaj ponownie",
                     "unused_entities": "Nieużywane encje"

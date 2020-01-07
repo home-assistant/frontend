@@ -46,6 +46,13 @@
         "shopping_list": "खरीदारी की सूची",
         "states": "स्थिति"
     },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "off": "बंद"
+            }
+        }
+    },
     "state_badge": {
         "alarm_control_panel": {
             "pending": "अपूर्ण"

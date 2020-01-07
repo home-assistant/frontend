@@ -574,9 +574,9 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "如果禁用，新发现的实体将不会自动添加到 Home Assistant。",
+                "enable_new_entities_description": "如果禁用，从 {integration} 新发现的实体将不会自动添加到 Home Assistant。",
                 "enable_new_entities_label": "启用新添加的实体。",
-                "title": "系统选项"
+                "title": "{integration}的系统选项"
             },
             "confirmation": {
                 "cancel": "取消",
@@ -587,9 +587,11 @@
                 "title": "切换域"
             },
             "more_info_control": {
+                "dismiss": "关闭对话",
                 "script": {
                     "last_action": "上次执行"
                 },
+                "settings": "实体设置",
                 "sun": {
                     "elevation": "太阳高度角",
                     "rising": "日出",
@@ -600,6 +602,7 @@
                 }
             },
             "more_info_settings": {
+                "back": "退回",
                 "entity_id": "实体 ID",
                 "name": "名称",
                 "save": "保存"
@@ -658,6 +661,7 @@
         },
         "notification_drawer": {
             "click_to_configure": "单击按钮可以配置 {entity}",
+            "close": "关闭",
             "empty": "没有任何通知",
             "title": "通知"
         },
@@ -766,7 +770,7 @@
                                     "above": "大于",
                                     "below": "小于",
                                     "label": "数字型状态",
-                                    "value_template": "自定义值（可选）"
+                                    "value_template": "数值模板（可选）"
                                 },
                                 "or": {
                                     "label": "或者"
@@ -806,6 +810,8 @@
                             "label": "描述",
                             "placeholder": "可选描述"
                         },
+                        "edit_ui": "使用UI编辑",
+                        "edit_yaml": "以YAML编辑",
                         "introduction": "使用自动化让你的家聪明起来",
                         "load_error_not_editable": "只能编辑 automations.yaml 中的自动化。",
                         "load_error_unknown": "加载自动化错误 ({err_no})。",
@@ -1193,7 +1199,7 @@
                         "update": "更新"
                     },
                     "picker": {
-                        "header": "实体注册表",
+                        "header": "实体",
                         "headers": {
                             "enabled": "已启用",
                             "entity_id": "实体 ID",
@@ -1247,6 +1253,7 @@
                     "configure": "配置",
                     "configured": "已配置",
                     "description": "管理连接的设备和服务",
+                    "details": "集成详细信息",
                     "discovered": "已发现",
                     "home_assistant_website": "Home Assistant网站",
                     "integration_not_found": "未找到集成。",
@@ -1353,7 +1360,7 @@
                     "section": {
                         "reloading": {
                             "automation": "重载自动化",
-                            "core": "重载核心模块",
+                            "core": "重载位置和个人化",
                             "group": "重载分组",
                             "heading": "配置重载",
                             "introduction": "Home Assistant 中的部分配置可以直接重载，而无需重启服务。点击重载按钮将重新载入新的配置。",
@@ -1611,6 +1618,10 @@
                     "states": {
                         "alert_entity_field": "设备/实体是必填字段",
                         "attributes": "属性",
+                        "copied": "复制到剪贴板",
+                        "copy_entity_attribute": "复制属性",
+                        "copy_entity_id": "复制ID",
+                        "copy_entity_state": "复制状态",
                         "current_entities": "现有设备/实体",
                         "description1": "设置设备在 Home Assistant 中的呈现方式。",
                         "description2": "这将不影响实际设备。",
@@ -1709,6 +1720,16 @@
                         },
                         "generic": {
                             "aspect_ratio": "长宽比",
+                            "camera_image": "相机实体",
+                            "camera_view": "相机视图",
+                            "entities": "实体",
+                            "entity": "设备/实体",
+                            "hold_action": "保持操作",
+                            "hours_to_show": "显示时间",
+                            "icon": "图标",
+                            "icon_height": "图标高度",
+                            "image": "图像路径",
+                            "maximum": "最大",
                             "minimum": "最低",
                             "name": "名称",
                             "refresh_interval": "刷新间隔",
@@ -1851,6 +1872,7 @@
                 "menu": {
                     "close": "关闭",
                     "configure_ui": "配置 UI",
+                    "exit_edit_mode": "退出UI编辑模式",
                     "help": "帮助",
                     "refresh": "刷新",
                     "unused_entities": "未使用的实体"

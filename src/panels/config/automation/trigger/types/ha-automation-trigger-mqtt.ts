@@ -4,8 +4,8 @@ import { HomeAssistant } from "../../../../../types";
 import {
   handleChangeEvent,
   TriggerElement,
-  MqttTrigger,
 } from "../ha-automation-trigger-row";
+import { MqttTrigger } from "../../../../../data/automation";
 
 @customElement("ha-automation-trigger-mqtt")
 export class HaMQTTTrigger extends LitElement implements TriggerElement {

@@ -61,6 +61,15 @@
         "shopping_list": "Daftar belanja",
         "states": "Ikhtisar"
     },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "auto": "Auto",
+                "off": "Off",
+                "on": "On"
+            }
+        }
+    },
     "state_badge": {
         "alarm_control_panel": {
             "armed": "Armed",
@@ -910,13 +919,24 @@
                 "form": {
                     "providers": {
                         "command_line": {
+                            "abort": {
+                                "login_expired": "Sesi kedaluwarsa, harap masuk lagi."
+                            },
+                            "error": {
+                                "invalid_auth": "Username dan password salah",
+                                "invalid_code": "Kode autentikasi tidak valid"
+                            },
                             "step": {
                                 "init": {
                                     "data": {
+                                        "password": "Kata sandi",
                                         "username": "Nama pengguna"
                                     }
                                 },
                                 "mfa": {
+                                    "data": {
+                                        "code": "Kode Autentikasi Dua Faktor"
+                                    },
                                     "description": "Buka ** {mfa_module_name} ** pada perangkat Anda untuk melihat kode otentikasi dua-faktor Anda dan verifikasi identitas Anda:"
                                 }
                             }

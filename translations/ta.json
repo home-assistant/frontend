@@ -25,6 +25,15 @@
         "shopping_list": "பொருட்கள் பட்டியல்",
         "states": "கண்ணோட்டம்"
     },
+    "state_attributes": {
+        "climate": {
+            "fan_mode": {
+                "auto": "தானாக இயங்குதல்",
+                "off": "ஆஃப்",
+                "on": "ஆன்"
+            }
+        }
+    },
     "state_badge": {
         "alarm_control_panel": {
             "armed": "எச்சரிக்கை ஒலி அமைக்கப்பட்டுள்ளது",
