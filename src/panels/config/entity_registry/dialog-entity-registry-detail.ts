@@ -31,7 +31,6 @@ import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialo
 class DialogEntityRegistryDetail extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() private _name!: string;
-  @property() private _platform!: string;
   @property() private _entityId!: string;
   @property() private _disabledBy!: string | null;
   @property() private _error?: string;
@@ -45,7 +44,6 @@ class DialogEntityRegistryDetail extends LitElement {
     this._params = params;
     this._error = undefined;
     this._name = this._params.entry.name || "";
-    this._platform = this._params.entry.platform;
     this._origEntityId = this._params.entry.entity_id;
     this._entityId = this._params.entry.entity_id;
     this._disabledBy = this._params.entry.disabled_by;
@@ -143,7 +141,8 @@ class DialogEntityRegistryDetail extends LitElement {
           <mwc-button
             class="warning"
             @click="${this._confirmDeleteEntry}"
-            .disabled=${this._submitting}
+            .disabled=${this._submitting ||
+              !(stateObj && stateObj.attributes.restored)}
           >
             ${this.hass.localize(
               "ui.panel.config.entity_registry.editor.delete"
@@ -201,13 +200,8 @@ class DialogEntityRegistryDetail extends LitElement {
 
   private _confirmDeleteEntry(): void {
     showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.entity_registry.editor.confirm_delete"
-      ),
       text: this.hass.localize(
-        "ui.panel.config.entity_registry.editor.confirm_delete2",
-        "platform",
-        this._platform
+        "ui.panel.config.entity_registry.editor.confirm_delete"
       ),
       confirm: () => this._deleteEntry(),
     });
