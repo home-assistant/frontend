@@ -30,7 +30,7 @@ export class ZHANode extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <ha-config-section .isWide="${this.isWide}">
-        <div class="sectionHeader" slot="header">
+        <div slot="header">
           <span
             >${this.hass!.localize(
               "ui.panel.config.zha.node_management.header"
@@ -82,20 +82,8 @@ export class ZHANode extends LitElement {
     return [
       haStyle,
       css`
-        .flex {
-          -ms-flex: 1 1 0.000000001px;
-          -webkit-flex: 1;
-          flex: 1;
-          -webkit-flex-basis: 0.000000001px;
-          flex-basis: 0.000000001px;
-        }
-
         .node-info {
           margin-left: 16px;
-        }
-
-        .sectionHeader {
-          position: relative;
         }
 
         .help-text {
@@ -108,21 +96,6 @@ export class ZHANode extends LitElement {
         ha-card {
           margin: 0 auto;
           max-width: 600px;
-        }
-
-        .node-picker {
-          display: -ms-flexbox;
-          display: -webkit-flex;
-          display: flex;
-          -ms-flex-direction: row;
-          -webkit-flex-direction: row;
-          flex-direction: row;
-          -ms-flex-align: center;
-          -webkit-align-items: center;
-          align-items: center;
-          padding-left: 28px;
-          padding-right: 28px;
-          padding-bottom: 10px;
         }
 
         .card {
