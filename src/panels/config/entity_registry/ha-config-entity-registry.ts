@@ -52,7 +52,7 @@ class HaConfigEntityRegistry extends LitElement {
   @property() public narrow!: boolean;
   @property() private _entities?: EntityRegistryEntry[];
   @property() private _showDisabled = false;
-  @property() private _showRestored = true;
+  @property() private _showUnavailable = true;
   @property() private _filter = "";
   @property() private _selectedEntities: string[] = [];
   @query("ha-data-table") private _dataTable!: HaDataTable;
@@ -244,7 +244,7 @@ class HaConfigEntityRegistry extends LitElement {
             .data=${this._filteredEntities(
               this._entities,
               this._showDisabled,
-              this._showRestored
+              this._showUnavailable
             )}
             .filter=${this._filter}
             selectable
@@ -343,7 +343,7 @@ class HaConfigEntityRegistry extends LitElement {
                         </paper-icon-item>
                         <paper-icon-item @click="${this._showRestoredChanged}">
                           <paper-checkbox
-                            .checked=${this._showRestored}
+                            .checked=${this._showUnavailable}
                             slot="item-icon"
                           ></paper-checkbox>
                           ${this.hass!.localize(
@@ -382,7 +382,7 @@ class HaConfigEntityRegistry extends LitElement {
   }
 
   private _showRestoredChanged() {
-    this._showRestored = !this._showRestored;
+    this._showUnavailable = !this._showUnavailable;
   }
 
   private _handleSearchChange(ev: CustomEvent) {
@@ -395,11 +395,9 @@ class HaConfigEntityRegistry extends LitElement {
     if (changedSelection.selected) {
       this._selectedEntities = [...this._selectedEntities, entity];
     } else {
-      const index = this._selectedEntities.indexOf(entity);
-      if (index !== -1) {
-        this._selectedEntities.splice(index, 1);
-        this._selectedEntities = [...this._selectedEntities];
-      }
+      this._selectedEntities = this._selectedEntities.filter(
+        (entityId) => entityId !== entity
+      );
     }
   }
 
@@ -450,12 +448,9 @@ class HaConfigEntityRegistry extends LitElement {
   }
 
   private _removeSelected() {
-    const removeableEntities: string[] = [];
-    this._selectedEntities.forEach((entity) => {
+    const removeableEntities = this._selectedEntities.filter((entity) => {
       const stateObj = this.hass.states[entity];
-      if (stateObj?.attributes.restored) {
-        removeableEntities.push(entity);
-      }
+      return stateObj?.attributes.restored;
     });
     showConfirmationDialog(this, {
       title: this.hass.localize(
