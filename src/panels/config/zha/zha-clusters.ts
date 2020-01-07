@@ -80,7 +80,7 @@ export class ZHAClusters extends LitElement {
         <ha-card class="content">
           <div class="node-picker">
             <paper-dropdown-menu
-              label="${this.hass!.localize(
+              .label=${this.hass!.localize(
                 "ui.panel.config.zha.common.clusters"
               )}"
               class="flex"
