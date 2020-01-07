@@ -49,7 +49,7 @@ export class ZHADevicePage extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <hass-subpage
-        header="${this.hass!.localize("ui.panel.config.zha.devices.header")}"
+        .header=${this.hass!.localize("ui.panel.config.zha.devices.header")}
       >
         <zha-node
           .isWide="${this.isWide}"
