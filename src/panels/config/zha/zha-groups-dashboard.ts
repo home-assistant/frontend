@@ -47,7 +47,7 @@ export class ZHAGroupsDashboard extends LitElement {
   protected render(): TemplateResult {
     return html`
       <hass-subpage
-        header="${this.hass!.localize(
+        .header="${this.hass!.localize(
           "ui.panel.config.zha.groups.groups-header"
         )}"
       >
