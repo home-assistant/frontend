@@ -113,7 +113,7 @@ class HuiGenericEntityRow extends LitElement {
                     .datetime=${stateObj.attributes.last_triggered}
                   ></ha-relative-time>
                 `
-              : ""}
+              : "never"}
           </div>
         </div>
 
