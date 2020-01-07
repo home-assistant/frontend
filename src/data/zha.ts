@@ -51,6 +51,12 @@ export interface ReadAttributeServiceData {
   manufacturer?: number;
 }
 
+export interface ZHAGroup {
+  name: string;
+  group_id: number;
+  members: ZHADevice[];
+}
+
 export const reconfigureNode = (
   hass: HomeAssistant,
   ieeeAddress: string
@@ -152,4 +158,67 @@ export const fetchClustersForZhaNode = (
   hass.callWS({
     type: "zha/devices/clusters",
     ieee: ieeeAddress,
+  });
+
+export const fetchGroups = (hass: HomeAssistant): Promise<ZHAGroup[]> =>
+  hass.callWS({
+    type: "zha/groups",
+  });
+
+export const removeGroups = (
+  hass: HomeAssistant,
+  groupIdsToRemove: number[]
+): Promise<ZHAGroup[]> =>
+  hass.callWS({
+    type: "zha/group/remove",
+    group_ids: groupIdsToRemove,
+  });
+
+export const fetchGroup = (
+  hass: HomeAssistant,
+  groupId: number
+): Promise<ZHAGroup> =>
+  hass.callWS({
+    type: "zha/group",
+    group_id: groupId,
+  });
+
+export const fetchGroupableDevices = (
+  hass: HomeAssistant
+): Promise<ZHADevice[]> =>
+  hass.callWS({
+    type: "zha/devices/groupable",
+  });
+
+export const addMembersToGroup = (
+  hass: HomeAssistant,
+  groupId: number,
+  membersToAdd: string[]
+): Promise<ZHAGroup> =>
+  hass.callWS({
+    type: "zha/group/members/add",
+    group_id: groupId,
+    members: membersToAdd,
+  });
+
+export const removeMembersFromGroup = (
+  hass: HomeAssistant,
+  groupId: number,
+  membersToRemove: string[]
+): Promise<ZHAGroup> =>
+  hass.callWS({
+    type: "zha/group/members/remove",
+    group_id: groupId,
+    members: membersToRemove,
+  });
+
+export const addGroup = (
+  hass: HomeAssistant,
+  groupName: string,
+  membersToAdd?: string[]
+): Promise<ZHAGroup> =>
+  hass.callWS({
+    type: "zha/group/add",
+    group_name: groupName,
+    members: membersToAdd,
   });

@@ -1,4 +1,12 @@
-import { LitElement, html, TemplateResult, CSSResult, css } from "lit-element";
+import {
+  customElement,
+  LitElement,
+  html,
+  TemplateResult,
+  CSSResult,
+  css,
+  property,
+} from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { safeDump, safeLoad } from "js-yaml";
 
@@ -27,23 +35,15 @@ const lovelaceStruct = struct.interface({
   resources: struct.optional(["object"]),
 });
 
+@customElement("hui-editor")
 class LovelaceFullConfigEditor extends LitElement {
-  public hass!: HomeAssistant;
-  public lovelace?: Lovelace;
-  public closeEditor?: () => void;
-  private _saving?: boolean;
-  private _changed?: boolean;
-  private _generation = 1;
+  @property() public hass!: HomeAssistant;
+  @property() public lovelace?: Lovelace;
+  @property() public closeEditor?: () => void;
+  @property() private _saving?: boolean;
+  @property() private _changed?: boolean;
 
-  static get properties() {
-    return {
-      hass: {},
-      lovelace: {},
-      closeEditor: {},
-      _saving: {},
-      _changed: {},
-    };
-  }
+  private _generation = 1;
 
   public render(): TemplateResult | void {
     return html`
@@ -73,7 +73,10 @@ class LovelaceFullConfigEditor extends LitElement {
                     "ui.panel.lovelace.editor.raw_editor.saved"
                   )}
             </div>
-            <mwc-button raised @click="${this._handleSave}"
+            <mwc-button
+              raised
+              @click="${this._handleSave}"
+              .disabled=${!this._changed}
               >${this.hass!.localize(
                 "ui.panel.lovelace.editor.raw_editor.save"
               )}</mwc-button
@@ -114,6 +117,11 @@ class LovelaceFullConfigEditor extends LitElement {
         app-toolbar {
           background-color: var(--dark-background-color, #455a64);
           color: var(--dark-text-color);
+        }
+
+        mwc-button[disabled] {
+          background-color: var(--mdc-theme-on-primary);
+          border-radius: 4px;
         }
 
         .comments {
@@ -242,5 +250,3 @@ declare global {
     "hui-editor": LovelaceFullConfigEditor;
   }
 }
-
-customElements.define("hui-editor", LovelaceFullConfigEditor);

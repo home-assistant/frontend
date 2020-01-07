@@ -72,6 +72,10 @@
             "on": "Įjungta"
         },
         "binary_sensor": {
+            "connectivity": {
+                "off": "Atsijungęs",
+                "on": "Prisijungęs"
+            },
             "default": {
                 "off": "Išjungta",
                 "on": "Įjungta"
@@ -207,9 +211,11 @@
         },
         "dialogs": {
             "more_info_control": {
+                "dismiss": "Atsisakyti dialogo",
                 "script": {
                     "last_action": "Paskutinis veiksmas"
                 },
+                "settings": "Subjekto nustatymai",
                 "sun": {
                     "elevation": "Aukštis",
                     "rising": "Kyla",
@@ -218,12 +224,18 @@
                 "updater": {
                     "title": "Atnaujinimo instrukcijos"
                 }
+            },
+            "more_info_settings": {
+                "back": "Atgal"
             }
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {diena}\n  other {dienos}\n}",
             "second": "{count} {count, plural,\n  one {sekundė}\n  other {sekundės}\n}",
             "week": "{count} {count, plural,\n  one {savaitė}\n  other {savaitės}\n}"
+        },
+        "notification_drawer": {
+            "close": "Uždaryti"
         },
         "panel": {
             "config": {
@@ -298,6 +310,8 @@
                                 }
                             }
                         },
+                        "edit_ui": "Redaguoti naudojant vartotojo sąsają",
+                        "edit_yaml": "Redaguoti kaip YAML",
                         "triggers": {
                             "delete": "Ištrinti",
                             "learn_more": "Sužinokite daugiau apie trigerius",
@@ -336,12 +350,27 @@
                     }
                 },
                 "cloud": {
+                    "account": {
+                        "connected": "Prisijungęs",
+                        "not_connected": "Neprisijungęs"
+                    },
                     "caption": "Home Assistant Cloud"
                 },
                 "customize": {
                     "picker": {
                         "header": "Pritaikymas"
                     }
+                },
+                "devices": {
+                    "area_picker_label": "Sritis",
+                    "automations": "Automatizavimai",
+                    "data_table": {
+                        "area": "Sritis",
+                        "device": "Įrenginys",
+                        "model": "Modelis"
+                    },
+                    "description": "Tvarkyti prijungtus įrenginius",
+                    "entities": "Subjektai"
                 },
                 "entity_registry": {
                     "caption": "Subjektų registras",
@@ -361,8 +390,19 @@
                 },
                 "integrations": {
                     "config_entry": {
-                        "no_area": "Nėra srities"
-                    }
+                        "hub": "Prijungtas per",
+                        "no_area": "Nėra srities",
+                        "via": "Prijungtas per"
+                    },
+                    "config_flow": {
+                        "aborted": "Nutraukta",
+                        "add_area": "Pridėti sritį",
+                        "area_picker_label": "Sritis",
+                        "close": "Uždaryti",
+                        "finish": "Baigti",
+                        "submit": "Pateikti"
+                    },
+                    "details": "Integravimo informacija"
                 },
                 "person": {
                     "caption": "Asmenys",
@@ -411,13 +451,21 @@
             },
             "custom": {
                 "external_panel": {
-                    "hide_message": "Norėdami paslėpti šį pranešimą, patikrinkite „panel_custom“ dokumentacija"
+                    "complete_access": "Jis turės prieigą prie visų namų asistento duomenų.",
+                    "hide_message": "Norėdami paslėpti šį pranešimą, patikrinkite „panel_custom“ dokumentacija",
+                    "question_trust": "Ar pasitikite išoriniu skydeliu {name} adresu {link}?"
                 }
             },
             "developer-tools": {
                 "tabs": {
                     "mqtt": {
                         "title": "MQTT"
+                    },
+                    "states": {
+                        "copied": "Nukopijuota į iškarpinę",
+                        "copy_entity_attribute": "Kopijuoti atributus",
+                        "copy_entity_id": "Kopijuoti ID",
+                        "copy_entity_state": "Kopijuoti būseną"
                     }
                 }
             },
@@ -440,11 +488,16 @@
                         "pick_card": "Pasirinkite kortelę, kurią norite pridėti.",
                         "save": "Išsaugoti"
                     },
+                    "edit_lovelace": {
+                        "edit_title": "Redaguoti pavadinimą"
+                    },
                     "edit_view": {
                         "add": "Pridėti rodinį",
                         "delete": "Ištrinti rodinį",
                         "edit": "Redaguoti rodinį",
-                        "header": "Peržiūrėti konfigūraciją"
+                        "header": "Peržiūrėti konfigūraciją",
+                        "move_left": "Perkelti rodinį į kairę",
+                        "move_right": "Perkelti rodinį į dešinę"
                     },
                     "header": "Redaguoti UI",
                     "menu": {
@@ -454,6 +507,11 @@
                         "migrate": "Perkelti konfigūraciją"
                     },
                     "raw_editor": {
+                        "confirm_unsaved_changes": "Turite neišsaugotų pakeitimų, ar tikrai norite išeiti?",
+                        "confirm_unsaved_comments": "Jūsų konfigūracijoje yra komentarų (-ų), jie nebus išsaugoti. Ar norite tęsti?",
+                        "error_invalid_config": "Jūsų konfigūracija netinkama: {error}",
+                        "error_parse_yaml": "Neįmanoma išanalizuoti YAML: {Error}",
+                        "error_save_yaml": "Neįmanoma įrašyti YAML: {klaida}",
                         "header": "Redaguoti konfigūraciją",
                         "save": "Išsaugoti",
                         "saved": "Išsaugota",
@@ -467,10 +525,18 @@
                     }
                 },
                 "menu": {
+                    "close": "Uždaryti",
                     "configure_ui": "Konfigūruoti UI",
+                    "exit_edit_mode": "Išeiti iš vartotojo sąsajos redagavimo režimo",
                     "help": "Pagalba",
                     "refresh": "Atnaujinti",
                     "unused_entities": "Nepanaudoti elementai"
+                },
+                "unused_entities": {
+                    "domain": "Domenas",
+                    "entity": "Subjektas",
+                    "entity_id": "Subjekto ID",
+                    "last_changed": "Paskutinį kartą pakeistas"
                 },
                 "warning": {
                     "entity_non_numeric": "Subjektas nėra skaitinis: {entity}",
@@ -513,6 +579,10 @@
                 }
             },
             "profile": {
+                "advanced_mode": {
+                    "hint_enable": "Trūksta konfigūracijos parinkčių? Įjungti išplėstinį režimą",
+                    "link_profile_page": "jūsų profilio puslapis"
+                },
                 "change_password": {
                     "current_password": "Dabartinis slaptažodis",
                     "header": "Keisti slaptažodį",

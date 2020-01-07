@@ -75,7 +75,7 @@ export interface DataTableSortColumnData {
 export interface DataTableColumnData extends DataTableSortColumnData {
   title: string;
   type?: "numeric" | "icon";
-  template?: <T>(data: any, row: T) => TemplateResult;
+  template?: <T>(data: any, row: T) => TemplateResult | string;
 }
 
 export interface DataTableRowData {
@@ -88,11 +88,11 @@ export class HaDataTable extends BaseElement {
   @property({ type: Array }) public data: DataTableRowData[] = [];
   @property({ type: Boolean }) public selectable = false;
   @property({ type: String }) public id = "id";
+  @property({ type: String }) public filter = "";
   protected mdcFoundation!: MDCDataTableFoundation;
   protected readonly mdcFoundationClass = MDCDataTableFoundation;
   @query(".mdc-data-table") protected mdcRoot!: HTMLElement;
   @queryAll(".mdc-data-table__row") protected rowElements!: HTMLElement[];
-  @query("#header-checkbox") private _headerCheckbox!: HaCheckbox;
   @property({ type: Boolean }) private _filterable = false;
   @property({ type: Boolean }) private _headerChecked = false;
   @property({ type: Boolean }) private _headerIndeterminate = false;
@@ -108,12 +108,18 @@ export class HaDataTable extends BaseElement {
   private _worker: any | undefined;
 
   private _debounceSearch = debounce(
-    (ev) => {
-      this._filter = ev.detail.value;
+    (value: string) => {
+      this._filter = value;
     },
     200,
     false
   );
+
+  public clearSelection(): void {
+    this._headerChecked = false;
+    this._headerIndeterminate = false;
+    this.mdcFoundation.handleHeaderRowCheckboxChange();
+  }
 
   protected firstUpdated() {
     super.firstUpdated();
@@ -146,6 +152,10 @@ export class HaDataTable extends BaseElement {
       this._sortColumns = clonedColumns;
     }
 
+    if (properties.has("filter")) {
+      this._debounceSearch(this.filter);
+    }
+
     if (
       properties.has("data") ||
       properties.has("columns") ||
@@ -159,14 +169,18 @@ export class HaDataTable extends BaseElement {
 
   protected render() {
     return html`
-      ${this._filterable
-        ? html`
-            <search-input
-              @value-changed=${this._handleSearchChange}
-            ></search-input>
-          `
-        : ""}
       <div class="mdc-data-table">
+        <slot name="header">
+          ${this._filterable
+            ? html`
+                <div class="table-header">
+                  <search-input
+                    @value-changed=${this._handleSearchChange}
+                  ></search-input>
+                </div>
+              `
+            : ""}
+        </slot>
         <table class="mdc-data-table__table">
           <thead>
             <tr class="mdc-data-table__header-row">
@@ -178,7 +192,6 @@ export class HaDataTable extends BaseElement {
                       scope="col"
                     >
                       <ha-checkbox
-                        id="header-checkbox"
                         class="mdc-data-table__row-checkbox"
                         @change=${this._handleHeaderRowCheckboxChange}
                         .indeterminate=${this._headerIndeterminate}
@@ -372,9 +385,10 @@ export class HaDataTable extends BaseElement {
     });
   }
 
-  private _handleHeaderRowCheckboxChange() {
-    this._headerChecked = this._headerCheckbox.checked;
-    this._headerIndeterminate = this._headerCheckbox.indeterminate;
+  private _handleHeaderRowCheckboxChange(ev: Event) {
+    const checkbox = ev.target as HaCheckbox;
+    this._headerChecked = checkbox.checked;
+    this._headerIndeterminate = checkbox.indeterminate;
     this.mdcFoundation.handleHeaderRowCheckboxChange();
   }
 
@@ -387,20 +401,26 @@ export class HaDataTable extends BaseElement {
   }
 
   private _handleRowClick(ev: Event) {
-    const rowId = (ev.target as HTMLElement)
-      .closest("tr")!
-      .getAttribute("data-row-id")!;
+    const target = ev.target as HTMLElement;
+    if (target.tagName === "HA-CHECKBOX") {
+      return;
+    }
+    const rowId = target.closest("tr")!.getAttribute("data-row-id")!;
     fireEvent(this, "row-click", { id: rowId }, { bubbles: false });
   }
 
   private _setRowChecked(rowId: string, checked: boolean) {
-    if (checked && !this._checkedRows.includes(rowId)) {
-      this._checkedRows = [...this._checkedRows, rowId];
-    } else if (!checked) {
-      const index = this._checkedRows.indexOf(rowId);
-      if (index !== -1) {
-        this._checkedRows.splice(index, 1);
+    if (checked) {
+      if (this._checkedRows.includes(rowId)) {
+        return;
       }
+      this._checkedRows = [...this._checkedRows, rowId];
+    } else {
+      const index = this._checkedRows.indexOf(rowId);
+      if (index === -1) {
+        return;
+      }
+      this._checkedRows.splice(index, 1);
     }
     fireEvent(this, "selection-changed", {
       id: rowId,
@@ -409,7 +429,7 @@ export class HaDataTable extends BaseElement {
   }
 
   private _handleSearchChange(ev: CustomEvent): void {
-    this._debounceSearch(ev);
+    this._debounceSearch(ev.detail.value);
   }
 
   static get styles(): CSSResult {
@@ -588,6 +608,9 @@ export class HaDataTable extends BaseElement {
       }
       .mdc-data-table__header-cell:hover.not-sorted ha-icon {
         left: 0px;
+      }
+      .table-header {
+        border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
       }
     `;
   }

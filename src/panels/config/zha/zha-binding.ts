@@ -32,7 +32,7 @@ export class ZHABindingControl extends LitElement {
   @property() private _showHelp: boolean = false;
   @property() private _bindTargetIndex: number = -1;
   @property() private bindableDevices: ZHADevice[] = [];
-  private _deviceToBind?: ZHADevice;
+  @property() private _deviceToBind?: ZHADevice;
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("selectedDevice")) {
@@ -83,7 +83,11 @@ export class ZHABindingControl extends LitElement {
               `
             : ""}
           <div class="card-actions">
-            <mwc-button @click="${this._onBindDevicesClick}">Bind</mwc-button>
+            <mwc-button
+              @click="${this._onBindDevicesClick}"
+              .disabled="${!(this._deviceToBind && this.selectedDevice)}"
+              >Bind</mwc-button
+            >
             ${this._showHelp
               ? html`
                   <div class="helpText">
@@ -91,7 +95,9 @@ export class ZHABindingControl extends LitElement {
                   </div>
                 `
               : ""}
-            <mwc-button @click="${this._onUnbindDevicesClick}"
+            <mwc-button
+              @click="${this._onUnbindDevicesClick}"
+              .disabled="${!(this._deviceToBind && this.selectedDevice)}"
               >Unbind</mwc-button
             >
             ${this._showHelp

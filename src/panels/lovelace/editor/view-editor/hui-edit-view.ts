@@ -129,7 +129,7 @@ export class HuiEditView extends LitElement {
         break;
     }
     return html`
-      <ha-paper-dialog with-backdrop>
+      <ha-paper-dialog with-backdrop modal>
         <h2>
           ${this._viewConfigTitle}
         </h2>

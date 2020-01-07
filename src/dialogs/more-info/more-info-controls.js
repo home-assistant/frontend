@@ -1,6 +1,7 @@
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-icon-button/paper-icon-button";
+import "@material/mwc-button";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
@@ -18,6 +19,8 @@ import { DOMAINS_MORE_INFO_NO_HISTORY } from "../../common/const";
 import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import { computeRTL } from "../../common/util/compute_rtl";
+import { removeEntityRegistryEntry } from "../../data/entity_registry";
+import { showConfirmationDialog } from "../confirmation/show-dialog-confirmation";
 
 const DOMAINS_NO_INFO = ["camera", "configurator", "history_graph"];
 /*
@@ -55,6 +58,10 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
         paper-dialog-scrollable {
           padding-bottom: 16px;
+        }
+
+        mwc-button.warning {
+          --mdc-theme-primary: var(--google-red-500);
         }
 
         :host([domain="camera"]) paper-dialog-scrollable {
@@ -117,6 +124,15 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
           state-obj="[[stateObj]]"
           hass="[[hass]]"
         ></more-info-content>
+        <template
+          is="dom-if"
+          if="[[_computeShowRestored(stateObj)]]"
+          restamp=""
+        >
+          [[localize('ui.dialogs.more_info_control.restored.not_provided')]] <br />
+          [[localize('ui.dialogs.more_info_control.restored.remove_intro')]] <br />
+          <mwc-button class="warning" on-click="_removeEntity">[[localize('ui.dialogs.more_info_control.restored.remove_action')]]</mwc-buttom>
+        </template>
       </paper-dialog-scrollable>
     `;
   }
@@ -172,6 +188,10 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return !stateObj || !DOMAINS_NO_INFO.includes(computeStateDomain(stateObj));
   }
 
+  _computeShowRestored(stateObj) {
+    return stateObj && stateObj.attributes.restored;
+  }
+
   _computeShowHistoryComponent(hass, stateObj) {
     return (
       hass &&
@@ -200,6 +220,21 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
         cacheKey: `more_info.${newVal.entity_id}`,
       };
     }
+  }
+
+  _removeEntity() {
+    showConfirmationDialog(this, {
+      title: this.localize(
+        "ui.dialogs.more_info_control.restored.confirm_remove_title"
+      ),
+      text: this.localize(
+        "ui.dialogs.more_info_control.restored.confirm_remove_text"
+      ),
+      confirmBtnText: this.localize("ui.common.yes"),
+      cancelBtnText: this.localize("ui.common.no"),
+      confirm: () =>
+        removeEntityRegistryEntry(this.hass, this.stateObj.entity_id),
+    });
   }
 
   _gotoSettings() {

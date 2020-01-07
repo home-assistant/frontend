@@ -1,8 +1,8 @@
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { Lovelace } from "../../types";
+import { LovelaceConfig } from "../../../../data/lovelace";
 
 export interface SelectViewDialogParams {
-  lovelace: Lovelace;
+  lovelaceConfig: LovelaceConfig;
   viewSelectedCallback: (view: number) => void;
 }
 
