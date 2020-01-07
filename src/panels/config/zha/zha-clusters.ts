@@ -82,7 +82,7 @@ export class ZHAClusters extends LitElement {
             <paper-dropdown-menu
               .label=${this.hass!.localize(
                 "ui.panel.config.zha.common.clusters"
-              )}"
+              )}
               class="flex"
             >
               <paper-listbox
