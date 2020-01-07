@@ -45,7 +45,6 @@ class ZHAConfigDashboard extends LitElement {
         ...device,
         name: device.user_given_name ? device.user_given_name : device.name,
         nwk: formatAsPaddedHex(device.nwk),
-        ieee: device.ieee,
         id: device.ieee,
       };
     });
