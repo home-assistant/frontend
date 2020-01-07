@@ -233,7 +233,7 @@ class ZHADeviceCard extends LitElement {
             label="${this.hass!.localize(
               "ui.dialogs.zha_device_info.zha_device_card.area_picker_label"
             )}"
-            class="flex"
+            class="menu"
           >
             <paper-listbox
               slot="dropdown-content"
@@ -453,22 +453,10 @@ class ZHADeviceCard extends LitElement {
           color: grey;
           padding: 16px;
         }
-        .flex {
-          -ms-flex: 1 1 0.000000001px;
-          -webkit-flex: 1;
-          flex: 1;
-          -webkit-flex-basis: 0.000000001px;
-          flex-basis: 0.000000001px;
+        .menu {
+          width: 100%;
         }
         .node-picker {
-          display: -ms-flexbox;
-          display: -webkit-flex;
-          display: flex;
-          -ms-flex-direction: row;
-          -webkit-flex-direction: row;
-          flex-direction: row;
-          -ms-flex-align: center;
-          -webkit-align-items: center;
           align-items: center;
           padding-left: 28px;
           padding-right: 28px;
