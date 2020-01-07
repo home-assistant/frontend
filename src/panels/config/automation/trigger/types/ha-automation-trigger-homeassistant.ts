@@ -5,7 +5,7 @@ import { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-g
 import { LitElement, html, property, customElement } from "lit-element";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../../types";
-import { HassTrigger } from "../ha-automation-trigger-row";
+import { HassTrigger } from "../../../../../data/automation";
 
 @customElement("ha-automation-trigger-homeassistant")
 export default class HaHassTrigger extends LitElement {

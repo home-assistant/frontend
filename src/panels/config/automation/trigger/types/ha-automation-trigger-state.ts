@@ -6,10 +6,9 @@ import { HomeAssistant } from "../../../../../types";
 import {
   handleChangeEvent,
   TriggerElement,
-  StateTrigger,
-  ForDict,
 } from "../ha-automation-trigger-row";
 import { PolymerChangedEvent } from "../../../../../polymer-types";
+import { StateTrigger, ForDict } from "../../../../../data/automation";
 
 @customElement("ha-automation-trigger-state")
 export class HaStateTrigger extends LitElement implements TriggerElement {
