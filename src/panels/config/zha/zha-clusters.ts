@@ -62,7 +62,7 @@ export class ZHAClusters extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <ha-config-section .isWide="${this.isWide}">
-        <div slot="header">
+        <div class="header" slot="header">
           <span>
             ${this.hass!.localize("ui.panel.config.zha.clusters.header")}
           </span>
@@ -147,6 +147,10 @@ export class ZHAClusters extends LitElement {
           margin-top: 24px;
         }
 
+        .header {
+          flex-grow: 1;
+        }
+
         ha-card {
           margin: 0 auto;
           max-width: 600px;
@@ -160,7 +164,7 @@ export class ZHAClusters extends LitElement {
         }
 
         .toggle-help-icon {
-          position: absolute;
+          float: right;
           top: -6px;
           right: 0;
           color: var(--primary-color);

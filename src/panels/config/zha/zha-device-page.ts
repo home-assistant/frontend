@@ -89,6 +89,7 @@ export class ZHADevicePage extends LitElement {
               ></zha-binding-control>
             `
           : ""}
+        <div class="spacer" />
       </hass-subpage>
     `;
   }
@@ -112,8 +113,8 @@ export class ZHADevicePage extends LitElement {
     return [
       haStyle,
       css`
-        hass-subpage > *:last-child {
-          margin-bottom: 50px;
+        .spacer {
+          height: 50px;
         }
       `,
     ];

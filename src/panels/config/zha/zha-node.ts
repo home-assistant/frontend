@@ -30,7 +30,7 @@ export class ZHANode extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <ha-config-section .isWide="${this.isWide}">
-        <div slot="header">
+        <div class="header" slot="header">
           <span
             >${this.hass!.localize(
               "ui.panel.config.zha.node_management.header"
@@ -115,8 +115,12 @@ export class ZHANode extends LitElement {
           display: none;
         }
 
+        .header {
+          flex-grow: 1;
+        }
+
         .toggle-help-icon {
-          position: absolute;
+          float: right;
           top: 6px;
           right: 0;
           color: var(--primary-color);
