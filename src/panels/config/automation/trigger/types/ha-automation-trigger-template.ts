@@ -1,10 +1,8 @@
 import "../../../../../components/ha-textarea";
 import { LitElement, property, html, customElement } from "lit-element";
 import { HomeAssistant } from "../../../../../types";
-import {
-  TemplateTrigger,
-  handleChangeEvent,
-} from "../ha-automation-trigger-row";
+import { handleChangeEvent } from "../ha-automation-trigger-row";
+import { TemplateTrigger } from "../../../../../data/automation";
 
 @customElement("ha-automation-trigger-template")
 export class HaTemplateTrigger extends LitElement {

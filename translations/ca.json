@@ -587,9 +587,11 @@
                 "title": "Commutació de dominis"
             },
             "more_info_control": {
+                "dismiss": "Desestimar el diàleg",
                 "script": {
                     "last_action": "Última acció"
                 },
+                "settings": "Configuració de l'entitat",
                 "sun": {
                     "elevation": "Elevació",
                     "rising": "Sortint",
@@ -600,6 +602,7 @@
                 }
             },
             "more_info_settings": {
+                "back": "Torna",
                 "entity_id": "ID de l'entitat",
                 "name": "Substitució de Nom",
                 "save": "Desa"
@@ -658,6 +661,7 @@
         },
         "notification_drawer": {
             "click_to_configure": "Prem el botó per configurar {entity}",
+            "close": "Tanca",
             "empty": "No hi ha notificacions",
             "title": "Notificacions"
         },
@@ -806,6 +810,8 @@
                             "label": "Descripció",
                             "placeholder": "Descripció opcional"
                         },
+                        "edit_ui": "Edita a través d'interfície",
+                        "edit_yaml": "Edita com a YAML",
                         "introduction": "Utilitza les automatitzacions per donar més vida a la teva casa",
                         "load_error_not_editable": "Només es poden editar les automatitzacions de l'arxiu automations.yaml.",
                         "load_error_unknown": "Error en carregar l’automatització ({err_no}).",
@@ -1247,6 +1253,7 @@
                     "configure": "Configurar",
                     "configured": "Configurades",
                     "description": "Gestiona i configura la integració",
+                    "details": "Detalls de la integració",
                     "discovered": "Descobertes",
                     "home_assistant_website": "lloc web de Home Assistant",
                     "integration_not_found": "No s'ha trobat la integració.",
@@ -1611,6 +1618,10 @@
                     "states": {
                         "alert_entity_field": "L’entitat és un camp obligatori",
                         "attributes": "Atributs",
+                        "copied": "Copiat al porta-retalls",
+                        "copy_entity_attribute": "Copia atributs",
+                        "copy_entity_id": "Copia identificador",
+                        "copy_entity_state": "Copia estat",
                         "current_entities": "Entitats actuals",
                         "description1": "Defineix la representació d'un dispositiu a Home Assistant.",
                         "description2": "No hi haurà cap comunicació amb el dispositiu real.",
@@ -1861,6 +1872,7 @@
                 "menu": {
                     "close": "Tanca",
                     "configure_ui": "Configurar la interfície d'usuari",
+                    "exit_edit_mode": "Surt del mode d’edició d'interfície",
                     "help": "Ajuda",
                     "refresh": "Actualitzar",
                     "unused_entities": "Entitats sense utilitzar"

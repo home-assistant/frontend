@@ -5,11 +5,9 @@ import { PaperRadioGroupElement } from "@polymer/paper-radio-group/paper-radio-g
 import "../../../../../components/entity/ha-entity-picker";
 import { LitElement, customElement, property, html } from "lit-element";
 import { HomeAssistant } from "../../../../../types";
-import {
-  GeoLocationTrigger,
-  handleChangeEvent,
-} from "../ha-automation-trigger-row";
+import { handleChangeEvent } from "../ha-automation-trigger-row";
 import { fireEvent } from "../../../../../common/dom/fire_event";
+import { GeoLocationTrigger } from "../../../../../data/automation";
 
 @customElement("ha-automation-trigger-geo_location")
 export default class HaGeolocationTrigger extends LitElement {

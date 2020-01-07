@@ -5,6 +5,12 @@ import { toggleEntity } from "./entity/toggle-entity";
 import { ActionConfig } from "../../../data/lovelace";
 import { forwardHaptic } from "../../../data/haptics";
 
+declare global {
+  interface HASSDomEvents {
+    "ll-custom": ActionConfig;
+  }
+}
+
 export const handleAction = (
   node: HTMLElement,
   hass: HomeAssistant,
@@ -76,7 +82,7 @@ export const handleAction = (
         forwardHaptic("light");
       }
       break;
-    case "call-service": {
+    case "call-service":
       if (!actionConfig.service) {
         forwardHaptic("failure");
         return;
@@ -84,6 +90,8 @@ export const handleAction = (
       const [domain, service] = actionConfig.service.split(".", 2);
       hass.callService(domain, service, actionConfig.service_data);
       forwardHaptic("light");
-    }
+      break;
+    case "fire-dom-event":
+      fireEvent(node, "ll-custom", actionConfig);
   }
 };

@@ -5,11 +5,8 @@ import "../../../../../components/entity/ha-entity-picker";
 import { LitElement, html, customElement, property } from "lit-element";
 import { HomeAssistant } from "../../../../../types";
 import { fireEvent } from "../../../../../common/dom/fire_event";
-import {
-  NumericStateTrigger,
-  ForDict,
-  handleChangeEvent,
-} from "../ha-automation-trigger-row";
+import { handleChangeEvent } from "../ha-automation-trigger-row";
+import { NumericStateTrigger, ForDict } from "../../../../../data/automation";
 
 @customElement("ha-automation-trigger-numeric_state")
 export default class HaNumericStateTrigger extends LitElement {

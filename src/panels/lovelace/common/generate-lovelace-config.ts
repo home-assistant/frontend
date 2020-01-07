@@ -97,8 +97,8 @@ const splitByAreas = (
   };
 };
 
-const computeCards = (
-  states: Array<[string, HassEntity]>,
+export const computeCards = (
+  states: Array<[string, HassEntity?]>,
   entityCardOptions: Partial<EntitiesCardConfig>
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
@@ -131,6 +131,11 @@ const computeCards = (
         hours_to_show: stateObj.attributes.hours_to_show,
         title: stateObj.attributes.friendly_name,
         refresh_interval: stateObj.attributes.refresh,
+      });
+    } else if (domain === "light") {
+      cards.push({
+        type: "light",
+        entity: entityId,
       });
     } else if (domain === "media_player") {
       cards.push({

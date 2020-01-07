@@ -81,6 +81,12 @@ class ZHADeviceCard extends LitElement {
     super.connectedCallback();
     this._unsubAreas = subscribeAreaRegistry(this.hass.connection, (areas) => {
       this._areas = areas;
+      if (this.device) {
+        this._selectedAreaIndex =
+          this._areas.findIndex(
+            (area) => area.area_id === this.device!.area_id
+          ) + 1; // account for the no area selected index
+      }
     });
     this.hass.connection
       .subscribeEvents((event: HassEvent) => {
