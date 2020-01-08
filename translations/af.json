@@ -884,6 +884,9 @@
                     "configured": "Opgestel",
                     "description": "Bestuur gekoppelde toestelle en dienste",
                     "discovered": "Ontdek",
+                    "ignore": {
+                        "stop_ignore": "Deixar de ignorar"
+                    },
                     "new": "Stel 'n nuwe integrasie op",
                     "none": "Nog niks is opgestel nie"
                 },

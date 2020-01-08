@@ -980,7 +980,7 @@
                         "link_disable_webhook": "desativá-lo",
                         "managed_by_integration": "Este webhook é gerido por uma integração e não pode ser desabilitado.",
                         "view_documentation": "Ver documentação",
-                        "webhook_for": "Webhook para {nome}"
+                        "webhook_for": "Webhook para {name}"
                     },
                     "forgot_password": {
                         "check_your_email": "Verifique o seu e-mail para obter instruções sobre como redefinir a sua senha.",
@@ -1025,7 +1025,7 @@
                         "headline": "Inicie a sua avaliação gratuita",
                         "information2": "A avaliação gratuita dará acesso a todos os benefícios do Home Assistant Cloud, incluindo:",
                         "information3": "Este serviço é executado pelo nosso parceiro",
-                        "information3a": ",uma empresa criada pelos fundadores do Home Assistant e do Hass.io.",
+                        "information3a": ", uma empresa criada pelos fundadores do Home Assistant e do Hass.io.",
                         "link_privacy_policy": "Política de privacidade",
                         "link_terms_conditions": "Termos e condições",
                         "password": "Palavra-passe",
@@ -1108,7 +1108,7 @@
                     },
                     "automations": "Automações",
                     "caption": "Dispositivos",
-                    "confirm_rename_entity_ids": " Deseja também renomear os id's de entidade de suas entidades?",
+                    "confirm_rename_entity_ids": "Deseja também renomear os id's de entidade de suas entidades?",
                     "data_table": {
                         "area": "Área",
                         "battery": "Bateria",
@@ -1120,7 +1120,6 @@
                     "description": "Gerir dispositivos ligados",
                     "details": "Aqui estão todos os detalhes do seu dispositivo.",
                     "device_not_found": "Dispositivo não encontrado.",
-                    "entities": "Entidades",
                     "info": "Informação do dispositivo",
                     "unknown_error": "Erro desconhecido",
                     "unnamed_device": "Dispositivo sem nome"
@@ -1437,7 +1436,7 @@
                 "tabs": {
                     "events": {
                         "available_events": "Eventos Disponíveis",
-                        "count_listeners": "({count} escutas)",
+                        "count_listeners": " ({count} escutas)",
                         "description": "Dispare um evento aqui.",
                         "documentation": "Documentação de eventos.",
                         "fire_event": "Executar Evento",
@@ -1712,7 +1711,7 @@
                 },
                 "reload_lovelace": "Recarregar Lovelace",
                 "unused_entities": {
-                    "available_entities": "Estas são as entidades que tem disponíveis, mas que ainda não estão no seu  Lovelace UI.",
+                    "available_entities": "Estas são as entidades que tem disponíveis, mas que ainda não estão no seu Lovelace UI.",
                     "domain": "Domínio",
                     "entity": "Entidade",
                     "entity_id": "ID da Entidade",

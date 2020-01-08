@@ -1050,7 +1050,6 @@
                     "description": "Hallitse yhdistettyjä laitteita",
                     "details": "Tässä ovat kaikki laitteesi tiedot.",
                     "device_not_found": "Laitetta ei löydy.",
-                    "entities": "Kohteet",
                     "info": "Laitteen tiedot",
                     "unknown_error": "Tuntematon virhe",
                     "unnamed_device": "Nimeämätön laite"
