@@ -48,7 +48,6 @@ class ZHAConfigDashboard extends LitElement {
         ...device,
         name: device.user_given_name ? device.user_given_name : device.name,
         nwk: formatAsPaddedHex(device.nwk),
-        id: device.ieee,
       };
     });
 
@@ -142,6 +141,7 @@ class ZHAConfigDashboard extends LitElement {
               .columns=${this._columns(this.narrow)}
               .data=${this._memoizeDevices(this._devices)}
               @row-click=${this._handleDeviceClicked}
+              .id=${"ieee"}
             ></ha-data-table>
           </ha-card>
         </ha-config-section>
