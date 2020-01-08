@@ -44,7 +44,7 @@ export class ZHABindingControl extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <ha-config-section .isWide="${this.isWide}">
-        <div class="sectionHeader" slot="header">
+        <div class="header" slot="header">
           <span>Device Binding</span>
           <paper-icon-button
             class="toggle-help-icon"
@@ -57,7 +57,7 @@ export class ZHABindingControl extends LitElement {
 
         <ha-card class="content">
           <div class="command-picker">
-            <paper-dropdown-menu label="Bindable Devices" class="flex">
+            <paper-dropdown-menu label="Bindable Devices" class="menu">
               <paper-listbox
                 slot="dropdown-content"
                 .selected="${this._bindTargetIndex}"
@@ -149,12 +149,8 @@ export class ZHABindingControl extends LitElement {
     return [
       haStyle,
       css`
-        .flex {
-          -ms-flex: 1 1 0.000000001px;
-          -webkit-flex: 1;
-          flex: 1;
-          -webkit-flex-basis: 0.000000001px;
-          flex-basis: 0.000000001px;
+        .menu {
+          width: 100%;
         }
 
         .content {
@@ -171,28 +167,10 @@ export class ZHABindingControl extends LitElement {
         }
 
         .command-picker {
-          display: -ms-flexbox;
-          display: -webkit-flex;
-          display: flex;
-          -ms-flex-direction: row;
-          -webkit-flex-direction: row;
-          flex-direction: row;
-          -ms-flex-align: center;
-          -webkit-align-items: center;
           align-items: center;
           padding-left: 28px;
           padding-right: 28px;
           padding-bottom: 10px;
-        }
-
-        .input-text {
-          padding-left: 28px;
-          padding-right: 28px;
-          padding-bottom: 10px;
-        }
-
-        .sectionHeader {
-          position: relative;
         }
 
         .helpText {
@@ -200,8 +178,12 @@ export class ZHABindingControl extends LitElement {
           padding: 16px;
         }
 
+        .header {
+          flex-grow: 1;
+        }
+
         .toggle-help-icon {
-          position: absolute;
+          float: right;
           top: -6px;
           right: 0;
           color: var(--primary-color);

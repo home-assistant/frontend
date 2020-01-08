@@ -56,7 +56,7 @@ export class ZHAClusterCommands extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <ha-config-section .isWide="${this.isWide}">
-        <div class="sectionHeader" slot="header">
+        <div class="header" slot="header">
           <span>
             ${this.hass!.localize(
               "ui.panel.config.zha.cluster_commands.header"
@@ -81,7 +81,7 @@ export class ZHAClusterCommands extends LitElement {
               label="${this.hass!.localize(
                 "ui.panel.config.zha.cluster_commands.commands_of_cluster"
               )}"
-              class="flex"
+              class="menu"
             >
               <paper-listbox
                 slot="dropdown-content"
@@ -203,12 +203,8 @@ export class ZHAClusterCommands extends LitElement {
     return [
       haStyle,
       css`
-        .flex {
-          -ms-flex: 1 1 0.000000001px;
-          -webkit-flex: 1;
-          flex: 1;
-          -webkit-flex-basis: 0.000000001px;
-          flex-basis: 0.000000001px;
+        .menu {
+          width: 100%;
         }
 
         .content {
@@ -225,14 +221,6 @@ export class ZHAClusterCommands extends LitElement {
         }
 
         .command-picker {
-          display: -ms-flexbox;
-          display: -webkit-flex;
-          display: flex;
-          -ms-flex-direction: row;
-          -webkit-flex-direction: row;
-          flex-direction: row;
-          -ms-flex-align: center;
-          -webkit-align-items: center;
           align-items: center;
           padding-left: 28px;
           padding-right: 28px;
@@ -243,10 +231,6 @@ export class ZHAClusterCommands extends LitElement {
           padding-left: 28px;
           padding-right: 28px;
           padding-bottom: 10px;
-        }
-
-        .sectionHeader {
-          position: relative;
         }
 
         .help-text {
@@ -261,8 +245,12 @@ export class ZHAClusterCommands extends LitElement {
           padding: 16px;
         }
 
+        .header {
+          flex-grow: 1;
+        }
+
         .toggle-help-icon {
-          position: absolute;
+          float: right;
           top: -6px;
           right: 0;
           color: var(--primary-color);

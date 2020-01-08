@@ -1424,6 +1424,9 @@
         },
         "zha": {
           "caption": "ZHA",
+          "title": "Zigbee Home Automation",
+          "header": "Configure Zigbee Home Automation",
+          "introduction": "Here it is possible to configure the ZHA component. Not everything is possible to configure from the UI yet, but we're working on it.",
           "description": "Zigbee Home Automation network management",
           "common": {
             "add_devices": "Add Devices",
@@ -1442,6 +1445,13 @@
             "header": "Network Management",
             "introduction": "Commands that affect the entire network"
           },
+          "add": {
+            "caption": "Add Devices",
+            "description": "Add devices to the Zigbee network"
+          },
+          "devices": {
+            "header": "Zigbee Home Automation - Device"
+          },
           "node_management": {
             "header": "Device Management",
             "introduction": "Run ZHA commands that affect a single device. Pick a device to see a list of available commands.",
@@ -1450,7 +1460,9 @@
             "help_node_dropdown": "Select a device to view per-device options."
           },
           "clusters": {
-            "help_cluster_dropdown": "Select a cluster to view attributes and commands."
+            "header": "Clusters",
+            "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
+            "introduction": "Clusters are the building blocks for Zigbee functionality. They seperate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
           },
           "cluster_attributes": {
             "header": "Cluster Attributes",
@@ -1470,12 +1482,16 @@
             "help_command_dropdown": "Select a command to interact with."
           },
           "groups": {
+            "caption": "Groups",
+            "description": "Create and modify Zigbee groups",
             "zha_zigbee_groups": "ZHA Zigbee Groups",
             "manage_groups": "Manage Zigbee Groups",
             "groups": "Groups",
             "group_id": "Group ID",
             "members": "Members",
-            "header": "Zigbee Group Management",
+            "header": "Zigbee Home Automation - Group Management",
+            "groups-header": "Zigbee Home Automation - Group Management",
+            "group-header": "Zigbee Home Automation - Group Details",
             "introduction": "Create and modify zigbee groups",
             "remove_groups": "Remove Groups",
             "removing_groups": "Removing Groups",
@@ -1488,7 +1504,7 @@
             "removing_members": "Removing Members",
             "create_group_details": "Enter the required details to create a new zigbee group",
             "group_name_placeholder": "Group Name",
-            "create_group": "Create New ZHA Zigbee Group",
+            "create_group": "Zigbee Home Automation - Create Group",
             "create": "Create Group",
             "creating_group": "Creating Group"
           }
