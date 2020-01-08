@@ -127,10 +127,10 @@ class HaPanelConfig extends HassRouterPage {
           ),
       },
       zha: {
-        tag: "zha-config-panel",
+        tag: "zha-config-dashboard-router",
         load: () =>
           import(
-            /* webpackChunkName: "panel-config-zha" */ "./zha/zha-config-panel"
+            /* webpackChunkName: "panel-config-zha" */ "./zha/zha-config-dashboard-router"
           ),
       },
       zwave: {
