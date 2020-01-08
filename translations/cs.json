@@ -940,7 +940,7 @@
                             "title": "Google Assistant"
                         },
                         "integrations": "Integrace",
-                        "integrations_introduction": "Integrace pro Home Assistant Cloud vám umožní připojit se ke cloudovým službám, aniž byste museli veřejně zpřístupnit vaší instanci Home Assistant na internetu. ",
+                        "integrations_introduction": "Integrace pro Home Assistant Cloud vám umožní připojit se ke cloudovým službám, aniž byste museli veřejně zpřístupnit vaší instanci Home Assistant na internetu.",
                         "integrations_introduction2": "Na webových stránkách najdete ",
                         "integrations_link_all_features": " všechny dostupné funkce",
                         "manage_account": "Spravovat účet",
@@ -966,7 +966,7 @@
                             "no_hooks_yet": "Vypadá to, že ještě nemáte žádné webhooky. Začněte konfigurací ",
                             "no_hooks_yet_link_automation": "automatizace webhooků",
                             "no_hooks_yet_link_integration": "integrace založené na webhooku",
-                            "no_hooks_yet2": "nebo vytvořením ",
+                            "no_hooks_yet2": "nebo vytvořením",
                             "title": "Webhooky"
                         }
                     },
@@ -1442,7 +1442,7 @@
                     "events": {
                         "alert_event_type": "Typ události je povinné pole",
                         "available_events": "Dostupné události",
-                        "count_listeners": "({count} posluchačů)",
+                        "count_listeners": " ({count} posluchačů)",
                         "data": "Data události (YAML, volitelné)",
                         "description": "Spustit událost na sběrnici událostí.",
                         "documentation": "Dokumentace událostí.",

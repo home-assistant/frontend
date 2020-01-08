@@ -533,6 +533,7 @@
         },
         "common": {
             "cancel": "Anuluj",
+            "close": "Zamknij",
             "loading": "Ładowanie",
             "no": "Nie",
             "save": "Zapisz",
@@ -576,7 +577,7 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Jeśli wyłączone, nowo wykryte encje nie będą automatycznie dodawane do Home Assistant'a.",
                 "enable_new_entities_label": "Włącz dodawanie nowych encji.",
-                "title": "Opcje systemu"
+                "title": "Opcje systemowe dla {integration}"
             },
             "confirmation": {
                 "cancel": "Anuluj",
@@ -588,6 +589,13 @@
             },
             "more_info_control": {
                 "dismiss": "Zamknij okno dialogowe",
+                "restored": {
+                    "confirm_remove_text": "Czy na pewno chcesz usunąć tę encję?",
+                    "confirm_remove_title": "Usunąć encję?",
+                    "not_provided": "Ta encja jest obecnie niedostępna i jest osierocona po usuniętej, zmienionej lub dysfunkcyjnej integracji, lub urządzeniu.",
+                    "remove_action": "Usuń encje",
+                    "remove_intro": "Jeśli encja nie jest używana możesz ją usunąć."
+                },
                 "script": {
                     "last_action": "Ostatnia akcja"
                 },
@@ -1146,8 +1154,8 @@
                         "introduction": "Dostosuj atrybuty encji. Dodawane/edytowane dostosowywania zostaną wprowadzone natychmiast. Usunięte dostosowania zostaną uwzględnione, gdy encja zostanie zaktualizowana."
                     },
                     "warning": {
-                        "include_link": "zawierają customize.yaml.",
-                        "include_sentence": "Wygląda na to, że Twój plik configuration.yaml nie jest prawidłowy.",
+                        "include_link": "plik customize.yaml.",
+                        "include_sentence": "Wygląda na to, że Twój plik configuration.yaml nieprawidłowo załącza",
                         "not_applied": "Wprowadzone tutaj zmiany są w nim zapisane, ale nie zostaną zastosowane po ponownym wczytaniu konfiguracji, chyba że dołączony plik jest na miejscu."
                     }
                 },
@@ -1178,7 +1186,10 @@
                     "description": "Zarządzaj podłączonymi urządzeniami",
                     "details": "Oto wszystkie szczegóły dotyczące twojego urządzenia.",
                     "device_not_found": "Urządzenie nie zostało znalezione.",
-                    "entities": "Encje",
+                    "entities": {
+                        "entities": "Encje",
+                        "none": "To urządzenie nie ma żadnych encji"
+                    },
                     "info": "Informacje o urządzeniu",
                     "unknown_error": "Nieznany błąd",
                     "unnamed_device": "Nienazwane urządzenie"
@@ -1256,6 +1267,17 @@
                     "details": "Szczegóły integracji",
                     "discovered": "Wykryte",
                     "home_assistant_website": "Home Assistant'a",
+                    "ignore": {
+                        "confirm_delete_ignore": "Spowoduje to, że integracja pojawi się ponownie w wykrytych integracjach. Może to wymagać ponownego uruchomienia lub czasu.",
+                        "confirm_delete_ignore_title": "Przestać ignorować {name}?",
+                        "confirm_ignore": "Na pewno chcesz ignorować tę integrację? Możesz to cofnąć, klikając „Pokaż ignorowane integracje” w menu w prawym górnym rogu.",
+                        "confirm_ignore_title": "Ignorować wykrywanie {name}?",
+                        "hide_ignored": "Ukryj ignorowane integracje",
+                        "ignore": "Ignoruj",
+                        "ignored": "Ignorowana",
+                        "show_ignored": "Pokaż ignorowane integracje",
+                        "stop_ignore": "Wyłączenie ignorowania"
+                    },
                     "integration_not_found": "Nie znaleziono integracji.",
                     "new": "Konfiguruj nową integrację",
                     "none": "Nic jeszcze nie zostało skonfigurowane",
@@ -1334,6 +1356,7 @@
                     "caption": "Skrypty",
                     "description": "Twórz i edytuj skrypty",
                     "editor": {
+                        "alias": "Nazwa",
                         "default_name": "Nowy skrypt",
                         "delete_confirm": "Na pewno chcesz usunąć ten skrypt?",
                         "delete_script": "Usuń skrypt",
