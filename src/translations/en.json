@@ -1164,6 +1164,7 @@
               "devices_pin": "Security Devices Pin",
               "enter_pin_hint": "Enter a PIN to use security devices",
               "sync_entities": "Sync Entities to Google",
+              "sync_entities_404_message": "Failed to sync your entities to Google, ask Google 'Hey Google, sync my devices' to sync your entities.",
               "manage_entities": "Manage Entities",
               "enter_pin_error": "Unable to store pin:"
             },
