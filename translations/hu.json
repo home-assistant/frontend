@@ -602,7 +602,7 @@
                 }
             },
             "more_info_settings": {
-                "back": "VIssza",
+                "back": "Vissza",
                 "entity_id": "Entitás ID",
                 "name": "Név felülbírálása",
                 "save": "Mentés"
@@ -984,7 +984,7 @@
                             "no_hooks_yet": "Úgy tűnik, még nincs egy webhookod sem. Kezdéshez konfigurálj egy ",
                             "no_hooks_yet_link_automation": "webhook automatizálást",
                             "no_hooks_yet_link_integration": "webhook-alapú integrációt",
-                            "no_hooks_yet2": " vagy hozz létre egy ",
+                            "no_hooks_yet2": "vagy hozz létre egy",
                             "title": "Webhookok"
                         }
                     },
@@ -1067,7 +1067,7 @@
                         "information": "Hozz létre egy fiókot ahhoz, hogy elindíthasd az egy hónapos ingyenes Home Assistant Felhő próbaidőszakodat. Nincs szükség fizetési információk megadására.",
                         "information2": "A próbaidőszak hozzáférést biztosít a Home Assistant Felhő minden előnyéhez, beleértve a következőket:",
                         "information3": "Ezt a szolgáltatást partnerünk a ",
-                        "information3a": " vállalat üzemelteti, amelyet a Home Assistant és a Hass.io alapítói alapítottak.",
+                        "information3a": ", vállalat üzemelteti, amelyet a Home Assistant és a Hass.io alapítói alapítottak.",
                         "information4": "Fiók regisztrálásával elfogadod az alábbi feltételeket.",
                         "link_privacy_policy": "Adatvédelmi irányelvek",
                         "link_terms_conditions": "Felhasználási feltételek",
@@ -1178,7 +1178,6 @@
                     "description": "Csatlakoztatott eszközök kezelése",
                     "details": "Itt található minden részlet az eszközről.",
                     "device_not_found": "Eszköz nem található.",
-                    "entities": "Entitások",
                     "info": "Eszköz infó",
                     "unknown_error": "Ismeretlen hiba",
                     "unnamed_device": "Névtelen eszköz"
@@ -1256,6 +1255,17 @@
                     "details": "Integráció részletei",
                     "discovered": "Felfedezett",
                     "home_assistant_website": "Home Assistant weboldal",
+                    "ignore": {
+                        "confirm_delete_ignore": "Ettől az integráció újra meg fog jelenni a felfedezett integrációk között a felfedezés során. Ehhez szükség lehet egy kis időre, vagy egy újraindításra.",
+                        "confirm_delete_ignore_title": "{name} mellőzésének visszavonása?",
+                        "confirm_ignore": "Biztosan nem szeretnéd beállítani ezt az integrációt? Visszavonhatod a döntésed, ha kiválasztod a \"mellőzött integrációk megjelenítése\" menüpontot a jobb felső sarokban lévő menüben.",
+                        "confirm_ignore_title": "{name} felfedezésének mellőzése?",
+                        "hide_ignored": "Mellőzött integrációk elrejtése",
+                        "ignore": "Mellőzés",
+                        "ignored": "Mellőzve",
+                        "show_ignored": "Mellőzött integrációk megjelenítése",
+                        "stop_ignore": "Mellőzés visszavonása"
+                    },
                     "integration_not_found": "Integráció nem található.",
                     "new": "Új integráció beállítása",
                     "none": "Még semmi sincs beállítva",
@@ -1334,6 +1344,7 @@
                     "caption": "Szkriptek",
                     "description": "Szkriptek létrehozása és szerkesztése",
                     "editor": {
+                        "alias": "Név",
                         "default_name": "Új Szkript",
                         "delete_confirm": "Biztosan törölni szeretnéd ezt a szkriptet?",
                         "delete_script": "Szkript törlése",
@@ -1427,15 +1438,28 @@
                     },
                     "caption": "ZHA",
                     "cluster_attributes": {
+                        "attributes_of_cluster": "A kiválasztott klaszter attribútumai",
                         "get_zigbee_attribute": "Zigbee attribútum lekérdezése",
+                        "header": "Klaszter attribútumok",
+                        "help_attribute_dropdown": "Válassz egy attribútumot a megtekintéshez, vagy az értékének beállításához.",
+                        "help_get_zigbee_attribute": "A kiválasztott attribútum értékének lekérdezése.",
+                        "help_set_zigbee_attribute": "Attribútumérték beállítása egy klaszterhez a megadott entitáson.",
+                        "introduction": "Klaszter attribútumok megtekintése és szerkesztése.",
                         "set_zigbee_attribute": "Zigbee attribútum beállítása"
                     },
                     "cluster_commands": {
+                        "commands_of_cluster": "Kiválasztott klaszter parancsai",
+                        "header": "Klaszterparancsok",
                         "help_command_dropdown": "Válasszon egy parancsot, amellyel kapcsolatba lép",
+                        "introduction": "Klaszterparancsok megtekintése és kiadása.",
                         "issue_zigbee_command": "Zigbee parancs kiadása"
+                    },
+                    "clusters": {
+                        "help_cluster_dropdown": "Válassz egy klasztert az attribútumok és parancsok megtekintéséhez."
                     },
                     "common": {
                         "add_devices": "Eszközök hozzáadása",
+                        "clusters": "Klaszterek",
                         "devices": "Eszközök",
                         "manufacturer_code_override": "Gyártói kód felülbírálása",
                         "value": "Érték"
@@ -1447,10 +1471,15 @@
                         "update_name_button": "Név frissítése"
                     },
                     "network_management": {
-                        "header": "Hálózat menedzsment"
+                        "header": "Hálózat menedzsment",
+                        "introduction": "Parancsok, amik kihatnak az egész hálózatra"
                     },
                     "node_management": {
-                        "header": "Eszköz kezelés"
+                        "header": "Eszköz kezelés",
+                        "help_node_dropdown": "Válassz egy eszközt az eszközönkénti beállítások megtekintéséhez.",
+                        "hint_battery_devices": "Megjegyzés: alvó üzemmódú (elemmel működő) eszközöket fel kell ébreszteni a parancsok futtatásához. Általában az ébresztés megtörténik a triggereléskor.",
+                        "hint_wakeup": "Egyes eszközöknek, például a Xiaomi szenzoroknak van ébresztő gombjuk, amit kb. 5 másodperces szünetekkel nyomkodva éber állapotban tarthatók a kommunikáció idejére.",
+                        "introduction": "Egy eszközt érintő ZHA parancs futtatása. Válassz ki egy eszközt az elérhető parancsok megtekintéséhez."
                     },
                     "services": {
                         "reconfigure": "A ZHA készülék újratelepítése (eszköz rendbehozatala). Ezt a funkciót használd, ha problémáid vannak a készülékkel. Ha a kérdéses eszköz akkumulátoros, győződj meg róla, hogy nincs alvó állapotban és fogadja a parancsokat, amikor ezt a szolgáltatást használod.",
@@ -1574,7 +1603,7 @@
                         "description_listen": "Téma figyelése",
                         "description_publish": "Csomag közzététele",
                         "listening_to": "Figyelés:",
-                        "message_received": "Üzenet ({id}) érkezett a(z) {topic} témában {idő}-kor:",
+                        "message_received": "Üzenet ({id}) érkezett a(z) {topic} témában {time}-kor:",
                         "payload": "Payload (sablon megengedett)",
                         "publish": "Közzététel",
                         "start_listening": "Figyelés indítása",
@@ -1707,7 +1736,7 @@
                             "entities": "Entitások",
                             "entity": "Entitás",
                             "hold_action": "Tartási művelet",
-                            "hours_to_show": "Órák megjelenítése",
+                            "hours_to_show": "Megjelenítendő órák",
                             "icon": "Ikon",
                             "icon_height": "Ikon magassága",
                             "image": "Kép elérési útja",

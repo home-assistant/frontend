@@ -1178,7 +1178,6 @@
                     "description": "Verwalt verbonnen Apparater",
                     "details": "Hei sinn all Detailer vun ärem Apparat.",
                     "device_not_found": "Apparat net fonnt.",
-                    "entities": "Entitéiten",
                     "info": "Informatioune vum Apparat",
                     "unknown_error": "Onbekannten Feeler",
                     "unnamed_device": "Apparat ouni Numm"
@@ -1256,6 +1255,17 @@
                     "details": "Detailer vun der Integratioun",
                     "discovered": "Entdeckt",
                     "home_assistant_website": "Home Assistant Websäit",
+                    "ignore": {
+                        "confirm_delete_ignore": "Dëst wäert d'Integratioun an Ären entdeckten Integratiounen erëm siichtbar maache wann se entdeckt gëtt. Dëst kann e Restart erfuerderen oder e bëssi Zäit brauchen.",
+                        "confirm_delete_ignore_title": "Ophale mam ignoréieren vun {name}?",
+                        "confirm_ignore": "Sidd Dir sécher, datt Dir dës Integratioun net wëll ariichten? Dir kënnt dëst annuléieren andeems Dir op 'Ignoréiert Integratiounen uweisen' am Menü uewe riets klickt.",
+                        "confirm_ignore_title": "Entdeckung vun {name} ignoréieren?",
+                        "hide_ignored": "Ignoréiert Integratiounen verstoppen",
+                        "ignore": "Ignoréieren",
+                        "ignored": "Ignoréiert",
+                        "show_ignored": "Ignoréiert Integratiounen uweisen",
+                        "stop_ignore": "Ophale mam ignoréieren"
+                    },
                     "integration_not_found": "Integratioun net fonnt.",
                     "new": "Eng nei Integratioun ariichten",
                     "none": "Nach näischt konfiguréiert",
@@ -1334,6 +1344,7 @@
                     "caption": "Skript",
                     "description": "Skript erstellen an änneren",
                     "editor": {
+                        "alias": "Numm",
                         "default_name": "Neie Skript",
                         "delete_confirm": "Sécher fir dësen Skript ze läsche?",
                         "delete_script": "Skript läschen",
@@ -1813,7 +1824,7 @@
                         "move": "Réckelen",
                         "options": "Méi Optiounen",
                         "pick_card": "Wielt eng Kaart aus déi soll dobäigesat ginn.",
-                        "pick_card_view_title": "Wéieng Kaart wëllt dir zu ärer {name] Usiicht dobäisetzen?",
+                        "pick_card_view_title": "Wéieng Kaart wëllt dir zu ärer {name}Usiicht dobäisetzen?",
                         "save": "Späicheren",
                         "show_code_editor": "Code Editeur uweisen",
                         "show_visual_editor": "Visuellen Editeur uweisen",

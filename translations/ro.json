@@ -388,7 +388,7 @@
             },
             "query_stage": {
                 "dead": "Inactiv ({query_stage})",
-                "initializing": "Se inițializează ( {query_stage} )"
+                "initializing": "Se inițializează ({query_stage})"
             }
         }
     },

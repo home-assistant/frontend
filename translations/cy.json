@@ -759,7 +759,6 @@
                     },
                     "details": "Dyma holl fanylion eich dyfais.",
                     "device_not_found": "Heb ganfod y ddyfais.",
-                    "entities": "Endidau",
                     "info": "Gwybodaeth am ddyfais",
                     "unknown_error": "Gwall anhysbys",
                     "unnamed_device": "Dyfais ddienw"
@@ -1132,8 +1131,8 @@
                     "raw_editor": {
                         "confirm_unsaved_changes": "Mae gennych newidiadau heb eu cadw. Ydych chi'n siŵr bod chi eisiau gadael?",
                         "confirm_unsaved_comments": "Mae eich cyfluniad yn cynnwys sylwadau (au), ni fydd y rhain yn cael eu cadw. Ydych chi eisio parhau?",
-                        "error_invalid_config": "Dydy eich cyfluniad ddim yn ddilys: {Error}",
-                        "error_parse_yaml": "Methu gramadegu YAML: {Error}",
+                        "error_invalid_config": "Dydy eich cyfluniad ddim yn ddilys: {error}",
+                        "error_parse_yaml": "Methu gramadegu YAML: {error}",
                         "error_save_yaml": "Methu arbed YAML: {error}",
                         "header": "Golygu ffurfweddu",
                         "save": "Arbed",
