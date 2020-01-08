@@ -276,6 +276,11 @@
         }
     },
     "ui": {
+        "auth_store": {
+            "ask": "このログインの保存をよろしいですか？",
+            "confirm": "ログインを保存",
+            "decline": "結構です"
+        },
         "card": {
             "alarm_control_panel": {
                 "clear_code": "削除",
@@ -381,6 +386,9 @@
                 "no_history_found": "状態履歴がありません。"
             },
             "relative_time": {
+                "duration": {
+                    "hour": "{count} {count, plural,\n  one {時間}\n  other {時間}\n}"
+                },
                 "future": "{time}以内",
                 "past": "{time}前"
             },
@@ -637,6 +645,7 @@
                         "view_documentation": "ドキュメントを見る"
                     },
                     "google": {
+                        "disable_2FA": "多要素認証を無効にする",
                         "expose": "Google Assistant に公開",
                         "title": "Google Assistant"
                     },
@@ -710,7 +719,6 @@
                     "description": "接続されたデバイスの管理",
                     "details": "これらはデバイスの詳細な情報です。",
                     "device_not_found": "デバイスが見つかりません。",
-                    "entities": "エンティティ",
                     "info": "デバイス情報",
                     "unknown_error": "不明なエラー",
                     "unnamed_device": "名前のないデバイス"
@@ -989,6 +997,9 @@
                         "gauge": {
                             "name": "ゲージ"
                         },
+                        "generic": {
+                            "theme": "テーマ"
+                        },
                         "history-graph": {
                             "name": "履歴グラフ"
                         },
@@ -1073,6 +1084,7 @@
                 "empty": "メッセージはありません"
             },
             "page-authorize": {
+                "abort_intro": "ログインが中止されました",
                 "form": {
                     "providers": {
                         "command_line": {
@@ -1086,7 +1098,13 @@
                             "step": {
                                 "init": {
                                     "data": {
-                                        "password": "パスワード"
+                                        "password": "パスワード",
+                                        "username": "ユーザー名"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "多要素認証コード"
                                     }
                                 }
                             }
@@ -1094,10 +1112,60 @@
                         "homeassistant": {
                             "abort": {
                                 "login_expired": "セッションの有効期限が切れました、もう一度ログインしてください。"
+                            },
+                            "error": {
+                                "invalid_auth": "無効なユーザー名またはパスワード",
+                                "invalid_code": "無効な認証コード"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "パスワード",
+                                        "username": "ユーザー名"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "多要素認証コード"
+                                    }
+                                }
+                            }
+                        },
+                        "legacy_api_password": {
+                            "abort": {
+                                "login_expired": "セッションがタイムアウトしました、再度ログインしてください。"
+                            },
+                            "error": {
+                                "invalid_auth": "無効な API パスワード",
+                                "invalid_code": "無効な認証コード"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API パスワード"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "多要素認証コード"
+                                    }
+                                }
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "ユーザー"
+                                    }
+                                }
                             }
                         }
-                    }
-                }
+                    },
+                    "unknown_error": "エラーが発生しました",
+                    "working": "お待ちください"
+                },
+                "initializing": "初期化中"
             },
             "page-demo": {
                 "config": {
@@ -1120,8 +1188,23 @@
                     "link_profile_page": "プロフィールページ",
                     "title": "高度モード"
                 },
+                "change_password": {
+                    "current_password": "現在のパスワード",
+                    "header": "パスワードの変更"
+                },
+                "force_narrow": {
+                    "header": "サイドバーを常に非表示にする"
+                },
+                "language": {
+                    "dropdown_label": "言語",
+                    "header": "言語",
+                    "link_promo": "翻訳を助ける"
+                },
                 "mfa_setup": {
                     "close": "閉じる"
+                },
+                "mfa": {
+                    "header": "多要素認証モジュール"
                 },
                 "push_notifications": {
                     "description": "このデバイスに通知を送信します。",
@@ -1129,6 +1212,15 @@
                     "header": "プッシュ通知",
                     "link_promo": "もっと見る",
                     "push_notifications": "プッシュ通知"
+                },
+                "themes": {
+                    "dropdown_label": "テーマ",
+                    "error_no_theme": "利用可能なテーマはありません。",
+                    "header": "テーマ",
+                    "link_promo": "テーマの情報をもっと見る。"
+                },
+                "vibrate": {
+                    "header": "バイブレーション機能"
                 }
             },
             "shopping-list": {
@@ -1137,6 +1229,7 @@
             }
         },
         "sidebar": {
+            "external_app_configuration": "アプリの構成",
             "log_out": "ログアウト",
             "sidebar_toggle": "サイドバーの切り替え"
         }

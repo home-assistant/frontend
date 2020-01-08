@@ -981,10 +981,10 @@
                             "link_learn_more": "Més informació sobre la creació d'automatizacions basats en webhook.",
                             "loading": "Carregant ...",
                             "manage": "Gestiona",
-                            "no_hooks_yet": "Sembla que encara no tens cap webhook. Comença configurant una ",
+                            "no_hooks_yet": "Sembla que encara no tens cap webhook. Comença configurant una",
                             "no_hooks_yet_link_automation": "automatització de webhook",
                             "no_hooks_yet_link_integration": "integració basada en webhook",
-                            "no_hooks_yet2": " o bé creant una ",
+                            "no_hooks_yet2": "o bé creant una",
                             "title": "Webhooks"
                         }
                     },
@@ -1178,7 +1178,6 @@
                     "description": "Gestiona els dispositius connectats",
                     "details": "Aquí tens tots els detalls del dispositiu.",
                     "device_not_found": "Dispositiu no trobat.",
-                    "entities": "Entitats",
                     "info": "Informació del dispositiu",
                     "unknown_error": "Error desconegut",
                     "unnamed_device": "Dispositiu sense nom"
@@ -1256,6 +1255,17 @@
                     "details": "Detalls de la integració",
                     "discovered": "Descobertes",
                     "home_assistant_website": "lloc web de Home Assistant",
+                    "ignore": {
+                        "confirm_delete_ignore": "Això farà que quan la integració es descobreixi torni a aparèixer a les integracions descobertes. Pot ser que tardi una estona o es necessiti reiniciar.",
+                        "confirm_delete_ignore_title": "Vols deixar d’ignorar {name}?",
+                        "confirm_ignore": "Estàs segur que no vols per a configurar aquesta integració? Pots desfer-ho fent clic a 'Mostra les integracions ignorades' al menú de la part superior dreta.",
+                        "confirm_ignore_title": "Ignorar descobriment de {name}?",
+                        "hide_ignored": "Amaga les integracions ignorades",
+                        "ignore": "Ignora",
+                        "ignored": "Ignorada",
+                        "show_ignored": "Mostra les integracions ignorades",
+                        "stop_ignore": "Deixa d'ignorar"
+                    },
                     "integration_not_found": "No s'ha trobat la integració.",
                     "new": "Configura una nova integració",
                     "none": "Encara no hi ha res configurat",
@@ -1334,6 +1344,7 @@
                     "caption": "Programació (scripts)",
                     "description": "Crea i edita programes (scripts)",
                     "editor": {
+                        "alias": "Nom",
                         "default_name": "Nou script",
                         "delete_confirm": "Estàs segur que vols eliminar aquest script?",
                         "delete_script": "Suprimeix l'script",
@@ -1355,7 +1366,7 @@
                     }
                 },
                 "server_control": {
-                    "caption": "Control del servidor",
+                    "caption": "Controls del servidor",
                     "description": "Reinicia o atura el servidor de Home Assistant",
                     "section": {
                         "reloading": {

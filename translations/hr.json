@@ -621,8 +621,8 @@
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {dan}\n  other {dani}\n}",
-            "hour": "{broj} {broj, množina, jedan {sat} drugi {sati}}",
-            "minute": "{broj} {broj, množina, jedna {minuta}, druge {minute}}",
+            "hour": "{count} {count, plural,\n  one {sat}\n  other {sati}\n }",
+            "minute": "{count} {count, plural,\n  one {minuta}\n  other {minute}\n }",
             "second": "{count} {count, plural,\n  one {sekunde}\n  other {sekunde}\n}",
             "week": "{count} {count, plural,\n  one {tjedan}\n  other {tjedni}\n}"
         },
@@ -1015,7 +1015,6 @@
                     "description": "Upravljanje povezanim uređajima",
                     "details": "Ovdje su sve pojedinosti vašeg uređaja.",
                     "device_not_found": "Uređaj nije pronađen.",
-                    "entities": "Entiteti",
                     "info": "Informacije o uređaju",
                     "unknown_error": "Nepoznata pogreška",
                     "unnamed_device": "Neimenovani uređaj"

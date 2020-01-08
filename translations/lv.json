@@ -520,8 +520,10 @@
         "common": {
             "cancel": "Atcelt",
             "loading": "Ielāde",
+            "no": "Nē",
             "save": "Saglabāt",
-            "successfully_saved": "Veiksmīgi saglabāts"
+            "successfully_saved": "Veiksmīgi saglabāts",
+            "yes": "Jā"
         },
         "components": {
             "device-picker": {
@@ -683,6 +685,9 @@
                                     "label": "Palaist notikumu:",
                                     "service_data": "Pakalpojuma dati"
                                 },
+                                "scene": {
+                                    "label": "Aktivizēt ainu"
+                                },
                                 "service": {
                                     "label": "Izsaukt pakalpojumu",
                                     "service_data": "Pakalpojuma dati"
@@ -843,11 +848,16 @@
                     },
                     "picker": {
                         "add_automation": "Pievienot automatizāciju",
+                        "delete_automation": "Dzēst automatizāciju",
+                        "delete_confirm": "Vai tiešām vēlaties dzēst šo automatizāciju?",
+                        "edit_automation": "Rediģēt automatizāciju",
                         "header": "Automatizāciju redaktors",
                         "introduction": "Automatizācijas redaktors ļauj jums izveidot un rediģēt automatizācijas. Lūdzu, sekojiet saitei zemāk, lai pārliecinātos, ka esat pareizi konfigurējis Home Assistant.",
                         "learn_more": "Uzziniet vairāk par automatizācijām",
                         "no_automations": "Mēs nevarējām atrast rediģējamas automatizācijas",
-                        "pick_automation": "Izvēlieties automatizāciju rediģēšanai"
+                        "only_editable": "Rediģēt var tikai tās automatizācijas, kas definētas automations.yaml.",
+                        "pick_automation": "Izvēlieties automatizāciju rediģēšanai",
+                        "show_info_automation": "Rādīt informāciju par automatizāciju"
                     }
                 },
                 "cloud": {
@@ -905,8 +915,10 @@
                     }
                 },
                 "customize": {
+                    "attributes_not_set": "Šie atribūti netika iestatīti. Iestatiet tos, ja vēlaties.",
                     "caption": "Pielāgojumi",
                     "description": "Pielāgojiet jūsu iekārtas",
+                    "pick_attribute": "Izvēlieties atribūtu, kuru neievērot",
                     "picker": {
                         "header": "Pielāgojumi",
                         "introduction": "Korekcijas atribūti vienai vienībai. Pievienotās / labotās pielāgošanas stāsies spēkā nekavējoties. Noņemtie pielāgojumi stāsies spēkā, kad vienība tiks atjaunināta."
@@ -918,12 +930,16 @@
                     "caption": "Ierīces",
                     "confirm_rename_entity_ids": "Vai vēlaties pārdēvēt arī vienības ID no Jūsu vinībām?",
                     "data_table": {
-                        "device": "Ierīce"
+                        "area": "Apgabals",
+                        "battery": "Akumulators",
+                        "device": "Ierīce",
+                        "integration": "Integrācija",
+                        "manufacturer": "Ražotājs",
+                        "model": "Modelis"
                     },
                     "description": "Pievienoto ierīču pārvaldība",
                     "details": "Šeit ir visas Jūsu ierīces detaļas.",
                     "device_not_found": "Ierīce nav atrasta.",
-                    "entities": "Vienības",
                     "info": "Informācija par ierīci",
                     "unknown_error": "Nezināma kļūda",
                     "unnamed_device": "Nenosaukta ierīce"
@@ -937,6 +953,7 @@
                         "enabled_cause": "Atspējots dēļ {cause}.",
                         "enabled_description": "Atspējotās vienības netiks pievienotas Home Assistant.",
                         "enabled_label": "Iespējot vienību",
+                        "note": "Piezīme: tas var vēl nedarboties ar visām integrācijām.",
                         "unavailable": "Šī vienība pašlaik nav pieejama.",
                         "update": "ATJAUNINĀT"
                     },
@@ -965,8 +982,10 @@
                         "via": "Savienots ar"
                     },
                     "config_flow": {
+                        "aborted": "Pārtraukts",
                         "add_area": "Pievienot Apgabalu",
                         "area_picker_label": "Apgabals",
+                        "close": "Aizvērt",
                         "created_config": "Tika izveidota konfigurācija {name}.",
                         "error_saving_area": "Kļūda saglabājot apgabalu: {error}",
                         "external_step": {
@@ -974,6 +993,7 @@
                             "open_site": "Atvērt tīmekļa vietni"
                         },
                         "failed_create_area": "Neizdevās izveidot apgabalu.",
+                        "finish": "Pabeigt",
                         "name_new_area": "Jaunā apgabala nosaukums?",
                         "not_all_required_fields": "Ne visi obligātie lauki ir aizpildīti.",
                         "submit": "Iesniegt"
@@ -983,6 +1003,18 @@
                     "description": "Pārvaldīt un iestatīt integrācijas",
                     "details": "Integrācijas detaļas",
                     "discovered": "Atklāts",
+                    "ignore": {
+                        "confirm_delete_ignore": "Tas ļaus integrācijai atkal parādīties jūsu atklātajās integrācijās, kad tā tiks atklāta. Tam var būt nepieciešama restartēšana vai nepieciešams ilgāks laiks.",
+                        "confirm_delete_ignore_title": "Pārtraukt ignorēt {name}?",
+                        "confirm_ignore": "Vai tiešām nevēlaties iestatīt šo integrāciju? To varat atsaukt, augšējā labajā stūrī noklikšķinot uz “Rādīt ignorētās integrācijas” pārpildes izvēlnē.",
+                        "confirm_ignore_title": "Ignorēt {name} atklāšanu?",
+                        "hide_ignored": "Slēpt ignorētās integrācijas",
+                        "ignore": "Ignorēt",
+                        "ignored": "Ignorēts",
+                        "show_ignored": "Rādīt ignorētās integrācijas",
+                        "stop_ignore": "Pārtraukt ignorēt"
+                    },
+                    "integration_not_found": "Integrācija nav atrasta.",
                     "new": "Izveidot jaunu integrāciju",
                     "none": "Nekas vēl nav konfigurēts"
                 },
@@ -998,19 +1030,59 @@
                     }
                 },
                 "scene": {
+                    "activated": "Aktivizēta aina {name}.",
+                    "caption": "Ainas",
+                    "description": "Izveidojiet un rediģējiet ainas",
                     "editor": {
+                        "default_name": "Jauna aina",
+                        "devices": {
+                            "add": "Ierīces pievienošana",
+                            "delete": "Dzēst ierīci",
+                            "header": "Ierīces",
+                            "introduction": "Pievienot ierīces kuras Jūs vēlaties iekļaut Jūsu ainā. Uzstādiet visu ierīču stāvokli kādu Jūs vēlaties šai ainai."
+                        },
                         "entities": {
                             "add": "Pievienot vienību",
                             "delete": "Dzēst vienību",
                             "device_entities": "Ja pievienosiet vienību, kas pieder ierīcei, tad tā tiks pievienota.",
+                            "header": "Vienības",
+                            "introduction": "Šeit var iestatīt vienības, kas nepieder nevienai ierīcei.",
                             "without_device": "Vienības bez ierīcēm"
-                        }
+                        },
+                        "introduction": "Izmantojiet ainas, lai Jūsu mājas padarītu dzīvas.",
+                        "load_error_not_editable": "Tikai ainas ir rediģējamas scenes.yaml.",
+                        "load_error_unknown": "Kļūda ielādējot ainu ({err_no}).",
+                        "name": "Nosaukums",
+                        "save": "Saglabāt",
+                        "unsaved_confirm": "Jums ir nesaglabātas izmaiņas. Vai tiešām vēlaties pamest?"
+                    },
+                    "picker": {
+                        "add_scene": "Pievienot ainu",
+                        "delete_confirm": "Vai tiešām vēlaties izdzēst šo ainu?",
+                        "delete_scene": "Dzēst ainu",
+                        "edit_scene": "Rediģēt ainu",
+                        "header": "Ainu Redaktors",
+                        "introduction": "Ainu redaktors ļauj Jums izveidot un rediģēt ainas. Lūdzu, sekojiet saitei zemāk, lai izlasītu instrukciju, ka Jūs esat pareizi konfigurējis Home Assistant.",
+                        "learn_more": "Uzzināt vairāk par ainām",
+                        "no_scenes": "Mēs nevarējām atrast nevienu rediģējamu ainu",
+                        "only_editable": "Rediģēt var tikai ainas, kas definētas scenes.yaml.",
+                        "pick_scene": "Izvēlaties ainu kuru rediģēt",
+                        "show_info_scene": "Rādīt informāciju par ainu"
                     }
                 },
                 "script": {
                     "caption": "Skripti",
                     "description": "Veidojiet un rediģējiet skriptus",
+                    "editor": {
+                        "alias": "Nosaukums",
+                        "delete_script": "Dzēst skriptu",
+                        "introduction": "Izmantojiet skriptus, lai izpildītu darbību secību.",
+                        "link_available_actions": "Uzzināt vairāk par pieejamām darbībām.",
+                        "sequence": "Secība",
+                        "sequence_sentence": "Šī skripta darbību secība."
+                    },
                     "picker": {
+                        "edit_script": "Rediģēt skriptu",
                         "trigger_script": "Izsaukšanas skripts"
                     }
                 },
@@ -1205,6 +1277,11 @@
                     "refresh": "Atsvaidzināt"
                 },
                 "editor": {
+                    "card": {
+                        "entities": {
+                            "toggle": "Pārslēgt vienības."
+                        }
+                    },
                     "edit_card": {
                         "add": "Pievienot kartīti",
                         "delete": "Dzēst Kartiņu",
