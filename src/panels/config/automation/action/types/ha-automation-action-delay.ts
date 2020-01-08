@@ -1,7 +1,6 @@
 import "@polymer/paper-input/paper-input";
 import "../../../../../components/ha-service-picker";
 import "../../../../../components/entity/ha-entity-picker";
-import "../../../../../components/ha-yaml-editor";
 
 import { LitElement, property, customElement, html } from "lit-element";
 import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
