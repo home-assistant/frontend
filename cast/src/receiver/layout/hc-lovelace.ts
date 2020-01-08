@@ -39,6 +39,7 @@ class HcLovelace extends LitElement {
       mode: "storage",
       language: "en",
       saveConfig: async () => undefined,
+      deleteConfig: async () => undefined,
       setEditMode: () => undefined,
     };
     return this.lovelaceConfig.views[index].panel
