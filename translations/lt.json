@@ -369,8 +369,7 @@
                         "device": "Įrenginys",
                         "model": "Modelis"
                     },
-                    "description": "Tvarkyti prijungtus įrenginius",
-                    "entities": "Subjektai"
+                    "description": "Tvarkyti prijungtus įrenginius"
                 },
                 "entity_registry": {
                     "caption": "Subjektų registras",
@@ -510,8 +509,8 @@
                         "confirm_unsaved_changes": "Turite neišsaugotų pakeitimų, ar tikrai norite išeiti?",
                         "confirm_unsaved_comments": "Jūsų konfigūracijoje yra komentarų (-ų), jie nebus išsaugoti. Ar norite tęsti?",
                         "error_invalid_config": "Jūsų konfigūracija netinkama: {error}",
-                        "error_parse_yaml": "Neįmanoma išanalizuoti YAML: {Error}",
-                        "error_save_yaml": "Neįmanoma įrašyti YAML: {klaida}",
+                        "error_parse_yaml": "Neįmanoma išanalizuoti YAML: {error}",
+                        "error_save_yaml": "Neįmanoma įrašyti YAML: {error}",
                         "header": "Redaguoti konfigūraciją",
                         "save": "Išsaugoti",
                         "saved": "Išsaugota",

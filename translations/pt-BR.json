@@ -145,7 +145,7 @@
         },
         "automation": {
             "off": "Desligado",
-            "on": "Ativo"
+            "on": "Ativa"
         },
         "binary_sensor": {
             "battery": {
@@ -181,7 +181,7 @@
                 "on": "Quente"
             },
             "lock": {
-                "off": "Bloqueado",
+                "off": "Trancado",
                 "on": "Desbloqueado"
             },
             "moisture": {
@@ -230,8 +230,8 @@
             }
         },
         "calendar": {
-            "off": "Desligado",
-            "on": "Ligado"
+            "off": "Inativo",
+            "on": "Ativo"
         },
         "camera": {
             "idle": "Ocioso",
@@ -574,9 +574,9 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Se desativadas, as entidades recém-descobertas não serão automaticamente adicionadas ao Home Assistant.",
+                "enable_new_entities_description": "Se desativadas, as entidades recém-descobertas de {integration} não serão automaticamente adicionadas ao Home Assistant.",
                 "enable_new_entities_label": "Habilitar entidades recém-adicionadas.",
-                "title": "Opções do sistema"
+                "title": "Opções do sistema para {integration}"
             },
             "confirmation": {
                 "cancel": "Cancelar",
@@ -587,9 +587,11 @@
                 "title": "Alternar Domínios"
             },
             "more_info_control": {
+                "dismiss": "Dispensar diálogo",
                 "script": {
                     "last_action": "Última Ação"
                 },
+                "settings": "Configurações da entidade",
                 "sun": {
                     "elevation": "Elevação",
                     "rising": "Nascendo",
@@ -600,6 +602,7 @@
                 }
             },
             "more_info_settings": {
+                "back": "Voltar",
                 "entity_id": "ID da entidade",
                 "name": "Substituição de nome",
                 "save": "Salvar"
@@ -633,7 +636,7 @@
                 "quirk": "Quirk",
                 "services": {
                     "reconfigure": "Reconfigure o dispositivo ZHA (curar dispositivo). Use isto se você estiver tendo problemas com o dispositivo. Se o dispositivo em questão for um dispositivo alimentado por bateria, certifique-se de que ele esteja ativo e aceitando comandos ao usar esse serviço.",
-                    "remove": "Remova um dispositivo da rede Zigbee.",
+                    "remove": "Remove um dispositivo da rede Zigbee.",
                     "updateDeviceName": "Definir um nome personalizado para este dispositivo no registro de dispositivos."
                 },
                 "unknown": "Desconhecido",
@@ -645,7 +648,7 @@
             }
         },
         "duration": {
-            "day": "{count} {count, plural,\none {day}\nother {days}\n}",
+            "day": "{count} {count, plural,\none {dia}\nother {dias}\n}",
             "hour": "{count} {count, plural,\none {hora}\nother {horas}\n}",
             "minute": "{count} {count, plural,\none {minuto}\nother {minutos}\n}",
             "second": "{count} {count, plural,\none {second}\nother {seconds}\n}",
@@ -658,6 +661,7 @@
         },
         "notification_drawer": {
             "click_to_configure": "Clique no botão para configurar {entity}",
+            "close": "Fechar",
             "empty": "Sem notificações",
             "title": "Notificações"
         },
@@ -697,7 +701,7 @@
                     "editor": {
                         "actions": {
                             "add": "Adicionar ação",
-                            "delete": "Apagar",
+                            "delete": "Excluir",
                             "delete_confirm": "Tem certeza que deseja apagar?",
                             "duplicate": "Duplicar",
                             "header": "Ações",
@@ -722,7 +726,7 @@
                                 "event": {
                                     "event": "Evento:",
                                     "label": "Iniciar evento",
-                                    "service_data": "Informações do serviço"
+                                    "service_data": "Dados do Serviço"
                                 },
                                 "scene": {
                                     "label": "Ativar cena"
@@ -742,8 +746,8 @@
                         "alias": "Nome",
                         "conditions": {
                             "add": "Adicionar condição",
-                            "delete": "Apagar",
-                            "delete_confirm": "Tem certeza que quer apagar?",
+                            "delete": "Excluir",
+                            "delete_confirm": "Tem certeza que deseja excluir?",
                             "duplicate": "Duplicar",
                             "header": "Condições",
                             "introduction": "As condições são uma parte opcional de uma regra de automação e podem ser usadas para impedir que uma ação aconteça quando acionada. As condições parecem muito semelhantes aos gatilhos, mas são muito diferentes. Um gatilho analisará os eventos que estão ocorrendo no sistema, enquanto uma condição apenas analisa a aparência do sistema no momento. Um disparador pode observar que um comutador está sendo ligado. Uma condição só pode ver se um interruptor está atualmente ativado ou desativado.",
@@ -806,7 +810,9 @@
                             "label": "Descrição",
                             "placeholder": "Descrição opcional"
                         },
-                        "introduction": "Use automações para trazer sua casa a vida",
+                        "edit_ui": "Editar com interface",
+                        "edit_yaml": "Editar como YAML",
+                        "introduction": "Use automações para trazer vida à sua casa",
                         "load_error_not_editable": "Somente automações em automations.yaml são editáveis.",
                         "load_error_unknown": "Erro ao carregar a automação ({err_no}).",
                         "save": "Salvar",
@@ -1097,7 +1103,7 @@
                                 "unit_system_imperial": "Imperial",
                                 "unit_system_metric": "Métrico"
                             },
-                            "header": "Configuração e Controle do Servidor",
+                            "header": "Configurações Gerais",
                             "introduction": "Alterar sua configuração pode ser um processo cansativo. Nós sabemos. Esta seção tentará tornar sua vida um pouco mais fácil."
                         },
                         "server_control": {
@@ -1131,17 +1137,18 @@
                     "attributes_outside": "Os seguintes atributos são customizados por fora do customize.yaml",
                     "attributes_override": "Você pode substituí-los, se quiser.",
                     "attributes_set": "Os seguintes atributos da entidade são definidos de forma programática.",
-                    "caption": "Customização",
+                    "caption": "Customizações",
                     "description": "Personalizar suas entidades",
                     "different_include": "Possivelmente por meio de um domínio, um glob ou uma inclusão diferente.",
                     "pick_attribute": "Escolha um atributo para substituir",
                     "picker": {
-                        "header": "Personalização",
+                        "header": "Personalizações",
                         "introduction": "Ajustar atributos por entidade. As personalizações adicionadas / editadas entrarão em vigor imediatamente. As personalizações removidas entrarão em vigor quando a entidade for atualizada."
                     },
                     "warning": {
                         "include_link": "incluir customize.yaml",
-                        "include_sentence": "Parece que o seu configuration.yaml não está funcionando corretamente"
+                        "include_sentence": "Parece que o seu configuration.yaml não está funcionando corretamente",
+                        "not_applied": "Alterações feitas aqui serão escritas, mas não serão aplicadas a não ser que o haja o include."
                     }
                 },
                 "devices": {
@@ -1171,13 +1178,12 @@
                     "description": "Gerenciar dispositivos conectados",
                     "details": "Aqui estão todos os detalhes do seu dispositivo.",
                     "device_not_found": "Dispositivo não encontrado.",
-                    "entities": "Entidades",
                     "info": "Informação do dispositivo",
                     "unknown_error": "Erro desconhecido",
                     "unnamed_device": "Dispositivo sem nome"
                 },
                 "entity_registry": {
-                    "caption": "Registro de Entidade",
+                    "caption": "Registro de Entidades",
                     "description": "Visão geral de todas as entidades conhecidas.",
                     "editor": {
                         "confirm_delete": "Tem certeza de que deseja excluir esta entrada?",
@@ -1192,7 +1198,7 @@
                         "update": "ATUALIZAR"
                     },
                     "picker": {
-                        "header": "Registro de Entidade",
+                        "header": "Registro de Entidades",
                         "headers": {
                             "enabled": "Habilitado",
                             "entity_id": "ID da entidade",
@@ -1231,7 +1237,7 @@
                         "add_area": "Adicionar área",
                         "area_picker_label": "Área",
                         "close": "Fechar",
-                        "created_config": "Configuração criada para {name} .",
+                        "created_config": "Configuração criada para {name}.",
                         "error_saving_area": "Erro ao salvar a área: {error}",
                         "external_step": {
                             "description": "Esta etapa exige que você visite um site externo para ser concluída.",
@@ -1245,9 +1251,21 @@
                     },
                     "configure": "Configurar",
                     "configured": "Configurado",
-                    "description": "Gerenciar dispositivos e serviços conectados",
+                    "description": "Gerenciar integrações e serviços conectados",
+                    "details": "Detalhes da integração",
                     "discovered": "Descoberto",
                     "home_assistant_website": "Site do Home Assistant",
+                    "ignore": {
+                        "confirm_delete_ignore": "Isso fará com que a integração apareça novamente nas suas integrações descobertas quando ela for descoberta. Isso pode exigir uma reinicialização ou levar algum tempo.",
+                        "confirm_delete_ignore_title": "Deixar de ignorar {name}?",
+                        "confirm_ignore": "Temcerteza que não deseja configurar esta integração? Você pode desfazer isso clicando em 'Mostrar integrações ignoradas' no menu no canto superior esquerdo.",
+                        "confirm_ignore_title": "Ignorar o descobrimento de {name}?",
+                        "hide_ignored": "Esconder integrações ignoradas",
+                        "ignore": "Ignorar",
+                        "ignored": "Ignorada",
+                        "show_ignored": "Mostrar integrações ignoradas",
+                        "stop_ignore": "Deixar de ignorar"
+                    },
                     "integration_not_found": "Integração não encontrada.",
                     "new": "Configurar uma nova integração",
                     "none": "Nada configurado ainda",
@@ -1323,9 +1341,10 @@
                     }
                 },
                 "script": {
-                    "caption": "Script",
+                    "caption": "Scripts",
                     "description": "Criar e editar scripts",
                     "editor": {
+                        "alias": "Nome",
                         "default_name": "Novo Script",
                         "delete_confirm": "Tem certeza de que deseja excluir este script?",
                         "delete_script": "Excluir script",
@@ -1347,7 +1366,7 @@
                     }
                 },
                 "server_control": {
-                    "caption": "Controle do servidor",
+                    "caption": "Controles do servidor",
                     "description": "Reinicie e interrompa o servidor do Home Assistant",
                     "section": {
                         "reloading": {
@@ -1610,6 +1629,10 @@
                     "states": {
                         "alert_entity_field": "Entidade é um campo obrigatório",
                         "attributes": "Atributos",
+                        "copied": "Copiado para a àrea de transferência",
+                        "copy_entity_attribute": "Copiar atributos",
+                        "copy_entity_id": "Copiar ID",
+                        "copy_entity_state": "Copiar estado",
                         "current_entities": "Entidades atuais",
                         "description1": "Definir a representação de um dispositivo no Home Assistant.",
                         "description2": "Isso não se comunicará com o dispositivo atual.",
@@ -1641,7 +1664,7 @@
             "logbook": {
                 "entries_not_found": "Não foram encontradas registros no diário de bordo.",
                 "period": "Período",
-                "showing_entries": "Exibindo entradas para"
+                "showing_entries": "Exibindo registros de"
             },
             "lovelace": {
                 "cards": {
@@ -1688,6 +1711,7 @@
                         },
                         "entities": {
                             "name": "Entidades",
+                            "show_header_toggle": "Mostrar Alternador do Cabeçalho?",
                             "toggle": "Alternar entidades."
                         },
                         "entity-button": {
@@ -1697,6 +1721,7 @@
                             "name": "Entidade Filtro"
                         },
                         "gauge": {
+                            "name": "Indicador",
                             "severity": {
                                 "define": "Definir gravidade?",
                                 "green": "Verde",
@@ -1729,7 +1754,8 @@
                             "url": "URL"
                         },
                         "glance": {
-                            "columns": "Colunas"
+                            "columns": "Colunas",
+                            "name": "Relance"
                         },
                         "history-graph": {
                             "name": "Gráfico de histórico"
@@ -1763,6 +1789,9 @@
                         "picture-entity": {
                             "name": "Entidade Imagem"
                         },
+                        "picture-glance": {
+                            "name": "Relance de Imagem"
+                        },
                         "picture": {
                             "name": "Imagem"
                         },
@@ -1794,7 +1823,7 @@
                         "header": "Configuração de cartão",
                         "move": "Mover",
                         "options": "Mais opções",
-                        "pick_card": "Escolha o cartão que você deseja adicionar.",
+                        "pick_card": "Qual card você gostaria de adicionar?",
                         "pick_card_view_title": "Qual cartão você gostaria de adicionar à sua visualização {name} ?",
                         "save": "Salvar",
                         "show_code_editor": "Mostrar Editor de Código",
@@ -1854,6 +1883,7 @@
                 "menu": {
                     "close": "Fechar",
                     "configure_ui": "Configurar “interface” do usuário",
+                    "exit_edit_mode": "Sair do modo de edição de interface",
                     "help": "Ajuda",
                     "refresh": "Atualizar",
                     "unused_entities": "Entidades não utilizadas"
@@ -2142,7 +2172,7 @@
             "shopping-list": {
                 "add_item": "Adicionar item",
                 "clear_completed": "Limpar completos",
-                "microphone_tip": "Clique no microfone no canto superior direito e diga \"Adicionar doces à minha lista de compras\""
+                "microphone_tip": "Clique no microfone no canto superior direito e diga ou digite \"Adicionar doces à minha lista de compras\""
             }
         },
         "sidebar": {

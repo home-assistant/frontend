@@ -587,7 +587,7 @@
                 "title": "Domänen umschalten"
             },
             "more_info_control": {
-                "dismiss": "Ausblenden",
+                "dismiss": "Dialog ausblenden",
                 "script": {
                     "last_action": "Letzte Aktion"
                 },
@@ -642,7 +642,7 @@
                 "unknown": "Unbekannt",
                 "zha_device_card": {
                     "area_picker_label": "Bereich",
-                    "device_name_placeholder": "Vorname des Benutzers",
+                    "device_name_placeholder": "Benutzerdefinierter Name",
                     "update_name_button": "Aktualisierung Name"
                 }
             }
@@ -977,7 +977,7 @@
                         "thank_you_note": "Vielen Dank, dass Sie Teil der Home Assistant Cloud sind. Es ist wegen Menschen wie Ihnen, dass wir in der Lage sind, eine großartige Home Automation Erfahrung für alle zu machen. Danke!",
                         "webhooks": {
                             "disable_hook_error_msg": "Fehler beim Deaktivieren des Webhooks:",
-                            "info": "Alles, was so konfiguriert ist, dass es durch einen Webhook ausgelöst wird, kann mit einer öffentlich zugänglichen URL versehen werden, damit Daten von überall an Home Assistant gesenden werden können, ohne deine Installation dem Internet zu öffnen.",
+                            "info": "Alles, was so konfiguriert ist, dass es durch einen Webhook ausgelöst wird, kann mit einer öffentlich zugänglichen URL versehen werden, damit Daten von überall an Home Assistant gesendet werden können, ohne deine Installation dem Internet zu öffnen.",
                             "link_learn_more": "Weitere Informationen zum Erstellen webhookgestützter Automatisierungen.",
                             "loading": "Wird geladen ...",
                             "manage": "Verwalten",
@@ -1139,7 +1139,7 @@
                     "attributes_set": "Die folgenden Attribute der Entität sind programmatisch festgelegt.",
                     "caption": "Anpassung",
                     "description": "Elemente anpassen",
-                    "different_include": "Möglich über eine Domain, einen Glob oder ",
+                    "different_include": "Möglich über eine Domain, einen Glob oder einen anderen Include.",
                     "pick_attribute": "Wähle ein Attribut zum Überschreiben aus.",
                     "picker": {
                         "header": "Anpassungen",
@@ -1178,13 +1178,12 @@
                     "description": "Verwalte verbundene Geräte",
                     "details": "Hier sind alle Details deines Geräts.",
                     "device_not_found": "Gerät nicht gefunden.",
-                    "entities": "Entitäten",
                     "info": "Geräteinformationen",
                     "unknown_error": "Unbekannter Fehler",
                     "unnamed_device": "Unbenanntes Gerät"
                 },
                 "entity_registry": {
-                    "caption": "Entitätsregister",
+                    "caption": "Entitäten",
                     "description": "Überblick aller bekannten Elemente.",
                     "editor": {
                         "confirm_delete": "Möchten Sie diesen Eintrag wirklich löschen?",
@@ -1256,6 +1255,17 @@
                     "details": "Details zur Integration",
                     "discovered": "Entdeckt",
                     "home_assistant_website": "Home Assistant Website",
+                    "ignore": {
+                        "confirm_delete_ignore": "Dies wird die Integration in deinen entdeckten Integrationen wieder erscheinen lassen, wenn sie entdeckt wird. Dies kann einen Neustart erfordern oder einige Zeit dauern.",
+                        "confirm_delete_ignore_title": "{name} nicht mehr ignorieren?",
+                        "confirm_ignore": "Bist du sicher, dass du diese Integration nicht einrichten willst? Du kannst dies rückgängig machen, indem du im Kontextmenü oben rechts auf 'Ignorierte Integrationen anzeigen' klickst.",
+                        "confirm_ignore_title": "Ignoriere die Entdeckung von {name}?",
+                        "hide_ignored": "Ignorierte Integrationen ausblenden",
+                        "ignore": "Ignorieren",
+                        "ignored": "Ignoriert",
+                        "show_ignored": "Ignorierte Integrationen anzeigen",
+                        "stop_ignore": "Nicht mehr ignorieren"
+                    },
                     "integration_not_found": "Integration nicht gefunden.",
                     "new": "Richte eine neue Integration ein",
                     "none": "Noch nichts konfiguriert",
@@ -1334,6 +1344,7 @@
                     "caption": "Skript",
                     "description": "Skripte erstellen und bearbeiten",
                     "editor": {
+                        "alias": "Name",
                         "default_name": "Neues Skript",
                         "delete_confirm": "Möchten Sie dieses Skript wirklich löschen?",
                         "delete_script": "Skript löschen",
@@ -1456,7 +1467,7 @@
                     "description": "Zigbee Home Automation Netzwerkmanagement",
                     "device_card": {
                         "area_picker_label": "Bereich",
-                        "device_name_placeholder": "Benutzername",
+                        "device_name_placeholder": "Benutzerdefinierter Name",
                         "update_name_button": "Name aktualisieren"
                     },
                     "network_management": {
@@ -1467,7 +1478,7 @@
                         "header": "Geräteverwaltung",
                         "help_node_dropdown": "Wähle ein Gerät aus, um die Geräteoptionen anzuzeigen.",
                         "hint_battery_devices": "Hinweis: Schlafende (batteriebetriebene) Geräte müssen wach sein, wenn Befehle für sie ausgeführt werden. Ein schlafendes Gerät kann meist durch eine Aktion am Gerät aufgeweckt werden.",
-                        "hint_wakeup": "Einige Geräte, z. B. Xiaomi-Sensoren, verfügen über eine Wecktaste, die in Intervallen von ~5 Sekunden gedrückt werden können, um die Geräte wach zu halten, während mit ihnen interagiert wird.",
+                        "hint_wakeup": "Einige Geräte, z. B. Xiaomi-Sensoren, verfügen über eine Wecktaste, die in Intervallen von ~5 Sekunden gedrückt werden kann, um die Geräte wach zu halten, während mit ihnen interagiert wird.",
                         "introduction": "Führe ZHA-Befehle aus, die sich auf ein einzelnes Gerät auswirken. Wähle ein Gerät aus, um eine Liste der verfügbaren Befehle anzuzeigen."
                     },
                     "services": {
@@ -1511,7 +1522,7 @@
                     },
                     "ozw_log": {
                         "header": "OZW Log",
-                        "introduction": "Zeigen Sie das Protokoll an. 0 ist das Minimum (lädt das gesamte Protokoll) und 1000 ist das Maximum. Beim Laden wird ein statisches Protokoll angezeigt, und das Ende wird automatisch mit der zuletzt angegebenen Anzahl von Zeilen des Protokolls aktualisiert."
+                        "introduction": "Sehen Sie sich das Protokoll an. 0 ist das Minimum (lädt das gesamte Protokoll) und 1000 ist das Maximum. Beim Laden wird ein statisches Protokoll angezeigt und das Ende wird automatisch mit der zuletzt angegebenen Anzahl von Zeilen des Protokolls aktualisiert."
                     },
                     "services": {
                         "add_node": "Knoten hinzufügen",
@@ -1581,7 +1592,7 @@
                         "clear": "Leeren",
                         "details": "Protokolldetails ( {level} )",
                         "load_full_log": "Vollständiges Home Assistant-Protokoll laden",
-                        "loading_log": "Fehlerprotokoll wird geladen ...",
+                        "loading_log": "Fehlerprotokoll wird geladen...",
                         "multiple_messages": "Die Nachricht ist zum ersten Mal um {time} aufgetreten und erscheint {counter} mal",
                         "no_errors": "Es wurden keine Fehler gemeldet.",
                         "no_issues": "Es gibt keine neuen Probleme!",
@@ -2161,7 +2172,7 @@
             "shopping-list": {
                 "add_item": "Artikel hinzufügen",
                 "clear_completed": "Erledigte entfernen",
-                "microphone_tip": "Tippe oben rechts auf das Mikrofon und sage “Add candy to my shopping list”"
+                "microphone_tip": "Tippe oben rechts auf das Mikrofon und sage oder schreibe “Süßigkeiten zu meiner Einkaufsliste hinzufügen”"
             }
         },
         "sidebar": {

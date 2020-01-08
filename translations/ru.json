@@ -405,9 +405,9 @@
                 "arm_home": "Охрана (дома)",
                 "arm_night": "Ночная охрана",
                 "armed_custom_bypass": "Охрана с исключениями",
-                "clear_code": "Очистить",
+                "clear_code": "Сброс",
                 "code": "Код",
-                "disarm": "Без охраны"
+                "disarm": "Снять с охраны"
             },
             "automation": {
                 "last_triggered": "Последний запуск",
@@ -1178,7 +1178,6 @@
                     "description": "Управляйте подключенными устройствами",
                     "details": "Здесь приведена вся доступная информация об этом устройстве.",
                     "device_not_found": "Устройство не найдено.",
-                    "entities": "Объекты",
                     "info": "Информация об устройстве",
                     "unknown_error": "Неизвестная ошибка.",
                     "unnamed_device": "Безымянное устройство"
@@ -1256,6 +1255,17 @@
                     "details": "Детали интеграции",
                     "discovered": "Обнаружено",
                     "home_assistant_website": "сайте Home Assistant",
+                    "ignore": {
+                        "confirm_delete_ignore": "Эта интеграция станет доступна для обнаружения системой. Обнаружение произойдёт автоматически в течении некоторого времени, либо после перезапуска системы.",
+                        "confirm_delete_ignore_title": "Прекратить игнорировать {name}?",
+                        "confirm_ignore": "Вы сможете снова включить обнаружение этой интеграции системой. Для этого откройте меню в правом верхнем углу и нажмите «Показать игнорируемые интеграции».",
+                        "confirm_ignore_title": "Игнорировать обнаружение интеграции {name}?",
+                        "hide_ignored": "Скрыть игнорируемые интеграции",
+                        "ignore": "Игнорировать",
+                        "ignored": "Игнорируется",
+                        "show_ignored": "Показать игнорируемые интеграции",
+                        "stop_ignore": "Прекратить игнорировать"
+                    },
                     "integration_not_found": "Интеграция не найдена.",
                     "new": "Интеграции",
                     "none": "Пока ничего не настроено",
@@ -1267,7 +1277,7 @@
                     "add_person": "Добавить персону",
                     "caption": "Люди",
                     "confirm_delete": "Вы уверены, что хотите удалить эту персону?",
-                    "confirm_delete2": "Все устройства, связанные с этой персоной, станут неназначенными.",
+                    "confirm_delete2": "Все устройства, связанные с этой персоной, станут не назначенными.",
                     "create_person": "Добавить персону",
                     "description": "Определяйте людей, которых может отслеживать Home Assistant",
                     "detail": {
@@ -1334,6 +1344,7 @@
                     "caption": "Сценарии",
                     "description": "Создавайте и редактируйте сценарии",
                     "editor": {
+                        "alias": "Название",
                         "default_name": "Новый сценарий",
                         "delete_confirm": "Вы уверены, что хотите удалить этот сценарий?",
                         "delete_script": "Удалить сценарий",
@@ -1542,7 +1553,7 @@
                     "events": {
                         "alert_event_type": "Укажите событие.",
                         "available_events": "Доступные события",
-                        "count_listeners": "(подписано: {count})",
+                        "count_listeners": " (подписано: {count})",
                         "data": "Данные события в формате YAML (необязательно)",
                         "description": "Здесь Вы можете создать и отправить событие в Home Assistant.",
                         "documentation": "Узнайте больше о событиях.",
@@ -1689,7 +1700,7 @@
                         },
                         "alarm-panel": {
                             "available_states": "Доступные состояния",
-                            "name": "Alarm Panel"
+                            "name": "Панель сигнализации"
                         },
                         "conditional": {
                             "name": "Conditional"
@@ -1699,12 +1710,12 @@
                             "required": "обязательно"
                         },
                         "entities": {
-                            "name": "Entities",
+                            "name": "Объекты",
                             "show_header_toggle": "Переключатель в заголовке",
                             "toggle": "Переключить объекты"
                         },
                         "entity-button": {
-                            "name": "Entity Button"
+                            "name": "Объект кнопка"
                         },
                         "entity-filter": {
                             "name": "Entity Filter"
@@ -1744,25 +1755,25 @@
                         },
                         "glance": {
                             "columns": "Столбцы",
-                            "name": "Glance"
+                            "name": "Просмотр"
                         },
                         "history-graph": {
                             "name": "History Graph"
                         },
                         "horizontal-stack": {
-                            "name": "Horizontal Stack"
+                            "name": "Горизонтальная панель"
                         },
                         "iframe": {
                             "name": "iFrame"
                         },
                         "light": {
-                            "name": "Light"
+                            "name": "Свет"
                         },
                         "map": {
                             "dark_mode": "Ночной режим",
                             "default_zoom": "Масштаб по умолчанию",
                             "geo_location_sources": "Источники геолокации",
-                            "name": "Map",
+                            "name": "Карта",
                             "source": "Источник"
                         },
                         "markdown": {
@@ -1770,19 +1781,19 @@
                             "name": "Markdown"
                         },
                         "media-control": {
-                            "name": "Media Control"
+                            "name": "Управление медиа плеером"
                         },
                         "picture-elements": {
-                            "name": "Picture Elements"
+                            "name": "Элементы картинки"
                         },
                         "picture-entity": {
-                            "name": "Picture Entity"
+                            "name": "Картинка объекта"
                         },
                         "picture-glance": {
-                            "name": "Picture Glance"
+                            "name": "Вид картинки"
                         },
                         "picture": {
-                            "name": "Picture"
+                            "name": "Картинка"
                         },
                         "plant-status": {
                             "name": "Plant Status"
@@ -1790,7 +1801,7 @@
                         "sensor": {
                             "graph_detail": "Детализация графика",
                             "graph_type": "Тип графика",
-                            "name": "Sensor"
+                            "name": "Датчик"
                         },
                         "shopping-list": {
                             "name": "Список покупок"

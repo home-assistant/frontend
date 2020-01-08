@@ -496,7 +496,7 @@
                                 },
                                 "mqtt": {
                                     "label": "MQTT",
-                                    "payload": "పేలోడ్ ",
+                                    "payload": "పేలోడ్",
                                     "topic": "విషయం"
                                 },
                                 "numeric_state": {

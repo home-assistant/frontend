@@ -1178,7 +1178,6 @@
                     "description": "管理已連線設備",
                     "details": "此處顯示設備所有詳細資訊。",
                     "device_not_found": "未找到設備。",
-                    "entities": "物件",
                     "info": "設備資訊",
                     "unknown_error": "未知錯誤",
                     "unnamed_device": "未命名設備"
@@ -1256,6 +1255,17 @@
                     "details": "整合詳細資訊",
                     "discovered": "已掃描",
                     "home_assistant_website": "Home Assistant 網站",
+                    "ignore": {
+                        "confirm_delete_ignore": "將使於整合中發現到的裝置重新出現在整合中，可能需要重新啟動或花費一點時間。",
+                        "confirm_delete_ignore_title": "停止忽略{name}？",
+                        "confirm_ignore": "確定不設定此整合？可以於右上方的選單中點選「顯示已忽略整合」、以還原此動作。",
+                        "confirm_ignore_title": "忽略所發現的{name}？",
+                        "hide_ignored": "隱藏已忽略整合",
+                        "ignore": "忽略",
+                        "ignored": "已忽略",
+                        "show_ignored": "顯示已忽略整合",
+                        "stop_ignore": "停止忽略中"
+                    },
                     "integration_not_found": "找不到整合。",
                     "new": "設定新整合",
                     "none": "尚未設定",
@@ -1334,6 +1344,7 @@
                     "caption": "腳本",
                     "description": "創建和編輯腳本",
                     "editor": {
+                        "alias": "名稱",
                         "default_name": "新腳本",
                         "delete_confirm": "確定要刪除此腳本？",
                         "delete_script": "刪除腳本",
@@ -1542,7 +1553,7 @@
                     "events": {
                         "alert_event_type": "事件類型為必填欄位",
                         "available_events": "可用事件",
-                        "count_listeners": " （{count}  位監聽者）",
+                        "count_listeners": " {count}  位監聽者）",
                         "data": "事件資料（YAML，選項）",
                         "description": "於事件匯流排中執行事件。",
                         "documentation": "事件文件。",

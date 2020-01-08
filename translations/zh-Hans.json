@@ -630,12 +630,12 @@
                     "remove": "删除设备"
                 },
                 "last_seen": "上次看到",
-                "manuf": "由{manufacturer}",
+                "manuf": "制造商：{manufacturer}",
                 "no_area": "没有区域",
                 "power_source": "电源",
                 "quirk": "怪癖",
                 "services": {
-                    "reconfigure": "重新配置ZHA设备（唤醒设备）。如果您的设备遇到问题，请使用此项。如果有问题的设备是电池供电的，请确保在使用此服务时它处于唤醒状态并可以接受指令。",
+                    "reconfigure": "这将重新配置 ZHA 设备（复原设备）。如果您的设备遇到问题，请使用此项。如果有问题的设备是由电池供电的，请确保在使用此服务时它处于唤醒状态并可以接受指令。",
                     "remove": "从 Zigbee 网络中删除设备。",
                     "updateDeviceName": "在设备注册表中为此设备设置自定义名称。"
                 },
@@ -671,7 +671,7 @@
             "entity_turned_on": "已打开 {entity}。",
             "service_call_failed": "调用服务 {service} 失败。",
             "service_called": "服务 {service} 已调用。",
-            "triggered": "已触发{name}"
+            "triggered": "已触发 {name}"
         },
         "panel": {
             "config": {
@@ -934,7 +934,7 @@
                             "info": "借助用于Home Assistant Cloud的Alexa集成，您将能够通过任何支持Alexa的设备控制所有Home Assistant设备。",
                             "info_state_reporting": "如果启用状态报告，Home Assistant将向 Amazon 发送所有公开实体的状态更改。这允许您始终查看 Alexa 应用中的最新状态，并使用状态更改创建例程。",
                             "manage_entities": "管理实体：",
-                            "state_reporting_error": "无法 [enable_disable] 报告状态。",
+                            "state_reporting_error": "无法{enable_disable}状态报告。",
                             "sync_entities": "同步实体",
                             "sync_entities_error": "无法同步实体：",
                             "title": "Alexa"
@@ -955,14 +955,14 @@
                             "manage_entities": "管理实体",
                             "security_devices": "安全装置",
                             "sync_entities": "同步实体到Google",
-                            "title": "Google助手"
+                            "title": "Google Assistant"
                         },
                         "integrations": "集成",
                         "integrations_introduction": "Home Assistant Cloud的集成使您可以连接云中的服务，而不必在Internet上公开公开Home Assistant实例。",
-                        "integrations_introduction2": "检查网站",
+                        "integrations_introduction2": "浏览网站以查找",
                         "integrations_link_all_features": "所有可用功能",
                         "manage_account": "管理帐户",
-                        "nabu_casa_account": "Nabu Casa帐户",
+                        "nabu_casa_account": "Nabu Casa 帐户",
                         "not_connected": "未连接",
                         "remote": {
                             "access_is_being_prepared": "正在准备远程访问。准备就绪后，我们会通知您。",
@@ -974,7 +974,7 @@
                             "title": "远程控制"
                         },
                         "sign_out": "退出",
-                        "thank_you_note": "感谢您成为Home Assistant Cloud的一部分。因为有了像您这样的人，我们才能够为每个人带来出色的家庭自动化体验。谢谢！",
+                        "thank_you_note": "感谢您加入 Home Assistant Cloud。正是因为像您这样的人，我们才得以为每个人带来出色的智能家居体验。谢谢！",
                         "webhooks": {
                             "disable_hook_error_msg": "无法禁用 Webhook：",
                             "info": "由webhook触发的任何配置可以提供公开访问的URL,它允许您将数据发送回家庭助理从任何地方,并且不会暴露您的实例。",
@@ -1015,7 +1015,7 @@
                         "link_disable_webhook": "禁用",
                         "managed_by_integration": "该Webhook由集成管理，无法禁用。",
                         "view_documentation": "查看文档",
-                        "webhook_for": " {name}的Webhook"
+                        "webhook_for": "{name}的Webhook"
                     },
                     "forgot_password": {
                         "check_your_email": "检查您的电子邮件以获取有关如何重设密码的说明。",
@@ -1042,15 +1042,15 @@
                         "email": "电子邮箱",
                         "email_error_msg": "无效电子邮件",
                         "forgot_password": "忘记密码？",
-                        "introduction": "当你离家后，Home Assistant Cloud 为您提供一个安全的远程连接到您的实例。它还允许您连接仅云服务：亚马逊Alexa和Google 助手。",
+                        "introduction": "当您不在家时，Home Assistant Cloud 供您安全地远程连接到您的实例。它还允许您连接仅限云端的服务：Amazon Alexa 和 Google Assistant。",
                         "introduction2": "此服务由我们的合作伙伴运行",
-                        "introduction2a": "，由Home Assistant和Hass.io的创始人创立的公司。",
-                        "introduction3": "Home Assistant Cloud是一项订阅服务，提供一个月免费试用。无需付款信息。",
-                        "learn_more_link": "了解有关Home Assistant Cloud的更多信息",
+                        "introduction2a": "，由 Home Assistant 和 Hass.io 的创始人创立的公司。",
+                        "introduction3": "Home Assistant Cloud 是一项订阅服务，提供一个月免费试用。无需提供付款信息。",
+                        "learn_more_link": "详细了解 Home Assistant Cloud",
                         "password": "密码",
                         "password_error_msg": "密码至少为 8 个字符",
                         "sign_in": "登录",
-                        "start_trial": "开始您的免费 1 个月试用",
+                        "start_trial": "开始 1 个月免费试用",
                         "title": "云登录",
                         "trial_info": "无需付款信息"
                     },
@@ -1059,15 +1059,15 @@
                         "create_account": "创建帐户",
                         "email_address": "电子邮件地址",
                         "email_error_msg": "无效电子邮件",
-                        "feature_amazon_alexa": "与Amazon Alexa集成",
-                        "feature_google_home": "与Google Assistant集成",
-                        "feature_remote_control": "离家后远程控制Home Assistant",
-                        "feature_webhook_apps": "轻松与基于 Webhook 的应用程序（如 OwnTracks）集成",
+                        "feature_amazon_alexa": "接入 Amazon Alexa",
+                        "feature_google_home": "接入 Google Assistant",
+                        "feature_remote_control": "出门在外也可控制 Home Assistant",
+                        "feature_webhook_apps": "轻松接入基于 Webhook 的应用程序（如 OwnTracks）",
                         "headline": "开始免费试用",
-                        "information": "创建一个帐户以开始使用Home Assistant Cloud进行为期一个月的免费试用。无需付款信息。",
-                        "information2": "试用版将为您提供Home Assistant Cloud的所有好处，包括：",
+                        "information": "创建一个帐户以开始 Home Assistant Cloud 的一个月免费试用。无需提供付款信息。",
+                        "information2": "试用版将为您提供 Home Assistant Cloud 的所有权益，包括：",
                         "information3": "此服务由我们的合作伙伴运行",
-                        "information3a": "，由Home Assistant和Hass.io的创始人创立的公司。",
+                        "information3a": "，由 Home Assistant 和 Hass.io 的创始人创立的公司。",
                         "information4": "注册帐户即表示您同意以下条款和条件。",
                         "link_privacy_policy": "隐私政策",
                         "link_terms_conditions": "条款和条件",
@@ -1155,13 +1155,13 @@
                     "area_picker_label": "区域",
                     "automation": {
                         "actions": {
-                            "caption": "当某事件被触发时..."
+                            "caption": "满足条件时执行："
                         },
                         "conditions": {
-                            "caption": "如果...,只要做"
+                            "caption": "并且满足以下条件时："
                         },
                         "triggers": {
-                            "caption": "当..."
+                            "caption": "当以下事件发生时："
                         }
                     },
                     "automations": "自动化",
@@ -1175,10 +1175,9 @@
                         "manufacturer": "制造商",
                         "model": "模型"
                     },
-                    "description": "已连接设备管理",
+                    "description": "管理已连接的设备",
                     "details": "这是设备的所有详细信息。",
                     "device_not_found": "未找到设备。",
-                    "entities": "实体",
                     "info": "设备信息",
                     "unknown_error": "未知错误",
                     "unnamed_device": "未命名设备"
@@ -1256,6 +1255,17 @@
                     "details": "集成详细信息",
                     "discovered": "已发现",
                     "home_assistant_website": "Home Assistant网站",
+                    "ignore": {
+                        "confirm_delete_ignore": "这将使集成在发现时再次出现在您的发现集成中。这可能需要重新启动或需要一些时间。",
+                        "confirm_delete_ignore_title": "停止忽略{name}吗？",
+                        "confirm_ignore": "您确定不想设置此集成吗？您可以通过单击右上角溢出菜单中的“显示忽略的集成”来撤消此操作。",
+                        "confirm_ignore_title": "忽略发现的{name}?",
+                        "hide_ignored": "隐藏被忽略的集成",
+                        "ignore": "忽视",
+                        "ignored": "被忽略",
+                        "show_ignored": "显示忽略的集成",
+                        "stop_ignore": "停止忽略"
+                    },
                     "integration_not_found": "未找到集成。",
                     "new": "设置新集成",
                     "none": "尚未配置任何集成",
@@ -1334,6 +1344,7 @@
                     "caption": "脚本",
                     "description": "创建和编辑脚本",
                     "editor": {
+                        "alias": "名称",
                         "default_name": "新建脚本",
                         "delete_confirm": "您确定要删除此脚本吗？",
                         "delete_script": "删除脚本",
@@ -1360,7 +1371,7 @@
                     "section": {
                         "reloading": {
                             "automation": "重载自动化",
-                            "core": "重载位置和个人化",
+                            "core": "重载位置和自定义",
                             "group": "重载分组",
                             "heading": "配置重载",
                             "introduction": "Home Assistant 中的部分配置可以直接重载，而无需重启服务。点击重载按钮将重新载入新的配置。",
@@ -1370,7 +1381,7 @@
                         "server_management": {
                             "confirm_restart": "您确定要重新启动 Home Assistant 吗？",
                             "confirm_stop": "您确定要停止 Home Assistant 吗？",
-                            "heading": "服务器管理",
+                            "heading": "服务管理",
                             "introduction": "在这里即可控制 Home Assistant 服务。",
                             "restart": "重新启动",
                             "stop": "停止服务"
@@ -1542,7 +1553,7 @@
                     "events": {
                         "alert_event_type": "事件类型是必填字段",
                         "available_events": "可用事件",
-                        "count_listeners": "({count} 个监听器)",
+                        "count_listeners": " ({count} 个监听器)",
                         "data": "事件数据（格式为YAML，选填）",
                         "description": "将事件发送到事件总线",
                         "documentation": "事件文档。",
@@ -1723,14 +1734,14 @@
                             "camera_image": "相机实体",
                             "camera_view": "相机视图",
                             "entities": "实体",
-                            "entity": "设备/实体",
+                            "entity": "实体",
                             "hold_action": "保持操作",
                             "hours_to_show": "显示时间",
                             "icon": "图标",
                             "icon_height": "图标高度",
                             "image": "图像路径",
                             "maximum": "最大",
-                            "minimum": "最低",
+                            "minimum": "最小",
                             "name": "名称",
                             "refresh_interval": "刷新间隔",
                             "show_icon": "显示图标？",
@@ -1759,7 +1770,7 @@
                             "name": "灯"
                         },
                         "map": {
-                            "dark_mode": "暗模式？",
+                            "dark_mode": "夜间模式？",
                             "default_zoom": "默认缩放",
                             "geo_location_sources": "地理位置来源",
                             "name": "地图",
@@ -1821,8 +1832,8 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "编辑标题",
-                        "explanation": "该标题显示在Lovelace的所有视图之上。",
-                        "header": "Lovelace UI标题"
+                        "explanation": "此标题将显示在 Lovelace 的所有视图之上。",
+                        "header": "Lovelace UI 标题"
                     },
                     "edit_view": {
                         "add": "添加视图",

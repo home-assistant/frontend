@@ -7,7 +7,7 @@ trigger:
     - dev
   paths:
     include:
-    - translation/en.json
+    - translations/en.json
 pr: none
 schedules:
   - cron: "30 0 * * *"
