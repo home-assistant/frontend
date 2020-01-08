@@ -512,7 +512,7 @@
                 },
                 "cardinal_direction": {
                     "e": "מזרח",
-                    "ene": " צפון מזרח",
+                    "ene": "צפון מזרח",
                     "ese": " דרום מזרח",
                     "n": "צפון",
                     "ne": "צפון מזרח",
@@ -1015,7 +1015,7 @@
                         "link_disable_webhook": "לנטרל אותו",
                         "managed_by_integration": "webhook זה מנוהל על ידי אינטגרציה ואי אפשר לנטרל אותו.",
                         "view_documentation": "הצג תיעוד",
-                        "webhook_for": "Webhook עבור {שם}"
+                        "webhook_for": "Webhook עבור {name}"
                     },
                     "forgot_password": {
                         "check_your_email": "בדוק את הדואר האלקטרוני שלך לקבלת הוראות כיצד לאפס את סיסמתך.",
@@ -1178,7 +1178,6 @@
                     "description": "ניהול התקנים מחוברים",
                     "details": "להלן כל פרטי ההתקן שלך.",
                     "device_not_found": "ההתקן לא נמצא.",
-                    "entities": "ישויות",
                     "info": "פרטי התקן",
                     "unknown_error": "שגיאה לא ידועה",
                     "unnamed_device": "התקן ללא שם"
@@ -1849,7 +1848,7 @@
                         "confirm_unsaved_comments": "התצורה שלך מכילה הערות, אלה לא יישמרו. האם אתה רוצה להמשיך?",
                         "error_invalid_config": "התצורה שלך אינה תקפה: {error}",
                         "error_parse_yaml": "לא ניתן לנתח את YAML: {error}",
-                        "error_save_yaml": "אין אפשרות לשמור את YAML: {שגיאה}",
+                        "error_save_yaml": "אין אפשרות לשמור את YAML: {error}",
                         "header": "עריכת קונפיגורציה",
                         "save": "שמור",
                         "saved": "נשמר",

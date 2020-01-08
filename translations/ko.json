@@ -574,7 +574,7 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "비활성화한 경우 새로 검색된 {integration} 구성요소는 Home Assistant 에 자동으로 추가되지 않습니다.",
+                "enable_new_entities_description": "비활성화한 경우 새로 발견된 {integration} 구성요소는 Home Assistant 에 자동으로 추가되지 않습니다.",
                 "enable_new_entities_label": "새로 추가된 구성요소를 활성화합니다.",
                 "title": "{integration} 시스템 옵션"
             },
@@ -931,7 +931,7 @@
                             "enable": "활성화",
                             "enable_ha_skill": "Alexa 에 Home Assistant 스킬 사용하기",
                             "enable_state_reporting": "상태 보고 활성화",
-                            "info": "Home Assistant Cloud 의 Alexa 연동 기능으로 Alexa 가 지원하는 기기로서 Home Assistant 기기를 제어 할 수 있습니다.",
+                            "info": "Home Assistant Cloud 의 Alexa 연동 기능으로 Alexa 가 지원하는 기기로서 Home Assistant 기기를 제어할 수 있습니다.",
                             "info_state_reporting": "상태 보고를 활성화하면 Home Assistant 는 노출된 구성요소의 모든 상태 변경 사항을 Amazon 에 보냅니다. 이를 통해 Alexa 앱에서 언제든지 구성요소의 최신 상태를 확인할 수 있으며, 상태 변경을 사용하여 루틴을 만들 수 있습니다.",
                             "manage_entities": "구성요소 관리",
                             "state_reporting_error": "상태 보고를 {enable_disable}할 수 없습니다.",
@@ -950,7 +950,7 @@
                             "enter_pin_error": "PIN 을 저장할 수 없습니다:",
                             "enter_pin_hint": "보안 기기 사용 PIN 입력",
                             "enter_pin_info": "보안 기기를 제어하기 위한 PIN 을 설정해주세요. 보안 기기란 현관문, 차고문, 도어락과 같은 기기입니다. Google 어시스턴트를 통해 이러한 기기를 제어할 때 PIN 을 입력하거나 말씀해주셔야 합니다.",
-                            "info": "Home Assistant Cloud 의 Google 어시스턴트 연동 기능으로 Google 어시스턴트가 지원하는 기기로서 Home Assistant 기기를 제어 할 수 있습니다.",
+                            "info": "Home Assistant Cloud 의 Google 어시스턴트 연동 기능으로 Google 어시스턴트가 지원하는 기기로서 Home Assistant 기기를 제어할 수 있습니다.",
                             "info_state_reporting": "상태 보고를 활성화하면 Home Assistant 는 노출된 구성요소의 모든 상태 변경 사항을 Google 에 보냅니다. 이를 통해 Google 앱에서 언제든지 구성요소의 최신 상태를 확인할 수 있습니다.",
                             "manage_entities": "구성요소 관리",
                             "security_devices": "보안 기기",
@@ -1132,11 +1132,14 @@
                     }
                 },
                 "customize": {
+                    "attributes_customize": "다음 속성은 이미 customize.yaml 에 설정되어 있습니다",
                     "attributes_not_set": "다음의 속성이 설정되지 않았습니다. 원하는 경우 설정해주세요.",
+                    "attributes_outside": "다음 속성은 customize.yaml 이 아닌 다른 곳에서 사용자화됩니다",
                     "attributes_override": "원하는 경우 재정의 할 수 있습니다.",
                     "attributes_set": "구성요소의 다음 속성은 프로그래밍 방식으로 설정됩니다.",
                     "caption": "사용자화",
                     "description": "구성요소를 사용자화 합니다",
+                    "different_include": "도메인, 글로브 혹은 다른 포함 기능을 통해 가능할 수 있습니다.",
                     "pick_attribute": "재정의 할 속성 선택",
                     "picker": {
                         "header": "사용자화",
@@ -1144,7 +1147,8 @@
                     },
                     "warning": {
                         "include_link": "customize.yaml 포함",
-                        "include_sentence": "configuration.yaml 이 올바르지 않은 것 같습니다"
+                        "include_sentence": "configuration.yaml 이 올바르지 않은 것 같습니다",
+                        "not_applied": "여기에서 변경 한 내용은 저장되지만, 해당 사항이 없다면 구성을 다시 읽어들인 후에는 적용되지 않습니다."
                     }
                 },
                 "devices": {
@@ -1154,10 +1158,10 @@
                             "caption": "뭔가 트리거 되었을 때...."
                         },
                         "conditions": {
-                            "caption": "...인 경우 뭔가를 실행"
+                            "caption": "... 이면 자동화를 실행 (조건)"
                         },
                         "triggers": {
-                            "caption": "...일 때 뭔가를 실행"
+                            "caption": "... 일 때 자동화를 실행 (트리거)"
                         }
                     },
                     "automations": "자동화",
@@ -1174,7 +1178,6 @@
                     "description": "연결된 기기를 관리합니다",
                     "details": "기기의 모든 세부 정보는 다음과 같습니다.",
                     "device_not_found": "기기를 찾을 수 없습니다.",
-                    "entities": "구성요소",
                     "info": "기기 정보",
                     "unknown_error": "알 수 없는 오류",
                     "unnamed_device": "이름이 없는 기기"
@@ -1213,7 +1216,7 @@
                 "integrations": {
                     "caption": "통합 구성요소",
                     "config_entry": {
-                        "area": "{area}에 위치",
+                        "area": "{area}에 있슴",
                         "delete_button": "{integration} 삭제",
                         "delete_confirm": "이 통합 구성요소를 제거 하시겠습니까?",
                         "device_unavailable": "기기 사용불가",
@@ -1252,6 +1255,17 @@
                     "details": "통합 구성요소 상세정보",
                     "discovered": "발견된 구성요소",
                     "home_assistant_website": "Home Assistant 웹 사이트",
+                    "ignore": {
+                        "confirm_delete_ignore": "이렇게 하면 발견된 통합 구성요소가 발견될 때, 발견된 통합 구성요소에 다시 나타나게 됩니다. 다시 시작해야 하거나 시간이 걸릴 수 있습니다.",
+                        "confirm_delete_ignore_title": "{name} 무시를 중지하시겠습니까?",
+                        "confirm_ignore": "이 통합 구성요소의 설정을 하지 않으시겠습니까? 오른쪽 상단의 오버플로 메뉴에서 '무시된 통합 구성요소 표시' 를 클릭하여 이 작업을 취소할 수 있습니다.",
+                        "confirm_ignore_title": "발견된 {name} 기기를 무시하시겠습니까?",
+                        "hide_ignored": "무시된 통합 구성요소 숨김",
+                        "ignore": "무시",
+                        "ignored": "무시",
+                        "show_ignored": "무시된 통합 구성요소 표시",
+                        "stop_ignore": "무시 중지"
+                    },
                     "integration_not_found": "통합 구성요소를 찾을 수 없습니다.",
                     "new": "새로운 통합 구성요소 설정",
                     "none": "설정된 구성요소가 없습니다",
@@ -1330,6 +1344,7 @@
                     "caption": "스크립트",
                     "description": "스크립트를 만들고 편집합니다",
                     "editor": {
+                        "alias": "이름",
                         "default_name": "새로운 스크립트",
                         "delete_confirm": "이 스크립트를 삭제 하시겠습니까?",
                         "delete_script": "스크립트 삭제",

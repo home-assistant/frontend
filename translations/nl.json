@@ -671,7 +671,7 @@
             "entity_turned_on": "{entity} ingeschakeld.",
             "service_call_failed": "Kan service {service} niet aanroepen",
             "service_called": "Service {service} aangeroepen",
-            "triggered": "Geactiveerd {naam}"
+            "triggered": "Geactiveerd {name}"
         },
         "panel": {
             "config": {
@@ -984,7 +984,7 @@
                             "no_hooks_yet": "Het lijkt erop dat je nog geen webhooks hebt. Ga aan de slag door het configureren van een ",
                             "no_hooks_yet_link_automation": "webhook automatisering",
                             "no_hooks_yet_link_integration": "webhook gebaseerde integratie",
-                            "no_hooks_yet2": " of door het maken van een ",
+                            "no_hooks_yet2": "of door het maken van een",
                             "title": "Webhooks"
                         }
                     },
@@ -1134,10 +1134,12 @@
                 "customize": {
                     "attributes_customize": "De volgende attributen zijn al ingesteld in adjust.yaml",
                     "attributes_not_set": "De volgende attributen zijn nog niet ingesteld. Je kunt ze instellen als je wilt.",
+                    "attributes_outside": "De volgende kenmerken worden aangepast van buiten customize.yaml",
                     "attributes_override": "Je kunt ze overschrijven als je wilt.",
-                    "attributes_set": "De volgende attributen van de entiteit zijn ",
+                    "attributes_set": "De volgende attributen van de entiteit zijn.",
                     "caption": "Aanpassingen",
                     "description": "Pas je entiteiten aan",
+                    "different_include": "Mogelijk via een domein, een glob of een andere include.",
                     "pick_attribute": "Kies een attribuut om te overschrijven",
                     "picker": {
                         "header": "Aanpassingen",
@@ -1164,6 +1166,7 @@
                     },
                     "automations": "Automatiseringen",
                     "caption": "Apparaten",
+                    "confirm_rename_entity_ids": "Wil je ook de entiteits-ID's van je entiteiten hernoemen?",
                     "data_table": {
                         "area": "Gebied",
                         "battery": "Batterij",
@@ -1175,7 +1178,6 @@
                     "description": "Beheer verbonden apparaten",
                     "details": "Hier zijn alle details van uw apparaat",
                     "device_not_found": "Apparaat niet gevonden.",
-                    "entities": "Entiteiten",
                     "info": "Apparaat info",
                     "unknown_error": "Onbekende fout",
                     "unnamed_device": "Naamloos apparaat"
@@ -1253,6 +1255,17 @@
                     "details": "Integratiedetails",
                     "discovered": "Ontdekt",
                     "home_assistant_website": "Home Assistant-website",
+                    "ignore": {
+                        "confirm_delete_ignore": "Hierdoor verschijnt de integratie weer in uw ontdekte integraties wanneer deze wordt ontdekt. Dit kan een herstart vereisen of enige tijd duren.",
+                        "confirm_delete_ignore_title": "Stop met negeren van {name}?",
+                        "confirm_ignore": "Weet u zeker dat u deze integratie niet wilt instellen? U kunt dit ongedaan maken door in het overloopmenu rechtsboven op 'Genegeerde integraties weergeven' te klikken.",
+                        "confirm_ignore_title": "Detectie van {name} negeren?",
+                        "hide_ignored": "Verberg genegeerde integraties",
+                        "ignore": "Negeren",
+                        "ignored": "Genegeerd",
+                        "show_ignored": "Toon genegeerde integraties",
+                        "stop_ignore": "Stop met negeren"
+                    },
                     "integration_not_found": "Integratie niet gevonden.",
                     "new": "Stel een nieuwe integratie in",
                     "none": "Er is nog niets geconfigureerd",
@@ -1308,7 +1321,7 @@
                         },
                         "introduction": "Gebruik scènes om je huis tot leven te brengen.",
                         "load_error_not_editable": "Alleen scènes die zijn gedefinieerd in scenes.yaml kunnen worden bewerkt.",
-                        "load_error_unknown": "Fout bij het laden van de scène {{err_no}}.",
+                        "load_error_unknown": "Fout bij het laden van de scène ({err_no}).",
                         "name": "Naam",
                         "save": "Opslaan",
                         "unsaved_confirm": "U heeft niet-opgeslagen wijzigingen. Weet u zeker dat u wilt afsluiten?"
@@ -1319,6 +1332,7 @@
                         "delete_scene": "Scène verwijderen",
                         "edit_scene": "Scène bewerken",
                         "header": "Scene Editor",
+                        "introduction": "Met de scene editor kunt je scenes maken en bewerken. Volg de onderstaande link om de instructies te lezen om ervoor te zorgen dat u Home Assistant correct hebt geconfigureerd.",
                         "learn_more": "Meer informatie over scènes",
                         "no_scenes": "We konden geen bewerkbare scènes vinden.",
                         "only_editable": "Alleen scènes die zijn gedefinieerd in scenes.yaml kunnen worden bewerkt.",
@@ -1330,6 +1344,7 @@
                     "caption": "Scripts",
                     "description": "Maak en bewerk scripts",
                     "editor": {
+                        "alias": "Naam",
                         "default_name": "Nieuw script",
                         "delete_confirm": "Weet je zeker dat je dit script wilt verwijderen?",
                         "delete_script": "Verwijder script",
@@ -1356,7 +1371,7 @@
                     "section": {
                         "reloading": {
                             "automation": "Herlaad automatiseringen",
-                            "core": "Herlaad lokatie en aanpassingen",
+                            "core": "Herlaad locatie en aanpassingen",
                             "group": "Herlaad groepen",
                             "heading": "Configuratie herladen",
                             "introduction": "Sommige delen van Home Assistant kunnen opnieuw worden geladen zonder dat een herstart vereist is. Als je herladen gebruikt, wordt de huidige configuratie leeggemaakt en wordt de nieuwe geladen.",
@@ -1538,11 +1553,11 @@
                     "events": {
                         "alert_event_type": "Het type gebeurtenis is een verplicht veld",
                         "available_events": "Beschikbare gebeurtenissen",
-                        "count_listeners": "({count} luisteraars)",
+                        "count_listeners": " ({count} luisteraars)",
                         "data": "Gebeurtenis data (YAML, optioneel)",
                         "description": "Start een evenement op de Home Assistant-gebeurtenisbus",
                         "documentation": "Gebeurtenissen documentatie.",
-                        "event_fired": "Gebeurtenis {naam} afgevuurd",
+                        "event_fired": "Gebeurtenis {name} afgevuurd",
                         "fire_event": "Gebeurtenis uitvoeren",
                         "listen_to_events": "Luisteren naar gebeurtenissen",
                         "listening_to": "Luisteren naar",
@@ -1696,7 +1711,7 @@
                         },
                         "entities": {
                             "name": "Entiteiten",
-                            "show_header_toggle": "Koptekst weergeven wisselen?",
+                            "show_header_toggle": "Titel schakelaar weergeven?",
                             "toggle": "Entiteiten in- en uitschakelen"
                         },
                         "entity-button": {

@@ -119,7 +119,7 @@
             "entity_not_found": "Entidad no encontrada",
             "error": "Error",
             "unavailable": "N/D",
-            "unknown": "?"
+            "unknown": "Desconocido"
         },
         "device_tracker": {
             "home": "En casa",
@@ -671,7 +671,7 @@
             "entity_turned_on": "Encendido {entity}.",
             "service_call_failed": "Error al llamar al servicio {service}.",
             "service_called": "Servicio {service} llamado.",
-            "triggered": "Activado {nombre}"
+            "triggered": "Activado {name}"
         },
         "panel": {
             "config": {
@@ -1178,7 +1178,6 @@
                     "description": "Administrar dispositivos conectados",
                     "details": "Aquí están todos los detalles de tu dispositivo.",
                     "device_not_found": "Dispositivo no encontrado.",
-                    "entities": "Entidades",
                     "info": "Información del dispositivo",
                     "unknown_error": "Error desconocido",
                     "unnamed_device": "Dispositivo sin nombre"
@@ -1256,6 +1255,17 @@
                     "details": "Detalles de la integración",
                     "discovered": "Descubierto",
                     "home_assistant_website": "Sitio web de Home Assistant",
+                    "ignore": {
+                        "confirm_delete_ignore": "Esto hará que la integración vuelva a aparecer en tus integraciones descubiertas cuando se descubra de nuevo. Esto podría requerir un reinicio o tomar algo de tiempo.",
+                        "confirm_delete_ignore_title": "¿Dejar de ignorar {name}?",
+                        "confirm_ignore": "¿Estás seguro de que no quieres configurar esta integración? Puedes deshacer esto haciendo clic en 'Mostrar integraciones ignoradas' en el menú de desbordamiento en la parte superior derecha.",
+                        "confirm_ignore_title": "¿Ignorar la detección de {name}?",
+                        "hide_ignored": "Ocultar integraciones ignoradas",
+                        "ignore": "Ignorar",
+                        "ignored": "Ignorado",
+                        "show_ignored": "Mostrar integraciones ignoradas",
+                        "stop_ignore": "Dejar de ignorar"
+                    },
                     "integration_not_found": "Integración no encontrada.",
                     "new": "Configurar una nueva integración.",
                     "none": "Todavía no hay nada configurado",
@@ -1290,7 +1300,7 @@
                     "note_about_persons_configured_in_yaml": "Nota: las personas configuradas a través de configuration.yaml no se pueden editar a través de la interfaz de usuario."
                 },
                 "scene": {
-                    "activated": "Escena activada {nombre}.",
+                    "activated": "Escena activada {name}.",
                     "caption": "Escenas",
                     "description": "Crear y editar escenas",
                     "editor": {
@@ -1334,6 +1344,7 @@
                     "caption": "Scripts",
                     "description": "Crear y editar scripts",
                     "editor": {
+                        "alias": "Nombre",
                         "default_name": "Nuevo script",
                         "delete_confirm": "¿Seguro que quieres eliminar este script?",
                         "delete_script": "Eliminar script",

@@ -411,7 +411,7 @@
             },
             "automation": {
                 "last_triggered": "Last triggered",
-                "trigger": "Trigger"
+                "trigger": "Execute"
             },
             "camera": {
                 "not_available": "Image not available"
@@ -533,6 +533,7 @@
         },
         "common": {
             "cancel": "Cancel",
+            "close": "Close",
             "loading": "Loading",
             "no": "No",
             "save": "Save",
@@ -588,6 +589,13 @@
             },
             "more_info_control": {
                 "dismiss": "Dismiss dialog",
+                "restored": {
+                    "confirm_remove_text": "Are you sure you want to remove this entity?",
+                    "confirm_remove_title": "Remove entity?",
+                    "not_provided": "This entity is currently unavailable and is an orphan to a removed, changed or dysfunctional integration or device.",
+                    "remove_action": "Remove entity",
+                    "remove_intro": "If the entity is no longer in use, you can clean it up by removing it."
+                },
                 "script": {
                     "last_action": "Last Action"
                 },
@@ -955,6 +963,7 @@
                             "manage_entities": "Manage Entities",
                             "security_devices": "Security Devices",
                             "sync_entities": "Sync Entities to Google",
+                            "sync_entities_404_message": "Failed to sync your entities to Google, ask Google 'Hey Google, sync my devices' to sync your entities.",
                             "title": "Google Assistant"
                         },
                         "integrations": "Integrations",
@@ -1178,7 +1187,11 @@
                     "description": "Manage connected devices",
                     "details": "Here are all the details of your device.",
                     "device_not_found": "Device not found.",
-                    "entities": "Entities",
+                    "entities": {
+                        "add_entities_lovelace": "Add all device entities to Lovelace",
+                        "entities": "Entities",
+                        "none": "This device has no entities"
+                    },
                     "info": "Device info",
                     "unknown_error": "Unknown error",
                     "unnamed_device": "Unnamed device"
@@ -1199,17 +1212,44 @@
                         "update": "UPDATE"
                     },
                     "picker": {
+                        "disable_selected": {
+                            "button": "Disable selected",
+                            "confirm_text": "Disabled entities will not be added to Home Assistant.",
+                            "confirm_title": "Do you want to disable {number} entities?"
+                        },
+                        "enable_selected": {
+                            "button": "Enable selected",
+                            "confirm_text": "This will make them available in Home Assistant again if they are now disabled.",
+                            "confirm_title": "Do you want to enable {number} entities?"
+                        },
+                        "filter": {
+                            "filter": "Filter",
+                            "show_disabled": "Show disabled entities",
+                            "show_unavailable": "Show unavailable entities"
+                        },
                         "header": "Entities",
                         "headers": {
                             "enabled": "Enabled",
                             "entity_id": "Entity ID",
                             "integration": "Integration",
-                            "name": "Name"
+                            "name": "Name",
+                            "status": "Status"
                         },
                         "integrations_page": "Integrations page",
                         "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
-                        "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant. Note, removing the entity registry entry won't remove the entity. To do that, follow the link below and remove it from the integrations page.",
+                        "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant.",
+                        "remove_selected": {
+                            "button": "Remove selected",
+                            "confirm_text": "Entities can only be removed when the integration is no longer providing the entities.",
+                            "confirm_title": "Do you want to remove {number} entities?"
+                        },
+                        "selected": "{number} selected",
                         "show_disabled": "Show disabled entities",
+                        "status": {
+                            "disabled": "Disabled",
+                            "ok": "Ok",
+                            "unavailable": "Unavailable"
+                        },
                         "unavailable": "(unavailable)"
                     }
                 },
@@ -1317,7 +1357,7 @@
                             "delete": "Delete entity",
                             "device_entities": "If you add an entity that belongs to a device, the device will be added.",
                             "header": "Entities",
-                            "introduction": "Entities that do not belong to a devices can be set here.",
+                            "introduction": "Entities that do not belong to a device can be set here.",
                             "without_device": "Entities without device"
                         },
                         "introduction": "Use scenes to bring your home alive.",
@@ -1470,6 +1510,29 @@
                         "area_picker_label": "Area",
                         "device_name_placeholder": "User given name",
                         "update_name_button": "Update Name"
+                    },
+                    "groups": {
+                        "add_members": "Add Members",
+                        "adding_members": "Adding Members",
+                        "create": "Create Group",
+                        "create_group": "Create New ZHA Zigbee Group",
+                        "create_group_details": "Enter the required details to create a new zigbee group",
+                        "creating_group": "Creating Group",
+                        "group_details": "Here are all the details for the selected Zigbee group.",
+                        "group_id": "Group ID",
+                        "group_info": "Group Information",
+                        "group_name_placeholder": "Group Name",
+                        "group_not_found": "Group not found!",
+                        "groups": "Groups",
+                        "header": "Zigbee Group Management",
+                        "introduction": "Create and modify zigbee groups",
+                        "manage_groups": "Manage Zigbee Groups",
+                        "members": "Members",
+                        "remove_groups": "Remove Groups",
+                        "remove_members": "Remove Members",
+                        "removing_groups": "Removing Groups",
+                        "removing_members": "Removing Members",
+                        "zha_zigbee_groups": "ZHA Zigbee Groups"
                     },
                     "network_management": {
                         "header": "Network Management",
@@ -1668,6 +1731,11 @@
                 "showing_entries": "Showing entries for"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "You can only use this function when you have taken control of Lovelace.",
+                    "saving_failed": "Saving Lovelace config failed.",
+                    "yaml_unsupported": "You can not use this function when using Lovelace in YAML mode."
+                },
                 "cards": {
                     "confirm_delete": "Are you sure you want to delete this card?",
                     "empty_state": {
@@ -1857,10 +1925,13 @@
                         "para_no_id": "This element doesn't have an ID. Please add an ID to this element in 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "We will automatically generate your Lovelace views with your areas and devices if you remove your Lovelace configuration.",
+                        "confirm_remove_config_title": "Are you sure you want to remove your Lovelace configuration? We will automatically generate your Lovelace views with your areas and devices.",
                         "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
                         "confirm_unsaved_comments": "Your config contains comment(s), these will not be saved. Do you want to continue?",
                         "error_invalid_config": "Your config is not valid: {error}",
                         "error_parse_yaml": "Unable to parse YAML: {error}",
+                        "error_remove": "Unable to remove config: {error}",
                         "error_save_yaml": "Unable to save YAML: {error}",
                         "header": "Edit Config",
                         "save": "Save",
@@ -1873,6 +1944,11 @@
                         "para": "By default Home Assistant will maintain your user interface, updating it when new entities or Lovelace components become available. If you take control we will no longer make changes automatically for you.",
                         "para_sure": "Are you sure you want to take control of your user interface?",
                         "save": "Take control"
+                    },
+                    "suggest_card": {
+                        "add": "Add to Lovelace",
+                        "create_own": "Create your own",
+                        "header": "We created a suggestion for you"
                     },
                     "view": {
                         "panel_mode": {
