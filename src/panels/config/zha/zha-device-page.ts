@@ -25,10 +25,12 @@ import {
   fetchBindableDevices,
   ZHADevice,
   fetchZHADevice,
+  ZHAGroup,
+  fetchGroups,
 } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { sortZHADevices } from "./functions";
+import { sortZHADevices, sortZHAGroups } from "./functions";
 import { ZHAClusterSelectedParams } from "./types";
 
 @customElement("zha-device-page")
@@ -110,13 +112,13 @@ export class ZHADevicePage extends LitElement {
               ></zha-device-binding-control>
             `
           : ""}
-        ${this._selectedDevice && this._groups.length > 0
+        ${this.device && this._groups.length > 0
           ? html`
               <zha-group-binding-control
                 .isWide="${this.isWide}"
                 .narrow="${this.narrow}"
                 .hass="${this.hass}"
-                .selectedDevice="${this._selectedDevice}"
+                .selectedDevice="${this.device}"
                 .groups="${this._groups}"
               ></zha-group-binding-control>
             `
