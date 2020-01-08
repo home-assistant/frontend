@@ -28,6 +28,8 @@ import "../../components/ha-code-editor";
 import { HaCodeEditor } from "../../components/ha-code-editor";
 import { HomeAssistant } from "../../types";
 import { computeRTL } from "../../common/util/compute_rtl";
+import { LovelaceConfig } from "../../data/lovelace";
+import { showConfirmationDialog } from "../../dialogs/confirmation/show-dialog-confirmation";
 
 const lovelaceStruct = struct.interface({
   title: "string?",
@@ -180,8 +182,43 @@ class LovelaceFullConfigEditor extends LitElement {
     }
   }
 
+  private async _removeConfig() {
+    try {
+      await this.lovelace!.deleteConfig();
+    } catch (err) {
+      alert(
+        this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.error_remove",
+          "error",
+          err
+        )
+      );
+    }
+    window.onbeforeunload = null;
+    if (this.closeEditor) {
+      this.closeEditor();
+    }
+  }
+
   private async _handleSave() {
     this._saving = true;
+
+    const value = this.yamlEditor.value;
+
+    if (!value) {
+      showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.confirm_remove_config_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.confirm_remove_config_text"
+        ),
+        confirmBtnText: this.hass.localize("ui.common.yes"),
+        cancelBtnText: this.hass.localize("ui.common.no"),
+        confirm: () => this._removeConfig(),
+      });
+      return;
+    }
 
     if (this.yamlEditor.hasComments) {
       if (
@@ -195,9 +232,9 @@ class LovelaceFullConfigEditor extends LitElement {
       }
     }
 
-    let value;
+    let config: LovelaceConfig;
     try {
-      value = safeLoad(this.yamlEditor.value);
+      config = safeLoad(value);
     } catch (err) {
       alert(
         this.hass.localize(
@@ -210,7 +247,7 @@ class LovelaceFullConfigEditor extends LitElement {
       return;
     }
     try {
-      value = lovelaceStruct(value);
+      config = lovelaceStruct(config);
     } catch (err) {
       alert(
         this.hass.localize(
@@ -222,7 +259,7 @@ class LovelaceFullConfigEditor extends LitElement {
       return;
     }
     try {
-      await this.lovelace!.saveConfig(value);
+      await this.lovelace!.saveConfig(config);
     } catch (err) {
       alert(
         this.hass.localize(

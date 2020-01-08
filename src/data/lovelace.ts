@@ -113,6 +113,11 @@ export const saveConfig = (
     config,
   });
 
+export const deleteConfig = (hass: HomeAssistant): Promise<void> =>
+  hass.callWS({
+    type: "lovelace/config/delete",
+  });
+
 export const subscribeLovelaceUpdates = (
   conn: Connection,
   onChange: () => void
