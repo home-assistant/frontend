@@ -20,8 +20,11 @@ import { HomeAssistant, Route } from "../../../types";
 import { fetchDevices, ZHADevice } from "../../../data/zha";
 import { sortZHADevices, formatAsPaddedHex } from "./functions";
 import memoizeOne from "memoize-one";
-import { DataTableColumnContainer } from "../../../components/data-table/ha-data-table";
-import { showZHADeviceInfoDialog } from "../../../dialogs/zha-device-info-dialog/show-dialog-zha-device-info";
+import {
+  DataTableColumnContainer,
+  RowClickedEvent,
+} from "../../../components/data-table/ha-data-table";
+import { navigate } from "../../../common/navigate";
 
 export interface DeviceRowData extends ZHADevice {
   device?: DeviceRowData;
@@ -61,26 +64,6 @@ class ZHAConfigDashboard extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
-              template: (name) => html`
-                <div
-                  @click=${this._handleDeviceClicked}
-                  style="cursor: pointer;"
-                >
-                  ${name}
-                </div>
-              `,
-            },
-            id: {
-              title: "",
-              sortable: false,
-              filterable: false,
-              template: (id) => html`
-                <a href=${`/config/zha/device/${id}`}>
-                  <ha-icon-next
-                    style="color: var(--primary-text-color);"
-                  ></ha-icon-next>
-                </a>
-              `,
             },
           }
         : {
@@ -89,14 +72,6 @@ class ZHAConfigDashboard extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
-              template: (name) => html`
-                <div
-                  @click=${this._handleDeviceClicked}
-                  style="cursor: pointer;"
-                >
-                  ${name}
-                </div>
-              `,
             },
             nwk: {
               title: "Nwk",
@@ -107,18 +82,6 @@ class ZHAConfigDashboard extends LitElement {
               title: "IEEE",
               sortable: true,
               filterable: true,
-            },
-            id: {
-              title: "",
-              sortable: false,
-              filterable: false,
-              template: (id) => html`
-                <a href=${`/config/zha/device/${id}`}>
-                  <ha-icon-next
-                    style="color: var(--primary-text-color);"
-                  ></ha-icon-next>
-                </a>
-              `,
             },
           }
   );
@@ -175,6 +138,7 @@ class ZHAConfigDashboard extends LitElement {
             <ha-data-table
               .columns=${this._columns(this.narrow)}
               .data=${this._memoizeDevices(this._devices)}
+              @row-click=${this._handleDeviceClicked}
             ></ha-data-table>
           </ha-card>
         </ha-config-section>
@@ -187,10 +151,8 @@ class ZHAConfigDashboard extends LitElement {
   }
 
   private async _handleDeviceClicked(ev: CustomEvent) {
-    const ieee = (ev.target as HTMLElement)
-      .closest("tr")!
-      .getAttribute("data-row-id")!;
-    showZHADeviceInfoDialog(this, { ieee });
+    const deviceId = (ev.detail as RowClickedEvent).id;
+    navigate(this, `/config/zha/device/${deviceId}`);
   }
 
   static get styles(): CSSResultArray {
