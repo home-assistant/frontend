@@ -1178,7 +1178,6 @@
                     "description": "Gestisci i dispositivi collegati",
                     "details": "Ecco tutti i dettagli del tuo dispositivo.",
                     "device_not_found": "Dispositivo non trovato.",
-                    "entities": "Entità",
                     "info": "Informazioni sul dispositivo",
                     "unknown_error": "Errore sconosciuto",
                     "unnamed_device": "Dispositivo senza nome"
@@ -1256,6 +1255,17 @@
                     "details": "Dettagli dell'integrazione",
                     "discovered": "Scoperto",
                     "home_assistant_website": "Sito Web di Home Assistant",
+                    "ignore": {
+                        "confirm_delete_ignore": "Questo farà apparire di nuovo l'integrazione nelle vostre integrazioni scoperte quando verrà scoperta. Questo potrebbe richiedere un riavvio o richiedere un po' di tempo.",
+                        "confirm_delete_ignore_title": "Smettere di ignorare {name}?",
+                        "confirm_ignore": "Sei sicuro di non voler configurare questa integrazione? È possibile annullare questa operazione facendo clic su 'Mostra integrazioni ignorate' nel menu di overflow in alto a destra.",
+                        "confirm_ignore_title": "Ignorare l'individuazione di {name}?",
+                        "hide_ignored": "Nascondi integrazioni ignorate",
+                        "ignore": "Ignora",
+                        "ignored": "Ignorato",
+                        "show_ignored": "Mostra integrazioni ignorate",
+                        "stop_ignore": "Smetti di ignorare"
+                    },
                     "integration_not_found": "Integrazione non trovata.",
                     "new": "Configura una nuova integrazione",
                     "none": "Non hai ancora configurato niente",
@@ -1334,6 +1344,7 @@
                     "caption": "Script",
                     "description": "Crea e modifica Script",
                     "editor": {
+                        "alias": "Nome",
                         "default_name": "Nuovo Script",
                         "delete_confirm": "Sei sicuro di voler eliminare questo script?",
                         "delete_script": "Elimina script",
@@ -1542,7 +1553,7 @@
                     "events": {
                         "alert_event_type": "Il tipo di evento è un campo obbligatorio",
                         "available_events": "Eventi disponibili",
-                        "count_listeners": "({count} ascoltatori)",
+                        "count_listeners": " ({count} ascoltatori)",
                         "data": "Dati Evento (YAML, opzionale)",
                         "description": "Attiva un evento sul bus eventi.",
                         "documentation": "Documentazione degli Eventi.",
@@ -1767,7 +1778,7 @@
                         },
                         "markdown": {
                             "content": "Contenuto",
-                            "name": "Riduzione"
+                            "name": "Markdown"
                         },
                         "media-control": {
                             "name": "Controllo dei media"

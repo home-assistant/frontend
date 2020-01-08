@@ -3,7 +3,13 @@ import "../../../../../components/ha-service-picker";
 import "../../../../../components/entity/ha-entity-picker";
 import "../../../../../components/ha-yaml-editor";
 
-import { LitElement, property, customElement } from "lit-element";
+import {
+  LitElement,
+  property,
+  customElement,
+  PropertyValues,
+  query,
+} from "lit-element";
 import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 import { HomeAssistant } from "../../../../../types";
 import { html } from "lit-html";
@@ -13,11 +19,15 @@ import { computeObjectId } from "../../../../../common/entity/compute_object_id"
 import { PolymerChangedEvent } from "../../../../../polymer-types";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { ServiceAction } from "../../../../../data/script";
+// tslint:disable-next-line
+import { HaYamlEditor } from "../../../../../components/ha-yaml-editor";
 
 @customElement("ha-automation-action-service")
 export class HaServiceAction extends LitElement implements ActionElement {
   @property() public hass!: HomeAssistant;
   @property() public action!: ServiceAction;
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+  private _actionData?: ServiceAction["data"];
 
   public static get defaultConfig() {
     return { service: "", data: {} };
@@ -43,7 +53,19 @@ export class HaServiceAction extends LitElement implements ActionElement {
     });
   });
 
-  public render() {
+  protected updated(changedProperties: PropertyValues) {
+    if (!changedProperties.has("action")) {
+      return;
+    }
+    if (this._actionData && this._actionData !== this.action.data) {
+      if (this._yamlEditor) {
+        this._yamlEditor.setValue(this.action.data);
+      }
+    }
+    this._actionData = this.action.data;
+  }
+
+  protected render() {
     const { service, data, entity_id } = this.action;
 
     const serviceData = this._getServiceData(service);
@@ -73,12 +95,13 @@ export class HaServiceAction extends LitElement implements ActionElement {
         )}
         .name=${"data"}
         .value=${data}
-        @value-changed=${this._valueChanged}
+        @value-changed=${this._dataChanged}
       ></ha-yaml-editor>
     `;
   }
 
-  private _valueChanged(ev: CustomEvent): void {
+  private _dataChanged(ev: CustomEvent): void {
+    this._actionData = ev.detail.value;
     handleChangeEvent(this, ev);
   }
 

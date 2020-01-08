@@ -1094,7 +1094,6 @@
                     },
                     "description": "Halda ühendatud seadmeid",
                     "device_not_found": "Seadet ei leitud.",
-                    "entities": "Olemid",
                     "info": "Seadme info",
                     "unknown_error": "Tundmatu viga",
                     "unnamed_device": "Nimetu seade"
