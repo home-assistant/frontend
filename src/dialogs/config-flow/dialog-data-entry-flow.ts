@@ -124,6 +124,7 @@ class DataEntryFlowDialog extends LitElement {
       <ha-paper-dialog
         with-backdrop
         opened
+        modal
         @opened-changed=${this._openedChanged}
       >
         ${this._loading || (this._step === null && this._handlers === undefined)
