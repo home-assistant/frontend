@@ -1,4 +1,3 @@
-import "../../../layouts/hass-subpage";
 import "./zha-groups-data-table";
 
 import {
@@ -19,6 +18,7 @@ import "@material/mwc-button";
 import "@polymer/paper-spinner/paper-spinner";
 import "@polymer/paper-icon-button/paper-icon-button";
 import { navigate } from "../../../common/navigate";
+import "../../../layouts/hass-subpage";
 
 @customElement("zha-groups-dashboard")
 export class ZHAGroupsDashboard extends LitElement {
@@ -47,9 +47,9 @@ export class ZHAGroupsDashboard extends LitElement {
   protected render(): TemplateResult {
     return html`
       <hass-subpage
-        header=${this.hass.localize(
-          "ui.panel.config.zha.groups.zha_zigbee_groups"
-        )}
+        .header="${this.hass!.localize(
+          "ui.panel.config.zha.groups.groups-header"
+        )}"
       >
         <paper-icon-button
           slot="toolbar-icon"

@@ -21,6 +21,7 @@ export interface Lovelace {
   enableFullEditMode: () => void;
   setEditMode: (editMode: boolean) => void;
   saveConfig: (newConfig: LovelaceConfig) => Promise<void>;
+  deleteConfig: () => Promise<void>;
 }
 
 export interface LovelaceBadge extends HTMLElement {

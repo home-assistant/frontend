@@ -482,7 +482,7 @@
             "day": "{count} {count, plural,\n  one {روز}\n  other {روز ها}\n}",
             "hour": "{count} {تعداد, جمع,\nیکی {ساعت}\nدیگر {ساعت}\n}",
             "second": "ویرایشگر اتوماسیون اجازه می دهد تا شما را به ایجاد و ویرایش اتوماسیون بپردازید. لطفا پیوند زیر را بخوانید تا دستورالعمل ها را متوجه بشید تا مطمئن شوید که صفحه اصلی دستیار را به درستی پیکربندی کرده اید.",
-            "week": "\n{count} {count, plural,\n  one {هفته}\n  other {هفته ها}\n}\n"
+            "week": "{count} {count, plural,\n  one {هفته}\n  other {هفته ها}\n}"
         },
         "login-form": {
             "log_in": "ورود",
@@ -679,7 +679,7 @@
                     }
                 },
                 "cloud": {
-                    "caption": " home assistant ابر",
+                    "caption": "home assistant ابر",
                     "description_features": "کنترل کردن از خانه، ادغام با Alexa و Google Assistant.",
                     "description_login": "وارد شده به عنوان {email}",
                     "description_not_login": "وارد نشده اید"
@@ -833,7 +833,7 @@
                 "zha": {
                     "add_device_page": {
                         "discovery_text": "دستگاه های کشف شده در اینجا نشان داده می شوند. دستورالعمل های دستگاه (های) خود را دنبال کنید و دستگاه (های) را در حالت جفت قرار دهید.",
-                        "header": " صفحه اصلی اتوماسیون مدیریت شبکه Zigbee",
+                        "header": "صفحه اصلی اتوماسیون مدیریت شبکه Zigbee",
                         "search_again": "جستجوی مجدد",
                         "spinner": "جستجو برای دستگاه های ZHY Zigbee ..."
                     },
@@ -843,7 +843,7 @@
                         "devices": "دستگاه ها",
                         "value": "مقدار"
                     },
-                    "description": " صفحه اصلی اتوماسیون مدیریت شبکه Zigbee",
+                    "description": "صفحه اصلی اتوماسیون مدیریت شبکه Zigbee",
                     "device_card": {
                         "area_picker_label": "منطقه",
                         "device_name_placeholder": "نام کاربر داده شده",

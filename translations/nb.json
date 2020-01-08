@@ -1178,7 +1178,6 @@
                     "description": "Administrer tilkoblede enheter",
                     "details": "Her er alle detaljer for enheten.",
                     "device_not_found": "Enhet ikke funnet",
-                    "entities": "Entiteter",
                     "info": "Enhetsinformasjon",
                     "unknown_error": "Ukjent feil",
                     "unnamed_device": "Enhet uten navn"
@@ -1188,7 +1187,7 @@
                     "description": "Oversikt over alle kjente entiteter",
                     "editor": {
                         "confirm_delete": "Er du sikker på at du vil slette denne oppføringen?",
-                        "confirm_delete2": "Hvis du sletter en oppføring, fjernes ikke entiteten fra Home Assistant. Hvis du vil gjøre dette, må du fjerne integrasjonen '{Platform} ' fra Home Assistant.",
+                        "confirm_delete2": "Hvis du sletter en oppføring, fjernes ikke entiteten fra Home Assistant. Hvis du vil gjøre dette, må du fjerne integrasjonen {platform} fra Home Assistant.",
                         "default_name": "Nytt område",
                         "delete": "SLETT",
                         "enabled_cause": "Deaktivert av {cause}.",
@@ -1229,8 +1228,8 @@
                         "no_device": "Oppføringer uten enheter",
                         "no_devices": "Denne integrasjonen har ingen enheter.",
                         "restart_confirm": "Start Home Assistant på nytt for å fullføre fjerningen av denne integrasjonen",
-                        "settings_button": "Rediger innstillinger for {Integration}",
-                        "system_options_button": "System alternativer for {Integration}",
+                        "settings_button": "Rediger innstillinger for {integration}",
+                        "system_options_button": "System alternativer for {integration}",
                         "via": "Tilkoblet via"
                     },
                     "config_flow": {
@@ -1256,6 +1255,17 @@
                     "details": "Integrasjonsdetaljer",
                     "discovered": "Oppdaget",
                     "home_assistant_website": "Nettsted for Home Assistant",
+                    "ignore": {
+                        "confirm_delete_ignore": "Dette vil få integrasjonen til å vises i de oppdagede integrasjonene dine igjen når den blir oppdaget. Dette kan kreve omstart eller ta litt tid.",
+                        "confirm_delete_ignore_title": "Slutt å ignorere {name}?",
+                        "confirm_ignore": "Er du sikker på at du ikke vil konfigurere denne integreringen? Du kan angre dette ved å klikke på «Vis ignorerte integreringer» i overflow-menyen øverst til høyre.",
+                        "confirm_ignore_title": "Ignorer oppdaging av {name}?",
+                        "hide_ignored": "Skjul ignorerte integrasjoner",
+                        "ignore": "Ignorer",
+                        "ignored": "ignorert",
+                        "show_ignored": "Vis ignorerte integrasjoner",
+                        "stop_ignore": "Slutt å ignorere"
+                    },
                     "integration_not_found": "Integrasjon ikke funnet.",
                     "new": "Sett opp en ny integrasjon",
                     "none": "Ingenting er konfigurert enda",
@@ -1334,10 +1344,11 @@
                     "caption": "Skript",
                     "description": "Opprett og rediger skript",
                     "editor": {
+                        "alias": "Navn",
                         "default_name": "Nytt skript",
                         "delete_confirm": "Er du sikker på at du vil slette dette skriptet?",
                         "delete_script": "Slett skript",
-                        "header": "Skript: {navn}",
+                        "header": "Skript: {name}",
                         "introduction": "Bruk skript til å utføre en sekvens med handlinger.",
                         "link_available_actions": "Finn ut mer om tilgjengelige handlinger.",
                         "load_error_not_editable": "Bare skript inne i skript.yaml kan redigeres.",
@@ -1592,7 +1603,7 @@
                         "description_listen": "Lytt til et emne",
                         "description_publish": "Publiser en pakke",
                         "listening_to": "Lytter til",
-                        "message_received": "Meldingen {ID} ble mottatt på {topic} klokken {time}:",
+                        "message_received": "Meldingen {id} ble mottatt på {topic} klokken {time}:",
                         "payload": "Nyttelast (mal tillatt)",
                         "publish": "Publiser",
                         "start_listening": "Begynn å lytte",
@@ -1700,7 +1711,7 @@
                         },
                         "entities": {
                             "name": "Entiteter",
-                            "show_header_toggle": "Vise topptekst veksling?",
+                            "show_header_toggle": "Vis kortbryter?",
                             "toggle": "Aktivér/deaktivér entiteter."
                         },
                         "entity-button": {
@@ -1724,7 +1735,7 @@
                             "camera_view": "Kameravisning",
                             "entities": "Entiteter",
                             "entity": "Entitet",
-                            "hold_action": "Hold nede for handling",
+                            "hold_action": "Hold handling",
                             "hours_to_show": "Timer som skal vises",
                             "icon": "Ikon",
                             "icon_height": "Ikon høyde",
@@ -1736,15 +1747,15 @@
                             "show_icon": "Vis ikon?",
                             "show_name": "Vis navn?",
                             "show_state": "Vis tilstand?",
-                            "tap_action": "Trykk for handling",
+                            "tap_action": "Trykk handling",
                             "theme": "Tema",
                             "title": "Tittel",
                             "unit": "Betegnelse",
                             "url": "Url"
                         },
                         "glance": {
-                            "columns": "kolonner",
-                            "name": "Glance"
+                            "columns": "Kolonner",
+                            "name": "Blikk"
                         },
                         "history-graph": {
                             "name": "Historikk graf"
@@ -1779,17 +1790,17 @@
                             "name": "Bildeoppføring"
                         },
                         "picture-glance": {
-                            "name": "Bilde Glance"
+                            "name": "Bilde blikk"
                         },
                         "picture": {
                             "name": "Bilde"
                         },
                         "plant-status": {
-                            "name": "Plant status"
+                            "name": "Plante status"
                         },
                         "sensor": {
                             "graph_detail": "Detaljer for graf",
-                            "graph_type": "Grafstype",
+                            "graph_type": "Graf type",
                             "name": "Sensor"
                         },
                         "shopping-list": {
@@ -1872,14 +1883,14 @@
                 "menu": {
                     "close": "Lukk",
                     "configure_ui": "Konfigurer brukergrensesnitt",
-                    "exit_edit_mode": "Avslutt UI redigeringsmodus",
+                    "exit_edit_mode": "Avslutt redigeringsmodus for brukergrensesnitt",
                     "help": "Hjelp",
                     "refresh": "Oppdater",
                     "unused_entities": "Ubrukte entiteter"
                 },
-                "reload_lovelace": "Laste Lovelace på nytt",
+                "reload_lovelace": "Last inn Lovelace på nytt",
                 "unused_entities": {
-                    "available_entities": "Dette er enheter som du har tilgjengelig, men er ikke i Lovelace UI ennå.",
+                    "available_entities": "Dette er enheter som du har tilgjengelig, men som ikke er i Lovelace UI ennå.",
                     "domain": "Domene",
                     "entity": "Entitet",
                     "entity_id": "Entitets-ID",

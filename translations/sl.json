@@ -814,7 +814,7 @@
                         "edit_yaml": "Uredi z YAML-om",
                         "introduction": "Uporabite avtomatizacije za oživitev vašega doma.",
                         "load_error_not_editable": "Urejati je mogoče le avtomatizacije v automations.yaml.",
-                        "load_error_unknown": "Napaka pri nalaganju avtomatizacije ( {err_no}).",
+                        "load_error_unknown": "Napaka pri nalaganju avtomatizacije ({err_no}).",
                         "save": "Shrani",
                         "triggers": {
                             "add": "Dodaj sprožilec",
@@ -1178,7 +1178,6 @@
                     "description": "Upravljajte povezane naprave",
                     "details": "Tu so vse podrobnosti vaše naprave.",
                     "device_not_found": "Naprave ni bilo mogoče najti",
-                    "entities": "Entitete",
                     "info": "Informacije o napravi",
                     "unknown_error": "Neznana napaka",
                     "unnamed_device": "Neimenovana naprava"
@@ -1256,6 +1255,17 @@
                     "details": "Podrobnosti integracije",
                     "discovered": "Odkrito",
                     "home_assistant_website": "spletne strani Home Assistant",
+                    "ignore": {
+                        "confirm_delete_ignore": "Zaradi tega bo integracija spet prikazana v vaših odkritih integracijah, ko bodo odkrite. To lahko zahteva ponovni zagon ali traja nekaj časa.",
+                        "confirm_delete_ignore_title": "Ali želite prenehati ignorirati {name}?",
+                        "confirm_ignore": "Ali ste prepričani, da ne želite nastaviti te integracije? To lahko razveljavite s klikom na 'Prikaži prezrte integracije' v prelivnem meniju v zgornjem desnem kotu.",
+                        "confirm_ignore_title": "Prezri odkritje {name}?",
+                        "hide_ignored": "Skrij prezrte integracije",
+                        "ignore": "Ignoriraj",
+                        "ignored": "Ignorirano",
+                        "show_ignored": "Pokaži prezrte integracije",
+                        "stop_ignore": "Prenehajte ignorirati"
+                    },
                     "integration_not_found": "Integracije ni mogoče najti.",
                     "new": "Nastavite novo integracijo",
                     "none": "Nič še ni konfigurirano",
@@ -1334,6 +1344,7 @@
                     "caption": "Skripte",
                     "description": "Ustvarite in uredite skripte",
                     "editor": {
+                        "alias": "Ime",
                         "default_name": "Nova Skripta",
                         "delete_confirm": "Ali ste prepričani, da želite izbrisati to skripto?",
                         "delete_script": "Izbriši skripto",
@@ -1542,7 +1553,7 @@
                     "events": {
                         "alert_event_type": "Vrsta dogodka je obvezno polje",
                         "available_events": "Razpoložljivi dogodki",
-                        "count_listeners": "({count} poslušalcev)",
+                        "count_listeners": " ({count} poslušalcev)",
                         "data": "Podatki o dogodku (YAML, neobvezno)",
                         "description": "Zaženite dogodek na \"event bus\".",
                         "documentation": "Dokumentacija o dogodkih.",
@@ -2139,7 +2150,7 @@
                 "refresh_tokens": {
                     "confirm_delete": "Ali ste prepričani, da želite izbrisati žeton za osveževanje za {name} ?",
                     "created_at": "Ustvarjen na {date}",
-                    "current_token_tooltip": "Trenutni  žeton ni mogoče izbrisati",
+                    "current_token_tooltip": "Trenutni žeton ni mogoče izbrisati",
                     "delete_failed": "Žetonov za osveževanje ni bilo mogoče izbrisati.",
                     "description": "Vsak osvežilni žeton predstavlja sejo za prijavo. Osvežilni žetoni se samodejno odstranijo, ko kliknete odjava. Za vaš račun so trenutno aktivni naslednji žetoni za osveževanje.",
                     "header": "Osvežilni žetoni",

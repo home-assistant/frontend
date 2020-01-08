@@ -3,22 +3,44 @@ import "../../../../../components/ha-service-picker";
 import "../../../../../components/entity/ha-entity-picker";
 import "../../../../../components/ha-yaml-editor";
 
-import { LitElement, property, customElement } from "lit-element";
+import {
+  LitElement,
+  property,
+  customElement,
+  PropertyValues,
+  query,
+} from "lit-element";
 import { ActionElement, handleChangeEvent } from "../ha-automation-action-row";
 import { HomeAssistant } from "../../../../../types";
 import { html } from "lit-html";
 import { EventAction } from "../../../../../data/script";
+// tslint:disable-next-line
+import { HaYamlEditor } from "../../../../../components/ha-yaml-editor";
 
 @customElement("ha-automation-action-event")
 export class HaEventAction extends LitElement implements ActionElement {
   @property() public hass!: HomeAssistant;
   @property() public action!: EventAction;
+  @query("ha-yaml-editor") private _yamlEditor?: HaYamlEditor;
+  private _actionData?: EventAction["event_data"];
 
   public static get defaultConfig(): EventAction {
     return { event: "", event_data: {} };
   }
 
-  public render() {
+  protected updated(changedProperties: PropertyValues) {
+    if (!changedProperties.has("action")) {
+      return;
+    }
+    if (this._actionData && this._actionData !== this.action.event_data) {
+      if (this._yamlEditor) {
+        this._yamlEditor.setValue(this.action.event_data);
+      }
+    }
+    this._actionData = this.action.event_data;
+  }
+
+  protected render() {
     const { event, event_data } = this.action;
 
     return html`
@@ -36,9 +58,14 @@ export class HaEventAction extends LitElement implements ActionElement {
         )}
         .name=${"event_data"}
         .value=${event_data}
-        @value-changed=${this._valueChanged}
+        @value-changed=${this._dataChanged}
       ></ha-yaml-editor>
     `;
+  }
+
+  private _dataChanged(ev: CustomEvent): void {
+    this._actionData = ev.detail.value;
+    handleChangeEvent(this, ev);
   }
 
   private _valueChanged(ev: CustomEvent): void {

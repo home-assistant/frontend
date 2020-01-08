@@ -6,6 +6,7 @@ import {
   saveConfig,
   subscribeLovelaceUpdates,
   WindowWithLovelaceProm,
+  deleteConfig,
 } from "../../data/lovelace";
 import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-error-screen";
@@ -305,6 +306,28 @@ class LovelacePanel extends LitElement {
           });
           this._ignoreNextUpdateEvent = true;
           await saveConfig(this.hass!, newConfig);
+        } catch (err) {
+          // tslint:disable-next-line
+          console.error(err);
+          // Rollback the optimistic update
+          this._updateLovelace({
+            config: previousConfig,
+            mode: previousMode,
+          });
+          throw err;
+        }
+      },
+      deleteConfig: async (): Promise<void> => {
+        const { config: previousConfig, mode: previousMode } = this.lovelace!;
+        try {
+          // Optimistic update
+          this._updateLovelace({
+            config: await generateLovelaceConfigFromHass(this.hass!),
+            mode: "generated",
+            editMode: false,
+          });
+          this._ignoreNextUpdateEvent = true;
+          await deleteConfig(this.hass!);
         } catch (err) {
           // tslint:disable-next-line
           console.error(err);
