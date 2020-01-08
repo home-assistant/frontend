@@ -1574,7 +1574,7 @@
                         "description_listen": "Téma figyelése",
                         "description_publish": "Csomag közzététele",
                         "listening_to": "Figyelés:",
-                        "message_received": "Üzenet ({id}) érkezett a(z) {topic} témában {idő}-kor:",
+                        "message_received": "Üzenet ({id}) érkezett a(z) {topic} témában {time}-kor:",
                         "payload": "Payload (sablon megengedett)",
                         "publish": "Közzététel",
                         "start_listening": "Figyelés indítása",
