@@ -7,6 +7,9 @@ import { afterNextRender } from "../common/util/render-status";
 import { HaCodeEditor } from "./ha-code-editor";
 
 const isEmpty = (obj: object) => {
+  if (typeof obj !== "object") {
+    return false;
+  }
   for (const key in obj) {
     if (obj.hasOwnProperty(key)) {
       return false;
