@@ -393,6 +393,7 @@
       },
       "automation": {
         "last_triggered": "Last triggered",
+        "never_triggered":"Never triggered",
         "trigger": "Execute"
       },
       "camera": {
@@ -458,6 +459,8 @@
         "activate": "Activate"
       },
       "script": {
+        "last_triggered": "Last triggered",
+        "never_triggered":"Never triggered",
         "execute": "Execute"
       },
       "timer": {
