@@ -106,14 +106,14 @@ class HuiGenericEntityRow extends LitElement {
                   ></ha-relative-time>
                 `
               : this.config.secondary_info === "last-triggered"
-               ? stateObj.attributes.last_triggered
-               ? html`
-                   <ha-relative-time
-                     .hass=${this.hass}
-                     .datetime=${stateObj.attributes.last_triggered}
-                   ></ha-relative-time>
-                 `
-               : this.hass.localize("ui.panel.lovelace.entities.never_triggered")
+              ? stateObj.attributes.last_triggered
+              ? html`
+                  <ha-relative-time
+                    .hass=${this.hass}
+                    .datetime=${stateObj.attributes.last_triggered}
+                  ></ha-relative-time>
+                `
+              : this.hass.localize("ui.panel.lovelace.entities.never_triggered")
               : ""}
           </div>
         </div>
