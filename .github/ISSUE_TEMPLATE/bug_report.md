@@ -59,7 +59,7 @@ Give the config of both the integration that is used, the Lovelace config, scene
 **Steps to reproduce this problem:**
 
 <!--
-Sum up all steps that are necesarry to reproduce this bug.
+Sum up all steps that are necessary to reproduce this bug.
 For example:
 1. Add a climate integration
 2. Navigate to Lovelace
