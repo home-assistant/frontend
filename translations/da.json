@@ -1925,10 +1925,13 @@
                         "para_no_id": "Dette element har ikke et id. Tilføj venligst et id til dette element i 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Vi genererer automatisk dine Lovelace-visninger med dine områder og enheder, hvis du fjerner din Lovelace-konfiguration.",
+                        "confirm_remove_config_title": "Er du sikker på, at du vil fjerne din Lovelace-konfiguration? Vi vil automatisk generere dine Lovelace-visninger med dine områder og enheder.",
                         "confirm_unsaved_changes": "Du har ikke-gemte ændringer, er du sikker på, at du vil afslutte?",
                         "confirm_unsaved_comments": "Din konfiguration indeholder kommentarer. Disse vil ikke blive gemt. Vil du fortsætte?",
                         "error_invalid_config": "Din konfiguration er ugyldig: {error}",
                         "error_parse_yaml": "Kunne ikke fortolke YAML: {error}",
+                        "error_remove": "Ude af stand til at fjerne konfiguration: {error}",
                         "error_save_yaml": "Kunne ikke gemme YAML: {error}",
                         "header": "Rediger konfiguration",
                         "save": "Gem",

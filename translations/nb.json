@@ -533,6 +533,7 @@
         },
         "common": {
             "cancel": "Avbryt",
+            "close": "Lukk",
             "loading": "Laster",
             "no": "Nei",
             "save": "Lagre",
@@ -1198,17 +1199,26 @@
                         "update": "OPPDATER"
                     },
                     "picker": {
+                        "filter": {
+                            "filter": "Filter"
+                        },
                         "header": "Entiteter",
                         "headers": {
                             "enabled": "Aktivert",
                             "entity_id": "Entitets-ID",
                             "integration": "Integrering",
-                            "name": "Navn"
+                            "name": "Navn",
+                            "status": "Status"
                         },
                         "integrations_page": "Integrasjonsside",
                         "introduction": "Home Assistant bygger opp et register over hver entitet den har sett som kan identifiseres unikt. Hver av disse entitetene vil ha en entitets-ID som er reservert kun til denne entiteten.",
                         "introduction2": "Bruk entitetsregisteret for å overskrive navnet, endre entitets-ID eller fjern oppføringen fra Home Assistant. Merk at fjerning av entitetsregisteroppføringer ikke fjerner entiteten. For å gjøre det, følg linken under og fjern den fra integrasjonssiden.",
                         "show_disabled": "Vis deaktiverte entiteter",
+                        "status": {
+                            "disabled": "Deaktivert",
+                            "ok": "Ok",
+                            "unavailable": "Utilgjengelig"
+                        },
                         "unavailable": "(utilgjengelig)"
                     }
                 },
@@ -1469,6 +1479,13 @@
                         "area_picker_label": "Område",
                         "device_name_placeholder": "Brukers navn",
                         "update_name_button": "Oppdatér navn"
+                    },
+                    "groups": {
+                        "add_members": "Legg til medlemmer",
+                        "create": "Opprett gruppe",
+                        "groups": "Grupper",
+                        "remove_groups": "Fjern grupper",
+                        "removing_groups": "Fjerner grupper"
                     },
                     "network_management": {
                         "header": "Nettverksadministrasjon",
@@ -1860,6 +1877,7 @@
                         "confirm_unsaved_comments": "Konfigurasjonen din inneholder kommentar(er), disse vil ikke bli lagret. Vil du fortsette?",
                         "error_invalid_config": "Konfigurasjonen er ikke gyldig: {error}",
                         "error_parse_yaml": "Kan ikke analysere YAML: {error}",
+                        "error_remove": "Kan ikke fjerne konfigurasjonen: {error}",
                         "error_save_yaml": "Kan ikke lagre YAML: {error}",
                         "header": "Rediger konfigurasjon",
                         "save": "Lagre",
