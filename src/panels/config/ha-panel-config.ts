@@ -11,7 +11,7 @@ import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
 import "../../layouts/hass-loading-screen";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { HomeAssistant } from "../../types";
+import { HomeAssistant, Route } from "../../types";
 import {
   CloudStatus,
   fetchCloudStatus,
@@ -37,8 +37,7 @@ declare global {
 class HaPanelConfig extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
-  @property() public route;
-  @property() public panel;
+  @property() public route!: Route;
 
   @property() private _wideSidebar: boolean = false;
   @property() private _wide: boolean = false;
@@ -91,6 +90,12 @@ class HaPanelConfig extends LitElement {
   }
 
   protected render() {
+    const dividerPos = this.route.path.indexOf("/", 1);
+    const curPage =
+      dividerPos === -1
+        ? this.route.path.substr(1)
+        : this.route.path.substr(1, dividerPos - 1);
+
     const isWide =
       this.hass.dockedSidebar === "docked" ? this._wideSidebar : this._wide;
 
@@ -100,46 +105,17 @@ class HaPanelConfig extends LitElement {
             <div class="side-bar">
               <div class="toolbar">Configuration</div>
               <div class="navigation">
-                <a href="/config/cloud" tabindex="-1">
-                  <paper-item>
-                    <paper-item-body two-line>
-                      ${this.hass.localize("ui.panel.config.cloud.caption")}
-                      ${this._cloudStatus?.logged_in
-                        ? html`
-                            <div secondary>
-                              ${this.hass.localize(
-                                "ui.panel.config.cloud.description_login",
-                                "email",
-                                (this._cloudStatus as CloudStatusLoggedIn).email
-                              )}
-                            </div>
-                          `
-                        : html`
-                            <div secondary>
-                              ${this.hass.localize(
-                                "ui.panel.config.cloud.description_features"
-                              )}
-                            </div>
-                          `}
-                    </paper-item-body>
-                  </paper-item>
-                </a>
                 <ha-config-navigation
                   .hass=${this.hass}
                   .showAdvanced=${this._showAdvanced}
+                  .curPage=${curPage}
                   .pages=${[
+                    { page: "cloud", info: this._cloudStatus },
                     { page: "integrations", core: true },
                     { page: "devices", core: true },
                     { page: "automation" },
                     { page: "script" },
                     { page: "scene" },
-                  ]}
-                ></ha-config-navigation>
-
-                <ha-config-navigation
-                  .hass=${this.hass}
-                  .showAdvanced=${this._showAdvanced}
-                  .pages=${[
                     { page: "core", core: true },
                     { page: "server_control", core: true },
                     { page: "entity_registry", core: true },
@@ -158,7 +134,6 @@ class HaPanelConfig extends LitElement {
       <ha-config-router
         .hass=${this.hass}
         .route=${this.route}
-        .panel=${this.panel}
         .narrow=${this.narrow}
         .isWide=${isWide}
         .wide=${this._wide}
