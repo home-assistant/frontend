@@ -135,53 +135,60 @@ class DataEntryFlowDialog extends LitElement {
           ? // When we are going to next step, we render 1 round of empty
             // to reset the element.
             ""
-          : this._step === null
-          ? // Show handler picker
-            html`
-              <step-flow-pick-handler
-                .flowConfig=${this._params.flowConfig}
-                .hass=${this.hass}
-                .handlers=${this._handlers}
-                .showAdvanced=${this._params.showAdvanced}
-              ></step-flow-pick-handler>
-            `
-          : this._step.type === "form"
-          ? html`
-              <step-flow-form
-                .flowConfig=${this._params.flowConfig}
-                .step=${this._step}
-                .hass=${this.hass}
-              ></step-flow-form>
-            `
-          : this._step.type === "external"
-          ? html`
-              <step-flow-external
-                .flowConfig=${this._params.flowConfig}
-                .step=${this._step}
-                .hass=${this.hass}
-              ></step-flow-external>
-            `
-          : this._step.type === "abort"
-          ? html`
-              <step-flow-abort
-                .flowConfig=${this._params.flowConfig}
-                .step=${this._step}
-                .hass=${this.hass}
-              ></step-flow-abort>
-            `
-          : this._devices === undefined || this._areas === undefined
-          ? // When it's a create entry result, we will fetch device & area registry
-            html`
-              <step-flow-loading></step-flow-loading>
-            `
           : html`
-              <step-flow-create-entry
-                .flowConfig=${this._params.flowConfig}
-                .step=${this._step}
-                .hass=${this.hass}
-                .devices=${this._devices}
-                .areas=${this._areas}
-              ></step-flow-create-entry>
+              <paper-icon-button
+                aria-label$="[[localize('ui.dialogs.more_info_control.dismiss')]]"
+                icon="hass:close"
+                dialog-dismiss
+              ></paper-icon-button>
+              ${this._step === null
+                ? // Show handler picker
+                  html`
+                    <step-flow-pick-handler
+                      .flowConfig=${this._params.flowConfig}
+                      .hass=${this.hass}
+                      .handlers=${this._handlers}
+                      .showAdvanced=${this._params.showAdvanced}
+                    ></step-flow-pick-handler>
+                  `
+                : this._step.type === "form"
+                ? html`
+                    <step-flow-form
+                      .flowConfig=${this._params.flowConfig}
+                      .step=${this._step}
+                      .hass=${this.hass}
+                    ></step-flow-form>
+                  `
+                : this._step.type === "external"
+                ? html`
+                    <step-flow-external
+                      .flowConfig=${this._params.flowConfig}
+                      .step=${this._step}
+                      .hass=${this.hass}
+                    ></step-flow-external>
+                  `
+                : this._step.type === "abort"
+                ? html`
+                    <step-flow-abort
+                      .flowConfig=${this._params.flowConfig}
+                      .step=${this._step}
+                      .hass=${this.hass}
+                    ></step-flow-abort>
+                  `
+                : this._devices === undefined || this._areas === undefined
+                ? // When it's a create entry result, we will fetch device & area registry
+                  html`
+                    <step-flow-loading></step-flow-loading>
+                  `
+                : html`
+                    <step-flow-create-entry
+                      .flowConfig=${this._params.flowConfig}
+                      .step=${this._step}
+                      .hass=${this.hass}
+                      .devices=${this._devices}
+                      .areas=${this._areas}
+                    ></step-flow-create-entry>
+                  `}
             `}
       </ha-paper-dialog>
     `;
@@ -318,6 +325,12 @@ class DataEntryFlowDialog extends LitElement {
           margin: 0;
           display: block;
           padding: 0;
+        }
+        paper-icon-button {
+          display: inline-block;
+          padding: 8px;
+          margin: 16px 16px 0 0;
+          float: right;
         }
       `,
     ];
