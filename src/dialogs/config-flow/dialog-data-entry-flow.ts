@@ -138,7 +138,9 @@ class DataEntryFlowDialog extends LitElement {
             ""
           : html`
               <paper-icon-button
-                aria-label$="[[localize('ui.dialogs.more_info_control.dismiss')]]"
+                aria-label=${this.hass.localize(
+                  "ui.panel.config.integrations.config_flow.dismiss"
+                )}
                 icon="hass:close"
                 dialog-dismiss
               ></paper-icon-button>
