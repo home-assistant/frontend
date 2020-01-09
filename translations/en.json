@@ -1477,6 +1477,10 @@
                         "search_again": "Search Again",
                         "spinner": "Searching for ZHA Zigbee devices..."
                     },
+                    "add": {
+                        "caption": "Add Devices",
+                        "description": "Add devices to the Zigbee network"
+                    },
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributes of the selected cluster",
@@ -1496,7 +1500,9 @@
                         "issue_zigbee_command": "Issue Zigbee Command"
                     },
                     "clusters": {
-                        "help_cluster_dropdown": "Select a cluster to view attributes and commands."
+                        "header": "Clusters",
+                        "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
+                        "introduction": "Clusters are the building blocks for Zigbee functionality. They seperate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
                     },
                     "common": {
                         "add_devices": "Add Devices",
@@ -1511,20 +1517,27 @@
                         "device_name_placeholder": "User given name",
                         "update_name_button": "Update Name"
                     },
+                    "devices": {
+                        "header": "Zigbee Home Automation - Device"
+                    },
                     "groups": {
                         "add_members": "Add Members",
                         "adding_members": "Adding Members",
+                        "caption": "Groups",
                         "create": "Create Group",
-                        "create_group": "Create New ZHA Zigbee Group",
+                        "create_group": "Zigbee Home Automation - Create Group",
                         "create_group_details": "Enter the required details to create a new zigbee group",
                         "creating_group": "Creating Group",
+                        "description": "Create and modify Zigbee groups",
                         "group_details": "Here are all the details for the selected Zigbee group.",
                         "group_id": "Group ID",
                         "group_info": "Group Information",
                         "group_name_placeholder": "Group Name",
                         "group_not_found": "Group not found!",
+                        "group-header": "Zigbee Home Automation - Group Details",
                         "groups": "Groups",
-                        "header": "Zigbee Group Management",
+                        "groups-header": "Zigbee Home Automation - Group Management",
+                        "header": "Zigbee Home Automation - Group Management",
                         "introduction": "Create and modify zigbee groups",
                         "manage_groups": "Manage Zigbee Groups",
                         "members": "Members",
@@ -1534,6 +1547,8 @@
                         "removing_members": "Removing Members",
                         "zha_zigbee_groups": "ZHA Zigbee Groups"
                     },
+                    "header": "Configure Zigbee Home Automation",
+                    "introduction": "Here it is possible to configure the ZHA component. Not everything is possible to configure from the UI yet, but we're working on it.",
                     "network_management": {
                         "header": "Network Management",
                         "introduction": "Commands that affect the entire network"
@@ -1549,7 +1564,8 @@
                         "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
                         "remove": "Remove a device from the ZigBee network.",
                         "updateDeviceName": "Set a custom name for this device in the device registry."
-                    }
+                    },
+                    "title": "Zigbee Home Automation"
                 },
                 "zwave": {
                     "caption": "Z-Wave",
