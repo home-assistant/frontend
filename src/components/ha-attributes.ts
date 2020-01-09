@@ -38,12 +38,12 @@ class HaAttributes extends LitElement {
           `
         )}
         ${this.stateObj.attributes.attribution
-          ? html``
-          : html`
+          ? html`
               <div class="attribution">
                 ${this.stateObj.attributes.attribution}
               </div>
-            `}
+            `
+          : ""}
       </div>
     `;
   }
