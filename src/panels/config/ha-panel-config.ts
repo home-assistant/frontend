@@ -12,11 +12,7 @@ import "@polymer/paper-item/paper-item";
 import "../../layouts/hass-loading-screen";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { HomeAssistant, Route } from "../../types";
-import {
-  CloudStatus,
-  fetchCloudStatus,
-  CloudStatusLoggedIn,
-} from "../../data/cloud";
+import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import {
   getOptimisticFrontendUserDataCollection,
