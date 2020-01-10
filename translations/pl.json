@@ -963,6 +963,7 @@
                             "manage_entities": "Zarządzanie encjami",
                             "security_devices": "Urządzenia bezpieczeństwa",
                             "sync_entities": "Synchronizuj encje",
+                            "sync_entities_404_message": "Nie udało się zsynchronizować encji z Google, poproś Google Asystenta 'Hej, Google, zsynchronizuj moje urządzenia', aby ponowić próbę synchronizacji.",
                             "title": "Asystent Google"
                         },
                         "integrations": "Integracje",
@@ -1187,6 +1188,7 @@
                     "details": "Oto wszystkie szczegóły dotyczące twojego urządzenia.",
                     "device_not_found": "Urządzenie nie zostało znalezione.",
                     "entities": {
+                        "add_entities_lovelace": "Dodaj wszystkie encje urządzenia do interfejsu użytkownika Lovelace",
                         "entities": "Encje",
                         "none": "To urządzenie nie ma żadnych encji"
                     },
@@ -1210,17 +1212,33 @@
                         "update": "UAKTUALNIJ"
                     },
                     "picker": {
+                        "enable_selected": {
+                            "button": "Włącz wybrane",
+                            "confirm_title": "Czy chcesz włączyć {number} encj(-e/-i)?"
+                        },
+                        "filter": {
+                            "filter": "Filtr",
+                            "show_disabled": "Wyświetlaj wyłączone encje",
+                            "show_unavailable": "Wyświetlaj niedostępne encje"
+                        },
                         "header": "Rejestr encji",
                         "headers": {
                             "enabled": "Włączone",
                             "entity_id": "Identyfikator encji",
                             "integration": "Integracja",
-                            "name": "Nazwa"
+                            "name": "Nazwa",
+                            "status": "Status"
                         },
                         "integrations_page": "Strona integracji",
                         "introduction": "Home Assistant prowadzi rejestr każdej encji, jaką kiedykolwiek widział i którą można jednoznacznie zidentyfikować. Każda z tych encji będzie miała przypisany unikalny identyfikator, który będzie zarezerwowany tylko dla niej.",
                         "introduction2": "Użyj rejestru encji, aby nadpisać jej nazwę, zmienić jej identyfikator lub usunąć ją z Home Assistant'a. Uwaga: usunięcie wpisu rejestru encji nie spowoduje usunięcia encji. Aby to zrobić, kliknij poniższy link i usuń integracje encji.",
+                        "selected": "wybrano {numer}",
                         "show_disabled": "Wyświetlaj nieużywane encje",
+                        "status": {
+                            "disabled": "Wyłączone",
+                            "ok": "Ok",
+                            "unavailable": "Niedostępne"
+                        },
                         "unavailable": "(niedostępne)"
                     }
                 },

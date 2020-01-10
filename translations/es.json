@@ -533,6 +533,7 @@
         },
         "common": {
             "cancel": "Cancelar",
+            "close": "Cerrar",
             "loading": "Cargando",
             "no": "No",
             "save": "Guardar",
@@ -588,6 +589,13 @@
             },
             "more_info_control": {
                 "dismiss": "Descartar diálogo",
+                "restored": {
+                    "confirm_remove_text": "¿Estás seguro de que deseas eliminar esta entidad?",
+                    "confirm_remove_title": "¿Eliminar entidad?",
+                    "not_provided": "Esta entidad no está disponible actualmente y es huérfana de una integración o dispositivo eliminado, cambiado o disfuncional.",
+                    "remove_action": "Eliminar entidad",
+                    "remove_intro": "Si la entidad ya no está en uso, puedes limpiarla eliminándola."
+                },
                 "script": {
                     "last_action": "Última acción"
                 },
@@ -955,6 +963,7 @@
                             "manage_entities": "Administrar entidades",
                             "security_devices": "Dispositivos de seguridad",
                             "sync_entities": "Sincronizar entidades con Google",
+                            "sync_entities_404_message": "No se pudo sincronizar las entidades con Google, di a Google 'Ey Google, sincroniza mis dispositivos' para sincronizar tus entidades.",
                             "title": "Asistente de Google"
                         },
                         "integrations": "Integraciones",
@@ -974,7 +983,7 @@
                             "title": "Control remoto"
                         },
                         "sign_out": "Cerrar sesión",
-                        "thank_you_note": "Gracias por ser parte de Home Assistant Cloud. Gracias a personas como tú, podemos hacer una gran experiencia de automatización del hogar para todos. ¡Gracias!",
+                        "thank_you_note": "Gracias por ser parte de Home Assistant Cloud. Gracias a personas como tú, podemos hacer una gran experiencia domótica para todos. ¡Gracias!",
                         "webhooks": {
                             "disable_hook_error_msg": "No se pudo deshabilitar el webhook:",
                             "info": "Cualquier cosa que esté configurada para ser activada por un webhook puede recibir una URL de acceso público para permitirte enviar datos a Home Assistant desde cualquier lugar, sin exponer tu instancia a Internet.",
@@ -1116,7 +1125,7 @@
                                 "script": "Recargar los scripts"
                             },
                             "server_management": {
-                                "heading": "Gestión del servidor",
+                                "heading": "Administración del servidor",
                                 "introduction": "Controla tu servidor de Home Assistant ... desde Home Assistant.",
                                 "restart": "Reiniciar",
                                 "stop": "Detener"
@@ -1178,6 +1187,11 @@
                     "description": "Administrar dispositivos conectados",
                     "details": "Aquí están todos los detalles de tu dispositivo.",
                     "device_not_found": "Dispositivo no encontrado.",
+                    "entities": {
+                        "add_entities_lovelace": "Agregar todas las entidades del dispositivo a Lovelace",
+                        "entities": "Entidades",
+                        "none": "Este dispositivo no tiene entidades"
+                    },
                     "info": "Información del dispositivo",
                     "unknown_error": "Error desconocido",
                     "unnamed_device": "Dispositivo sin nombre"
@@ -1198,17 +1212,44 @@
                         "update": "ACTUALIZAR"
                     },
                     "picker": {
+                        "disable_selected": {
+                            "button": "Desactivar seleccionadas",
+                            "confirm_text": "Las entidades deshabilitadas no se agregarán a Home Assistant.",
+                            "confirm_title": "¿Deseas deshabilitar {number} entidades?"
+                        },
+                        "enable_selected": {
+                            "button": "Habilitar seleccionadas",
+                            "confirm_text": "Esto las hará disponibles en Home Assistant de nuevo si ahora están deshabilitadas.",
+                            "confirm_title": "¿Deseas habilitar {number} entidades?"
+                        },
+                        "filter": {
+                            "filter": "Filtrar",
+                            "show_disabled": "Mostrar entidades deshabilitadas",
+                            "show_unavailable": "Mostrar entidades no disponibles"
+                        },
                         "header": "Entidades",
                         "headers": {
                             "enabled": "Habilitado",
                             "entity_id": "ID de entidad",
                             "integration": "Integración",
-                            "name": "Nombre"
+                            "name": "Nombre",
+                            "status": "Estado"
                         },
                         "integrations_page": "Integraciones",
                         "introduction": "Home Assistant mantiene un registro de cada entidad que ha visto. Cada una de estas entidades tendrá una identificación asignada que se reservará sólo para esta entidad.",
-                        "introduction2": "Utiliza el registro de entidades para anular el nombre, cambiar el ID de la entidad o eliminar la entrada de Home Assistant. Nota: la eliminación de la entrada del registro de entidades no eliminará la entidad. Para ello, sigue el siguiente enlace y elimínalo de la página de integraciones.",
+                        "introduction2": "Utiliza el registro de entidades para anular el nombre, cambiar el ID de la entidad o eliminar la entrada de Home Assistant.",
+                        "remove_selected": {
+                            "button": "Eliminar seleccionadas",
+                            "confirm_text": "Las entidades solo se pueden eliminar cuando la integración ya no proporciona las entidades.",
+                            "confirm_title": "¿Deseas eliminar {number} entidades?"
+                        },
+                        "selected": "{number} seleccionadas",
                         "show_disabled": "Mostrar entidades deshabilitadas",
+                        "status": {
+                            "disabled": "Deshabilitado",
+                            "ok": "De acuerdo",
+                            "unavailable": "No disponible"
+                        },
                         "unavailable": "(no disponible)"
                     }
                 },
@@ -1300,7 +1341,7 @@
                     "note_about_persons_configured_in_yaml": "Nota: las personas configuradas a través de configuration.yaml no se pueden editar a través de la interfaz de usuario."
                 },
                 "scene": {
-                    "activated": "Escena activada {name}.",
+                    "activated": "Activada escena {name}.",
                     "caption": "Escenas",
                     "description": "Crear y editar escenas",
                     "editor": {
@@ -1316,7 +1357,7 @@
                             "delete": "Eliminar entidad",
                             "device_entities": "Si añades una entidad que pertenece a un dispositivo, se añadirá el dispositivo.",
                             "header": "Entidades",
-                            "introduction": "Las entidades que no pertenecen a un dispositivo se pueden establecer aquí.",
+                            "introduction": "Las entidades que no pertenecen a un dispositivo se pueden configurar aquí.",
                             "without_device": "Entidades sin dispositivo"
                         },
                         "introduction": "Usa escenas para dar vida a tu hogar.",
@@ -1381,7 +1422,7 @@
                         "server_management": {
                             "confirm_restart": "¿Seguro que quieres reiniciar Home Assistant?",
                             "confirm_stop": "¿Seguro que quieres detener Home Assistant?",
-                            "heading": "Gestión del servidor",
+                            "heading": "Administración del servidor",
                             "introduction": "Controla tu servidor de Home Assistant... desde Home Assistant.",
                             "restart": "Reiniciar",
                             "stop": "Detener"
@@ -1436,6 +1477,10 @@
                         "search_again": "Buscar de nuevo",
                         "spinner": "Buscando dispositivos ZHA Zigbee...."
                     },
+                    "add": {
+                        "caption": "Añadir dispositivos",
+                        "description": "Añadir dispositivos a la red Zigbee"
+                    },
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributos del clúster seleccionado",
@@ -1455,7 +1500,9 @@
                         "issue_zigbee_command": "Emitir comando Zigbee"
                     },
                     "clusters": {
-                        "help_cluster_dropdown": "Selecciona un clúster para ver atributos y comandos."
+                        "header": "Clusters",
+                        "help_cluster_dropdown": "Selecciona un clúster para ver atributos y comandos.",
+                        "introduction": "Los clústeres son los bloques de construcción para la funcionalidad de Zigbee. Separan la funcionalidad en unidades lógicas. Hay tipos de cliente y servidor y se componen de atributos y comandos."
                     },
                     "common": {
                         "add_devices": "Añadir dispositivos",
@@ -1464,18 +1511,50 @@
                         "manufacturer_code_override": "Anulación del código del fabricante",
                         "value": "Valor"
                     },
-                    "description": "Gestión de red de Zigbee Home Automation",
+                    "description": "Administración de red de Domótica Zigbee",
                     "device_card": {
                         "area_picker_label": "Área",
                         "device_name_placeholder": "Nombre dado por el usuario",
                         "update_name_button": "Cambiar nombre"
                     },
+                    "devices": {
+                        "header": "Domótica Zigbee - Dispositivo"
+                    },
+                    "groups": {
+                        "add_members": "Añadir miembros",
+                        "adding_members": "Agregar miembros",
+                        "caption": "Grupos",
+                        "create": "Crear un grupo",
+                        "create_group": "Domótica Zigbee - Crear grupo",
+                        "create_group_details": "Introduce los detalles necesarios para crear un nuevo grupo de zigbee",
+                        "creating_group": "Creación de grupo",
+                        "description": "Crea y modifica grupos Zigbee.",
+                        "group_details": "Aquí están todos los detalles del grupo Zigbee seleccionado.",
+                        "group_id": "ID de grupo",
+                        "group_info": "Información del grupo",
+                        "group_name_placeholder": "Nombre del grupo",
+                        "group_not_found": "¡Grupo no encontrado!",
+                        "group-header": "Domótica Zigbee - Detalles de grupo",
+                        "groups": "Grupos",
+                        "groups-header": "Domótica Zigbee - Administración de grupos",
+                        "header": "Domótica Zigbee - Administración de grupos",
+                        "introduction": "Crea y modifica grupos de zigbee",
+                        "manage_groups": "Administrar grupos Zigbee",
+                        "members": "Miembros",
+                        "remove_groups": "Eliminar grupos",
+                        "remove_members": "Eliminar miembros",
+                        "removing_groups": "Eliminar grupos",
+                        "removing_members": "Eliminando miembros",
+                        "zha_zigbee_groups": "Grupos ZHA Zigbee"
+                    },
+                    "header": "Configurar domótica Zigbee",
+                    "introduction": "Aquí puedes configurar el componente ZHA. Aun no es posible configurar todo desde la interfaz de usuario, pero estamos trabajando en ello.",
                     "network_management": {
-                        "header": "Gestión de la red",
+                        "header": "Administración de la red",
                         "introduction": "Comandos que afectan a toda la red."
                     },
                     "node_management": {
-                        "header": "Gestión de dispositivos",
+                        "header": "Administración de dispositivos",
                         "help_node_dropdown": "Selecciona un dispositivo para ver las opciones por dispositivo.",
                         "hint_battery_devices": "Nota: Los dispositivos dormidos (alimentados por batería) deben estar despiertos al ejecutar comandos contra ellos. En general, puedes activar un dispositivo dormido activándolo.",
                         "hint_wakeup": "Algunos dispositivos, como los sensores Xiaomi, tienen un botón de activación que puedes presionar a intervalos de ~ 5 segundos para mantener los dispositivos despiertos mientras interactúas con ellos.",
@@ -1485,7 +1564,8 @@
                         "reconfigure": "Reconfigura el dispositivo ZHA (curar dispositivo). Usa esto si tienes problemas con el dispositivo. Si el dispositivo en cuestión es un dispositivo alimentado por batería, asegúrate de que está activo y aceptando comandos cuando uses este servicio.",
                         "remove": "Eliminar un dispositivo de la red Zigbee.",
                         "updateDeviceName": "Establece un nombre personalizado para este dispositivo en el registro de dispositivos."
-                    }
+                    },
+                    "title": "Domótica Zigbee"
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1496,10 +1576,10 @@
                         "value": "Valor",
                         "wakeup_interval": "Intervalo de activación"
                     },
-                    "description": "Gestiona tu red Z-Wave",
+                    "description": "Administra tu red Z-Wave",
                     "learn_more": "Aprende más sobre Z-Wave",
                     "network_management": {
-                        "header": "Gestión de red Z-Wave",
+                        "header": "Administración de red Z-Wave",
                         "introduction": "Ejecutar comandos que afectan a la red Z-Wave. No recibirás comentarios sobre si la mayoría de los comandos tuvieron éxito, pero puedes consultar el Registro OZW para intentar averiguarlo."
                     },
                     "network_status": {
@@ -1667,6 +1747,11 @@
                 "showing_entries": "Mostrando entradas del"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "Solo puedes usar esta función cuando hayas tomado el control de Lovelace.",
+                    "saving_failed": "Error al guardar la configuración de Lovelace.",
+                    "yaml_unsupported": "No puedes usar esta función cuando usas Lovelace en modo YAML."
+                },
                 "cards": {
                     "confirm_delete": "¿Seguro que quieres eliminar esta tarjeta?",
                     "empty_state": {
@@ -1856,10 +1941,13 @@
                         "para_no_id": "Este elemento no tiene un ID. Por favor añade uno a este elemento en 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Generaremos automáticamente tus vistas de Lovelace con tus áreas y dispositivos si eliminas tu configuración de Lovelace.",
+                        "confirm_remove_config_title": "¿Estás seguro de que deseas eliminar tu configuración de Lovelace? Generaremos automáticamente tus vistas de Lovelace con tus áreas y dispositivos.",
                         "confirm_unsaved_changes": "Tienes cambios sin guardar, ¿estás seguro de que quieres salir?",
                         "confirm_unsaved_comments": "Tu configuración contiene comentarios, estos no serán guardados. ¿Quieres continuar?",
                         "error_invalid_config": "Tu configuración no es válida: {error}",
                         "error_parse_yaml": "No se puede analizar YAML: {error}",
+                        "error_remove": "No se puede eliminar la configuración: {error}",
                         "error_save_yaml": "No se puede guardar YAML: {error}",
                         "header": "Editar configuración",
                         "save": "Guardar",
@@ -1872,6 +1960,11 @@
                         "para": "Por defecto Home Assistant se encargará de tu interfaz de usuario y la actualizará cuando haya nuevas entidades o componentes Lovelace disponibles. Si asumes el control, ya no haremos más cambios automáticamente por ti.",
                         "para_sure": "¿Estás seguro de que quieres tomar el control de tu interfaz de usuario?",
                         "save": "Tomar el control"
+                    },
+                    "suggest_card": {
+                        "add": "Añadir a Lovelace",
+                        "create_own": "Crear la tuya propia",
+                        "header": "Hemos creado una sugerencia para ti"
                     },
                     "view": {
                         "panel_mode": {
