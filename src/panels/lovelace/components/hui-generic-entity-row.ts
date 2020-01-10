@@ -113,7 +113,9 @@ class HuiGenericEntityRow extends LitElement {
                       .datetime=${stateObj.attributes.last_triggered}
                     ></ha-relative-time>
                   `
-                : this.hass.localize("ui.panel.lovelace.entities.never_triggered")
+                : this.hass.localize(
+                    "ui.panel.lovelace.entities.never_triggered"
+                  )
               : ""}
           </div>
         </div>
