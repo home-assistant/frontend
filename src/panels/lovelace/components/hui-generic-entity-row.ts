@@ -114,7 +114,7 @@ class HuiGenericEntityRow extends LitElement {
                     ></ha-relative-time>
                   `
                 : this.hass.localize(
-                    "ui.panel.lovelace.entities.never_triggered"
+                    "ui.panel.lovelace.cards.entities.never_triggered"
                   )
               : ""}
           </div>
