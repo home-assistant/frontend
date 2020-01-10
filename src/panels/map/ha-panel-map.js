@@ -69,8 +69,13 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
 
   fitMap() {
     var bounds;
+    var devices = [];
 
-    if (this._mapItems.length === 0) {
+    this._mapItems.forEach((item) => {
+      if (!item.options.zone) devices.push(item.getLatLng());
+    });
+
+    if (devices.length === 0) {
       this._map.setView(
         new this.Leaflet.LatLng(
           this.hass.config.latitude,
@@ -79,9 +84,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
         14
       );
     } else {
-      bounds = new this.Leaflet.latLngBounds(
-        this._mapItems.map((item) => item.getLatLng())
-      );
+      bounds = new this.Leaflet.latLngBounds(devices);
       this._map.fitBounds(bounds.pad(0.5));
     }
   }
@@ -143,6 +146,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
               icon: icon,
               interactive: false,
               title: title,
+              zone: true,
             }
           ).addTo(map)
         );
@@ -155,6 +159,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
               interactive: false,
               color: "#FF9800",
               radius: entity.attributes.radius,
+              zone: true,
             }
           ).addTo(map)
         );

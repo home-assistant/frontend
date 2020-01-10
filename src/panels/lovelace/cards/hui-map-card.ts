@@ -248,7 +248,13 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return;
     }
     const zoom = this._config.default_zoom;
-    if (this._mapItems.length === 0) {
+
+    var devices = [];
+    this._mapItems.forEach((item) => {
+      if (!item.options.zone) devices.push(item.getLatLng());
+    });
+
+    if (devices.length === 0) {
       this._leafletMap.setView(
         new this.Leaflet.LatLng(
           this.hass.config.latitude,
@@ -259,9 +265,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const bounds = this.Leaflet.latLngBounds(
-      this._mapItems ? this._mapItems.map((item) => item.getLatLng()) : []
-    );
+    const bounds = this.Leaflet.latLngBounds(devices);
     this._leafletMap.fitBounds(bounds.pad(0.5));
 
     if (zoom && this._leafletMap.getZoom() > zoom) {
@@ -349,6 +353,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             }),
             interactive: false,
             title,
+            zone: true,
           })
         );
 
@@ -358,6 +363,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             interactive: false,
             color: "#FF9800",
             radius,
+            zone: true,
           })
         );
 
