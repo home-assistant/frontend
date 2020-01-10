@@ -1698,7 +1698,7 @@
               "optional": "Optional"
             },
             "entities": {
-              "never_triggered":"Never triggered",
+              "never_triggered": "Never triggered",
               "name": "Entities",
               "show_header_toggle": "Show Header Toggle?",
               "toggle": "Toggle entities."
