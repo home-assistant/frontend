@@ -393,7 +393,6 @@
       },
       "automation": {
         "last_triggered": "Last triggered",
-        "never_triggered":"Never triggered",
         "trigger": "Execute"
       },
       "camera": {
@@ -459,8 +458,6 @@
         "activate": "Activate"
       },
       "script": {
-        "last_triggered": "Last triggered",
-        "never_triggered":"Never triggered",
         "execute": "Execute"
       },
       "timer": {
@@ -1701,6 +1698,7 @@
               "optional": "Optional"
             },
             "entities": {
+              "never_triggered":"Never triggered",
               "name": "Entities",
               "show_header_toggle": "Show Header Toggle?",
               "toggle": "Toggle entities."
