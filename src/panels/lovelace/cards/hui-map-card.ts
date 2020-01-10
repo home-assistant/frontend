@@ -249,9 +249,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
     const zoom = this._config.default_zoom;
 
-    var devices = [];
+    const devices = [];
     this._mapItems.forEach((item) => {
-      if (!item.options.zone) devices.push(item.getLatLng());
+      if (!item.options.zone) {
+        devices.push(item.getLatLng());
+      }
     });
 
     if (devices.length === 0) {
