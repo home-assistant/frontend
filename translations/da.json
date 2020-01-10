@@ -940,11 +940,11 @@
                             "enable_ha_skill": "Aktivér Home Assistant-skill til Alexa",
                             "enable_state_reporting": "Aktivér tilstandsrapportering",
                             "info": "Med Alexa-integrationen til Home Assistant Cloud kan du styre alle dine Home Assistant-enheder via enhver Alexa-aktiveret enhed.",
-                            "info_state_reporting": "Hvis du aktiverer tilstandsrapportering, vil Home Assistant sende alle tilstandsændringer af eksponerede enheder til Amazon. Dette giver dig mulighed for altid at se de seneste tilstande i Alexa-appen og bruge tilstandsændringer til at oprette rutiner.",
+                            "info_state_reporting": "Hvis du aktiverer tilstandsrapportering, vil Home Assistant sende alle tilstandsændringer af eksponerede entiteter til Amazon. Dette giver dig mulighed for altid at se de seneste tilstande i Alexa-appen og bruge tilstandsændringer til at oprette rutiner.",
                             "manage_entities": "Administrer entiteter",
                             "state_reporting_error": "Kunne ikke {enable_disable} rapporteringstilstand.",
                             "sync_entities": "Synkroniser entiteter",
-                            "sync_entities_error": "Kunne ikke synkronisere enheder:",
+                            "sync_entities_error": "Kunne ikke synkronisere entiteter:",
                             "title": "Alexa"
                         },
                         "connected": "Forbundet",
@@ -959,7 +959,7 @@
                             "enter_pin_hint": "Indtast en pinkode for at bruge sikkerhedsenheder",
                             "enter_pin_info": "Indtast en pin for at interagere med sikkerhedsenheder. Sikkerhedsenheder er døre, garageporte og låse. Du bliver bedt om at sige/indtaste denne pin, når du interagerer med sådanne enheder via Google Assistant.",
                             "info": "Med Google Assistant-integrationen til Home Assistant Cloud kan du styre alle dine Home Assistant-enheder via enhver Google Assistant-aktiveret enhed.",
-                            "info_state_reporting": "Hvis du aktiverer tilstandsrapportering, vil Home Assistant sende alle tilstandsændringer af eksponerede enheder til Google. Dette giver dig mulighed for altid at se de seneste tilstande i Google-appen.",
+                            "info_state_reporting": "Hvis du aktiverer tilstandsrapportering, vil Home Assistant sende alle tilstandsændringer af eksponerede entiteter til Google. Dette giver dig mulighed for altid at se de seneste tilstande i Google-appen.",
                             "manage_entities": "Administrer entiteter",
                             "security_devices": "Sikkerhedsenheder",
                             "sync_entities": "Synkroniser entiteter til Google",
@@ -1205,7 +1205,7 @@
                         "default_name": "Nyt område",
                         "delete": "SLET",
                         "enabled_cause": "Deaktiveret af {cause}.",
-                        "enabled_description": "Deaktiverede enheder tilføjes ikke til Home Assistant.",
+                        "enabled_description": "Deaktiverede entiteter tilføjes ikke til Home Assistant.",
                         "enabled_label": "Aktivér entitet",
                         "note": "Bemærk: Dette fungerer muligvis ikke med alle integrationer endnu.",
                         "unavailable": "Denne entitet er ikke tilgængelig i øjeblikket.",
@@ -1477,6 +1477,10 @@
                         "search_again": "Søg igen",
                         "spinner": "Søger efter ZHA Zigbee-enheder..."
                     },
+                    "add": {
+                        "caption": "Tilføj enheder",
+                        "description": "Føj enheder til Zigbee-netværk"
+                    },
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Egenskaber for den valgte klynge",
@@ -1496,7 +1500,9 @@
                         "issue_zigbee_command": "Send ZigBee-kommando"
                     },
                     "clusters": {
-                        "help_cluster_dropdown": "Vælg en klynge for at se egenskaber og kommandoer."
+                        "header": "Klynger",
+                        "help_cluster_dropdown": "Vælg en klynge for at se egenskaber og kommandoer.",
+                        "introduction": "Klynger er byggestenene til Zigbee-funktionalitet. De adskiller funktionalitet i logiske enheder. Der er klient- og servertyper, og de består af egenskaber og kommandoer."
                     },
                     "common": {
                         "add_devices": "Tilføj enheder",
@@ -1511,19 +1517,26 @@
                         "device_name_placeholder": "Brugertildelt navn",
                         "update_name_button": "Opdater navn"
                     },
+                    "devices": {
+                        "header": "Zigbee Home Automation - Enhed"
+                    },
                     "groups": {
                         "add_members": "Tilføj medlemmer",
                         "adding_members": "Tilføjer medlemmer",
+                        "caption": "Grupper",
                         "create": "Opret gruppe",
                         "create_group": "Opret ny ZHA Zigbee-gruppe",
                         "create_group_details": "Indtast de nødvendige oplysninger for at oprette en ny ZigBee-gruppe",
                         "creating_group": "Opretter gruppe",
+                        "description": "Opret og rediger Zigbee-grupper",
                         "group_details": "Her er alle detaljer for den valgte Zigbee-gruppe.",
                         "group_id": "Gruppe-id",
                         "group_info": "Gruppeoplysninger",
                         "group_name_placeholder": "Gruppenavn",
                         "group_not_found": "Gruppen blev ikke fundet!",
+                        "group-header": "Zigbee Home Automation - Gruppedetaljer",
                         "groups": "Grupper",
+                        "groups-header": "Zigbee Home Automation - Gruppeadministration",
                         "header": "Zigbee-gruppeadministration",
                         "introduction": "Opret og rediger Zigbee-grupper",
                         "manage_groups": "Administrer Zigbee-grupper",
@@ -1534,6 +1547,8 @@
                         "removing_members": "Fjerner medlemmer",
                         "zha_zigbee_groups": "ZHA Zigbee-grupper"
                     },
+                    "header": "Konfigurer Zigbee Home Automation",
+                    "introduction": "Her er det muligt at konfigurere ZHA-komponenten. Ikke alt er muligt at konfigurere fra brugerfladen endnu, men vi arbejder på det.",
                     "network_management": {
                         "header": "Netværksstyring",
                         "introduction": "Kommandoer, der påvirker hele netværket"
@@ -1549,7 +1564,8 @@
                         "reconfigure": "Genkonfigurer ZHA-enhed (helbred enheden). Brug dette, hvis du har problemer med enheden. Hvis den pågældende enhed er en batteridrevet enhed, skal du sørge for at den er vågen og accepterer kommandoer, når du bruger denne tjeneste.",
                         "remove": "Fjern en enhed fra Zigbee-netværket.",
                         "updateDeviceName": "Angiv et brugerdefineret navn til denne enhed i enhedsregistret"
-                    }
+                    },
+                    "title": "Zigbee Home Automation"
                 },
                 "zwave": {
                     "caption": "Z-Wave",
