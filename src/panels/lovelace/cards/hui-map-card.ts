@@ -249,8 +249,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
     const zoom = this._config.default_zoom;
 
-    const devices = [];
+    const devices = new Array();
     this._mapItems.forEach((item) => {
+      // @ts-ignore
       if (!item.options.zone) {
         devices.push(item.getLatLng());
       }
@@ -355,12 +356,14 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             }),
             interactive: false,
             title,
+            // @ts-ignore
             zone: true,
           })
         );
 
         // create circle around it
         mapItems.push(
+          // @ts-ignore
           Leaflet.circle([latitude, longitude], {
             interactive: false,
             color: "#FF9800",
