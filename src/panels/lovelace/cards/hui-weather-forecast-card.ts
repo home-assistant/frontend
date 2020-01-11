@@ -23,6 +23,7 @@ import { computeRTL } from "../../../common/util/compute_rtl";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { actionHandler } from "../common/directives/action-handler-directive";
 
 const cardinalDirections = [
   "N",
@@ -141,7 +142,11 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
       : undefined;
 
     return html`
-      <ha-card @click="${this.handleClick}">
+      <ha-card
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler()}
+        tabindex="0"
+      >
         <div class="header">
           ${this.hass.localize(`state.weather.${stateObj.state}`) ||
             stateObj.state}
@@ -274,7 +279,7 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  private handleClick(): void {
+  private _handleAction(): void {
     fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
 

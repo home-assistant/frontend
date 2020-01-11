@@ -65,6 +65,7 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
+        tabindex="0"
       >
         ${this._config.prefix}${stateObj
           ? computeStateDisplay(
@@ -89,6 +90,11 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
       div {
         padding: 8px;
         white-space: nowrap;
+      }
+      div:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 100%;
       }
     `;
   }

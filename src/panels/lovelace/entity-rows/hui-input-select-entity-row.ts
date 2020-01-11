@@ -141,13 +141,17 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
         margin-left: 16px;
         flex: 1;
       }
-
       paper-item {
         cursor: pointer;
         min-width: 200px;
       }
       .pointer {
         cursor: pointer;
+      }
+      state-badge:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 100%;
       }
     `;
   }

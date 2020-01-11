@@ -45,6 +45,7 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
+        tabindex="0"
       ></ha-icon>
     `;
   }
@@ -57,6 +58,11 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
     return css`
       :host {
         cursor: pointer;
+      }
+      ha-icon:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 100%;
       }
     `;
   }
