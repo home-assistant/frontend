@@ -227,6 +227,7 @@ class DialogPersonDetail extends LitElement {
         mwc-dialog {
           min-width: 400px;
           max-width: 600px;
+          --mdc-dialog-title-ink-color: var(--primary-text-color);
         }
         .form {
           padding-bottom: 24px;
@@ -242,6 +243,9 @@ class DialogPersonDetail extends LitElement {
         }
         a {
           color: var(--primary-color);
+        }
+        p {
+          color: var(--primary-text-color);
         }
       `,
     ];
