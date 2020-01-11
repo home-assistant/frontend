@@ -24,7 +24,6 @@ import {
   setHassioAddonOption,
   HassioAddonSetOptionParams,
 } from "../../../src/data/hassio";
-import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 
@@ -50,7 +49,7 @@ class HassioAddonAudio extends LitElement {
 
           <paper-dropdown-menu
             label="Input"
-            @value-changed="${this._setInputDevice}"
+            @selected-item-changed=${this._setInputDevice}
           >
             <paper-listbox
               slot="dropdown-content"
@@ -60,16 +59,14 @@ class HassioAddonAudio extends LitElement {
               ${this._inputDevices &&
                 this._inputDevices.map((item) => {
                   return html`
-                    <paper-item device="${item.device}"
-                      >${item.name}</paper-item
-                    >
+                    <paper-item .device=${item.device}>${item.name}</paper-item>
                   `;
                 })}
             </paper-listbox>
           </paper-dropdown-menu>
           <paper-dropdown-menu
             label="Output"
-            @value-changed="${this._setOutputDevice}"
+            @selected-item-changed=${this._setOutputDevice}
           >
             <paper-listbox
               slot="dropdown-content"
@@ -79,9 +76,7 @@ class HassioAddonAudio extends LitElement {
               ${this._outputDevices &&
                 this._outputDevices.map((item) => {
                   return html`
-                    <paper-item device="${item.device}"
-                      >${item.name}</paper-item
-                    >
+                    <paper-item .device=${item.device}>${item.name}</paper-item>
                   `;
                 })}
             </paper-listbox>
@@ -125,32 +120,16 @@ class HassioAddonAudio extends LitElement {
     }
   }
 
-  private _setInputDevice(ev: PolymerChangedEvent<string>): void {
-    const value = ev.detail.value;
-    let device: undefined | string;
-    if (value) {
-      this._inputDevices!.map((item) => {
-        if (item.name === value) {
-          device = item.device;
-        }
-      });
-    }
-    if (device && device !== this._selectedInput) {
+  private _setInputDevice(ev): void {
+    const device = ev.detail.device;
+    if (device) {
       this._selectedInput = device;
     }
   }
 
-  private _setOutputDevice(ev: PolymerChangedEvent<string>): void {
-    const value = ev.detail.value;
-    let device: undefined | string;
-    if (value) {
-      this._outputDevices!.map((item) => {
-        if (item.name === value) {
-          device = item.device;
-        }
-      });
-    }
-    if (device && device !== this._selectedOutput) {
+  private _setOutputDevice(ev): void {
+    const device = ev.detail.device;
+    if (device) {
       this._selectedOutput = device;
     }
   }
