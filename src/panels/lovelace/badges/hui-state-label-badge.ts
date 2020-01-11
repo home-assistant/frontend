@@ -4,6 +4,8 @@ import {
   TemplateResult,
   customElement,
   property,
+  CSSResult,
+  css,
 } from "lit-element";
 
 import "../../../components/entity/ha-state-label-badge";
@@ -45,12 +47,28 @@ export class HuiStateLabelBadge extends LitElement implements LovelaceBadge {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
+        tabindex="0"
       ></ha-state-label-badge>
     `;
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      ha-state-label-badge:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 4px;
+      }
+      ha-state-label-badge {
+        display: inline-block;
+        padding: 4px;
+        margin: -4px 0 -4px 0;
+      }
+    `;
   }
 }
 
