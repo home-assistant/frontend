@@ -70,6 +70,7 @@ export class HuiStateBadgeElement extends LitElement
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
+        tabindex="0"
       ></ha-state-label-badge>
     `;
   }

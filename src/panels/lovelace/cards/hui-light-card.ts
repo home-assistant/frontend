@@ -94,7 +94,8 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
         <paper-icon-button
           icon="hass:dots-vertical"
           class="more-info"
-          @click="${this._handleMoreInfo}"
+          @click=${this._handleMoreInfo}
+          tabindex="0"
         ></paper-icon-button>
 
         <div id="controls">
@@ -121,6 +122,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
                 color: this._computeColor(stateObj),
               })}
               @click=${this._handleClick}
+              tabindex="0"
             ></paper-icon-button>
           </div>
         </div>

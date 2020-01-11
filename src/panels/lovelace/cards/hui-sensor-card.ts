@@ -25,6 +25,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { fetchRecent } from "../../../data/history";
 import { SensorCardConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { actionHandler } from "../common/directives/action-handler-directive";
 
 const midPoint = (
   _Ax: number,
@@ -241,7 +242,11 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
       graph = "";
     }
     return html`
-      <ha-card @click="${this._handleClick}">
+      <ha-card
+        @action=${this._handleClick}
+        .actionHandler=${actionHandler()}
+        tabindex="0"
+      >
         <div class="flex">
           <div class="icon">
             <ha-icon
@@ -351,6 +356,11 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
         padding: 16px;
         position: relative;
         cursor: pointer;
+      }
+
+      ha-card:focus {
+        outline: none;
+        background: var(--divider-color);
       }
 
       .flex {

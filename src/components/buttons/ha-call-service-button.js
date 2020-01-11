@@ -15,6 +15,7 @@ class HaCallServiceButton extends EventsMixin(PolymerElement) {
         id="progress"
         progress="[[progress]]"
         on-click="buttonTapped"
+        tabindex="0"
         ><slot></slot
       ></ha-progress-button>
     `;

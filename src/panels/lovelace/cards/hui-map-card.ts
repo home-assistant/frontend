@@ -147,6 +147,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
           ></div>
           <paper-icon-button
             @click=${this._fitMap}
+            tabindex="0"
             icon="hass:image-filter-center-focus"
             title="Reset focus"
           ></paper-icon-button>

@@ -86,6 +86,7 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
+        tabindex="0"
         class="${classMap({
           clickable: Boolean(
             this._config.tap_action || this._config.hold_action
