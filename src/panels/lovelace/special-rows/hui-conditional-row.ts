@@ -1,4 +1,4 @@
-import { customElement } from "lit-element";
+import { customElement, property, UpdatingElement } from "lit-element";
 
 import { createRowElement } from "../common/create-row-element";
 import {
@@ -9,8 +9,8 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceRow, ConditionalRowConfig } from "../entity-rows/types";
 
 @customElement("hui-conditional-row")
-class HuiConditionalRow extends HTMLElement implements LovelaceRow {
-  private _hass?: HomeAssistant;
+class HuiConditionalRow extends UpdatingElement implements LovelaceRow {
+  @property() public hass?: HomeAssistant;
   private _config?: ConditionalRowConfig;
   private _row?: LovelaceRow;
 
@@ -41,22 +41,16 @@ class HuiConditionalRow extends HTMLElement implements LovelaceRow {
     this.update();
   }
 
-  set hass(hass: HomeAssistant) {
-    this._hass = hass;
-
-    this.update();
-  }
-
-  private update() {
-    if (!this._row || !this._hass) {
+  protected update() {
+    if (!this._row || !this.hass) {
       return;
     }
 
     const visible =
-      this._config && checkConditionsMet(this._config.conditions, this._hass);
+      this._config && checkConditionsMet(this._config.conditions, this.hass);
 
     if (visible) {
-      this._row.hass = this._hass;
+      this._row.hass = this.hass;
       if (!this._row.parentElement) {
         this.appendChild(this._row);
       }
