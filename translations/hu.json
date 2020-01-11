@@ -533,6 +533,7 @@
         },
         "common": {
             "cancel": "Mégse",
+            "close": "Bezárás",
             "loading": "Betöltés",
             "no": "Nem",
             "save": "Mentés",
@@ -588,6 +589,11 @@
             },
             "more_info_control": {
                 "dismiss": "Elvetés párbeszédpanel",
+                "restored": {
+                    "confirm_remove_text": "Biztosan el szeretnéd távolítani ezt az entitást?",
+                    "confirm_remove_title": "Eltávolítod az entitást?",
+                    "remove_action": "Entitás eltávolítása"
+                },
                 "script": {
                     "last_action": "Utolsó Művelet"
                 },
@@ -642,7 +648,7 @@
                 "unknown": "Ismeretlen",
                 "zha_device_card": {
                     "area_picker_label": "Terület",
-                    "device_name_placeholder": "Felhasználó utóneve",
+                    "device_name_placeholder": "Felhasznál által megadott név",
                     "update_name_button": "Név frissítése"
                 }
             }
@@ -1178,6 +1184,9 @@
                     "description": "Csatlakoztatott eszközök kezelése",
                     "details": "Itt található minden részlet az eszközről.",
                     "device_not_found": "Eszköz nem található.",
+                    "entities": {
+                        "entities": "Entitások"
+                    },
                     "info": "Eszköz infó",
                     "unknown_error": "Ismeretlen hiba",
                     "unnamed_device": "Névtelen eszköz"
@@ -1198,17 +1207,41 @@
                         "update": "FRISSÍTÉS"
                     },
                     "picker": {
+                        "disable_selected": {
+                            "button": "Kiválasztottak letiltása",
+                            "confirm_title": "Le szeretnél tiltani {number} entitást?"
+                        },
+                        "enable_selected": {
+                            "button": "Kiválasztottak engedélyezése",
+                            "confirm_title": "Engedélyezni szeretnél {number} entitást?"
+                        },
+                        "filter": {
+                            "filter": "Szűrő",
+                            "show_disabled": "Letiltott entitások megjelenítése",
+                            "show_unavailable": "Nem elérhető entitások megjelenítése"
+                        },
                         "header": "Entitások",
                         "headers": {
                             "enabled": "Engedélyezve",
                             "entity_id": "Entitás ID",
                             "integration": "Integráció",
-                            "name": "Név"
+                            "name": "Név",
+                            "status": "Állapot"
                         },
                         "integrations_page": "Integrációk oldal",
                         "introduction": "A Home Assistant nyilvántartást vezet minden olyan entitásról, melyet valaha látott, és egyedileg azonosítható. Ezen entitások mindegyikéhez létrejön egy entitás ID, amely csak az adott entitáshoz van rendelve.",
                         "introduction2": "Az entitás nyilvántartás használatával felülbírálhatod a nevet, módosíthatod az entitás ID-t vagy eltávolíthatod a bejegyzést a Home Assistant-ból. Megjegyzendő, hogy az entitás nyilvántartásból történő bejegyzés eltávolítás nem fogja eltávolítani magát az entitást. Ehhez kövesd az alábbi linket, és távolítsd el azt az integrációk oldalról.",
+                        "remove_selected": {
+                            "button": "Kiválasztottak eltávolítása",
+                            "confirm_title": "El szeretnél távolítani {number} entitást?"
+                        },
+                        "selected": "{number} kiválasztva",
                         "show_disabled": "Letiltott entitások megjelenítése",
+                        "status": {
+                            "disabled": "Letiltott",
+                            "ok": "Ok",
+                            "unavailable": "Nem elérhető"
+                        },
                         "unavailable": "(nem elérhető)"
                     }
                 },
@@ -1436,6 +1469,9 @@
                         "search_again": "Keresés Újra",
                         "spinner": "ZHA Zigbee eszközök keresése..."
                     },
+                    "add": {
+                        "caption": "Eszközök hozzáadása"
+                    },
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "A kiválasztott klaszter attribútumai",
@@ -1455,6 +1491,7 @@
                         "issue_zigbee_command": "Zigbee parancs kiadása"
                     },
                     "clusters": {
+                        "header": "Klaszterek",
                         "help_cluster_dropdown": "Válassz egy klasztert az attribútumok és parancsok megtekintéséhez."
                     },
                     "common": {
@@ -1469,6 +1506,21 @@
                         "area_picker_label": "Terület",
                         "device_name_placeholder": "Felhasználónév",
                         "update_name_button": "Név frissítése"
+                    },
+                    "groups": {
+                        "add_members": "Tagok hozzáadása",
+                        "adding_members": "Tagok hozzáadása",
+                        "caption": "Csoportok",
+                        "create": "Csoport létrehozása",
+                        "group_id": "Csoport ID",
+                        "group_info": "Csoportinformációk",
+                        "group_name_placeholder": "Csoport név",
+                        "group_not_found": "A csoport nem található!",
+                        "groups": "Csoportok",
+                        "members": "Tagok",
+                        "remove_members": "Tagok eltávolítása",
+                        "removing_members": "Tagok eltávolítása",
+                        "zha_zigbee_groups": "ZHA Zigbee csoportok"
                     },
                     "network_management": {
                         "header": "Hálózat menedzsment",
@@ -1872,6 +1924,10 @@
                         "para": "Alapértelmezés szerint a Home Assistant kezeli a felhasználói felületet, és frissíti azt, amikor új entitások vagy Lovelace komponensek válnak elérhetővé. Ha átveszed az irányítást, többé nem fogunk automatikusan módosításokat végezni számodra.",
                         "para_sure": "Biztosan át szeretnéd venni az irányítást a felhasználói felületed felett?",
                         "save": "Irányítás átvétele"
+                    },
+                    "suggest_card": {
+                        "add": "Hozzáadás a Lovelace-hez",
+                        "create_own": "Készítsd el a sajátod"
                     },
                     "view": {
                         "panel_mode": {

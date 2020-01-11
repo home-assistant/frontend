@@ -1225,7 +1225,7 @@
                         "filter": {
                             "filter": "Filtrer",
                             "show_disabled": "Vis deaktiverede entiteter",
-                            "show_unavailable": "Vis ikke-tilgængelige entiteter"
+                            "show_unavailable": "Vis utilgængelige entiteter"
                         },
                         "header": "Entiteter",
                         "headers": {
