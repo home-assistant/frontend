@@ -46,14 +46,15 @@ class HassioAddonConfig extends LitElement {
           ></iron-autogrow-textarea>
         </div>
         <div class="card-actions">
-          <mwc-button class="warning" @click=${this.resetTapped}
-            >Reset to defaults</mwc-button
-          >
+          <mwc-button class="warning" @click=${this.resetTapped}>
+            Reset to defaults
+          </mwc-button>
           <mwc-button
             @click=${this.saveTapped}
             .disabled=${!this._configHasChanged}
-            >Save</mwc-button
           >
+            Save
+          </mwc-button>
         </div>
       </paper-card>
     `;
@@ -71,8 +72,8 @@ class HassioAddonConfig extends LitElement {
           display: block;
         }
         .card-actions {
-          @apply --layout;
-          @apply --layout-justified;
+          display: flex;
+          justify-content: space-between;
         }
         .errors {
           color: var(--google-red-500);

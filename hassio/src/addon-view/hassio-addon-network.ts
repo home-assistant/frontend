@@ -107,8 +107,8 @@ class HassioAddonNetwork extends LitElement {
           margin-bottom: 16px;
         }
         .card-actions {
-          @apply --layout;
-          @apply --layout-justified;
+          display: flex;
+          justify-content: space-between;
         }
       `,
     ];

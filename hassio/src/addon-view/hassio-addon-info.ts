@@ -510,9 +510,6 @@ class HassioAddonInfo extends LitElement {
           color: var(--google-red-500);
           --mdc-theme-primary: var(--google-red-500);
         }
-        .addon-header {
-          @apply --paper-font-headline;
-        }
         .light-color {
           color: var(--secondary-text-color);
         }
