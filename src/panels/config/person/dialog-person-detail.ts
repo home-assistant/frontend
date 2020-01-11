@@ -191,8 +191,10 @@ class DialogPersonDetail extends LitElement {
       const values: PersonMutableParams = {
         name: this._name.trim(),
         device_trackers: this._deviceTrackers,
-        user_id: this._userId || null,
       };
+      if (this._userId !== this._params!.entry!.user_id) {
+        values.user_id = this._userId || null;
+      }
       if (this._params!.entry) {
         await this._params!.updateEntry(values);
       } else {

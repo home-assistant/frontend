@@ -9,7 +9,7 @@ export interface Person {
 
 export interface PersonMutableParams {
   name: string;
-  user_id: string | null;
+  user_id?: string | null;
   device_trackers: string[];
 }
 
