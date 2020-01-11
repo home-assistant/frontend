@@ -192,7 +192,7 @@ class DialogPersonDetail extends LitElement {
         name: this._name.trim(),
         device_trackers: this._deviceTrackers,
       };
-      if (this._userId !== this._params!.entry!.user_id) {
+      if (this._params?.entry?.user_id !== this._userId) {
         values.user_id = this._userId || null;
       }
       if (this._params!.entry) {
