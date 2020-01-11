@@ -97,7 +97,7 @@ class HaLogbook extends LitElement {
                     ${item.name}
                   </a>
                 `}
-            <span> </span> <span>${item.message}</span>
+            <span>${item.message}</span>
           </div>
         </div>
       </div>
