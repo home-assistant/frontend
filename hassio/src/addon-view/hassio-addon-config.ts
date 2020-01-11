@@ -42,7 +42,7 @@ class HassioAddonConfig extends LitElement {
           <iron-autogrow-textarea
             @value-changed=${this._configChanged}
             id="config"
-            value=${this._config}
+            .value=${this._config}
           ></iron-autogrow-textarea>
         </div>
         <div class="card-actions">
