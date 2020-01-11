@@ -74,7 +74,7 @@ class HassioAddonAudio extends LitElement {
             <paper-listbox
               slot="dropdown-content"
               attr-for-selected="device"
-              selected="${this._selectedOutput}"
+              .selected=${this._selectedOutput}
             >
               ${this._outputDevices &&
                 this._outputDevices.map((item) => {
