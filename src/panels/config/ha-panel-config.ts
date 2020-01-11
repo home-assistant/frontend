@@ -176,11 +176,12 @@ class HaPanelConfig extends LitElement {
         align-items: center;
         font-size: 20px;
         height: 64px;
-        padding: 0 16px 0 32px;
+        padding: 0 16px 0 16px;
         pointer-events: none;
-        background-color: var(--primary-color);
+        background-color: var(--primary-background-color);
         font-weight: 400;
-        color: var(--text-primary-color, white);
+        color: var(--primary-text-color);
+        border-bottom: 1px solid var(--divider-color);
       }
 
       .wide-config {

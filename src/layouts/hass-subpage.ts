@@ -24,21 +24,17 @@ class HassSubpage extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      ${this.toolbar
-        ? html`
-            <div class="toolbar">
-              <ha-paper-icon-button-arrow-prev
-                aria-label="Back"
-                .hassio=${this.hassio}
-                @click=${this._backTapped}
-                class=${classMap({ hidden: !this.back })}
-              ></ha-paper-icon-button-arrow-prev>
+      <div class="toolbar">
+        <ha-paper-icon-button-arrow-prev
+          aria-label="Back"
+          .hassio=${this.hassio}
+          @click=${this._backTapped}
+          class=${classMap({ hidden: !this.back })}
+        ></ha-paper-icon-button-arrow-prev>
 
-              <div main-title>${this.header}</div>
-              <slot name="toolbar-icon"></slot>
-            </div>
-          `
-        : ""}
+        <div main-title>${this.header}</div>
+        <slot name="toolbar-icon"></slot>
+      </div>
       <div class="content"><slot></slot></div>
     `;
   }
