@@ -1373,6 +1373,7 @@
           "config_flow": {
             "aborted": "Aborted",
             "close": "Close",
+            "dismiss": "Dismiss dialog",
             "finish": "Finish",
             "submit": "Submit",
             "not_all_required_fields": "Not all required fields are filled in.",
