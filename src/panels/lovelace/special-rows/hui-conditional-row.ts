@@ -11,7 +11,7 @@ import { LovelaceRow, ConditionalRowConfig } from "../entity-rows/types";
 @customElement("hui-conditional-row")
 class HuiConditionalRow extends UpdatingElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
-  private _config?: ConditionalRowConfig;
+  @property() private _config?: ConditionalRowConfig;
   private _row?: LovelaceRow;
 
   public setConfig(config) {
@@ -37,8 +37,6 @@ class HuiConditionalRow extends UpdatingElement implements LovelaceRow {
 
     this._config = config;
     this._row = createRowElement(config.row) as LovelaceRow;
-
-    this.update();
   }
 
   protected update() {
