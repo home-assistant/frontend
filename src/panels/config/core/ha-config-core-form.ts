@@ -164,6 +164,12 @@ class ConfigCoreForm extends LitElement {
       "[name=timeZone]"
     ) as PaperInputElement;
     input.inputElement.appendChild(createTimezoneListEl());
+
+    if (this._unitSystemValue === "imperial") {
+      this._elevation = String(
+        parseInt(String(this.hass.config.elevation * 3.2808), 10)
+      );
+    }
   }
 
   private get _locationValue() {
@@ -173,9 +179,11 @@ class ConfigCoreForm extends LitElement {
   }
 
   private get _elevationValue() {
-    return this._elevation !== undefined
-      ? this._elevation
-      : this.hass.config.elevation;
+    let elevation: string = String(this.hass.config.elevation);
+    if (this._unitSystem !== "metric") {
+      elevation = String(parseInt(String(Number(elevation) * 3.2808), 10));
+    }
+    return this._elevation !== undefined ? this._elevation : elevation;
   }
 
   private get _timeZoneValue() {
@@ -204,7 +212,7 @@ class ConfigCoreForm extends LitElement {
   private _unitSystemChanged(
     ev: PolymerChangedEvent<ConfigUpdateValues["unit_system"]>
   ) {
-    if (this._unitSystem !== ev.detail.value) {
+    if (this._unitSystem && this._unitSystem !== ev.detail.value) {
       if (this._unitSystem === "metric") {
         this._elevation = String(
           parseInt(String(Number(this._elevation) * 3.2808), 10)
@@ -224,12 +232,12 @@ class ConfigCoreForm extends LitElement {
       const location = this._locationValue;
       let elevation = Number(this._elevationValue);
       if (this._unitSystemValue !== "metric") {
-        elevation = parseInt(String(Number(this._elevation) / 3.2808), 10);
+        elevation = parseInt(String(Number(this._elevationValue) / 3.2808), 10);
       }
       await saveCoreConfig(this.hass, {
         latitude: location[0],
         longitude: location[1],
-        elevation: elevation,
+        elevation,
         unit_system: this._unitSystemValue,
         time_zone: this._timeZoneValue,
       });

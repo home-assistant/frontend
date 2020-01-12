@@ -186,6 +186,12 @@ class OnboardingCoreConfig extends LitElement {
       "[name=timeZone]"
     ) as PaperInputElement;
     input.inputElement.appendChild(createTimezoneListEl());
+
+    if (this._unitSystemValue === "imperial") {
+      this._elevation = String(
+        parseInt(String(this.hass.config.elevation * 3.2808), 10)
+      );
+    }
   }
 
   private get _nameValue() {
@@ -224,17 +230,15 @@ class OnboardingCoreConfig extends LitElement {
   private _unitSystemChanged(
     ev: PolymerChangedEvent<ConfigUpdateValues["unit_system"]>
   ) {
-    if (this._unitSystem !== ev.detail.value) {
-      if (this._unitSystem !== ev.detail.value) {
-        if (this._unitSystem === "metric") {
-          this._elevation = String(
-            parseInt(String(Number(this._elevation) * 3.2808), 10)
-          );
-        } else if (this._unitSystem === "imperial") {
-          this._elevation = String(
-            parseInt(String(Number(this._elevation) / 3.2808), 10)
-          );
-        }
+    if (this._unitSystem && this._unitSystem !== ev.detail.value) {
+      if (this._unitSystem === "metric") {
+        this._elevation = String(
+          parseInt(String(Number(this._elevation) * 3.2808), 10)
+        );
+      } else if (this._unitSystem === "imperial") {
+        this._elevation = String(
+          parseInt(String(Number(this._elevation) / 3.2808), 10)
+        );
       }
     }
     this._unitSystem = ev.detail.value;
@@ -270,13 +274,13 @@ class OnboardingCoreConfig extends LitElement {
       const location = this._locationValue;
       let elevation = Number(this._elevationValue);
       if (this._unitSystemValue !== "metric") {
-        elevation = parseInt(String(Number(this._elevation) / 3.2808), 10);
+        elevation = parseInt(String(Number(this._elevationValue) / 3.2808), 10);
       }
       await saveCoreConfig(this.hass, {
         location_name: this._nameValue,
         latitude: location[0],
         longitude: location[1],
-        elevation: elevation,
+        elevation,
         unit_system: this._unitSystemValue,
         time_zone: this._timeZoneValue || "UTC",
       });
