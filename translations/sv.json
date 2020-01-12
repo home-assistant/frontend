@@ -1350,11 +1350,23 @@
                         "spinner": "Söker efter ZHA Zigbee-enheter ..."
                     },
                     "caption": "ZHA",
+                    "clusters": {
+                        "header": "Kluster"
+                    },
                     "description": "Zigbee Home Automation (ZHA) nätverkshantering",
                     "device_card": {
                         "area_picker_label": "Plats",
                         "device_name_placeholder": "Användarnamn",
                         "update_name_button": "Uppdatera namn"
+                    },
+                    "devices": {
+                        "header": "Zigbee Home Automation - Enhet"
+                    },
+                    "groups": {
+                        "caption": "Grupper",
+                        "description": "Skapa och modifiera Zigbee grupper",
+                        "group-header": "Zigbee Home Automation - Gruppdetaljer",
+                        "groups-header": "Zigbee Home Automation - Grupphantering"
                     },
                     "node_management": {
                         "hint_wakeup": "Vissa enheter, som Xiaomi-sensorer, har en väckningsknapp som du kan trycka på med ca 5 sekunders intervall för att hålla enheterna vakna medan du interagerar med dem."
