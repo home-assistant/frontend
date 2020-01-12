@@ -1279,6 +1279,7 @@
                         "area_picker_label": "Area",
                         "close": "Close",
                         "created_config": "Created config for {name}.",
+                        "dismiss": "Dismiss dialog",
                         "error_saving_area": "Error saving area: {error}",
                         "external_step": {
                             "description": "This step requires you to visit an external website to be completed.",
