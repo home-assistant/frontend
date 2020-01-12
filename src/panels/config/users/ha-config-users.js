@@ -27,6 +27,7 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
         <ha-config-user-picker
           hass="[[hass]]"
           users="[[_users]]"
+          is-wide="[[isWide]]"
         ></ha-config-user-picker>
       </template>
       <template
@@ -45,6 +46,7 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
   static get properties() {
     return {
       hass: Object,
+      isWide: Boolean,
       route: {
         type: Object,
         observer: "_checkRoute",

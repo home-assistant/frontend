@@ -1,15 +1,26 @@
-import { property, PropertyValues, customElement } from "lit-element";
+import {
+  property,
+  PropertyValues,
+  customElement,
+  LitElement,
+  html,
+  CSSResult,
+  css,
+} from "lit-element";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-item/paper-item";
 import "../../layouts/hass-loading-screen";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { HomeAssistant } from "../../types";
+import { HomeAssistant, Route } from "../../types";
 import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
 import { listenMediaQuery } from "../../common/dom/media_query";
-import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import {
-  CoreFrontendUserData,
   getOptimisticFrontendUserDataCollection,
+  CoreFrontendUserData,
 } from "../../data/frontend";
-import { PolymerElement } from "@polymer/polymer";
+import "./ha-config-router";
+import "./dashboard/ha-config-navigation";
+import { classMap } from "lit-html/directives/class-map";
 
 declare global {
   // for fire event
@@ -19,133 +30,15 @@ declare global {
 }
 
 @customElement("ha-panel-config")
-class HaPanelConfig extends HassRouterPage {
+class HaPanelConfig extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
-
-  protected routerOptions: RouterOptions = {
-    defaultPage: "dashboard",
-    cacheAll: true,
-    preloadAll: true,
-    routes: {
-      area_registry: {
-        tag: "ha-config-area-registry",
-        load: () =>
-          import(
-            /* webpackChunkName: "panel-config-area-registry" */ "./area_registry/ha-config-area-registry"
-          ),
-      },
-      automation: {
-        tag: "ha-config-automation",
-        load: () =>
-          import(
-            /* webpackChunkName: "panel-config-automation" */ "./automation/ha-config-automation"
-          ),
-      },
-      cloud: {
-        tag: "ha-config-cloud",
-        load: () =>
-          import(
-            /* webpackChunkName: "panel-config-cloud" */ "./cloud/ha-config-cloud"
-          ),
-      },
-      core: {
-        tag: "ha-config-core",
-        load: () =>
-          import(
-            /* webpackChunkName: "panel-config-core" */ "./core/ha-config-core"
-          ),
-      },
-      devices: {
-        tag: "ha-config-devices",
-        load: () =>
-          import(
-            /* webpackChunkName: "panel-config-devices" */ "./devices/ha-config-devices"
-          ),
-      },
-      server_control: {
-        tag: "ha-config-server-control",
-        load: () =>
-          import(
-            /* webpackChunkName: "panel-config-server-control" */ "./server_control/ha-config-server-control"
-          ),
-      },
-      customize: {
-        tag: "ha-config-customize",
-        load: () =>
-          import(
-            /* webpackChunkName: "panel-config-customize" */ "./customize/ha-config-customize"
-          ),
-      },
-      dashboard: {
-        tag: "ha-config-dashboard",
-        load: () =>
-          import(
-            /* webpackChunkName: "panel-config-dashboard" */ "./dashboard/ha-config-dashboard"
-          ),
-      },
-      entity_registry: {
-        tag: "ha-config-entity-registry",
-        load: () =>
-          import(
-            /* webpackChunkName: "panel-config-entity-registry" */ "./entity_registry/ha-config-entity-registry"
-          ),
-      },
-      integrations: {
-        tag: "ha-config-integrations",
-        load: () =>
-          import(
-            /* webpackChunkName: "panel-config-integrations" */ "./integrations/ha-config-integrations"
-          ),
-      },
-      person: {
-        tag: "ha-config-person",
-        load: () =>
-          import(
-            /* webpackChunkName: "panel-config-person" */ "./person/ha-config-person"
-          ),
-      },
-      script: {
-        tag: "ha-config-script",
-        load: () =>
-          import(
-            /* webpackChunkName: "panel-config-script" */ "./script/ha-config-script"
-          ),
-      },
-      scene: {
-        tag: "ha-config-scene",
-        load: () =>
-          import(
-            /* webpackChunkName: "panel-config-scene" */ "./scene/ha-config-scene"
-          ),
-      },
-      users: {
-        tag: "ha-config-users",
-        load: () =>
-          import(
-            /* webpackChunkName: "panel-config-users" */ "./users/ha-config-users"
-          ),
-      },
-      zha: {
-        tag: "zha-config-dashboard-router",
-        load: () =>
-          import(
-            /* webpackChunkName: "panel-config-zha" */ "./zha/zha-config-dashboard-router"
-          ),
-      },
-      zwave: {
-        tag: "ha-config-zwave",
-        load: () =>
-          import(
-            /* webpackChunkName: "panel-config-zwave" */ "./zwave/ha-config-zwave"
-          ),
-      },
-    },
-  };
+  @property() public route!: Route;
 
   @property() private _wideSidebar: boolean = false;
   @property() private _wide: boolean = false;
   @property() private _coreUserData?: CoreFrontendUserData;
+  @property() private _showAdvanced = false;
   @property() private _cloudStatus?: CloudStatus;
 
   private _listeners: Array<() => void> = [];
@@ -168,6 +61,9 @@ class HaPanelConfig extends HassRouterPage {
         "core"
       ).subscribe((coreUserData) => {
         this._coreUserData = coreUserData || {};
+        this._showAdvanced = !!(
+          this._coreUserData && this._coreUserData.showAdvanced
+        );
       })
     );
   }
@@ -189,31 +85,60 @@ class HaPanelConfig extends HassRouterPage {
     );
   }
 
-  protected updatePageEl(el) {
-    const showAdvanced = !!(
-      this._coreUserData && this._coreUserData.showAdvanced
-    );
+  protected render() {
+    const dividerPos = this.route.path.indexOf("/", 1);
+    const curPage =
+      dividerPos === -1
+        ? this.route.path.substr(1)
+        : this.route.path.substr(1, dividerPos - 1);
+
     const isWide =
       this.hass.dockedSidebar === "docked" ? this._wideSidebar : this._wide;
 
-    if ("setProperties" in el) {
-      // As long as we have Polymer panels
-      (el as PolymerElement).setProperties({
-        route: this.routeTail,
-        hass: this.hass,
-        showAdvanced,
-        isWide,
-        narrow: this.narrow,
-        cloudStatus: this._cloudStatus,
-      });
-    } else {
-      el.route = this.routeTail;
-      el.hass = this.hass;
-      el.showAdvanced = showAdvanced;
-      el.isWide = isWide;
-      el.narrow = this.narrow;
-      el.cloudStatus = this._cloudStatus;
-    }
+    return html`
+      ${isWide
+        ? html`
+            <div class="side-bar">
+              <div class="toolbar">Configuration</div>
+              <div class="navigation">
+                <ha-config-navigation
+                  .hass=${this.hass}
+                  .showAdvanced=${this._showAdvanced}
+                  .curPage=${curPage}
+                  .pages=${[
+                    { page: "cloud", info: this._cloudStatus },
+                    { page: "integrations", core: true },
+                    { page: "devices", core: true },
+                    { page: "automation" },
+                    { page: "script" },
+                    { page: "scene" },
+                    { page: "core", core: true },
+                    { page: "server_control", core: true },
+                    { page: "entities", core: true },
+                    { page: "areas", core: true },
+                    { page: "person" },
+                    { page: "users", core: true },
+                    { page: "zha" },
+                    { page: "zwave" },
+                    { page: "customize", core: true, advanced: true },
+                  ]}
+                ></ha-config-navigation>
+              </div>
+            </div>
+          `
+        : ""}
+      <ha-config-router
+        .hass=${this.hass}
+        .route=${this.route}
+        .narrow=${this.narrow}
+        .isWide=${isWide}
+        .wide=${this._wide}
+        .wideSidebar=${this._wideSidebar}
+        .showAdvanced=${this._showAdvanced}
+        .cloudStatus=${this._cloudStatus}
+        class=${classMap({ "wide-config": isWide })}
+      ></ha-config-router>
+    `;
   }
 
   private async _updateCloudStatus() {
@@ -222,6 +147,54 @@ class HaPanelConfig extends HassRouterPage {
     if (this._cloudStatus.cloud === "connecting") {
       setTimeout(() => this._updateCloudStatus(), 5000);
     }
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      :host {
+        display: block;
+        height: 100%;
+        background-color: var(--primary-background-color);
+      }
+
+      a {
+        text-decoration: none;
+        color: var(--primary-text-color);
+      }
+
+      .side-bar {
+        border-right: 1px solid #e0e0e0;
+        background: white;
+        width: 320px;
+        float: left;
+        box-sizing: border-box;
+        position: fixed;
+      }
+
+      .toolbar {
+        display: flex;
+        align-items: center;
+        font-size: 20px;
+        height: 64px;
+        padding: 0 16px 0 16px;
+        pointer-events: none;
+        background-color: var(--primary-background-color);
+        font-weight: 400;
+        color: var(--primary-text-color);
+        border-bottom: 1px solid var(--divider-color);
+      }
+
+      .wide-config {
+        float: right;
+        width: calc(100% - 320px);
+        height: 100%;
+      }
+
+      .navigation {
+        height: calc(100vh - 64px);
+        overflow: auto;
+      }
+    `;
   }
 }
 

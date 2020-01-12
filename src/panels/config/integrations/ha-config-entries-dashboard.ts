@@ -49,6 +49,7 @@ import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialo
 export class HaConfigManagerDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public showAdvanced!: boolean;
+  @property() public isWide!: boolean;
 
   @property() private configEntries!: ConfigEntry[];
 
@@ -72,7 +73,8 @@ export class HaConfigManagerDashboard extends LitElement {
   protected render(): TemplateResult {
     return html`
       <hass-subpage
-        header=${this.hass.localize("ui.panel.config.integrations.caption")}
+        .showBackButton=${!this.isWide}
+        .header=${this.hass.localize("ui.panel.config.integrations.caption")}
       >
         <paper-menu-button
           close-on-activate

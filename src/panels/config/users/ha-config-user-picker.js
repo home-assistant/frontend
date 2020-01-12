@@ -58,7 +58,10 @@ class HaUserPicker extends EventsMixin(
         }
       </style>
 
-      <hass-subpage header="[[localize('ui.panel.config.users.picker.title')]]">
+      <hass-subpage
+        header="[[localize('ui.panel.config.users.picker.title')]]"
+        showBackButton="[[!isWide]]"
+      >
         <ha-card>
           <template is="dom-repeat" items="[[users]]" as="user">
             <a href="[[_computeUrl(user)]]">
@@ -94,7 +97,7 @@ class HaUserPicker extends EventsMixin(
     return {
       hass: Object,
       users: Array,
-
+      isWide: Boolean,
       rtl: {
         type: Boolean,
         reflectToAttribute: true,
