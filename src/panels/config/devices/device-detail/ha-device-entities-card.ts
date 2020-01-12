@@ -20,7 +20,7 @@ import "@polymer/paper-item/paper-item-body";
 import "../../../../components/ha-card";
 import "../../../../components/ha-icon";
 import "../../../../components/ha-switch";
-import { showEntityRegistryDetailDialog } from "../../entity_registry/show-dialog-entity-registry-detail";
+import { showEntityRegistryDetailDialog } from "../../entities/show-dialog-entity-registry-detail";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { computeDomain } from "../../../../common/entity/compute_domain";
 import { domainIcon } from "../../../../common/entity/domain_icon";
