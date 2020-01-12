@@ -20,6 +20,7 @@ import { AreaRegistryEntry } from "../../../data/area_registry";
 export class HaConfigDeviceDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow = false;
+  @property() public isWide = false;
   @property() public devices!: DeviceRegistryEntry[];
   @property() public entries!: ConfigEntry[];
   @property() public entities!: EntityRegistryEntry[];
@@ -29,7 +30,8 @@ export class HaConfigDeviceDashboard extends LitElement {
   protected render(): TemplateResult {
     return html`
       <hass-subpage
-        header=${this.hass.localize("ui.panel.config.devices.caption")}
+        .showBackButton=${!this.isWide}
+        .header=${this.hass.localize("ui.panel.config.devices.caption")}
       >
         <div class="content">
           <ha-devices-data-table

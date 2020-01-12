@@ -35,6 +35,7 @@ class HaConfigServerControl extends LocalizeMixin(PolymerElement) {
 
       <hass-subpage
         header="[[localize('ui.panel.config.server_control.caption')]]"
+        showBackButton="[[!isWide]]"
       >
         <div class$="[[computeClasses(isWide)]]">
           <ha-config-section-server-control

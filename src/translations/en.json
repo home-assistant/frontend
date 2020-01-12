@@ -673,7 +673,7 @@
             "confirm_unsaved": "You have unsaved changes. Are you sure you want to leave?"
           }
         },
-        "area_registry": {
+        "areas": {
           "caption": "Areas",
           "description": "Overview of all areas in your home.",
           "picker": {
@@ -1253,7 +1253,7 @@
             "battery": "Battery"
           }
         },
-        "entity_registry": {
+        "entities": {
           "caption": "Entities",
           "description": "Overview of all known entities.",
           "picker": {

@@ -42,6 +42,7 @@ class HaAutomationPicker extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <hass-subpage
+        .showBackButton=${!this.isWide}
         .header=${this.hass.localize("ui.panel.config.automation.caption")}
       >
         <ha-config-section .isWide=${this.isWide}>

@@ -23,12 +23,17 @@ import LocalizeMixin from "../../../mixins/localize-mixin";
 class HaConfigCustomize extends LocalizeMixin(PolymerElement) {
   static get template() {
     return html`
-      <style include="ha-style"></style>
+      <style include="ha-style">
+        ha-paper-icon-button-arrow-prev[hide] {
+          visibility: hidden;
+        }
+      </style>
 
       <app-header-layout has-scrolling-region="">
         <app-header slot="header" fixed="">
           <app-toolbar>
             <ha-paper-icon-button-arrow-prev
+              hide$="[[isWide]]"
               on-click="_backTapped"
             ></ha-paper-icon-button-arrow-prev>
             <div main-title="">

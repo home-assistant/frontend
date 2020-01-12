@@ -30,14 +30,16 @@ import { forwardHaptic } from "../../../data/haptics";
 class HaSceneDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
+  @property() public isWide!: boolean;
   @property() public scenes!: SceneEntity[];
 
   protected render(): TemplateResult | void {
     return html`
       <hass-subpage
+        .showBackButton=${!this.isWide}
         .header=${this.hass.localize("ui.panel.config.scene.caption")}
       >
-        <ha-config-section .isWide=${!this.narrow}>
+        <ha-config-section .isWide=${this.isWide}>
           <div slot="header">
             ${this.hass.localize("ui.panel.config.scene.picker.header")}
           </div>
