@@ -71,6 +71,7 @@ class HassioAddonLogs extends LitElement {
   }
 
   private async _loadData(): Promise<void> {
+    this.error = undefined;
     try {
       const content = await fetchHassioAddonLogs(this.hass, this.addon.slug);
       while (this._logContet.lastChild) {

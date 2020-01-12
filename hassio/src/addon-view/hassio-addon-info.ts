@@ -706,6 +706,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _startOnBootToggled(): Promise<void> {
+    this.error = undefined;
     const data: HassioAddonSetOptionParams = {
       boot: this.addon.boot === "auto" ? "manual" : "auto",
     };
@@ -723,6 +724,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _autoUpdateToggled(): Promise<void> {
+    this.error = undefined;
     const data: HassioAddonSetOptionParams = {
       auto_update: !this.addon.auto_update,
     };
@@ -740,6 +742,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _protectionToggled(): Promise<void> {
+    this.error = undefined;
     const data: HassioAddonSetSecurityParams = {
       protected: !this.addon.protected,
     };
@@ -757,6 +760,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _panelToggled(): Promise<void> {
+    this.error = undefined;
     const data: HassioAddonSetOptionParams = {
       ingress_panel: !this.addon.ingress_panel,
     };
@@ -774,6 +778,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _openChangelog(): Promise<void> {
+    this.error = undefined;
     try {
       const content = await fetchHassioAddonChangelog(
         this.hass,
@@ -789,6 +794,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _installClicked(): Promise<void> {
+    this.error = undefined;
     try {
       await installHassioAddon(this.hass, this.addon.slug);
       const eventdata = {
@@ -806,6 +812,7 @@ class HassioAddonInfo extends LitElement {
     if (!confirm("Are you sure you want to uninstall this add-on?")) {
       return;
     }
+    this.error = undefined;
     try {
       await uninstallHassioAddon(this.hass, this.addon.slug);
       const eventdata = {

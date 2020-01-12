@@ -112,6 +112,7 @@ class HassioAddonConfig extends LitElement {
   }
 
   private async _resetTapped(): Promise<void> {
+    this.error = undefined;
     const data: HassioAddonSetOptionParams = {
       options: null,
     };
