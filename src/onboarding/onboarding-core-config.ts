@@ -116,9 +116,13 @@ class OnboardingCoreConfig extends LitElement {
           @value-changed=${this._handleChange}
         >
           <span slot="suffix">
-            ${this.hass.localize(
-              "ui.panel.config.core.section.core.core_config.elevation_meters"
-            )}
+            ${this._unitSystem === "metric"
+              ? this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.elevation_meters"
+                )
+              : this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.elevation_feet"
+                )}
           </span>
         </paper-input>
       </div>
