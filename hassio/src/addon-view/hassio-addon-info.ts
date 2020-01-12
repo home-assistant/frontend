@@ -781,7 +781,7 @@ class HassioAddonInfo extends LitElement {
       );
       showHassioMarkdownDialog(this, {
         title: "Changelog",
-        content: content,
+        content,
       });
     } catch (err) {
       this.error = `Failed to get addon changelog, ${err.body.message}`;
