@@ -42,7 +42,7 @@ class HaLogbook extends LitElement {
   }
 
   protected render(): TemplateResult | void {
-    if (!this.entries.length) {
+    if (!this.entries?.length) {
       return html`
         ${this.hass.localize("ui.panel.logbook.entries_not_found")}
       `;
@@ -81,7 +81,7 @@ class HaLogbook extends LitElement {
           <div class="time">
             ${formatTime(new Date(item.when), this.hass.language)}
           </div>
-          <iron-icon icon="${domainIcon(item.domain)}"></iron-icon>
+          <iron-icon .icon="${domainIcon(item.domain)}"></iron-icon>
           <div class="message">
             ${!item.entity_id
               ? html`
