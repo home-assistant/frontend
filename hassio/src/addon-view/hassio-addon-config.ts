@@ -51,11 +51,11 @@ class HassioAddonConfig extends LitElement {
           ></iron-autogrow-textarea>
         </div>
         <div class="card-actions">
-          <mwc-button class="warning" @click=${this.resetTapped}>
+          <mwc-button class="warning" @click=${this._resetTapped}>
             Reset to defaults
           </mwc-button>
           <mwc-button
-            @click=${this.saveTapped}
+            @click=${this._saveTapped}
             ?disabled=${!this._configHasChanged}
           >
             Save
@@ -111,7 +111,7 @@ class HassioAddonConfig extends LitElement {
       this._config !== JSON.stringify(this.addon.options, null, 2);
   }
 
-  private async resetTapped(): Promise<void> {
+  private async _resetTapped(): Promise<void> {
     const data: HassioAddonSetOptionParams = {
       options: null,
     };
@@ -129,7 +129,7 @@ class HassioAddonConfig extends LitElement {
     }
   }
 
-  private async saveTapped(): Promise<void> {
+  private async _saveTapped(): Promise<void> {
     let data: HassioAddonSetOptionParams;
     this.error = undefined;
     try {
