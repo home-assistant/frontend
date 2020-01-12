@@ -138,11 +138,20 @@ export interface HassioSnapshotDetail extends HassioSnapshot {
   repositories: string[];
   folders: string[];
 }
+
 export interface HassioAddonSetOptionParams {
   audio_input?: string | null;
   audio_output?: string | null;
   options?: object | null;
+  boot?: "auto" | "manual";
+  auto_update?: boolean;
+  ingress_panel?: boolean;
 }
+
+export interface HassioAddonSetSecurityParams {
+  protected?: boolean;
+}
+
 export interface HassioFullSnapshotCreateParams {
   name: string;
   password?: string;
@@ -251,10 +260,51 @@ export const setHassioAddonOption = async (
   );
 };
 
+export const setHassioAddonSecurity = async (
+  hass: HomeAssistant,
+  slug: string,
+  data: HassioAddonSetSecurityParams
+) => {
+  await hass.callApi<HassioResponse<void>>(
+    "POST",
+    `hassio/addons/${slug}/security`,
+    data
+  );
+};
+
+export const installHassioAddon = async (hass: HomeAssistant, slug: string) => {
+  await hass.callApi<HassioResponse<void>>(
+    "POST",
+    `hassio/addons/${slug}/install`
+  );
+};
+
+export const uninstallHassioAddon = async (
+  hass: HomeAssistant,
+  slug: string
+) => {
+  await hass.callApi<HassioResponse<void>>(
+    "POST",
+    `hassio/addons/${slug}/uninstall`
+  );
+};
+
 export const fetchHassioHardwareAudio = async (hass: HomeAssistant) => {
   const response = await hass.callApi<HassioResponse<HassioHardwareAudioList>>(
     "GET",
     "hassio/hardware/audio"
   );
   return response.data;
+};
+
+export const fetchHassioAddonChangelog = async (
+  hass: HomeAssistant,
+  slug: string
+) => {
+  const response = await hass.callApi<string>(
+    "GET",
+    `hassio/addons/${slug}/changelog`
+  );
+  console.log(response);
+  return response;
 };

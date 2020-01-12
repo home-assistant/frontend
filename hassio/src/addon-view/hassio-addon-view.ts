@@ -131,7 +131,7 @@ class HassioAddonView extends LitElement {
       return;
     }
 
-    if (path.substr(path.lastIndexOf("/") + 1) === "uninstall") {
+    if (path === "uninstall") {
       history.back();
     } else {
       this._routeDataChanged(this.route);

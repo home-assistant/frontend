@@ -19,7 +19,16 @@ import "../../../src/components/ha-switch";
 import "../components/hassio-card-content";
 
 import { fireEvent } from "../../../src/common/dom/fire_event";
-import { HassioAddonDetails } from "../../../src/data/hassio";
+import {
+  HassioAddonDetails,
+  HassioAddonSetOptionParams,
+  HassioAddonSetSecurityParams,
+  setHassioAddonOption,
+  setHassioAddonSecurity,
+  uninstallHassioAddon,
+  installHassioAddon,
+  fetchHassioAddonChangelog,
+} from "../../../src/data/hassio";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
@@ -83,6 +92,7 @@ const PERMIS_DESC = {
 class HassioAddonInfo extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
+  @property() protected error?: string;
 
   protected render(): TemplateResult | void {
     return html`
@@ -95,7 +105,7 @@ class HassioAddonInfo extends LitElement {
                     .hass=${this.hass}
                     title="${this.addon.name} ${this.addon
                       .last_version} is available"
-                    .description="You are currently running version ${this.addon
+                    description="You are currently running version ${this.addon
                       .version}"
                     icon="hassio:arrow-up-bold-circle"
                     iconClass="update"
@@ -111,16 +121,16 @@ class HassioAddonInfo extends LitElement {
                 <div class="card-actions">
                   <ha-call-api-button
                     .hass=${this.hass}
-                    .disabled=${!this.addon.available}
+                    ?disabled=${!this.addon.available}
                     path="hassio/addons/${this.addon.slug}/update"
                   >
                     Update
                   </ha-call-api-button>
                   ${this.addon.changelog
                     ? html`
-                        <mwc-button @click=${this._openChangelog}
-                          >Changelog</mwc-button
-                        >
+                        <mwc-button @click=${this._openChangelog}>
+                          Changelog
+                        </mwc-button>
                       `
                     : ""}
                 </div>
@@ -357,10 +367,10 @@ class HassioAddonInfo extends LitElement {
                           ></ha-switch>
                           ${this._computeCannotIngressSidebar
                             ? html`
-                                <span
-                                  >This option requires Home Assistant 0.92 or
-                                  later.</span
-                                >
+                                <span>
+                                  This option requires Home Assistant 0.92 or
+                                  later.
+                                </span>
                               `
                             : ""}
                         </div>
@@ -373,10 +383,9 @@ class HassioAddonInfo extends LitElement {
                             Protection mode
                             <span>
                               <iron-icon icon="hassio:information"></iron-icon>
-                              <paper-tooltip
-                                >Grant the add-on elevated system
-                                access.</paper-tooltip
-                              >
+                              <paper-tooltip>
+                                Grant the add-on elevated system access.
+                              </paper-tooltip>
                             </span>
                           </div>
                           <ha-switch
@@ -389,22 +398,30 @@ class HassioAddonInfo extends LitElement {
                 `
               : ""
           }
+          ${
+            this.error
+              ? html`
+                  <div class="errors">${this.error}</div>
+                `
+              : ""
+          }
         </div>
         <div class="card-actions">
         ${
           this.addon.version
             ? html`
-                <mwc-button class="warning" @click=${this._unistallClicked}
-                  >Uninstall</mwc-button
-                >
+                <mwc-button class="warning" @click=${this._uninstallClicked}>
+                  Uninstall
+                </mwc-button>
                 ${this.addon.build
                   ? html`
                       <ha-call-api-button
                         class="warning"
                         .hass=${this.hass}
                         path="hassio/addons/${this.addon.slug}/rebuild"
-                        >Rebuild</ha-call-api-button
                       >
+                        Rebuild
+                      </ha-call-api-button>
                     `
                   : ""}
                 ${this._computeIsRunning
@@ -413,21 +430,25 @@ class HassioAddonInfo extends LitElement {
                         class="warning"
                         .hass=${this.hass}
                         path="hassio/addons/${this.addon.slug}/restart"
-                        >Restart</ha-call-api-button
                       >
+                        Restart
+                      </ha-call-api-button>
                       <ha-call-api-button
                         class="warning"
                         .hass=${this.hass}
                         path="hassio/addons/${this.addon.slug}/stop"
-                        >Stop</ha-call-api-button
                       >
+                        Stop
+                      </ha-call-api-button>
                     `
                   : html`
                       <ha-call-api-button
                         .hass=${this.hass}
                         path="hassio/addons/${this.addon.slug}/start"
-                        >Start</ha-call-api-button
                       >
+                        Start
+                        <ha-call-api-button> </ha-call-api-button
+                      ></ha-call-api-button>
                     `}
                 ${this._computeShowWebUI
                   ? html`
@@ -436,8 +457,11 @@ class HassioAddonInfo extends LitElement {
                         tabindex="-1"
                         target="_blank"
                         class="right"
-                        ><mwc-button>Open web UI</mwc-button></a
                       >
+                        <mwc-button>
+                          Open web UI
+                        </mwc-button>
+                      </a>
                     `
                   : ""}
                 ${this._computeShowIngressUI
@@ -446,8 +470,9 @@ class HassioAddonInfo extends LitElement {
                         tabindex="-1"
                         class="right"
                         @click=${this._openIngress}
-                        >Open web UI</mwc-button
                       >
+                        Open web UI
+                      </mwc-button>
                     `
                   : ""}
               `
@@ -459,12 +484,14 @@ class HassioAddonInfo extends LitElement {
                       </p>
                     `
                   : ""}
-                <ha-call-api-button
-                  .disabled=${!this.addon.available}
-                  .hass=${this.hass}
-                  path="hassio/addons/${this.addon.slug}/install"
-                  >Install</ha-call-api-button
+                <mwc-button
+                  ?disabled=${!this.addon.available}
+                  tabindex="-1"
+                  class="right"
+                  @click=${this._installClicked}
                 >
+                  Install
+                </mwc-button>
               `
         }
         </div>
@@ -504,7 +531,7 @@ class HassioAddonInfo extends LitElement {
           --paper-card-header-color: white;
         }
         paper-card.warning mwc-button {
-          color: white !important;
+          --mdc-theme-primary: white !important;
         }
         .warning {
           color: var(--google-red-500);
@@ -517,6 +544,10 @@ class HassioAddonInfo extends LitElement {
           float: right;
           font-size: 15px;
           vertical-align: middle;
+        }
+        .errors {
+          color: var(--google-red-500);
+          margin-bottom: 16px;
         }
         .description {
           margin-bottom: 16px;
@@ -613,8 +644,7 @@ class HassioAddonInfo extends LitElement {
   private get _computeSecurityClassName(): string {
     if (Number(this.addon.rating) > 4) {
       return "green";
-    }
-    if (Number(this.addon.rating) > 2) {
+    } else if (Number(this.addon.rating) > 2) {
       return "yellow";
     }
     return "red";
@@ -629,7 +659,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private get _computeIsRunning(): boolean {
-    return this.addon && this.addon.state === "started";
+    return this.addon?.state === "started";
   }
 
   private get _computeUpdateAvailable(): boolean | "" {
@@ -675,72 +705,118 @@ class HassioAddonInfo extends LitElement {
     return Number(major) > 0 || (major === "0" && Number(minor) >= 92);
   }
 
-  private _startOnBootToggled(): void {
-    const data = { boot: this.addon.boot === "auto" ? "manual" : "auto" };
-    this.hass.callApi("POST", `hassio/addons/${this.addon.slug}/options`, data);
+  private async _startOnBootToggled(): Promise<void> {
+    const data: HassioAddonSetOptionParams = {
+      boot: this.addon.boot === "auto" ? "manual" : "auto",
+    };
+    try {
+      await setHassioAddonOption(this.hass, this.addon.slug, data);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "option",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+    } catch (err) {
+      this.error = `Failed to set addon option, ${err.body.message}`;
+    }
   }
 
-  private _autoUpdateToggled(): void {
-    const data = { auto_update: !this.addon.auto_update };
-    this.hass.callApi("POST", `hassio/addons/${this.addon.slug}/options`, data);
+  private async _autoUpdateToggled(): Promise<void> {
+    const data: HassioAddonSetOptionParams = {
+      auto_update: !this.addon.auto_update,
+    };
+    try {
+      await setHassioAddonOption(this.hass, this.addon.slug, data);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "option",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+    } catch (err) {
+      this.error = `Failed to set addon option, ${err.body.message}`;
+    }
   }
 
-  private _protectionToggled(): void {
-    const data = { protected: !this.addon.protected };
-    this.hass.callApi(
-      "POST",
-      `hassio/addons/${this.addon.slug}/security`,
-      data
-    );
-    this.addon.protected = !this.addon.protected;
-    this.requestUpdate();
+  private async _protectionToggled(): Promise<void> {
+    const data: HassioAddonSetSecurityParams = {
+      protected: !this.addon.protected,
+    };
+    try {
+      await setHassioAddonSecurity(this.hass, this.addon.slug, data);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "security",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+    } catch (err) {
+      this.error = `Failed to set addon security option, ${err.body.message}`;
+    }
   }
 
-  private _panelToggled(): void {
-    const data = { ingress_panel: !this.addon.ingress_panel };
-    this.hass.callApi("POST", `hassio/addons/${this.addon.slug}/options`, data);
+  private async _panelToggled(): Promise<void> {
+    const data: HassioAddonSetOptionParams = {
+      ingress_panel: !this.addon.ingress_panel,
+    };
+    try {
+      await setHassioAddonOption(this.hass, this.addon.slug, data);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "option",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+    } catch (err) {
+      this.error = `Failed to set addon option, ${err.body.message}`;
+    }
   }
 
-  private _openChangelog(): void {
-    this.hass
-      .callApi("GET", `hassio/addons/${this.addon.slug}/changelog`)
-      .then(
-        (resp) => resp,
-        () => "Error getting changelog"
-      )
-      .then((content) => {
-        showHassioMarkdownDialog(this, {
-          title: "Changelog",
-          content: content as any,
-        });
+  private async _openChangelog(): Promise<void> {
+    try {
+      const content = await fetchHassioAddonChangelog(
+        this.hass,
+        this.addon.slug
+      );
+      showHassioMarkdownDialog(this, {
+        title: "Changelog",
+        content: content,
       });
+    } catch (err) {
+      this.error = `Failed to get addon changelog, ${err.body.message}`;
+    }
   }
 
-  private _unistallClicked(): void {
+  private async _installClicked(): Promise<void> {
+    try {
+      await installHassioAddon(this.hass, this.addon.slug);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "install",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+    } catch (err) {
+      this.error = `Failed to install addon, ${err.body.message}`;
+    }
+  }
+
+  private async _uninstallClicked(): Promise<void> {
     if (!confirm("Are you sure you want to uninstall this add-on?")) {
       return;
     }
-    const path = `hassio/addons/${this.addon.slug}/uninstall`;
-    const eventData = {
-      path,
-      success: false,
-      response: undefined,
-    };
-    this.hass
-      .callApi("POST", path)
-      .then(
-        (resp) => {
-          eventData.success = true;
-          eventData.response = resp as any;
-        },
-        (resp) => {
-          eventData.success = false;
-          eventData.response = resp;
-        }
-      )
-      .then(() => {
-        fireEvent(this, "hass-api-called", eventData);
-      });
+    try {
+      await uninstallHassioAddon(this.hass, this.addon.slug);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "uninstall",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+    } catch (err) {
+      this.error = `Failed to uninstall addon, ${err.body.message}`;
+    }
   }
 }
 declare global {
