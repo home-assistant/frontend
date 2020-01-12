@@ -21,6 +21,7 @@ import {
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
+import { fireEvent } from "../../../src/common/dom/fire_event";
 
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
@@ -28,6 +29,7 @@ class HassioAddonConfig extends LitElement {
   @property() public addon!: HassioAddonDetails;
   @property() protected error?: string;
   @property() private _config!: string;
+  @property({ type: Boolean }) private _configHasChanged = false;
 
   public connectedCallback(): void {
     super.connectedCallback();
@@ -102,13 +104,11 @@ class HassioAddonConfig extends LitElement {
     }
   }
 
-  private get _configHasChanged() {
-    return this._config !== JSON.stringify(this.addon.options, null, 2);
-  }
-
   private _configChanged(ev: PolymerChangedEvent<string>): void {
     this._config =
       ev.detail.value || JSON.stringify(this.addon.options, null, 2);
+    this._configHasChanged =
+      this._config !== JSON.stringify(this.addon.options, null, 2);
   }
 
   private async resetTapped(): Promise<void> {
@@ -117,8 +117,15 @@ class HassioAddonConfig extends LitElement {
     };
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);
+      this._configHasChanged = false;
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "options",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
     } catch {
-      this.error = "Failed to save addon configuration";
+      this.error = "Failed to reset addon configuration";
     }
   }
 
@@ -135,6 +142,13 @@ class HassioAddonConfig extends LitElement {
     }
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);
+      this._configHasChanged = false;
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "options",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
       console.log(err);
       this.error = `Failed to save addon configuration, ${err.body.message}`;
