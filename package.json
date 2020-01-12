@@ -89,6 +89,7 @@
     "leaflet": "^1.4.0",
     "lit-element": "^2.2.1",
     "lit-html": "^1.1.0",
+    "lit-virtualizer": "^0.4.2",
     "marked": "^0.6.1",
     "mdn-polyfills": "^5.16.0",
     "memoize-one": "^5.0.2",
