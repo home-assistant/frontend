@@ -11,7 +11,10 @@ import {
   query,
 } from "lit-element";
 import { HomeAssistant } from "../../../src/types";
-import { HassioAddonDetails } from "../../../src/data/hassio";
+import {
+  HassioAddonDetails,
+  fetchHassioAddonLogs,
+} from "../../../src/data/hassio";
 import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../ansi-to-html";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
@@ -20,16 +23,22 @@ import { haStyle } from "../../../src/resources/styles";
 class HassioAddonLogs extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
+  @property() protected error?: string;
   @query("#content") private _logContet!: any;
 
-  public connectedCallback(): void {
+  public async connectedCallback(): Promise<void> {
     super.connectedCallback();
-    this._loadData();
+    await this._loadData();
   }
 
   protected render(): TemplateResult | void {
     return html`
       <paper-card heading="Log">
+        ${this.error
+          ? html`
+              <div class="errors">${this.error}</div>
+            `
+          : ""}
         <div class="card-content" id="content"></div>
         <div class="card-actions">
           <mwc-button @click=${this._refresh}>Refresh</mwc-button>
@@ -53,27 +62,28 @@ class HassioAddonLogs extends LitElement {
           white-space: pre-wrap;
           overflow-wrap: break-word;
         }
+        .errors {
+          color: var(--google-red-500);
+          margin-bottom: 16px;
+        }
       `,
     ];
   }
 
-  private _loadData(): void {
-    this.hass.callApi("GET", `hassio/addons/${this.addon.slug}/logs`).then(
-      (text) => {
-        while (this._logContet.lastChild) {
-          this._logContet.removeChild(this._logContet.lastChild as Node);
-        }
-        this._logContet.appendChild(parseTextToColoredPre(text));
-      },
-      () => {
-        this._logContet.innerHTML =
-          '<span class="fg-red bold">Error fetching logs</span>';
+  private async _loadData(): Promise<void> {
+    try {
+      const content = await fetchHassioAddonLogs(this.hass, this.addon.slug);
+      while (this._logContet.lastChild) {
+        this._logContet.removeChild(this._logContet.lastChild as Node);
       }
-    );
+      this._logContet.appendChild(parseTextToColoredPre(content));
+    } catch (err) {
+      this.error = `Failed to get addon logs, ${err.body.message}`;
+    }
   }
 
-  private _refresh(): void {
-    this._loadData();
+  private async _refresh(): Promise<void> {
+    await this._loadData();
   }
 }
 

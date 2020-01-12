@@ -305,6 +305,16 @@ export const fetchHassioAddonChangelog = async (
     "GET",
     `hassio/addons/${slug}/changelog`
   );
-  console.log(response);
+  return response;
+};
+
+export const fetchHassioAddonLogs = async (
+  hass: HomeAssistant,
+  slug: string
+) => {
+  const response = await hass.callApi<string>(
+    "GET",
+    `hassio/addons/${slug}/logs`
+  );
   return response;
 };
