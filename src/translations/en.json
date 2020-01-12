@@ -705,6 +705,7 @@
                 "longitude": "Longitude",
                 "elevation": "Elevation",
                 "elevation_meters": "meters",
+                "elevation_feet": "feet",
                 "time_zone": "Time Zone",
                 "unit_system": "Unit System",
                 "unit_system_imperial": "Imperial",
