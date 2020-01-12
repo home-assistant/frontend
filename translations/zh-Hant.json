@@ -1037,7 +1037,7 @@
                     },
                     "google": {
                         "banner": "由於您已經透過 configuration.yaml 設定物件過濾器、 因此編輯連結物件的介面將無法使用。",
-                        "disable_2FA": "關閉兩步驟驗證",
+                        "disable_2FA": "關閉雙重驗證",
                         "expose": "與 Google Assistant 連結",
                         "exposed_entities": "已連結物件",
                         "not_exposed_entities": "未連結物件",
@@ -2028,9 +2028,9 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "兩步驟驗證碼"
+                                        "code": "雙重驗證碼"
                                     },
-                                    "description": "開啟設備上的 **{mfa_module_name}** 以獲得兩步驟驗證碼，並進行驗證："
+                                    "description": "開啟設備上的 **{mfa_module_name}** 以獲得雙重驗證碼，並進行驗證："
                                 }
                             }
                         },
@@ -2051,9 +2051,9 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "兩步驟驗證碼"
+                                        "code": "雙重驗證碼"
                                     },
-                                    "description": "開啟設備上的 **{mfa_module_name}** 以獲得兩步驟驗證碼，並進行驗證："
+                                    "description": "開啟設備上的 **{mfa_module_name}** 以獲得雙重驗證碼，並進行驗證："
                                 }
                             }
                         },
@@ -2075,9 +2075,9 @@
                                 },
                                 "mfa": {
                                     "data": {
-                                        "code": "兩步驟驗證碼"
+                                        "code": "雙重驗證碼"
                                     },
-                                    "description": "開啟設備上的 **{mfa_module_name}** 以獲得兩步驟驗證碼，並進行驗證："
+                                    "description": "開啟設備上的 **{mfa_module_name}** 以獲得雙重驗證碼，並進行驗證："
                                 }
                             }
                         },
