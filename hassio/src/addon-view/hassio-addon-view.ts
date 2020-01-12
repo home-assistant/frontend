@@ -124,10 +124,7 @@ class HassioAddonView extends LitElement {
 
   protected async firstUpdated(): Promise<void> {
     await this._routeDataChanged(this.route);
-    this.addEventListener(
-      "hass-api-called",
-      async (ev) => await this._apiCalled(ev)
-    );
+    this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
   }
 
   private async _apiCalled(ev): Promise<void> {
