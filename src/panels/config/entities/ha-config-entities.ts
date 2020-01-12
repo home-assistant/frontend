@@ -6,6 +6,7 @@ import {
   CSSResult,
   property,
   query,
+  customElement,
 } from "lit-element";
 import { styleMap } from "lit-html/directives/style-map";
 
@@ -46,7 +47,8 @@ import {
 } from "../../../components/data-table/ha-data-table";
 import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialog-confirmation";
 
-class HaConfigEntityRegistry extends LitElement {
+@customElement("ha-config-entities")
+export class HaConfigEntities extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public isWide!: boolean;
   @property() public narrow!: boolean;
@@ -211,9 +213,10 @@ class HaConfigEntityRegistry extends LitElement {
     }
     return html`
       <hass-subpage
-        header="${this.hass.localize(
+        .header="${this.hass.localize(
           "ui.panel.config.entity_registry.caption"
         )}"
+        .showBackButton=${!this.isWide}
       >
         <div class="content">
           <div class="intro">
@@ -496,14 +499,14 @@ class HaConfigEntityRegistry extends LitElement {
       }
       h2 {
         margin-top: 0;
-        font-family: var(--paper-font-display1_-_font-family);
+        font-family: var(--paper-font-headline_-_font-family);
         -webkit-font-smoothing: var(
-          --paper-font-display1_-_-webkit-font-smoothing
+          --paper-font-headline_-_-webkit-font-smoothing
         );
-        font-size: var(--paper-font-display1_-_font-size);
-        font-weight: var(--paper-font-display1_-_font-weight);
-        letter-spacing: var(--paper-font-display1_-_letter-spacing);
-        line-height: var(--paper-font-display1_-_line-height);
+        font-size: var(--paper-font-headline_-_font-size);
+        font-weight: var(--paper-font-headline_-_font-weight);
+        letter-spacing: var(--paper-font-headline_-_letter-spacing);
+        line-height: var(--paper-font-headline_-_line-height);
         opacity: var(--dark-primary-opacity);
       }
       p {
@@ -511,10 +514,8 @@ class HaConfigEntityRegistry extends LitElement {
         -webkit-font-smoothing: var(
           --paper-font-subhead_-_-webkit-font-smoothing
         );
-        font-size: var(--paper-font-subhead_-_font-size);
         font-weight: var(--paper-font-subhead_-_font-weight);
         line-height: var(--paper-font-subhead_-_line-height);
-        opacity: var(--dark-primary-opacity);
       }
       .intro {
         padding: 24px 16px;
@@ -549,5 +550,3 @@ class HaConfigEntityRegistry extends LitElement {
     `;
   }
 }
-
-customElements.define("ha-config-entity-registry", HaConfigEntityRegistry);

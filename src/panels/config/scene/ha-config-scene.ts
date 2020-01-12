@@ -20,6 +20,7 @@ import { HassEntities } from "home-assistant-js-websocket";
 class HaConfigScene extends HassRouterPage {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
+  @property() public isWide!: boolean;
   @property() public showAdvanced!: boolean;
   @property() public scenes: SceneEntity[] = [];
 
@@ -52,6 +53,7 @@ class HaConfigScene extends HassRouterPage {
   protected updatePageEl(pageEl, changedProps: PropertyValues) {
     pageEl.hass = this.hass;
     pageEl.narrow = this.narrow;
+    pageEl.isWide = this.isWide;
     pageEl.showAdvanced = this.showAdvanced;
 
     if (this.hass) {
