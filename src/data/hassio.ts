@@ -146,6 +146,7 @@ export interface HassioAddonSetOptionParams {
   boot?: "auto" | "manual";
   auto_update?: boolean;
   ingress_panel?: boolean;
+  network?: object | null;
 }
 
 export interface HassioAddonSetSecurityParams {

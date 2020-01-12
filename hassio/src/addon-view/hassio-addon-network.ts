@@ -13,7 +13,11 @@ import {
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 
 import { HomeAssistant } from "../../../src/types";
-import { HassioAddonDetails } from "../../../src/data/hassio";
+import {
+  HassioAddonDetails,
+  HassioAddonSetOptionParams,
+  setHassioAddonOption,
+} from "../../../src/data/hassio";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 import { fireEvent } from "../../../src/common/dom/fire_event";
@@ -82,9 +86,9 @@ class HassioAddonNetwork extends LitElement {
           </table>
         </div>
         <div class="card-actions">
-          <mwc-button class="warning" @click=${this._resetTapped}
-            >Reset to defaults</mwc-button
-          >
+          <mwc-button class="warning" @click=${this._resetTapped}>
+            Reset to defaults
+          </mwc-button>
           <mwc-button @click=${this._saveTapped}>Save</mwc-button>
         </div>
       </paper-card>
@@ -132,35 +136,7 @@ class HassioAddonNetwork extends LitElement {
     this._config = items.sort((a, b) => (a.container > b.container ? 1 : -1));
   }
 
-  private _resetTapped(): void {
-    this.error = undefined;
-    const path = `hassio/addons/${this.addon.slug}/options`;
-    const eventData = {
-      path,
-      success: false,
-      response: undefined,
-    };
-    this.hass
-      .callApi("POST", path, {
-        network: null,
-      })
-      .then(
-        (resp) => {
-          eventData.success = true;
-          eventData.response = resp as any;
-        },
-        (resp) => {
-          eventData.success = false;
-          eventData.response = resp;
-        }
-      )
-      .then(() => {
-        fireEvent(this, "hass-api-called", eventData);
-        this.requestUpdate();
-      });
-  }
-
-  private _configChanged(ev: Event): void {
+  private async _configChanged(ev: Event): Promise<void> {
     const target = ev.target as NetworkItemInput;
     this._config!.map((item) => {
       if (
@@ -172,36 +148,46 @@ class HassioAddonNetwork extends LitElement {
     });
   }
 
-  private _saveTapped(): void {
-    this.error = undefined;
-    const data = {};
-    this._config!.forEach((item) => {
-      data[item.container] = parseInt(String(item.host), 10);
-    });
-    const path = `hassio/addons/${this.addon.slug}/options`;
-    const eventData = {
-      path,
-      success: false,
-      response: undefined,
+  private async _resetTapped(): Promise<void> {
+    const data: HassioAddonSetOptionParams = {
+      network: null,
     };
-    this.hass
-      .callApi("POST", path, {
-        network: data,
-      })
-      .then(
-        (resp) => {
-          eventData.success = true;
-          eventData.response = resp as any;
-        },
-        (resp) => {
-          eventData.success = false;
-          eventData.response = resp;
-        }
-      )
-      .then(() => {
-        fireEvent(this, "hass-api-called", eventData);
-        this.requestUpdate();
-      });
+
+    try {
+      await setHassioAddonOption(this.hass, this.addon.slug, data);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "option",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+    } catch (err) {
+      this.error = `Failed to set addon network configuration, ${err.body.message}`;
+    }
+  }
+
+  private async _saveTapped(): Promise<void> {
+    this.error = undefined;
+    const networkconfiguration = {};
+    this._config!.forEach((item) => {
+      networkconfiguration[item.container] = parseInt(String(item.host), 10);
+    });
+
+    const data: HassioAddonSetOptionParams = {
+      network: networkconfiguration,
+    };
+
+    try {
+      await setHassioAddonOption(this.hass, this.addon.slug, data);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "option",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
+    } catch (err) {
+      this.error = `Failed to set addon network configuration, ${err.body.message}`;
+    }
   }
 }
 
