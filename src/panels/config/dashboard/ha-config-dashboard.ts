@@ -106,8 +106,8 @@ class HaConfigDashboard extends LitElement {
               .pages=${[
                 { page: "core", core: true },
                 { page: "server_control", core: true },
-                { page: "entity_registry", core: true },
-                { page: "area_registry", core: true },
+                { page: "entities", core: true },
+                { page: "areas", core: true },
                 { page: "person" },
                 { page: "users", core: true },
                 { page: "zha" },

@@ -27,11 +27,11 @@ class HaConfigRouter extends HassRouterPage {
     cacheAll: true,
     preloadAll: true,
     routes: {
-      area_registry: {
-        tag: "ha-config-area-registry",
+      areas: {
+        tag: "ha-config-areas",
         load: () =>
           import(
-            /* webpackChunkName: "panel-config-area-registry" */ "./area_registry/ha-config-area-registry"
+            /* webpackChunkName: "panel-config-areas" */ "./areas/ha-config-areas"
           ),
       },
       automation: {
@@ -83,11 +83,11 @@ class HaConfigRouter extends HassRouterPage {
             /* webpackChunkName: "panel-config-dashboard" */ "./dashboard/ha-config-dashboard"
           ),
       },
-      entity_registry: {
-        tag: "ha-config-entity-registry",
+      entities: {
+        tag: "ha-config-entities",
         load: () =>
           import(
-            /* webpackChunkName: "panel-config-entity-registry" */ "./entity_registry/ha-config-entity-registry"
+            /* webpackChunkName: "panel-config-entities" */ "./entities/ha-config-entities"
           ),
       },
       integrations: {

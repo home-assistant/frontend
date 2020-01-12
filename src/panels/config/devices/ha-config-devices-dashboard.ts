@@ -30,8 +30,8 @@ export class HaConfigDeviceDashboard extends LitElement {
   protected render(): TemplateResult {
     return html`
       <hass-subpage
-        .back=${!this.isWide}
-        header=${this.hass.localize("ui.panel.config.devices.caption")}
+        .showBackButton=${!this.isWide}
+        .header=${this.hass.localize("ui.panel.config.devices.caption")}
       >
         <div class="content">
           <ha-devices-data-table

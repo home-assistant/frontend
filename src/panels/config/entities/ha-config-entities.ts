@@ -6,6 +6,7 @@ import {
   CSSResult,
   property,
   query,
+  customElement,
 } from "lit-element";
 import { styleMap } from "lit-html/directives/style-map";
 
@@ -46,7 +47,8 @@ import {
 } from "../../../components/data-table/ha-data-table";
 import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialog-confirmation";
 
-class HaConfigEntityRegistry extends LitElement {
+@customElement("ha-config-entities")
+export class HaConfigEntities extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public isWide!: boolean;
   @property() public narrow!: boolean;
@@ -211,10 +213,10 @@ class HaConfigEntityRegistry extends LitElement {
     }
     return html`
       <hass-subpage
-        header="${this.hass.localize(
+        .header="${this.hass.localize(
           "ui.panel.config.entity_registry.caption"
         )}"
-        .back=${!this.isWide}
+        .showBackButton=${!this.isWide}
       >
         <div class="content">
           <div class="intro">
@@ -548,5 +550,3 @@ class HaConfigEntityRegistry extends LitElement {
     `;
   }
 }
-
-customElements.define("ha-config-entity-registry", HaConfigEntityRegistry);

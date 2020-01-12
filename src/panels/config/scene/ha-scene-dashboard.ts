@@ -36,8 +36,7 @@ class HaSceneDashboard extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <hass-subpage
-        style="width: 100%"
-        .back=${!this.isWide}
+        .showBackButton=${!this.isWide}
         .header=${this.hass.localize("ui.panel.config.scene.caption")}
       >
         <ha-config-section .isWide=${this.isWide}>

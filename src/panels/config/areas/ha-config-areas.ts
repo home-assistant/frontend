@@ -5,6 +5,7 @@ import {
   css,
   CSSResult,
   property,
+  customElement,
 } from "lit-element";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
@@ -30,7 +31,8 @@ import { classMap } from "lit-html/directives/class-map";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 
-class HaConfigAreaRegistry extends LitElement {
+@customElement("ha-config-areas")
+export class HaConfigAreas extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public isWide?: boolean;
   @property() private _areas?: AreaRegistryEntry[];
@@ -51,8 +53,8 @@ class HaConfigAreaRegistry extends LitElement {
     }
     return html`
       <hass-subpage
-        header="${this.hass.localize("ui.panel.config.area_registry.caption")}"
-        .back=${!this.isWide}
+        .header="${this.hass.localize("ui.panel.config.area_registry.caption")}"
+        .showBackButton=${!this.isWide}
       >
         <ha-config-section .isWide=${this.isWide}>
           <span slot="header">
@@ -209,5 +211,3 @@ All devices in this area will become unassigned.`)
     `;
   }
 }
-
-customElements.define("ha-config-area-registry", HaConfigAreaRegistry);

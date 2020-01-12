@@ -49,8 +49,8 @@ class HaConfigPerson extends LitElement {
     const hass = this.hass;
     return html`
       <hass-subpage
-        header=${hass.localize("ui.panel.config.person.caption")}
-        .back=${!this.isWide}
+        .header=${hass.localize("ui.panel.config.person.caption")}
+        .showBackButton=${!this.isWide}
       >
         <ha-config-section .isWide=${this.isWide}>
           <span slot="header"

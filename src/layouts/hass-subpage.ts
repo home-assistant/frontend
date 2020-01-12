@@ -16,9 +16,7 @@ class HassSubpage extends LitElement {
   @property()
   public header?: string;
   @property({ type: Boolean })
-  public back = true;
-  @property({ type: Boolean })
-  public toolbar = true;
+  public showBackButton = true;
   @property({ type: Boolean })
   public hassio = false;
 
@@ -29,7 +27,7 @@ class HassSubpage extends LitElement {
           aria-label="Back"
           .hassio=${this.hassio}
           @click=${this._backTapped}
-          class=${classMap({ hidden: !this.back })}
+          class=${classMap({ hidden: !this.showBackButton })}
         ></ha-paper-icon-button-arrow-prev>
 
         <div main-title>${this.header}</div>

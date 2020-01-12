@@ -64,7 +64,7 @@ class CloudAccount extends EventsMixin(LocalizeMixin(PolymerElement)) {
         }
       </style>
       <hass-subpage
-        back="[[!isWide]]"
+        showBackButton="[[!isWide]]"
         header="[[localize('ui.panel.config.cloud.caption')]]"
       >
         <div class="content">

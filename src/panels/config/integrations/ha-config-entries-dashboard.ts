@@ -73,8 +73,8 @@ export class HaConfigManagerDashboard extends LitElement {
   protected render(): TemplateResult {
     return html`
       <hass-subpage
-        .back=${!this.isWide}
-        header=${this.hass.localize("ui.panel.config.integrations.caption")}
+        .showBackButton=${!this.isWide}
+        .header=${this.hass.localize("ui.panel.config.integrations.caption")}
       >
         <paper-menu-button
           close-on-activate
