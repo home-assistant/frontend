@@ -222,10 +222,14 @@ class ConfigCoreForm extends LitElement {
     this._working = true;
     try {
       const location = this._locationValue;
+      let elevation = Number(this._elevationValue);
+      if (this._unitSystemValue !== "metric") {
+        elevation = parseInt(String(Number(this._elevation) / 3.2808), 10);
+      }
       await saveCoreConfig(this.hass, {
         latitude: location[0],
         longitude: location[1],
-        elevation: Number(this._elevationValue),
+        elevation: elevation,
         unit_system: this._unitSystemValue,
         time_zone: this._timeZoneValue,
       });
