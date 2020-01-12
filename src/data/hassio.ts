@@ -141,6 +141,7 @@ export interface HassioSnapshotDetail extends HassioSnapshot {
 export interface HassioAddonSetOptionParams {
   audio_input?: string | null;
   audio_output?: string | null;
+  options?: object | null;
 }
 export interface HassioFullSnapshotCreateParams {
   name: string;

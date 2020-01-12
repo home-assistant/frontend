@@ -13,10 +13,14 @@ import {
 } from "lit-element";
 
 import { HomeAssistant } from "../../../src/types";
-import { HassioAddonDetails } from "../../../src/data/hassio";
+import {
+  HassioAddonDetails,
+  setHassioAddonOption,
+  HassioAddonSetOptionParams,
+} from "../../../src/data/hassio";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
-import { fireEvent } from "../../../src/common/dom/fire_event";
+import { PolymerChangedEvent } from "../../../src/polymer-types";
 
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
@@ -41,7 +45,6 @@ class HassioAddonConfig extends LitElement {
             : ""}
           <iron-autogrow-textarea
             @value-changed=${this._configChanged}
-            id="config"
             .value=${this._config}
           ></iron-autogrow-textarea>
         </div>
@@ -51,7 +54,7 @@ class HassioAddonConfig extends LitElement {
           </mwc-button>
           <mwc-button
             @click=${this.saveTapped}
-            .disabled=${!this._configHasChanged}
+            ?disabled=${!this._configHasChanged}
           >
             Save
           </mwc-button>
@@ -103,59 +106,38 @@ class HassioAddonConfig extends LitElement {
     return this._config !== JSON.stringify(this.addon.options, null, 2);
   }
 
-  private _configChanged(ev): void {
-    try {
-      this.error = undefined;
-      this._config = ev.detail.value;
-    } catch (err) {
-      this.error = err;
-      this._config = JSON.stringify(this.addon.options, null, 2);
-    }
+  private _configChanged(ev: PolymerChangedEvent<string>): void {
+    this._config =
+      ev.detail.value || JSON.stringify(this.addon.options, null, 2);
   }
 
-  private _callApi(options: null | object): void {
-    this.error = undefined;
-    const path = `hassio/addons/${this.addon.slug}/options`;
-    const eventData = {
-      path,
-      success: false,
-      response: undefined,
+  private async resetTapped(): Promise<void> {
+    const data: HassioAddonSetOptionParams = {
+      options: null,
     };
-    this.hass
-      .callApi("POST", path, {
-        options,
-      })
-      .then(
-        (resp) => {
-          eventData.success = true;
-          eventData.response = resp as any;
-        },
-        (resp) => {
-          eventData.success = false;
-          eventData.response = resp;
-        }
-      )
-      .then(() => {
-        fireEvent(this, "hass-api-called", eventData);
-      });
-  }
-
-  private resetTapped(): void {
-    this._callApi(null);
-  }
-
-  private saveTapped(): void {
-    let config: object | null;
     try {
-      config = JSON.parse(this._config);
-      this.error = undefined;
-    } catch (err) {
-      config = null;
-      this.error = err;
+      await setHassioAddonOption(this.hass, this.addon.slug, data);
+    } catch {
+      this.error = "Failed to save addon configuration";
     }
+  }
 
-    if (!this.error) {
-      this._callApi(config);
+  private async saveTapped(): Promise<void> {
+    let data: HassioAddonSetOptionParams;
+    this.error = undefined;
+    try {
+      data = {
+        options: JSON.parse(this._config),
+      };
+    } catch (err) {
+      this.error = err;
+      return;
+    }
+    try {
+      await setHassioAddonOption(this.hass, this.addon.slug, data);
+    } catch (err) {
+      console.log(err);
+      this.error = `Failed to save addon configuration, ${err.body.message}`;
     }
   }
 }
