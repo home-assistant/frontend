@@ -9,7 +9,6 @@
   "scripts": {
     "build": "script/build_frontend",
     "lint": "eslint src hassio/src gallery/src && tslint 'src/**/*.ts' 'hassio/src/**/*.ts' 'gallery/src/**/*.ts' 'cast/src/**/*.ts' 'test-mocha/**/*.ts' && tsc",
-    "lint-hassio": "eslint hassio/src && tslint 'hassio/src/**/*.ts'",
     "mocha": "node_modules/.bin/ts-mocha -p test-mocha/tsconfig.test.json --opts test-mocha/mocha.opts",
     "test": "npm run lint && npm run mocha",
     "docker_build": "sh ./script/docker_run.sh build $npm_package_version",
