@@ -14,7 +14,10 @@ import {
 } from "lit-element";
 
 import { HomeAssistant, Route } from "../../../src/types";
-import { HassioAddonDetails } from "../../../src/data/hassio";
+import {
+  HassioAddonDetails,
+  fetchHassioAddonInfo,
+} from "../../../src/data/hassio";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 
@@ -119,12 +122,15 @@ class HassioAddonView extends LitElement {
     ];
   }
 
-  protected firstUpdated(): void {
-    this._routeDataChanged(this.route);
-    this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
+  protected async firstUpdated(): Promise<void> {
+    await this._routeDataChanged(this.route);
+    this.addEventListener(
+      "hass-api-called",
+      async (ev) => await this._apiCalled(ev)
+    );
   }
 
-  private _apiCalled(ev): void {
+  private async _apiCalled(ev): Promise<void> {
     const path: string = ev.detail.path;
 
     if (!path) {
@@ -134,20 +140,18 @@ class HassioAddonView extends LitElement {
     if (path === "uninstall") {
       history.back();
     } else {
-      this._routeDataChanged(this.route);
+      await this._routeDataChanged(this.route);
     }
   }
 
-  private _routeDataChanged(routeData: Route): void {
+  private async _routeDataChanged(routeData: Route): Promise<void> {
     const addon = routeData.path.substr(1);
-    this.hass.callApi("GET", `hassio/addons/${addon}/info`).then(
-      (info) => {
-        this.addon = (info as any).data;
-      },
-      () => {
-        this.addon = undefined;
-      }
-    );
+    try {
+      const content = await fetchHassioAddonInfo(this.hass, addon);
+      this.addon = content;
+    } catch {
+      this.addon = undefined;
+    }
   }
 }
 

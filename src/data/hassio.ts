@@ -183,14 +183,6 @@ export const fetchHassioAddonsInfo = (hass: HomeAssistant) =>
     .callApi<HassioResponse<HassioAddonsInfo>>("GET", `hassio/addons`)
     .then(hassioApiResultExtractor);
 
-export const fetchHassioAddonInfo = (hass: HomeAssistant, addon: string) =>
-  hass
-    .callApi<HassioResponse<HassioAddonDetails>>(
-      "GET",
-      `hassio/addons/${addon}/info`
-    )
-    .then(hassioApiResultExtractor);
-
 export const fetchHassioSupervisorInfo = (hass: HomeAssistant) =>
   hass
     .callApi<HassioResponse<HassioSupervisorInfo>>(
@@ -294,6 +286,17 @@ export const fetchHassioHardwareAudio = async (hass: HomeAssistant) => {
   const response = await hass.callApi<HassioResponse<HassioHardwareAudioList>>(
     "GET",
     "hassio/hardware/audio"
+  );
+  return response.data;
+};
+
+export const fetchHassioAddonInfo = async (
+  hass: HomeAssistant,
+  slug: string
+) => {
+  const response = await hass.callApi<HassioResponse<HassioAddonDetails>>(
+    "GET",
+    `hassio/addons/${slug}/info`
   );
   return response.data;
 };
