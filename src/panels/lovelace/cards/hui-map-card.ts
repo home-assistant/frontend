@@ -355,19 +355,15 @@ class HuiMapCard extends LitElement implements LovelaceCard {
             }),
             interactive: false,
             title,
-            // @ts-ignore
-            zone: true,
           })
         );
 
         // create circle around it
         mapZones.push(
-          // @ts-ignore
           Leaflet.circle([latitude, longitude], {
             interactive: false,
             color: "#FF9800",
             radius,
-            zone: true,
           })
         );
 
