@@ -98,6 +98,13 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
     }
     var mapItems = (this._mapItems = []);
 
+    if (this._mapZones) {
+      this._mapZones.forEach(function(marker) {
+        marker.remove();
+      });
+    }
+    var mapZones = (this._mapZones = []);
+
     Object.keys(hass.states).forEach((entityId) => {
       var entity = hass.states[entityId];
       var title = computeStateName(entity);
@@ -136,7 +143,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
         });
 
         // create marker with the icon
-        mapItems.push(
+        mapZones.push(
           this.Leaflet.marker(
             [entity.attributes.latitude, entity.attributes.longitude],
             {
@@ -148,7 +155,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
         );
 
         // create circle around it
-        mapItems.push(
+        mapZones.push(
           this.Leaflet.circle(
             [entity.attributes.latitude, entity.attributes.longitude],
             {
