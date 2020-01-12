@@ -68,6 +68,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     false
   );
   private _mapItems: Array<Marker | Circle> = [];
+  private _mapZones: Array<Marker | Circle> = [];
   private _connected = false;
 
   public setConfig(config: MapCardConfig): void {
@@ -248,16 +249,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return;
     }
     const zoom = this._config.default_zoom;
-
-    const devices = new Array();
-    this._mapItems.forEach((item) => {
-      // @ts-ignore
-      if (!item.options.zone) {
-        devices.push(item.getLatLng());
-      }
-    });
-
-    if (devices.length === 0) {
+    if (this._mapItems.length === 0) {
       this._leafletMap.setView(
         new this.Leaflet.LatLng(
           this.hass.config.latitude,
@@ -268,7 +260,9 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const bounds = this.Leaflet.latLngBounds(devices);
+    const bounds = this.Leaflet.latLngBounds(
+      this._mapItems ? this._mapItems.map((item) => item.getLatLng()) : []
+    );
     this._leafletMap.fitBounds(bounds.pad(0.5));
 
     if (zoom && this._leafletMap.getZoom() > zoom) {
@@ -289,6 +283,11 @@ class HuiMapCard extends LitElement implements LovelaceCard {
       this._mapItems.forEach((marker) => marker.remove());
     }
     const mapItems: Layer[] = (this._mapItems = []);
+
+    if (this._mapZones) {
+      this._mapZones.forEach((marker) => marker.remove());
+    }
+    const mapZones: Layer[] = (this._mapZones = []);
 
     const allEntities = this._configEntities!.concat();
 
@@ -347,7 +346,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         }
 
         // create marker with the icon
-        mapItems.push(
+        mapZones.push(
           Leaflet.marker([latitude, longitude], {
             icon: Leaflet.divIcon({
               html: iconHTML,
@@ -362,7 +361,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
         );
 
         // create circle around it
-        mapItems.push(
+        mapZones.push(
           // @ts-ignore
           Leaflet.circle([latitude, longitude], {
             interactive: false,
@@ -416,6 +415,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
 
     this._mapItems.forEach((marker) => map.addLayer(marker));
+    this._mapZones.forEach((marker) => map.addLayer(marker));
   }
 
   private _attachObserver(): void {
