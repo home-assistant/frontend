@@ -144,8 +144,8 @@ class HassioAddonView extends LitElement {
   private async _routeDataChanged(routeData: Route): Promise<void> {
     const addon = routeData.path.substr(1);
     try {
-      const content = await fetchHassioAddonInfo(this.hass, addon);
-      this.addon = content;
+      const addoninfo = await fetchHassioAddonInfo(this.hass, addon);
+      this.addon = addoninfo;
     } catch {
       this.addon = undefined;
     }
