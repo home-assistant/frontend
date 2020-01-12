@@ -224,6 +224,19 @@ class OnboardingCoreConfig extends LitElement {
   private _unitSystemChanged(
     ev: PolymerChangedEvent<ConfigUpdateValues["unit_system"]>
   ) {
+    if (this._unitSystem !== ev.detail.value) {
+      if (this._unitSystem !== ev.detail.value) {
+        if (this._unitSystem === "metric") {
+          this._elevation = String(
+            parseInt(String(Number(this._elevation) * 3.2808), 10)
+          );
+        } else if (this._unitSystem === "imperial") {
+          this._elevation = String(
+            parseInt(String(Number(this._elevation) / 3.2808), 10)
+          );
+        }
+      }
+    }
     this._unitSystem = ev.detail.value;
   }
 
