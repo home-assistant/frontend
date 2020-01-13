@@ -60,7 +60,7 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
         }
 
         mwc-button {
-          --mdc-theme-primary: white;
+          --mdc-theme-primary: var(--error-color, red);
         }
 
         a {
@@ -91,7 +91,7 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
             ></paper-icon-button>
             <a
               href="https://github.com/home-assistant/home-assistant-polymer/issues/4459"
-              ><mwc-button outlined>DEPRECATED</mwc-button></a
+              ><mwc-button unelevated>DEPRECATED</mwc-button></a
             >
           </app-toolbar>
 
