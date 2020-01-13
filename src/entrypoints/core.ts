@@ -55,8 +55,12 @@ const connProm = async (auth) => {
       throw err;
     }
     // We can get invalid auth if auth tokens were stored that are no longer valid
-    // Clear stored tokens.
-    if (!isExternal) {
+    if (isExternal) {
+      // Tell the external app to force refresh the access tokens.
+      // This should trigger their unauthorized handling.
+      await auth.refreshAccessToken(true);
+    } else {
+      // Clear stored tokens.
       saveTokens(null);
     }
     auth = await authProm();
