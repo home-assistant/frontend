@@ -9,6 +9,8 @@ import "@polymer/iron-pages/iron-pages";
 import "@polymer/paper-tabs/paper-tab";
 import "@polymer/paper-tabs/paper-tabs";
 
+import "@material/mwc-button/mwc-button";
+
 import "../../components/ha-cards";
 import "../../components/ha-icon";
 import "../../components/ha-menu-button";
@@ -56,6 +58,14 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
           --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
         }
+
+        mwc-button {
+          --mdc-theme-primary: white;
+        }
+
+        a {
+          text-decoration: none;
+        }
       </style>
       <app-route
         route="{{route}}"
@@ -79,6 +89,10 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
               icon="hass:microphone"
               on-click="_showVoiceCommandDialog"
             ></paper-icon-button>
+            <a
+              href="https://github.com/home-assistant/home-assistant-polymer/issues/4459"
+              ><mwc-button outlined>DEPRECATED</mwc-button></a
+            >
           </app-toolbar>
 
           <div sticky="" hidden$="[[areTabsHidden(views, showTabs)]]">
