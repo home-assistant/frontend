@@ -1510,6 +1510,17 @@
             "create_group": "Zigbee Home Automation - Create Group",
             "create": "Create Group",
             "creating_group": "Creating Group"
+          },
+          "group_binding": {
+            "header": "Group Binding",
+            "introduction": "Bind and unbind groups.",
+            "group_picker_label": "Bindable Groups",
+            "group_picker_help": "Select a group to issue a bind command.",
+            "cluster_selection_help": "Select clusters to bind to the selected group.",
+            "bind_button_label": "Bind Group",
+            "unbind_button_label": "Unbind Group",
+            "bind_button_help": "Bind the selected group to the selected device clusters.",
+            "unbind_button_help": "Unbind the selected group from the selected device clusters."
           }
         },
         "zwave": {

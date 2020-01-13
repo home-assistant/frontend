@@ -61,7 +61,11 @@ export class ZHAGroupBindingControl extends LitElement {
     return html`
       <ha-config-section .isWide="${this.isWide}">
         <div class="sectionHeader" slot="header">
-          <span>Group Binding</span>
+          <span
+            >${this.hass!.localize(
+              "ui.panel.config.zha.group_binding.header"
+            )}</span
+          >
           <paper-icon-button
             class="toggle-help-icon"
             @click="${this._onHelpTap}"
@@ -69,11 +73,20 @@ export class ZHAGroupBindingControl extends LitElement {
           >
           </paper-icon-button>
         </div>
-        <span slot="introduction">Bind and unbind groups.</span>
+        <span slot="introduction"
+          >${this.hass!.localize(
+            "ui.panel.config.zha.group_binding.introduction"
+          )}</span
+        >
 
         <ha-card class="content">
           <div class="command-picker">
-            <paper-dropdown-menu label="Bindable Groups" class="menu">
+            <paper-dropdown-menu
+              label=${this.hass!.localize(
+                "ui.panel.config.zha.group_binding.group_picker_label"
+              )}
+              class="menu"
+            >
               <paper-listbox
                 slot="dropdown-content"
                 .selected="${this._bindTargetIndex}"
@@ -90,7 +103,9 @@ export class ZHAGroupBindingControl extends LitElement {
           ${this._showHelp
             ? html`
                 <div class="helpText">
-                  Select a group to issue a bind command.
+                  ${this.hass!.localize(
+                    "ui.panel.config.zha.group_binding.group_picker_help"
+                  )}
                 </div>
               `
             : ""}
@@ -107,7 +122,7 @@ export class ZHAGroupBindingControl extends LitElement {
             ? html`
                 <div class="helpText">
                   ${this.hass!.localize(
-                    "ui.panel.config.zha.clusters.help_cluster_dropdown"
+                    "ui.panel.config.zha.group_binding.cluster_selection_help"
                   )}
                 </div>
               `
@@ -121,12 +136,16 @@ export class ZHAGroupBindingControl extends LitElement {
                 this._clustersToBind?.length > 0 &&
                 this.selectedDevice
               )}"
-              >Bind Group</mwc-button
+              >${this.hass!.localize(
+                "ui.panel.config.zha.group_binding.bind_button_label"
+              )}</mwc-button
             >
             ${this._showHelp
               ? html`
                   <div class="helpText">
-                    Bind group to the selected device.
+                    ${this.hass!.localize(
+                      "ui.panel.config.zha.group_binding.bind_button_help"
+                    )}
                   </div>
                 `
               : ""}
@@ -138,12 +157,16 @@ export class ZHAGroupBindingControl extends LitElement {
                 this._clustersToBind?.length > 0 &&
                 this.selectedDevice
               )}"
-              >Unbind Group</mwc-button
+              >${this.hass!.localize(
+                "ui.panel.config.zha.group_binding.unbind_button_label"
+              )}</mwc-button
             >
             ${this._showHelp
               ? html`
                   <div class="helpText">
-                    Unbind group to the selected device.
+                    ${this.hass!.localize(
+                      "ui.panel.config.zha.group_binding.unbind_button_help"
+                    )}
                   </div>
                 `
               : ""}
