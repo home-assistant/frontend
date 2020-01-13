@@ -91,6 +91,7 @@ class PartialCards extends EventsMixin(NavigateMixin(PolymerElement)) {
             ></paper-icon-button>
             <a
               href="https://github.com/home-assistant/home-assistant-polymer/issues/4459"
+              target="_blank"
               ><mwc-button unelevated>DEPRECATED</mwc-button></a
             >
           </app-toolbar>
