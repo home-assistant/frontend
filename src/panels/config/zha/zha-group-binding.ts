@@ -115,7 +115,7 @@ export class ZHAGroupBindingControl extends LitElement {
           <div class="card-actions">
             <mwc-button
               @click="${this._onBindGroupClick}"
-              ?disabled="${!(
+              .disabled="${!(
                 this._groupToBind &&
                 this._clustersToBind &&
                 this._clustersToBind?.length > 0 &&
@@ -132,7 +132,7 @@ export class ZHAGroupBindingControl extends LitElement {
               : ""}
             <mwc-button
               @click="${this._onUnbindGroupClick}"
-              ?disabled="${!(
+              .disabled="${!(
                 this._groupToBind &&
                 this._clustersToBind &&
                 this._clustersToBind?.length > 0 &&
