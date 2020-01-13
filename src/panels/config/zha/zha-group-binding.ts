@@ -73,7 +73,7 @@ export class ZHAGroupBindingControl extends LitElement {
 
         <ha-card class="content">
           <div class="command-picker">
-            <paper-dropdown-menu label="Bindable Groups" class="flex">
+            <paper-dropdown-menu label="Bindable Groups" class="menu">
               <paper-listbox
                 slot="dropdown-content"
                 .selected="${this._bindTargetIndex}"
@@ -89,7 +89,7 @@ export class ZHAGroupBindingControl extends LitElement {
           </div>
           ${this._showHelp
             ? html`
-                <div class="help-text">
+                <div class="helpText">
                   Select a group to issue a bind command.
                 </div>
               `
@@ -100,12 +100,12 @@ export class ZHAGroupBindingControl extends LitElement {
               .narrow=${this.narrow}
               .clusters=${this._clusters}
               @selection-changed=${this._handleClusterSelectionChanged}
-              class="flex"
+              class="menu"
             ></zha-clusters-data-table>
           </div>
           ${this._showHelp
             ? html`
-                <div class="help-text">
+                <div class="helpText">
                   ${this.hass!.localize(
                     "ui.panel.config.zha.clusters.help_cluster_dropdown"
                   )}
@@ -243,12 +243,8 @@ export class ZHAGroupBindingControl extends LitElement {
     return [
       haStyle,
       css`
-        .flex {
-          -ms-flex: 1 1 0.000000001px;
-          -webkit-flex: 1;
-          flex: 1;
-          -webkit-flex-basis: 0.000000001px;
-          flex-basis: 0.000000001px;
+        .menu {
+          width: 100%;
         }
 
         .content {
@@ -265,14 +261,6 @@ export class ZHAGroupBindingControl extends LitElement {
         }
 
         .command-picker {
-          display: -ms-flexbox;
-          display: -webkit-flex;
-          display: flex;
-          -ms-flex-direction: row;
-          -webkit-flex-direction: row;
-          flex-direction: row;
-          -ms-flex-align: center;
-          -webkit-align-items: center;
           align-items: center;
           padding-left: 28px;
           padding-right: 28px;
@@ -286,16 +274,18 @@ export class ZHAGroupBindingControl extends LitElement {
         }
 
         .sectionHeader {
-          position: relative;
+          flex-grow: 1;
         }
 
         .helpText {
           color: grey;
-          padding: 16px;
+          padding-left: 28px;
+          padding-right: 28px;
+          padding-bottom: 10px;
         }
 
         .toggle-help-icon {
-          position: absolute;
+          float: right;
           top: -6px;
           right: 0;
           color: var(--primary-color);

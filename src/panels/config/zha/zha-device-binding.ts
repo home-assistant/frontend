@@ -175,7 +175,9 @@ export class ZHADeviceBindingControl extends LitElement {
 
         .helpText {
           color: grey;
-          padding: 16px;
+          padding-left: 28px;
+          padding-right: 28px;
+          padding-bottom: 10px;
         }
 
         .header {
