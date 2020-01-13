@@ -270,7 +270,7 @@ class OnboardingCoreConfig extends LitElement {
       });
     } catch (err) {
       this._working = false;
-      alert("FAIL");
+      alert(`Failed to save: ${err.message}`);
     }
   }
 
