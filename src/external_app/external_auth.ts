@@ -11,6 +11,10 @@ interface BasePayload {
   callback: string;
 }
 
+interface GetExternalAuthPayload extends BasePayload {
+  force?: boolean;
+}
+
 interface RefreshTokenResponse {
   access_token: string;
   expires_in: number;
@@ -26,7 +30,7 @@ declare global {
     webkit?: {
       messageHandlers: {
         getExternalAuth: {
-          postMessage(payload: BasePayload);
+          postMessage(payload: GetExternalAuthPayload);
         };
         revokeExternalAuth: {
           postMessage(payload: BasePayload);
@@ -60,8 +64,13 @@ class ExternalAuth extends Auth {
     });
   }
 
-  public async refreshAccessToken() {
-    const callbackPayload = { callback: CALLBACK_SET_TOKEN };
+  public async refreshAccessToken(force?: boolean) {
+    const payload: GetExternalAuthPayload = {
+      callback: CALLBACK_SET_TOKEN,
+    };
+    if (force) {
+      payload.force = true;
+    }
 
     const callbackPromise = new Promise<RefreshTokenResponse>(
       (resolve, reject) => {
@@ -73,11 +82,9 @@ class ExternalAuth extends Auth {
     await 0;
 
     if (window.externalApp) {
-      window.externalApp.getExternalAuth(JSON.stringify(callbackPayload));
+      window.externalApp.getExternalAuth(JSON.stringify(payload));
     } else {
-      window.webkit!.messageHandlers.getExternalAuth.postMessage(
-        callbackPayload
-      );
+      window.webkit!.messageHandlers.getExternalAuth.postMessage(payload);
     }
 
     const tokens = await callbackPromise;
@@ -87,7 +94,7 @@ class ExternalAuth extends Auth {
   }
 
   public async revoke() {
-    const callbackPayload = { callback: CALLBACK_REVOKE_TOKEN };
+    const payload: BasePayload = { callback: CALLBACK_REVOKE_TOKEN };
 
     const callbackPromise = new Promise((resolve, reject) => {
       window[CALLBACK_REVOKE_TOKEN] = (success, data) =>
@@ -97,11 +104,9 @@ class ExternalAuth extends Auth {
     await 0;
 
     if (window.externalApp) {
-      window.externalApp.revokeExternalAuth(JSON.stringify(callbackPayload));
+      window.externalApp.revokeExternalAuth(JSON.stringify(payload));
     } else {
-      window.webkit!.messageHandlers.revokeExternalAuth.postMessage(
-        callbackPayload
-      );
+      window.webkit!.messageHandlers.revokeExternalAuth.postMessage(payload);
     }
 
     await callbackPromise;
