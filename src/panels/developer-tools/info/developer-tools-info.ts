@@ -32,7 +32,9 @@ class HaPanelDevInfo extends LitElement {
     const nonDefaultLinkText =
       localStorage.defaultPage === OPT_IN_PANEL && OPT_IN_PANEL === "states"
         ? this.hass.localize("ui.panel.developer-tools.tabs.info.lovelace_ui")
-        : this.hass.localize("ui.panel.developer-tools.tabs.info.states_ui");
+        : `${this.hass.localize(
+            "ui.panel.developer-tools.tabs.info.states_ui"
+          )} (DEPRECATED)`;
 
     const defaultPageText = `${this.hass.localize(
       "ui.panel.developer-tools.tabs.info.default_ui",
@@ -41,7 +43,7 @@ class HaPanelDevInfo extends LitElement {
         ? this.hass.localize("ui.panel.developer-tools.tabs.info.remove")
         : this.hass.localize("ui.panel.developer-tools.tabs.info.set"),
       "name",
-      OPT_IN_PANEL
+      `${OPT_IN_PANEL} (DEPRECATED)`
     )}`;
 
     return html`
