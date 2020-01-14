@@ -944,7 +944,7 @@
                     "unknown_error": "Nezināma kļūda",
                     "unnamed_device": "Nenosaukta ierīce"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Vienības",
                     "description": "Pārskats par visām zināmajām vienībām.",
                     "editor": {

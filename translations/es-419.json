@@ -1046,7 +1046,7 @@
                     "unknown_error": "Error desconocido",
                     "unnamed_device": "Dispositivo sin nombre"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Registro de entidades",
                     "description": "Visión general de todas las entidades conocidas.",
                     "editor": {

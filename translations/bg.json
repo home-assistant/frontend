@@ -907,7 +907,7 @@
                     "caption": "Устройства",
                     "description": "Управление на свързани устройства"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Регистър на обектите",
                     "description": "Преглед на всички известни обекти.",
                     "editor": {

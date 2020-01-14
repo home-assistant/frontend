@@ -588,12 +588,12 @@
                     },
                     "no_areas": "Dit lyk asof u nog geen gebiede het nie!",
                     "picker": {
-                        "create_area": "SKEP GEBIED",
+                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
                         "header": "Gebiedsregister",
                         "integrations_page": "Integrasies bladsy",
                         "introduction": "Gebiede word gebruik om toestelle te organiseer gebaseer op waar hulle is. Hierdie inligting sal regdeur Home Assistant gebruik word om u te help om u koppelvlak, toestemmings en integrasies met ander stelsels te organiseer.",
                         "introduction2": "Om toestelle in 'n gebied te plaas, gebruik die skakel hieronder om na die integrasies bladsy toe te gaan en klik dan op 'n opgestelde integrasie om na die toestelkaarte toe te gaan.",
-                        "no_areas": "Dit lyk asof u nog geen gebiede het nie!"
+                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
                     }
                 },
                 "automation": {
@@ -841,7 +841,7 @@
                         "introduction": "Verfyn per-entiteit eienskappe. Bygevoegde / gewysigde aanpassings sal onmiddellik in werking tree. Verwyderde aanpassings sal in werking tree wanneer die entiteit opgedateer word."
                     }
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Entiteit Register",
                     "description": "Oorsig van alle bekende entiteite.",
                     "editor": {
@@ -852,7 +852,6 @@
                     },
                     "picker": {
                         "header": "Entiteit Register",
-                        "integrations_page": "Integrasies bladsy",
                         "introduction": "Home Assistant hou 'n register van al die vorige entiteite wat uniek geïdentifiseer kan word. Elk van hierdie entiteite sal 'n entiteit-ID hê wat vir hierdie entiteit gereserveer sal word.",
                         "introduction2": "Gebruik die entiteitsregister om die naam te oorskryf, die entiteit ID te verander, of die inskrywing van Home Assistant te verwyder. Let wel, die verwydering van die entiteit registerinskrywing sal nie die entiteit verwyder nie. Om dit te doen, volg die skakel hieronder en verwyder dit uit die integrasies bladsy.",
                         "unavailable": "(nie beskikbaar nie)"

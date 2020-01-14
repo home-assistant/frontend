@@ -723,7 +723,7 @@
                     "unknown_error": "不明なエラー",
                     "unnamed_device": "名前のないデバイス"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "エンティティ",
                     "description": "すべて既知のエンティティの一覧",
                     "picker": {

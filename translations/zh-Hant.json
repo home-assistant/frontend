@@ -689,7 +689,7 @@
                     "description": "家中所有分區概觀",
                     "editor": {
                         "create": "建立",
-                        "default_name": "新增分區",
+                        "default_name": "新分區",
                         "delete": "刪除",
                         "update": "更新"
                     },
@@ -1196,7 +1196,7 @@
                     "unknown_error": "未知錯誤",
                     "unnamed_device": "未命名設備"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "物件",
                     "description": "所有已知物件概觀",
                     "editor": {
@@ -1279,6 +1279,7 @@
                         "area_picker_label": "分區",
                         "close": "關閉",
                         "created_config": "新增 {name} 設定。",
+                        "dismiss": "忽略對話",
                         "error_saving_area": "儲存分區錯誤：{error}",
                         "external_step": {
                             "description": "此步驟將需要開啟外部網站方能完成。",

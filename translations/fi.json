@@ -1054,7 +1054,7 @@
                     "unknown_error": "Tuntematon virhe",
                     "unnamed_device": "Nimeämätön laite"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Olemusrekisteri",
                     "description": "Yleiskuva kaikista tunnetuista entiteeteistä.",
                     "editor": {

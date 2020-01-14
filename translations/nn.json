@@ -917,7 +917,7 @@
                     "description": "Administrer tilkopla einingar",
                     "info": "Enhetsinformasjon"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Oppføringsregister",
                     "description": "Oversikt over alle kjende oppføringar.",
                     "editor": {

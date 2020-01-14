@@ -1196,7 +1196,7 @@
                     "unknown_error": "Ukendt fejl",
                     "unnamed_device": "Enhed uden navn"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Entiteter",
                     "description": "Oversigt over alle kendte entiteter.",
                     "editor": {
@@ -1279,6 +1279,7 @@
                         "area_picker_label": "Område",
                         "close": "Luk",
                         "created_config": "Oprettede konfiguration til {name}.",
+                        "dismiss": "Afvis dialog",
                         "error_saving_area": "Fejl ved lagring af område: {error}",
                         "external_step": {
                             "description": "Dette trin kræver, at du besøger et eksternt websted.",

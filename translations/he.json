@@ -1182,7 +1182,7 @@
                     "unknown_error": "שגיאה לא ידועה",
                     "unnamed_device": "התקן ללא שם"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "מאגר הישויות",
                     "description": "סקירה של כל הישויות המוכרות",
                     "editor": {
