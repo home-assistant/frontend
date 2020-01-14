@@ -683,7 +683,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Lëscht vun de Beräicher",
                     "create_area": "Beräich erstellen",
                     "description": "Iwwersiicht vun de Beräicher am Haus",

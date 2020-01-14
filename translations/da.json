@@ -683,7 +683,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Områder",
                     "create_area": "OPRET OMRÅDE",
                     "description": "Oversigt over alle områder i dit hjem.",
@@ -1100,6 +1100,7 @@
                             "core_config": {
                                 "edit_requires_storage": "Editor er deaktiveret, fordi config er gemt i 'configuration.yaml'.",
                                 "elevation": "Højde",
+                                "elevation_feet": "fod",
                                 "elevation_meters": "meter",
                                 "imperial_example": "Fahrenheit, pund",
                                 "latitude": "Breddegrad",

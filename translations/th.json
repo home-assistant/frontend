@@ -564,7 +564,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "ค่าของห้อง",
                     "create_area": "สร้างห้องใหม่",
                     "description": "ภาพรวมของห้องทั้งหมดในบ้านของคุณ",

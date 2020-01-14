@@ -612,7 +612,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Svæðaskrá",
                     "create_area": "BÚA TIL SVÆÐI",
                     "description": "Yfirlit yfir öll svæði á heimilinu þínu.",

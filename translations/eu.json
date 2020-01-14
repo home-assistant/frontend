@@ -438,7 +438,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Gune Erregistroa",
                     "create_area": "GUNEA SORTU",
                     "description": "Zure etxeko gune guztien ikuspegi orokorra.",
@@ -451,8 +451,7 @@
                     "picker": {
                         "create_area": "GUNEA SORTU",
                         "header": "Gune Erregistroa",
-                        "integrations_page": "Integrazioen orria",
-                        "no_areas": "Oraindik gunerik ez duzula dirudi!"
+                        "integrations_page": "Integrazioen orria"
                     }
                 },
                 "automation": {

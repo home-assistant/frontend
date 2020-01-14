@@ -576,7 +576,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Đăng ký Khu vực",
                     "create_area": "TẠO KHU VỰC",
                     "description": "Tổng quan tất cả các khu vực trong nhà bạn.",
@@ -593,7 +593,7 @@
                         "integrations_page": "Trang tích hợp",
                         "introduction": "Các khu vực được sử dụng để phân loại các thiết bị. Thông tin này sẽ được sử dụng trong toàn bộ Home Assistant để giúp bạn tổ chức giao diện, quyền và tích hợp với các hệ thống khác.",
                         "introduction2": "Để đặt các thiết bị trong một khu vực, hãy sử dụng liên kết bên dưới để điều hướng đến trang tích hợp và sau đó nhấp vào tích hợp được định cấu hình để truy cập vào thẻ thiết bị.",
-                        "no_areas": "Hình như bạn chưa có Khu vực nào!"
+                        "no_areas": "Hình như bạn chưa có khu vực nào!"
                     }
                 },
                 "automation": {
