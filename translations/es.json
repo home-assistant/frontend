@@ -683,7 +683,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Áreas",
                     "create_area": "CREAR ÁREA",
                     "description": "Visión general de todas las áreas de tu casa.",
@@ -700,7 +700,7 @@
                         "integrations_page": "Integraciones",
                         "introduction": "Las áreas se utilizan para organizar dónde están los dispositivos. Esta información se utilizará en todo Home Assistant para ayudarte a organizar tu interfaz, permisos e integraciones con otros sistemas.",
                         "introduction2": "Para colocar dispositivos en un área, utiliza el siguiente enlace para navegar a la página de integraciones y luego haz clic en una integración configurada para llegar a las tarjetas de dispositivos.",
-                        "no_areas": "¡Parece que aún no tienes áreas!"
+                        "no_areas": "¡Parece que no tienes áreas!"
                     }
                 },
                 "automation": {

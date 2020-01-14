@@ -73,7 +73,7 @@ export class HaConfigEntities extends LitElement {
         },
         name: {
           title: this.hass.localize(
-            "ui.panel.config.entity_registry.picker.headers.name"
+            "ui.panel.config.entities.picker.headers.name"
           ),
           sortable: true,
           filterable: true,
@@ -83,7 +83,7 @@ export class HaConfigEntities extends LitElement {
 
       const statusColumn: DataTableColumnData = {
         title: this.hass.localize(
-          "ui.panel.config.entity_registry.picker.headers.status"
+          "ui.panel.config.entities.picker.headers.status"
         ),
         type: "icon",
         sortable: true,
@@ -106,10 +106,10 @@ export class HaConfigEntities extends LitElement {
                   <paper-tooltip position="left">
                     ${entity.unavailable
                       ? this.hass.localize(
-                          "ui.panel.config.entity_registry.picker.status.unavailable"
+                          "ui.panel.config.entities.picker.status.unavailable"
                         )
                       : this.hass.localize(
-                          "ui.panel.config.entity_registry.picker.status.disabled"
+                          "ui.panel.config.entities.picker.status.disabled"
                         )}
                   </paper-tooltip>
                 </div>
@@ -132,14 +132,14 @@ export class HaConfigEntities extends LitElement {
 
       columns.entity_id = {
         title: this.hass.localize(
-          "ui.panel.config.entity_registry.picker.headers.entity_id"
+          "ui.panel.config.entities.picker.headers.entity_id"
         ),
         sortable: true,
         filterable: true,
       };
       columns.platform = {
         title: this.hass.localize(
-          "ui.panel.config.entity_registry.picker.headers.integration"
+          "ui.panel.config.entities.picker.headers.integration"
         ),
         sortable: true,
         filterable: true,
@@ -183,15 +183,13 @@ export class HaConfigEntities extends LitElement {
           unavailable,
           status: unavailable
             ? this.hass.localize(
-                "ui.panel.config.entity_registry.picker.status.unavailable"
+                "ui.panel.config.entities.picker.status.unavailable"
               )
             : entry.disabled_by
             ? this.hass.localize(
-                "ui.panel.config.entity_registry.picker.status.disabled"
+                "ui.panel.config.entities.picker.status.disabled"
               )
-            : this.hass.localize(
-                "ui.panel.config.entity_registry.picker.status.ok"
-              ),
+            : this.hass.localize("ui.panel.config.entities.picker.status.ok"),
         });
         return result;
       }, [] as any);
@@ -213,32 +211,28 @@ export class HaConfigEntities extends LitElement {
     }
     return html`
       <hass-subpage
-        .header="${this.hass.localize(
-          "ui.panel.config.entity_registry.caption"
-        )}"
+        .header="${this.hass.localize("ui.panel.config.entities.caption")}"
         .showBackButton=${!this.isWide}
       >
         <div class="content">
           <div class="intro">
             <h2>
-              ${this.hass.localize(
-                "ui.panel.config.entity_registry.picker.header"
-              )}
+              ${this.hass.localize("ui.panel.config.entities.picker.header")}
             </h2>
             <p>
               ${this.hass.localize(
-                "ui.panel.config.entity_registry.picker.introduction"
+                "ui.panel.config.entities.picker.introduction"
               )}
             </p>
 
             <p>
               ${this.hass.localize(
-                "ui.panel.config.entity_registry.picker.introduction2"
+                "ui.panel.config.entities.picker.introduction2"
               )}
             </p>
             <a href="/config/integrations">
               ${this.hass.localize(
-                "ui.panel.config.entity_registry.picker.integrations_page"
+                "ui.panel.config.entities.picker.integrations_page"
               )}
             </a>
           </div>
@@ -260,7 +254,7 @@ export class HaConfigEntities extends LitElement {
                 ? html`
                     <p class="selected-txt">
                       ${this.hass.localize(
-                        "ui.panel.config.entity_registry.picker.selected",
+                        "ui.panel.config.entities.picker.selected",
                         "number",
                         this._selectedEntities.length
                       )}
@@ -270,17 +264,17 @@ export class HaConfigEntities extends LitElement {
                         ? html`
                             <mwc-button @click=${this._enableSelected}
                               >${this.hass.localize(
-                                "ui.panel.config.entity_registry.picker.enable_selected.button"
+                                "ui.panel.config.entities.picker.enable_selected.button"
                               )}</mwc-button
                             >
                             <mwc-button @click=${this._disableSelected}
                               >${this.hass.localize(
-                                "ui.panel.config.entity_registry.picker.disable_selected.button"
+                                "ui.panel.config.entities.picker.disable_selected.button"
                               )}</mwc-button
                             >
                             <mwc-button @click=${this._removeSelected}
                               >${this.hass.localize(
-                                "ui.panel.config.entity_registry.picker.remove_selected.button"
+                                "ui.panel.config.entities.picker.remove_selected.button"
                               )}</mwc-button
                             >
                           `
@@ -292,7 +286,7 @@ export class HaConfigEntities extends LitElement {
                             ></paper-icon-button>
                             <paper-tooltip for="enable-btn">
                               ${this.hass.localize(
-                                "ui.panel.config.entity_registry.picker.enable_selected.button"
+                                "ui.panel.config.entities.picker.enable_selected.button"
                               )}
                             </paper-tooltip>
                             <paper-icon-button
@@ -302,7 +296,7 @@ export class HaConfigEntities extends LitElement {
                             ></paper-icon-button>
                             <paper-tooltip for="disable-btn">
                               ${this.hass.localize(
-                                "ui.panel.config.entity_registry.picker.disable_selected.button"
+                                "ui.panel.config.entities.picker.disable_selected.button"
                               )}
                             </paper-tooltip>
                             <paper-icon-button
@@ -312,7 +306,7 @@ export class HaConfigEntities extends LitElement {
                             ></paper-icon-button>
                             <paper-tooltip for="remove-btn">
                               ${this.hass.localize(
-                                "ui.panel.config.entity_registry.picker.remove_selected.button"
+                                "ui.panel.config.entities.picker.remove_selected.button"
                               )}
                             </paper-tooltip>
                           `}
@@ -326,10 +320,10 @@ export class HaConfigEntities extends LitElement {
                     <paper-menu-button no-animations horizontal-align="right">
                       <paper-icon-button
                         aria-label=${this.hass!.localize(
-                          "ui.panel.config.entity_registry.picker.filter.filter"
+                          "ui.panel.config.entities.picker.filter.filter"
                         )}
                         title="${this.hass!.localize(
-                          "ui.panel.config.entity_registry.picker.filter.filter"
+                          "ui.panel.config.entities.picker.filter.filter"
                         )}"
                         icon="hass:filter-variant"
                         slot="dropdown-trigger"
@@ -341,7 +335,7 @@ export class HaConfigEntities extends LitElement {
                             slot="item-icon"
                           ></paper-checkbox>
                           ${this.hass!.localize(
-                            "ui.panel.config.entity_registry.picker.filter.show_disabled"
+                            "ui.panel.config.entities.picker.filter.show_disabled"
                           )}
                         </paper-icon-item>
                         <paper-icon-item @click="${this._showRestoredChanged}">
@@ -350,7 +344,7 @@ export class HaConfigEntities extends LitElement {
                             slot="item-icon"
                           ></paper-checkbox>
                           ${this.hass!.localize(
-                            "ui.panel.config.entity_registry.picker.filter.show_unavailable"
+                            "ui.panel.config.entities.picker.filter.show_unavailable"
                           )}
                         </paper-icon-item>
                       </paper-listbox>
@@ -407,12 +401,12 @@ export class HaConfigEntities extends LitElement {
   private _enableSelected() {
     showConfirmationDialog(this, {
       title: this.hass.localize(
-        "ui.panel.config.entity_registry.picker.enable_selected.confirm_title",
+        "ui.panel.config.entities.picker.enable_selected.confirm_title",
         "number",
         this._selectedEntities.length
       ),
       text: this.hass.localize(
-        "ui.panel.config.entity_registry.picker.enable_selected.confirm_text"
+        "ui.panel.config.entities.picker.enable_selected.confirm_text"
       ),
       confirmBtnText: this.hass.localize("ui.common.yes"),
       cancelBtnText: this.hass.localize("ui.common.no"),
@@ -430,12 +424,12 @@ export class HaConfigEntities extends LitElement {
   private _disableSelected() {
     showConfirmationDialog(this, {
       title: this.hass.localize(
-        "ui.panel.config.entity_registry.picker.disable_selected.confirm_title",
+        "ui.panel.config.entities.picker.disable_selected.confirm_title",
         "number",
         this._selectedEntities.length
       ),
       text: this.hass.localize(
-        "ui.panel.config.entity_registry.picker.disable_selected.confirm_text"
+        "ui.panel.config.entities.picker.disable_selected.confirm_text"
       ),
       confirmBtnText: this.hass.localize("ui.common.yes"),
       cancelBtnText: this.hass.localize("ui.common.no"),
@@ -457,12 +451,12 @@ export class HaConfigEntities extends LitElement {
     });
     showConfirmationDialog(this, {
       title: this.hass.localize(
-        "ui.panel.config.entity_registry.picker.remove_selected.confirm_title",
+        "ui.panel.config.entities.picker.remove_selected.confirm_title",
         "number",
         removeableEntities.length
       ),
       text: this.hass.localize(
-        "ui.panel.config.entity_registry.picker.remove_selected.confirm_text"
+        "ui.panel.config.entities.picker.remove_selected.confirm_text"
       ),
       confirmBtnText: this.hass.localize("ui.common.yes"),
       cancelBtnText: this.hass.localize("ui.common.no"),

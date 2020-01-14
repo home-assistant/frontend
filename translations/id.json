@@ -537,7 +537,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Registry Area",
                     "create_area": "BUAT AREA",
                     "description": "Gambaran umum semua area di rumah Anda.",
@@ -548,8 +548,10 @@
                     },
                     "no_areas": "Sepertinya Anda belum memiliki area!",
                     "picker": {
+                        "create_area": "BUAT AREA",
                         "header": "Registry Area",
-                        "integrations_page": "Halaman integrasi"
+                        "integrations_page": "Halaman integrasi",
+                        "no_areas": "Sepertinya Anda belum memiliki area!"
                     }
                 },
                 "automation": {

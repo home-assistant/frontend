@@ -463,7 +463,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "エリア",
                     "description": "すべて自宅のエリアの一覧",
                     "picker": {

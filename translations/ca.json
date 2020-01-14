@@ -675,7 +675,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Registre d'àrees",
                     "create_area": "CREA ÀREA",
                     "description": "Visió general de totes les àrees de la casa.",
@@ -687,12 +687,12 @@
                     },
                     "no_areas": "Sembla que encara no tens cap àrea!.",
                     "picker": {
-                        "create_area": "CREAR ÀREA",
+                        "create_area": "CREA ÀREA",
                         "header": "Registre d'àrees",
                         "integrations_page": "Pàgina d'integracions",
                         "introduction": "Les àrees s'utilitzen per organitzar la situació dels dispositius. Aquesta informació serà utilitzada per Home Assistant per ajudar-te a organitzar millor la teva interfície, els permisos i les integracions amb d'altres sistemes.",
                         "introduction2": "Per col·locar dispositius en una àrea, utilitza l'enllaç de sota per anar a la pàgina d'integracions i, a continuació, fes clic a una integració configurada per accedir a les targetes del dispositiu.",
-                        "no_areas": "Sembla que encara no tens cap àrea!"
+                        "no_areas": "Sembla que encara no tens cap àrea!."
                     }
                 },
                 "automation": {

@@ -663,7 +663,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Alanları",
                     "create_area": "ALAN OLUŞTUR",
                     "description": "Evinizdeki tüm alanlara genel bakış.",

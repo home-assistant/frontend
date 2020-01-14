@@ -115,7 +115,7 @@ class DialogConfigEntrySystemOptions extends LitElement {
                   .disabled=${this._submitting}
                 >
                   ${this.hass.localize(
-                    "ui.panel.config.entity_registry.editor.update"
+                    "ui.panel.config.entities.editor.update"
                   )}
                 </mwc-button>
               </div>
