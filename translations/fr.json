@@ -675,7 +675,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Pièces",
                     "create_area": "CRÉER UNE PIÈCE",
                     "description": "Vue d'ensemble de toutes les pièces de votre maison.",

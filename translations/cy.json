@@ -476,7 +476,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Gofrestrfa ardal",
                     "create_area": "CREU ARDAL",
                     "description": "Trosolwg o bob ardal yn eich cartref.",

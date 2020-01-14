@@ -683,7 +683,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Rejestr obszarów",
                     "create_area": "UTWÓRZ OBSZAR",
                     "description": "Przegląd wszystkich obszarów w twoim domu",
@@ -700,7 +700,7 @@
                         "integrations_page": "Strona integracji",
                         "introduction": "Obszary służą do organizacji urządzeń. Informacje te będą używane w Home Assistant, aby pomóc w organizacji interfejsu, uprawnień i integracji z innymi systemami.",
                         "introduction2": "Aby umieścić urządzenia w danym obszarze, użyj poniższego linku, aby przejść do strony integracji, a następnie kliknij skonfigurowaną integrację, aby dostać się do kart urządzeń.",
-                        "no_areas": "Wygląda na to, że nie masz jeszcze lokalizacji!"
+                        "no_areas": "Wygląda na to, że jeszcze nie masz zdefiniowanych obszarów!"
                     }
                 },
                 "automation": {
@@ -1100,6 +1100,7 @@
                             "core_config": {
                                 "edit_requires_storage": "Edytor wyłączony, ponieważ konfiguracja jest przechowywana w pliku configuration.yaml.",
                                 "elevation": "Wysokość",
+                                "elevation_feet": "stopy",
                                 "elevation_meters": "metry/-ów",
                                 "imperial_example": "stopnie Fahrenheita, funty",
                                 "latitude": "Szerokość geograficzna",
@@ -1219,7 +1220,7 @@
                         },
                         "enable_selected": {
                             "button": "Włącz wybrane",
-                            "confirm_text": "Dzięki temu będą ponownie dostępne w Home Assistancie, jeśli są teraz wyłączone.",
+                            "confirm_text": "Dzięki temu będą ponownie dostępne w Home Assistant, jeśli są teraz wyłączone.",
                             "confirm_title": "Czy chcesz włączyć {number} encj(-e/-i)?"
                         },
                         "filter": {
@@ -1474,9 +1475,13 @@
                 "zha": {
                     "add_device_page": {
                         "discovery_text": "Wykryte urządzenia pojawią się tutaj. Postępuj zgodnie z instrukcjami dla urządzeń, by wprowadzić je w tryb parowania.",
-                        "header": "Zigbee Home Automation - Dodaj urządzenia",
+                        "header": "Zigbee Home Automation - dodaj urządzenia",
                         "search_again": "Szukaj ponownie",
                         "spinner": "Wyszukiwanie urządzeń ZHA Zigbee..."
+                    },
+                    "add": {
+                        "caption": "Dodaj urządzenia",
+                        "description": "Dodaj urządzenia do sieci Zigbee"
                     },
                     "caption": "ZHA",
                     "cluster_attributes": {
@@ -1497,7 +1502,9 @@
                         "issue_zigbee_command": "Wydaj polecenie Zigbee"
                     },
                     "clusters": {
-                        "help_cluster_dropdown": "Wybierz klaster, aby wyświetlić atrybuty i polecenia."
+                        "header": "Klastry",
+                        "help_cluster_dropdown": "Wybierz klaster, aby wyświetlić atrybuty i polecenia.",
+                        "introduction": "Klastry są elementami składowymi funkcjonalności Zigbee. Dzielą one funkcjonalność na jednostki logiczne. Istnieją typy klientów i serwerów, które składają się z atrybutów i poleceń."
                     },
                     "common": {
                         "add_devices": "Dodaj urządzenia",
@@ -1506,12 +1513,44 @@
                         "manufacturer_code_override": "Zastąpienie kodu producenta",
                         "value": "Wartość"
                     },
-                    "description": "Zarządzanie siecią automatyki domowej Zigbee",
+                    "description": "Zarządzanie siecią Zigbee Home Automation",
                     "device_card": {
                         "area_picker_label": "Obszar",
                         "device_name_placeholder": "Nazwa użytkownika",
                         "update_name_button": "Aktualizuj nazwę"
                     },
+                    "devices": {
+                        "header": "Zigbee Home Automation - urządzenie"
+                    },
+                    "groups": {
+                        "add_members": "Dodaj członków",
+                        "adding_members": "Dodawanie członków",
+                        "caption": "Grupy",
+                        "create": "Utwórz grupę",
+                        "create_group": "Zigbee Home Automation - utwórz grupę",
+                        "create_group_details": "Wprowadź wymagane dane, aby utworzyć nową grupę zigbee",
+                        "creating_group": "Tworzenie grupy",
+                        "description": "Twórz i modyfikuj grupy Zigbee",
+                        "group_details": "Oto wszystkie szczegóły dotyczące zaznaczonej grupy Zigbee.",
+                        "group_id": "Identyfikator grupy",
+                        "group_info": "Informacje o grupie",
+                        "group_name_placeholder": "Nazwa grupy",
+                        "group_not_found": "Grupa nie znaleziona!",
+                        "group-header": "Zigbee Home Automation - szczegóły grupy",
+                        "groups": "Grupy",
+                        "groups-header": "Zigbee Home Automation - zarządzanie grupą",
+                        "header": "Zigbee Home Automation - zarządzanie grupą",
+                        "introduction": "Twórz i modyfikuj grupy zigbee",
+                        "manage_groups": "Zarządzaj grupami Zigbee",
+                        "members": "Członkowie",
+                        "remove_groups": "Usuń grupy",
+                        "remove_members": "Usuń członków",
+                        "removing_groups": "Usuwanie grup",
+                        "removing_members": "Usuwanie członków",
+                        "zha_zigbee_groups": "Grupy ZHA Zigbee"
+                    },
+                    "header": "Konfiguruj Zigbee Home Automation",
+                    "introduction": "Tutaj można skonfigurować komponent ZHA. Nie wszystko jest możliwe do skonfigurowania z interfejsu użytkownika, ale pracujemy nad tym.",
                     "network_management": {
                         "header": "Zarządzanie siecią",
                         "introduction": "Polecenia, które wpływają na całą sieć"
@@ -1527,7 +1566,8 @@
                         "reconfigure": "Ponowna konfiguracja urządzenia ZHA (uzdrawianie urządzenia). Użyj tego polecenia, jeśli masz problemy z urządzeniem. Jeśli urządzenie jest zasilane bateryjnie, upewnij się, że nie jest uśpione i przyjmie polecenie rekonfiguracji.",
                         "remove": "Usuń urządzenie z sieci Zigbee.",
                         "updateDeviceName": "Ustaw niestandardową nazwę tego urządzenia w rejestrze urządzeń."
-                    }
+                    },
+                    "title": "Zigbee Home Automation"
                 },
                 "zwave": {
                     "caption": "Z-Wave",

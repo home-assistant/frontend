@@ -671,7 +671,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Områden",
                     "create_area": "SKAPA OMRÅDE",
                     "description": "Oversikt över alla områden i ditt hem",
@@ -683,12 +683,12 @@
                     },
                     "no_areas": "Det verkar som om du inte har några områden än!",
                     "picker": {
-                        "create_area": "Skapa område",
+                        "create_area": "SKAPA OMRÅDE",
                         "header": "Områden",
                         "integrations_page": "Integrationssidan",
                         "introduction": "Områden används för att organisera var enheter befinner sig. Denna information kommer att användas i hela Home Assistant för att hjälpa dig att organisera ditt gränssnitt, behörigheter och integreringar med andra system.",
                         "introduction2": "Om du vill placera enheter i ett område använder du länken nedan för att navigera till integrationssidan och klickar sedan på en konfigurerad integration för att komma till enhetskort.",
-                        "no_areas": "Det verkar som om du inte har några områden ännu"
+                        "no_areas": "Det verkar som om du inte har några områden än!"
                     }
                 },
                 "automation": {

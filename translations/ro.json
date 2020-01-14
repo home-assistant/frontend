@@ -633,7 +633,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Zone",
                     "create_area": "CREARE ZONĂ",
                     "description": "Privire de ansamblu asupra tuturor zonelor din casa ta.",

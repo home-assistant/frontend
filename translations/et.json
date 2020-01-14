@@ -660,7 +660,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Alade register",
                     "create_area": "LOO ALA",
                     "description": "Ülevaade kõikidest oma kodu aladest.",

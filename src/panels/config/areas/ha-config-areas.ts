@@ -53,25 +53,23 @@ export class HaConfigAreas extends LitElement {
     }
     return html`
       <hass-subpage
-        .header="${this.hass.localize("ui.panel.config.area_registry.caption")}"
+        .header="${this.hass.localize("ui.panel.config.areas.caption")}"
         .showBackButton=${!this.isWide}
       >
         <ha-config-section .isWide=${this.isWide}>
           <span slot="header">
-            ${this.hass.localize("ui.panel.config.area_registry.picker.header")}
+            ${this.hass.localize("ui.panel.config.areas.picker.header")}
           </span>
           <span slot="introduction">
-            ${this.hass.localize(
-              "ui.panel.config.area_registry.picker.introduction"
-            )}
+            ${this.hass.localize("ui.panel.config.areas.picker.introduction")}
             <p>
               ${this.hass.localize(
-                "ui.panel.config.area_registry.picker.introduction2"
+                "ui.panel.config.areas.picker.introduction2"
               )}
             </p>
             <a href="/config/integrations/dashboard">
               ${this.hass.localize(
-                "ui.panel.config.area_registry.picker.integrations_page"
+                "ui.panel.config.areas.picker.integrations_page"
               )}
             </a>
           </span>
@@ -88,13 +86,9 @@ export class HaConfigAreas extends LitElement {
             ${this._areas.length === 0
               ? html`
                   <div class="empty">
-                    ${this.hass.localize(
-                      "ui.panel.config.area_registry.no_areas"
-                    )}
+                    ${this.hass.localize("ui.panel.config.areas.no_areas")}
                     <mwc-button @click=${this._createArea}>
-                      ${this.hass.localize(
-                        "ui.panel.config.area_registry.create_area"
-                      )}
+                      ${this.hass.localize("ui.panel.config.areas.create_area")}
                     </mwc-button>
                   </div>
                 `
@@ -106,9 +100,7 @@ export class HaConfigAreas extends LitElement {
       <ha-fab
         ?is-wide=${this.isWide}
         icon="hass:plus"
-        title="${this.hass.localize(
-          "ui.panel.config.area_registry.create_area"
-        )}"
+        title="${this.hass.localize("ui.panel.config.areas.create_area")}"
         @click=${this._createArea}
         class="${classMap({
           rtl: computeRTL(this.hass),

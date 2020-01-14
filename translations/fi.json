@@ -629,7 +629,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Aluerekisteri",
                     "create_area": "LUO ALUE",
                     "description": "Yleiskuva kaikista kotisi alueista.",
@@ -646,7 +646,7 @@
                         "integrations_page": "Integraatiot",
                         "introduction": "Alueita käytetään laitteiden järjestämiseen. Näitä tietoja käytetään Home Assistantissa käyttöliittymän ja käyttöoikeuksien järjestämiseen sekä integroinnin muihin järjestelmiin.",
                         "introduction2": "Voit sijoittaa laitteita alueelle siirtymällä alla olevan linkin avulla integraatiot-sivulle ja sitten napauttamalla määritettyyn integraatioon, jotta pääset laitteet -kortteihin.",
-                        "no_areas": "Et ole vielä luonut alueita!"
+                        "no_areas": "Näyttää siltä, että sinulla ei ole vielä alueita!"
                     }
                 },
                 "automation": {

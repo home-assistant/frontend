@@ -681,7 +681,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Területek",
                     "create_area": "TERÜLET LÉTREHOZÁSA",
                     "description": "Az összes otthoni terület áttekintése",

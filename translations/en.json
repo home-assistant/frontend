@@ -683,7 +683,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Areas",
                     "create_area": "CREATE AREA",
                     "description": "Overview of all areas in your home.",
@@ -694,24 +694,6 @@
                         "update": "UPDATE"
                     },
                     "no_areas": "Looks like you have no areas yet!",
-                    "picker": {
-                        "create_area": "CREATE AREA",
-                        "header": "Areas",
-                        "integrations_page": "Integrations page",
-                        "introduction": "Areas are used to organize where devices are. This information will be used throughout Home Assistant to help you in organizing your interface, permissions and integrations with other systems.",
-                        "introduction2": "To place devices in an area, use the link below to navigate to the integrations page and then click on a configured integration to get to the device cards.",
-                        "no_areas": "Looks like you have no areas yet!"
-                    }
-                },
-                "areas": {
-                    "caption": "Areas",
-                    "description": "Overview of all areas in your home.",
-                    "editor": {
-                        "create": "CREATE",
-                        "default_name": "New Area",
-                        "delete": "DELETE",
-                        "update": "UPDATE"
-                    },
                     "picker": {
                         "create_area": "CREATE AREA",
                         "header": "Areas",
