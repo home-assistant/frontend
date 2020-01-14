@@ -610,7 +610,7 @@
                 }
             },
             "more_info_settings": {
-                "back": "退回",
+                "back": "后退",
                 "entity_id": "实体 ID",
                 "name": "名称",
                 "save": "保存"
@@ -683,7 +683,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "区域注册",
                     "create_area": "创建区域",
                     "description": "您家中所有区域的概览。",
@@ -1100,6 +1100,7 @@
                             "core_config": {
                                 "edit_requires_storage": "编辑器已禁用，因为配置存储于 configuration.yaml。",
                                 "elevation": "海拔",
+                                "elevation_feet": "英尺",
                                 "elevation_meters": "米",
                                 "imperial_example": "华氏、磅",
                                 "latitude": "纬度",
@@ -1182,7 +1183,7 @@
                         "device": "设备",
                         "integration": "集成",
                         "manufacturer": "制造商",
-                        "model": "模型"
+                        "model": "型号"
                     },
                     "description": "管理已连接的设备",
                     "details": "这是设备的所有详细信息。",
@@ -1278,7 +1279,8 @@
                         "area_picker_label": "区域",
                         "close": "关闭",
                         "created_config": "为{name}创建了配置。",
-                        "error_saving_area": "保存区域时发生错误： {error}",
+                        "dismiss": "关闭对话框",
+                        "error_saving_area": "保存区域时发生错误：{error}",
                         "external_step": {
                             "description": "此步骤需要访问外部网站才能完成。",
                             "open_site": "打开网站"
@@ -1340,7 +1342,7 @@
                     "note_about_persons_configured_in_yaml": "注意：通过 configuration.yaml 配置的人员不能通过 UI 编辑。"
                 },
                 "scene": {
-                    "activated": "已激活场景 {name} 。",
+                    "activated": "已激活场景 {name}。",
                     "caption": "场景",
                     "description": "创建和编辑场景",
                     "editor": {
@@ -1707,6 +1709,11 @@
                 "showing_entries": "显示以下日期的条目"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "只有在自行编辑 Lovelace 时才能使用此功能。",
+                    "saving_failed": "保存 Lovelace 配置失败。",
+                    "yaml_unsupported": "在 YAML 模式下使用 Lovelace 时不能使用此功能。"
+                },
                 "cards": {
                     "confirm_delete": "您确定要删除此卡片吗？",
                     "empty_state": {
@@ -1896,11 +1903,14 @@
                         "para_no_id": "此元素没有 ID。请在 'ui-lovelace.yaml' 中为此元素添加 ID。"
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "如果您删除了 Lovelace 配置，我们将通过您的区域和设备自动生成 Lovelace 视图。",
+                        "confirm_remove_config_title": "您确定要删除 Lovelace 配置吗？我们将通过您的区域和设备自动生成 Lovelace 视图。",
                         "confirm_unsaved_changes": "您有未保存的更改，确定要退出吗？",
                         "confirm_unsaved_comments": "您的配置包含注释，这些注释将不会保存。是否继续？",
                         "error_invalid_config": "您的配置无效： {error}",
-                        "error_parse_yaml": "无法解析YAML： {error}",
-                        "error_save_yaml": "无法保存YAML： {error}",
+                        "error_parse_yaml": "无法解析YAML：{error}",
+                        "error_remove": "无法删除配置：{error}",
+                        "error_save_yaml": "无法保存YAML：{error}",
                         "header": "编辑配置",
                         "save": "保存",
                         "saved": "已保存",

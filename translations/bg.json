@@ -629,7 +629,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Регистър на областите",
                     "create_area": "СЪЗДАВАНЕ НА ОБЛАСТ",
                     "description": "Преглед на всички области във Вашия дом.",

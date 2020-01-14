@@ -576,7 +576,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Gebiedsregister",
                     "create_area": "SKEP GEBIED",
                     "description": "Oorsig van alle gebiede in u huis.",
@@ -588,12 +588,12 @@
                     },
                     "no_areas": "Dit lyk asof u nog geen gebiede het nie!",
                     "picker": {
-                        "create_area": "[%key:ui::panel::config::areas::create_area%]",
+                        "create_area": "SKEP GEBIED",
                         "header": "Gebiedsregister",
                         "integrations_page": "Integrasies bladsy",
                         "introduction": "Gebiede word gebruik om toestelle te organiseer gebaseer op waar hulle is. Hierdie inligting sal regdeur Home Assistant gebruik word om u te help om u koppelvlak, toestemmings en integrasies met ander stelsels te organiseer.",
                         "introduction2": "Om toestelle in 'n gebied te plaas, gebruik die skakel hieronder om na die integrasies bladsy toe te gaan en klik dan op 'n opgestelde integrasie om na die toestelkaarte toe te gaan.",
-                        "no_areas": "[%key:ui::panel::config::areas::no_areas%]"
+                        "no_areas": "Dit lyk asof u nog geen gebiede het nie!"
                     }
                 },
                 "automation": {
@@ -852,6 +852,7 @@
                     },
                     "picker": {
                         "header": "Entiteit Register",
+                        "integrations_page": "Integrasies bladsy",
                         "introduction": "Home Assistant hou 'n register van al die vorige entiteite wat uniek geïdentifiseer kan word. Elk van hierdie entiteite sal 'n entiteit-ID hê wat vir hierdie entiteit gereserveer sal word.",
                         "introduction2": "Gebruik die entiteitsregister om die naam te oorskryf, die entiteit ID te verander, of die inskrywing van Home Assistant te verwyder. Let wel, die verwydering van die entiteit registerinskrywing sal nie die entiteit verwyder nie. Om dit te doen, volg die skakel hieronder en verwyder dit uit die integrasies bladsy.",
                         "unavailable": "(nie beskikbaar nie)"

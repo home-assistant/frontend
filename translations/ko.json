@@ -683,7 +683,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "영역",
                     "create_area": "영역 만들기",
                     "description": "영역을 만들고 편집합니다",

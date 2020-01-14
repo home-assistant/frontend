@@ -675,7 +675,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Περιοχή Μητρώου",
                     "create_area": "ΔΗΜΙΟΥΡΓΙΑ ΠΕΡΙΟΧΗΣ",
                     "description": "Επισκόπηση όλων των περιοχών στο σπίτι σας.",

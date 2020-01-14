@@ -683,7 +683,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Registr oblastí",
                     "create_area": "VYTVOŘIT OBLAST",
                     "description": "Přehled všech oblastí ve vaší domácnosti.",
