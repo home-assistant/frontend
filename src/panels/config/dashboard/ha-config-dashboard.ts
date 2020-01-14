@@ -28,7 +28,7 @@ class HaConfigDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
   @property() public isWide!: boolean;
-  @property() public cloudStatus!: CloudStatus;
+  @property() public cloudStatus?: CloudStatus;
   @property() public showAdvanced!: boolean;
 
   protected render(): TemplateResult | void {
@@ -53,7 +53,7 @@ class HaConfigDashboard extends LitElement {
             ${this.hass.localize("ui.panel.config.introduction")}
           </div>
 
-          ${isComponentLoaded(this.hass, "cloud")
+          ${this.cloudStatus && isComponentLoaded(this.hass, "cloud")
             ? html`
                 <ha-card>
                   <a href="/config/cloud" tabindex="-1">
