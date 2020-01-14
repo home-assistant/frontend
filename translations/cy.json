@@ -763,7 +763,7 @@
                     "unknown_error": "Gwall anhysbys",
                     "unnamed_device": "Dyfais ddienw"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Gofrestrfa Endid",
                     "description": "Trosolwg o holl endidau hysbys.",
                     "editor": {

@@ -1196,7 +1196,7 @@
                     "unknown_error": "Ukjent feil",
                     "unnamed_device": "Enhet uten navn"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Entiteter",
                     "description": "Oversikt over alle kjente entiteter",
                     "editor": {
@@ -1279,6 +1279,7 @@
                         "area_picker_label": "Område",
                         "close": "Lukk",
                         "created_config": "Opprettet konfigurasjon for {name}.",
+                        "dismiss": "Avvis dialog",
                         "error_saving_area": "Feil ved lagring av område: {error}",
                         "external_step": {
                             "description": "Dette trinnet krever at du besøker et eksternt nettsted som skal fylles ut.",

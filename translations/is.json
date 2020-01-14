@@ -998,7 +998,7 @@
                     "unknown_error": "Óþekkt villa",
                     "unnamed_device": "Ónefnt tæki"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Einingarskrá",
                     "description": "Yfirlit yfir allar þekktar einingar.",
                     "editor": {

@@ -1195,7 +1195,7 @@
                     "unknown_error": "Onbekende fout",
                     "unnamed_device": "Naamloos apparaat"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Entiteiten",
                     "description": "Overzicht van alle geregistreerde entiteiten",
                     "editor": {

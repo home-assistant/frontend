@@ -689,7 +689,7 @@
                     "description": "Управляйте помещениями в Вашем доме",
                     "editor": {
                         "create": "ДОБАВИТЬ",
-                        "default_name": "Новое помещение",
+                        "default_name": "Новый объект",
                         "delete": "УДАЛИТЬ",
                         "update": "ОБНОВИТЬ"
                     },
@@ -1196,7 +1196,7 @@
                     "unknown_error": "Неизвестная ошибка.",
                     "unnamed_device": "Безымянное устройство"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Объекты",
                     "description": "Управляйте доступными объектами",
                     "editor": {
@@ -1279,6 +1279,7 @@
                         "area_picker_label": "Помещение",
                         "close": "Закрыть",
                         "created_config": "Создана конфигурация для {name}.",
+                        "dismiss": "Закрыть",
                         "error_saving_area": "Ошибка сохранения помещения: {error}",
                         "external_step": {
                             "description": "Для завершения этого шага требуется посетить внешний веб-сайт.",

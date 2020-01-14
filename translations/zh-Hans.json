@@ -1196,7 +1196,7 @@
                     "unknown_error": "未知错误",
                     "unnamed_device": "未命名设备"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "实体注册",
                     "description": "所有已知实体的概览。",
                     "editor": {

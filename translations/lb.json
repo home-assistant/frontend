@@ -1196,7 +1196,7 @@
                     "unknown_error": "Onbekannten Feeler",
                     "unnamed_device": "Apparat ouni Numm"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Lëscht vun den Entitéiten",
                     "description": "Iwwersiicht vun all bekannten Entitéiten.",
                     "editor": {
@@ -1279,6 +1279,7 @@
                         "area_picker_label": "Beräich",
                         "close": "Zoumaachen",
                         "created_config": "Konfiguratioun erstallt fir {name}.",
+                        "dismiss": "Dialog ofbriechen",
                         "error_saving_area": "Feeler beim späicheren vum Beräich: {error}",
                         "external_step": {
                             "description": "Fir dës Etapp ofzeschléisse muss dir eng externe Internetsäit besichen.",

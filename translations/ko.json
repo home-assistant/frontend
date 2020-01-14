@@ -1196,7 +1196,7 @@
                     "unknown_error": "알 수 없는 오류",
                     "unnamed_device": "이름이 없는 기기"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "구성요소",
                     "description": "등록된 구성요소를 편집합니다",
                     "editor": {

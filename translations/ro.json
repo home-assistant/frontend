@@ -935,7 +935,7 @@
                     "caption": "Dispozitive",
                     "description": "Gestionați dispozitivele conectate"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Entități",
                     "description": "Prezentare generală a tuturor entităților cunoscute.",
                     "editor": {

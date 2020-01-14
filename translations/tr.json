@@ -1131,7 +1131,7 @@
                     "unknown_error": "Bilinmeyen hata",
                     "unnamed_device": "Adsız cihaz"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Varlıklar",
                     "editor": {
                         "default_name": "Alan Ekle ",

@@ -1182,7 +1182,7 @@
                     "unknown_error": "Neznana napaka",
                     "unnamed_device": "Neimenovana naprava"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Entitete",
                     "description": "Pregled vseh znanih entitet.",
                     "editor": {
