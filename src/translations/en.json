@@ -1035,7 +1035,11 @@
             "edit_scene": "Edit scene",
             "show_info_scene": "Show info about scene",
             "delete_scene": "Delete scene",
-            "delete_confirm": "Are you sure you want to delete this scene?"
+            "delete_confirm": "Are you sure you want to delete this scene?",
+            "filter": {
+              "device": "Filter by device",
+              "area": "Filter by area"
+            }
           },
           "editor": {
             "introduction": "Use scenes to bring your home alive.",

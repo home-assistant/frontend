@@ -6,12 +6,14 @@ import {
   css,
   property,
   customElement,
+  query,
 } from "lit-element";
 import "@polymer/paper-icon-button/paper-icon-button";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-tooltip/paper-tooltip";
 import "../../../layouts/hass-subpage";
-
+import "../../../components/device/ha-device-picker";
+import "../../../components/ha-area-picker";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
 
@@ -25,6 +27,12 @@ import { SceneEntity, activateScene } from "../../../data/scene";
 import { showToast } from "../../../util/toast";
 import { ifDefined } from "lit-html/directives/if-defined";
 import { forwardHaptic } from "../../../data/haptics";
+import { findRelated } from "../../../data/search";
+// tslint:disable-next-line
+import { HaDevicePicker } from "../../../components/device/ha-device-picker";
+// tslint:disable-next-line
+import { HaAreaPicker } from "../../../components/ha-area-picker";
+import memoizeOne from "memoize-one";
 
 @customElement("ha-scene-dashboard")
 class HaSceneDashboard extends LitElement {
@@ -32,8 +40,19 @@ class HaSceneDashboard extends LitElement {
   @property() public narrow!: boolean;
   @property() public isWide!: boolean;
   @property() public scenes!: SceneEntity[];
+  @property() private _filteredScenes?: string[];
+  @query("ha-device-picker") private _devicePicker!: HaDevicePicker;
+  @query("ha-area-picker") private _areaPicker!: HaAreaPicker;
+
+  private _scenes = memoizeOne(
+    (scenes: SceneEntity[], filteredScenes?: string[]): SceneEntity[] =>
+      filteredScenes
+        ? scenes.filter((scene) => filteredScenes!.includes(scene.entity_id))
+        : scenes
+  );
 
   protected render(): TemplateResult | void {
+    const scenes = this._scenes(this.scenes, this._filteredScenes);
     return html`
       <hass-subpage
         .showBackButton=${!this.isWide}
@@ -60,7 +79,23 @@ class HaSceneDashboard extends LitElement {
               "ui.panel.config.scene.picker.pick_scene"
             )}
           >
-            ${this.scenes.length === 0
+            <div class="filter-bar">
+              <ha-device-picker
+                @value-changed=${this._devicePicked}
+                .hass=${this.hass}
+                .label=${this.hass.localize(
+                  "ui.panel.config.scene.picker.filter.device"
+                )}
+              ></ha-device-picker>
+              <ha-area-picker
+                @value-changed=${this._areaPicked}
+                .hass=${this.hass}
+                .label=${this.hass.localize(
+                  "ui.panel.config.scene.picker.filter.area"
+                )}
+              ></ha-area-picker>
+            </div>
+            ${scenes.length === 0
               ? html`
                   <div class="card-content">
                     <p>
@@ -70,7 +105,7 @@ class HaSceneDashboard extends LitElement {
                     </p>
                   </div>
                 `
-              : this.scenes.map(
+              : scenes.map(
                   (scene) => html`
 
                       <div class='scene'>
@@ -133,6 +168,26 @@ class HaSceneDashboard extends LitElement {
     `;
   }
 
+  private async _devicePicked(ev: CustomEvent) {
+    this._areaPicker.value = "";
+    if (!ev.detail.value) {
+      this._filteredScenes = undefined;
+      return;
+    }
+    const related = await findRelated(this.hass, "device", ev.detail.value);
+    this._filteredScenes = related.scene || [];
+  }
+
+  private async _areaPicked(ev: CustomEvent) {
+    this._devicePicker.value = "";
+    if (!ev.detail.value) {
+      this._filteredScenes = undefined;
+      return;
+    }
+    const related = await findRelated(this.hass, "area", ev.detail.value);
+    this._filteredScenes = related.scene || [];
+  }
+
   private async _activateScene(ev) {
     const scene = ev.target.scene as SceneEntity;
     await activateScene(this.hass, scene.entity_id);
@@ -171,6 +226,21 @@ class HaSceneDashboard extends LitElement {
 
         .scene a[href] {
           color: var(--primary-text-color);
+        }
+
+        .card-content {
+          padding-top: 16px;
+        }
+
+        .filter-bar {
+          display: flex;
+          padding: 0 16px;
+          border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+        }
+
+        .filter-bar > * {
+          flex-grow: 1;
+          padding: 0 8px;
         }
 
         ha-entity-toggle {
