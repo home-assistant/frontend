@@ -624,7 +624,7 @@
                         }
                     }
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Entitate Erregistroa",
                     "editor": {
                         "default_name": "Gune berria",

@@ -1099,7 +1099,7 @@
                     "unknown_error": "Okänt fel",
                     "unnamed_device": "Namnlös enhet"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Entiteter",
                     "description": "Översikt över alla kända entiteter",
                     "editor": {

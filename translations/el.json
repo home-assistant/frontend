@@ -1182,7 +1182,7 @@
                     "unknown_error": "Άγνωστο σφάλμα",
                     "unnamed_device": "Συσκευή χωρίς όνομα"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Μητρώο οντοτήτων",
                     "description": "Επισκόπηση όλων των γνωστών οντοτήτων.",
                     "editor": {

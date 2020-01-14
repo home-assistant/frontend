@@ -371,7 +371,7 @@
                     },
                     "description": "Tvarkyti prijungtus įrenginius"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Subjektų registras",
                     "description": "Visų žinomų subjektų apžvalga.",
                     "editor": {

@@ -840,7 +840,7 @@
                         "introduction": "Tinh chỉnh thuộc tính mỗi thực thể. Các tùy chỉnh được thêm / chỉnh sửa sẽ có hiệu lực ngay lập tức. Các tùy chỉnh bị xóa sẽ có hiệu lực khi thực thể được cập nhật."
                     }
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Đăng ký thực thể",
                     "description": "Tổng quan tất cả các thực thể đã biết.",
                     "editor": {

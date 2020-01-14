@@ -1196,7 +1196,7 @@
                     "unknown_error": "Nieznany błąd",
                     "unnamed_device": "Nienazwane urządzenie"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Rejestr encji",
                     "description": "Przegląd wszystkich znanych encji",
                     "editor": {
@@ -1212,8 +1212,14 @@
                         "update": "UAKTUALNIJ"
                     },
                     "picker": {
+                        "disable_selected": {
+                            "button": "Wyłącz wybrane",
+                            "confirm_text": "Wyłączone encje nie zostaną dodane do Home Assistant'a.",
+                            "confirm_title": "Czy chcesz wyłączyć {number} encj(-e/-i)?"
+                        },
                         "enable_selected": {
                             "button": "Włącz wybrane",
+                            "confirm_text": "Dzięki temu będą ponownie dostępne w Home Assistancie, jeśli są teraz wyłączone.",
                             "confirm_title": "Czy chcesz włączyć {number} encj(-e/-i)?"
                         },
                         "filter": {
@@ -1232,6 +1238,11 @@
                         "integrations_page": "Strona integracji",
                         "introduction": "Home Assistant prowadzi rejestr każdej encji, jaką kiedykolwiek widział i którą można jednoznacznie zidentyfikować. Każda z tych encji będzie miała przypisany unikalny identyfikator, który będzie zarezerwowany tylko dla niej.",
                         "introduction2": "Użyj rejestru encji, aby nadpisać jej nazwę, zmienić jej identyfikator lub usunąć ją z Home Assistant'a. Uwaga: usunięcie wpisu rejestru encji nie spowoduje usunięcia encji. Aby to zrobić, kliknij poniższy link i usuń integracje encji.",
+                        "remove_selected": {
+                            "button": "Usuń zaznaczone",
+                            "confirm_text": "Encje mogą zostać usunięte tylko wtedy, gdy ich integracja na to zezwala.",
+                            "confirm_title": "Czy chcesz usunąć {number} encj(-e/-i)?"
+                        },
                         "selected": "wybrano {numer}",
                         "show_disabled": "Wyświetlaj nieużywane encje",
                         "status": {
@@ -1268,6 +1279,7 @@
                         "area_picker_label": "Obszar",
                         "close": "Zamknij",
                         "created_config": "Utworzono konfigurację dla {name}.",
+                        "dismiss": "Okno dialogowe odrzucenia",
                         "error_saving_area": "Błąd podczas zapisywania obszaru: {error}",
                         "external_step": {
                             "description": "Ten krok wymaga od Ciebie odwiedzenia zewnętrznej strony.",
@@ -1697,6 +1709,11 @@
                 "showing_entries": "Wyświetlanie rekordów dla"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "Z tej funkcji można korzystać tylko po przejęciu kontroli nad interfejsem użytkownika Lovelace.",
+                    "saving_failed": "Zapisywanie konfiguracji interfejsu użytkownika Lovelace nie powiodło się.",
+                    "yaml_unsupported": "Nie możesz używać tej funkcji, gdy używasz interfejsu użytkownika Lovelace w trybie YAML."
+                },
                 "cards": {
                     "confirm_delete": "Na pewno chcesz usunąć tę kartę?",
                     "empty_state": {
@@ -1886,10 +1903,13 @@
                         "para_no_id": "Ten element nie ma ID. Dodaj ID do tego elementu w \"ui-lovelace.yaml\"."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Jeśli usuniesz konfigurację interfejsu użytkownika Lovelace, widoki automatycznie będą generowane z obszarów i urządzeń.",
+                        "confirm_remove_config_title": "Na pewno chcesz usunąć konfigurację interfejsu użytkownika Lovelace? Widoki będą automatycznie generowane z obszarów i urządzeń.",
                         "confirm_unsaved_changes": "Masz niezapisane zmiany. Na pewno chcesz wyjść?",
                         "confirm_unsaved_comments": "Twoja konfiguracja zawiera komentarze, które nie zostaną zapisane. Czy chcesz kontynuować?",
                         "error_invalid_config": "Twoja konfiguracja jest nieprawidłowa: {error}",
                         "error_parse_yaml": "Nie można przeanalizować YAML: {error}",
+                        "error_remove": "Nie można usunąć konfiguracji: {error}",
                         "error_save_yaml": "Nie można zapisać YAML: {error}",
                         "header": "Edytuj konfigurację",
                         "save": "Zapisz",
@@ -1902,6 +1922,11 @@
                         "para": "Domyślnie asystent domowy będzie utrzymywał interfejs użytkownika, aktualizując go, gdy pojawią się nowe elementy lub komponenty Lovelace. Jeśli przejmiesz kontrolę, nie będziemy już dokonywać zmian automatycznie.",
                         "para_sure": "Na pewno chcesz przejąć kontrolę nad interfejsem użytkownika?",
                         "save": "Przejmuję kontrolę"
+                    },
+                    "suggest_card": {
+                        "add": "Dodaj do interfejsu użytkownika Lovelace",
+                        "create_own": "Stwórz swój własny",
+                        "header": "Stworzyliśmy dla Ciebie sugestię"
                     },
                     "view": {
                         "panel_mode": {

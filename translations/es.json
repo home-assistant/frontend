@@ -1196,7 +1196,7 @@
                     "unknown_error": "Error desconocido",
                     "unnamed_device": "Dispositivo sin nombre"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Entidades",
                     "description": "Resumen de todas las entidades conocidas.",
                     "editor": {
@@ -1279,6 +1279,7 @@
                         "area_picker_label": "Área",
                         "close": "Cerrar",
                         "created_config": "Configuración creada para {name}.",
+                        "dismiss": "Descartar diálogo",
                         "error_saving_area": "Error al guardar el área: {error}",
                         "external_step": {
                             "description": "Este paso requiere que visites una web externa para ser completado.",

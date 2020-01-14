@@ -1182,7 +1182,7 @@
                     "unknown_error": "Erreur inconnue",
                     "unnamed_device": "Appareil sans nom"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Entités",
                     "description": "Vue d'ensemble de toutes les entités connues.",
                     "editor": {
