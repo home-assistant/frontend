@@ -1,53 +1,49 @@
+import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
+import "@polymer/paper-tabs/paper-tab";
+import "@polymer/paper-tabs/paper-tabs";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
-  LitElement,
-  html,
   css,
   CSSResult,
-  TemplateResult,
+  customElement,
+  html,
+  LitElement,
   property,
+  query,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
-import "@polymer/paper-input/paper-input";
-
+import { cache } from "lit-html/directives/cache";
+import { fireEvent } from "../../../common/dom/fire_event";
+import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/dialog/ha-paper-dialog";
-import "../../../components/ha-switch";
-
-import { EntityRegistryDetailDialogParams } from "./show-dialog-entity-registry-detail";
+// tslint:disable-next-line: no-duplicate-imports
+import { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
+import "../../../components/ha-related-items";
+import "../../../dialogs/more-info/controls/more-info-content";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
+import "../../../state-summary/state-card-content";
 import { HomeAssistant } from "../../../types";
-import { HassEntity } from "home-assistant-js-websocket";
-// tslint:disable-next-line: no-duplicate-imports
-import { HaSwitch } from "../../../components/ha-switch";
+import "./entity-registry-settings";
+import { EntityRegistryDetailDialogParams } from "./show-dialog-entity-registry-detail";
 
-import { computeDomain } from "../../../common/entity/compute_domain";
-import { computeStateName } from "../../../common/entity/compute_state_name";
-import {
-  updateEntityRegistryEntry,
-  removeEntityRegistryEntry,
-} from "../../../data/entity_registry";
-import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialog-confirmation";
-
-class DialogEntityRegistryDetail extends LitElement {
+@customElement("dialog-entity-registry-detail")
+export class DialogEntityRegistryDetail extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() private _name!: string;
-  @property() private _entityId!: string;
-  @property() private _disabledBy!: string | null;
-  @property() private _error?: string;
   @property() private _params?: EntityRegistryDetailDialogParams;
-  @property() private _submitting?: boolean;
-  private _origEntityId!: string;
+  @property() private _curTab?: string;
+  @query("ha-paper-dialog") private _dialog!: HaPaperDialog;
+  private _curTabIndex = 0;
 
   public async showDialog(
     params: EntityRegistryDetailDialogParams
   ): Promise<void> {
     this._params = params;
-    this._error = undefined;
-    this._name = this._params.entry.name || "";
-    this._origEntityId = this._params.entry.entity_id;
-    this._entityId = this._params.entry.entity_id;
-    this._disabledBy = this._params.entry.disabled_by;
     await this.updateComplete;
+  }
+
+  public closeDialog(): void {
+    this._params = undefined;
   }
 
   protected render(): TemplateResult | void {
@@ -56,160 +52,100 @@ class DialogEntityRegistryDetail extends LitElement {
     }
     const entry = this._params.entry;
     const stateObj: HassEntity | undefined = this.hass.states[entry.entity_id];
-    const invalidDomainUpdate =
-      computeDomain(this._entityId.trim()) !==
-      computeDomain(this._params.entry.entity_id);
 
     return html`
       <ha-paper-dialog
         with-backdrop
         opened
-        @opened-changed="${this._openedChanged}"
+        @opened-changed=${this._openedChanged}
       >
         <h2>
           ${stateObj
             ? computeStateName(stateObj)
             : entry.name || entry.entity_id}
         </h2>
-        <paper-dialog-scrollable>
-          ${!stateObj
-            ? html`
-                <div>
-                  ${this.hass!.localize(
-                    "ui.panel.config.entities.editor.unavailable"
-                  )}
-                </div>
-              `
-            : ""}
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
-          <div class="form">
-            <paper-input
-              .value=${this._name}
-              @value-changed=${this._nameChanged}
-              .label=${this.hass.localize("ui.dialogs.more_info_settings.name")}
-              .placeholder=${stateObj ? computeStateName(stateObj) : ""}
-              .disabled=${this._submitting}
-            ></paper-input>
-            <paper-input
-              .value=${this._entityId}
-              @value-changed=${this._entityIdChanged}
-              .label=${this.hass.localize(
-                "ui.dialogs.more_info_settings.entity_id"
-              )}
-              error-message="Domain needs to stay the same"
-              .invalid=${invalidDomainUpdate}
-              .disabled=${this._submitting}
-            ></paper-input>
-            <div class="row">
-              <ha-switch
-                .checked=${!this._disabledBy}
-                @change=${this._disabledByChanged}
-              >
-                <div>
-                  <div>
-                    ${this.hass.localize(
-                      "ui.panel.config.entities.editor.enabled_label"
-                    )}
-                  </div>
-                  <div class="secondary">
-                    ${this._disabledBy && this._disabledBy !== "user"
-                      ? this.hass.localize(
-                          "ui.panel.config.entities.editor.enabled_cause",
-                          "cause",
-                          this.hass.localize(
-                            `config_entry.disabled_by.${this._disabledBy}`
-                          )
-                        )
-                      : ""}
-                    ${this.hass.localize(
-                      "ui.panel.config.entities.editor.enabled_description"
-                    )}
-                    <br />${this.hass.localize(
-                      "ui.panel.config.entities.editor.note"
-                    )}
-                  </div>
-                </div>
-              </ha-switch>
-            </div>
-          </div>
-        </paper-dialog-scrollable>
-        <div class="paper-dialog-buttons">
-          <mwc-button
-            class="warning"
-            @click="${this._confirmDeleteEntry}"
-            .disabled=${this._submitting ||
-              !(stateObj && stateObj.attributes.restored)}
+        <paper-tabs
+          scrollable
+          hide-scroll-buttons
+          .selected=${this._curTabIndex}
+          @selected-item-changed=${this._handleTabSelected}
+        >
+          <paper-tab id="tab-settings"
+            >${this.hass.localize(
+              "ui.panel.config.entities.dialog.settings"
+            )}</paper-tab
           >
-            ${this.hass.localize("ui.panel.config.entities.editor.delete")}
-          </mwc-button>
-          <mwc-button
-            @click="${this._updateEntry}"
-            .disabled=${invalidDomainUpdate || this._submitting}
+          <paper-tab id="tab-state"
+            >${this.hass.localize(
+              "ui.panel.config.entities.dialog.state"
+            )}</paper-tab
           >
-            ${this.hass.localize("ui.panel.config.entities.editor.update")}
-          </mwc-button>
-        </div>
+          <paper-tab id="tab-related"
+            >${this.hass.localize(
+              "ui.panel.config.entities.dialog.related"
+            )}</paper-tab
+          >
+        </paper-tabs>
+        ${cache(
+          this._curTab === "tab-settings"
+            ? html`
+                <entity-registry-settings
+                  .hass=${this.hass}
+                  .entry=${entry}
+                  @close-dialog=${this._closeDialog}
+                ></entity-registry-settings>
+              `
+            : this._curTab === "tab-state"
+            ? html`
+                <paper-dialog-scrollable>
+                  <state-card-content
+                    .hass=${this.hass}
+                    .stateObj=${stateObj}
+                  ></state-card-content>
+                  <more-info-content
+                    .hass=${this.hass}
+                    .stateObj=${stateObj}
+                  ></more-info-content>
+                </paper-dialog-scrollable>
+              `
+            : this._curTab === "tab-related"
+            ? html`
+                <paper-dialog-scrollable>
+                  <ha-related-items
+                    .hass=${this.hass}
+                    .itemId=${entry.entity_id}
+                    itemType="entity"
+                    @close-dialog=${this._closeDialog}
+                  ></ha-related-items>
+                </paper-dialog-scrollable>
+              `
+            : html``
+        )}
       </ha-paper-dialog>
     `;
   }
 
-  private _nameChanged(ev: PolymerChangedEvent<string>): void {
-    this._error = undefined;
-    this._name = ev.detail.value;
-  }
-
-  private _entityIdChanged(ev: PolymerChangedEvent<string>): void {
-    this._error = undefined;
-    this._entityId = ev.detail.value;
-  }
-
-  private async _updateEntry(): Promise<void> {
-    this._submitting = true;
-    try {
-      await updateEntityRegistryEntry(this.hass!, this._origEntityId, {
-        name: this._name.trim() || null,
-        disabled_by: this._disabledBy,
-        new_entity_id: this._entityId.trim(),
-      });
-      this._params = undefined;
-    } catch (err) {
-      this._error = err.message || "Unknown error";
-    } finally {
-      this._submitting = false;
+  private _handleTabSelected(ev: CustomEvent): void {
+    if (!ev.detail.value) {
+      return;
     }
+    this._curTab = ev.detail.value.id;
+    this._resizeDialog();
   }
 
-  private async _deleteEntry(): Promise<void> {
-    this._submitting = true;
-
-    try {
-      await removeEntityRegistryEntry(this.hass!, this._entityId);
-      this._params = undefined;
-    } finally {
-      this._submitting = false;
-    }
+  private async _resizeDialog(): Promise<void> {
+    await this.updateComplete;
+    fireEvent(this._dialog as HTMLElement, "iron-resize");
   }
 
-  private _confirmDeleteEntry(): void {
-    showConfirmationDialog(this, {
-      text: this.hass.localize(
-        "ui.panel.config.entities.editor.confirm_delete"
-      ),
-      confirm: () => this._deleteEntry(),
-    });
+  private _closeDialog(): void {
+    this._params = undefined;
   }
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
     if (!(ev.detail as any).value) {
       this._params = undefined;
     }
-  }
-  private _disabledByChanged(ev: Event): void {
-    this._disabledBy = (ev.target as HaSwitch).checked ? null : "user";
   }
 
   static get styles(): CSSResult[] {
@@ -220,24 +156,12 @@ class DialogEntityRegistryDetail extends LitElement {
           --paper-font-title_-_white-space: normal;
         }
         ha-paper-dialog {
-          min-width: 400px;
-          max-width: 450px;
+          width: 450px;
         }
-        .form {
-          padding-bottom: 24px;
-        }
-        mwc-button.warning {
-          margin-right: auto;
-        }
-        .error {
-          color: var(--google-red-500);
-        }
-        .row {
-          margin-top: 8px;
-          color: var(--primary-text-color);
-        }
-        .secondary {
-          color: var(--secondary-text-color);
+        paper-tabs {
+          --paper-tabs-selection-bar-color: var(--primary-color);
+          text-transform: uppercase;
+          border-bottom: 1px solid rgba(0, 0, 0, 0.1);
         }
       `,
     ];
@@ -249,8 +173,3 @@ declare global {
     "dialog-entity-registry-detail": DialogEntityRegistryDetail;
   }
 }
-
-customElements.define(
-  "dialog-entity-registry-detail",
-  DialogEntityRegistryDetail
-);

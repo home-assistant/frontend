@@ -553,6 +553,16 @@
       },
       "service-picker": {
         "service": "Service"
+      },
+      "related-items": {
+        "integration": "Integration",
+        "device": "Device",
+        "area": "Area",
+        "entity": "Related entities",
+        "group": "Part of the following groups",
+        "scene": "Part of the following scenes",
+        "script": "Part of the following scripts",
+        "automation": "Part of the following automations"
       }
     },
     "dialogs": {
@@ -1292,6 +1302,11 @@
               "confirm_title": "Do you want to remove {number} entities?",
               "confirm_text": "Entities can only be removed when the integration is no longer providing the entities."
             }
+          },
+          "dialog": {
+            "settings": "Settings",
+            "state": "State",
+            "related": "Related"
           },
           "editor": {
             "unavailable": "This entity is not currently available.",
