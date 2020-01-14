@@ -1061,7 +1061,7 @@
                     "caption": "Zariadenia",
                     "description": "Spravovať pripojené zariadenia"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Register entít",
                     "description": "Prehľad všetkých známych entít.",
                     "editor": {

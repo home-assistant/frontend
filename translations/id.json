@@ -543,7 +543,6 @@
                     "description": "Gambaran umum semua area di rumah Anda.",
                     "editor": {
                         "create": "MEMBUAT",
-                        "default_name": "Area Baru",
                         "delete": "HAPUS",
                         "update": "MEMPERBARUI"
                     },
@@ -779,7 +778,7 @@
                     "caption": "Penyesuaian",
                     "description": "Sesuaikan entitas anda"
                 },
-                "entity_registry": {
+                "entities": {
                     "description": "Ikhtisar semua entitas yang dikenal.",
                     "editor": {
                         "delete": "HAPUS",

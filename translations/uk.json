@@ -1176,7 +1176,7 @@
                     "unknown_error": "Невідома помилка",
                     "unnamed_device": "Пристрій без імені"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Реєстр об'єктів",
                     "description": "Огляд всіх відомих об'єктів.",
                     "editor": {

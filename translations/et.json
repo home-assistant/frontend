@@ -1098,7 +1098,7 @@
                     "unknown_error": "Tundmatu viga",
                     "unnamed_device": "Nimetu seade"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Olemite register",
                     "description": "Ülevaade kõikidest teadaolevatest olemitest.",
                     "editor": {

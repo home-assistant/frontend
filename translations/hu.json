@@ -648,7 +648,7 @@
                 "unknown": "Ismeretlen",
                 "zha_device_card": {
                     "area_picker_label": "Terület",
-                    "device_name_placeholder": "Felhasznál által megadott név",
+                    "device_name_placeholder": "Felhasználó által megadott név",
                     "update_name_button": "Név frissítése"
                 }
             }
@@ -1191,7 +1191,7 @@
                     "unknown_error": "Ismeretlen hiba",
                     "unnamed_device": "Névtelen eszköz"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Entitások",
                     "description": "Az összes ismert entitás áttekintése",
                     "editor": {
