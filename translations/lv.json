@@ -635,7 +635,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Apgabali",
                     "create_area": "IZVEIDOT APGABALU",
                     "description": "Pārskats par visām vietām jūsu mājās.",

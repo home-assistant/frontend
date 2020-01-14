@@ -675,7 +675,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Registro de Áreas",
                     "create_area": "CRIAR ÁREA",
                     "description": "Visão geral de todas as áreas da sua casa.",

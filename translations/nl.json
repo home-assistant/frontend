@@ -683,7 +683,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Gebieden",
                     "create_area": "MAAK GEBIED",
                     "description": "Overzicht van alle gebieden in je huis.",
@@ -695,12 +695,12 @@
                     },
                     "no_areas": "Het lijkt erop dat je nog geen gebieden hebt!",
                     "picker": {
-                        "create_area": "MAAK RUIMTE",
+                        "create_area": "MAAK GEBIED",
                         "header": "Gebieden",
                         "integrations_page": "Integratiespagina",
                         "introduction": "Gebieden worden gebruikt om te bepalen waar apparaten zijn. Deze informatie wordt overal in de Home Assistant gebruikt om je te helpen bij het organiseren van je interface, machtigingen en integraties met andere systemen.",
                         "introduction2": "Als u apparaten in een gebied wilt plaatsen, gebruikt u de onderstaande koppeling om naar de integratiespagina te gaan en vervolgens op een geconfigureerde integratie te klikken om naar de apparaatkaarten te gaan.",
-                        "no_areas": "Het lijkt erop dat je nog geen ruimtes hebt!"
+                        "no_areas": "Het lijkt erop dat je nog geen gebieden hebt!"
                     }
                 },
                 "automation": {

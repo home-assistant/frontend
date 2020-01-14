@@ -675,7 +675,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Območja",
                     "create_area": "USTVARITE OBMOČJE",
                     "description": "Pregled vseh območij v vašem domu.",

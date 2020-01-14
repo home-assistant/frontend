@@ -683,7 +683,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "分區",
                     "create_area": "建立分區",
                     "description": "家中所有分區概觀",

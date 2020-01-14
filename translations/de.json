@@ -683,7 +683,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Bereichsregister",
                     "create_area": "BEREICH ERSTELLEN",
                     "description": "Überblick über alle Bereiche in Deinem Haus.",

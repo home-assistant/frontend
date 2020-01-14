@@ -683,7 +683,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Områder",
                     "create_area": "OPPRETT OMRÅDE",
                     "description": "Oversikt over alle områder i ditt hjem",
@@ -695,12 +695,12 @@
                     },
                     "no_areas": "Det ser ikke ut som om du har noen områder ennå!",
                     "picker": {
-                        "create_area": "Opprett område",
+                        "create_area": "OPPRETT OMRÅDE",
                         "header": "Områder",
                         "integrations_page": "Integrasjonsside",
                         "introduction": "Områder brukes til å organisere hvor enheter er. Denne informasjonen vil bli brukt gjennomgående i Home Assistant for å hjelpe deg med å organisere grensesnittet, tillatelser og integrasjoner med andre systemer.",
                         "introduction2": "For å plassere enheter i et område, bruk linken under for å navigere til integrasjonssiden og klikk deretter på en konfigurert integrasjon for å komme til enhetskortene.",
-                        "no_areas": "Det ser ikke ut som om du har noen områder enda!"
+                        "no_areas": "Det ser ikke ut som om du har noen områder ennå!"
                     }
                 },
                 "automation": {
@@ -1100,6 +1100,7 @@
                             "core_config": {
                                 "edit_requires_storage": "Redigering deaktivert da konfigurasjonen er lagret i configuration.yaml.",
                                 "elevation": "Høyde",
+                                "elevation_feet": "fot",
                                 "elevation_meters": "meter",
                                 "imperial_example": "Fahrenheit, pund",
                                 "latitude": "Breddegrad",

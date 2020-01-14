@@ -117,9 +117,7 @@ class DialogDeviceRegistryDetail extends LitElement {
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
           <mwc-button @click="${this._updateEntry}">
-            ${this.hass.localize(
-              "ui.panel.config.entity_registry.editor.update"
-            )}
+            ${this.hass.localize("ui.panel.config.entities.editor.update")}
           </mwc-button>
         </div>
       </ha-paper-dialog>

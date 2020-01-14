@@ -76,7 +76,7 @@ class DialogEntityRegistryDetail extends LitElement {
             ? html`
                 <div>
                   ${this.hass!.localize(
-                    "ui.panel.config.entity_registry.editor.unavailable"
+                    "ui.panel.config.entities.editor.unavailable"
                   )}
                 </div>
               `
@@ -112,13 +112,13 @@ class DialogEntityRegistryDetail extends LitElement {
                 <div>
                   <div>
                     ${this.hass.localize(
-                      "ui.panel.config.entity_registry.editor.enabled_label"
+                      "ui.panel.config.entities.editor.enabled_label"
                     )}
                   </div>
                   <div class="secondary">
                     ${this._disabledBy && this._disabledBy !== "user"
                       ? this.hass.localize(
-                          "ui.panel.config.entity_registry.editor.enabled_cause",
+                          "ui.panel.config.entities.editor.enabled_cause",
                           "cause",
                           this.hass.localize(
                             `config_entry.disabled_by.${this._disabledBy}`
@@ -126,10 +126,10 @@ class DialogEntityRegistryDetail extends LitElement {
                         )
                       : ""}
                     ${this.hass.localize(
-                      "ui.panel.config.entity_registry.editor.enabled_description"
+                      "ui.panel.config.entities.editor.enabled_description"
                     )}
                     <br />${this.hass.localize(
-                      "ui.panel.config.entity_registry.editor.note"
+                      "ui.panel.config.entities.editor.note"
                     )}
                   </div>
                 </div>
@@ -144,17 +144,13 @@ class DialogEntityRegistryDetail extends LitElement {
             .disabled=${this._submitting ||
               !(stateObj && stateObj.attributes.restored)}
           >
-            ${this.hass.localize(
-              "ui.panel.config.entity_registry.editor.delete"
-            )}
+            ${this.hass.localize("ui.panel.config.entities.editor.delete")}
           </mwc-button>
           <mwc-button
             @click="${this._updateEntry}"
             .disabled=${invalidDomainUpdate || this._submitting}
           >
-            ${this.hass.localize(
-              "ui.panel.config.entity_registry.editor.update"
-            )}
+            ${this.hass.localize("ui.panel.config.entities.editor.update")}
           </mwc-button>
         </div>
       </ha-paper-dialog>
@@ -201,7 +197,7 @@ class DialogEntityRegistryDetail extends LitElement {
   private _confirmDeleteEntry(): void {
     showConfirmationDialog(this, {
       text: this.hass.localize(
-        "ui.panel.config.entity_registry.editor.confirm_delete"
+        "ui.panel.config.entities.editor.confirm_delete"
       ),
       confirm: () => this._deleteEntry(),
     });
