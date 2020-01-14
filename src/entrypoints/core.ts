@@ -70,6 +70,9 @@ const connProm = async (auth) => {
 };
 
 if (__DEV__) {
+  // Remove adoptedStyleSheets so style inspector works on shadow DOM.
+  // @ts-ignore
+  delete Document.prototype.adoptedStyleSheets;
   performance.mark("hass-start");
 }
 window.hassConnection = authProm().then(connProm);
