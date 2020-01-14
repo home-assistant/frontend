@@ -624,6 +624,9 @@
           "updateDeviceName": "Set a custom name for this device in the device registry.",
           "remove": "Remove a device from the Zigbee network."
         },
+        "confirmations": {
+          "remove": "Are you sure that you want to remove the device?"
+        },
         "quirk": "Quirk",
         "last_seen": "Last Seen",
         "power_source": "Power Source",

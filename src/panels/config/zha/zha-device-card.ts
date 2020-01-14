@@ -286,6 +286,9 @@ class ZHADeviceCard extends LitElement {
                     .hass="${this.hass}"
                     domain="zha"
                     service="remove"
+                    confirmation=${this.hass!.localize(
+                      "ui.dialogs.zha_device_info.confirmations.remove"
+                    )}
                     .serviceData="${this._serviceData}"
                   >
                     ${this.hass!.localize(
