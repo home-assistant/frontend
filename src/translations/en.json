@@ -572,6 +572,7 @@
       "more_info_control": {
         "dismiss": "Dismiss dialog",
         "settings": "Entity settings",
+        "edit": "Edit entity",
         "script": {
           "last_action": "Last Action"
         },
