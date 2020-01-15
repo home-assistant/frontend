@@ -12,6 +12,7 @@ import "../../state-summary/state-card-content";
 
 import "./controls/more-info-content";
 
+import { navigate } from "../../common/navigate";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -23,6 +24,9 @@ import { removeEntityRegistryEntry } from "../../data/entity_registry";
 import { showConfirmationDialog } from "../confirmation/show-dialog-confirmation";
 
 const DOMAINS_NO_INFO = ["camera", "configurator", "history_graph"];
+const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
+const EDITABLE_DOMAINS = ["script"];
+
 /*
  * @appliesMixin EventsMixin
  */
@@ -88,6 +92,13 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
             aria-label$="[[localize('ui.dialogs.more_info_control.settings')]]"
             icon="hass:settings"
             on-click="_gotoSettings"
+          ></paper-icon-button>
+        </template>
+        <template is="dom-if" if="[[_computeEdit(hass, stateObj)]]">
+          <paper-icon-button
+            aria-label$="[[localize('ui.dialogs.more_info_control.edit')]]"
+            icon="hass:pencil"
+            on-click="_gotoEdit"
           ></paper-icon-button>
         </template>
       </app-toolbar>
@@ -209,6 +220,16 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return stateObj ? computeStateName(stateObj) : "";
   }
 
+  _computeEdit(hass, stateObj) {
+    const domain = this._computeDomain(stateObj);
+    return (
+      stateObj &&
+      hass.user.is_admin &&
+      ((EDITABLE_DOMAINS_WITH_ID.includes(domain) && stateObj.attributes.id) ||
+        EDITABLE_DOMAINS.includes(domain))
+    );
+  }
+
   _stateObjChanged(newVal) {
     if (!newVal) {
       return;
@@ -239,6 +260,19 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
 
   _gotoSettings() {
     this.fire("more-info-page", { page: "settings" });
+  }
+
+  _gotoEdit() {
+    const domain = this._computeDomain(this.stateObj);
+    navigate(
+      this,
+      `/config/${domain}/edit/${
+        EDITABLE_DOMAINS_WITH_ID.includes(domain)
+          ? this.stateObj.attributes.id
+          : this.stateObj.entity_id
+      }`
+    );
+    this.fire("hass-more-info", { entityId: null });
   }
 
   _computeRTL(hass) {
