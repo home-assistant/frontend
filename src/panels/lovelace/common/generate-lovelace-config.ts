@@ -39,17 +39,17 @@ import { processEditorEntities } from "../editor/process-editor-entities";
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const DOMAINS_BADGES = [
   "binary_sensor",
-  "person",
-  "device_tracker",
   "mailbox",
+  "person",
   "sensor",
   "sun",
   "timer",
 ];
 const HIDE_DOMAIN = new Set([
-  "persistent_notification",
   "configurator",
+  "device_tracker",
   "geo_location",
+  "persistent_notification",
 ]);
 
 let subscribedRegistries = false;
