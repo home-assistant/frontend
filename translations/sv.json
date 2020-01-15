@@ -1010,6 +1010,7 @@
                             "core_config": {
                                 "edit_requires_storage": "Redigeraren är inaktiverad eftersom konfigurationen lagras i configuration.yaml.",
                                 "elevation": "Höjd över havet",
+                                "elevation_feet": "fot",
                                 "elevation_meters": "meter",
                                 "imperial_example": "Fahrenheit, pounds",
                                 "latitude": "Latitud",
@@ -1348,6 +1349,10 @@
                         "discovery_text": "Upptäckta enheter kommer dyka upp här. Följ instruktionerna för dina enheter och sätt dem i parningsläge.",
                         "header": "Zigbee Home Automation - Lägg till enheter",
                         "spinner": "Söker efter ZHA Zigbee-enheter ..."
+                    },
+                    "add": {
+                        "caption": "Lägg till enheter",
+                        "description": "Lägg till enheter till Zigbee-nätverket"
                     },
                     "caption": "ZHA",
                     "clusters": {
@@ -1718,6 +1723,7 @@
                         "para_no_id": "Det här elementet har inget ID. Lägg till ett ID till det här elementet i \"ui-lovelace.yaml\"."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Vi kommer automatiskt att generera dina Lovelace-vyer med dina områden och enheter om du tar bort din Lovelace-konfiguration.",
                         "confirm_unsaved_changes": "Du har osparade ändringar. Är du säker på att du vill avsluta?",
                         "confirm_unsaved_comments": "Din konfiguration innehåller kommentarer, dessa sparas inte. Vill du fortsätta?",
                         "error_invalid_config": "Din konfigurering är inte giltig: {error}",
@@ -1734,6 +1740,10 @@
                         "para": "Home Assistant kommer som standard att behålla ditt användargränssnitt, uppdatera det när nya enheter eller Lovelace-komponenter blir tillgängliga. Om du tar kontroll kommer vi inte längre göra ändringar automatiskt för dig.",
                         "para_sure": "Är du säker på att du vill ta kontroll över ditt användargränssnitt?",
                         "save": "Ta kontroll"
+                    },
+                    "suggest_card": {
+                        "add": "Lägg till i Lovelace",
+                        "create_own": "Skapa ditt eget"
                     },
                     "view": {
                         "panel_mode": {

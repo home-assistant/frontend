@@ -1100,6 +1100,7 @@
                             "core_config": {
                                 "edit_requires_storage": "Editeur ass desaktivéiert well d'Konfiguratioun an der configuration.yaml gespäichert ass.",
                                 "elevation": "Héicht",
+                                "elevation_feet": "Féiss",
                                 "elevation_meters": "Meter",
                                 "imperial_example": "Fahrenheit, Pënner",
                                 "latitude": "Breedegrad",
