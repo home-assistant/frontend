@@ -85,9 +85,6 @@ class HaConfigNavigation extends LitElement {
 
   static get styles(): CSSResult {
     return css`
-      paper-listbox {
-        width: 100%;
-      }
       a {
         text-decoration: none;
         color: var(--primary-text-color);
