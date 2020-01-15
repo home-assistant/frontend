@@ -376,7 +376,7 @@ class ZHADeviceCard extends LitElement {
   }
 
   private _onAddDevicesClick() {
-    navigate(this, "add/" + this.device!.ieee);
+    navigate(this, "/config/zha/add/" + this.device!.ieee);
   }
 
   static get styles(): CSSResult[] {
