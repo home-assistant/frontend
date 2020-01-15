@@ -62,7 +62,8 @@ class HuiSensorEntityRow extends LitElement implements EntityRow {
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         <div>
           ${stateObj.attributes.device_class === "timestamp" &&
-          stateObj.state !== "unavailable"
+          stateObj.state !== "unavailable" &&
+          stateObj.state !== "unknown"
             ? html`
                 <hui-timestamp-display
                   .hass="${this.hass}"
