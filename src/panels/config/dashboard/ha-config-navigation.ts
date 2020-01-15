@@ -107,6 +107,9 @@ class HaConfigNavigation extends LitElement {
       .iron-selected paper-item[pressed]:before {
         opacity: 0.37;
       }
+      paper-listbox {
+        padding: 0;
+      }
     `;
   }
 }
