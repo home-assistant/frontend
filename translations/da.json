@@ -505,7 +505,7 @@
             "weather": {
                 "attributes": {
                     "air_pressure": "Lufttryk",
-                    "humidity": "Fugtighed",
+                    "humidity": "Luftfugtighed",
                     "temperature": "Temperatur",
                     "visibility": "Sigtbarhed",
                     "wind_speed": "Vindhastighed"
@@ -698,7 +698,7 @@
                         "create_area": "OPRET OMRÅDE",
                         "header": "Områder",
                         "integrations_page": "Integrationsside",
-                        "introduction": "Områder bruges til at organisere hvor enheder er. Disse oplysninger vil blive brugt i Home Assistant til at hjælpe dig med at organisere din grænseflade, tilladelser og integrationer med andre systemer.",
+                        "introduction": "Områder bruges til at organisere hvor enheder befinder sig. Disse oplysninger vil blive brugt i Home Assistant til at hjælpe dig med at organisere din brugerflade, tilladelser og integrationer med andre systemer.",
                         "introduction2": "Hvis du vil placere enheder i et område, skal du bruge linket herunder til at navigere til integrationssiden og derefter klikke på en konfigureret integration for at komme til enhedskortene.",
                         "no_areas": "Du ikke har ingen områder endnu!"
                     }
@@ -1527,7 +1527,7 @@
                         "adding_members": "Tilføjer medlemmer",
                         "caption": "Grupper",
                         "create": "Opret gruppe",
-                        "create_group": "Opret ny ZHA Zigbee-gruppe",
+                        "create_group": "Zigbee Home Automation - Opret gruppe",
                         "create_group_details": "Indtast de nødvendige oplysninger for at oprette en ny ZigBee-gruppe",
                         "creating_group": "Opretter gruppe",
                         "description": "Opret og rediger Zigbee-grupper",
@@ -1539,7 +1539,7 @@
                         "group-header": "Zigbee Home Automation - Gruppedetaljer",
                         "groups": "Grupper",
                         "groups-header": "Zigbee Home Automation - Gruppeadministration",
-                        "header": "Zigbee-gruppeadministration",
+                        "header": "Zigbee Home Automation - Gruppeadministration",
                         "introduction": "Opret og rediger Zigbee-grupper",
                         "manage_groups": "Administrer Zigbee-grupper",
                         "members": "Medlemmer",
@@ -2176,7 +2176,7 @@
                         "required_fields": "Udfyld alle obligatoriske felter"
                     },
                     "intro": "Lad os komme i gang ved at oprette en brugerkonto.",
-                    "required_field": "Nødvendig"
+                    "required_field": "Påkrævet"
                 }
             },
             "profile": {
