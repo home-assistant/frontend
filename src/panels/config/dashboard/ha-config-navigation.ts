@@ -88,9 +88,12 @@ class HaConfigNavigation extends LitElement {
       a {
         text-decoration: none;
         color: var(--primary-text-color);
+        position: relative;
+        display: block;
+        outline: 0;
       }
-      .iron-selected paper-item:before {
-        border-radius: 4px;
+      .iron-selected paper-item::before,
+      a:not(.iron-selected):focus::before {
         position: absolute;
         top: 0;
         right: 0;
@@ -98,13 +101,22 @@ class HaConfigNavigation extends LitElement {
         left: 0;
         pointer-events: none;
         content: "";
-        background-color: var(--sidebar-selected-icon-color);
-        opacity: 0.12;
         transition: opacity 15ms linear;
         will-change: opacity;
       }
-
-      .iron-selected paper-item[pressed]:before {
+      .iron-selected paper-item::before {
+        background-color: var(--sidebar-selected-icon-color);
+        opacity: 0.12;
+      }
+      a:not(.iron-selected):focus::before {
+        background-color: currentColor;
+        opacity: var(--dark-divider-opacity);
+      }
+      .iron-selected paper-item:focus::before,
+      .iron-selected:focus paper-item::before {
+        opacity: 0.2;
+      }
+      .iron-selected paper-item[pressed]::before {
         opacity: 0.37;
       }
       paper-listbox {
