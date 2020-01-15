@@ -1672,7 +1672,7 @@
           },
           "suggest_card": {
             "header": "We created a suggestion for you",
-            "create_own": "Create your own",
+            "create_own": "Pick different card",
             "add": "Add to Lovelace"
           },
           "save_config": {
