@@ -18,7 +18,8 @@ import { Cluster } from "../../../data/zha";
 import { formatAsPaddedHex } from "./functions";
 
 export interface ClusterRowData extends Cluster {
-  cluster?: ClusterRowData;
+  cluster?: Cluster;
+  cluster_id?: string;
 }
 
 @customElement("zha-clusters-data-table")

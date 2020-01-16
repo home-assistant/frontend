@@ -229,14 +229,14 @@ class ZHADeviceCard extends LitElement {
                     type="string"
                     @change="${this._saveCustomName}"
                     .value="${this._userGivenName}"
-                    placeholder="${this.hass!.localize(
+                    .placeholder="${this.hass!.localize(
                       "ui.dialogs.zha_device_info.zha_device_card.device_name_placeholder"
                     )}"
                   ></paper-input>
                 </div>
                 <div class="node-picker">
                   <paper-dropdown-menu
-                    label="${this.hass!.localize(
+                    .label="${this.hass!.localize(
                       "ui.dialogs.zha_device_info.zha_device_card.area_picker_label"
                     )}"
                     class="menu"
@@ -254,7 +254,7 @@ class ZHADeviceCard extends LitElement {
 
                       ${this._areas.map(
                         (entry) => html`
-                          <paper-item area="${entry}">${entry.name}</paper-item>
+                          <paper-item>${entry.name}</paper-item>
                         `
                       )}
                     </paper-listbox>
@@ -286,7 +286,7 @@ class ZHADeviceCard extends LitElement {
                     .hass="${this.hass}"
                     domain="zha"
                     service="remove"
-                    confirmation=${this.hass!.localize(
+                    .confirmation=${this.hass!.localize(
                       "ui.dialogs.zha_device_info.confirmations.remove"
                     )}
                     .serviceData="${this._serviceData}"

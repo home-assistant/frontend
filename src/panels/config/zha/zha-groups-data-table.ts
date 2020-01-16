@@ -36,7 +36,7 @@ export class ZHAGroupsDataTable extends LitElement {
     outputGroups = outputGroups.map((group) => {
       return {
         ...group,
-        id: "" + group.group_id,
+        id: String(group.group_id),
       };
     });
 

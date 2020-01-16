@@ -82,7 +82,7 @@ export class ZHAGroupBindingControl extends LitElement {
         <ha-card class="content">
           <div class="command-picker">
             <paper-dropdown-menu
-              label=${this.hass!.localize(
+              .label=${this.hass!.localize(
                 "ui.panel.config.zha.group_binding.group_picker_label"
               )}
               class="menu"
@@ -130,12 +130,7 @@ export class ZHAGroupBindingControl extends LitElement {
           <div class="card-actions">
             <mwc-button
               @click="${this._onBindGroupClick}"
-              .disabled="${!(
-                this._groupToBind &&
-                this._clustersToBind &&
-                this._clustersToBind?.length > 0 &&
-                this.selectedDevice
-              )}"
+              .disabled="${!this._canBind}"
               >${this.hass!.localize(
                 "ui.panel.config.zha.group_binding.bind_button_label"
               )}</mwc-button
@@ -151,12 +146,7 @@ export class ZHAGroupBindingControl extends LitElement {
               : ""}
             <mwc-button
               @click="${this._onUnbindGroupClick}"
-              .disabled="${!(
-                this._groupToBind &&
-                this._clustersToBind &&
-                this._clustersToBind?.length > 0 &&
-                this.selectedDevice
-              )}"
+              .disabled="${!this._canBind}"
               >${this.hass!.localize(
                 "ui.panel.config.zha.group_binding.unbind_button_label"
               )}</mwc-button
@@ -189,35 +179,23 @@ export class ZHAGroupBindingControl extends LitElement {
   }
 
   private async _onBindGroupClick(): Promise<void> {
-    if (
-      this.hass &&
-      this._groupToBind &&
-      this._clustersToBind &&
-      this._clustersToBind?.length > 0 &&
-      this.selectedDevice
-    ) {
+    if (this.hass && this._canBind) {
       await bindDeviceToGroup(
         this.hass,
-        this.selectedDevice.ieee,
-        this._groupToBind.group_id,
-        this._clustersToBind
+        this.selectedDevice!.ieee,
+        this._groupToBind!.group_id,
+        this._clustersToBind!
       );
     }
   }
 
   private async _onUnbindGroupClick(): Promise<void> {
-    if (
-      this.hass &&
-      this._groupToBind &&
-      this._clustersToBind &&
-      this._clustersToBind?.length > 0 &&
-      this.selectedDevice
-    ) {
+    if (this.hass && this._canBind) {
       await unbindDeviceFromGroup(
         this.hass,
-        this.selectedDevice.ieee,
-        this._groupToBind.group_id,
-        this._clustersToBind
+        this.selectedDevice!.ieee,
+        this._groupToBind!.group_id,
+        this._clustersToBind!
       );
     }
   }
@@ -260,6 +238,18 @@ export class ZHAGroupBindingControl extends LitElement {
           return a.name.localeCompare(b.name);
         });
     }
+  }
+
+  private get _canBind(): boolean {
+    return (
+      this._groupToBind !== null &&
+      this._groupToBind !== undefined &&
+      this._clustersToBind !== null &&
+      this._clustersToBind !== undefined &&
+      this._clustersToBind?.length > 0 &&
+      this.selectedDevice !== null &&
+      this.selectedDevice !== undefined
+    );
   }
 
   static get styles(): CSSResult[] {
