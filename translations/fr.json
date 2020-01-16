@@ -1091,6 +1091,7 @@
                             "core_config": {
                                 "edit_requires_storage": "L'éditeur est désactivé car la configuration est stockée dans configuration.yaml.",
                                 "elevation": "Élévation",
+                                "elevation_feet": "pieds",
                                 "elevation_meters": "mètres",
                                 "imperial_example": "Fahrenheit, livres",
                                 "latitude": "Latitude",
@@ -1470,6 +1471,10 @@
                         "device_name_placeholder": "Nom d'utilisateur",
                         "update_name_button": "Mettre à jour le nom"
                     },
+                    "groups": {
+                        "caption": "Groupes",
+                        "creating_group": "Création de groupe"
+                    },
                     "network_management": {
                         "header": "Gestion du réseau",
                         "introduction": "Commandes qui affectent l'ensemble du réseau"
@@ -1485,7 +1490,8 @@
                         "reconfigure": "Reconfigurer le périphérique ZHA. Utilisez cette option si vous rencontrez des problèmes avec le périphérique. Si l'appareil en question est un appareil alimenté par batterie, assurez-vous qu'il soit allumé et qu'il accepte les commandes lorsque vous utilisez ce service.",
                         "remove": "Supprimer un appareil du réseau Zigbee.",
                         "updateDeviceName": "Définissez un nom personnalisé pour ce périphérique dans le registre de périphériques."
-                    }
+                    },
+                    "title": "Zigbee Home Automation"
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1667,6 +1673,9 @@
                 "showing_entries": "Afficher les entrées pour le"
             },
             "lovelace": {
+                "add_entities": {
+                    "saving_failed": "La sauvegarde de la configuration de Lovelace a échoué."
+                },
                 "cards": {
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette carte?",
                     "empty_state": {
@@ -1872,6 +1881,10 @@
                         "para": "Par défaut, Home Assistant maintient votre interface utilisateur et la met à jour lorsque de nouvelles entités ou de nouveaux composants Lovelace sont disponibles. Si vous prenez le contrôle, nous ne ferons plus les changements automatiquement pour vous.",
                         "para_sure": "Êtes-vous sûr de vouloir prendre le contrôle de l'interface utilisateur?",
                         "save": "Prenez le contrôle"
+                    },
+                    "suggest_card": {
+                        "add": "Ajouter à Lovelace",
+                        "create_own": "Créez votre propre carte"
                     },
                     "view": {
                         "panel_mode": {
