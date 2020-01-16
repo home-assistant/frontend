@@ -97,22 +97,13 @@ export class ZHANode extends LitElement {
         }
 
         .content {
-          padding: 28px 20px 0;
-          max-width: 640px;
-          margin: 0 auto;
-        }
-
-        ha-card {
-          margin: 0 auto;
           max-width: 600px;
+          margin: 0 auto;
         }
 
         .card {
+          padding: 28px 20px 0;
           margin-top: 24px;
-          box-sizing: border-box;
-          display: flex;
-          flex: 1;
-          word-wrap: break-word;
         }
 
         ha-service-description {
