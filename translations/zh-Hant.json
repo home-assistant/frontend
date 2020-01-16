@@ -1100,6 +1100,7 @@
                             "core_config": {
                                 "edit_requires_storage": "由於 configuration.yaml 內已儲存設定，編輯功能已關閉。",
                                 "elevation": "海拔",
+                                "elevation_feet": "呎",
                                 "elevation_meters": "公尺",
                                 "imperial_example": "華氏、磅",
                                 "latitude": "緯度",

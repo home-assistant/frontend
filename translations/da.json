@@ -476,7 +476,7 @@
                 "activate": "Aktiver"
             },
             "script": {
-                "execute": "Udfør"
+                "execute": "Udløs"
             },
             "timer": {
                 "actions": {
@@ -1392,7 +1392,7 @@
                         "delete_confirm": "Er du sikker på, at du vil slette dette script?",
                         "delete_script": "Slet script",
                         "header": "Script: {name}",
-                        "introduction": "Brug scripts til at udføre en sekvens af handlinger.",
+                        "introduction": "Brug scripts til at udløse en sekvens af handlinger.",
                         "link_available_actions": "Lær mere om tilgængelige handlinger.",
                         "load_error_not_editable": "Kun scripts i 'scripts.yaml' kan redigeres.",
                         "sequence": "Sekvens",
