@@ -693,14 +693,14 @@
                         "delete": "BORRAR",
                         "update": "ACTUALIZAR"
                     },
-                    "no_areas": "¡Parece que no tienes áreas!",
+                    "no_areas": "¡Parece que aún no tienes áreas!",
                     "picker": {
                         "create_area": "CREAR ÁREA",
                         "header": "Áreas",
                         "integrations_page": "Integraciones",
                         "introduction": "Las áreas se utilizan para organizar dónde están los dispositivos. Esta información se utilizará en todo Home Assistant para ayudarte a organizar tu interfaz, permisos e integraciones con otros sistemas.",
                         "introduction2": "Para colocar dispositivos en un área, utiliza el siguiente enlace para navegar a la página de integraciones y luego haz clic en una integración configurada para llegar a las tarjetas de dispositivos.",
-                        "no_areas": "¡Parece que no tienes áreas!"
+                        "no_areas": "¡Parece que aún no tienes áreas!"
                     }
                 },
                 "automation": {
@@ -990,7 +990,7 @@
                             "link_learn_more": "Aprende más sobre la creación de automatizaciones basadas en webhook.",
                             "loading": "Cargando ...",
                             "manage": "Administrar",
-                            "no_hooks_yet": "Parece que todavía no tienes webhooks. Comienza configurando un",
+                            "no_hooks_yet": "Parece que aún no tienes webhooks. Comienza configurando un",
                             "no_hooks_yet_link_automation": "automatización de webhook",
                             "no_hooks_yet_link_integration": "integración basada en webhook",
                             "no_hooks_yet2": " o mediante la creación de un ",
@@ -1100,6 +1100,7 @@
                             "core_config": {
                                 "edit_requires_storage": "Editor deshabilitado debido a la configuración almacenada en configuration.yaml.",
                                 "elevation": "Altitud",
+                                "elevation_feet": "pies",
                                 "elevation_meters": "metros",
                                 "imperial_example": "Fahrenheit, libras",
                                 "latitude": "Latitud",

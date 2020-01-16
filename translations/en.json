@@ -589,6 +589,7 @@
             },
             "more_info_control": {
                 "dismiss": "Dismiss dialog",
+                "edit": "Edit entity",
                 "restored": {
                     "confirm_remove_text": "Are you sure you want to remove this entity?",
                     "confirm_remove_title": "Remove entity?",
@@ -1965,7 +1966,7 @@
                     },
                     "suggest_card": {
                         "add": "Add to Lovelace",
-                        "create_own": "Create your own",
+                        "create_own": "Pick different card",
                         "header": "We created a suggestion for you"
                     },
                     "view": {
