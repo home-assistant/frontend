@@ -241,14 +241,11 @@ export class ZHAGroupBindingControl extends LitElement {
   }
 
   private get _canBind(): boolean {
-    return (
-      this._groupToBind !== null &&
-      this._groupToBind !== undefined &&
-      this._clustersToBind !== null &&
-      this._clustersToBind !== undefined &&
-      this._clustersToBind?.length > 0 &&
-      this.selectedDevice !== null &&
-      this.selectedDevice !== undefined
+    return Boolean(
+      this._groupToBind &&
+        this._clustersToBind &&
+        this._clustersToBind?.length > 0 &&
+        this.selectedDevice
     );
   }
 
