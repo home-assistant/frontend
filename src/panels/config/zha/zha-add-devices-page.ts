@@ -120,7 +120,7 @@ class ZHAAddDevicesPage extends LitElement {
                       .narrow=${!this.isWide}
                       .showHelp=${this._showHelp}
                       .showActions=${!this._active}
-                      isJoinPage
+                      .showEntityDetail=${false}
                     ></zha-device-card>
                   `
                 )}
