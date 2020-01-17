@@ -20,6 +20,7 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 @customElement("hui-picture-card")
 export class HuiPictureCard extends LitElement implements LovelaceCard {
@@ -86,10 +87,14 @@ export class HuiPictureCard extends LitElement implements LovelaceCard {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
-        tabindex="0"
+        tabindex=${ifDefined(
+          hasAction(this._config.tap_action) ? "0" : undefined
+        )}
         class="${classMap({
           clickable: Boolean(
-            this._config.tap_action || this._config.hold_action
+            this._config.tap_action ||
+              this._config.hold_action ||
+              this._config.double_tap_action
           ),
         })}"
       >
