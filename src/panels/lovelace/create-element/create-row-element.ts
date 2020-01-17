@@ -19,7 +19,7 @@ import "../special-rows/hui-section-row";
 import "../special-rows/hui-weblink-row";
 import "../special-rows/hui-cast-row";
 import { EntityConfig } from "../entity-rows/types";
-import { createLovelaceElement } from "../create-element/create-element-base";
+import { createLovelaceElement } from "./create-element-base";
 
 const SPECIAL_TYPES = new Set([
   "call-service",

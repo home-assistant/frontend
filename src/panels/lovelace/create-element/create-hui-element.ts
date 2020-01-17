@@ -7,7 +7,7 @@ import "../elements/hui-state-icon-element";
 import "../elements/hui-state-label-element";
 
 import { LovelaceElementConfig } from "../elements/types";
-import { createLovelaceElement } from "../create-element/create-element-base";
+import { createLovelaceElement } from "./create-element-base";
 
 const ELEMENT_TYPES = new Set([
   "conditional",

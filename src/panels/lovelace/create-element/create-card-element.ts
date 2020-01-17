@@ -23,7 +23,7 @@ import "../cards/hui-thermostat-card";
 import "../cards/hui-weather-forecast-card";
 import "../cards/hui-gauge-card";
 import { LovelaceCardConfig } from "../../../data/lovelace";
-import { createLovelaceElement } from "../create-element/create-element-base";
+import { createLovelaceElement } from "./create-element-base";
 
 const CARD_TYPES = new Set([
   "alarm-panel",
