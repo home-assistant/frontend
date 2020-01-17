@@ -589,6 +589,7 @@
             },
             "more_info_control": {
                 "dismiss": "Zamknij okno dialogowe",
+                "edit": "Edytuj encję",
                 "restored": {
                     "confirm_remove_text": "Czy na pewno chcesz usunąć tę encję?",
                     "confirm_remove_title": "Usunąć encję?",

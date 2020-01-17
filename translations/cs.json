@@ -589,6 +589,7 @@
             },
             "more_info_control": {
                 "dismiss": "Zavřít dialog",
+                "edit": "Upravit entitu",
                 "restored": {
                     "confirm_remove_text": "Opravdu chcete tuto entitu odebrat?",
                     "confirm_remove_title": "Odebrat entitu?",

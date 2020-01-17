@@ -589,6 +589,7 @@
             },
             "more_info_control": {
                 "dismiss": "Afvis dialog",
+                "edit": "Rediger entitet",
                 "restored": {
                     "confirm_remove_text": "Er du sikker på, at du vil fjerne denne entitet?",
                     "confirm_remove_title": "Fjern entitet?",

@@ -589,6 +589,7 @@
             },
             "more_info_control": {
                 "dismiss": "Dialog ausblenden",
+                "edit": "Entität bearbeiten",
                 "restored": {
                     "confirm_remove_text": "Bist du dir sicher, dass du diese Entität löschen möchtest?",
                     "confirm_remove_title": "Entität entfernen?",
@@ -1100,6 +1101,7 @@
                             "core_config": {
                                 "edit_requires_storage": "Editor deaktiviert, da die Konfiguration in configuration.yaml gespeichert ist.",
                                 "elevation": "Höhe",
+                                "elevation_feet": "Fuß",
                                 "elevation_meters": "Meter",
                                 "imperial_example": "Fahrenheit, Pfund",
                                 "latitude": "Breitengrad",

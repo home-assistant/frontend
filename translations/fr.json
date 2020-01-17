@@ -533,6 +533,7 @@
         },
         "common": {
             "cancel": "Annuler",
+            "close": "Fermer",
             "loading": "Chargement",
             "no": "Non",
             "save": "Enregistrer",
@@ -588,6 +589,12 @@
             },
             "more_info_control": {
                 "dismiss": "Fermer la fenêtre de dialogue",
+                "edit": "Modifier l'entité",
+                "restored": {
+                    "confirm_remove_text": "Voulez-vous vraiment supprimer cette entité ?",
+                    "confirm_remove_title": "Supprimer l'entité ?",
+                    "remove_action": "Supprimer l'entité"
+                },
                 "script": {
                     "last_action": "Dernière action"
                 },
@@ -1239,6 +1246,7 @@
                         "area_picker_label": "Zone",
                         "close": "Fermer",
                         "created_config": "Configuration créée pour {name}.",
+                        "dismiss": "Fermer la boîte de dialogue",
                         "error_saving_area": "Erreur lors de l'enregistrement de la zone: {error}",
                         "external_step": {
                             "description": "Cette étape nécessite la visite d'un site Web externe pour être complétée.",
@@ -1437,6 +1445,9 @@
                         "search_again": "Rechercher à nouveau",
                         "spinner": "Recherche de périphériques ZHA Zigbee ..."
                     },
+                    "add": {
+                        "caption": "Ajouter des appareils"
+                    },
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributs du cluster sélectionné",
@@ -1473,8 +1484,11 @@
                     },
                     "groups": {
                         "caption": "Groupes",
-                        "creating_group": "Création de groupe"
+                        "create": "Créer un groupe",
+                        "creating_group": "Création de groupe",
+                        "group_name_placeholder": "Nom du groupe"
                     },
+                    "header": "Configurer Zigbee Home Automation",
                     "network_management": {
                         "header": "Gestion du réseau",
                         "introduction": "Commandes qui affectent l'ensemble du réseau"

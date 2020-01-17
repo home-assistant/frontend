@@ -589,6 +589,7 @@
             },
             "more_info_control": {
                 "dismiss": "Закрыть диалог",
+                "edit": "Изменить объект",
                 "restored": {
                     "confirm_remove_text": "Вы уверены, что хотите удалить этот объект?",
                     "confirm_remove_title": "Удалить объект?",
@@ -1189,7 +1190,7 @@
                     "details": "Здесь приведена вся доступная информация об этом устройстве.",
                     "device_not_found": "Устройство не найдено.",
                     "entities": {
-                        "add_entities_lovelace": "Добавить в Lovelace все объекты, связанные с устройствами",
+                        "add_entities_lovelace": "Добавить объекты этого устройства в Lovelace",
                         "entities": "Объекты",
                         "none": "У этого устройства нет объектов"
                     },
@@ -1797,18 +1798,18 @@
                             "required": "обязательно"
                         },
                         "entities": {
-                            "name": "Объекты",
+                            "name": "Entities",
                             "show_header_toggle": "Переключатель в заголовке",
                             "toggle": "Переключить объекты"
                         },
                         "entity-button": {
-                            "name": "Объект кнопка"
+                            "name": "Entity Button"
                         },
                         "entity-filter": {
                             "name": "Entity Filter"
                         },
                         "gauge": {
-                            "name": "Gauge",
+                            "name": "Шкала",
                             "severity": {
                                 "define": "Задать оттенок для значений",
                                 "green": "Зелёный",
@@ -1842,19 +1843,19 @@
                         },
                         "glance": {
                             "columns": "Столбцы",
-                            "name": "Просмотр"
+                            "name": "Glance"
                         },
                         "history-graph": {
                             "name": "History Graph"
                         },
                         "horizontal-stack": {
-                            "name": "Горизонтальная панель"
+                            "name": "Horizontal Stack"
                         },
                         "iframe": {
                             "name": "iFrame"
                         },
                         "light": {
-                            "name": "Свет"
+                            "name": "Освещение"
                         },
                         "map": {
                             "dark_mode": "Ночной режим",
@@ -1868,22 +1869,22 @@
                             "name": "Markdown"
                         },
                         "media-control": {
-                            "name": "Управление медиа плеером"
+                            "name": "Медиа"
                         },
                         "picture-elements": {
-                            "name": "Элементы картинки"
+                            "name": "Picture Elements"
                         },
                         "picture-entity": {
-                            "name": "Картинка объекта"
+                            "name": "Picture Entity"
                         },
                         "picture-glance": {
-                            "name": "Вид картинки"
+                            "name": "Picture Glance"
                         },
                         "picture": {
-                            "name": "Картинка"
+                            "name": "Picture"
                         },
                         "plant-status": {
-                            "name": "Plant Status"
+                            "name": "Растение"
                         },
                         "sensor": {
                             "graph_detail": "Детализация графика",
@@ -1897,7 +1898,7 @@
                             "name": "Термостат"
                         },
                         "vertical-stack": {
-                            "name": "Вертикальный массив"
+                            "name": "Vertical Stack"
                         },
                         "weather-forecast": {
                             "name": "Прогноз погоды"
@@ -1964,8 +1965,9 @@
                         "save": "Получить контроль"
                     },
                     "suggest_card": {
-                        "add": "Добавить в Lovelace",
-                        "create_own": "Создать свою"
+                        "add": "Добавить",
+                        "create_own": "Изменить",
+                        "header": "Вариант отображения этого устройства в Lovelace"
                     },
                     "view": {
                         "panel_mode": {
