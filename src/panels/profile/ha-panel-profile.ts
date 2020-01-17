@@ -175,7 +175,9 @@ class HaPanelProfile extends LitElement {
 
   private _handleLogOut() {
     showConfirmationDialog(this, {
-      text: this.hass.localize("ui.panel.profile.confirm_logout"),
+      title: this.hass.localize("ui.panel.profile.logout_title"),
+      text: this.hass.localize("ui.panel.profile.logout_text"),
+      confirmBtnText: this.hass.localize("ui.panel.profile.logout"),
       confirm: () => fireEvent(this, "hass-logout"),
     });
   }
