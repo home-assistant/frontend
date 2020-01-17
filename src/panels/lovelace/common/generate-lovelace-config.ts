@@ -100,7 +100,7 @@ const splitByAreas = (
 export const computeCards = (
   states: Array<[string, HassEntity?]>,
   entityCardOptions: Partial<EntitiesCardConfig>,
-  grouped = false
+  single = false
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
 
@@ -133,7 +133,7 @@ export const computeCards = (
         title: stateObj.attributes.friendly_name,
         refresh_interval: stateObj.attributes.refresh,
       });
-    } else if (domain === "light" && !grouped) {
+    } else if (domain === "light" && single) {
       cards.push({
         type: "light",
         entity: entityId,
@@ -239,8 +239,7 @@ export const generateDefaultViewConfig = (
         {
           title: area.name,
           show_header_toggle: true,
-        },
-        true
+        }
       )
     );
   });
@@ -301,8 +300,7 @@ const generateViewConfig = (
         {
           title: computeStateName(groupEntity),
           show_header_toggle: groupEntity.attributes.control !== "hidden",
-        },
-        true
+        }
       )
     );
   });
@@ -318,8 +316,7 @@ const generateViewConfig = (
           ]),
           {
             title: localize(`domain.${domain}`),
-          },
-          false
+          }
         )
       );
     });
