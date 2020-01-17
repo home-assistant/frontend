@@ -12,10 +12,10 @@ class HaStoreAuth extends LocalizeMixin(PolymerElement) {
     return html`
       <style include="ha-style">
         paper-card {
-          position: fixed;
+          position: absolute;
           padding: 8px 0;
-          bottom: 16px;
-          right: 16px;
+          top: 50%;
+          left: 50%;
         }
 
         .card-content {
