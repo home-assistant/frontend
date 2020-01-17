@@ -59,6 +59,18 @@ interface SplittedByAreas {
   otherEntities: HassEntities;
 }
 
+const createChunks = (array: any[], size: number) =>
+  Array(Math.ceil(array.length / size))
+    .fill(null)
+    .map((_, i) => array.slice(i * size, i * size + size));
+
+const createLightCard = (entityId: string) => {
+  return {
+    type: "light",
+    entity: entityId,
+  };
+};
+
 const splitByAreas = (
   areaEntries: AreaRegistryEntry[],
   deviceEntries: DeviceRegistryEntry[],
@@ -99,12 +111,16 @@ const splitByAreas = (
 
 export const computeCards = (
   states: Array<[string, HassEntity?]>,
-  entityCardOptions: Partial<EntitiesCardConfig>
+  entityCardOptions: Partial<EntitiesCardConfig>,
+  grouped = false
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
 
   // For entity card
   const entities: Array<string | EntityRowConfig> = [];
+
+  // For light stack
+  const lightEntities: string[] = [];
 
   for (const [entityId, stateObj] of states) {
     const domain = computeDomain(entityId);
@@ -132,11 +148,8 @@ export const computeCards = (
         title: stateObj.attributes.friendly_name,
         refresh_interval: stateObj.attributes.refresh,
       });
-    } else if (domain === "light") {
-      cards.push({
-        type: "light",
-        entity: entityId,
-      });
+    } else if (domain === "light" && !grouped) {
+      lightEntities.push(entityId);
     } else if (domain === "media_player") {
       cards.push({
         type: "media-control",
@@ -164,6 +177,25 @@ export const computeCards = (
       entities.push(conf);
     } else {
       entities.push(entityId);
+    }
+  }
+
+  if (lightEntities.length > 0) {
+    if (lightEntities.length === 1) {
+      cards.push(createLightCard(lightEntities[0]));
+    } else {
+      const chunks = createChunks(lightEntities, 2);
+      const horStacks = chunks.map((group) => {
+        return {
+          type: "horizontal-stack",
+          cards: group.map((entityId) => createLightCard(entityId)),
+        };
+      });
+      if (horStacks.length > 1) {
+        cards.push({ type: "vertical-stack", cards: horStacks });
+      } else {
+        cards.push(horStacks[0]);
+      }
     }
   }
 
@@ -238,7 +270,8 @@ export const generateDefaultViewConfig = (
         {
           title: area.name,
           show_header_toggle: true,
-        }
+        },
+        true
       )
     );
   });
@@ -299,7 +332,8 @@ const generateViewConfig = (
         {
           title: computeStateName(groupEntity),
           show_header_toggle: groupEntity.attributes.control !== "hidden",
-        }
+        },
+        true
       )
     );
   });
@@ -315,7 +349,8 @@ const generateViewConfig = (
           ]),
           {
             title: localize(`domain.${domain}`),
-          }
+          },
+          false
         )
       );
     });
