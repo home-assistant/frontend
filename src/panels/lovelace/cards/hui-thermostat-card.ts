@@ -153,7 +153,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         <g>
           <text text-anchor="middle" class="set-value">
             ${
-              this._setTemp === undefined
+              this._setTemp === undefined || this._setTemp === null
                 ? ""
                 : Array.isArray(this._setTemp)
                 ? this._stepSize === 1
