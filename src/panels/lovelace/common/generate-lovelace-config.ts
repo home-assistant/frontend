@@ -133,15 +133,11 @@ export const computeCards = (
         title: stateObj.attributes.friendly_name,
         refresh_interval: stateObj.attributes.refresh,
       });
-    } else if (domain === "light") {
-      if (grouped) {
-        entities.push(entityId);
-      } else {
-        cards.push({
-          type: "light",
-          entity: entityId,
-        });
-      }
+    } else if (domain === "light" && !grouped) {
+      cards.push({
+        type: "light",
+        entity: entityId,
+      });
     } else if (domain === "media_player") {
       cards.push({
         type: "media-control",
