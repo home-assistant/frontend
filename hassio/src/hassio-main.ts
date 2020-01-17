@@ -27,6 +27,7 @@ import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 // Don't codesplit it, that way the dashboard always loads fast.
 import "./hassio-pages-with-tabs";
+import { navigate } from "../../src/common/navigate";
 
 // The register callback of the IronA11yKeysBehavior inside paper-icon-button
 // is not called, causing _keyBindings to be uninitiliazed for paper-icon-button,
@@ -165,14 +166,20 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
         }),
       ]);
       if (!addon.ingress_url) {
-        throw new Error("Add-on does not support Ingress");
+        alert("Add-on does not support Ingress");
+        return;
+      }
+      if (addon.state !== "started") {
+        alert("Add-on is not running. Please start it first");
+        navigate(this, `/hassio/addon/${addon.slug}`, true);
+        return;
       }
       location.assign(addon.ingress_url);
       // await a promise that doesn't resolve, so we show the loading screen
       // while we load the next page.
       await new Promise(() => undefined);
     } catch (err) {
-      alert(`Unable to open ingress connection `);
+      alert("Unable to open ingress connection");
     }
   }
 
