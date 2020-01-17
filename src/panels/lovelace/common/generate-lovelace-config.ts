@@ -99,7 +99,8 @@ const splitByAreas = (
 
 export const computeCards = (
   states: Array<[string, HassEntity?]>,
-  entityCardOptions: Partial<EntitiesCardConfig>
+  entityCardOptions: Partial<EntitiesCardConfig>,
+  grouped = false
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
 
@@ -133,10 +134,14 @@ export const computeCards = (
         refresh_interval: stateObj.attributes.refresh,
       });
     } else if (domain === "light") {
-      cards.push({
-        type: "light",
-        entity: entityId,
-      });
+      if (grouped) {
+        entities.push(entityId);
+      } else {
+        cards.push({
+          type: "light",
+          entity: entityId,
+        });
+      }
     } else if (domain === "media_player") {
       cards.push({
         type: "media-control",
@@ -238,7 +243,8 @@ export const generateDefaultViewConfig = (
         {
           title: area.name,
           show_header_toggle: true,
-        }
+        },
+        true
       )
     );
   });
@@ -299,7 +305,8 @@ const generateViewConfig = (
         {
           title: computeStateName(groupEntity),
           show_header_toggle: groupEntity.attributes.control !== "hidden",
-        }
+        },
+        true
       )
     );
   });
@@ -315,7 +322,8 @@ const generateViewConfig = (
           ]),
           {
             title: localize(`domain.${domain}`),
-          }
+          },
+          false
         )
       );
     });
