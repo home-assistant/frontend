@@ -588,7 +588,8 @@
                 "title": "도메인 토글"
             },
             "more_info_control": {
-                "dismiss": "대화 상자 해제",
+                "dismiss": "대화창 닫기",
+                "edit": "구성요소 편집",
                 "restored": {
                     "confirm_remove_text": "이 구성요소를 제거하시겠습니까?",
                     "confirm_remove_title": "구성요소를 제거하시겠습니까?",
@@ -1100,6 +1101,7 @@
                             "core_config": {
                                 "edit_requires_storage": "구성내용이 configuration.yaml 에 저장되어 있기 때문에 편집기가 비활성화 되었습니다.",
                                 "elevation": "고도",
+                                "elevation_feet": "피트",
                                 "elevation_meters": "미터",
                                 "imperial_example": "화씨, 파운드",
                                 "latitude": "위도",
@@ -1268,6 +1270,7 @@
                         "area_picker_label": "영역",
                         "close": "닫기",
                         "created_config": "{name} 에 대한 구성을 만들었습니다.",
+                        "dismiss": "대화창 닫기",
                         "error_saving_area": "영역 저장 오류: {error}",
                         "external_step": {
                             "description": "이 단계는 외부 웹사이트 방문이 필요합니다.",
@@ -1485,7 +1488,8 @@
                         "issue_zigbee_command": "Zigbee 명령 실행"
                     },
                     "clusters": {
-                        "help_cluster_dropdown": "속성과 명령을 보려면 클러스터를 선택해주세요."
+                        "help_cluster_dropdown": "속성과 명령을 보려면 클러스터를 선택해주세요.",
+                        "introduction": "클러스터는 Zigbee 기능의 빌딩 블록이며 기능을 논리 단위로 분리 구성합니다. 클라이언트 및 서버 유형이 있으며 속성 및 명령으로 구성됩니다."
                     },
                     "common": {
                         "add_devices": "기기 추가",
@@ -1499,6 +1503,12 @@
                         "area_picker_label": "영역",
                         "device_name_placeholder": "사용자 지정 이름",
                         "update_name_button": "이름 업데이트"
+                    },
+                    "groups": {
+                        "caption": "그룹",
+                        "description": "Zigbee 그룹 생성 및 수정",
+                        "group-header": "Zigbee 홈 자동화 - 그룹 상세정보",
+                        "groups-header": "Zigbee 홈 자동화 - 그룹 관리"
                     },
                     "network_management": {
                         "header": "네트워크 관리",
