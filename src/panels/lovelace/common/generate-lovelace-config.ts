@@ -99,7 +99,8 @@ const splitByAreas = (
 
 export const computeCards = (
   states: Array<[string, HassEntity?]>,
-  entityCardOptions: Partial<EntitiesCardConfig>
+  entityCardOptions: Partial<EntitiesCardConfig>,
+  single = false
 ): LovelaceCardConfig[] => {
   const cards: LovelaceCardConfig[] = [];
 
@@ -132,7 +133,7 @@ export const computeCards = (
         title: stateObj.attributes.friendly_name,
         refresh_interval: stateObj.attributes.refresh,
       });
-    } else if (domain === "light") {
+    } else if (domain === "light" && single) {
       cards.push({
         type: "light",
         entity: entityId,
