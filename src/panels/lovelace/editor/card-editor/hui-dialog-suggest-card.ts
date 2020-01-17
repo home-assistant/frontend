@@ -49,7 +49,8 @@ export class HuiDialogSuggestCard extends LitElement {
           entityId,
           this.hass.states[entityId],
         ]),
-        {}
+        {},
+        true
       );
     if (this._dialog) {
       this._dialog.open();
