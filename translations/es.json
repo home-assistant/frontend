@@ -589,6 +589,7 @@
             },
             "more_info_control": {
                 "dismiss": "Descartar diálogo",
+                "edit": "Editar entidad",
                 "restored": {
                     "confirm_remove_text": "¿Estás seguro de que deseas eliminar esta entidad?",
                     "confirm_remove_title": "¿Eliminar entidad?",
@@ -1965,7 +1966,7 @@
                     },
                     "suggest_card": {
                         "add": "Añadir a Lovelace",
-                        "create_own": "Crear la tuya propia",
+                        "create_own": "Elige una tarjeta diferente",
                         "header": "Hemos creado una sugerencia para ti"
                     },
                     "view": {
