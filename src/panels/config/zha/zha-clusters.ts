@@ -21,7 +21,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { Cluster, fetchClustersForZhaNode, ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { formatAsPaddedHex } from "./functions";
+import { computeClusterKey } from "./functions";
 import { ItemSelectedEvent } from "./types";
 
 declare global {
@@ -32,12 +32,6 @@ declare global {
     };
   }
 }
-
-const computeClusterKey = (cluster: Cluster): string => {
-  return `${cluster.name} (Endpoint id: ${
-    cluster.endpoint_id
-  }, Id: ${formatAsPaddedHex(cluster.id)}, Type: ${cluster.type})`;
-};
 
 export class ZHAClusters extends LitElement {
   @property() public hass?: HomeAssistant;

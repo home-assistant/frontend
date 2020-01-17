@@ -1,6 +1,7 @@
 import "../../../layouts/hass-subpage";
 import "../../../components/ha-paper-icon-button-arrow-prev";
-import "./zha-binding";
+import "./zha-device-binding";
+import "./zha-group-binding";
 import "./zha-cluster-attributes";
 import "./zha-cluster-commands";
 import "./zha-clusters";
@@ -24,10 +25,12 @@ import {
   fetchBindableDevices,
   ZHADevice,
   fetchZHADevice,
+  ZHAGroup,
+  fetchGroups,
 } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { sortZHADevices } from "./functions";
+import { sortZHADevices, sortZHAGroups } from "./functions";
 import { ZHAClusterSelectedParams } from "./types";
 
 @customElement("zha-device-page")
@@ -36,8 +39,27 @@ export class ZHADevicePage extends LitElement {
   @property() public isWide?: boolean;
   @property() public ieee?: string;
   @property() public device?: ZHADevice;
+  @property() public narrow?: boolean;
   @property() private _selectedCluster?: Cluster;
   @property() private _bindableDevices: ZHADevice[] = [];
+  @property() private _groups: ZHAGroup[] = [];
+
+  private _firstUpdatedCalled: boolean = false;
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this.hass && this._firstUpdatedCalled) {
+      this._fetchGroups();
+    }
+  }
+
+  protected firstUpdated(changedProperties: PropertyValues): void {
+    super.firstUpdated(changedProperties);
+    if (this.hass) {
+      this._fetchGroups();
+    }
+    this._firstUpdatedCalled = true;
+  }
 
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("ieee")) {
@@ -82,12 +104,23 @@ export class ZHADevicePage extends LitElement {
           : ""}
         ${this._bindableDevices.length > 0
           ? html`
-              <zha-binding-control
+              <zha-device-binding-control
                 .isWide="${this.isWide}"
                 .hass="${this.hass}"
                 .selectedDevice="${this.device}"
                 .bindableDevices="${this._bindableDevices}"
-              ></zha-binding-control>
+              ></zha-device-binding-control>
+            `
+          : ""}
+        ${this.device && this._groups.length > 0
+          ? html`
+              <zha-group-binding-control
+                .isWide="${this.isWide}"
+                .narrow="${this.narrow}"
+                .hass="${this.hass}"
+                .selectedDevice="${this.device}"
+                .groups="${this._groups}"
+              ></zha-group-binding-control>
             `
           : ""}
         <div class="spacer" />
@@ -108,6 +141,10 @@ export class ZHADevicePage extends LitElement {
         await fetchBindableDevices(this.hass, this.ieee)
       ).sort(sortZHADevices);
     }
+  }
+
+  private async _fetchGroups() {
+    this._groups = (await fetchGroups(this.hass!)).sort(sortZHAGroups);
   }
 
   static get styles(): CSSResult[] {

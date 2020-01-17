@@ -58,8 +58,11 @@ class ZHADeviceCard extends LitElement {
   @property() public device?: ZHADevice;
   @property({ type: Boolean }) public narrow?: boolean;
   @property({ type: Boolean }) public showHelp?: boolean = false;
-  @property({ type: Boolean }) public showActions?: boolean;
-  @property({ type: Boolean }) public isJoinPage?: boolean;
+  @property({ type: Boolean }) public showActions?: boolean = true;
+  @property({ type: Boolean }) public showName?: boolean = true;
+  @property({ type: Boolean }) public showEntityDetail?: boolean = true;
+  @property({ type: Boolean }) public showModelInfo?: boolean = true;
+  @property({ type: Boolean }) public showEditableInfo?: boolean = true;
   @property() private _serviceData?: NodeServiceData;
   @property() private _areas: AreaRegistryEntry[] = [];
   @property() private _selectedAreaIndex: number = -1;
@@ -137,9 +140,9 @@ class ZHADeviceCard extends LitElement {
 
   protected render(): TemplateResult | void {
     return html`
-      <ha-card header="${this.isJoinPage ? this.device!.name : ""}">
+      <ha-card header="${this.showName ? this.device!.name : ""}">
         ${
-          this.isJoinPage
+          this.showModelInfo
             ? html`
                 <div class="info">
                   <div class="model">${this.device!.model}</div>
@@ -202,7 +205,7 @@ class ZHADeviceCard extends LitElement {
                   .stateObj="${this.hass!.states[entity.entity_id]}"
                   slot="item-icon"
                 ></state-badge>
-                ${!this.isJoinPage
+                ${this.showEntityDetail
                   ? html`
                       <paper-item-body>
                         <div class="name">
@@ -218,40 +221,48 @@ class ZHADeviceCard extends LitElement {
             `
           )}
         </div>
-        <div class="editable">
-          <paper-input
-            type="string"
-            @change="${this._saveCustomName}"
-            .value="${this._userGivenName}"
-            placeholder="${this.hass!.localize(
-              "ui.dialogs.zha_device_info.zha_device_card.device_name_placeholder"
-            )}"
-          ></paper-input>
-        </div>
-        <div class="node-picker">
-          <paper-dropdown-menu
-            label="${this.hass!.localize(
-              "ui.dialogs.zha_device_info.zha_device_card.area_picker_label"
-            )}"
-            class="menu"
-          >
-            <paper-listbox
-              slot="dropdown-content"
-              .selected="${this._selectedAreaIndex}"
-              @iron-select="${this._selectedAreaChanged}"
-            >
-              <paper-item>
-                ${this.hass!.localize("ui.dialogs.zha_device_info.no_area")}
-              </paper-item>
+        ${
+          this.showEditableInfo
+            ? html`
+                <div class="editable">
+                  <paper-input
+                    type="string"
+                    @change="${this._saveCustomName}"
+                    .value="${this._userGivenName}"
+                    .placeholder="${this.hass!.localize(
+                      "ui.dialogs.zha_device_info.zha_device_card.device_name_placeholder"
+                    )}"
+                  ></paper-input>
+                </div>
+                <div class="node-picker">
+                  <paper-dropdown-menu
+                    .label="${this.hass!.localize(
+                      "ui.dialogs.zha_device_info.zha_device_card.area_picker_label"
+                    )}"
+                    class="menu"
+                  >
+                    <paper-listbox
+                      slot="dropdown-content"
+                      .selected="${this._selectedAreaIndex}"
+                      @iron-select="${this._selectedAreaChanged}"
+                    >
+                      <paper-item>
+                        ${this.hass!.localize(
+                          "ui.dialogs.zha_device_info.no_area"
+                        )}
+                      </paper-item>
 
-              ${this._areas.map(
-                (entry) => html`
-                  <paper-item area="${entry}">${entry.name}</paper-item>
-                `
-              )}
-            </paper-listbox>
-          </paper-dropdown-menu>
-        </div>
+                      ${this._areas.map(
+                        (entry) => html`
+                          <paper-item>${entry.name}</paper-item>
+                        `
+                      )}
+                    </paper-listbox>
+                  </paper-dropdown-menu>
+                </div>
+              `
+            : ""
+        }
         ${
           this.showActions
             ? html`
@@ -275,6 +286,9 @@ class ZHADeviceCard extends LitElement {
                     .hass="${this.hass}"
                     domain="zha"
                     service="remove"
+                    .confirmation=${this.hass!.localize(
+                      "ui.dialogs.zha_device_info.confirmations.remove"
+                    )}
                     .serviceData="${this._serviceData}"
                   >
                     ${this.hass!.localize(

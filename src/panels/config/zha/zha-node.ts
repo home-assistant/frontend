@@ -55,16 +55,19 @@ export class ZHANode extends LitElement {
             "ui.panel.config.zha.node_management.hint_wakeup"
           )}
         </span>
-        <zha-device-card
-          class="card"
-          .hass=${this.hass}
-          .device=${this.device}
-          .narrow=${!this.isWide}
-          .showHelp=${this._showHelp}
-          isJoinPage
-          showActions
-          @zha-device-removed=${this._onDeviceRemoved}
-        ></zha-device-card>
+        <div class="content">
+          <zha-device-card
+            class="card"
+            .hass=${this.hass}
+            .device=${this.device}
+            .narrow=${!this.isWide}
+            .showHelp=${this._showHelp}
+            showName
+            showModelInfo
+            .showEntityDetail=${false}
+            @zha-device-removed=${this._onDeviceRemoved}
+          ></zha-device-card>
+        </div>
       </ha-config-section>
     `;
   }
@@ -93,17 +96,14 @@ export class ZHANode extends LitElement {
           padding-bottom: 16px;
         }
 
-        ha-card {
-          margin: 0 auto;
+        .content {
           max-width: 600px;
+          margin: 0 auto;
         }
 
         .card {
+          padding: 28px 20px 0;
           margin-top: 24px;
-          box-sizing: border-box;
-          display: flex;
-          flex: 1;
-          word-wrap: break-word;
         }
 
         ha-service-description {
