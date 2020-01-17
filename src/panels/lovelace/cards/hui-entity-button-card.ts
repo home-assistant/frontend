@@ -211,6 +211,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
       ha-icon[data-domain="switch"][data-state="on"],
       ha-icon[data-domain="binary_sensor"][data-state="on"],
       ha-icon[data-domain="fan"][data-state="on"],
+      ha-icon[data-domain="automation"][data-state="on"],
       ha-icon[data-domain="sun"][data-state="above_horizon"] {
         color: var(--paper-item-icon-active-color, #fdd835);
       }
