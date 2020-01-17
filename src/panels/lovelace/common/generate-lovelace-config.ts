@@ -132,11 +132,6 @@ export const computeCards = (
         title: stateObj.attributes.friendly_name,
         refresh_interval: stateObj.attributes.refresh,
       });
-    } else if (domain === "light") {
-      cards.push({
-        type: "light",
-        entity: entityId,
-      });
     } else if (domain === "media_player") {
       cards.push({
         type: "media-control",
