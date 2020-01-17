@@ -17,6 +17,7 @@ import { HomeAssistant } from "../../types";
 import { ConfirmationDialogParams } from "./show-dialog-confirmation";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
+import { actionHandler } from "../../panels/lovelace/common/directives/action-handler-directive";
 
 @customElement("dialog-confirmation")
 class DialogConfirmation extends LitElement {
@@ -48,12 +49,15 @@ class DialogConfirmation extends LitElement {
           <p>${this._params.text}</p>
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          <mwc-button @click="${this._dismiss}">
+          <mwc-button @action=${this._dismiss}>
             ${this._params.cancelBtnText
               ? this._params.cancelBtnText
               : this.hass.localize("ui.dialogs.confirmation.cancel")}
           </mwc-button>
-          <mwc-button @click="${this._confirm}">
+          <mwc-button
+            @action=${this._confirm}
+            .actionHandler=${actionHandler({})}
+          >
             ${this._params.confirmBtnText
               ? this._params.confirmBtnText
               : this.hass.localize("ui.dialogs.confirmation.ok")}
