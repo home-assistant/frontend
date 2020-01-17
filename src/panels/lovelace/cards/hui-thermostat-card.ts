@@ -129,7 +129,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
             ></round-slider>
           `;
 
-    const currentTemperature = stateObj.attributes.current_temperature
+    const currentTemperature = !isNaN(stateObj.attributes.current_temperature)
       ? svg`
           <svg viewBox="0 0 40 20">
             <text
@@ -153,7 +153,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         <g>
           <text text-anchor="middle" class="set-value">
             ${
-              !this._setTemp
+              this._setTemp === undefined
                 ? ""
                 : Array.isArray(this._setTemp)
                 ? this._stepSize === 1
