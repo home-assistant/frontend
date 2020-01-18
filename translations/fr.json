@@ -593,7 +593,9 @@
                 "restored": {
                     "confirm_remove_text": "Voulez-vous vraiment supprimer cette entité ?",
                     "confirm_remove_title": "Supprimer l'entité ?",
-                    "remove_action": "Supprimer l'entité"
+                    "not_provided": "Cette entité est actuellement indisponible et est orpheline d'une intégration ou d'un périphérique supprimé, modifié ou dysfonctionnel.",
+                    "remove_action": "Supprimer l'entité",
+                    "remove_intro": "Si l'entité n'est plus utilisée, vous pouvez la nettoyer en la supprimant."
                 },
                 "script": {
                     "last_action": "Dernière action"
@@ -962,6 +964,7 @@
                             "manage_entities": "Gérer les entités",
                             "security_devices": "Dispositif de sécurité",
                             "sync_entities": "Synchroniser les entités vers Google",
+                            "sync_entities_404_message": "Échec de la synchronisation de vos entités avec Google, demandez à Google \"Hey Google, synchronise mes appareils\" de synchroniser vos entités.",
                             "title": "Google Assistant"
                         },
                         "integrations": "Intégrations",
@@ -1186,6 +1189,11 @@
                     "description": "Gérer les appareils connectés",
                     "details": "Voici tous les détails de votre appareil.",
                     "device_not_found": "Appareil non trouvé.",
+                    "entities": {
+                        "add_entities_lovelace": "Ajouter toutes les entités de périphérique dans Lovelace",
+                        "entities": "Entités",
+                        "none": "Cet appareil n'a pas d'entités"
+                    },
                     "info": "Infos sur l'appareil",
                     "unknown_error": "Erreur inconnue",
                     "unnamed_device": "Appareil sans nom"
@@ -1206,17 +1214,36 @@
                         "update": "METTRE À JOUR"
                     },
                     "picker": {
+                        "enable_selected": {
+                            "button": "Activer la sélection"
+                        },
+                        "filter": {
+                            "filter": "Filtre",
+                            "show_disabled": "Afficher les entités désactivées",
+                            "show_unavailable": "Afficher les entités non disponibles"
+                        },
                         "header": "Entités",
                         "headers": {
                             "enabled": "Activé",
                             "entity_id": "ID de l'entité",
                             "integration": "Intégration",
-                            "name": "Nom"
+                            "name": "Nom",
+                            "status": "Statut"
                         },
                         "integrations_page": "Page des intégrations",
                         "introduction": "Home Assistant tient un registre de chaque entité qu'il a déjà vu au moins une fois et qui peut être identifié de manière unique. Chacune de ces entités se verra attribuer un identifiant qui sera réservé à cette seule entité.",
                         "introduction2": "Utilisez le registre d'entités pour remplacer le nom, modifier l'ID d'entité ou supprimer l'entrée d'Home Assistant. Remarque: la suppression de l'entrée de registre d'entité ne supprime pas l'entité. Pour ce faire, suivez le lien ci-dessous et supprimez-le de la page des intégrations.",
+                        "remove_selected": {
+                            "button": "Supprimer la sélection",
+                            "confirm_text": "Les entités ne peuvent être supprimées que lorsque l'intégration ne fournit plus les entités."
+                        },
+                        "selected": "{number} sélectionné",
                         "show_disabled": "Afficher les entités désactivées",
+                        "status": {
+                            "disabled": "Désactivé",
+                            "ok": "Ok",
+                            "unavailable": "Indisponible"
+                        },
                         "unavailable": "(indisponible)"
                     }
                 },
@@ -1446,7 +1473,8 @@
                         "spinner": "Recherche de périphériques ZHA Zigbee ..."
                     },
                     "add": {
-                        "caption": "Ajouter des appareils"
+                        "caption": "Ajouter des appareils",
+                        "description": "Ajouter des appareils au réseau Zigbee"
                     },
                     "caption": "ZHA",
                     "cluster_attributes": {
@@ -1467,7 +1495,9 @@
                         "issue_zigbee_command": "Émettre une commande Zigbee"
                     },
                     "clusters": {
-                        "help_cluster_dropdown": "Sélectionnez un cluster pour afficher les attributs et les commandes."
+                        "header": "Clusters",
+                        "help_cluster_dropdown": "Sélectionnez un cluster pour afficher les attributs et les commandes.",
+                        "introduction": "Les clusters sont les blocs de construction de la fonctionnalité Zigbee. Ils séparent les fonctionnalités en unités logiques. Il existe des types de clients et de serveurs qui sont composés d'attributs et de commandes."
                     },
                     "common": {
                         "add_devices": "Ajouter des appareils",
@@ -1482,13 +1512,36 @@
                         "device_name_placeholder": "Nom d'utilisateur",
                         "update_name_button": "Mettre à jour le nom"
                     },
+                    "devices": {
+                        "header": "Zigbee Home Automation - Appareil"
+                    },
                     "groups": {
+                        "add_members": "Ajouter des membres",
+                        "adding_members": "Ajout de membres",
                         "caption": "Groupes",
                         "create": "Créer un groupe",
+                        "create_group": "Zigbee Home Automation - Créer un groupe",
                         "creating_group": "Création de groupe",
-                        "group_name_placeholder": "Nom du groupe"
+                        "description": "Créer et modifier des groupes Zigbee",
+                        "group_details": "Voici tous les détails du groupe Zigbee sélectionné.",
+                        "group_id": "ID de groupe",
+                        "group_info": "Informations sur le groupe",
+                        "group_name_placeholder": "Nom du groupe",
+                        "group_not_found": "Groupe introuvable !",
+                        "group-header": "Zigbee Home Automation - Détails du groupe",
+                        "groups": "Groupes",
+                        "groups-header": "Zigbee Home Automation - Gestion de groupe",
+                        "introduction": "Créer et modifier des groupes zigbee",
+                        "manage_groups": "Gérer les groupes Zigbee",
+                        "members": "Membres",
+                        "remove_groups": "Supprimer des groupes",
+                        "remove_members": "Supprimer des membres",
+                        "removing_groups": "Suppression de groupes",
+                        "removing_members": "Suppression de membres",
+                        "zha_zigbee_groups": "Groupes ZHA Zigbee"
                     },
                     "header": "Configurer Zigbee Home Automation",
+                    "introduction": "Ici, il est possible de configurer le composant ZHA. Il n'est pas encore possible de tout configurer à partir de l'interface utilisateur, mais nous y travaillons.",
                     "network_management": {
                         "header": "Gestion du réseau",
                         "introduction": "Commandes qui affectent l'ensemble du réseau"
@@ -1688,7 +1741,9 @@
             },
             "lovelace": {
                 "add_entities": {
-                    "saving_failed": "La sauvegarde de la configuration de Lovelace a échoué."
+                    "generated_unsupported": "Vous ne pouvez utiliser cette fonction que lorsque vous avez pris le contrôle de Lovelace.",
+                    "saving_failed": "La sauvegarde de la configuration de Lovelace a échoué.",
+                    "yaml_unsupported": "Vous ne pouvez pas utiliser cette fonction lorsque vous utilisez Lovelace en mode YAML."
                 },
                 "cards": {
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette carte?",
@@ -1879,10 +1934,13 @@
                         "para_no_id": "Cet élément n'a pas d'identifiant. Veuillez ajouter un identifiant à cet élément dans 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Nous générerons automatiquement vos vues Lovelace avec vos zones et appareils si vous supprimez votre configuration Lovelace.",
+                        "confirm_remove_config_title": "Voulez-vous vraiment supprimer votre configuration Lovelace? Nous générerons automatiquement vos vues Lovelace avec vos zones et appareils.",
                         "confirm_unsaved_changes": "Vous avez des changements non enregistrés. Êtes-vous sûr de vouloir quitter?",
                         "confirm_unsaved_comments": "Votre configuration contient des commentaires, ceux-ci ne seront pas sauvegardés. Voulez-vous continuer?",
                         "error_invalid_config": "Votre configuration n'est pas valide : {error}",
                         "error_parse_yaml": "Impossible d'analyser le YAML : {error}",
+                        "error_remove": "Impossible de supprimer la configuration: {error}",
                         "error_save_yaml": "Impossible de sauvegarder le YAML : {error}",
                         "header": "Modifier la configuration",
                         "save": "Enregistrer",
@@ -1898,7 +1956,8 @@
                     },
                     "suggest_card": {
                         "add": "Ajouter à Lovelace",
-                        "create_own": "Créez votre propre carte"
+                        "create_own": "Créez votre propre carte",
+                        "header": "Nous avons créé une suggestion pour vous"
                     },
                     "view": {
                         "panel_mode": {

@@ -638,6 +638,9 @@
                     "reconfigure": "Reconfigure Device",
                     "remove": "Remove Device"
                 },
+                "confirmations": {
+                    "remove": "Are you sure that you want to remove the device?"
+                },
                 "last_seen": "Last Seen",
                 "manuf": "by {manufacturer}",
                 "no_area": "No Area",
@@ -1190,7 +1193,7 @@
                     "details": "Here are all the details of your device.",
                     "device_not_found": "Device not found.",
                     "entities": {
-                        "add_entities_lovelace": "Add all device entities to Lovelace",
+                        "add_entities_lovelace": "Add all device entities to Lovelace UI",
                         "entities": "Entities",
                         "none": "This device has no entities"
                     },
@@ -1523,6 +1526,17 @@
                     "devices": {
                         "header": "Zigbee Home Automation - Device"
                     },
+                    "group_binding": {
+                        "bind_button_help": "Bind the selected group to the selected device clusters.",
+                        "bind_button_label": "Bind Group",
+                        "cluster_selection_help": "Select clusters to bind to the selected group.",
+                        "group_picker_help": "Select a group to issue a bind command.",
+                        "group_picker_label": "Bindable Groups",
+                        "header": "Group Binding",
+                        "introduction": "Bind and unbind groups.",
+                        "unbind_button_help": "Unbind the selected group from the selected device clusters.",
+                        "unbind_button_label": "Unbind Group"
+                    },
                     "groups": {
                         "add_members": "Add Members",
                         "adding_members": "Adding Members",
@@ -1751,9 +1765,9 @@
             },
             "lovelace": {
                 "add_entities": {
-                    "generated_unsupported": "You can only use this function when you have taken control of Lovelace.",
-                    "saving_failed": "Saving Lovelace config failed.",
-                    "yaml_unsupported": "You can not use this function when using Lovelace in YAML mode."
+                    "generated_unsupported": "You can only use this function when you have taken control of the Lovelace UI.",
+                    "saving_failed": "Saving Lovelace UI config failed.",
+                    "yaml_unsupported": "You can not use this function when using Lovelace UI in YAML mode."
                 },
                 "cards": {
                     "confirm_delete": "Are you sure you want to delete this card?",
@@ -1778,7 +1792,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "The Lovelace config was updated, would you like to refresh?",
+                    "message": "The Lovelace UI configuration was updated, refresh to see changes?",
                     "refresh": "Refresh"
                 },
                 "editor": {
@@ -1920,7 +1934,7 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "Edit title",
-                        "explanation": "This title is shown above all your views in Lovelace.",
+                        "explanation": "This title is shown above all your views in the Lovelace UI.",
                         "header": "Title of your Lovelace UI"
                     },
                     "edit_view": {
@@ -1934,7 +1948,7 @@
                     },
                     "header": "Edit UI",
                     "menu": {
-                        "open": "Open Lovelace menu",
+                        "open": "Open Lovelace UI menu",
                         "raw_editor": "Raw config editor"
                     },
                     "migrate": {
@@ -1944,8 +1958,8 @@
                         "para_no_id": "This element doesn't have an ID. Please add an ID to this element in 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
-                        "confirm_remove_config_text": "We will automatically generate your Lovelace views with your areas and devices if you remove your Lovelace configuration.",
-                        "confirm_remove_config_title": "Are you sure you want to remove your Lovelace configuration? We will automatically generate your Lovelace views with your areas and devices.",
+                        "confirm_remove_config_text": "We will automatically generate your Lovelace UI views with your areas and devices if you remove your Lovelace UI configuration.",
+                        "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration? We will automatically generate your Lovelace UI views with your areas and devices.",
                         "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
                         "confirm_unsaved_comments": "Your config contains comment(s), these will not be saved. Do you want to continue?",
                         "error_invalid_config": "Your config is not valid: {error}",
@@ -1960,12 +1974,12 @@
                     "save_config": {
                         "cancel": "Never mind",
                         "header": "Take control of your Lovelace UI",
-                        "para": "By default Home Assistant will maintain your user interface, updating it when new entities or Lovelace components become available. If you take control we will no longer make changes automatically for you.",
+                        "para": "By default Home Assistant will maintain your user interface, updating it when new entities or Lovelace UI components become available. If you take control we will no longer make changes automatically for you.",
                         "para_sure": "Are you sure you want to take control of your user interface?",
                         "save": "Take control"
                     },
                     "suggest_card": {
-                        "add": "Add to Lovelace",
+                        "add": "Add to Lovelace UI",
                         "create_own": "Pick different card",
                         "header": "We created a suggestion for you"
                     },
@@ -1984,7 +1998,7 @@
                     "refresh": "Refresh",
                     "unused_entities": "Unused entities"
                 },
-                "reload_lovelace": "Reload Lovelace",
+                "reload_lovelace": "Reload UI",
                 "unused_entities": {
                     "available_entities": "These are the entities that you have available, but are not in your Lovelace UI yet.",
                     "domain": "Domain",
