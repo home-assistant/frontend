@@ -103,7 +103,7 @@ class HassioAddonInfo extends LitElement {
                 <div class="card-content">
                   <hassio-card-content
                     .hass=${this.hass}
-                    title="${this.addon.name} ${this.addon
+                    .title="${this.addon.name} ${this.addon
                       .last_version} is available"
                     description="You are currently running version ${this.addon
                       .version}"
