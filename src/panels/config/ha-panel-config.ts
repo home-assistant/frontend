@@ -184,17 +184,23 @@ class HaPanelConfig extends LitElement {
         height: 64px;
         padding: 0 16px 0 16px;
         pointer-events: none;
+        font-weight: 400;
+        border-bottom: 1px solid var(--divider-color);
         background-color: var(--primary-background-color);
-        background-color: var(--app-header-background-color);
         font-weight: 400;
         color: var(--app-header-text-color, white);
+      }
+
+      div[main-title],
+      ha-menu-button {
+        color: var(--primary-text-color);
       }
 
       .wide-config {
         float: right;
         width: calc(100% - 320px);
         height: 100%;
-        margin-top: -64px;
+        margin-top: -65px;
       }
 
       .navigation {
