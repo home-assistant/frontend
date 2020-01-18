@@ -1,4 +1,4 @@
-import { createCardElement } from "../common/create-card-element";
+import { createCardElement } from "../create-element/create-card-element";
 import { processConfigEntities } from "../common/process-config-entities";
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";

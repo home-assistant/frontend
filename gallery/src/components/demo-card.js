@@ -2,7 +2,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 import { safeLoad } from "js-yaml";
 
-import { createCardElement } from "../../../src/panels/lovelace/common/create-card-element";
+import { createCardElement } from "../../../src/panels/lovelace/create-element/create-card-element";
 
 class DemoCard extends PolymerElement {
   static get template() {
