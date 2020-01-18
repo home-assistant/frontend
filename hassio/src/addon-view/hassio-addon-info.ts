@@ -485,7 +485,7 @@ class HassioAddonInfo extends LitElement {
                     `
                   : ""}
                 <mwc-button
-                  ?disabled=${!this.addon.available}
+                  .disabled=${!this.addon.available}
                   tabindex="-1"
                   class="right"
                   @click=${this._installClicked}
