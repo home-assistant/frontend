@@ -74,6 +74,7 @@ class HaConfigNavigation extends LitElement {
                             </div>
                           `}
                     </paper-item-body>
+                    <ha-icon-next></ha-icon-next>
                   </paper-item>
                 </a>
               `

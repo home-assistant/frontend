@@ -19,6 +19,7 @@ import { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 import "../../../components/ha-card";
+import "../../../components/ha-icon-next";
 
 import "../ha-config-section";
 import "./ha-config-navigation";
