@@ -55,8 +55,9 @@ export class HuiShoppingListEditor extends LitElement
         ${!isComponentLoaded(this.hass, "shopping_list")
           ? html`
               <div class="error">
-                The 'shopping_list' integration is not enabled in Home
-                Assistant, this card will not work before you do that.
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.card.shopping-list.integration_not_loaded"
+                )}
               </div>
             `
           : ""}
