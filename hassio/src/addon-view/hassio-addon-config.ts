@@ -96,7 +96,7 @@ class HassioAddonConfig extends LitElement {
   }
 
   protected update(changedProperties: PropertyValues): void {
-    super.update(changedProperties);
+    super.updated(changedProperties);
     if (changedProperties.has("addon")) {
       if (this._configHasChanged) {
         this._config = JSON.stringify(this.addon.options, null, 2);
