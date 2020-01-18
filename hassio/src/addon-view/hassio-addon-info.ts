@@ -418,7 +418,7 @@ class HassioAddonInfo extends LitElement {
                       <ha-call-api-button
                         class="warning"
                         .hass=${this.hass}
-                        .path=`hassio/addons/${this.addon.slug}/rebuild`
+                        .path="hassio/addons/${this.addon.slug}/rebuild"
                       >
                         Rebuild
                       </ha-call-api-button>
@@ -429,14 +429,14 @@ class HassioAddonInfo extends LitElement {
                       <ha-call-api-button
                         class="warning"
                         .hass=${this.hass}
-                        .path=`hassio/addons/${this.addon.slug}/restart`
+                        .path="hassio/addons/${this.addon.slug}/restart"
                       >
                         Restart
                       </ha-call-api-button>
                       <ha-call-api-button
                         class="warning"
                         .hass=${this.hass}
-                        .path=`hassio/addons/${this.addon.slug}/stop`
+                        .path="hassio/addons/${this.addon.slug}/stop"
                       >
                         Stop
                       </ha-call-api-button>
@@ -444,10 +444,10 @@ class HassioAddonInfo extends LitElement {
                   : html`
                       <ha-call-api-button
                         .hass=${this.hass}
-                        .path=`hassio/addons/${this.addon.slug}/start`
+                        .path="hassio/addons/${this.addon.slug}/start"
                       >
                         Start
-                      ></ha-call-api-button>
+                      </ha-call-api-button>
                     `}
                 ${this._computeShowWebUI
                   ? html`
@@ -465,10 +465,7 @@ class HassioAddonInfo extends LitElement {
                   : ""}
                 ${this._computeShowIngressUI
                   ? html`
-                      <mwc-button
-                        class="right"
-                        @click=${this._openIngress}
-                      >
+                      <mwc-button class="right" @click=${this._openIngress}>
                         Open web UI
                       </mwc-button>
                     `
