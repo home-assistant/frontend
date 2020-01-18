@@ -180,9 +180,9 @@ class HaPanelConfig extends LitElement {
       }
 
       .toolbar {
-        width: 288px;
         height: 64px;
         padding: 0 16px 0 16px;
+        width: 288px;
         pointer-events: none;
         border-bottom: 1px solid var(--divider-color);
         background-color: var(--primary-background-color);
