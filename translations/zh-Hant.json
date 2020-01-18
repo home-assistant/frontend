@@ -589,6 +589,7 @@
             },
             "more_info_control": {
                 "dismiss": "忽略對話",
+                "edit": "編輯物件",
                 "restored": {
                     "confirm_remove_text": "確定要移除此物件？",
                     "confirm_remove_title": "移除物件？",
@@ -1965,7 +1966,7 @@
                     },
                     "suggest_card": {
                         "add": "新增至 Lovelace",
-                        "create_own": "自行建立",
+                        "create_own": "選擇其他卡片",
                         "header": "已為您產生建議卡片"
                     },
                     "view": {
