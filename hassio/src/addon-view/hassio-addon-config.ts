@@ -27,7 +27,7 @@ import { fireEvent } from "../../../src/common/dom/fire_event";
 class HassioAddonConfig extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
-  @property() protected error?: string;
+  @property() private _error?: string;
   @property() private _config!: string;
   @property({ type: Boolean }) private _configHasChanged = false;
 
@@ -40,9 +40,9 @@ class HassioAddonConfig extends LitElement {
     return html`
       <paper-card heading="Config">
         <div class="card-content">
-          ${this.error
+          ${this._error
             ? html`
-                <div class="errors">${this.error}</div>
+                <div class="errors">${this._error}</div>
               `
             : ""}
           <iron-autogrow-textarea
@@ -112,7 +112,7 @@ class HassioAddonConfig extends LitElement {
   }
 
   private async _resetTapped(): Promise<void> {
-    this.error = undefined;
+    this._error = undefined;
     const data: HassioAddonSetOptionParams = {
       options: null,
     };
@@ -126,20 +126,20 @@ class HassioAddonConfig extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this.error = `Failed to reset addon configuration, ${err.body?.message ||
+      this._error = `Failed to reset addon configuration, ${err.body?.message ||
         err}`;
     }
   }
 
   private async _saveTapped(): Promise<void> {
     let data: HassioAddonSetOptionParams;
-    this.error = undefined;
+    this._error = undefined;
     try {
       data = {
         options: JSON.parse(this._config),
       };
     } catch (err) {
-      this.error = err;
+      this._error = err;
       return;
     }
     try {
@@ -152,7 +152,7 @@ class HassioAddonConfig extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this.error = `Failed to save addon configuration, ${err.body?.message ||
+      this._error = `Failed to save addon configuration, ${err.body?.message ||
         err}`;
     }
   }

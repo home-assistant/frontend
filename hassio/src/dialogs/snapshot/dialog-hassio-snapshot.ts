@@ -75,7 +75,7 @@ interface FolderItem {
 @customElement("dialog-hassio-snapshot")
 class HassioSnapshotDialog extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() protected error?: string;
+  @property() private _error?: string;
   @property() private snapshot?: HassioSnapshotDetail;
   @property() private _folders!: FolderItem[];
   @property() private _addons!: AddonItem[];
@@ -187,9 +187,9 @@ class HassioSnapshotDialog extends LitElement {
               ></paper-input>
             `
           : ""}
-        ${this.error
+        ${this._error
           ? html`
-              <p class="error">Error: ${this.error}</p>
+              <p class="error">Error: ${this._error}</p>
             `
           : ""}
 
@@ -350,7 +350,7 @@ class HassioSnapshotDialog extends LitElement {
           this._dialog.close();
         },
         (error) => {
-          this.error = error.body.message;
+          this._error = error.body.message;
         }
       );
   }
@@ -376,7 +376,7 @@ class HassioSnapshotDialog extends LitElement {
           this._dialog.close();
         },
         (error) => {
-          this.error = error.body.message;
+          this._error = error.body.message;
         }
       );
   }
@@ -395,7 +395,7 @@ class HassioSnapshotDialog extends LitElement {
           this._dialogParams!.onDelete();
         },
         (error) => {
-          this.error = error.body.message;
+          this._error = error.body.message;
         }
       );
   }

@@ -92,7 +92,7 @@ const PERMIS_DESC = {
 class HassioAddonInfo extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
-  @property() protected error?: string;
+  @property() private _error?: string;
 
   protected render(): TemplateResult | void {
     return html`
@@ -399,9 +399,9 @@ class HassioAddonInfo extends LitElement {
               : ""
           }
           ${
-            this.error
+            this._error
               ? html`
-                  <div class="errors">${this.error}</div>
+                  <div class="errors">${this._error}</div>
                 `
               : ""
           }
@@ -700,7 +700,7 @@ class HassioAddonInfo extends LitElement {
   }
 
   private async _startOnBootToggled(): Promise<void> {
-    this.error = undefined;
+    this._error = undefined;
     const data: HassioAddonSetOptionParams = {
       boot: this.addon.boot === "auto" ? "manual" : "auto",
     };
@@ -713,12 +713,12 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this.error = `Failed to set addon option, ${err.body?.message || err}`;
+      this._error = `Failed to set addon option, ${err.body?.message || err}`;
     }
   }
 
   private async _autoUpdateToggled(): Promise<void> {
-    this.error = undefined;
+    this._error = undefined;
     const data: HassioAddonSetOptionParams = {
       auto_update: !this.addon.auto_update,
     };
@@ -731,12 +731,12 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this.error = `Failed to set addon option, ${err.body?.message || err}`;
+      this._error = `Failed to set addon option, ${err.body?.message || err}`;
     }
   }
 
   private async _protectionToggled(): Promise<void> {
-    this.error = undefined;
+    this._error = undefined;
     const data: HassioAddonSetSecurityParams = {
       protected: !this.addon.protected,
     };
@@ -749,13 +749,13 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this.error = `Failed to set addon security option, ${err.body?.message ||
+      this._error = `Failed to set addon security option, ${err.body?.message ||
         err}`;
     }
   }
 
   private async _panelToggled(): Promise<void> {
-    this.error = undefined;
+    this._error = undefined;
     const data: HassioAddonSetOptionParams = {
       ingress_panel: !this.addon.ingress_panel,
     };
@@ -768,12 +768,12 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this.error = `Failed to set addon option, ${err.body?.message || err}`;
+      this._error = `Failed to set addon option, ${err.body?.message || err}`;
     }
   }
 
   private async _openChangelog(): Promise<void> {
-    this.error = undefined;
+    this._error = undefined;
     try {
       const content = await fetchHassioAddonChangelog(
         this.hass,
@@ -784,12 +784,13 @@ class HassioAddonInfo extends LitElement {
         content,
       });
     } catch (err) {
-      this.error = `Failed to get addon changelog, ${err.body?.message || err}`;
+      this._error = `Failed to get addon changelog, ${err.body?.message ||
+        err}`;
     }
   }
 
   private async _installClicked(): Promise<void> {
-    this.error = undefined;
+    this._error = undefined;
     try {
       await installHassioAddon(this.hass, this.addon.slug);
       const eventdata = {
@@ -799,7 +800,7 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this.error = `Failed to install addon, ${err.body?.message || err}`;
+      this._error = `Failed to install addon, ${err.body?.message || err}`;
     }
   }
 
@@ -807,7 +808,7 @@ class HassioAddonInfo extends LitElement {
     if (!confirm("Are you sure you want to uninstall this add-on?")) {
       return;
     }
-    this.error = undefined;
+    this._error = undefined;
     try {
       await uninstallHassioAddon(this.hass, this.addon.slug);
       const eventdata = {
@@ -817,7 +818,7 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this.error = `Failed to uninstall addon, ${err.body?.message || err}`;
+      this._error = `Failed to uninstall addon, ${err.body?.message || err}`;
     }
   }
 }

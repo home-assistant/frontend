@@ -23,7 +23,7 @@ import { haStyle } from "../../../src/resources/styles";
 class HassioAddonLogs extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
-  @property() protected error?: string;
+  @property() private _error?: string;
   @query("#content") private _logContent!: any;
 
   public async connectedCallback(): Promise<void> {
@@ -34,9 +34,9 @@ class HassioAddonLogs extends LitElement {
   protected render(): TemplateResult | void {
     return html`
       <paper-card heading="Log">
-        ${this.error
+        ${this._error
           ? html`
-              <div class="errors">${this.error}</div>
+              <div class="errors">${this._error}</div>
             `
           : ""}
         <div class="card-content" id="content"></div>
@@ -71,7 +71,7 @@ class HassioAddonLogs extends LitElement {
   }
 
   private async _loadData(): Promise<void> {
-    this.error = undefined;
+    this._error = undefined;
     try {
       const content = await fetchHassioAddonLogs(this.hass, this.addon.slug);
       while (this._logContent.lastChild) {
@@ -79,7 +79,7 @@ class HassioAddonLogs extends LitElement {
       }
       this._logContent.appendChild(parseTextToColoredPre(content));
     } catch (err) {
-      this.error = `Failed to get addon logs, ${err.body?.message || err}`;
+      this._error = `Failed to get addon logs, ${err.body?.message || err}`;
     }
   }
 

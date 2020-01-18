@@ -31,7 +31,7 @@ import { haStyle } from "../../../src/resources/styles";
 class HassioAddonAudio extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
-  @property() protected error?: string;
+  @property() private _error?: string;
   @property() private _inputDevices?: HassioHardwareAudioDevice[];
   @property() private _outputDevices?: HassioHardwareAudioDevice[];
   @property() private _selectedInput?: string;
@@ -41,9 +41,9 @@ class HassioAddonAudio extends LitElement {
     return html`
       <paper-card heading="Audio">
         <div class="card-content">
-          ${this.error
+          ${this._error
             ? html`
-                <div class="errors">${this.error}</div>
+                <div class="errors">${this._error}</div>
               `
             : ""}
 
@@ -159,14 +159,14 @@ class HassioAddonAudio extends LitElement {
       this._inputDevices = noDevice.concat(inupt);
       this._outputDevices = noDevice.concat(output);
     } catch {
-      this.error = "Failed to fetch audio hardware";
+      this._error = "Failed to fetch audio hardware";
       this._inputDevices = noDevice;
       this._outputDevices = noDevice;
     }
   }
 
   private async _saveSettings(): Promise<void> {
-    this.error = undefined;
+    this._error = undefined;
     const data: HassioAddonSetOptionParams = {
       audio_input: this._selectedInput || null,
       audio_output: this._selectedOutput || null,
@@ -174,7 +174,7 @@ class HassioAddonAudio extends LitElement {
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);
     } catch {
-      this.error = "Failed to set addon audio device";
+      this._error = "Failed to set addon audio device";
     }
   }
 }
