@@ -1966,7 +1966,7 @@
                     },
                     "suggest_card": {
                         "add": "Legg til i Lovelace",
-                        "create_own": "Lag din egen",
+                        "create_own": "Velg et annet kort",
                         "header": "Vi har laget et forslag til deg"
                     },
                     "view": {
