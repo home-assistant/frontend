@@ -11,6 +11,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 
 import "../../../src/components/buttons/ha-call-api-button";
 import "../../../src/components/ha-label-badge";
@@ -201,10 +202,13 @@ class HassioAddonInfo extends LitElement {
                 `
               : ""
           }
-
           <div class="security">
             <ha-label-badge
-              class=${this._computeSecurityClassName}
+              class=${classMap({
+                green: [5, 6].includes(Number(this.addon.rating)),
+                yellow: [3, 4].includes(Number(this.addon.rating)),
+                red: [1, 2].includes(Number(this.addon.rating)),
+              })}
               @click=${this._showMoreInfo}
               id="rating"
               .value=${this.addon.rating}
@@ -633,15 +637,6 @@ class HassioAddonInfo extends LitElement {
       return "red";
     }
     return "";
-  }
-
-  private get _computeSecurityClassName(): string {
-    if (Number(this.addon.rating) > 4) {
-      return "green";
-    } else if (Number(this.addon.rating) > 2) {
-      return "yellow";
-    }
-    return "red";
   }
 
   private _showMoreInfo(ev): void {
