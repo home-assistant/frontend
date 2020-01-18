@@ -121,7 +121,7 @@ class HassioAddonInfo extends LitElement {
                 <div class="card-actions">
                   <ha-call-api-button
                     .hass=${this.hass}
-                    ?disabled=${!this.addon.available}
+                    .disabled=${!this.addon.available}
                     path="hassio/addons/${this.addon.slug}/update"
                   >
                     Update
