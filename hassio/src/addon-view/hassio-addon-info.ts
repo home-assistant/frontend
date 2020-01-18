@@ -261,7 +261,7 @@ class HassioAddonInfo extends LitElement {
                       id="hassio_api"
                       icon="hassio:home-assistant"
                       label="hassio"
-                      description=${this.addon.hassio_role}
+                      .description=${this.addon.hassio_role}
                     ></ha-label-badge>
                   `
                 : ""
