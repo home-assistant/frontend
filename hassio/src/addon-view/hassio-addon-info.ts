@@ -467,7 +467,6 @@ class HassioAddonInfo extends LitElement {
                 ${this._computeShowIngressUI
                   ? html`
                       <mwc-button
-                        tabindex="-1"
                         class="right"
                         @click=${this._openIngress}
                       >
