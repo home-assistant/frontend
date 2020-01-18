@@ -207,7 +207,7 @@ class HassioAddonInfo extends LitElement {
               class=${this._computeSecurityClassName}
               @click=${this._showMoreInfo}
               id="rating"
-              value=${this.addon.rating}
+              .value=${this.addon.rating}
               label="rating"
               description=""
             ></ha-label-badge>
