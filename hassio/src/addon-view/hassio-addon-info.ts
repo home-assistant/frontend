@@ -429,7 +429,7 @@ class HassioAddonInfo extends LitElement {
                       <ha-call-api-button
                         class="warning"
                         .hass=${this.hass}
-                        path="hassio/addons/${this.addon.slug}/restart"
+                        .path=`hassio/addons/${this.addon.slug}/restart`
                       >
                         Restart
                       </ha-call-api-button>
