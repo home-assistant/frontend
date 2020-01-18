@@ -19,7 +19,7 @@ import { processConfigEntities } from "../common/process-config-entities";
 import { createRowElement } from "../create-element/create-row-element";
 import { EntitiesCardConfig, EntitiesCardEntityConfig } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
-import { createHeaderFooterElement } from "../common/create-header-footer-element";
+import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 
 @customElement("hui-entities-card")
