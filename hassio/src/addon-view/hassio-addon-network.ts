@@ -75,7 +75,7 @@ class HassioAddonNetwork extends LitElement {
                         placeholder="disabled"
                         .value=${item.host}
                         .container=${item.container}
-                        no-label-float=""
+                        no-label-float
                       ></paper-input>
                     </td>
                     <td>${item.description}</td>
