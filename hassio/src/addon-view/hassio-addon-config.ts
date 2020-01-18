@@ -56,7 +56,7 @@ class HassioAddonConfig extends LitElement {
           </mwc-button>
           <mwc-button
             @click=${this._saveTapped}
-            ?disabled=${!this._configHasChanged}
+            .disabled=${!this._configHasChanged}
           >
             Save
           </mwc-button>
