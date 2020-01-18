@@ -203,10 +203,7 @@ class HaPanelConfig extends LitElement {
       }
 
       .navigation {
-        background-color: var(
-          --paper-listbox-background-color,
-          var(--primary-background-color)
-        );
+        background-color: var(--sidebar-background-color);
         height: calc(100vh - 64px);
         overflow: auto;
       }
