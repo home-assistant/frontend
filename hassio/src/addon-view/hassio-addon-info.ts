@@ -105,7 +105,7 @@ class HassioAddonInfo extends LitElement {
                     .hass=${this.hass}
                     .title="${this.addon.name} ${this.addon
                       .last_version} is available"
-                    description="You are currently running version ${this.addon
+                    .description="You are currently running version ${this.addon
                       .version}"
                     icon="hassio:arrow-up-bold-circle"
                     iconClass="update"
