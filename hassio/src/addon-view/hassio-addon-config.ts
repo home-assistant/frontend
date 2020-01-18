@@ -31,11 +31,6 @@ class HassioAddonConfig extends LitElement {
   @property() private _config!: string;
   @property({ type: Boolean }) private _configHasChanged = false;
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    this._config = JSON.stringify(this.addon.options, null, 2);
-  }
-
   protected render(): TemplateResult | void {
     return html`
       <paper-card heading="Config">
@@ -98,9 +93,7 @@ class HassioAddonConfig extends LitElement {
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (changedProperties.has("addon")) {
-      if (this._configHasChanged) {
-        this._config = JSON.stringify(this.addon.options, null, 2);
-      }
+      this._config = JSON.stringify(this.addon.options, null, 2);
     }
   }
 
