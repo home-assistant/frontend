@@ -9,7 +9,7 @@ import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_elemen
 
 import { HomeAssistant } from "../../../types";
 import { LovelaceCard } from "../types";
-import { createCardElement } from "../common/create-card-element";
+import { createCardElement } from "../create-element/create-card-element";
 import { LovelaceViewConfig } from "../../../data/lovelace";
 
 @customElement("hui-panel-view")
