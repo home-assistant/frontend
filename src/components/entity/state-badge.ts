@@ -111,12 +111,21 @@ class StateBadge extends LitElement {
         transition: color 0.3s ease-in-out, filter 0.3s ease-in-out;
       }
 
-      /* Color the icon if light or sun is on */
       ha-icon[data-domain="light"][data-state="on"],
       ha-icon[data-domain="switch"][data-state="on"],
       ha-icon[data-domain="binary_sensor"][data-state="on"],
       ha-icon[data-domain="fan"][data-state="on"],
-      ha-icon[data-domain="sun"][data-state="above_horizon"] {
+      ha-icon[data-domain="sun"][data-state="above_horizon"],
+      ha-icon[data-domain="input_boolean"][data-state="on"],
+      ha-icon[data-domain="cover"][data-state="open"],
+      ha-icon[data-domain="media_player"][data-state="playing"],
+      ha-icon[data-domain="media_player"][data-state="paused"],
+      ha-icon[data-domain="device_tracker"][data-state="home"],
+      ha-icon[data-domain="person"][data-state="home"],
+      ha-icon[data-domain="plant"][data-state="problem"],
+      ha-icon[data-domain="lock"][data-state="unlocked"],
+      ha-icon[data-domain="climate"][data-state="heating"],
+      ha-icon[data-domain="climate"][data-state="cooling"] {
         color: var(--paper-item-icon-active-color, #fdd835);
       }
 
