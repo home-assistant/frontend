@@ -64,9 +64,9 @@
     "state_attributes": {
         "climate": {
             "fan_mode": {
-                "auto": "Auto",
-                "off": "Off",
-                "on": "On"
+                "auto": "Otomatis",
+                "off": "Mati",
+                "on": "Nyala"
             }
         }
     },
@@ -92,7 +92,7 @@
             "not_home": "Keluar"
         },
         "person": {
-            "home": "Rumah",
+            "home": "Di rumah",
             "not_home": "Keluar"
         }
     },
@@ -283,7 +283,7 @@
         },
         "person": {
             "home": "Di rumah",
-            "not_home": "Mode jauh"
+            "not_home": "Keluar"
         },
         "plant": {
             "ok": "OK",
@@ -538,18 +538,19 @@
         "panel": {
             "config": {
                 "areas": {
-                    "caption": "Registry Area",
+                    "caption": "Daftar Area",
                     "create_area": "BUAT AREA",
                     "description": "Gambaran umum semua area di rumah Anda.",
                     "editor": {
-                        "create": "MEMBUAT",
+                        "create": "BUAT",
+                        "default_name": "Area Baru",
                         "delete": "HAPUS",
-                        "update": "MEMPERBARUI"
+                        "update": "PERBARUI"
                     },
                     "no_areas": "Sepertinya Anda belum memiliki area!",
                     "picker": {
                         "create_area": "BUAT AREA",
-                        "header": "Registry Area",
+                        "header": "Daftar Area",
                         "integrations_page": "Halaman integrasi",
                         "no_areas": "Sepertinya Anda belum memiliki area!"
                     }
@@ -565,7 +566,7 @@
                             "duplicate": "Gandakan",
                             "header": "Aksi",
                             "introduction": "Aksi adalah apa yang Home Assistant akan lakukan ketika otomasi terpicu.\n\n[Pelajari lebih lanjut tentang aksi.](https://home-assistant.io/docs/automation/action/)",
-                            "learn_more": "Pelajari lebih lanjut tentang Aksi",
+                            "learn_more": "Pelajari lebih lanjut tentang aksi",
                             "type_select": "Jenis aksi",
                             "type": {
                                 "condition": {
@@ -659,7 +660,7 @@
                                 },
                                 "geo_location": {
                                     "enter": "Masuk",
-                                    "event": "Event:",
+                                    "event": "Peristiwa:",
                                     "label": "Geolokasi",
                                     "leave": "Keluar",
                                     "source": "Sumber",
@@ -711,7 +712,7 @@
                                 },
                                 "webhook": {
                                     "label": "Webhook",
-                                    "webhook_id": "Webhook ID"
+                                    "webhook_id": "ID Webhook"
                                 },
                                 "zone": {
                                     "enter": "Masuk",
@@ -784,7 +785,7 @@
                     "description": "Ikhtisar semua entitas yang dikenal.",
                     "editor": {
                         "delete": "HAPUS",
-                        "update": "UPDATE"
+                        "update": "PERBARUI"
                     },
                     "picker": {
                         "integrations_page": "Halaman integrasi"
@@ -825,7 +826,7 @@
                         "create": "Buat",
                         "name": "Nama",
                         "password": "Kata sandi",
-                        "username": "Username"
+                        "username": "Nama pengguna"
                     },
                     "caption": "Pengguna",
                     "description": "Kelola pengguna",
@@ -894,7 +895,7 @@
                 },
                 "editor": {
                     "edit_card": {
-                        "delete": "Hapus",
+                        "delete": "Hapus Kartu",
                         "edit": "Edit"
                     },
                     "raw_editor": {
@@ -904,7 +905,7 @@
                         "unsaved_changes": "Perubahan yang belum disimpan"
                     },
                     "save_config": {
-                        "para_sure": "Apakah Anda yakin ingin mengendalikan antarmuka pengguna Anda?"
+                        "para_sure": "Yakin ingin mengendalikan antarmuka pengguna Anda?"
                     }
                 }
             },
@@ -924,7 +925,7 @@
                                 "login_expired": "Sesi kedaluwarsa, harap masuk lagi."
                             },
                             "error": {
-                                "invalid_auth": "Username dan password salah",
+                                "invalid_auth": "Nama pengguna atau sandi tidak valid",
                                 "invalid_code": "Kode autentikasi tidak valid"
                             },
                             "step": {
@@ -967,7 +968,7 @@
                         },
                         "legacy_api_password": {
                             "abort": {
-                                "login_expired": "Sesi kadaluwarsa, silahkan masuk kembali.",
+                                "login_expired": "Sesi kadaluwarsa, silakan masuk kembali.",
                                 "no_api_password_set": "Anda tidak memiliki kata sandi API yang dikonfigurasi."
                             },
                             "error": {
@@ -1014,9 +1015,9 @@
                 "core-config": {
                     "button_detect": "Deteksi",
                     "finish": "Berikutnya",
-                    "intro": "Halo {name}, selamat datang di Asisten Rumah. Bagaimana Anda ingin memberi nama rumah Anda?",
+                    "intro": "Halo {name}, selamat datang di Home Assistant. Nama apa yang ingin diberikan untuk rumah Anda?",
                     "intro_location_detect": "Kami dapat membantu Anda mengisi informasi ini dengan membuat permintaan satu kali ke layanan eksternal.",
-                    "location_name_default": "Beranda"
+                    "location_name_default": "Rumah"
                 },
                 "integration": {
                     "finish": "Selesai"
@@ -1043,14 +1044,14 @@
                     "link_promo": "Bantu menerjemahkan"
                 },
                 "long_lived_access_tokens": {
-                    "confirm_delete": "Anda yakin ingin menghapus token akses untuk {name}?",
+                    "confirm_delete": "Yakin ingin menghapus token akses untuk {name}?",
                     "create": "Buat Token",
                     "create_failed": "Gagal membuat token akses.",
                     "created_at": "Dibuat pada {date}",
                     "delete_failed": "Gagal menghapus token akses.",
-                    "description": "Buat token akses yang berumur panjang untuk memungkinkan skrip Anda berinteraksi dengan Home Assistant. Setiap token akan berlaku selama 10 tahun sejak pembuatan. Berikut Token akses yang berumur panjang yang saat ini aktif.",
+                    "description": "Buat token akses yang berumur panjang untuk memungkinkan skrip Anda berinteraksi dengan Home Assistant. Setiap token akan berlaku selama 10 tahun sejak pembuatan. Berikut adalah token akses yang berumur panjang yang saat ini aktif.",
                     "empty_state": "Anda belum memiliki token akses yang berumur panjang.",
-                    "header": "Token Akses yang berumur panjang",
+                    "header": "Token Akses yang Berumur Panjang",
                     "last_used": "Terakhir digunakan pada {date} di {location}",
                     "learn_auth_requests": "Pelajari cara membuat permintaan yang diautentikasi.",
                     "not_used": "Belum pernah digunakan",
@@ -1066,12 +1067,12 @@
                     "push_notifications": "Pemberitahuan push"
                 },
                 "refresh_tokens": {
-                    "confirm_delete": "Anda yakin ingin menghapus token baru untuk {name} ?",
+                    "confirm_delete": "Yakin ingin menghapus token baru untuk {name} ?",
                     "created_at": "Dibuat pada {date}",
                     "current_token_tooltip": "Tidak dapat menghapus token baru saat ini",
                     "delete_failed": "Gagal menghapus token baru.",
-                    "description": "Setiap token baru mewakili sesi login. Membuat token baru akan dihapus secara otomatis saat Anda mengeklik keluar. Token baru berikut saat ini aktif untuk akun Anda.",
-                    "header": "Token baru",
+                    "description": "Setiap token baru mewakili sesi login. Token baru akan dihapus secara otomatis saat Anda mengeklik keluar. Token baru berikut saat ini aktif untuk akun Anda.",
+                    "header": "Token Baru",
                     "last_used": "Terakhir digunakan pada {date} di {location}",
                     "not_used": "Belum pernah digunakan",
                     "token_title": "Buat token baru untuk {clientId}"
