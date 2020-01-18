@@ -65,6 +65,7 @@ class HassioAddonNetwork extends LitElement {
                 <th>Host</th>
                 <th>Description</th>
               </tr>
+
               ${this._config!.map((item) => {
                 return html`
                   <tr>
@@ -162,7 +163,8 @@ class HassioAddonNetwork extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this.error = `Failed to set addon network configuration, ${err.body.message}`;
+      this.error = `Failed to set addon network configuration, ${err.body
+        ?.message || err}`;
     }
   }
 
@@ -186,7 +188,8 @@ class HassioAddonNetwork extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this.error = `Failed to set addon network configuration, ${err.body.message}`;
+      this.error = `Failed to set addon network configuration, ${err.body
+        ?.message || err}`;
     }
   }
 }

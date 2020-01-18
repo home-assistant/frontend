@@ -24,7 +24,7 @@ class HassioAddonLogs extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
   @property() protected error?: string;
-  @query("#content") private _logContet!: any;
+  @query("#content") private _logContent!: any;
 
   public async connectedCallback(): Promise<void> {
     super.connectedCallback();
@@ -75,11 +75,11 @@ class HassioAddonLogs extends LitElement {
     try {
       const content = await fetchHassioAddonLogs(this.hass, this.addon.slug);
       while (this._logContent.lastChild) {
-        this._logContet.removeChild(this._logContet.lastChild as Node);
+        this._logContent.removeChild(this._logContent.lastChild as Node);
       }
-      this._logContet.appendChild(parseTextToColoredPre(content));
+      this._logContent.appendChild(parseTextToColoredPre(content));
     } catch (err) {
-      this.error = `Failed to get addon logs, ${err.body.message}`;
+      this.error = `Failed to get addon logs, ${err.body?.message || err}`;
     }
   }
 

@@ -713,7 +713,7 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this.error = `Failed to set addon option, ${err.body.message}`;
+      this.error = `Failed to set addon option, ${err.body?.message || err}`;
     }
   }
 
@@ -731,7 +731,7 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this.error = `Failed to set addon option, ${err.body.message}`;
+      this.error = `Failed to set addon option, ${err.body?.message || err}`;
     }
   }
 
@@ -749,7 +749,8 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this.error = `Failed to set addon security option, ${err.body.message}`;
+      this.error = `Failed to set addon security option, ${err.body?.message ||
+        err}`;
     }
   }
 
@@ -767,7 +768,7 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this.error = `Failed to set addon option, ${err.body.message}`;
+      this.error = `Failed to set addon option, ${err.body?.message || err}`;
     }
   }
 
@@ -783,7 +784,7 @@ class HassioAddonInfo extends LitElement {
         content,
       });
     } catch (err) {
-      this.error = `Failed to get addon changelog, ${err.body.message}`;
+      this.error = `Failed to get addon changelog, ${err.body?.message || err}`;
     }
   }
 
@@ -798,7 +799,7 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this.error = `Failed to install addon, ${err.body.message}`;
+      this.error = `Failed to install addon, ${err.body?.message || err}`;
     }
   }
 
@@ -816,7 +817,7 @@ class HassioAddonInfo extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this.error = `Failed to uninstall addon, ${err.body.message}`;
+      this.error = `Failed to uninstall addon, ${err.body?.message || err}`;
     }
   }
 }

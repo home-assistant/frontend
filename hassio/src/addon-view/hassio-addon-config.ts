@@ -126,7 +126,8 @@ class HassioAddonConfig extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this.error = `Failed to reset addon configuration, ${err.body.message}`;
+      this.error = `Failed to reset addon configuration, ${err.body?.message ||
+        err}`;
     }
   }
 
@@ -151,7 +152,8 @@ class HassioAddonConfig extends LitElement {
       };
       fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      this.error = `Failed to save addon configuration, ${err.body.message}`;
+      this.error = `Failed to save addon configuration, ${err.body?.message ||
+        err}`;
     }
   }
 }
