@@ -74,7 +74,7 @@ class HassioAddonLogs extends LitElement {
     this.error = undefined;
     try {
       const content = await fetchHassioAddonLogs(this.hass, this.addon.slug);
-      while (this._logContet.lastChild) {
+      while (this._logContent.lastChild) {
         this._logContet.removeChild(this._logContet.lastChild as Node);
       }
       this._logContet.appendChild(parseTextToColoredPre(content));
