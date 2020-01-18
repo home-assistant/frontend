@@ -146,7 +146,6 @@ export class ZHAClusters extends LitElement {
         }
 
         ha-card {
-          margin: 0 auto;
           max-width: 600px;
         }
 

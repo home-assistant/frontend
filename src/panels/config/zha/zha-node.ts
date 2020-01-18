@@ -98,7 +98,6 @@ export class ZHANode extends LitElement {
 
         .content {
           max-width: 600px;
-          margin: 0 auto;
         }
 
         .card {
