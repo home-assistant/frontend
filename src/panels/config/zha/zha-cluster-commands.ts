@@ -212,7 +212,7 @@ export class ZHAClusterCommands extends LitElement {
         }
 
         ha-card {
-          max-width: 600px;
+          max-width: 680px;
         }
 
         .card-actions.warning ha-call-service-button {
@@ -252,6 +252,7 @@ export class ZHAClusterCommands extends LitElement {
           float: right;
           top: -6px;
           right: 0;
+          padding-right: 0px;
           color: var(--primary-color);
         }
 

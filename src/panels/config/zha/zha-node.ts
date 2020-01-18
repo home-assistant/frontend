@@ -97,7 +97,7 @@ export class ZHANode extends LitElement {
         }
 
         .content {
-          max-width: 600px;
+          max-width: 680px;
         }
 
         .card {
@@ -122,6 +122,7 @@ export class ZHANode extends LitElement {
           float: right;
           top: 6px;
           right: 0;
+          padding-right: 0px;
           color: var(--primary-color);
         }
       `,

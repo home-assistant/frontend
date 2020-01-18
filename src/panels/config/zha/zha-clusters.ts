@@ -146,7 +146,7 @@ export class ZHAClusters extends LitElement {
         }
 
         ha-card {
-          max-width: 600px;
+          max-width: 680px;
         }
 
         .node-picker {
@@ -160,6 +160,7 @@ export class ZHAClusters extends LitElement {
           float: right;
           top: -6px;
           right: 0;
+          padding-right: 0px;
           color: var(--primary-color);
         }
 
