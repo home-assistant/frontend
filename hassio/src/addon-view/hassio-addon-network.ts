@@ -65,7 +65,6 @@ class HassioAddonNetwork extends LitElement {
                 <th>Host</th>
                 <th>Description</th>
               </tr>
-
               ${this._config!.map((item) => {
                 return html`
                   <tr>
@@ -129,17 +128,20 @@ class HassioAddonNetwork extends LitElement {
   private _setNetworkConfig(): void {
     const network = this.addon.network || {};
     const description = this.addon.network_description || {};
-    const items = Object.keys(network).map((key) => ({
-      container: key,
-      host: network[key],
-      description: description[key],
-    }));
+    const items: NetworkItem[] = [];
+    Object.keys(network).forEach((key) => {
+      items.push({
+        container: key,
+        host: network[key],
+        description: description[key],
+      });
+    });
     this._config = items.sort((a, b) => (a.container > b.container ? 1 : -1));
   }
 
   private async _configChanged(ev: Event): Promise<void> {
     const target = ev.target as NetworkItemInput;
-    this._config!.map((item) => {
+    this._config!.forEach((item) => {
       if (
         item.container === target.container &&
         item.host !== parseInt(String(target.value), 10)
