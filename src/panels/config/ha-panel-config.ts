@@ -9,6 +9,7 @@ import {
 } from "lit-element";
 import "@polymer/paper-item/paper-item-body";
 import "@polymer/paper-item/paper-item";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "../../layouts/hass-loading-screen";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { HomeAssistant, Route } from "../../types";
@@ -18,6 +19,7 @@ import {
   getOptimisticFrontendUserDataCollection,
   CoreFrontendUserData,
 } from "../../data/frontend";
+import "../../components/ha-menu-button";
 import "./ha-config-router";
 import "./dashboard/ha-config-navigation";
 import { classMap } from "lit-html/directives/class-map";
@@ -98,8 +100,14 @@ class HaPanelConfig extends LitElement {
     return html`
       ${isWide
         ? html`
+            <app-toolbar class="toolbar">
+              <ha-menu-button
+                .hass=${this.hass}
+                .narrow=${this.narrow}
+              ></ha-menu-button>
+              <div main-title>${this.hass.localize("panel.config")}</div>
+            </app-toolbar>
             <div class="side-bar">
-              <div class="toolbar">Configuration</div>
               <div class="navigation">
                 <ha-config-navigation
                   .hass=${this.hass}
@@ -172,25 +180,28 @@ class HaPanelConfig extends LitElement {
       }
 
       .toolbar {
-        display: flex;
-        align-items: center;
-        font-size: 20px;
+        width: 288px;
         height: 64px;
         padding: 0 16px 0 16px;
         pointer-events: none;
         background-color: var(--primary-background-color);
+        background-color: var(--app-header-background-color);
         font-weight: 400;
-        color: var(--primary-text-color);
-        border-bottom: 1px solid var(--divider-color);
+        color: var(--app-header-text-color, white);
       }
 
       .wide-config {
         float: right;
         width: calc(100% - 320px);
         height: 100%;
+        margin-top: -64px;
       }
 
       .navigation {
+        background-color: var(
+          --paper-listbox-background-color,
+          var(--primary-background-color)
+        );
         height: calc(100vh - 64px);
         overflow: auto;
       }
