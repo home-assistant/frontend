@@ -447,7 +447,6 @@ class HassioAddonInfo extends LitElement {
                         path="hassio/addons/${this.addon.slug}/start"
                       >
                         Start
-                        <ha-call-api-button> </ha-call-api-button
                       ></ha-call-api-button>
                     `}
                 ${this._computeShowWebUI
