@@ -453,7 +453,7 @@ class HassioAddonInfo extends LitElement {
                 ${this._computeShowWebUI
                   ? html`
                       <a
-                        href="${this._pathWebui}"
+                        .href=${this._pathWebui}
                         tabindex="-1"
                         target="_blank"
                         class="right"
