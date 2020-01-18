@@ -444,7 +444,7 @@ class HassioAddonInfo extends LitElement {
                   : html`
                       <ha-call-api-button
                         .hass=${this.hass}
-                        path="hassio/addons/${this.addon.slug}/start"
+                        .path=`hassio/addons/${this.addon.slug}/start`
                       >
                         Start
                       ></ha-call-api-button>
