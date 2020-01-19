@@ -1809,7 +1809,8 @@
               "graph_type": "Graph Type"
             },
             "shopping-list": {
-              "name": "Shopping List"
+              "name": "Shopping List",
+              "integration_not_loaded": "This card requires the `shopping_list` integration to be set up."
             },
             "thermostat": {
               "name": "Thermostat"
