@@ -638,6 +638,9 @@
                     "reconfigure": "Genkonfigurer enhed",
                     "remove": "Fjern enhed"
                 },
+                "confirmations": {
+                    "remove": "Er du sikker på, at du vil fjerne enheden?"
+                },
                 "last_seen": "Sidst set",
                 "manuf": "af {manufacturer}",
                 "no_area": "Intet område",
@@ -1190,7 +1193,7 @@
                     "details": "Her er alle oplysninger om din enhed.",
                     "device_not_found": "Enhed blev ikke fundet.",
                     "entities": {
-                        "add_entities_lovelace": "Tilføj alle enheds-entiteter til Lovelace",
+                        "add_entities_lovelace": "Tilføj alle enheds-entiteter til Lovelace-brugerflade",
                         "entities": "Entiteter",
                         "none": "Denne enhed har ingen entiteter"
                     },
@@ -1523,6 +1526,17 @@
                     "devices": {
                         "header": "Zigbee Home Automation - Enhed"
                     },
+                    "group_binding": {
+                        "bind_button_help": "Sammenføj den valgte gruppe med de valgte enhedsklynger.",
+                        "bind_button_label": "Sammenføj gruppe",
+                        "cluster_selection_help": "Vælg klynger, der skal sammenføjes med den valgte gruppe.",
+                        "group_picker_help": "Vælg en gruppe for at udstede en sammenføjningskommando.",
+                        "group_picker_label": "Sammenføjbare grupper",
+                        "header": "Gruppesammenføjning",
+                        "introduction": "Sammenføj og fjern sammenføjning af grupper.",
+                        "unbind_button_help": "Fjern sammenføjningen af den valgte gruppe med de valgte enhedsklynger.",
+                        "unbind_button_label": "Fjern sammenføjning af gruppe"
+                    },
                     "groups": {
                         "add_members": "Tilføj medlemmer",
                         "adding_members": "Tilføjer medlemmer",
@@ -1751,9 +1765,9 @@
             },
             "lovelace": {
                 "add_entities": {
-                    "generated_unsupported": "Du kan kun bruge denne funktion, når du har taget kontrol over Lovelace.",
-                    "saving_failed": "Det lykkedes ikke at gemme Lovelace-konfiguration.",
-                    "yaml_unsupported": "Du kan ikke bruge denne funktion, når du bruger Lovelace i YAML-tilstand."
+                    "generated_unsupported": "Du kan kun bruge denne funktion, når du har taget kontrol over Lovelace-brugerfladen.",
+                    "saving_failed": "Det lykkedes ikke at gemme Lovelace-brugerfladekonfiguration.",
+                    "yaml_unsupported": "Du kan ikke bruge denne funktion, når du bruger Lovelace-brugerfladen i YAML-tilstand."
                 },
                 "cards": {
                     "confirm_delete": "Er du sikker på, at du vil slette dette kort?",
@@ -1778,7 +1792,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace-konfigurationen blev opdateret, vil du genindlæse?",
+                    "message": "Lovelace-brugerfladekonfigurationen blev opdateret. Vil du genindlæse?",
                     "refresh": "Opdater"
                 },
                 "editor": {
@@ -1920,7 +1934,7 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "Rediger titel",
-                        "explanation": "Denne titel vises over alle dine visninger i Lovelace.",
+                        "explanation": "Denne titel vises over alle dine visninger i Lovelace-brugerfladen.",
                         "header": "Titel på din Lovelace-brugerflade"
                     },
                     "edit_view": {
@@ -1934,7 +1948,7 @@
                     },
                     "header": "Rediger brugerflade",
                     "menu": {
-                        "open": "Åbn Lovelace-menu",
+                        "open": "Åbn Lovelace-brugerflademenu",
                         "raw_editor": "Tekstbaseret redigering"
                     },
                     "migrate": {
@@ -1944,8 +1958,8 @@
                         "para_no_id": "Dette element har ikke et id. Tilføj venligst et id til dette element i 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
-                        "confirm_remove_config_text": "Vi genererer automatisk dine Lovelace-visninger med dine områder og enheder, hvis du fjerner din Lovelace-konfiguration.",
-                        "confirm_remove_config_title": "Er du sikker på, at du vil fjerne din Lovelace-konfiguration? Vi vil automatisk generere dine Lovelace-visninger med dine områder og enheder.",
+                        "confirm_remove_config_text": "Vi genererer automatisk dine Lovelace-brugerfladevisninger med dine områder og enheder, hvis du fjerner din Lovelace-brugerfladekonfiguration.",
+                        "confirm_remove_config_title": "Er du sikker på, at du vil fjerne din Lovelace-brugerfladekonfiguration? Vi vil automatisk generere dine Lovelace-brugerfladevisninger med dine områder og enheder.",
                         "confirm_unsaved_changes": "Du har ikke-gemte ændringer, er du sikker på, at du vil afslutte?",
                         "confirm_unsaved_comments": "Din konfiguration indeholder kommentarer. Disse vil ikke blive gemt. Vil du fortsætte?",
                         "error_invalid_config": "Din konfiguration er ugyldig: {error}",
@@ -1960,12 +1974,12 @@
                     "save_config": {
                         "cancel": "Glem det",
                         "header": "Tag kontrol over din 'Lovelace'-brugerflade",
-                        "para": "Som standard vil Home Assistant vedligeholde din brugerflade ved at opdatere den, når nye entiteter eller 'Lovelace'-komponenter bliver tilgængelige. Hvis du overtager kontrollen, vil vi ikke længere foretage ændringer automatisk for dig.",
+                        "para": "Som standard vil Home Assistant vedligeholde din brugerflade ved at opdatere den, når nye entiteter eller Lovelace-brugerfladekomponenter bliver tilgængelige. Hvis du overtager kontrollen, vil vi ikke længere foretage ændringer automatisk for dig.",
                         "para_sure": "Er du sikker på du ønsker at tage kontrol over din brugerflade?",
                         "save": "Tag kontrol"
                     },
                     "suggest_card": {
-                        "add": "Tilføj til Lovelace",
+                        "add": "Tilføj til Lovelace-brugerflade",
                         "create_own": "Lav dit eget",
                         "header": "Vi har lavet et forslag til dig"
                     },
@@ -1984,7 +1998,7 @@
                     "refresh": "Opdater",
                     "unused_entities": "Ubrugte entiteter"
                 },
-                "reload_lovelace": "Genindlæs Lovelace",
+                "reload_lovelace": "Genindlæs brugerflade",
                 "unused_entities": {
                     "available_entities": "Dette er de entiteter, du har til rådighed, som endnu ikke er i din Lovelace-brugerflade.",
                     "domain": "Domæne",
