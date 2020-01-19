@@ -1848,6 +1848,8 @@
         "current_user": "You are currently logged in as {fullName}.",
         "is_owner": "You are an owner.",
         "logout": "Log out",
+        "logout_title": "Log out?",
+        "logout_text": "Are you sure you want to log out?",
         "force_narrow": {
           "header": "Always hide the sidebar",
           "description": "This will hide the sidebar by default, similar to the mobile experience."
