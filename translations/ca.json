@@ -629,6 +629,9 @@
                     "reconfigure": "Reconfigurar dispositiu",
                     "remove": "Eliminar dispositiu"
                 },
+                "confirmations": {
+                    "remove": "Estàs segur que vols eliminar el dispositiu?"
+                },
                 "last_seen": "Vist per últim cop",
                 "manuf": "per {manufacturer}",
                 "no_area": "Sense Àrea",
@@ -1091,6 +1094,7 @@
                             "core_config": {
                                 "edit_requires_storage": "L'editor està desactivat ja que la configuració es troba a configuration.yaml.",
                                 "elevation": "Altitud",
+                                "elevation_feet": "peus",
                                 "elevation_meters": "metres",
                                 "imperial_example": "Fahrenheit, lliures",
                                 "latitude": "Latitud",
@@ -1238,6 +1242,7 @@
                         "area_picker_label": "Àrea",
                         "close": "Tanca",
                         "created_config": "S'ha creat configuració per a {name}.",
+                        "dismiss": "Desestima el diàleg",
                         "error_saving_area": "Error desant àrea: {error}",
                         "external_step": {
                             "description": "Aquest pas requereix que visitis un lloc web extern per completar-lo.",
@@ -1436,6 +1441,9 @@
                         "search_again": "Torna a cercar",
                         "spinner": "S'estan cercant dispositius ZHA Zigbee..."
                     },
+                    "add": {
+                        "caption": "Afegeix dispositius"
+                    },
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributs del clúster seleccionat",
@@ -1465,16 +1473,45 @@
                         "manufacturer_code_override": "Substitució del codi de fabricant",
                         "value": "Valor"
                     },
-                    "description": "Gestiona la xarxa domòtica Zigbee",
+                    "description": "Gestiona la xarxa domòtica Zigbee (ZHA)",
                     "device_card": {
                         "area_picker_label": "Àrea",
                         "device_name_placeholder": "Nom donat per l'usuari",
                         "update_name_button": "Actualitzar Nom"
                     },
+                    "group_binding": {
+                        "bind_button_label": "Vincula grup",
+                        "group_picker_label": "Grups vinculables",
+                        "header": "Vinculació de grups",
+                        "introduction": "Vincula i desvincula grups.",
+                        "unbind_button_label": "Desvincula grup"
+                    },
                     "groups": {
+                        "add_members": "Afegeix membres",
+                        "adding_members": "Afegint membres",
                         "caption": "Grups",
-                        "create": "Crea un grup",
-                        "group_name_placeholder": "Nom del grup"
+                        "create": "Crea grup",
+                        "create_group": "Domòtica Zigbee (ZHA) - Creació de grups",
+                        "create_group_details": "Introdueix els detalls necessaris per crear un nou grup Zigbee",
+                        "creating_group": "Creant grup",
+                        "description": "Crea i modifica grups Zigbee",
+                        "group_details": "Detalls del grup Zigbee seleccionat.",
+                        "group_id": "ID del grup",
+                        "group_info": "Informació del grup",
+                        "group_name_placeholder": "Nom del grup",
+                        "group_not_found": "No s'ha trobat el grup.",
+                        "group-header": "Domòtica Zigbee (ZHA) - Detalls dels grups",
+                        "groups": "Grups",
+                        "groups-header": "Domòtica Zigbee (ZHA) - Gestió de grups",
+                        "header": "Domòtica Zigbee (ZHA) - Gestió de grups",
+                        "introduction": "Crea i modifica grups Zigbee",
+                        "manage_groups": "Gestiona els grups Zigbee",
+                        "members": "Membres",
+                        "remove_groups": "Elimina grups",
+                        "remove_members": "Elimina membres",
+                        "removing_groups": "Eliminant grups",
+                        "removing_members": "Eliminant membres",
+                        "zha_zigbee_groups": "Grups ZHA Zigbee"
                     },
                     "network_management": {
                         "header": "Gestió de la xarxa",
@@ -1491,7 +1528,8 @@
                         "reconfigure": "Reconfigura el dispositiu ZHA (dispositiu curatiu). Utilitza-ho si tens problemes amb el dispositiu. Si el dispositiu en qüestió està alimentat per bateria, assegura't que estigui despert i accepti ordres quan utilitzis aquest servei.",
                         "remove": "Treu un dispositiu de la xarxa Zigbee.",
                         "updateDeviceName": "Estableix un nom personalitzat pel dispositiu al registre de dispositius."
-                    }
+                    },
+                    "title": "Domòtica Zigbee (ZHA)"
                 },
                 "zwave": {
                     "caption": "Z-Wave",

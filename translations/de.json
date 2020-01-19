@@ -638,6 +638,9 @@
                     "reconfigure": "Gerät neu konfigurieren",
                     "remove": "Gerät entfernen"
                 },
+                "confirmations": {
+                    "remove": "Möchten Sie das Gerät wirklich entfernen?"
+                },
                 "last_seen": "Zuletzt gesehen",
                 "manuf": "von {manufacturer}",
                 "no_area": "Kein Bereich",
@@ -1522,6 +1525,14 @@
                     },
                     "devices": {
                         "header": "Zigbee Home Automation - Gerät"
+                    },
+                    "group_binding": {
+                        "bind_button_help": "Binden Sie die ausgewählte Gruppe an die ausgewählten Geräte-Cluster.",
+                        "bind_button_label": "Gruppe binden",
+                        "cluster_selection_help": "Wählen Sie Cluster aus, die an die ausgewählte Gruppe gebunden werden sollen.",
+                        "group_picker_label": "Bindbare Gruppen",
+                        "unbind_button_help": "Trennen Sie die Bindung der ausgewählten Gruppe von den ausgewählten Geräte-Clustern.",
+                        "unbind_button_label": "Gruppe auflösen"
                     },
                     "groups": {
                         "add_members": "Mitglieder hinzufügen",
