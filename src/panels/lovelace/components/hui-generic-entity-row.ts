@@ -8,6 +8,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 import "../../../components/entity/state-badge";
 import "../../../components/ha-relative-time";
@@ -72,7 +73,9 @@ class HuiGenericEntityRow extends LitElement {
           hasHold: hasAction(this.config!.hold_action),
           hasDoubleClick: hasAction(this.config!.double_tap_action),
         })}
-        tabindex="0"
+        tabindex=${ifDefined(
+          hasAction(this.config.tap_action) ? "0" : undefined
+        )}
       ></state-badge>
       <div class="flex">
         <div
