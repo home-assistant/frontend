@@ -638,6 +638,9 @@
                     "reconfigure": "重新設定設備",
                     "remove": "移除設備"
                 },
+                "confirmations": {
+                    "remove": "確定要移除此設備？"
+                },
                 "last_seen": "上次出現",
                 "manuf": "由 {manufacturer}",
                 "no_area": "無分區",
@@ -1190,7 +1193,7 @@
                     "details": "此處顯示設備所有詳細資訊。",
                     "device_not_found": "未找到設備。",
                     "entities": {
-                        "add_entities_lovelace": "新增所有設備物件至 Lovelace",
+                        "add_entities_lovelace": "新增所有設備物件至 Lovelace UI",
                         "entities": "物件",
                         "none": "此設備沒有物件。"
                     },
@@ -1523,6 +1526,17 @@
                     "devices": {
                         "header": "Zigbee 家庭自動化 - 設備"
                     },
+                    "group_binding": {
+                        "bind_button_help": "綁定所選擇之群組至所選擇之設備叢集。",
+                        "bind_button_label": "綁定群組",
+                        "cluster_selection_help": "選擇叢集以綁定至所選群組。",
+                        "group_picker_help": "選擇群組進行綁定命令。",
+                        "group_picker_label": "可綁定群組",
+                        "header": "群組綁定",
+                        "introduction": "綁定與解除綁定群組。",
+                        "unbind_button_help": "由所選擇之設備叢集中取消綁定所選擇之群組。",
+                        "unbind_button_label": "解除綁定群組"
+                    },
                     "groups": {
                         "add_members": "新增成員",
                         "adding_members": "新增成員",
@@ -1751,9 +1765,9 @@
             },
             "lovelace": {
                 "add_entities": {
-                    "generated_unsupported": "僅能於 Lovelace 自訂功能下使用此功能。",
-                    "saving_failed": "儲存 Lovelace 設定失敗。",
-                    "yaml_unsupported": "當使用 Lovelace 的 YAML 模式時，無法使用此功能。"
+                    "generated_unsupported": "僅能於 Lovelace UI 自訂功能下使用此功能。",
+                    "saving_failed": "儲存 Lovelace UI 設定失敗。",
+                    "yaml_unsupported": "當使用 Lovelace UI 的 YAML 模式時，無法使用此功能。"
                 },
                 "cards": {
                     "confirm_delete": "確定要刪除此卡片？",
@@ -1778,7 +1792,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace 設定已更新，是否要更新頁面？",
+                    "message": "Lovelace UI 設定已更新，是否要更新頁面？",
                     "refresh": "更新"
                 },
                 "editor": {
@@ -1920,7 +1934,7 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "編輯標題",
-                        "explanation": "此為 Lovelace 所有分視圖上方之標題。",
+                        "explanation": "此為 Lovelace UI 所有分視圖上方之標題。",
                         "header": "Lovelace UI 的標題"
                     },
                     "edit_view": {
@@ -1934,7 +1948,7 @@
                     },
                     "header": "編輯 UI",
                     "menu": {
-                        "open": "開啟 Lovelace 選單",
+                        "open": "開啟 Lovelace UI 選單",
                         "raw_editor": "文字模式編輯器"
                     },
                     "migrate": {
@@ -1944,8 +1958,8 @@
                         "para_no_id": "該元件未含 ID，請於「ui-lovelace.yaml」中為該元件新增 ID。"
                     },
                     "raw_editor": {
-                        "confirm_remove_config_text": "假如移除 Lovelace 設定的話，將自動以區域與設備產生 Lovelace 卡片。",
-                        "confirm_remove_config_title": "確定要移除 Lovelace 設定？將依據區域與設備自動產生 Lovelace 卡片。",
+                        "confirm_remove_config_text": "假如移除 Lovelace UI 設定的話，將自動以區域與設備產生 Lovelace UI 卡片。",
+                        "confirm_remove_config_title": "確定要移除 Lovelace UI 設定？將依據區域與設備自動產生 Lovelace UI 卡片。",
                         "confirm_unsaved_changes": "變更尚未儲存，確定要退出？",
                         "confirm_unsaved_comments": "設定包含命令、將不會被儲存。是否要繼續？",
                         "error_invalid_config": "設定無效：{error}",
@@ -1960,12 +1974,12 @@
                     "save_config": {
                         "cancel": "我再想想",
                         "header": "自行編輯 Lovelace UI",
-                        "para": "Home Assistant 於預設下，將維護您的使用者介面、於新物件或 Lovelace 元件可使用時進行更新。假如選擇自行編輯，系統將不再為您自動進行變更。",
+                        "para": "Home Assistant 於預設下，將維護您的使用者介面、於新物件或 Lovelace UI 元件可使用時進行更新。假如選擇自行編輯，系統將不再為您自動進行變更。",
                         "para_sure": "確定要自行編輯使用者介面？",
                         "save": "自行編輯"
                     },
                     "suggest_card": {
-                        "add": "新增至 Lovelace",
+                        "add": "新增至 Lovelace UI",
                         "create_own": "選擇其他卡片",
                         "header": "已為您產生建議卡片"
                     },
@@ -1984,7 +1998,7 @@
                     "refresh": "更新",
                     "unused_entities": "未顯示物件"
                 },
-                "reload_lovelace": "重新載入 Lovelace",
+                "reload_lovelace": "重新載入 UI",
                 "unused_entities": {
                     "available_entities": "此些為尚未於 Lovelace 介面中、可供使用的物件。",
                     "domain": "區域",

@@ -588,6 +588,7 @@
             },
             "more_info_control": {
                 "dismiss": "Dispensar diálogo",
+                "edit": "Editar entidade",
                 "script": {
                     "last_action": "Última Ação"
                 },
@@ -1091,6 +1092,7 @@
                             "core_config": {
                                 "edit_requires_storage": "Editor desativado porque a configuração está armazenada em configuration.yaml.",
                                 "elevation": "Elevação",
+                                "elevation_feet": "pés",
                                 "elevation_meters": "metros",
                                 "imperial_example": "Fahrenheit, libras",
                                 "latitude": "Latitude",
@@ -1436,6 +1438,9 @@
                         "search_again": "Pesquisar novamente",
                         "spinner": "Procurando por dispositivos ZHA Zigbee…"
                     },
+                    "add": {
+                        "caption": "Adicionar Dispositivos"
+                    },
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributos do cluster selecionado",
@@ -1455,6 +1460,7 @@
                         "issue_zigbee_command": "Emitir Comando Zigbee"
                     },
                     "clusters": {
+                        "header": "Clusters",
                         "help_cluster_dropdown": "Selecione um cluster para visualizar atributos e comandos."
                     },
                     "common": {
@@ -1469,6 +1475,9 @@
                         "area_picker_label": "Área",
                         "device_name_placeholder": "Nome dado pelo usuário",
                         "update_name_button": "Atualizar Nome"
+                    },
+                    "groups": {
+                        "caption": "Grupos"
                     },
                     "network_management": {
                         "header": "Gerenciamento de Rede",

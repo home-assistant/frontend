@@ -589,6 +589,7 @@
             },
             "more_info_control": {
                 "dismiss": "关闭对话",
+                "edit": "编辑实体",
                 "restored": {
                     "confirm_remove_text": "您确定要删除此实体吗？",
                     "confirm_remove_title": "是否删除实体？",
@@ -636,6 +637,9 @@
                     "add": "添加设备",
                     "reconfigure": "重新配置设备",
                     "remove": "删除设备"
+                },
+                "confirmations": {
+                    "remove": "您确定要删除此设备吗？"
                 },
                 "last_seen": "上次看到",
                 "manuf": "制造商：{manufacturer}",

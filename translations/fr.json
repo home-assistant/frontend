@@ -638,6 +638,9 @@
                     "reconfigure": "Reconfigurer l'appareil",
                     "remove": "Supprimer l'appareil"
                 },
+                "confirmations": {
+                    "remove": "Êtes-vous sûr de vouloir retirer l'appareil ?"
+                },
                 "last_seen": "Dernière vue",
                 "manuf": "par {manufacturer}",
                 "no_area": "Aucune pièce",
@@ -1214,8 +1217,15 @@
                         "update": "METTRE À JOUR"
                     },
                     "picker": {
+                        "disable_selected": {
+                            "button": "Désactiver la sélection",
+                            "confirm_text": "Les entités désactivées ne seront pas ajoutées à Home Assistant.",
+                            "confirm_title": "Voulez-vous désactiver les {number} entités?"
+                        },
                         "enable_selected": {
-                            "button": "Activer la sélection"
+                            "button": "Activer la sélection",
+                            "confirm_text": "Cela les rendra à nouveau disponibles dans Home Assistant s'ils sont maintenant désactivés.",
+                            "confirm_title": "Voulez-vous activer les {number} entités?"
                         },
                         "filter": {
                             "filter": "Filtre",
@@ -1235,7 +1245,8 @@
                         "introduction2": "Utilisez le registre d'entités pour remplacer le nom, modifier l'ID d'entité ou supprimer l'entrée d'Home Assistant. Remarque: la suppression de l'entrée de registre d'entité ne supprime pas l'entité. Pour ce faire, suivez le lien ci-dessous et supprimez-le de la page des intégrations.",
                         "remove_selected": {
                             "button": "Supprimer la sélection",
-                            "confirm_text": "Les entités ne peuvent être supprimées que lorsque l'intégration ne fournit plus les entités."
+                            "confirm_text": "Les entités ne peuvent être supprimées que lorsque l'intégration ne fournit plus les entités.",
+                            "confirm_title": "Voulez-vous supprimer {number} entités ?"
                         },
                         "selected": "{number} sélectionné",
                         "show_disabled": "Afficher les entités désactivées",
@@ -1515,12 +1526,24 @@
                     "devices": {
                         "header": "Zigbee Home Automation - Appareil"
                     },
+                    "group_binding": {
+                        "bind_button_help": "Lier le groupe sélectionné aux groupes de dispositifs sélectionnés.",
+                        "bind_button_label": "Lier Groupe",
+                        "cluster_selection_help": "Sélectionnez les clusters à lier au groupe sélectionné.",
+                        "group_picker_help": "Sélectionnez un groupe pour émettre une commande de liaison.",
+                        "group_picker_label": "Groupes pouvant être liés",
+                        "header": "Liaison de groupe",
+                        "introduction": "Lier et délier les groupes.",
+                        "unbind_button_help": "Délier le groupe sélectionné des groupes de périphériques sélectionnés.",
+                        "unbind_button_label": "Délier Groupe"
+                    },
                     "groups": {
                         "add_members": "Ajouter des membres",
                         "adding_members": "Ajout de membres",
                         "caption": "Groupes",
                         "create": "Créer un groupe",
                         "create_group": "Zigbee Home Automation - Créer un groupe",
+                        "create_group_details": "Entrez les détails requis pour créer un nouveau groupe de zigbee",
                         "creating_group": "Création de groupe",
                         "description": "Créer et modifier des groupes Zigbee",
                         "group_details": "Voici tous les détails du groupe Zigbee sélectionné.",
@@ -1531,6 +1554,7 @@
                         "group-header": "Zigbee Home Automation - Détails du groupe",
                         "groups": "Groupes",
                         "groups-header": "Zigbee Home Automation - Gestion de groupe",
+                        "header": "Zigbee Home Automation - Gestion de groupe",
                         "introduction": "Créer et modifier des groupes zigbee",
                         "manage_groups": "Gérer les groupes Zigbee",
                         "members": "Membres",
