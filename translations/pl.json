@@ -638,6 +638,9 @@
                     "reconfigure": "Rekonfiguracja urządzenia",
                     "remove": "Usuń urządzenie"
                 },
+                "confirmations": {
+                    "remove": "Czy na pewno chcesz usunąć urządzenie?"
+                },
                 "last_seen": "Ostatnio widziane",
                 "manuf": "Producent: {manufacturer}",
                 "no_area": "brak",
