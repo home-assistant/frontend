@@ -8,6 +8,7 @@ import {
   CSSResult,
   PropertyValues,
 } from "lit-element";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 import "../../../components/entity/state-badge";
 import "../components/hui-warning-element";
@@ -66,7 +67,9 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
-        tabindex="0"
+        tabindex=${ifDefined(
+          hasAction(this._config.tap_action) ? "0" : undefined
+        )}
         .overrideIcon=${this._config.icon}
       ></state-badge>
     `;

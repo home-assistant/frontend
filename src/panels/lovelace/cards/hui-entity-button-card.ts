@@ -10,6 +10,7 @@ import {
 } from "lit-element";
 import { HassEntity } from "home-assistant-js-websocket";
 import { styleMap } from "lit-html/directives/style-map";
+import { ifDefined } from "lit-html/directives/if-defined";
 import "@material/mwc-ripple";
 
 import "../../../components/ha-card";
@@ -134,7 +135,9 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
-        tabindex="0"
+        tabindex=${ifDefined(
+          hasAction(this._config.tap_action) ? "0" : undefined
+        )}
       >
         ${this._config.show_icon
           ? html`

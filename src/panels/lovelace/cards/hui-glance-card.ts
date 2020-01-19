@@ -9,6 +9,7 @@ import {
   CSSResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -214,7 +215,9 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
           hasHold: hasAction(entityConf.hold_action),
           hasDoubleClick: hasAction(entityConf.double_tap_action),
         })}
-        tabindex="0"
+        tabindex=${ifDefined(
+          hasAction(entityConf.tap_action) ? "0" : undefined
+        )}
       >
         ${this._config!.show_name !== false
           ? html`

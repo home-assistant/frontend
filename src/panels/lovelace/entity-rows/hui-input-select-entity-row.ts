@@ -8,6 +8,7 @@ import {
   customElement,
   PropertyValues,
 } from "lit-element";
+import { ifDefined } from "lit-html/directives/if-defined";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 
@@ -87,7 +88,9 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
-        tabindex="0"
+        tabindex=${ifDefined(
+          hasAction(this._config.tap_action) ? "0" : undefined
+        )}
       ></state-badge>
       <ha-paper-dropdown-menu
         .label=${this._config.name || computeStateName(stateObj)}
