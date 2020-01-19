@@ -1810,7 +1810,7 @@
             },
             "shopping-list": {
               "name": "Shopping List",
-              "integration_not_loaded": "The 'shopping_list' integration is not enabled, this card will not work before you do that."
+              "integration_not_loaded": "This card requires the `shopping_list` integration to be set up."
             },
             "thermostat": {
               "name": "Thermostat"
