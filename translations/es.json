@@ -638,6 +638,9 @@
                     "reconfigure": "Reconfigurar dispositivo",
                     "remove": "Eliminar dispositivos"
                 },
+                "confirmations": {
+                    "remove": "¿Estás seguro de que quieres eliminar este dispositivo?"
+                },
                 "last_seen": "Ultima vez visto",
                 "manuf": "por {manufacturer}",
                 "no_area": "Ningún área",
@@ -1522,6 +1525,17 @@
                     },
                     "devices": {
                         "header": "Domótica Zigbee - Dispositivo"
+                    },
+                    "group_binding": {
+                        "bind_button_help": "Enlazar el grupo seleccionado a los clústeres de dispositivos seleccionados.",
+                        "bind_button_label": "Enlazar grupo",
+                        "cluster_selection_help": "Selecciona los clústeres que desea enlazar al grupo seleccionado.",
+                        "group_picker_help": "Seleccione un grupo para emitir un comando de enlace.",
+                        "group_picker_label": "Grupos enlazables",
+                        "header": "Vinculación de grupos",
+                        "introduction": "Enlazar y desenlazar grupos.",
+                        "unbind_button_help": "Desvincule el grupo seleccionado de los clústeres de dispositivos seleccionados.",
+                        "unbind_button_label": "Desvincular grupo"
                     },
                     "groups": {
                         "add_members": "Añadir miembros",

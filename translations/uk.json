@@ -1473,6 +1473,10 @@
                         "device_name_placeholder": "Ім'я",
                         "update_name_button": "Змінити ім'я"
                     },
+                    "group_binding": {
+                        "bind_button_label": "Прив'язати групу",
+                        "unbind_button_label": "Відв'язати групу"
+                    },
                     "groups": {
                         "add_members": "Додати учасників",
                         "adding_members": "Додавання учасників",
