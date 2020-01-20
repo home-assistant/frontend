@@ -3,6 +3,7 @@ import { Condition } from "../common/validate-condition";
 import { EntityConfig, EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceElementConfig } from "../elements/types";
 import { HuiImage } from "../components/hui-image";
+import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;
@@ -40,6 +41,8 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   entities: EntitiesCardEntityConfig[];
   theme?: string;
   icon?: string;
+  header?: LovelaceHeaderFooterConfig;
+  footer?: LovelaceHeaderFooterConfig;
 }
 
 export interface EntityButtonCardConfig extends LovelaceCardConfig {

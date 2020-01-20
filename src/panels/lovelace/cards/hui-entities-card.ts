@@ -19,6 +19,8 @@ import { processConfigEntities } from "../common/process-config-entities";
 import { createRowElement } from "../create-element/create-row-element";
 import { EntitiesCardConfig, EntitiesCardEntityConfig } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { createHeaderFooterElement } from "../create-element/create-header-footer-element";
+import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
@@ -96,10 +98,13 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card>
+        ${this._config.header
+          ? this.renderHeaderFooter(this._config.header, "header")
+          : ""}
         ${!this._config.title &&
         !this._config.show_header_toggle &&
         !this._config.icon
-          ? html``
+          ? ""
           : html`
               <div class="card-header">
                 <div class="name">
@@ -130,6 +135,9 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
             this.renderEntity(entityConf)
           )}
         </div>
+        ${this._config.footer
+          ? this.renderHeaderFooter(this._config.footer, "footer")
+          : ""}
       </ha-card>
     `;
   }
@@ -162,6 +170,33 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       .icon {
         padding: 0px 18px 0px 8px;
       }
+
+      .header {
+        border-top-left-radius: var(--ha-card-border-radius, 2px);
+        border-top-right-radius: var(--ha-card-border-radius, 2px);
+        margin-bottom: 16px;
+        overflow: hidden;
+      }
+
+      .footer {
+        border-bottom-left-radius: var(--ha-card-border-radius, 2px);
+        border-bottom-right-radius: var(--ha-card-border-radius, 2px);
+        margin-top: -16px;
+        overflow: hidden;
+      }
+    `;
+  }
+
+  private renderHeaderFooter(
+    conf: LovelaceHeaderFooterConfig,
+    className: string
+  ): TemplateResult {
+    const element = createHeaderFooterElement(conf);
+    if (this._hass) {
+      element.hass = this._hass;
+    }
+    return html`
+      <div class=${className}>${element}</div>
     `;
   }
 
