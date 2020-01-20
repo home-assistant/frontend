@@ -67,6 +67,7 @@ export class ZHANode extends LitElement {
                   showName
                   showModelInfo
                   .showEntityDetail=${false}
+                  .showActions="${this.device.device_type !== "Coordinator"}"
                   @zha-device-removed=${this._onDeviceRemoved}
                 ></zha-device-card>
               `
