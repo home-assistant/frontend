@@ -1906,6 +1906,7 @@
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "This card requires the `shopping_list` integration to be set up.",
                             "name": "Shopping List"
                         },
                         "thermostat": {
@@ -2221,6 +2222,8 @@
                     "link_promo": "Help translating"
                 },
                 "logout": "Log out",
+                "logout_text": "Are you sure you want to log out?",
+                "logout_title": "Log out?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Are you sure you want to delete the access token for {name}?",
                     "create": "Create Token",
