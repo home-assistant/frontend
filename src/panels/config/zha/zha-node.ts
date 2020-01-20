@@ -56,17 +56,26 @@ export class ZHANode extends LitElement {
           )}
         </span>
         <div class="content">
-          <zha-device-card
-            class="card"
-            .hass=${this.hass}
-            .device=${this.device}
-            .narrow=${!this.isWide}
-            .showHelp=${this._showHelp}
-            showName
-            showModelInfo
-            .showEntityDetail=${false}
-            @zha-device-removed=${this._onDeviceRemoved}
-          ></zha-device-card>
+          ${this.device
+            ? html`
+                <zha-device-card
+                  class="card"
+                  .hass=${this.hass}
+                  .device=${this.device}
+                  .narrow=${!this.isWide}
+                  .showHelp=${this._showHelp}
+                  showName
+                  showModelInfo
+                  .showEntityDetail=${false}
+                  @zha-device-removed=${this._onDeviceRemoved}
+                ></zha-device-card>
+              `
+            : html`
+                <paper-spinner
+                  active
+                  alt=${this.hass!.localize("ui.common.loading")}
+                ></paper-spinner>
+              `}
         </div>
       </ha-config-section>
     `;
