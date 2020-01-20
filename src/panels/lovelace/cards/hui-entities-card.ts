@@ -155,10 +155,6 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         text-overflow: ellipsis;
       }
 
-      .card-header hui-entities-toggle {
-        margin: -4px 0;
-      }
-
       #states > * {
         margin: 8px 0;
       }
