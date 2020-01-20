@@ -1,8 +1,9 @@
 import { clearState } from "../util/ha-pref-storage";
-import { askWrite } from "../common/auth/token_storage";
+import { askWrite, enableWrite } from "../common/auth/token_storage";
 import { subscribeUser, userCollection } from "../data/ws-user";
 import { HassBaseEl } from "./hass-base-mixin";
 import { Constructor } from "../types";
+import { showConfirmationDialog } from "../dialogs/confirmation/show-dialog-confirmation";
 
 declare global {
   // for fire event
@@ -28,17 +29,17 @@ export default <T extends Constructor<HassBaseEl>>(superClass: T) =>
       );
 
       if (askWrite()) {
-        this.updateComplete
-          .then(() =>
-            import(
-              /* webpackChunkName: "ha-store-auth-card" */ "../dialogs/ha-store-auth-card"
-            )
-          )
-          .then(() => {
-            const el = document.createElement("ha-store-auth-card");
-            this.shadowRoot!.appendChild(el);
-            this.provideHass(el);
-          });
+        this.updateComplete.then(() =>
+          showConfirmationDialog(this, {
+            title: this.hass!.localize("ui.auth_store.title"),
+            text: this.hass!.localize("ui.auth_store.ask"),
+            confirmBtnText: this.hass!.localize("ui.auth_store.confirm"),
+            cancelBtnText: this.hass!.localize("ui.auth_store.decline"),
+            confirm: () => {
+              enableWrite();
+            },
+          })
+        );
       }
     }
 

@@ -377,6 +377,7 @@
   },
   "ui": {
     "auth_store": {
+      "title": "Save login?",
       "ask": "Do you want to save this login?",
       "decline": "No thanks",
       "confirm": "Save login"
