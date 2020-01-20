@@ -411,7 +411,7 @@
             },
             "automation": {
                 "last_triggered": "최근 트리거 됨",
-                "trigger": "트리거"
+                "trigger": "실행"
             },
             "camera": {
                 "not_available": "이미지 사용 불가"
@@ -637,6 +637,9 @@
                     "add": "기기 추가",
                     "reconfigure": "기기 재설정",
                     "remove": "기기 제거"
+                },
+                "confirmations": {
+                    "remove": "이 기기를 제거하시겠습니까?"
                 },
                 "last_seen": "마지막 확인",
                 "manuf": "{manufacturer} 제조",
@@ -1190,7 +1193,7 @@
                     "details": "기기의 모든 세부 정보는 다음과 같습니다.",
                     "device_not_found": "기기를 찾을 수 없습니다.",
                     "entities": {
-                        "add_entities_lovelace": "Lovelace 에 모든 기기 구성요소 추가",
+                        "add_entities_lovelace": "Lovelace UI 에 모든 기기 구성요소 추가",
                         "entities": "구성요소",
                         "none": "이 기기는 구성요소가 없습니다"
                     },
@@ -1214,8 +1217,14 @@
                         "update": "업데이트"
                     },
                     "picker": {
+                        "disable_selected": {
+                            "button": "선택된 구성요소 비활성화",
+                            "confirm_text": "비활성화 된 구성요소는 Home Assistant 에 추가되지 않습니다.",
+                            "confirm_title": "{number} 개의 구성요소를 비활성화하시겠습니까?"
+                        },
                         "enable_selected": {
                             "button": "선택된 구성요소 활성화",
+                            "confirm_text": "이제 비활성화 된 경우 Home Assistant 에서 다시 사용할 수 있게 됩니다.",
                             "confirm_title": "{number} 개의 구성요소를 활성화하시겠습니까?"
                         },
                         "filter": {
@@ -1233,7 +1242,12 @@
                         },
                         "integrations_page": "통합 구성요소 페이지",
                         "introduction": "Home Assistant 는 구성요소의 식별을 위해 모든 구성요소에 고유한 레지스트리를 부여합니다. 각각의 구성요소들은 자신만의 고유한 구성요소 ID 를 가집니다.",
-                        "introduction2": "구성요소를 편집하여 이름을 대체하거나 구성요소 ID를 변경하고 Home Assistant 에서 항목을 제거할 수 있습니다. 단, 구성요소 편집창에서 구성요소를 삭제해도 구성요소가 완전히 제거되는 것은 아닙니다. 완전히 제거하려면, 아래 링크를 따라 통합 구성요소 페이지에서 제거해주세요.",
+                        "introduction2": "구성요소 레지스트리를 사용하여 이름을 대체하거나 구성요소 ID 변경 또는 Home Assistant 에서 항목을 제거할 수 있습니다.",
+                        "remove_selected": {
+                            "button": "선택된 구성요소 제거",
+                            "confirm_text": "통합 구성요소가 더 이상 구성요소를 제공하지 않는 경우에만 구성요소를 제거할 수 있습니다.",
+                            "confirm_title": "{number} 개의 구성요소를 제거하시겠습니까?"
+                        },
                         "selected": "{number} 개 선택됨",
                         "show_disabled": "비활성화 된 구성요소 표시",
                         "status": {
@@ -1469,6 +1483,10 @@
                         "search_again": "다시 검색",
                         "spinner": "ZHA Zigbee 기기를 찾고있습니다..."
                     },
+                    "add": {
+                        "caption": "기기 추가",
+                        "description": "Zigbee 네트워크에 기기를 추가합니다"
+                    },
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "선택된 클러스터의 속성",
@@ -1488,8 +1506,9 @@
                         "issue_zigbee_command": "Zigbee 명령 실행"
                     },
                     "clusters": {
+                        "header": "클러스터",
                         "help_cluster_dropdown": "속성과 명령을 보려면 클러스터를 선택해주세요.",
-                        "introduction": "클러스터는 Zigbee 기능의 빌딩 블록이며 기능을 논리 단위로 분리 구성합니다. 클라이언트 및 서버 유형이 있으며 속성 및 명령으로 구성됩니다."
+                        "introduction": "클러스터는 Zigbee 기능의 빌딩 블록이며 기능을 논리 단위로 분리해서 구성합니다. 클라이언트 및 서버 유형이 있으며 속성 및 명령으로 구성됩니다."
                     },
                     "common": {
                         "add_devices": "기기 추가",
@@ -1504,12 +1523,49 @@
                         "device_name_placeholder": "사용자 지정 이름",
                         "update_name_button": "이름 업데이트"
                     },
-                    "groups": {
-                        "caption": "그룹",
-                        "description": "Zigbee 그룹 생성 및 수정",
-                        "group-header": "Zigbee 홈 자동화 - 그룹 상세정보",
-                        "groups-header": "Zigbee 홈 자동화 - 그룹 관리"
+                    "devices": {
+                        "header": "Zigbee 홈 자동화 - 기기"
                     },
+                    "group_binding": {
+                        "bind_button_help": "선택한 그룹을 선택한 기기 클러스터에서 바인딩해주세요.",
+                        "bind_button_label": "그룹 바인딩",
+                        "cluster_selection_help": "선택한 그룹에 바인딩 할 클러스터를 선택해주세요.",
+                        "group_picker_help": "바인딩 명령을 발행할 그룹을 선택해주세요.",
+                        "group_picker_label": "바인딩 가능한 그룹",
+                        "header": "그룹 바인딩",
+                        "introduction": "그룹 바인딩 및 바인딩 해제",
+                        "unbind_button_help": "선택한 그룹을 선택한 기기 클러스터에서 바인딩을 해제해주세요.",
+                        "unbind_button_label": "그룹 바인딩 해제"
+                    },
+                    "groups": {
+                        "add_members": "구성원 추가",
+                        "adding_members": "구성원 추가",
+                        "caption": "그룹",
+                        "create": "그룹 생성",
+                        "create_group": "Zigbee 홈 자동화 - 그룹 만들기",
+                        "create_group_details": "새로운 Zigbee 그룹을 생성하기 위해 필요한 세부 사항을 입력해주세요",
+                        "creating_group": "그룹 생성",
+                        "description": "Zigbee 그룹 생성 및 수정",
+                        "group_details": "선택된 Zigbee 그룹의 모든 세부 정보는 다음과 같습니다.",
+                        "group_id": "그룹 ID",
+                        "group_info": "그룹 정보",
+                        "group_name_placeholder": "그룹 이름",
+                        "group_not_found": "그룹을 찾을 수 없습니다!",
+                        "group-header": "Zigbee 홈 자동화 - 그룹 상세정보",
+                        "groups": "그룹",
+                        "groups-header": "Zigbee 홈 자동화 - 그룹 관리",
+                        "header": "Zigbee 홈 자동화 - 그룹 관리",
+                        "introduction": "Zigbee 그룹 생성 및 수정",
+                        "manage_groups": "Zigbee 그룹 관리",
+                        "members": "구성원",
+                        "remove_groups": "그룹 제거",
+                        "remove_members": "구성원 제거",
+                        "removing_groups": "그룹 제거",
+                        "removing_members": "구성원 제거",
+                        "zha_zigbee_groups": "ZHA Zigbee 그룹"
+                    },
+                    "header": "Zigbee 홈 자동화 구성",
+                    "introduction": "여기에서 ZHA 구성요소를 설정 할 수 있습니다. 아직 여기서 모두 설정 할 수는 없지만, 모든 내용을 설정 할 수 있도록 작업 중입니다.",
                     "network_management": {
                         "header": "네트워크 관리",
                         "introduction": "전체 네트워크에 영향을 미치는 명령"
@@ -1525,7 +1581,8 @@
                         "reconfigure": "ZHA 기기를 다시 구성 합니다. (기기 복구). 기기에 문제가 있는 경우 사용해주세요. 기기가 배터리로 작동하는 경우, 이 서비스를 사용할 때 기기가 켜져있고 통신이 가능한 상태인지 확인해주세요.",
                         "remove": "Zigbee 네트워크에서 기기 제거",
                         "updateDeviceName": "이 기기의 사용자 정의 이름을 기기 레지스트리에 설정합니다."
-                    }
+                    },
+                    "title": "Zigbee 홈 자동화"
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1707,6 +1764,11 @@
                 "showing_entries": "다음 날짜의 항목을 표시"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "Lovelace UI 를 직접 관리하는 경우에만 이 기능을 사용할 수 있습니다.",
+                    "saving_failed": "Lovelace UI 구성을 저장하지 못했습니다.",
+                    "yaml_unsupported": "Lovelace UI 를 YAML 모드로 사용하는 경우 이 기능은 사용할 수 없습니다."
+                },
                 "cards": {
                     "confirm_delete": "이 카드를 삭제하시겠습니까?",
                     "empty_state": {
@@ -1730,7 +1792,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace 구성이 업데이트되었습니다. 새로고침 하시겠습니까?",
+                    "message": "Lovelace UI 구성이 업데이트되었습니다. 새로고침 하시겠습니까?",
                     "refresh": "새로고침"
                 },
                 "editor": {
@@ -1872,7 +1934,7 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "제목 편집",
-                        "explanation": "이 제목은 Lovelace 의 모든 화면의 상단에 표시됩니다.",
+                        "explanation": "이 제목은 Lovelace UI 모든 뷰의 상단에 표시됩니다.",
                         "header": "Lovelace UI 의 제목"
                     },
                     "edit_view": {
@@ -1886,7 +1948,7 @@
                     },
                     "header": "UI 편집",
                     "menu": {
-                        "open": "Lovelace 메뉴 열기",
+                        "open": "Lovelace UI 메뉴 열기",
                         "raw_editor": "구성 코드 편집기"
                     },
                     "migrate": {
@@ -1896,10 +1958,13 @@
                         "para_no_id": "이 구성요소에는 ID가 없습니다. 'ui-lovelace.yaml' 에 구성요소의 ID를 추가해주세요."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Lovelace UI 구성을 제거하면, 영역 및 기기와 함께 Lovelace UI 뷰가 자동으로 생성됩니다.",
+                        "confirm_remove_config_title": "Lovelace UI 구성을 제거하시겠습니까? 영역 및 기기와 함께 Lovelace UI 뷰를 자동으로 생성해드립니다.",
                         "confirm_unsaved_changes": "저장되지 않은 변경 사항이 있습니다. 종료하시겠습니까?",
                         "confirm_unsaved_comments": "구성 내용에 주석이 포함되어 있지만 저장되지는 않습니다. 계속하시겠습니까?",
                         "error_invalid_config": "구성이 잘못되었습니다: {error}",
                         "error_parse_yaml": "YAML 을 구문 분석할 수 없습니다: {error}",
+                        "error_remove": "구성을 제거할 수 없습니다: {error}",
                         "error_save_yaml": "YAML 을 저장할 수 없습니다: {error}",
                         "header": "구성 코드 편집",
                         "save": "저장하기",
@@ -1912,6 +1977,11 @@
                         "para": "기본적으로 Home Assistant 는 사용자 인터페이스를 유지 관리하고, 사용할 수 있는 새로운 구성요소 또는 Lovelace 구성요소가 있을 때 업데이트를 합니다. 사용자가 직접 관리하는 경우 Home Assistant 는 더 이상 자동으로 변경하지 않습니다.",
                         "para_sure": "사용자 인터페이스를 직접 관리하시겠습니까?",
                         "save": "직접 관리할게요"
+                    },
+                    "suggest_card": {
+                        "add": "Lovelace UI 에 추가",
+                        "create_own": "다른 카드를 선택해주세요",
+                        "header": "제안 드리는 카드"
                     },
                     "view": {
                         "panel_mode": {
@@ -1928,7 +1998,7 @@
                     "refresh": "새로고침",
                     "unused_entities": "미사용 구성요소"
                 },
-                "reload_lovelace": "Lovelace 새로고침",
+                "reload_lovelace": "UI 새로고침",
                 "unused_entities": {
                     "available_entities": "사용 가능한 구성요소이지만 아직 Lovelace UI 에는 등록되지 않았습니다.",
                     "domain": "도메인",
