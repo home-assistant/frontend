@@ -7,10 +7,11 @@ import {
   createErrorCardElement,
   createErrorCardConfig,
 } from "../cards/hui-error-card";
-import { LovelaceCard, LovelaceBadge } from "../types";
+import { LovelaceCard, LovelaceBadge, LovelaceHeaderFooter } from "../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { LovelaceElementConfig, LovelaceElement } from "../elements/types";
 import { EntityRow, EntityRowConfig } from "../entity-rows/types";
+import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 
 const CUSTOM_TYPE_PREFIX = "custom:";
 const TIMEOUT = 2000;
@@ -20,6 +21,10 @@ interface CreateElementConfigTypes {
   badge: { config: LovelaceBadgeConfig; element: LovelaceBadge };
   element: { config: LovelaceElementConfig; element: LovelaceElement };
   row: { config: EntityRowConfig; element: EntityRow };
+  "header-footer": {
+    config: LovelaceHeaderFooterConfig;
+    element: LovelaceHeaderFooter;
+  };
 }
 
 const _createElement = <T extends keyof CreateElementConfigTypes>(
