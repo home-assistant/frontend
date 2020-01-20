@@ -895,7 +895,7 @@
             "conditions": {
               "name": "Condition",
               "header": "Conditions",
-              "introduction": "Conditions are an optional part of an automation rule and can be used to prevent an action from happening when triggered. Conditions look very similar to triggers but are very different. A trigger will look at events happening in the system while a condition only looks at how the system looks right now. A trigger can observe that a switch is being turned on. A condition can only see if a switch is currently on or off.",
+              "introduction": "Conditions are optional and will prevent further execution unless all conditions are satisfied.",
               "learn_more": "Learn more about conditions",
               "add": "Add condition",
               "duplicate": "[%key:ui::panel::config::automation::editor::triggers::duplicate%]",
