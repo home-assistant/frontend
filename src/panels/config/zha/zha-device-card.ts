@@ -42,6 +42,7 @@ import { navigate } from "../../../common/navigate";
 import { UnsubscribeFunc, HassEvent } from "home-assistant-js-websocket";
 import { formatAsPaddedHex } from "./functions";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { addEntitiesToLovelaceView } from "../../lovelace/editor/add-entities-to-view";
 
 declare global {
   // for fire event
@@ -109,9 +110,6 @@ class ZHADeviceCard extends LitElement {
     this.addEventListener("hass-service-called", (ev) =>
       this.serviceCalled(ev)
     );
-    this._serviceData = {
-      ieee_address: this.device!.ieee,
-    };
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -125,6 +123,9 @@ class ZHADeviceCard extends LitElement {
           ) + 1;
       }
       this._userGivenName = this.device!.user_given_name;
+      this._serviceData = {
+        ieee_address: this.device!.ieee,
+      };
     }
     super.update(changedProperties);
   }
@@ -222,6 +223,13 @@ class ZHADeviceCard extends LitElement {
               </paper-icon-item>
             `
           )}
+        </div>
+        <div class="card-actions">
+          <mwc-button @click=${this._addToLovelaceView}>
+            ${this.hass.localize(
+              "ui.panel.config.devices.entities.add_entities_lovelace"
+            )}
+          </mwc-button>
         </div>
         ${
           this.showEditableInfo
@@ -394,6 +402,14 @@ class ZHADeviceCard extends LitElement {
 
   private _onAddDevicesClick() {
     navigate(this, "/config/zha/add/" + this.device!.ieee);
+  }
+
+  private _addToLovelaceView(): void {
+    addEntitiesToLovelaceView(
+      this,
+      this.hass,
+      this.device!.entities.map((entity) => entity.entity_id)
+    );
   }
 
   static get styles(): CSSResult[] {
