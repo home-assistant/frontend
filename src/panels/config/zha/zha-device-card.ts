@@ -225,7 +225,7 @@ class ZHADeviceCard extends LitElement {
           )}
         </div>
         ${
-          this.device!.entities && this.device!.entities.length > 0
+          this.device?.entities?.length > 0
             ? html`
                 <div class="card-actions">
                   <mwc-button @click=${this._addToLovelaceView}>
