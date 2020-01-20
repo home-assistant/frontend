@@ -22,6 +22,7 @@ export interface ZHADevice {
   user_given_name?: string;
   power_source?: string;
   area_id?: string;
+  device_type: string;
 }
 
 export interface Attribute {

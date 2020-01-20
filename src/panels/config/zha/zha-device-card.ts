@@ -163,6 +163,8 @@ class ZHADeviceCard extends LitElement {
             <dd class="zha-info">${this.device!.ieee}</dd>
             <dt>Nwk:</dt>
             <dd class="zha-info">${formatAsPaddedHex(this.device!.nwk)}</dd>
+            <dt>Device Type:</dt>
+            <dd class="zha-info">${this.device!.device_type}</dd>
             <dt>LQI:</dt>
             <dd class="zha-info">${this.device!.lqi ||
               this.hass!.localize("ui.dialogs.zha_device_info.unknown")}</dd>
@@ -304,7 +306,8 @@ class ZHADeviceCard extends LitElement {
                         </div>
                       `
                     : ""}
-                  ${this.device!.power_source === "Mains"
+                  ${this.device!.power_source === "Mains" &&
+                  this.device!.device_type === "Router"
                     ? html`
                         <mwc-button @click=${this._onAddDevicesClick}>
                           ${this.hass!.localize(
