@@ -1,31 +1,43 @@
-import "@polymer/iron-flex-layout/iron-flex-layout-classes";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-import { PolymerElement } from "@polymer/polymer/polymer-element";
-import LocalizeMixin from "../../../mixins/localize-mixin";
+import {
+  LitElement,
+  html,
+  TemplateResult,
+  property,
+  customElement,
+} from "lit-element";
+import { HassEntity } from "home-assistant-js-websocket";
 
-class MoreInfoScript extends LocalizeMixin(PolymerElement) {
-  static get template() {
+import { HomeAssistant } from "../../../types";
+import format_date_time from "../../../common/datetime/format_date_time";
+
+@customElement("more-info-script")
+class MoreInfoScript extends LitElement {
+  @property() public hass!: HomeAssistant;
+  @property() public stateObj?: HassEntity;
+
+  protected render(): TemplateResult | void {
+    if (!this.hass || !this.stateObj) {
+      return html``;
+    }
+
     return html`
-      <style include="iron-flex iron-flex-alignment"></style>
-
-      <div class="layout vertical">
-        <div class="data-entry layout justified horizontal">
-          <div class="key">
-            [[localize('ui.dialogs.more_info_control.script.last_action')]]
-          </div>
-          <div class="value">[[stateObj.attributes.last_action]]</div>
-        </div>
+      <div>
+        ${this.hass.localize(
+          "ui.dialogs.more_info_control.script.last_triggered"
+        )}:
+        ${this.stateObj.attributes.last_triggered
+          ? format_date_time(
+              new Date(this.stateObj.attributes.last_triggered),
+              this.hass.language
+            )
+          : this.hass.localize("ui.components.relative_time.never")}
       </div>
     `;
   }
-
-  static get properties() {
-    return {
-      stateObj: {
-        type: Object,
-      },
-    };
-  }
 }
 
-customElements.define("more-info-script", MoreInfoScript);
+declare global {
+  interface HTMLElementTagNameMap {
+    "more-info-script": MoreInfoScript;
+  }
+}
