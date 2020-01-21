@@ -31,7 +31,7 @@ export class HaDeviceCard extends LitElement {
         <div class="card-content">
           <div class="info">
             <div class="model">${this.device.model}</div>
-            ${this.device.manufacturer && this.device.manufacturer !== ""
+            ${this.device.manufacturer
               ? html`
                   <div class="manuf">
                     ${this.hass.localize(
