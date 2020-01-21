@@ -1597,6 +1597,9 @@
             "no_devices": "This page allows you to control your devices, however it looks like you have no devices set up yet. Head to the integrations page to get started.",
             "go_to_integrations_page": "Go to the integrations page."
           },
+          "entities": {
+            "never_triggered": "Never triggered"
+          },
           "shopping-list": {
             "checked_items": "Checked items",
             "clear_items": "Clear checked items",
