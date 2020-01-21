@@ -1263,7 +1263,7 @@
                     "caption": "Интеграции",
                     "config_entry": {
                         "area": "Помещение: {area}",
-                        "delete_button": "Удалить {integration}",
+                        "delete_button": "Удалить интеграцию {integration}",
                         "delete_confirm": "Вы уверены, что хотите удалить эту интеграцию?",
                         "device_unavailable": "устройство недоступно",
                         "entity_unavailable": "объект недоступен",
@@ -1274,8 +1274,8 @@
                         "no_device": "Объекты без устройств",
                         "no_devices": "Эта интеграция не имеет устройств",
                         "restart_confirm": "Перезапустите Home Assistant, чтобы завершить удаление этой интеграции",
-                        "settings_button": "Настройки для {integration}",
-                        "system_options_button": "Системные параметры для {integration}",
+                        "settings_button": "Настройки интеграции {integration}",
+                        "system_options_button": "Системные параметры интеграции {integration}",
                         "via": "Подключено через"
                     },
                     "config_flow": {
@@ -1899,6 +1899,7 @@
                             "name": "Датчик"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "Для работы этой карточки необходимо настроить интеграцию `shopping_list`.",
                             "name": "Список покупок"
                         },
                         "thermostat": {
@@ -2214,6 +2215,8 @@
                     "link_promo": "Помочь в переводе"
                 },
                 "logout": "Выйти",
+                "logout_text": "Вы уверены, что хотите выйти из системы?",
+                "logout_title": "Выйти из системы?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Вы уверены, что хотите удалить токен доступа для {name}?",
                     "create": "Создать токен",

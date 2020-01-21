@@ -1906,6 +1906,7 @@
                             "name": "傳感器"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "此卡片需要先設定「shopping_list」整合。",
                             "name": "購物清單"
                         },
                         "thermostat": {
@@ -2221,6 +2222,8 @@
                     "link_promo": "協助翻譯"
                 },
                 "logout": "登出",
+                "logout_text": "確定要登出？",
+                "logout_title": "登出？",
                 "long_lived_access_tokens": {
                     "confirm_delete": "確定要刪除{name}存取密鑰嗎？",
                     "create": "創建密鑰",

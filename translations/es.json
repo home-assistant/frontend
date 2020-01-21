@@ -1506,13 +1506,13 @@
                         "issue_zigbee_command": "Emitir comando Zigbee"
                     },
                     "clusters": {
-                        "header": "Clusters",
+                        "header": "Clústeres",
                         "help_cluster_dropdown": "Selecciona un clúster para ver atributos y comandos.",
                         "introduction": "Los clústeres son los bloques de construcción para la funcionalidad de Zigbee. Separan la funcionalidad en unidades lógicas. Hay tipos de cliente y servidor y se componen de atributos y comandos."
                     },
                     "common": {
                         "add_devices": "Añadir dispositivos",
-                        "clusters": "Clusters",
+                        "clusters": "Clústeres",
                         "devices": "Dispositivos",
                         "manufacturer_code_override": "Anulación del código del fabricante",
                         "value": "Valor"
@@ -1527,14 +1527,14 @@
                         "header": "Domótica Zigbee - Dispositivo"
                     },
                     "group_binding": {
-                        "bind_button_help": "Enlazar el grupo seleccionado a los clústeres de dispositivos seleccionados.",
-                        "bind_button_label": "Enlazar grupo",
-                        "cluster_selection_help": "Selecciona los clústeres que desea enlazar al grupo seleccionado.",
-                        "group_picker_help": "Seleccione un grupo para emitir un comando de enlace.",
-                        "group_picker_label": "Grupos enlazables",
+                        "bind_button_help": "Vincula el grupo seleccionado a los clústeres de dispositivos seleccionados.",
+                        "bind_button_label": "Vincular grupo",
+                        "cluster_selection_help": "Selecciona los clústeres que deseas vincular al grupo seleccionado.",
+                        "group_picker_help": "Selecciona un grupo para emitir un comando de vinculación.",
+                        "group_picker_label": "Grupos vinculables",
                         "header": "Vinculación de grupos",
-                        "introduction": "Enlazar y desenlazar grupos.",
-                        "unbind_button_help": "Desvincule el grupo seleccionado de los clústeres de dispositivos seleccionados.",
+                        "introduction": "Vincular y desvincular grupos.",
+                        "unbind_button_help": "Desvincula el grupo seleccionado de los clústeres de dispositivos seleccionados.",
                         "unbind_button_label": "Desvincular grupo"
                     },
                     "groups": {
@@ -1906,6 +1906,7 @@
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "Esta tarjeta requiere que se configure la integración 'Lista de la compra'.",
                             "name": "Lista de la compra"
                         },
                         "thermostat": {
@@ -1974,7 +1975,7 @@
                     "save_config": {
                         "cancel": "No importa",
                         "header": "Tomar el control de la interfaz de usuario Lovelace",
-                        "para": "Por defecto Home Assistant se encargará de tu interfaz de usuario y la actualizará cuando haya nuevas entidades o componentes Lovelace disponibles. Si asumes el control, ya no haremos más cambios automáticamente por ti.",
+                        "para": "Por defecto Home Assistant se encargará de tu interfaz de usuario, actualizándola cuando haya nuevas entidades o componentes Lovelace disponibles. Si asumes el control, ya no haremos más cambios automáticamente por ti.",
                         "para_sure": "¿Estás seguro de que quieres tomar el control de tu interfaz de usuario?",
                         "save": "Tomar el control"
                     },
@@ -2221,6 +2222,8 @@
                     "link_promo": "Ayuda traduciendo"
                 },
                 "logout": "Cerrar sesión",
+                "logout_text": "¿Estás seguro de que quieres cerrar la sesión?",
+                "logout_title": "¿Cerrar sesión?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "¿Estás seguro de que quieres eliminar el token de acceso para {name}?",
                     "create": "Crear Token",
