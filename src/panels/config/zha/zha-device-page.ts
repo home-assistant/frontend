@@ -79,48 +79,53 @@ export class ZHADevicePage extends LitElement {
           .hass="${this.hass}"
           .device=${this.device}
         ></zha-node>
-        <zha-clusters
-          .hass="${this.hass}"
-          .isWide="${this.isWide}"
-          .selectedDevice="${this.device}"
-          @zha-cluster-selected="${this._onClusterSelected}"
-        ></zha-clusters>
-        ${this._selectedCluster
-          ? html`
-              <zha-cluster-attributes
-                .isWide="${this.isWide}"
-                .hass="${this.hass}"
-                .selectedNode="${this.device}"
-                .selectedCluster="${this._selectedCluster}"
-              ></zha-cluster-attributes>
 
-              <zha-cluster-commands
-                .isWide="${this.isWide}"
-                .hass="${this.hass}"
-                .selectedNode="${this.device}"
-                .selectedCluster="${this._selectedCluster}"
-              ></zha-cluster-commands>
-            `
-          : ""}
-        ${this._bindableDevices.length > 0
+        ${this.device && this.device.device_type !== "Coordinator"
           ? html`
-              <zha-device-binding-control
-                .isWide="${this.isWide}"
+              <zha-clusters
                 .hass="${this.hass}"
-                .selectedDevice="${this.device}"
-                .bindableDevices="${this._bindableDevices}"
-              ></zha-device-binding-control>
-            `
-          : ""}
-        ${this.device && this._groups.length > 0
-          ? html`
-              <zha-group-binding-control
                 .isWide="${this.isWide}"
-                .narrow="${this.narrow}"
-                .hass="${this.hass}"
                 .selectedDevice="${this.device}"
-                .groups="${this._groups}"
-              ></zha-group-binding-control>
+                @zha-cluster-selected="${this._onClusterSelected}"
+              ></zha-clusters>
+              ${this._selectedCluster
+                ? html`
+                    <zha-cluster-attributes
+                      .isWide="${this.isWide}"
+                      .hass="${this.hass}"
+                      .selectedNode="${this.device}"
+                      .selectedCluster="${this._selectedCluster}"
+                    ></zha-cluster-attributes>
+
+                    <zha-cluster-commands
+                      .isWide="${this.isWide}"
+                      .hass="${this.hass}"
+                      .selectedNode="${this.device}"
+                      .selectedCluster="${this._selectedCluster}"
+                    ></zha-cluster-commands>
+                  `
+                : ""}
+              ${this._bindableDevices.length > 0
+                ? html`
+                    <zha-device-binding-control
+                      .isWide="${this.isWide}"
+                      .hass="${this.hass}"
+                      .selectedDevice="${this.device}"
+                      .bindableDevices="${this._bindableDevices}"
+                    ></zha-device-binding-control>
+                  `
+                : ""}
+              ${this.device && this._groups.length > 0
+                ? html`
+                    <zha-group-binding-control
+                      .isWide="${this.isWide}"
+                      .narrow="${this.narrow}"
+                      .hass="${this.hass}"
+                      .selectedDevice="${this.device}"
+                      .groups="${this._groups}"
+                    ></zha-group-binding-control>
+                  `
+                : ""}
             `
           : ""}
         <div class="spacer" />
@@ -137,14 +142,20 @@ export class ZHADevicePage extends LitElement {
   private async _fetchData(): Promise<void> {
     if (this.ieee && this.hass) {
       this.device = await fetchZHADevice(this.hass, this.ieee);
-      this._bindableDevices = (
-        await fetchBindableDevices(this.hass, this.ieee)
-      ).sort(sortZHADevices);
+      this._bindableDevices =
+        this.device && this.device.device_type !== "Coordinator"
+          ? (await fetchBindableDevices(this.hass, this.ieee)).sort(
+              sortZHADevices
+            )
+          : [];
     }
   }
 
   private async _fetchGroups() {
-    this._groups = (await fetchGroups(this.hass!)).sort(sortZHAGroups);
+    this._groups =
+      this.device && this.device.device_type !== "Coordinator"
+        ? (await fetchGroups(this.hass!)).sort(sortZHAGroups)
+        : [];
   }
 
   static get styles(): CSSResult[] {

@@ -56,6 +56,7 @@ class DialogZHADeviceInfo extends LitElement {
                 .device=${this._device}
                 @zha-device-removed=${this._onDeviceRemoved}
                 .showEntityDetail=${false}
+                .showActions="${this._device.device_type !== "Coordinator"}"
               ></zha-device-card>
             `}
       </ha-paper-dialog>
