@@ -31,13 +31,17 @@ export class HaDeviceCard extends LitElement {
         <div class="card-content">
           <div class="info">
             <div class="model">${this.device.model}</div>
-            <div class="manuf">
-              ${this.hass.localize(
-                "ui.panel.config.integrations.config_entry.manuf",
-                "manufacturer",
-                this.device.manufacturer
-              )}
-            </div>
+            ${this.device.manufacturer
+              ? html`
+                  <div class="manuf">
+                    ${this.hass.localize(
+                      "ui.panel.config.integrations.config_entry.manuf",
+                      "manufacturer",
+                      this.device.manufacturer
+                    )}
+                  </div>
+                `
+              : ""}
             ${this.device.area_id
               ? html`
                   <div class="area">
