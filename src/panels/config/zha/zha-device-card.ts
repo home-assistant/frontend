@@ -224,13 +224,19 @@ class ZHADeviceCard extends LitElement {
             `
           )}
         </div>
-        <div class="card-actions">
-          <mwc-button @click=${this._addToLovelaceView}>
-            ${this.hass.localize(
-              "ui.panel.config.devices.entities.add_entities_lovelace"
-            )}
-          </mwc-button>
-        </div>
+        ${
+          this.device!.entities && this.device!.entities.length > 0
+            ? html`
+                <div class="card-actions">
+                  <mwc-button @click=${this._addToLovelaceView}>
+                    ${this.hass.localize(
+                      "ui.panel.config.devices.entities.add_entities_lovelace"
+                    )}
+                  </mwc-button>
+                </div>
+              `
+            : ""
+        }
         ${
           this.showEditableInfo
             ? html`
