@@ -73,8 +73,5 @@ If user exposed functionality or configuration variables are added/changed:
 
 <!--
   Thank you for contributing <3
-
-  Below, some useful links you could explore:
 -->
-[dev-checklist]: https://developers.home-assistant.io/docs/en/development_checklist.html
 [docs-repository]: https://github.com/home-assistant/home-assistant.io
