@@ -638,6 +638,9 @@
                     "reconfigure": "Rekonfigurer enhet",
                     "remove": "Fjern enhet"
                 },
+                "confirmations": {
+                    "remove": "Er du sikker på at du vil fjerne enheten?"
+                },
                 "last_seen": "Sist sett",
                 "manuf": "av {manufacturer}",
                 "no_area": "Intet område",
@@ -1190,7 +1193,7 @@
                     "details": "Her er alle detaljer for enheten.",
                     "device_not_found": "Enhet ikke funnet",
                     "entities": {
-                        "add_entities_lovelace": "Legg til alle enhetsenheter i Lovelace",
+                        "add_entities_lovelace": "Legg til alle enhetsenheter i Lovelace UI",
                         "entities": "Enheter",
                         "none": "Denne enheten har ingen enheter"
                     },
@@ -1272,7 +1275,7 @@
                         "no_devices": "Denne integrasjonen har ingen enheter.",
                         "restart_confirm": "Start Home Assistant på nytt for å fullføre fjerningen av denne integrasjonen",
                         "settings_button": "Rediger innstillinger for {integration}",
-                        "system_options_button": "System alternativer for {integration}",
+                        "system_options_button": "Systemalternativer for {integration}",
                         "via": "Tilkoblet via"
                     },
                     "config_flow": {
@@ -1523,6 +1526,17 @@
                     "devices": {
                         "header": "Zigbee Hjemme Automasjon - Enhet"
                     },
+                    "group_binding": {
+                        "bind_button_help": "Bind den valgte gruppen til de valgte enhetsklyngene.",
+                        "bind_button_label": "Bind gruppe",
+                        "cluster_selection_help": "Velg klynger som skal bindes til den valgte gruppen.",
+                        "group_picker_help": "Velg en gruppe for å utstede en bind-kommando.",
+                        "group_picker_label": "Bindbare grupper",
+                        "header": "Gruppebinding",
+                        "introduction": "Bind og frigi grupper.",
+                        "unbind_button_help": "Fjern bindingen fra den valgte gruppen fra de valgte enhetsklyngene.",
+                        "unbind_button_label": "Frigi gruppe"
+                    },
                     "groups": {
                         "add_members": "Legg til medlemmer",
                         "adding_members": "Legger til medlemmer",
@@ -1751,8 +1765,8 @@
             },
             "lovelace": {
                 "add_entities": {
-                    "generated_unsupported": "Du kan bare bruke denne funksjonen når du har tatt kontroll over Lovelace.",
-                    "saving_failed": "Lagring av Lovelace konfigurasjon feilet.",
+                    "generated_unsupported": "Du kan bare bruke denne funksjonen når du har tatt kontroll over Lovelace UI.",
+                    "saving_failed": "Lagring av Lovelace UI-konfigurasjon mislyktes.",
                     "yaml_unsupported": "Du kan ikke bruke denne funksjonen når du bruker Lovelace i YAML-modus."
                 },
                 "cards": {
@@ -1778,7 +1792,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace-konfigurasjonen ble oppdatert, ønsker du å oppdatere?",
+                    "message": "Lovelace UI-konfigurasjonen ble oppdatert. Oppdater for å se endringer?",
                     "refresh": "Oppdater"
                 },
                 "editor": {
@@ -1892,6 +1906,7 @@
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "Dette kortet krever at \"shopping_list\" -integrasjonen er satt opp.",
                             "name": "Handleliste"
                         },
                         "thermostat": {
@@ -1920,7 +1935,7 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "Rediger tittel",
-                        "explanation": "Denne tittelen vises over alle visningene dine i Lovelace.",
+                        "explanation": "Denne tittelen vises over alle visningene dine i Lovelace UI.",
                         "header": "Tittel på Lovelace UI"
                     },
                     "edit_view": {
@@ -1934,7 +1949,7 @@
                     },
                     "header": "Rediger brukergrensesnitt",
                     "menu": {
-                        "open": "Åpne Lovelace-menyen",
+                        "open": "Åpne Lovelace UI-menyen",
                         "raw_editor": "Tekstbasert konfigurasjonsredigering"
                     },
                     "migrate": {
@@ -1960,12 +1975,12 @@
                     "save_config": {
                         "cancel": "Glem det",
                         "header": "Ta kontroll over Lovelace brukergrensesnittet ditt",
-                        "para": "Som standard hjelper Home Assistant til med å vedlikeholde brukergrensesnittet ditt, oppdaterer det når nye enheter eller Lovelace-komponenter blir tilgjengelige. Hvis du tar kontroll, vil vi ikke lenger gjøre endringer automatisk for deg.",
+                        "para": "Som standard vil Home Assistant opprettholde brukergrensesnittet ditt, oppdatere det når nye enheter eller Lovelace UI-komponenter blir tilgjengelige. Hvis du tar kontroll, vil vi ikke lenger gjøre endringer automatisk for deg.",
                         "para_sure": "Er du sikker på at du vil ta kontroll over brukergrensesnittet ditt?",
                         "save": "Ta kontroll"
                     },
                     "suggest_card": {
-                        "add": "Legg til i Lovelace",
+                        "add": "Legg til i Lovelace UI",
                         "create_own": "Velg et annet kort",
                         "header": "Vi har laget et forslag til deg"
                     },
@@ -1984,7 +1999,7 @@
                     "refresh": "Oppdater",
                     "unused_entities": "Ubrukte entiteter"
                 },
-                "reload_lovelace": "Last inn Lovelace på nytt",
+                "reload_lovelace": "Last inn UI",
                 "unused_entities": {
                     "available_entities": "Dette er enheter som du har tilgjengelig, men som ikke er i Lovelace UI ennå.",
                     "domain": "Domene",
@@ -2207,6 +2222,8 @@
                     "link_promo": "Bidra til å oversette"
                 },
                 "logout": "Logg ut",
+                "logout_text": "Er du sikker på at du vil logge av?",
+                "logout_title": "Logg av?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Er du sikker på at du vil slette tilgangstoken for {name}?",
                     "create": "Opprett Token",
