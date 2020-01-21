@@ -8,7 +8,8 @@ import {
 import { HassEntity } from "home-assistant-js-websocket";
 
 import { HomeAssistant } from "../../../types";
-import format_date_time from "../../../common/datetime/format_date_time";
+
+import "../../../components/ha-relative-time";
 
 @customElement("more-info-script")
 class MoreInfoScript extends LitElement {
@@ -26,10 +27,12 @@ class MoreInfoScript extends LitElement {
           "ui.dialogs.more_info_control.script.last_triggered"
         )}:
         ${this.stateObj.attributes.last_triggered
-          ? format_date_time(
-              new Date(this.stateObj.attributes.last_triggered),
-              this.hass.language
-            )
+          ? html`
+              <ha-relative-time
+                .hass=${this.hass}
+                .datetime=${this.stateObj.attributes.last_triggered}
+              ></ha-relative-time>
+            `
           : this.hass.localize("ui.components.relative_time.never")}
       </div>
     `;
