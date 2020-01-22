@@ -125,6 +125,13 @@ class HaConfigRouter extends HassRouterPage {
             /* webpackChunkName: "panel-config-users" */ "./users/ha-config-users"
           ),
       },
+      zone: {
+        tag: "ha-config-zone",
+        load: () =>
+          import(
+            /* webpackChunkName: "panel-config-zone" */ "./zone/ha-config-zone"
+          ),
+      },
       zha: {
         tag: "zha-config-dashboard-router",
         load: () =>
