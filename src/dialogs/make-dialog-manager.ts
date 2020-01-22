@@ -5,6 +5,7 @@ declare global {
   // for fire event
   interface HASSDomEvents {
     "show-dialog": ShowDialogParams<unknown>;
+    "close-dialog": undefined;
   }
   // for add event listener
   interface HTMLElementEventMap {
