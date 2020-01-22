@@ -63,8 +63,6 @@ class MoreInfoContent extends UpdatingElement {
         ? stateObj.attributes.custom_ui_more_info
         : "more-info-" + stateMoreInfoType(stateObj);
 
-    console.log(moreInfoType);
-
     dynamicContentUpdater(this, moreInfoType.toUpperCase(), {
       hass,
       stateObj,
