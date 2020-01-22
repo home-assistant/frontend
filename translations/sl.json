@@ -533,6 +533,7 @@
         },
         "common": {
             "cancel": "Prekliči",
+            "close": "Zapri",
             "loading": "Nalaganje",
             "no": "Ne",
             "save": "Shrani",
@@ -588,6 +589,13 @@
             },
             "more_info_control": {
                 "dismiss": "Opusti pogovorno okno",
+                "restored": {
+                    "confirm_remove_text": "Ali ste prepričani, da želite odstraniti to entiteto?",
+                    "confirm_remove_title": "Ali želite odstraniti entiteto?",
+                    "not_provided": "Ta entiteta trenutno ni na voljo in je osirotelo odstranjene, spremenjene ali nefunkcionalne integracije ali naprave.",
+                    "remove_action": "Odstranite entiteto",
+                    "remove_intro": "Če entiteta ni več v uporabi, jo lahko očistite tako, da jo odstranite."
+                },
                 "script": {
                     "last_action": "Zadnje Dejanje"
                 },
@@ -955,6 +963,7 @@
                             "manage_entities": "Upravljajte entitete",
                             "security_devices": "Varnostne naprave",
                             "sync_entities": "Sinhronizirajte entitete z Googlom",
+                            "sync_entities_404_message": "Ni bilo mogoče sinhronizirati vaših entitet z Googlom, prosite Google »Hej Google, sinhroniziraj moje naprave«, da bi sinhroniziral vaše entitete.",
                             "title": "Pomočnik Google"
                         },
                         "integrations": "Integracije",
@@ -1178,6 +1187,11 @@
                     "description": "Upravljajte povezane naprave",
                     "details": "Tu so vse podrobnosti vaše naprave.",
                     "device_not_found": "Naprave ni bilo mogoče najti",
+                    "entities": {
+                        "add_entities_lovelace": "Dodajte vse entitete naprave v uporabniški vmesnik Lovelace",
+                        "entities": "Entitete",
+                        "none": "Ta naprava nima entitet"
+                    },
                     "info": "Informacije o napravi",
                     "unknown_error": "Neznana napaka",
                     "unnamed_device": "Neimenovana naprava"
@@ -1198,17 +1212,42 @@
                         "update": "POSODOBITEV"
                     },
                     "picker": {
+                        "disable_selected": {
+                            "button": "Onemogoči izbrane",
+                            "confirm_text": "Onemogočeni subjekti ne bodo dodani v Home Assistant-a.",
+                            "confirm_title": "Ali želite onemogočiti {number} entiteto/i/e?"
+                        },
+                        "enable_selected": {
+                            "button": "Omogoči izbrane",
+                            "confirm_text": "Naprave bodo znova na voljo v  Home Assistant-u, če so zdaj onemogočene.",
+                            "confirm_title": "Ali želite omogočiti {number} entiteto/i/e?"
+                        },
+                        "filter": {
+                            "filter": "Filter",
+                            "show_disabled": "Pokaži onemogočene subjekte",
+                            "show_unavailable": "Pokaži nerazpoložljive entitete"
+                        },
                         "header": "Entitete",
                         "headers": {
                             "enabled": "Omogočeno",
                             "entity_id": "ID subjekta",
                             "integration": "Integracija",
-                            "name": "Ime"
+                            "name": "Ime",
+                            "status": "Stanje"
                         },
                         "integrations_page": "Stran za integracije",
                         "introduction": "Home Assistant vodi register vseh entitet, ki jih je kdajkoli videl in jih je mogoče enolično identificirati. Vsak od teh entitet ima dodeljen ID entitete, ki bo rezerviran samo za to entiteto.",
                         "introduction2": "Z registrom entitet preglasite ime, spremenite ID entitete ali odstranite vnos iz Home Assistent-a. Opomba, odstranitev vnosa registra entitet ne bo odstranila entitete. Če želite to narediti, sledite spodnji povezavi in jo odstranite s strani za integracijo.",
+                        "remove_selected": {
+                            "button": "Odstrani izbrane"
+                        },
+                        "selected": "{številka} izbrana/ih",
                         "show_disabled": "Pokaži onemogočene subjekte",
+                        "status": {
+                            "disabled": "Onemogočeno",
+                            "ok": "V redu",
+                            "unavailable": "Ni na voljo"
+                        },
                         "unavailable": "(ni na voljo)"
                     }
                 },

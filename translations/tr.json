@@ -529,6 +529,7 @@
         },
         "common": {
             "cancel": "İptal",
+            "close": "Kapat",
             "loading": "Yükleniyor",
             "no": "Hayır",
             "save": "Kaydet",
@@ -580,6 +581,12 @@
             },
             "more_info_control": {
                 "dismiss": "İletişim kutusunu kapat",
+                "restored": {
+                    "confirm_remove_text": "Bu varlığı kaldırmak istediğinizden emin misiniz?",
+                    "confirm_remove_title": "Varlık kaldırılsın mı?",
+                    "remove_action": "Varlığı kaldır",
+                    "remove_intro": "Varlık artık kullanılmıyorsa, kaldırarak temizleyebilirsiniz."
+                },
                 "script": {
                     "last_action": "Son Eylem"
                 },
@@ -1127,6 +1134,11 @@
                     "description": "Bağlı cihazları yönet",
                     "details": "Cihazınızın tüm detayları.",
                     "device_not_found": "Cihaz bulunamadı.",
+                    "entities": {
+                        "add_entities_lovelace": "Tüm cihaz varlıklarını Lovelace kullanıcı arayüzüne ekle",
+                        "entities": "Varlıkları",
+                        "none": "Bu cihazın varlığı yok"
+                    },
                     "info": "Cihaz bilgileri",
                     "unknown_error": "Bilinmeyen hata",
                     "unnamed_device": "Adsız cihaz"
@@ -1143,14 +1155,39 @@
                         "update": "GÜNCELLEme"
                     },
                     "picker": {
+                        "disable_selected": {
+                            "button": "Seçilenleri devre dışı bırak",
+                            "confirm_text": "Devre dışı bırakılan varlıklar Home Assistant'a eklenmeyecek.",
+                            "confirm_title": "{number} varlığı devre dışı bırakmak istiyor musunuz?"
+                        },
+                        "enable_selected": {
+                            "button": "Seçilenleri etkinleştir",
+                            "confirm_title": "{number} varlığı etkinleştirmek istiyor musunuz?"
+                        },
+                        "filter": {
+                            "filter": "filtre",
+                            "show_disabled": "Devre dışı bırakılan varlıkları göster",
+                            "show_unavailable": "Kullanılamayan varlıkları göster"
+                        },
                         "header": "Varlıklar",
                         "headers": {
                             "enabled": "Etkin",
                             "entity_id": "Varlık kimliği",
                             "integration": "Entegrasyon",
-                            "name": "Ad"
+                            "name": "Ad",
+                            "status": "durum"
                         },
                         "integrations_page": "Entegrasyon sayfası",
+                        "remove_selected": {
+                            "button": "Seçilenleri kaldır",
+                            "confirm_title": "{number} varlığı kaldırmak istiyor musunuz?"
+                        },
+                        "selected": "{number} seçildi",
+                        "status": {
+                            "disabled": "Devre dışı",
+                            "ok": "Tamam",
+                            "unavailable": "Kullanım dışı"
+                        },
                         "unavailable": "(kullanım dışı)"
                     }
                 },
@@ -1355,6 +1392,10 @@
                         "search_again": "Yeniden Ara",
                         "spinner": "ZHA Zigbee cihazları aranıyor ..."
                     },
+                    "add": {
+                        "caption": "Cihaz Ekle",
+                        "description": "Zigbee ağına cihaz ekleme"
+                    },
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "get_zigbee_attribute": "Zigbee Özelliğini al",
@@ -1371,13 +1412,39 @@
                         "device_name_placeholder": "Kullanıcıya verilen ad",
                         "update_name_button": "Adı Güncelle"
                     },
+                    "devices": {
+                        "header": "Zigbee Ev Otomasyonu - Cihaz"
+                    },
+                    "groups": {
+                        "add_members": "Üye ekle",
+                        "adding_members": "Üye Ekleme",
+                        "create": "Grup oluştur",
+                        "create_group": "Zigbee Ev Otomasyonu - Grup Oluştur",
+                        "create_group_details": "Yeni bir zigbee grubu oluşturmak için gerekli ayrıntıları girin",
+                        "creating_group": "Grup Oluşturma",
+                        "group_id": "Grup kimliği",
+                        "group_info": "Grup Bilgisi",
+                        "group_name_placeholder": "Grup Adı",
+                        "group_not_found": "Grup bulunamadı!",
+                        "groups": "Gruplar",
+                        "introduction": "Zigbee grupları oluşturma ve değiştirme",
+                        "manage_groups": "Zigbee Gruplarını Yönetin",
+                        "members": "Üyeler",
+                        "remove_groups": "Grupları Kaldır",
+                        "remove_members": "Üyeleri Kaldır",
+                        "removing_groups": "Grupları Kaldırma",
+                        "removing_members": "Üyeleri Kaldırma"
+                    },
+                    "header": "Zigbee Ev Otomasyonunu Yapılandırma",
+                    "introduction": "Burada ZHA bileşenini yapılandırmak mümkündür. Kullanıcı arayüzünden henüz her şey yapılandırılamıyor, ancak üzerinde çalışıyoruz.",
                     "network_management": {
                         "header": "Ağ yönetimi"
                     },
                     "node_management": {
                         "header": "Cihaz yönetimi",
                         "hint_wakeup": "Xiaomi sensörleri gibi bazı cihazlarda, onlarla etkileşime girerken cihazları uyanık tutan ~ 5 saniyelik aralıklarla basabileceğiniz bir uyanma düğmesi bulunur."
-                    }
+                    },
+                    "title": "Zigbee Ev Otomasyonu"
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1522,6 +1589,11 @@
                 "showing_entries": "Gösterilen girişler"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "Bu işlevi yalnızca Lovelace UI'nin denetimini ele geçirdiyseniz kullanabilirsiniz.",
+                    "saving_failed": "Lovelace UI yapılandırması kaydedilemedi.",
+                    "yaml_unsupported": "YAML modunda Lovelace kullanıcı arayüzünü kullanırken bu işlevi kullanamazsınız."
+                },
                 "cards": {
                     "empty_state": {
                         "go_to_integrations_page": "Entegrasyonlar sayfasına gidin.",
@@ -1638,6 +1710,7 @@
                             "name": "Sensör"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "Bu kart, 'shopping_list' tümleştirmesinin ayarlanmasını gerektirir.",
                             "name": "Alışveriş listesi"
                         },
                         "thermostat": {
@@ -1652,6 +1725,7 @@
                         "delete": "Sil",
                         "edit": "Düzenle",
                         "header": "Kart Ayarları",
+                        "move": "Görünüme Taşı",
                         "options": "Daha fazla seçenek",
                         "pick_card": "Eklemek istediğiniz kartı seçin.",
                         "save": "Kaydet",
@@ -1685,6 +1759,7 @@
                         "confirm_unsaved_comments": "Yapılandırmanız yorumlar içeriyor, bunlar kaydedilmeyecek. Devam etmek istiyor musun?",
                         "error_invalid_config": "Yapılandırmanız geçerli değil: {error}",
                         "error_parse_yaml": "YAML alınamadı: {error}",
+                        "error_remove": "Config kaldırılamıyor: {error}",
                         "error_save_yaml": "YAML kaydedilemiyor: {error}",
                         "header": "Yapılandırmayı Düzenle",
                         "save": "Kaydet",
@@ -1697,6 +1772,10 @@
                         "para": "Home Assistant varsayılan olarak kullanıcı arayüzünüzü yönetecek, yeni Lovelace bileşenleri ya da varlıklar kullanıma sunulduğunda onu güncelleyecektir. Eğer bunu kontrolünüz altına almak istiyorsanız daha sonra biz sizin için bu değişiklikleri otomatik olarak gerçekleştiremeyeceğiz.",
                         "para_sure": "Kullanıcı arayüzünüzü kontrol altına almak istediğinize emin misiniz?",
                         "save": "Kontrol altına al"
+                    },
+                    "suggest_card": {
+                        "add": "Lovelace kullanıcı arayüzüne ekle",
+                        "header": "Sizin için bir öneri oluşturduk"
                     },
                     "view": {
                         "panel_mode": {
@@ -1920,6 +1999,8 @@
                     "link_promo": "Çeviriye yardım et"
                 },
                 "logout": "Çıkış yap",
+                "logout_text": "Çıkış yapmak istediğinizden emin misiniz?",
+                "logout_title": "Çıkış Yap?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "{name} için erişim anahtarını silmek istediğinizden emin misiniz?",
                     "create": "Anahtar oluştur.",
