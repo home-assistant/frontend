@@ -18,7 +18,6 @@ export const iconColorCSS = css`
   ha-icon[data-domain="sun"][data-state="above_horizon"],
   ha-icon[data-domain="switch"][data-state="on"],
   ha-icon[data-domain="timer"][data-state="active"],
-  ha-icon[data-domain="timer"][data-state="paused"],
   ha-icon[data-domain="vacuum"][data-state="cleaning"] {
     color: var(--paper-item-icon-active-color, #fdd835);
   }
