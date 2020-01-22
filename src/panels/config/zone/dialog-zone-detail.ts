@@ -199,7 +199,7 @@ class DialogZoneDetail extends LitElement {
         radius: this._radius,
       };
       if (this._params!.entry) {
-        await this._params!.updateEntry(values);
+        await this._params!.updateEntry!(values);
       } else {
         await this._params!.createEntry(values);
       }
@@ -214,7 +214,7 @@ class DialogZoneDetail extends LitElement {
   private async _deleteEntry() {
     this._submitting = true;
     try {
-      if (await this._params!.removeEntry()) {
+      if (await this._params!.removeEntry!()) {
         this._params = undefined;
       }
     } finally {
@@ -230,8 +230,12 @@ class DialogZoneDetail extends LitElement {
     return [
       css`
         mwc-dialog {
-          --mdc-dialog-min-width: 600px;
           --mdc-dialog-title-ink-color: var(--primary-text-color);
+        }
+        @media only screen and (min-width: 600px) {
+          mwc-dialog {
+            --mdc-dialog-min-width: 600px;
+          }
         }
         .form {
           padding-bottom: 24px;
