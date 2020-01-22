@@ -148,6 +148,24 @@ class HaConfigSectionServerControl extends LocalizeMixin(PolymerElement) {
                 </ha-call-service-button>
               </div>
             </template>
+            <template is="dom-if" if="[[personLoaded(hass)]]">
+              <div class="card-actions">
+                <ha-call-service-button
+                  hass="[[hass]]"
+                  domain="person"
+                  service="reload"
+                  >[[localize('ui.panel.config.server_control.section.reloading.person')]]
+                </ha-call-service-button>
+              </div>
+            </template>
+            <div class="card-actions">
+              <ha-call-service-button
+                hass="[[hass]]"
+                domain="zone"
+                service="reload"
+                >[[localize('ui.panel.config.server_control.section.reloading.zone')]]
+              </ha-call-service-button>
+            </div>
           </ha-card>
         </template>
         <ha-card
@@ -223,6 +241,10 @@ class HaConfigSectionServerControl extends LocalizeMixin(PolymerElement) {
 
   sceneLoaded(hass) {
     return isComponentLoaded(hass, "scene");
+  }
+
+  personLoaded(hass) {
+    return isComponentLoaded(hass, "person");
   }
 
   validateConfig() {

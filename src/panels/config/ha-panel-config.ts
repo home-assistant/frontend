@@ -115,6 +115,7 @@ class HaPanelConfig extends LitElement {
                     { page: "scene" },
                     { page: "core", core: true },
                     { page: "areas", core: true },
+                    { page: "zone" },
                     { page: "person" },
                     { page: "users", core: true },
                     { page: "server_control", core: true },
@@ -163,7 +164,7 @@ class HaPanelConfig extends LitElement {
       }
 
       .side-bar {
-        border-right: 1px solid #e0e0e0;
+        border-right: 1px solid var(--divider-color);
         background: white;
         width: 320px;
         float: left;
