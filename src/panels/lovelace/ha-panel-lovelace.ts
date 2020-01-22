@@ -80,11 +80,9 @@ class LovelacePanel extends LitElement {
           title="${this.hass!.localize("domain.lovelace")}"
           .error="${this._errorMsg}"
         >
-          <mwc-button on-click="_forceFetchConfig"
-            >${this.hass!.localize(
-              "ui.panel.lovelace.reload_lovelace"
-            )}</mwc-button
-          >
+          <mwc-button raised @click=${this._forceFetchConfig}>
+            ${this.hass!.localize("ui.panel.lovelace.reload_lovelace")}
+          </mwc-button>
         </hass-error-screen>
       `;
     }
