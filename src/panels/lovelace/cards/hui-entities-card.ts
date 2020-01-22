@@ -200,7 +200,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     const element = createRowElement(
       this._config!.state_color
         ? {
-            state_color: this._config!.state_color,
+            state_color: true,
             ...entityConf,
           }
         : entityConf
