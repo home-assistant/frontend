@@ -4,7 +4,7 @@ trigger: none
 pr: none
 schedules:
   - cron: "0 0 * * *"
-    displayName: "rebuild cache"
+    displayName: "build preview"
     branches:
       include:
       - dev
@@ -14,7 +14,7 @@ variables:
 
 jobs:
 
-- job: 'Netlify_Cache'
+- job: 'Netlify_preview'
   pool:
     vmImage: 'ubuntu-latest'
   steps:
@@ -24,4 +24,4 @@ jobs:
 
       # Demo
       curl -X POST -d {} https://api.netlify.com/build_hooks/${NETLIFY_DEMO}
-    displayName: 'Trigger netlify rebuild'
+    displayName: 'Trigger netlify build preview'
