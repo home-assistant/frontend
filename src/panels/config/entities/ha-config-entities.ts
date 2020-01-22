@@ -46,9 +46,11 @@ import {
   DataTableColumnData,
 } from "../../../components/data-table/ha-data-table";
 import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialog-confirmation";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { DialogEntityRegistryDetail } from "./dialog-entity-registry-detail";
 
 @customElement("ha-config-entities")
-export class HaConfigEntities extends LitElement {
+export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
   @property() public isWide!: boolean;
   @property() public narrow!: boolean;
@@ -58,8 +60,6 @@ export class HaConfigEntities extends LitElement {
   @property() private _filter = "";
   @property() private _selectedEntities: string[] = [];
   @query("ha-data-table") private _dataTable!: HaDataTable;
-
-  private _unsubEntities?: UnsubscribeFunc;
 
   private _columns = memoize(
     (narrow, _language): DataTableColumnContainer => {
@@ -196,10 +196,23 @@ export class HaConfigEntities extends LitElement {
     }
   );
 
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        this._entities = entities;
+      }),
+    ];
+  }
+
   public disconnectedCallback() {
     super.disconnectedCallback();
-    if (this._unsubEntities) {
-      this._unsubEntities();
+    const dialog = document
+      .querySelector("home-assistant")!
+      .shadowRoot!.querySelector("dialog-entity-registry-detail") as
+      | DialogEntityRegistryDetail
+      | undefined;
+    if (dialog) {
+      dialog.closeDialog();
     }
   }
 
@@ -360,18 +373,6 @@ export class HaConfigEntities extends LitElement {
   protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
     loadEntityRegistryDetailDialog();
-  }
-
-  protected updated(changedProps) {
-    super.updated(changedProps);
-    if (!this._unsubEntities) {
-      this._unsubEntities = subscribeEntityRegistry(
-        this.hass.connection,
-        (entities) => {
-          this._entities = entities;
-        }
-      );
-    }
   }
 
   private _showDisabledChanged() {
