@@ -32,6 +32,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 export class EntityRegistrySettings extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public entry!: EntityRegistryEntry;
+  @property() public dialogElement!: HTMLElement;
   @property() private _name!: string;
   @property() private _entityId!: string;
   @property() private _disabledBy!: string | null;
@@ -61,7 +62,7 @@ export class EntityRegistrySettings extends LitElement {
       computeDomain(this.entry.entity_id);
 
     return html`
-      <paper-dialog-scrollable>
+      <paper-dialog-scrollable .dialogElement=${this.dialogElement}>
         ${!stateObj
           ? html`
               <div>
@@ -80,7 +81,7 @@ export class EntityRegistrySettings extends LitElement {
           <paper-input
             .value=${this._name}
             @value-changed=${this._nameChanged}
-            .label=${this.hass.localize("ui.dialogs.more_info_settings.name")}
+            .label=${this.hass.localize("ui.panel.config.entities.editor.name")}
             .placeholder=${stateObj ? computeStateName(stateObj) : ""}
             .disabled=${this._submitting}
           ></paper-input>
@@ -88,7 +89,7 @@ export class EntityRegistrySettings extends LitElement {
             .value=${this._entityId}
             @value-changed=${this._entityIdChanged}
             .label=${this.hass.localize(
-              "ui.dialogs.more_info_settings.entity_id"
+              "ui.panel.config.entities.editor.entity_id"
             )}
             error-message="Domain needs to stay the same"
             .invalid=${invalidDomainUpdate}

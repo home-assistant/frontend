@@ -601,12 +601,6 @@
           "confirm_remove_text": "Are you sure you want to remove this entity?"
         }
       },
-      "more_info_settings": {
-        "back": "Go back",
-        "save": "Save",
-        "name": "Name Override",
-        "entity_id": "Entity ID"
-      },
       "options_flow": {
         "form": {
           "header": "Options"
@@ -1305,12 +1299,14 @@
           },
           "dialog": {
             "settings": "Settings",
-            "state": "State",
-            "related": "Related"
+            "control": "Control",
+            "related": "Related",
+            "dismiss": "Dismiss"
           },
           "editor": {
+            "name": "Name Override",
+            "entity_id": "Entity ID",
             "unavailable": "This entity is not currently available.",
-            "default_name": "New Area",
             "enabled_label": "Enable entity",
             "enabled_cause": "Disabled by {cause}.",
             "enabled_description": "Disabled entities will not be added to Home Assistant.",

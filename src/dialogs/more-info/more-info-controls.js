@@ -21,6 +21,7 @@ import LocalizeMixin from "../../mixins/localize-mixin";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { removeEntityRegistryEntry } from "../../data/entity_registry";
 import { showConfirmationDialog } from "../confirmation/show-dialog-confirmation";
+import { showEntityRegistryDetailDialog } from "../../panels/config/entities/show-dialog-entity-registry-detail";
 
 const DOMAINS_NO_INFO = ["camera", "configurator", "history_graph"];
 /*
@@ -83,7 +84,7 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <div class="main-title" main-title="" on-click="enlarge">
           [[_computeStateName(stateObj)]]
         </div>
-        <template is="dom-if" if="[[canConfigure]]">
+        <template is="dom-if" if="[[registryEntry]]">
           <paper-icon-button
             aria-label$="[[localize('ui.dialogs.more_info_control.settings')]]"
             icon="hass:settings"
@@ -147,7 +148,7 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
       },
 
       dialogElement: Object,
-      canConfigure: Boolean,
+      registryEntry: Object,
 
       domain: {
         type: String,
@@ -238,7 +239,8 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _gotoSettings() {
-    this.fire("more-info-page", { page: "settings" });
+    showEntityRegistryDetailDialog(this, { entry: this.registryEntry });
+    this.fire("hass-more-info", { entityId: null });
   }
 
   _computeRTL(hass) {
