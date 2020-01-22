@@ -374,7 +374,7 @@
             },
             "climate": {
                 "aux_heat": "Aux panas",
-                "away_mode": "Mode jauh",
+                "away_mode": "Mode di luar rumah",
                 "currently": "Saat ini",
                 "fan_mode": "Mode kipas",
                 "on_off": "Hidup / mati",

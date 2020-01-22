@@ -1526,6 +1526,17 @@
                     "devices": {
                         "header": "Zigbee Home Automation - urządzenie"
                     },
+                    "group_binding": {
+                        "bind_button_help": "Powiąż wybraną grupę z wybranymi klastrami urządzeń.",
+                        "bind_button_label": "Powiąż grupę",
+                        "cluster_selection_help": "Wybierz klastry, aby powiązać z wybraną grupą.",
+                        "group_picker_help": "Wybierz grupę, aby wydać polecenie powiązania.",
+                        "group_picker_label": "Grupy do powiązania",
+                        "header": "Powiązanie grupowe",
+                        "introduction": "Powiąż i usuń powiązania grup.",
+                        "unbind_button_help": "Usuń powiązanie wybranej grupy z wybranych klastrów urządzeń.",
+                        "unbind_button_label": "Usuń powiązanie grupy"
+                    },
                     "groups": {
                         "add_members": "Dodaj członków",
                         "adding_members": "Dodawanie członków",
@@ -1895,6 +1906,7 @@
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "Ta karta wymaga ustawienia integracji  `shopping_list`.",
                             "name": "Lista zakupów"
                         },
                         "thermostat": {
@@ -2210,6 +2222,8 @@
                     "link_promo": "Pomóż w tłumaczeniu"
                 },
                 "logout": "Wyloguj",
+                "logout_text": "Czy na pewno chcesz się wylogować?",
+                "logout_title": "Wylogować się?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Na pewno chcesz usunąć token dla {name}?",
                     "create": "Utwórz token",
