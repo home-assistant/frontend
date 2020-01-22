@@ -66,7 +66,12 @@ class LocationEditor extends LitElement {
 
     if (changedProps.has("location")) {
       this._updateMarker();
-      if (!this._ignoreFitToMap || this._ignoreFitToMap !== this.location) {
+      if (
+        this.location &&
+        (!this._ignoreFitToMap ||
+          this._ignoreFitToMap[0] !== this.location[0] ||
+          this._ignoreFitToMap[1] !== this.location[1])
+      ) {
         this.fitMap();
       }
       this._ignoreFitToMap = undefined;

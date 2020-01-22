@@ -75,8 +75,10 @@ class DialogZoneDetail extends LitElement {
               .value=${this._name}
               .configValue=${"name"}
               @value-changed=${this._valueChanged}
-              label="${this.hass!.localize("ui.panel.config.zone.detail.name")}"
-              error-message="${this.hass!.localize(
+              .label="${this.hass!.localize(
+                "ui.panel.config.zone.detail.name"
+              )}"
+              .errorMessage="${this.hass!.localize(
                 "ui.panel.config.zone.detail.required_error_msg"
               )}"
               .invalid=${this._name.trim() === ""}
@@ -85,8 +87,10 @@ class DialogZoneDetail extends LitElement {
               .value=${this._icon}
               .configValue=${"icon"}
               @value-changed=${this._valueChanged}
-              label="${this.hass!.localize("ui.panel.config.zone.detail.icon")}"
-              error-message="${this.hass!.localize(
+              .label="${this.hass!.localize(
+                "ui.panel.config.zone.detail.icon"
+              )}"
+              .errorMessage="${this.hass!.localize(
                 "ui.panel.config.zone.detail.icon_error_msg"
               )}"
               .invalid=${!this._icon.trim().includes(":")}
@@ -102,10 +106,10 @@ class DialogZoneDetail extends LitElement {
               .value=${this._latitude}
               .configValue=${"latitude"}
               @value-changed=${this._valueChanged}
-              label="${this.hass!.localize(
+              .label="${this.hass!.localize(
                 "ui.panel.config.zone.detail.latitude"
               )}"
-              error-message="${this.hass!.localize(
+              .errorMessage="${this.hass!.localize(
                 "ui.panel.config.zone.detail.required_error_msg"
               )}"
               .invalid=${String(this._latitude) === ""}
@@ -114,10 +118,10 @@ class DialogZoneDetail extends LitElement {
               .value=${this._longitude}
               .configValue=${"longitude"}
               @value-changed=${this._valueChanged}
-              label="${this.hass!.localize(
+              .label="${this.hass!.localize(
                 "ui.panel.config.zone.detail.longitude"
               )}"
-              error-message="${this.hass!.localize(
+              .errorMessage="${this.hass!.localize(
                 "ui.panel.config.zone.detail.required_error_msg"
               )}"
               .invalid=${String(this._longitude) === ""}
@@ -126,10 +130,10 @@ class DialogZoneDetail extends LitElement {
               .value=${this._radius}
               .configValue=${"radius"}
               @value-changed=${this._valueChanged}
-              label="${this.hass!.localize(
+              .label="${this.hass!.localize(
                 "ui.panel.config.zone.detail.radius"
               )}"
-              error-message="${this.hass!.localize(
+              .errorMessage="${this.hass!.localize(
                 "ui.panel.config.zone.detail.required_error_msg"
               )}"
               .invalid=${String(this._radius) === ""}
