@@ -8,7 +8,14 @@ import {
   customElement,
   PropertyValues,
 } from "lit-element";
-import { Marker, Map, LeafletMouseEvent, DragEndEvent, LatLng } from "leaflet";
+import {
+  Marker,
+  Map,
+  LeafletMouseEvent,
+  DragEndEvent,
+  LatLng,
+  Circle,
+} from "leaflet";
 import {
   setupLeafletMap,
   LeafletModuleType,
@@ -18,6 +25,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 @customElement("ha-location-editor")
 class LocationEditor extends LitElement {
   @property() public location?: [number, number];
+  @property() public radius?: number;
   public fitZoom = 16;
 
   private _ignoreFitToMap?: [number, number];
@@ -26,6 +34,7 @@ class LocationEditor extends LitElement {
   private Leaflet?: LeafletModuleType;
   private _leafletMap?: Map;
   private _locationMarker?: Marker;
+  private _locationRadius?: Circle;
 
   public fitMap(): void {
     if (!this._leafletMap || !this.location) {
@@ -53,11 +62,17 @@ class LocationEditor extends LitElement {
       return;
     }
 
-    this._updateMarker();
-    if (!this._ignoreFitToMap || this._ignoreFitToMap !== this.location) {
-      this.fitMap();
+    if (changedProps.has("location")) {
+      this._updateMarker();
+      this._updateRadius();
+      if (!this._ignoreFitToMap || this._ignoreFitToMap !== this.location) {
+        this.fitMap();
+      }
+      this._ignoreFitToMap = undefined;
     }
-    this._ignoreFitToMap = undefined;
+    if (changedProps.has("radius")) {
+      this._updateRadius();
+    }
   }
 
   private get _mapEl(): HTMLDivElement {
@@ -72,6 +87,7 @@ class LocationEditor extends LitElement {
       (ev: LeafletMouseEvent) => this._updateLocation(ev.latlng)
     );
     this._updateMarker();
+    this._updateRadius();
     this.fitMap();
     this._leafletMap.invalidateSize();
   }
@@ -99,6 +115,7 @@ class LocationEditor extends LitElement {
       this._locationMarker.setLatLng(this.location);
       return;
     }
+
     this._locationMarker = this.Leaflet!.marker(this.location, {
       draggable: true,
     });
@@ -108,6 +125,27 @@ class LocationEditor extends LitElement {
       (ev: DragEndEvent) => this._updateLocation(ev.target.getLatLng())
     );
     this._leafletMap!.addLayer(this._locationMarker);
+  }
+
+  private _updateRadius(): void {
+    if (!this.radius || !this.location) {
+      if (this._locationRadius) {
+        this._locationRadius.remove();
+        this._locationRadius = undefined;
+      }
+      return;
+    }
+
+    if (this._locationRadius) {
+      this._locationRadius.setLatLng(this.location);
+      this._locationRadius.setRadius(this.radius);
+      return;
+    }
+
+    this._locationRadius = this.Leaflet!.circle(this.location, {
+      color: "#FF9800",
+      radius: this.radius,
+    }).addTo(this._leafletMap!);
   }
 
   static get styles(): CSSResult {

@@ -105,6 +105,7 @@ class HcCast extends LitElement {
                             <ha-icon
                               .icon=${view.icon}
                               slot="item-icon"
+                              .style=${`color: ${COLORS[idx]}`}
                             ></ha-icon>
                           `
                         : ""}
