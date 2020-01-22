@@ -1336,9 +1336,8 @@
         },
         "zone": {
           "caption": "Zones",
-          "description": "Manage the zones.",
-          "introduction": "Here you can define each zone of interest in Home Assistant.",
-          "note_about_zones_configured_in_yaml": "Note: zones configured via configuration.yaml cannot be edited via the UI.",
+          "description": "Manage the zones you want to track persons in.",
+          "introduction": "Zones allow you to specify certain regions on earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
           "no_zones_created_yet": "Looks like you have not created any zones yet.",
           "create_zone": "Create Zone",
           "add_zone": "Add Zone",
