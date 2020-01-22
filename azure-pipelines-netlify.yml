@@ -1,0 +1,27 @@
+# https://dev.azure.com/home-assistant
+
+trigger: none
+pr: none
+schedules:
+  - cron: "0 0 * * *"
+    displayName: "build preview"
+    branches:
+      include:
+      - dev
+    always: false
+variables:
+  - group: netlify
+
+jobs:
+
+- job: 'Netlify_preview'
+  pool:
+    vmImage: 'ubuntu-latest'
+  steps:
+  - script: |
+      # Cast
+      curl -X POST -d {} https://api.netlify.com/build_hooks/${NETLIFY_CAST}
+
+      # Demo
+      curl -X POST -d {} https://api.netlify.com/build_hooks/${NETLIFY_DEMO}
+    displayName: 'Trigger netlify build preview'
