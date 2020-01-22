@@ -32,6 +32,7 @@ import { hasAction } from "../common/has-action";
 import { handleAction } from "../common/handle-action";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { computeActiveState } from "../../../common/entity/compute_active_state";
+import { iconColorCSS } from "../../../common/style/icon_color_css";
 
 @customElement("hui-entity-button-card")
 class HuiEntityButtonCard extends LitElement implements LovelaceCard {
@@ -211,41 +212,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
         color: var(--paper-item-icon-color, #44739e);
       }
 
-      ha-icon[data-domain="alarm_control_panel"][data-state="disarmed"],
-      ha-icon[data-domain="alert"][data-state="on"],
-      ha-icon[data-domain="automation"][data-state="on"],
-      ha-icon[data-domain="binary_sensor"][data-state="on"],
-      ha-icon[data-domain="calendar"][data-state="on"],
-      ha-icon[data-domain="camera"][data-state="streaming"],
-      ha-icon[data-domain="cover"][data-state="open"],
-      ha-icon[data-domain="fan"][data-state="on"],
-      ha-icon[data-domain="light"][data-state="on"],
-      ha-icon[data-domain="input_boolean"][data-state="on"],
-      ha-icon[data-domain="lock"][data-state="unlocked"],
-      ha-icon[data-domain="media_player"][data-state="paused"],
-      ha-icon[data-domain="media_player"][data-state="playing"],
-      ha-icon[data-domain="plant"][data-state="problem"],
-      ha-icon[data-domain="script"][data-state="running"],
-      ha-icon[data-domain="sun"][data-state="above_horizon"],
-      ha-icon[data-domain="switch"][data-state="on"],
-      ha-icon[data-domain="timer"][data-state="active"],
-      ha-icon[data-domain="timer"][data-state="paused"],
-      ha-icon[data-domain="vacuum"][data-state="cleaning"],
-      ha-icon[data-domain="zwave"][data-state="dead"] {
-        color: var(--paper-item-icon-active-color, #fdd835);
-      }
-
-      ha-icon[data-domain="climate"][data-state="cooling"] {
-        color: var(--cool-color, #2b9af9);
-      }
-
-      ha-icon[data-domain="climate"][data-state="heating"] {
-        color: var(--heat-color, #ff8100);
-      }
-
-      ha-icon[data-state="unavailable"] {
-        color: var(--state-icon-unavailable-color);
-      }
+      ${iconColorCSS}
     `;
   }
 

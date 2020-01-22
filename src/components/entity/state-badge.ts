@@ -17,13 +17,15 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { HaIcon } from "../ha-icon";
 import { HomeAssistant } from "../../types";
 import { computeActiveState } from "../../common/entity/compute_active_state";
+import { ifDefined } from "lit-html/directives/if-defined";
+import { iconColorCSS } from "../../common/style/icon_color_css";
 
 class StateBadge extends LitElement {
   public hass?: HomeAssistant;
   @property() public stateObj?: HassEntity;
   @property() public overrideIcon?: string;
   @property() public overrideImage?: string;
-  @property() public stateColor?: boolean;
+  @property({ type: Boolean }) public stateColor?: boolean;
   @query("ha-icon") private _icon!: HaIcon;
 
   protected render(): TemplateResult | void {
@@ -36,8 +38,10 @@ class StateBadge extends LitElement {
     return html`
       <ha-icon
         id="icon"
-        data-domain=${this.stateColor ? computeStateDomain(stateObj) : ""}
-        data-state=${this.stateColor ? computeActiveState(stateObj) : ""}
+        data-domain=${ifDefined(
+          this.stateColor ? computeStateDomain(stateObj) : undefined
+        )}
+        data-state=${computeActiveState(stateObj)}
         .icon=${this.overrideIcon || stateIcon(stateObj)}
       ></ha-icon>
     `;
@@ -113,42 +117,7 @@ class StateBadge extends LitElement {
         transition: color 0.3s ease-in-out, filter 0.3s ease-in-out;
       }
 
-      ha-icon[data-domain="alarm_control_panel"][data-state="disarmed"],
-      ha-icon[data-domain="alert"][data-state="on"],
-      ha-icon[data-domain="automation"][data-state="on"],
-      ha-icon[data-domain="binary_sensor"][data-state="on"],
-      ha-icon[data-domain="calendar"][data-state="on"],
-      ha-icon[data-domain="camera"][data-state="streaming"],
-      ha-icon[data-domain="cover"][data-state="open"],
-      ha-icon[data-domain="fan"][data-state="on"],
-      ha-icon[data-domain="light"][data-state="on"],
-      ha-icon[data-domain="input_boolean"][data-state="on"],
-      ha-icon[data-domain="lock"][data-state="unlocked"],
-      ha-icon[data-domain="media_player"][data-state="paused"],
-      ha-icon[data-domain="media_player"][data-state="playing"],
-      ha-icon[data-domain="plant"][data-state="problem"],
-      ha-icon[data-domain="script"][data-state="running"],
-      ha-icon[data-domain="sun"][data-state="above_horizon"],
-      ha-icon[data-domain="switch"][data-state="on"],
-      ha-icon[data-domain="timer"][data-state="active"],
-      ha-icon[data-domain="timer"][data-state="paused"],
-      ha-icon[data-domain="vacuum"][data-state="cleaning"],
-      ha-icon[data-domain="zwave"][data-state="dead"] {
-        color: var(--paper-item-icon-active-color, #fdd835);
-      }
-
-      ha-icon[data-domain="climate"][data-state="cooling"] {
-        color: var(--cool-color, #2b9af9);
-      }
-
-      ha-icon[data-domain="climate"][data-state="heating"] {
-        color: var(--heat-color, #ff8100);
-      }
-
-      /* Color the icon if unavailable */
-      ha-icon[data-state="unavailable"] {
-        color: var(--state-icon-unavailable-color);
-      }
+      ${iconColorCSS}
     `;
   }
 }

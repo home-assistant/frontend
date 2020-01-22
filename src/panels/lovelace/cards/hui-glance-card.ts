@@ -235,7 +235,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
                 .stateObj=${stateObj}
                 .overrideIcon=${entityConf.icon}
                 .overrideImage=${entityConf.image}
-                .stateColor="true"
+                stateColor
               ></state-badge>
             `
           : ""}

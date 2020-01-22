@@ -71,7 +71,7 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
           hasAction(this._config.tap_action) ? "0" : undefined
         )}
         .overrideIcon=${this._config.icon}
-        .stateColor="true"
+        stateColor
       ></state-badge>
     `;
   }
