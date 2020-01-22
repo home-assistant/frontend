@@ -1,8 +1,8 @@
-import "@polymer/iron-icon/iron-icon";
-
+import "../../components/ha-icon";
 import formatTime from "../../common/datetime/format_time";
 import formatDate from "../../common/datetime/format_date";
 import { domainIcon } from "../../common/entity/domain_icon";
+import { stateIcon } from "../../common/entity/state_icon";
 import { computeRTL } from "../../common/util/compute_rtl";
 import {
   LitElement,
@@ -63,6 +63,7 @@ class HaLogbook extends LitElement {
     index: number
   ): TemplateResult {
     const previous = this.entries[index - 1];
+    const state = item.entity_id ? this.hass.states[item.entity_id] : undefined;
     return html`
       <div>
         ${index === 0 ||
@@ -81,7 +82,9 @@ class HaLogbook extends LitElement {
           <div class="time">
             ${formatTime(new Date(item.when), this.hass.language)}
           </div>
-          <iron-icon .icon="${domainIcon(item.domain)}"></iron-icon>
+          <ha-icon
+            .icon=${state ? stateIcon(state) : domainIcon(item.domain)}
+          ></ha-icon>
           <div class="message">
             ${!item.entity_id
               ? html`
@@ -137,7 +140,7 @@ class HaLogbook extends LitElement {
         direction: rtl;
       }
 
-      iron-icon {
+      ha-icon {
         margin: 0 8px 0 16px;
         color: var(--primary-text-color);
       }
