@@ -94,6 +94,7 @@ class HaConfigDashboard extends LitElement {
               .pages=${[
                 { page: "integrations", core: true },
                 { page: "devices", core: true },
+                { page: "entities", core: true },
                 { page: "automation" },
                 { page: "script" },
                 { page: "scene" },
@@ -107,8 +108,8 @@ class HaConfigDashboard extends LitElement {
               .pages=${[
                 { page: "core", core: true },
                 { page: "server_control", core: true },
-                { page: "entities", core: true },
                 { page: "areas", core: true },
+                { page: "zone" },
                 { page: "person" },
                 { page: "users", core: true },
                 { page: "zha" },

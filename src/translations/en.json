@@ -739,7 +739,9 @@
               "group": "Reload groups",
               "automation": "Reload automations",
               "script": "Reload scripts",
-              "scene": "Reload scenes"
+              "scene": "Reload scenes",
+              "person": "Reload persons",
+              "zone": "Reload zones"
             },
             "server_management": {
               "heading": "Server management",
@@ -1330,6 +1332,30 @@
             "link_integrations_page": "Integrations page",
             "device_tracker_picked": "Track Device",
             "device_tracker_pick": "Pick device to track",
+            "delete": "Delete",
+            "create": "Create",
+            "update": "Update"
+          }
+        },
+        "zone": {
+          "caption": "Zones",
+          "description": "Manage the zones you want to track persons in.",
+          "introduction": "Zones allow you to specify certain regions on earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
+          "no_zones_created_yet": "Looks like you have not created any zones yet.",
+          "create_zone": "Create Zone",
+          "add_zone": "Add Zone",
+          "confirm_delete": "Are you sure you want to delete this zone?",
+          "detail": {
+            "new_zone": "New Zone",
+            "name": "Name",
+            "icon": "Icon",
+            "icon_error_msg": "Icon should be in the format prefix:iconname, for example: mdi:home",
+            "radius": "Radius",
+            "latitude": "Latitude",
+            "longitude": "Longitude",
+            "passive": "Passive",
+            "passive_note": "Passive zones are hidden in the frontend and are not used as location for device trackers. This is usefull if you just want to use it for automations.",
+            "required_error_msg": "This field is required",
             "delete": "Delete",
             "create": "Create",
             "update": "Update"
