@@ -81,7 +81,7 @@ export class HaFormString extends LitElement implements HaFormElement {
     });
   }
 
-  private _stringType() {
+  private get _stringType() {
     if (this.schema.format) {
       if (["email", "url"].includes(this.schema.format)) {
         return this.schema.format;
