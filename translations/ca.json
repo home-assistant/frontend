@@ -1848,6 +1848,7 @@
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "Aquesta targeta necessita que la integració `shopping_list` estigui configurada.",
                             "name": "Llista de la compra"
                         },
                         "thermostat": {
@@ -2158,6 +2159,8 @@
                     "link_promo": "Ajuda a traduir"
                 },
                 "logout": "Tanca sessió",
+                "logout_text": "Estàs segur que vols tancar la sessió?",
+                "logout_title": "Tancar sessió?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Estàs segur que vols eliminar el testimoni d'autenticació d'accés per {name}?",
                     "create": "Crea un testimoni d'autenticació",
