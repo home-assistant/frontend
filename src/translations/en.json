@@ -574,7 +574,8 @@
         "settings": "Entity settings",
         "edit": "Edit entity",
         "script": {
-          "last_action": "Last Action"
+          "last_action": "Last Action",
+          "last_triggered": "Last Triggered"
         },
         "sun": {
           "elevation": "Elevation",
