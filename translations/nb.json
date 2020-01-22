@@ -762,7 +762,7 @@
                             "delete_confirm": "Er du sikker på at du ønsker å slette?",
                             "duplicate": "Dupliser",
                             "header": "Betingelser",
-                            "introduction": "Betingelser er en valgfri del av en automasjonsregel og kan brukes til å forhindre at en handling skjer når den blir aktivert. \nBetingelsene ser veldig ut som utløsere, men er veldig forskjellige. \nEn utløser vil se på hendelser som skjer i systemet, mens en betingelse bare ser på hvordan systemet ser ut akkurat nå. En utløser kan observere at en bryter er slått på. En betingelse kan bare se om en bryter for øyeblikket er på eller av.",
+                            "introduction": "Betingelsene er valgfrie og vil forhindre videre utførelse med mindre alle vilkår er oppfylt.",
                             "learn_more": "Lær mer om betingelser",
                             "name": "Betingelse",
                             "type_select": "Betingelse",

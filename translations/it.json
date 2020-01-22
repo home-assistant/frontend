@@ -638,6 +638,9 @@
                     "reconfigure": "Riconfigura dispositivo",
                     "remove": "Rimuovi dispositivo"
                 },
+                "confirmations": {
+                    "remove": "Sei sicuro di voler rimuovere il dispositivo?"
+                },
                 "last_seen": "Ultima visualizzazione",
                 "manuf": "da {manufacturer}",
                 "no_area": "Nessuna Area",
@@ -1892,6 +1895,7 @@
                             "name": "Sensore"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "Questa carta richiede l'integrazione \"shopping_list\" per essere configurata.",
                             "name": "Lista della spesa"
                         },
                         "thermostat": {
@@ -2207,6 +2211,8 @@
                     "link_promo": "Aiuta a tradurre"
                 },
                 "logout": "Disconnetti",
+                "logout_text": "Sei sicuro di voler effettuare il logout?",
+                "logout_title": "Disconnettersi?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Sei sicuro di voler eliminare il token di accesso per {name} ?",
                     "create": "Crea token",
