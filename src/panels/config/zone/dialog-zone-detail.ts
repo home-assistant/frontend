@@ -95,6 +95,7 @@ class DialogZoneDetail extends LitElement {
               class="flex"
               .location=${this._locationValue}
               .radius=${this._radius}
+              .icon=${this._icon || "hass:home"}
               @change=${this._locationChanged}
             ></ha-location-editor>
             <paper-input
@@ -174,6 +175,7 @@ class DialogZoneDetail extends LitElement {
 
   private _locationChanged(ev) {
     [this._latitude, this._longitude] = ev.currentTarget.location;
+    this._radius = ev.currentTarget.radius;
   }
 
   private _passiveChanged(ev) {
