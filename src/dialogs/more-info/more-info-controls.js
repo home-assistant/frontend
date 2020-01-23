@@ -21,7 +21,7 @@ import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { removeEntityRegistryEntry } from "../../data/entity_registry";
-import { showConfirmationDialog } from "../confirmation/show-dialog-confirmation";
+import { showConfirmationDialog } from "../generic/show-dialog-box";
 import { showEntityRegistryDetailDialog } from "../../panels/config/entities/show-dialog-entity-registry-detail";
 
 const DOMAINS_NO_INFO = ["camera", "configurator", "history_graph"];

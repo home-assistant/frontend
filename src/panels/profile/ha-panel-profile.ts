@@ -37,7 +37,7 @@ import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { showConfirmationDialog } from "../../dialogs/confirmation/show-dialog-confirmation";
+import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 
 class HaPanelProfile extends LitElement {
   @property() public hass!: HomeAssistant;
