@@ -10,7 +10,7 @@ import "../../components/ha-card";
 import "../../resources/ha-style";
 
 import "./ha-settings-row";
-import { showDialog } from "../../dialogs/generic/show-dialog-box";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 
 /*
  * @appliesMixin EventsMixin
@@ -122,7 +122,7 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
     } catch (err) {
       // eslint-disable-next-line
       console.error(err);
-      showDialog(this, {
+      showAlertDialog(this, {
         text: this.localize(
           "ui.panel.profile.long_lived_access_tokens.create_failed"
         ),
@@ -151,7 +151,7 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
     } catch (err) {
       // eslint-disable-next-line
       console.error(err);
-      showDialog(this, {
+      showAlertDialog(this, {
         text: this.localize(
           "ui.panel.profile.long_lived_access_tokens.delete_failed"
         ),

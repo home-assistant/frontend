@@ -43,7 +43,7 @@ import { ConfigEntry, deleteConfigEntry } from "../../../data/config_entries";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
-import { showDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 
 @customElement("ha-config-entries-dashboard")
 export class HaConfigManagerDashboard extends LitElement {
@@ -268,8 +268,7 @@ export class HaConfigManagerDashboard extends LitElement {
 
   private _ignoreFlow(ev: Event) {
     const flow = (ev.target! as any).flow;
-    showDialog(this, {
-      confirmation: true,
+    showConfirmationDialog(this, {
       title: this.hass!.localize(
         "ui.panel.config.integrations.ignore.confirm_ignore_title",
         "name",
@@ -294,8 +293,7 @@ export class HaConfigManagerDashboard extends LitElement {
 
   private async _removeIgnoredIntegration(ev: Event) {
     const entry = (ev.target! as any).entry;
-    showDialog(this, {
-      confirmation: true,
+    showConfirmationDialog(this, {
       title: this.hass!.localize(
         "ui.panel.config.integrations.ignore.confirm_delete_ignore_title",
         "name",

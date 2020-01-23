@@ -50,7 +50,7 @@ import { computeRTLDirection } from "../../common/util/compute_rtl";
 import { loadLovelaceResources } from "./common/load-resources";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { showDialog } from "../../dialogs/generic/show-dialog-box";
+import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import memoizeOne from "memoize-one";
 
 class HUIRoot extends LitElement {
@@ -581,7 +581,7 @@ class HUIRoot extends LitElement {
 
   private _editModeEnable(): void {
     if (this._yamlMode) {
-      showDialog(this, {
+      showAlertDialog(this, {
         text: "The edit UI is not available when in YAML mode.",
       });
       return;

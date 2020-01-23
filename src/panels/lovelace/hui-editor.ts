@@ -29,7 +29,10 @@ import { HaCodeEditor } from "../../components/ha-code-editor";
 import { HomeAssistant } from "../../types";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { LovelaceConfig } from "../../data/lovelace";
-import { showDialog } from "../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../dialogs/generic/show-dialog-box";
 
 const lovelaceStruct = struct.interface({
   title: "string?",
@@ -206,8 +209,7 @@ class LovelaceFullConfigEditor extends LitElement {
     const value = this.yamlEditor.value;
 
     if (!value) {
-      showDialog(this, {
-        confirmation: true,
+      showConfirmationDialog(this, {
         title: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.confirm_remove_config_title"
         ),
@@ -237,7 +239,7 @@ class LovelaceFullConfigEditor extends LitElement {
     try {
       config = safeLoad(value);
     } catch (err) {
-      showDialog(this, {
+      showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_parse_yaml",
           "error",
@@ -250,7 +252,7 @@ class LovelaceFullConfigEditor extends LitElement {
     try {
       config = lovelaceStruct(config);
     } catch (err) {
-      showDialog(this, {
+      showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_invalid_config",
           "error",
@@ -262,7 +264,7 @@ class LovelaceFullConfigEditor extends LitElement {
     try {
       await this.lovelace!.saveConfig(config);
     } catch (err) {
-      showDialog(this, {
+      showAlertDialog(this, {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_save_yaml",
           "error",

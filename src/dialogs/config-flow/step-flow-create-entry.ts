@@ -25,7 +25,7 @@ import {
 } from "../../data/area_registry";
 import { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
 import { FlowConfig } from "./show-dialog-data-entry-flow";
-import { showDialog } from "../generic/show-dialog-box";
+import { showPromptDialog } from "../generic/show-dialog-box";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
@@ -134,8 +134,7 @@ class StepFlowCreateEntry extends LitElement {
   }
 
   private async _promptAddArea() {
-    showDialog(this, {
-      prompt: true,
+    showPromptDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.integrations.config_flow.name_new_area"
       ),

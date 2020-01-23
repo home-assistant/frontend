@@ -22,7 +22,7 @@ import {
   ScriptConfig,
   deleteScript,
 } from "../../../data/script";
-import { showDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -224,8 +224,7 @@ export class HaScriptEditor extends LitElement {
 
   private _backTapped(): void {
     if (this._dirty) {
-      showDialog(this, {
-        confirmation: true,
+      showConfirmationDialog(this, {
         text: this.hass!.localize(
           "ui.panel.config.common.editor.confirm_unsaved"
         ),
@@ -239,8 +238,7 @@ export class HaScriptEditor extends LitElement {
   }
 
   private async _deleteConfirm() {
-    showDialog(this, {
-      confirmation: true,
+    showConfirmationDialog(this, {
       text: this.hass.localize("ui.panel.config.script.editor.delete_confirm"),
       confirmText: this.hass!.localize("ui.common.yes"),
       dismissText: this.hass!.localize("ui.common.no"),

@@ -14,17 +14,17 @@ import "../../components/dialog/ha-paper-dialog";
 import "../../components/ha-switch";
 
 import { HomeAssistant } from "../../types";
-import { DialogBoxParams } from "./show-dialog-box";
+import { DialogParams } from "./show-dialog-box";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
 
 @customElement("dialog-box")
 class DialogBox extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() private _params?: DialogBoxParams;
+  @property() private _params?: DialogParams;
   @property() private _text?: string;
 
-  public async showDialog(params: DialogBoxParams): Promise<void> {
+  public async showDialog(params: DialogParams): Promise<void> {
     this._params = params;
     if (params.prompt) {
       this._text = params.text;

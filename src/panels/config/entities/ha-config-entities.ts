@@ -45,7 +45,7 @@ import {
   HaDataTable,
   DataTableColumnData,
 } from "../../../components/data-table/ha-data-table";
-import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialog-confirmation";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { DialogEntityRegistryDetail } from "./dialog-entity-registry-detail";
 
@@ -400,8 +400,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   }
 
   private _enableSelected() {
-    showDialog(this, {
-      confirmation: true,
+    showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.entities.picker.enable_selected.confirm_title",
         "number",
@@ -424,8 +423,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   }
 
   private _disableSelected() {
-    showDialog(this, {
-      confirmation: true,
+    showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.entities.picker.disable_selected.confirm_title",
         "number",
@@ -452,8 +450,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       const stateObj = this.hass.states[entity];
       return stateObj?.attributes.restored;
     });
-    showDialog(this, {
-      confirmation: true,
+    showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.entities.picker.remove_selected.confirm_title",
         "number",

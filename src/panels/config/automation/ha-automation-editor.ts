@@ -25,7 +25,10 @@ import {
   Trigger,
 } from "../../../data/automation";
 import { Action } from "../../../data/script";
-import { showDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
@@ -252,7 +255,7 @@ export class HaAutomationEditor extends LitElement {
             this._config = config;
           },
           (resp) => {
-            showDialog(this, {
+            showAlertDialog(this, {
               text:
                 resp.status_code === 404
                   ? this.hass.localize(
@@ -323,8 +326,7 @@ export class HaAutomationEditor extends LitElement {
 
   private _backTapped(): void {
     if (this._dirty) {
-      showDialog(this, {
-        confirmation: true,
+      showConfirmationDialog(this, {
         text: this.hass!.localize(
           "ui.panel.config.automation.editor.unsaved_confirm"
         ),
@@ -338,8 +340,7 @@ export class HaAutomationEditor extends LitElement {
   }
 
   private async _deleteConfirm() {
-    showDialog(this, {
-      confirmation: true,
+    showConfirmationDialog(this, {
       text: this.hass.localize(
         "ui.panel.config.automation.picker.delete_confirm"
       ),

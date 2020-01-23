@@ -3,7 +3,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "./ha-progress-button";
 import { EventsMixin } from "../../mixins/events-mixin";
-import { showDialog } from "../../dialogs/generic/show-dialog-box";
+import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 
 /*
  * @appliesMixin EventsMixin
@@ -81,7 +81,7 @@ class HaCallServiceButton extends EventsMixin(PolymerElement) {
 
   buttonTapped() {
     if (this.confirmation) {
-      showDialog(this, {
+      showConfirmationDialog(this, {
         confirmation: true,
         text: this.confirmation,
         confirm: () => this.callService(),

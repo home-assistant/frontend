@@ -54,7 +54,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import memoizeOne from "memoize-one";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { HassEvent } from "home-assistant-js-websocket";
-import { showDialog } from "../../../dialogs/generic/show-dialog-box";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 
 interface DeviceEntities {
   id: string;
@@ -556,8 +556,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
 
   private _backTapped(): void {
     if (this._dirty) {
-      showDialog(this, {
-        confirmation: true,
+      showConfirmationDialog(this, {
         text: this.hass!.localize(
           "ui.panel.config.scene.editor.unsaved_confirm"
         ),
@@ -576,8 +575,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   }
 
   private _deleteTapped(): void {
-    showDialog(this, {
-      confirmation: true,
+    showConfirmationDialog(this, {
       text: this.hass!.localize("ui.panel.config.scene.picker.delete_confirm"),
       confirmText: this.hass!.localize("ui.common.yes"),
       dismissText: this.hass!.localize("ui.common.no"),

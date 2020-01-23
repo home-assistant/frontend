@@ -245,8 +245,7 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _removeEntity() {
-    showDialog(this, {
-      confirmation: true,
+    showConfirmationDialog(this, {
       title: this.localize(
         "ui.dialogs.more_info_control.restored.confirm_remove_title"
       ),

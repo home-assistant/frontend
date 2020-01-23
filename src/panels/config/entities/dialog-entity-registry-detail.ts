@@ -26,6 +26,7 @@ import "../../../state-summary/state-card-content";
 import { HomeAssistant } from "../../../types";
 import "./entity-registry-settings";
 import { EntityRegistryDetailDialogParams } from "./show-dialog-entity-registry-detail";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 
 @customElement("dialog-entity-registry-detail")
 export class DialogEntityRegistryDetail extends LitElement {
@@ -145,8 +146,7 @@ export class DialogEntityRegistryDetail extends LitElement {
   }
 
   private _confirmDeleteEntry(): void {
-    showDialog(this, {
-      confirmation: true,
+    showConfirmationDialog(this, {
       title: this.hass.localize(
         "ui.panel.config.entity_registry.editor.confirm_delete"
       ),

@@ -24,7 +24,11 @@ import {
   SYSTEM_GROUP_ID_ADMIN,
 } from "../../../data/user";
 import { showSaveSuccessToast } from "../../../util/toast-saved-success";
-import { showDialog } from "../../../dialogs/generic/show-dialog-box";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+  showPromptDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 
 declare global {
   interface HASSDomEvents {
@@ -149,7 +153,7 @@ class HaUserEditor extends LitElement {
       });
       fireEvent(this, "reload-users");
     } catch (err) {
-      showDialog(this, {
+      showAlertDialog(this, {
         text: `${this.hass!.localize(
           "ui.panel.config.users.editor.user_rename_failed"
         )} ${err.message}`,
@@ -159,8 +163,7 @@ class HaUserEditor extends LitElement {
 
   private async _handlePromptRenameUser(ev): Promise<void> {
     ev.currentTarget.blur();
-    showDialog(this, {
-      prompt: true,
+    showPromptDialog(this, {
       title: this.hass!.localize("ui.panel.config.users.editor.enter_new_name"),
       text: this.user!.name,
       inputLabel: this.hass!.localize("ui.panel.config.users.add_user.name"),
@@ -178,7 +181,7 @@ class HaUserEditor extends LitElement {
       showSaveSuccessToast(this, this.hass!);
       fireEvent(this, "reload-users");
     } catch (err) {
-      showDialog(this, {
+      showAlertDialog(this, {
         text: `${this.hass!.localize(
           "ui.panel.config.users.editor.group_update_failed"
         )} ${err.message}`,
@@ -191,7 +194,7 @@ class HaUserEditor extends LitElement {
     try {
       await deleteUser(this.hass!, this.user!.id);
     } catch (err) {
-      showDialog(this, {
+      showAlertDialog(this, {
         text: err.code,
       });
       return;
@@ -201,8 +204,7 @@ class HaUserEditor extends LitElement {
   }
 
   private async _promptDeleteUser(_ev): Promise<void> {
-    showDialog(this, {
-      confirmation: true,
+    showConfirmationDialog(this, {
       text: this.hass!.localize(
         "ui.panel.config.users.editor.confirm_user_deletion",
         "name",
