@@ -1776,6 +1776,9 @@
                         "no_devices": "Denne side giver dig mulighed for at styre dine enheder, men det ser ud til, at du endnu ikke har konfigureret enheder. Gå til integrationssiden for at komme i gang.",
                         "title": "Velkommen hjem"
                     },
+                    "entities": {
+                        "never_triggered": "Aldrig udløst"
+                    },
                     "picture-elements": {
                         "call_service": "Kald tjeneste {name}",
                         "hold": "Hold:",

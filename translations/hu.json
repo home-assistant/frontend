@@ -589,10 +589,12 @@
             },
             "more_info_control": {
                 "dismiss": "Elvetés párbeszédpanel",
+                "edit": "Entitás szerkesztése",
                 "restored": {
                     "confirm_remove_text": "Biztosan el szeretnéd távolítani ezt az entitást?",
                     "confirm_remove_title": "Eltávolítod az entitást?",
-                    "remove_action": "Entitás eltávolítása"
+                    "remove_action": "Entitás eltávolítása",
+                    "remove_intro": "Ha az entitás már nincs használatban, akkor nyugodtan eltávolíthatod."
                 },
                 "script": {
                     "last_action": "Utolsó Művelet"
@@ -1097,6 +1099,7 @@
                             "core_config": {
                                 "edit_requires_storage": "A szerkesztő le van tiltva, mert a konfiguráció a configuration.yaml fájlban van tárolva.",
                                 "elevation": "Magasság",
+                                "elevation_feet": "láb",
                                 "elevation_meters": "méter",
                                 "imperial_example": "Fahrenheit, font",
                                 "latitude": "Szélesség",
@@ -1185,7 +1188,9 @@
                     "details": "Itt található minden részlet az eszközről.",
                     "device_not_found": "Eszköz nem található.",
                     "entities": {
-                        "entities": "Entitások"
+                        "add_entities_lovelace": "Az összes eszköz entitás hozzáadása a Lovelace felhasználói felülethez",
+                        "entities": "Entitások",
+                        "none": "Ennek az eszköznek nincsenek entitásai"
                     },
                     "info": "Eszköz infó",
                     "unknown_error": "Ismeretlen hiba",
@@ -1209,10 +1214,12 @@
                     "picker": {
                         "disable_selected": {
                             "button": "Kiválasztottak letiltása",
+                            "confirm_text": "A letiltott entitások nem lesznek hozzáadva a Home Assistant-hoz.",
                             "confirm_title": "Le szeretnél tiltani {number} entitást?"
                         },
                         "enable_selected": {
                             "button": "Kiválasztottak engedélyezése",
+                            "confirm_text": "Ezzel újra elérhetővé válnak a Home Assistant-ban, ha jelenleg le vannak tiltva.",
                             "confirm_title": "Engedélyezni szeretnél {number} entitást?"
                         },
                         "filter": {
@@ -1233,6 +1240,7 @@
                         "introduction2": "Az entitás nyilvántartás használatával felülbírálhatod a nevet, módosíthatod az entitás ID-t vagy eltávolíthatod a bejegyzést a Home Assistant-ból. Megjegyzendő, hogy az entitás nyilvántartásból történő bejegyzés eltávolítás nem fogja eltávolítani magát az entitást. Ehhez kövesd az alábbi linket, és távolítsd el azt az integrációk oldalról.",
                         "remove_selected": {
                             "button": "Kiválasztottak eltávolítása",
+                            "confirm_text": "Az entitások csak akkor távolíthatók el, ha az integráció már nem használja őket.",
                             "confirm_title": "El szeretnél távolítani {number} entitást?"
                         },
                         "selected": "{number} kiválasztva",
@@ -1271,6 +1279,7 @@
                         "area_picker_label": "Terület",
                         "close": "Bezárás",
                         "created_config": "Konfiguráció létrehozva a következőhöz: {name}.",
+                        "dismiss": "Elvetés párbeszédpanel",
                         "error_saving_area": "Hiba a terület mentésekor: {error}",
                         "external_step": {
                             "description": "Ehhez a lépéshez egy külső weboldal meglátogatása szükséges.",
@@ -1470,7 +1479,8 @@
                         "spinner": "ZHA Zigbee eszközök keresése..."
                     },
                     "add": {
-                        "caption": "Eszközök hozzáadása"
+                        "caption": "Eszközök hozzáadása",
+                        "description": "Eszközök hozzáadása a Zigbee hálózathoz"
                     },
                     "caption": "ZHA",
                     "cluster_attributes": {
@@ -1507,21 +1517,37 @@
                         "device_name_placeholder": "Felhasználónév",
                         "update_name_button": "Név frissítése"
                     },
+                    "devices": {
+                        "header": "Zigbee Home Automation - Eszköz"
+                    },
                     "groups": {
                         "add_members": "Tagok hozzáadása",
                         "adding_members": "Tagok hozzáadása",
                         "caption": "Csoportok",
                         "create": "Csoport létrehozása",
+                        "create_group_details": "Add meg a szükséges adatokat egy új zigbee csoport létrehozásához",
+                        "creating_group": "Csoport létrehozása",
+                        "description": "Zigbee csoportok létrehozása és módosítása",
+                        "group_details": "Itt van minden részlet a kiválasztott zigbee csoportról.",
                         "group_id": "Csoport ID",
                         "group_info": "Csoportinformációk",
                         "group_name_placeholder": "Csoport név",
                         "group_not_found": "A csoport nem található!",
+                        "group-header": "Zigbee Home Automation - Csoport részletei",
                         "groups": "Csoportok",
+                        "groups-header": "Zigbee Home Automation - Csoport menedzsment",
+                        "header": "Zigbee Home Automation - Csoport menedzsment",
+                        "introduction": "Zigbee csoportok létrehozása és módosítása",
+                        "manage_groups": "Zigbee csoportok kezelése",
                         "members": "Tagok",
+                        "remove_groups": "Csoportok eltávolítása",
                         "remove_members": "Tagok eltávolítása",
+                        "removing_groups": "Csoportok eltávolítása",
                         "removing_members": "Tagok eltávolítása",
                         "zha_zigbee_groups": "ZHA Zigbee csoportok"
                     },
+                    "header": "Zigbee Home Automation beállítása",
+                    "introduction": "Itt a ZHA komponenst lehet beállítani. Még nem lehet mindent a felületről, de dolgozunk rajta.",
                     "network_management": {
                         "header": "Hálózat menedzsment",
                         "introduction": "Parancsok, amik kihatnak az egész hálózatra"
@@ -1726,6 +1752,9 @@
                         "no_devices": "Ez az oldal lehetővé teszi az eszközeid vezérlését, de úgy tűnik, hogy még nincs beállítva egy sem. A kezdéshez lépj át az integrációs oldalra.",
                         "title": "Üdv Itthon"
                     },
+                    "entities": {
+                        "never_triggered": "Még nem volt triggerelve"
+                    },
                     "picture-elements": {
                         "call_service": "Szolgáltatás meghívása {name}",
                         "hold": "Tartás:",
@@ -1912,6 +1941,7 @@
                         "confirm_unsaved_comments": "A konfiguráció megjegyzéseket tartalmaz, amik nem kerülnek elmentésre. Biztosan folytatod?",
                         "error_invalid_config": "A konfiguráció érvénytelen: {error}",
                         "error_parse_yaml": "Nem sikerült elemezni a YAML-t: {error}",
+                        "error_remove": "Nem lehet eltávolítani a konfigurációt: {error}",
                         "error_save_yaml": "Nem sikerült menteni a YAML-t: {error}",
                         "header": "Konfiguráció szerkesztése",
                         "save": "Mentés",
@@ -2167,6 +2197,8 @@
                     "link_promo": "Segíts a fordításban"
                 },
                 "logout": "Kijelentkezés",
+                "logout_text": "Biztosan ki szeretnél jelentkezni?",
+                "logout_title": "Kijelentkezés?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Biztosan törölni szeretnéd {name} hozzáférési tokenjét?",
                     "create": "Token Létrehozása",

@@ -703,7 +703,7 @@
                         "header": "영역",
                         "integrations_page": "통합 구성요소 페이지",
                         "introduction": "영역은 기기가 있는 위치를 설정하는데 사용합니다. 이 정보는 인터페이스와 권한 그리고 다른 시스템과의 연동을 구성하는 데 도움이 되도록 Home Assistant 에 사용됩니다.",
-                        "introduction2": "특정 영역에 기기를 배치하려면 아래 링크를 따라 통합 구성요소 페이지로 이동 한 다음, 설정된 구성요소의 기기를 클릭하여 영역을 설정해주세요.",
+                        "introduction2": "특정 영역에 기기를 배치하려면 아래 링크를 따라 통합 구성요소 페이지로 이동 한 다음, 설정된 통합 구성요소의 기기를 클릭하여 영역을 설정해주세요.",
                         "no_areas": "등록된 영역이 없습니다. 거실, 침실과 같이 영역을 등록해보세요!"
                     }
                 },
@@ -762,7 +762,7 @@
                             "delete_confirm": "정말 삭제하시겠습니까?",
                             "duplicate": "복제",
                             "header": "조건",
-                            "introduction": "조건은 자동화 규칙의 선택사항이며 트리거 될 때 발생하는 동작을 방지하는 데 사용할 수 있습니다. 조건은 트리거와 비슷해 보이지만 매우 다릅니다. 트리거는 시스템에서 발생하는 이벤트를 검사하고 조건은 시스템의 현재 상태를 검사합니다. 스위치를 예로 들면, 트리거는 스위치가 켜지는 것(이벤트)을, 조건은 스위치가 현재 켜져 있는지 혹은 꺼져 있는지(상태)를 검사합니다.",
+                            "introduction": "조건은 자동화 규칙의 선택사항이며 트리거 될 때 설정된 모든 조건이 충족되지 않으면 동작되지 않도록 사용할 수 있습니다.",
                             "learn_more": "조건에 대해 더 알아보기",
                             "name": "조건",
                             "type_select": "조건 유형",
@@ -971,7 +971,7 @@
                             "title": "Google 어시스턴트"
                         },
                         "integrations": "서비스 연동",
-                        "integrations_introduction": "Home Assistant Cloud 연동을 통해 Home Assistant 구성요소를 인터넷상에 공개 노출시키지 않고도 클라우드의 서비스에 연결시킬 수 있습니다.",
+                        "integrations_introduction": "Home Assistant Cloud 연동으로 Home Assistant 구성요소를 인터넷상에 직접 공개 노출시키지 않고도 클라우드를 통해 서비스에 연결시킬 수 있습니다.",
                         "integrations_introduction2": "웹사이트를 방문하여 다음을 확인해보세요. ",
                         "integrations_link_all_features": "사용 가능한 모든 기능",
                         "manage_account": "계정 관리",
@@ -1002,7 +1002,7 @@
                         }
                     },
                     "alexa": {
-                        "banner": "configuration.yaml 에서 구성요소 필터를 구성했기 때문에 UI 를 통해 노출된 구성요소를 편집 할 수 없습니다.",
+                        "banner": "configuration.yaml 에서 구성요소 필터를 구성했기 때문에 UI 에서 노출된 구성요소를 편집 할 수 없습니다.",
                         "expose": "Alexa 에 노출",
                         "exposed_entities": "노출된 구성요소",
                         "not_exposed_entities": "노출되지 않은 구성요소",
@@ -1033,14 +1033,14 @@
                     "forgot_password": {
                         "check_your_email": "비밀번호를 재설정하는 방법은 보내드린 이메일을 확인해주세요.",
                         "email": "이메일",
-                        "email_error_msg": "잘못된 이메일 형식",
+                        "email_error_msg": "이메일 형식이 잘못되었습니다",
                         "instructions": "이메일 주소를 입력하시면 비밀번호를 재설정 할 수 있는 링크를 보내드립니다.",
                         "send_reset_email": "재설정 이메일 보내기",
                         "subtitle": "비밀번호 재설정 하기",
                         "title": "비밀번호 찾기"
                     },
                     "google": {
-                        "banner": "configuration.yaml 에서 구성요소 필터를 구성했기 때문에 UI 를 통해 노출된 구성요소를 편집 할 수 없습니다.",
+                        "banner": "configuration.yaml 에서 구성요소 필터를 구성했기 때문에 UI 에서 노출된 구성요소를 편집 할 수 없습니다.",
                         "disable_2FA": "2단계 인증 비활성화",
                         "expose": "Google 어시스턴트에 노출",
                         "exposed_entities": "노출된 구성요소",
@@ -1053,10 +1053,10 @@
                         "alert_password_change_required": "로그인하기 전에 비밀번호를 변경해야 합니다.",
                         "dismiss": "로그인 취소",
                         "email": "이메일",
-                        "email_error_msg": "잘못된 이메일 형식",
+                        "email_error_msg": "이메일 형식이 잘못되었습니다",
                         "forgot_password": "비밀번호가 기억나지 않으세요?",
                         "introduction": "Home Assistant Cloud 는 집 밖에서도 구성요소에 대한 안전한 원격 연결을 제공해드립니다. 또한 Amazon Alexa 및 Google 어시스턴트와 같은 클라우드 전용 서비스에 연결할 수 있습니다.",
-                        "introduction2": "이 서비스는 Home Assistant 와 Hass.io 의 설립자가 설립한 회사인 ",
+                        "introduction2": "이 서비스는 Home Assistant 와 Hass.io 의 창립자가 설립한 회사인 ",
                         "introduction2a": " 에 의해 운영되고 있습니다.",
                         "introduction3": "Home Assistant Cloud 는 1개월 무료 평가판이 포함된 구독 서비스입니다. 결제 정보는 필요하지 않습니다.",
                         "learn_more_link": "Home Assistant Cloud 에 대해 더 알아보기",
@@ -1071,7 +1071,7 @@
                         "account_created": "계정이 생성되었습니다! 계정을 활성화 하는 방법은 보내드린 이메일을 확인해주세요.",
                         "create_account": "계정 만들기",
                         "email_address": "이메일 주소",
-                        "email_error_msg": "잘못된 이메일 형식",
+                        "email_error_msg": "이메일 형식이 잘못되었습니다",
                         "feature_amazon_alexa": "Amazon Alexa 연동",
                         "feature_google_home": "Google 어시스턴트 연동",
                         "feature_remote_control": "집 밖에서 Home Assistant 를 제어",
@@ -1079,7 +1079,7 @@
                         "headline": "1개월 무료 평가판 사용해 보기",
                         "information": "1개월간 무료로 사용해 볼 수 있는 Home Assistant Cloud 계정을 만들어보세요. 결제 정보는 필요하지 않습니다.",
                         "information2": "평가판을 사용하면 다음을 포함하는 Home Assistant Cloud 의 모든 기능을 이용해 볼 수 있습니다:",
-                        "information3": "이 서비스는 Home Assistant 와 Hass.io 의 설립자가 설립한 회사인 ",
+                        "information3": "이 서비스는 Home Assistant 와 Hass.io 의 창립자가 설립한 회사인 ",
                         "information3a": " 에 의해 운영되고 있습니다.",
                         "information4": "계정 등록은 다음 이용 약관의 동의를 포함합니다.",
                         "link_privacy_policy": "개인 정보 정책",
@@ -1212,7 +1212,7 @@
                         "enabled_cause": "{cause} 에 의해 비활성화 되었습니다.",
                         "enabled_description": "비활성화 된 구성요소는 Home Assistant 에 추가되지 않습니다.",
                         "enabled_label": "구성요소 활성화",
-                        "note": "참고 : 아직 모든 통합 구성요소와 함께 작동하지 않을 수 있습니다.",
+                        "note": "참고 : 아직 모든 통합 구성요소에 적용되지 않을 수 있습니다.",
                         "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
                         "update": "업데이트"
                     },
@@ -1262,7 +1262,7 @@
                 "integrations": {
                     "caption": "통합 구성요소",
                     "config_entry": {
-                        "area": "{area}에 있슴",
+                        "area": "{area}에 위치",
                         "delete_button": "{integration} 삭제",
                         "delete_confirm": "이 통합 구성요소를 제거하시겠습니까?",
                         "device_unavailable": "기기 사용불가",
@@ -1297,7 +1297,7 @@
                         "submit": "확인"
                     },
                     "configure": "설정하기",
-                    "configured": "설정된 구성요소",
+                    "configured": "설정된 통합 구성요소",
                     "description": "통합 구성요소를 관리하고 설정합니다",
                     "details": "통합 구성요소 상세정보",
                     "discovered": "발견된 구성요소",
@@ -1309,14 +1309,14 @@
                         "confirm_ignore_title": "발견된 {name} 기기를 무시하시겠습니까?",
                         "hide_ignored": "무시된 통합 구성요소 숨김",
                         "ignore": "무시",
-                        "ignored": "무시",
+                        "ignored": "무시된 통합 구성요소",
                         "show_ignored": "무시된 통합 구성요소 표시",
                         "stop_ignore": "무시 중지"
                     },
                     "integration_not_found": "통합 구성요소를 찾을 수 없습니다.",
                     "new": "새로운 통합 구성요소 설정",
-                    "none": "설정된 구성요소가 없습니다",
-                    "note_about_integrations": "아직 UI 에서 모든 통합 구성요소를 구성할 수 있는것은 아닙니다.",
+                    "none": "설정된 통합 구성요소가 없습니다",
+                    "note_about_integrations": "아직 UI 에서 모든 통합 구성요소를 구성할 수 있는 것은 아닙니다.",
                     "note_about_website_reference": "더 많은 구성요소는 다음에서 살펴 봐주세요. "
                 },
                 "introduction": "여기에서 구성요소와  Home Assistant 를 설정 할 수 있습니다. 아직 여기서 모두 설정 할 수는 없지만, 모든 내용을 설정 할 수 있도록 작업 중입니다.",
@@ -1344,7 +1344,7 @@
                     },
                     "introduction": "Home Assistant 에서 추적 할 구성원을 정의 할 수 있습니다.",
                     "no_persons_created_yet": "아직 생성된 구성원이 없는 것 같습니다.",
-                    "note_about_persons_configured_in_yaml": "참고: configuration.yaml 에서 구성된 구성원은 UI 를 통해 편집 할 수 없습니다."
+                    "note_about_persons_configured_in_yaml": "참고: configuration.yaml 에서 구성된 구성원은 UI 에서 편집 할 수 없습니다."
                 },
                 "scene": {
                     "activated": "{name} 씬이 활성화 됨.",
@@ -1406,7 +1406,7 @@
                         "add_script": "스크립트 추가",
                         "edit_script": "스크립트 편집",
                         "header": "스크립트 편집기",
-                        "introduction": "스크립트 편집기를 사용하여 스크립트를 작성하고 편집 할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
+                        "introduction": "스크립트 편집기를 사용하여 스크립트를 작성하고 편집할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
                         "learn_more": "스크립트에 대해 더 알아보기",
                         "no_scripts": "편집 가능한 스크립트를 찾을 수 없습니다",
                         "trigger_script": "스크립트 트리거"
@@ -1467,7 +1467,7 @@
                         "owner": "소유자",
                         "rename_user": "사용자 이름 변경",
                         "system_generated": "시스템 자동 생성",
-                        "system_generated_users_not_removable": "시스템 자동 생성 사용자는 제거 할 수 없습니다.",
+                        "system_generated_users_not_removable": "시스템 자동 생성 사용자는 제거할 수 없습니다.",
                         "unnamed_user": "이름이 없는 사용자",
                         "user_rename_failed": "사용자 이름 변경이 실패했습니다:"
                     },
@@ -1776,6 +1776,9 @@
                         "no_devices": "이 페이지에서 기기를 제어 할 수 있지만, 기기가 아직 설정되지 않은 것 같습니다. 시작하려면 통합 페이지로 이동해주세요.",
                         "title": "집에 오신 것을 환영합니다"
                     },
+                    "entities": {
+                        "never_triggered": "트리거 된 적 없음"
+                    },
                     "picture-elements": {
                         "call_service": "{name} 서비스 호출",
                         "hold": "누르고 있기:",
@@ -1906,6 +1909,7 @@
                             "name": "센서"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "이 카드를 설정하려면 `shopping_list` 통합 구성요소가 필요합니다.",
                             "name": "장보기목록"
                         },
                         "thermostat": {
@@ -2221,6 +2225,8 @@
                     "link_promo": "번역 도와주기"
                 },
                 "logout": "로그아웃",
+                "logout_text": "로그 아웃 하시겠습니까?",
+                "logout_title": "로그 아웃",
                 "long_lived_access_tokens": {
                     "confirm_delete": "{name} 액세스 토큰을 삭제하시겠습니까?",
                     "create": "토큰 만들기",
