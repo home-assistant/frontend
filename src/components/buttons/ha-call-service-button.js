@@ -82,7 +82,6 @@ class HaCallServiceButton extends EventsMixin(PolymerElement) {
   buttonTapped() {
     if (this.confirmation) {
       showConfirmationDialog(this, {
-        confirmation: true,
         text: this.confirmation,
         confirm: () => this.callService(),
       });
