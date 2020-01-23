@@ -603,6 +603,24 @@
           "confirm_remove_text": "Are you sure you want to remove this entity?"
         }
       },
+      "entity_registry": {
+        "settings": "Settings",
+        "control": "Control",
+        "related": "Related",
+        "dismiss": "Dismiss",
+        "editor": {
+          "name": "Name Override",
+          "entity_id": "Entity ID",
+          "unavailable": "This entity is not currently available.",
+          "enabled_label": "Enable entity",
+          "enabled_cause": "Disabled by {cause}.",
+          "enabled_description": "Disabled entities will not be added to Home Assistant.",
+          "delete": "DELETE",
+          "confirm_delete": "Are you sure you want to delete this entry?",
+          "update": "UPDATE",
+          "note": "Note: this might not work yet with all integrations."
+        }
+      },
       "options_flow": {
         "form": {
           "header": "Options"
@@ -1303,24 +1321,6 @@
               "confirm_title": "Do you want to remove {number} entities?",
               "confirm_text": "Entities can only be removed when the integration is no longer providing the entities."
             }
-          },
-          "dialog": {
-            "settings": "Settings",
-            "control": "Control",
-            "related": "Related",
-            "dismiss": "Dismiss"
-          },
-          "editor": {
-            "name": "Name Override",
-            "entity_id": "Entity ID",
-            "unavailable": "This entity is not currently available.",
-            "enabled_label": "Enable entity",
-            "enabled_cause": "Disabled by {cause}.",
-            "enabled_description": "Disabled entities will not be added to Home Assistant.",
-            "delete": "DELETE",
-            "confirm_delete": "Are you sure you want to delete this entry?",
-            "update": "UPDATE",
-            "note": "Note: this might not work yet with all integrations."
           }
         },
         "person": {

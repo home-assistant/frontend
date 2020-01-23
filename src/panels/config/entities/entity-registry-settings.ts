@@ -67,7 +67,7 @@ export class EntityRegistrySettings extends LitElement {
           ? html`
               <div>
                 ${this.hass!.localize(
-                  "ui.panel.config.entities.editor.unavailable"
+                  "ui.dialogs.entity_registry.editor.unavailable"
                 )}
               </div>
             `
@@ -81,7 +81,9 @@ export class EntityRegistrySettings extends LitElement {
           <paper-input
             .value=${this._name}
             @value-changed=${this._nameChanged}
-            .label=${this.hass.localize("ui.panel.config.entities.editor.name")}
+            .label=${this.hass.localize(
+              "ui.dialogs.entity_registry.editor.name"
+            )}
             .placeholder=${stateObj ? computeStateName(stateObj) : ""}
             .disabled=${this._submitting}
           ></paper-input>
@@ -89,7 +91,7 @@ export class EntityRegistrySettings extends LitElement {
             .value=${this._entityId}
             @value-changed=${this._entityIdChanged}
             .label=${this.hass.localize(
-              "ui.panel.config.entities.editor.entity_id"
+              "ui.dialogs.entity_registry.editor.entity_id"
             )}
             error-message="Domain needs to stay the same"
             .invalid=${invalidDomainUpdate}
@@ -103,13 +105,13 @@ export class EntityRegistrySettings extends LitElement {
               <div>
                 <div>
                   ${this.hass.localize(
-                    "ui.panel.config.entities.editor.enabled_label"
+                    "ui.dialogs.entity_registry.editor.enabled_label"
                   )}
                 </div>
                 <div class="secondary">
                   ${this._disabledBy && this._disabledBy !== "user"
                     ? this.hass.localize(
-                        "ui.panel.config.entities.editor.enabled_cause",
+                        "ui.dialogs.entity_registry.editor.enabled_cause",
                         "cause",
                         this.hass.localize(
                           `config_entry.disabled_by.${this._disabledBy}`
@@ -117,10 +119,10 @@ export class EntityRegistrySettings extends LitElement {
                       )
                     : ""}
                   ${this.hass.localize(
-                    "ui.panel.config.entities.editor.enabled_description"
+                    "ui.dialogs.entity_registry.editor.enabled_description"
                   )}
                   <br />${this.hass.localize(
-                    "ui.panel.config.entities.editor.note"
+                    "ui.dialogs.entity_registry.editor.note"
                   )}
                 </div>
               </div>
@@ -135,13 +137,13 @@ export class EntityRegistrySettings extends LitElement {
           .disabled=${this._submitting ||
             !(stateObj && stateObj.attributes.restored)}
         >
-          ${this.hass.localize("ui.panel.config.entities.editor.delete")}
+          ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
         </mwc-button>
         <mwc-button
           @click="${this._updateEntry}"
           .disabled=${invalidDomainUpdate || this._submitting}
         >
-          ${this.hass.localize("ui.panel.config.entities.editor.update")}
+          ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
         </mwc-button>
       </div>
     `;
@@ -187,7 +189,7 @@ export class EntityRegistrySettings extends LitElement {
   private _confirmDeleteEntry(): void {
     showConfirmationDialog(this, {
       text: this.hass.localize(
-        "ui.panel.config.entities.editor.confirm_delete"
+        "ui.dialogs.entity_registry.editor.confirm_delete"
       ),
       confirm: () => this._deleteEntry(),
     });
