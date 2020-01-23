@@ -460,6 +460,9 @@
       "script": {
         "execute": "Execute"
       },
+      "service": {
+        "run": "Run"
+      },
       "timer": {
         "actions": {
           "start": "start",

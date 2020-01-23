@@ -14,7 +14,7 @@ import "../../../components/entity/ha-entity-toggle";
 import "../components/hui-warning";
 
 import { HomeAssistant } from "../../../types";
-import { LovelaceRow, EntityConfig } from "./types";
+import { LovelaceRow, ActionRowConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { activateScene } from "../../../data/scene";
 
@@ -22,9 +22,9 @@ import { activateScene } from "../../../data/scene";
 class HuiSceneEntityRow extends LitElement implements LovelaceRow {
   @property() public hass!: HomeAssistant;
 
-  @property() private _config?: EntityConfig;
+  @property() private _config?: ActionRowConfig;
 
-  public setConfig(config: EntityConfig): void {
+  public setConfig(config: ActionRowConfig): void {
     if (!config) {
       throw new Error("Configuration error");
     }
@@ -65,7 +65,9 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
             `
           : html`
               <mwc-button @click="${this._callService}">
-                ${this.hass!.localize("ui.card.scene.activate")}
+                ${this._config.action_name
+                  ? this._config.action_name
+                  : this.hass!.localize("ui.card.scene.activate")}
               </mwc-button>
             `}
       </hui-generic-entity-row>
