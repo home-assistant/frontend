@@ -64,9 +64,8 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
             `
           : html`
               <mwc-button @click="${this._callService}">
-                ${this._config.action_name
-                  ? this._config.action_name
-                  : this.hass!.localize("ui.card.script.execute")}
+                ${this._config.action_name ||
+                  this.hass!.localize("ui.card.script.execute")}
               </mwc-button>
             `}
       </hui-generic-entity-row>
