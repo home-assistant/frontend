@@ -2146,6 +2146,7 @@
                     "link_promo": "Help met vertalen"
                 },
                 "logout": "Uitloggen",
+                "logout_title": "Afmelden?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Weet je zeker dat je de toegangstoken voor {name} wilt verwijderen?",
                     "create": "Token aanmaken",

@@ -1776,6 +1776,9 @@
                         "no_devices": "Cette page vous permet de contrôler vos périphériques. Toutefois, il semble que vous n’ayez pas encore configuré de périphériques. Rendez-vous sur la page des intégrations pour commencer.",
                         "title": "Bienvenue à la maison"
                     },
+                    "entities": {
+                        "never_triggered": "Jamais déclenché"
+                    },
                     "picture-elements": {
                         "call_service": "Appeler le service {name}",
                         "hold": "Maintenir:",

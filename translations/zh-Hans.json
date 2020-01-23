@@ -1261,7 +1261,7 @@
                 "integrations": {
                     "caption": "集成",
                     "config_entry": {
-                        "area": "在{area}",
+                        "area": "位于：{area}",
                         "delete_button": "删除{integration}",
                         "delete_confirm": "您确定要删除此集成吗？",
                         "device_unavailable": "设备不可用",
@@ -1725,6 +1725,9 @@
                         "no_devices": "此页面是用来控制设备的，不过您好像还没有配置好任何设备。请前往集成页面以开始。",
                         "title": "欢迎回家"
                     },
+                    "entities": {
+                        "never_triggered": "从未触发"
+                    },
                     "picture-elements": {
                         "call_service": "调用服务{name}",
                         "hold": "按住：",
@@ -1855,6 +1858,7 @@
                             "name": "传感器"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "此卡片需要先配置好 `shopping_list` 集成。",
                             "name": "购物清单"
                         },
                         "thermostat": {
@@ -2165,6 +2169,8 @@
                     "link_promo": "帮助翻译"
                 },
                 "logout": "退出",
+                "logout_text": "您确定要退出登录吗？",
+                "logout_title": "确认退出？",
                 "long_lived_access_tokens": {
                     "confirm_delete": "确定要删除 {name} 的访问令牌吗？",
                     "create": "创建令牌",
