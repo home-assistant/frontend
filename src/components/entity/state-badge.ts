@@ -16,12 +16,16 @@ import { HassEntity } from "home-assistant-js-websocket";
 // tslint:disable-next-line
 import { HaIcon } from "../ha-icon";
 import { HomeAssistant } from "../../types";
+import { computeActiveState } from "../../common/entity/compute_active_state";
+import { ifDefined } from "lit-html/directives/if-defined";
+import { iconColorCSS } from "../../common/style/icon_color_css";
 
 class StateBadge extends LitElement {
   public hass?: HomeAssistant;
   @property() public stateObj?: HassEntity;
   @property() public overrideIcon?: string;
   @property() public overrideImage?: string;
+  @property({ type: Boolean }) public stateColor?: boolean;
   @query("ha-icon") private _icon!: HaIcon;
 
   protected render(): TemplateResult | void {
@@ -34,8 +38,10 @@ class StateBadge extends LitElement {
     return html`
       <ha-icon
         id="icon"
-        data-domain=${computeStateDomain(stateObj)}
-        data-state=${stateObj.state}
+        data-domain=${ifDefined(
+          this.stateColor ? computeStateDomain(stateObj) : undefined
+        )}
+        data-state=${computeActiveState(stateObj)}
         .icon=${this.overrideIcon || stateIcon(stateObj)}
       ></ha-icon>
     `;
@@ -111,19 +117,7 @@ class StateBadge extends LitElement {
         transition: color 0.3s ease-in-out, filter 0.3s ease-in-out;
       }
 
-      /* Color the icon if light or sun is on */
-      ha-icon[data-domain="light"][data-state="on"],
-      ha-icon[data-domain="switch"][data-state="on"],
-      ha-icon[data-domain="binary_sensor"][data-state="on"],
-      ha-icon[data-domain="fan"][data-state="on"],
-      ha-icon[data-domain="sun"][data-state="above_horizon"] {
-        color: var(--paper-item-icon-active-color, #fdd835);
-      }
-
-      /* Color the icon if unavailable */
-      ha-icon[data-state="unavailable"] {
-        color: var(--state-icon-unavailable-color);
-      }
+      ${iconColorCSS}
     `;
   }
 }

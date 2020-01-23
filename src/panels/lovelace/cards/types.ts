@@ -32,6 +32,7 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+  state_color?: boolean;
 }
 
 export interface EntitiesCardConfig extends LovelaceCardConfig {
@@ -43,6 +44,7 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   icon?: string;
   header?: LovelaceHeaderFooterConfig;
   footer?: LovelaceHeaderFooterConfig;
+  state_color?: boolean;
 }
 
 export interface EntityButtonCardConfig extends LovelaceCardConfig {
