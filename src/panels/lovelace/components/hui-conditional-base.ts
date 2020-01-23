@@ -15,7 +15,7 @@ export class HuiConditionalBase extends UpdatingElement {
   @property() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
   protected _element?: LovelaceCard | LovelaceRow;
 
-  public setConfig(config) {
+  public setConfig(config: ConditionalCardConfig | ConditionalRowConfig): void {
     if (!config.conditions) {
       throw new Error("No conditions option configured.");
     }
@@ -35,7 +35,7 @@ export class HuiConditionalBase extends UpdatingElement {
     this._config = config;
   }
 
-  protected update() {
+  protected update(): void {
     if (!this._element || !this.hass) {
       return;
     }
