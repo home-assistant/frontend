@@ -37,18 +37,21 @@ import {
   MarkerLocation,
 } from "../../../components/map/ha-locations-editor";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
-import { HassEntity } from "home-assistant-js-websocket";
+import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
+import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { subscribeEntityRegistry } from "../../../data/entity_registry";
 
 @customElement("ha-config-zone")
-export class HaConfigZone extends LitElement {
-  @property() public hass?: HomeAssistant;
+export class HaConfigZone extends SubscribeMixin(LitElement) {
+  @property() public hass!: HomeAssistant;
   @property() public isWide?: boolean;
   @property() public narrow?: boolean;
   @property() private _storageItems?: Zone[];
   @property() private _stateItems?: HassEntity[];
   @property() private _activeEntry: string = "";
   @query("ha-locations-editor") private _map?: HaLocationsEditor;
+  private _regEntities: string[] = [];
 
   private _getZones = memoizeOne(
     (storageItems: Zone[], stateItems: HassEntity[]): MarkerLocation[] => {
@@ -79,6 +82,17 @@ export class HaConfigZone extends LitElement {
       return storageLocations.concat(stateLocations);
     }
   );
+
+  public hassSubscribe(): UnsubscribeFunc[] {
+    return [
+      subscribeEntityRegistry(this.hass.connection!, (entities) => {
+        this._regEntities = entities.map(
+          (registryEntry) => registryEntry.entity_id
+        );
+        this._filterStates();
+      }),
+    ];
+  }
 
   protected render(): TemplateResult | void {
     if (
@@ -199,6 +213,7 @@ export class HaConfigZone extends LitElement {
   }
 
   protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     if (oldHass && this._stateItems) {
       this._getStates(oldHass);
@@ -213,17 +228,33 @@ export class HaConfigZone extends LitElement {
   }
 
   private _getStates(oldHass?: HomeAssistant) {
-    const tempStates: HassEntity[] = [];
     let changed = false;
-    Object.values(this.hass!.states).forEach((entity) => {
-      if (computeStateDomain(entity) === "zone") {
-        if (oldHass?.states[entity.entity_id] !== entity) {
-          changed = true;
-        }
-        tempStates.push(entity);
+    const tempStates = Object.values(this.hass!.states).filter((entity) => {
+      if (computeStateDomain(entity) !== "zone") {
+        return false;
       }
+      if (oldHass?.states[entity.entity_id] !== entity) {
+        changed = true;
+      }
+      if (this._regEntities.includes(entity.entity_id)) {
+        return false;
+      }
+      return true;
     });
+
     if (changed) {
+      this._stateItems = tempStates;
+    }
+  }
+
+  private _filterStates() {
+    if (!this._stateItems) {
+      return;
+    }
+    const tempStates = this._stateItems.filter(
+      (entity) => !this._regEntities.includes(entity.entity_id)
+    );
+    if (tempStates.length !== this._stateItems.length) {
       this._stateItems = tempStates;
     }
   }
@@ -274,9 +305,9 @@ export class HaConfigZone extends LitElement {
     )!;
     this._zoomZone(entityId);
     if (entityId === "zone.home") {
-      alert("Your location of your home can be changed in the gerenal config.");
+      alert(this.hass!.localize("ui.panel.config.zone.edit_home_zone"));
     } else {
-      alert("Zones created in YAML can not be edited in the UI.");
+      alert(this.hass!.localize("ui.panel.config.zone.configured_in_yaml"));
     }
   }
 
