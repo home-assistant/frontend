@@ -107,7 +107,6 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
 
     Object.keys(hass.states).forEach((entityId) => {
       var entity = hass.states[entityId];
-      var title = computeStateName(entity);
 
       if (
         (entity.attributes.hidden && computeStateDomain(entity) !== "zone") ||
@@ -118,6 +117,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
         return;
       }
 
+      var title = computeStateName(entity);
       var icon;
 
       if (computeStateDomain(entity) === "zone") {

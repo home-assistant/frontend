@@ -74,7 +74,6 @@ class LocationEditor extends LitElement {
       ) {
         this.fitMap();
       }
-      this._ignoreFitToMap = undefined;
     }
     if (changedProps.has("radius")) {
       this._updateRadius();
@@ -234,6 +233,7 @@ class LocationEditor extends LitElement {
         height: 100%;
       }
       .leaflet-edit-move {
+        border-radius: 50%;
         cursor: move !important;
       }
       .leaflet-edit-resize {

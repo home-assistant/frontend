@@ -32,18 +32,20 @@ declare global {
   }
 }
 
-export interface Location {
+export interface MarkerLocation {
   latitude: number;
   longitude: number;
-  radius: number;
-  name: string;
+  radius?: number;
+  name?: string;
   id: string;
-  icon: string;
+  icon?: string;
+  radius_color?: string;
+  editable?: boolean;
 }
 
 @customElement("ha-locations-editor")
 export class HaLocationsEditor extends LitElement {
-  @property() public locations?: Location[];
+  @property() public locations?: MarkerLocation[];
   public fitZoom = 16;
 
   // tslint:disable-next-line
@@ -51,6 +53,7 @@ export class HaLocationsEditor extends LitElement {
   // tslint:disable-next-line
   private _leafletMap?: Map;
   private _locationMarkers?: { [key: string]: Marker | Circle };
+  private _circles: Circle[] = [];
 
   public fitMap(): void {
     if (
@@ -155,6 +158,9 @@ export class HaLocationsEditor extends LitElement {
         marker.remove();
       });
       this._locationMarkers = undefined;
+
+      this._circles.forEach((circle) => circle.remove());
+      this._circles = [];
     }
 
     if (!this.locations || !this.locations.length) {
@@ -163,60 +169,69 @@ export class HaLocationsEditor extends LitElement {
 
     this._locationMarkers = {};
 
-    this.locations.forEach((location: Location) => {
+    this.locations.forEach((location: MarkerLocation) => {
       let icon: DivIcon | undefined;
       if (location.icon) {
         // create icon
-        let iconHTML = "";
-        const el = document.createElement("ha-icon");
-        el.setAttribute("icon", location.icon);
-        iconHTML = el.outerHTML;
+        const el = document.createElement("div");
+        el.className = "named-icon";
+        if (location.name) {
+          el.innerText = location.name;
+        }
+        const iconEl = document.createElement("ha-icon");
+        iconEl.setAttribute("icon", location.icon);
+        el.prepend(iconEl);
 
         icon = this.Leaflet!.divIcon({
-          html: iconHTML,
+          html: el.outerHTML,
           iconSize: [24, 24],
-          className: "light leaflet-edit-move",
+          className: "light",
         });
       }
       if (location.radius) {
         const circle = this.Leaflet!.circle(
           [location.latitude, location.longitude],
           {
-            color: "#FF9800",
+            color: location.radius_color ? location.radius_color : "#FF9800",
             radius: location.radius,
           }
         );
-        // @ts-ignore
-        circle.editing.enable();
         circle.addTo(this._leafletMap!);
-        // @ts-ignore
-        const moveMarker = circle.editing._moveMarker;
-        // @ts-ignore
-        const resizeMarker = circle.editing._resizeMarkers[0];
-        if (icon) {
-          moveMarker.setIcon(icon);
-        }
-        resizeMarker.id = moveMarker.id = location.id;
-        moveMarker
-          .addEventListener(
+        if (location.editable) {
+          // @ts-ignore
+          circle.editing.enable();
+          // @ts-ignore
+          const moveMarker = circle.editing._moveMarker;
+          // @ts-ignore
+          const resizeMarker = circle.editing._resizeMarkers[0];
+          if (icon) {
+            moveMarker.setIcon(icon);
+          }
+          resizeMarker.id = moveMarker.id = location.id;
+          moveMarker
+            .addEventListener(
+              "dragend",
+              // @ts-ignore
+              (ev: DragEndEvent) => this._updateLocation(ev)
+            )
+            .addEventListener(
+              "click",
+              // @ts-ignore
+              (ev: MouseEvent) => this._markerClicked(ev)
+            );
+          resizeMarker.addEventListener(
             "dragend",
             // @ts-ignore
-            (ev: DragEndEvent) => this._updateLocation(ev)
-          )
-          .addEventListener(
-            "click",
-            // @ts-ignore
-            (ev: MouseEvent) => this._markerClicked(ev)
+            (ev: DragEndEvent) => this._updateRadius(ev)
           );
-        resizeMarker.addEventListener(
-          "dragend",
-          // @ts-ignore
-          (ev: DragEndEvent) => this._updateRadius(ev)
-        );
-        this._locationMarkers![location.id] = circle;
-      } else {
+          this._locationMarkers![location.id] = circle;
+        } else {
+          this._circles.push(circle);
+        }
+      }
+      if (!location.radius || !location.editable) {
         const options: MarkerOptions = {
-          draggable: true,
+          draggable: Boolean(location.editable),
           title: location.name,
         };
 
@@ -255,12 +270,18 @@ export class HaLocationsEditor extends LitElement {
       #map {
         height: 100%;
       }
-      .leaflet-edit-move {
+      .leaflet-marker-draggable {
         cursor: move !important;
       }
       .leaflet-edit-resize {
         border-radius: 50%;
         cursor: nesw-resize !important;
+      }
+      .named-icon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
       }
     `;
   }
