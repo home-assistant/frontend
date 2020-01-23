@@ -302,12 +302,16 @@ export class HaConfigZone extends LitElement {
     this._map?.fitMarker(created.id);
   }
 
-  private async _updateEntry(entry: Zone, values: Partial<ZoneMutableParams>) {
+  private async _updateEntry(
+    entry: Zone,
+    values: Partial<ZoneMutableParams>,
+    fitMap: boolean = false
+  ) {
     const updated = await updateZone(this.hass!, entry!.id, values);
     this._storageItems = this._storageItems!.map((ent) =>
       ent === entry ? updated : ent
     );
-    if (this.narrow) {
+    if (this.narrow || !fitMap) {
       return;
     }
     await this.updateComplete;
@@ -341,7 +345,7 @@ ${this.hass!.localize("ui.panel.config.zone.confirm_delete2")}`)
       entry,
       createEntry: (values) => this._createEntry(values),
       updateEntry: entry
-        ? (values) => this._updateEntry(entry, values)
+        ? (values) => this._updateEntry(entry, values, true)
         : undefined,
       removeEntry: entry ? () => this._removeEntry(entry) : undefined,
     });
