@@ -14,6 +14,7 @@ import "../entity-rows/hui-text-entity-row";
 import "../entity-rows/hui-timer-entity-row";
 import "../entity-rows/hui-toggle-entity-row";
 import "../special-rows/hui-call-service-row";
+import "../special-rows/hui-conditional-row";
 import "../special-rows/hui-divider-row";
 import "../special-rows/hui-section-row";
 import "../special-rows/hui-weblink-row";
@@ -23,11 +24,12 @@ import { createLovelaceElement } from "./create-element-base";
 
 const SPECIAL_TYPES = new Set([
   "call-service",
+  "cast",
+  "conditional",
   "divider",
   "section",
-  "weblink",
-  "cast",
   "select",
+  "weblink",
 ]);
 const DOMAIN_TO_ELEMENT_TYPE = {
   _domain_not_found: "text",

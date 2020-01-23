@@ -6,11 +6,11 @@ import {
   property,
 } from "lit-element";
 
-import { EntityRow, DividerConfig } from "../entity-rows/types";
+import { LovelaceRow, DividerConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 
 @customElement("hui-divider-row")
-class HuiDividerRow extends LitElement implements EntityRow {
+class HuiDividerRow extends LitElement implements LovelaceRow {
   public hass?: HomeAssistant;
 
   @property() private _config?: DividerConfig;

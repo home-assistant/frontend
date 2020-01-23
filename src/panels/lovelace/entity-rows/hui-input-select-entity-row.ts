@@ -19,7 +19,7 @@ import "../components/hui-warning";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import { HomeAssistant, InputSelectEntity } from "../../../types";
-import { EntityRow } from "./types";
+import { LovelaceRow } from "./types";
 import { setInputSelectOption } from "../../../data/input-select";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { forwardHaptic } from "../../../data/haptics";
@@ -34,7 +34,7 @@ import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
 
 @customElement("hui-input-select-entity-row")
-class HuiInputSelectEntityRow extends LitElement implements EntityRow {
+class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: EntitiesCardEntityConfig;
