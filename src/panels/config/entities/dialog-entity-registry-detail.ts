@@ -26,7 +26,6 @@ import "../../../state-summary/state-card-content";
 import { HomeAssistant } from "../../../types";
 import "./entity-registry-settings";
 import { EntityRegistryDetailDialogParams } from "./show-dialog-entity-registry-detail";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 
 @customElement("dialog-entity-registry-detail")
 export class DialogEntityRegistryDetail extends LitElement {
@@ -141,19 +140,6 @@ export class DialogEntityRegistryDetail extends LitElement {
   private _openMoreInfo(): void {
     fireEvent(this, "hass-more-info", {
       entityId: this._params!.entry.entity_id,
-    });
-    this._params = undefined;
-  }
-
-  private _confirmDeleteEntry(): void {
-    showConfirmationDialog(this, {
-      title: this.hass.localize(
-        "ui.panel.config.entity_registry.editor.confirm_delete"
-      ),
-      text: this.hass.localize(
-        "ui.panel.config.entities.editor.confirm_delete"
-      ),
-      confirm: () => this._deleteEntry(),
     });
     this._params = undefined;
   }
