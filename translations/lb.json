@@ -589,6 +589,7 @@
             },
             "more_info_control": {
                 "dismiss": "Dialog ofbriechen",
+                "edit": "Entitéit änneren",
                 "restored": {
                     "confirm_remove_text": "Sécher fir dës Entitéit ze läsche?",
                     "confirm_remove_title": "Entitéit läschen?",
@@ -636,6 +637,9 @@
                     "add": "Apparater dobäisetzen",
                     "reconfigure": "Apparat frësch konfiguréieren",
                     "remove": "Apparat läschen"
+                },
+                "confirmations": {
+                    "remove": "Sécher fir den Apparat ze läsche?"
                 },
                 "last_seen": "Fir d'läscht gesinn",
                 "manuf": "vun {manufacturer}",
@@ -1522,6 +1526,17 @@
                     "devices": {
                         "header": "Zigbee Haus Automatismen - Apparat"
                     },
+                    "group_binding": {
+                        "bind_button_help": "Verbannt den gewielte Grupp mat de gewielten Cluster vun Apparaten.",
+                        "bind_button_label": "Grupp bannen",
+                        "cluster_selection_help": "Wielt Cluster aus fir mam gewielte Grupp ze verbannen",
+                        "group_picker_help": "Wielt e Grupp fir e Verbannung's Kommando auszeféieren.",
+                        "group_picker_label": "Gruppen déi kënne gebonne ginn",
+                        "header": "Gruppenandeelung",
+                        "introduction": "Gruppe verbannen an opléisen",
+                        "unbind_button_help": "De gewielte Grupp aus dem gewielte Cluster eraushuelen.",
+                        "unbind_button_label": "Grupp opléisen"
+                    },
                     "groups": {
                         "add_members": "Membere bäisetzen",
                         "adding_members": "Membere gi bäigesat",
@@ -1761,6 +1776,9 @@
                         "no_devices": "Dës Säit erlaabt et iech är Apparater ze kontrolléiere, awer wéi et schéngt sinn nach keng Apparater ageriicht. Gitt op d'Integratioun's Säit fir unzefänken.",
                         "title": "Wëllkomm Doheem"
                     },
+                    "entities": {
+                        "never_triggered": "Ni ausgeléist"
+                    },
                     "picture-elements": {
                         "call_service": "Service {name} opruffen",
                         "hold": "Gedréckt halen:",
@@ -1891,6 +1909,7 @@
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "Dës Kaart erfuerdert dass d'Integratioun `shopping_list ageriicht ass.",
                             "name": "Akafslëscht"
                         },
                         "thermostat": {
@@ -2206,6 +2225,8 @@
                     "link_promo": "Hëllef beim Iwwersetzen"
                 },
                 "logout": "Ausloggen",
+                "logout_text": "Sécher fir sech ofzemellen?",
+                "logout_title": "Ofmellen",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Sécher fir den Accèss Jeton fir {name} ze läsche?",
                     "create": "Jeton erstellen",

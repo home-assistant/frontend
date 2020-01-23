@@ -588,6 +588,7 @@
             },
             "more_info_control": {
                 "dismiss": "Avfärda",
+                "edit": "Redigera entitet",
                 "script": {
                     "last_action": "Senaste åtgärd"
                 },
@@ -628,6 +629,9 @@
                     "add": "Lägg till enheter",
                     "reconfigure": "Konfigurera om enheten",
                     "remove": "Ta bort enhet"
+                },
+                "confirmations": {
+                    "remove": "Är du säker på att du vill ta bort enheten?"
                 },
                 "last_seen": "Senast sedd",
                 "manuf": "av {manufacturer}",
@@ -1096,6 +1100,9 @@
                     "description": "Hantera anslutna enheter",
                     "details": "Här är alla detaljer om din enhet.",
                     "device_not_found": "Enheten hittades inte.",
+                    "entities": {
+                        "add_entities_lovelace": "Lägg till alla enhetsentiteter i Lovelace-gränsnittet"
+                    },
                     "info": "Enhetsinformation",
                     "unknown_error": "Okänt fel",
                     "unnamed_device": "Namnlös enhet"
@@ -1156,6 +1163,7 @@
                         "area_picker_label": "Område",
                         "close": "Stäng",
                         "created_config": "Skapad konfigurering för {name}.",
+                        "dismiss": "Avfärda dialogrutan",
                         "error_saving_area": "Fel vid sparande av område: {error}",
                         "external_step": {
                             "description": "Det här steget kräver att du besöker en extern webbplats för att slutföra.",
@@ -1356,7 +1364,8 @@
                     },
                     "caption": "ZHA",
                     "clusters": {
-                        "header": "Kluster"
+                        "header": "Kluster",
+                        "introduction": "Kluster är byggstenarna för Zigbee-funktionalitet. De separerar funktionalitet i logiska enheter. Det finns klient- och servertyper som består av attribut och kommandon."
                     },
                     "description": "Zigbee Home Automation (ZHA) nätverkshantering",
                     "device_card": {
@@ -1367,12 +1376,40 @@
                     "devices": {
                         "header": "Zigbee Home Automation - Enhet"
                     },
-                    "groups": {
-                        "caption": "Grupper",
-                        "description": "Skapa och modifiera Zigbee grupper",
-                        "group-header": "Zigbee Home Automation - Gruppdetaljer",
-                        "groups-header": "Zigbee Home Automation - Grupphantering"
+                    "group_binding": {
+                        "bind_button_help": "Bind den valda gruppen till de valda enhetsklustren.",
+                        "bind_button_label": "Bind grupp",
+                        "cluster_selection_help": "Välj kluster för att binda till den valda gruppen.",
+                        "group_picker_help": "Välj en grupp för att utfärda ett bind-kommando.",
+                        "group_picker_label": "Bindbara grupper",
+                        "header": "Gruppbindning",
+                        "introduction": "Binda och avlasta grupper.",
+                        "unbind_button_help": "Ta bort bindningen för den markerade gruppen från de valda enhetsklustren.",
+                        "unbind_button_label": "Avlasta gruppen"
                     },
+                    "groups": {
+                        "add_members": "Lägg till medlemmar",
+                        "adding_members": "Lägger till medlemmar",
+                        "caption": "Grupper",
+                        "create": "Skapa grupp",
+                        "create_group": "ZigBee Home Automation - Skapa grupp",
+                        "create_group_details": "Ange de uppgifter som krävs för att skapa en ny ZigBee-grupp",
+                        "creating_group": "Skapar grupp",
+                        "description": "Skapa och modifiera Zigbee grupper",
+                        "group_details": "Här är alla detaljer för den valda Zigbee-gruppen.",
+                        "group_info": "Gruppinformation",
+                        "group_name_placeholder": "Gruppnamn",
+                        "group_not_found": "Gruppen hittades inte!",
+                        "group-header": "Zigbee Home Automation - Gruppdetaljer",
+                        "groups-header": "Zigbee Home Automation - Grupphantering",
+                        "introduction": "Skapa och ändra zigbeegrupper",
+                        "remove_groups": "Ta bort grupper",
+                        "remove_members": "Ta bort medlemmar",
+                        "removing_groups": "Tar bort grupper",
+                        "removing_members": "Tar bort medlemmar"
+                    },
+                    "header": "Konfigurera ZigBee-hemautomation",
+                    "introduction": "Här går det att konfigurera ZHA-komponenten. Det är inte möjligt att ställa in allt från användargränssnittet ännu, men vi jobbar på det.",
                     "node_management": {
                         "hint_wakeup": "Vissa enheter, som Xiaomi-sensorer, har en väckningsknapp som du kan trycka på med ca 5 sekunders intervall för att hålla enheterna vakna medan du interagerar med dem."
                     },
@@ -1380,7 +1417,8 @@
                         "reconfigure": "Omkonfigurera ZHA-enheten (läk enheten). Använd det här om du har problem med enheten. Om den aktuella enheten är en batteridriven enhet, se till att den är påslagen och accepterar kommandon när du använder den här tjänstens funktion.",
                         "remove": "Ta bort en enhet från Zigbee-nätverket.",
                         "updateDeviceName": "Ange ett anpassat namn för den här enheten i entitetsregistret"
-                    }
+                    },
+                    "title": "ZigBee-hemautomation"
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1549,12 +1587,20 @@
                 "showing_entries": "Visar poster för"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "Du kan bara använda den här funktionen när du har tagit kontroll över Lovelace UI.",
+                    "saving_failed": "Det gick inte att spara Lovelace UI-konfigurationen.",
+                    "yaml_unsupported": "Du kan inte använda den här funktionen när du använder Lovelace UI i YAML-läge."
+                },
                 "cards": {
                     "confirm_delete": "Är du säker på att du vill ta bort det här kortet?",
                     "empty_state": {
                         "go_to_integrations_page": "Gå till integrationssidan.",
                         "no_devices": "På den här sidan kan du styra dina enheter, men det ser ut som om du inte har några enheter ännu. Gå till integrationssidan för att komma igång.",
                         "title": "Välkommen hem"
+                    },
+                    "entities": {
+                        "never_triggered": "Aldrig utlöst"
                     },
                     "picture-elements": {
                         "call_service": "Kör tjänst {name}",
@@ -1674,6 +1720,7 @@
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "Detta kort kräver att \"shopping_list\" -integrationen konfigureras.",
                             "name": "Inköpslista"
                         },
                         "thermostat": {
@@ -1724,10 +1771,12 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Vi kommer automatiskt att generera dina Lovelace-vyer med dina områden och enheter om du tar bort din Lovelace-konfiguration.",
+                        "confirm_remove_config_title": "Är du säker på att du vill ta bort din Lovelace UI konfiguration? Vi kommer automatiskt att generera dina Lovelace UI-vyer med dina områden och enheter.",
                         "confirm_unsaved_changes": "Du har osparade ändringar. Är du säker på att du vill avsluta?",
                         "confirm_unsaved_comments": "Din konfiguration innehåller kommentarer, dessa sparas inte. Vill du fortsätta?",
                         "error_invalid_config": "Din konfigurering är inte giltig: {error}",
                         "error_parse_yaml": "Det går inte att analysera YAML: {error}",
+                        "error_remove": "Det går inte att ta bort konfigurationen: {error}",
                         "error_save_yaml": "Det gick inte att spara YAML: {error}",
                         "header": "Ändra konfigurationen",
                         "save": "Spara",
@@ -1742,8 +1791,9 @@
                         "save": "Ta kontroll"
                     },
                     "suggest_card": {
-                        "add": "Lägg till i Lovelace",
-                        "create_own": "Skapa ditt eget"
+                        "add": "Lägg till i Lovelace-gränsnitt",
+                        "create_own": "Skapa ditt eget",
+                        "header": "Vi har skapat ett förslag för dig"
                     },
                     "view": {
                         "panel_mode": {
@@ -1981,6 +2031,8 @@
                     "link_promo": "Hjälp till att översätta"
                 },
                 "logout": "Logga ut",
+                "logout_text": "Är du säker på att du vill logga ut?",
+                "logout_title": "Logga ut?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Är du säker du vill radera åtkomsttoken för {name}?",
                     "create": "Skapa token",
