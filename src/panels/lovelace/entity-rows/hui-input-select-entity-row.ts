@@ -80,6 +80,9 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
     return html`
       <state-badge
         .stateObj=${stateObj}
+        .stateColor=${this._config.state_color}
+        .overrideIcon=${this._config.icon}
+        .overrideImage=${this._config.image}
         class=${classMap({
           pointer,
         })}
