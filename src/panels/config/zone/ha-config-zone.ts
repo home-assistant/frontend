@@ -60,7 +60,12 @@ export class HaConfigZone extends LitElement {
           latitude: state.attributes.latitude,
           longitude: state.attributes.longitude,
           radius: state.attributes.radius,
-          radius_color: state.attributes.passive ? "#9b9b9b" : "#FF9800",
+          radius_color:
+            state.entity_id === "zone.home"
+              ? "#03a9f4"
+              : state.attributes.passive
+              ? "#9b9b9b"
+              : "#FF9800",
           editable: false,
         };
       });
