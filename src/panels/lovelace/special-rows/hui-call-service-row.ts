@@ -12,11 +12,11 @@ import "@material/mwc-button";
 import "../../../components/ha-icon";
 
 import { callService } from "../common/call-service";
-import { EntityRow, CallServiceConfig } from "../entity-rows/types";
+import { LovelaceRow, CallServiceConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 
 @customElement("hui-call-service-row")
-class HuiCallServiceRow extends LitElement implements EntityRow {
+class HuiCallServiceRow extends LitElement implements LovelaceRow {
   public hass?: HomeAssistant;
 
   @property() private _config?: CallServiceConfig;

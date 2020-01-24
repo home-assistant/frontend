@@ -8,13 +8,13 @@ import {
   CSSResult,
 } from "lit-element";
 
-import { EntityRow, WeblinkConfig } from "../entity-rows/types";
+import { LovelaceRow, WeblinkConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 
 import "../../../components/ha-icon";
 
 @customElement("hui-weblink-row")
-class HuiWeblinkRow extends LitElement implements EntityRow {
+class HuiWeblinkRow extends LitElement implements LovelaceRow {
   public hass?: HomeAssistant;
 
   @property() private _config?: WeblinkConfig;
