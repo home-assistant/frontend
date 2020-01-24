@@ -557,6 +557,16 @@
                 "loading_history": "Lued Status Verlaaf",
                 "no_history_found": "Keen Status Verlaaf fonnt"
             },
+            "related-items": {
+                "area": "Beräich",
+                "automation": "Deel vun de folgenden Automatismen",
+                "device": "Apparat",
+                "entity": "Entitéiten a Relatioun",
+                "group": "Deel vun de folgende Gruppen",
+                "integration": "Integratioun",
+                "scene": "Deel vun de folgende Zeenen",
+                "script": "Deel vun de folgende Skripten"
+            },
             "relative_time": {
                 "duration": {
                     "day": "{count} {count, plural,\none {Dag}\nother {Deeg}\n}",
@@ -598,7 +608,8 @@
                     "remove_intro": "Falls d'Entitéit net méi benotzt gëtt kënnt dir sie botzen andeems dir sie läscht."
                 },
                 "script": {
-                    "last_action": "Läscht Aktioun"
+                    "last_action": "Läscht Aktioun",
+                    "last_triggered": "Läscht ausgeléist"
                 },
                 "settings": "Astellunge vun der Entitéit",
                 "sun": {
@@ -1204,6 +1215,12 @@
                 "entities": {
                     "caption": "Lëscht vun den Entitéiten",
                     "description": "Iwwersiicht vun all bekannten Entitéiten.",
+                    "dialog": {
+                        "control": "Kontroll",
+                        "dismiss": "Verwerfen",
+                        "related": "Relatioun",
+                        "settings": "Astellungen"
+                    },
                     "editor": {
                         "confirm_delete": "Sécher fir dës Entrée ze läsche?",
                         "confirm_delete2": "Beim Läsche vun enger Entrée gëtt dës Entitéit net aus dem Home Assistant erausgeholl. Fir dëst ze maache muss dir d'Integratioun '{platform}' aus dem Home Assistant ewech huelen.",
@@ -1212,6 +1229,8 @@
                         "enabled_cause": "Desaktivéiert duerch {cause}.",
                         "enabled_description": "Desaktivéiert Entitéiten ginn net am Home Assistant bäigesat.",
                         "enabled_label": "Entitéit aktivéieren",
+                        "entity_id": "ID vun der Entitéit",
+                        "name": "Numm iwwerschreiwen",
                         "note": "Nott: dëst funktionéiert villäicht nach net mat all Integratioun.",
                         "unavailable": "Dës Entitéit ass net erreechbar fir de Moment.",
                         "update": "Aktualiséieren"
@@ -1422,8 +1441,10 @@
                             "group": "Gruppe nei lueden",
                             "heading": "Konfiguratioun gëtt frësch gelueden",
                             "introduction": "E puer Deeler vum Home Assistant kënne frësch geluede ginn ouni datt een Neistart néideg ass. Klick op nei luede fir di aktuell Konfiguratioun z'entlueden an di nei Konfiguratioun ze lueden.",
+                            "person": "Persoune frësch lueden",
                             "scene": "Szeene néi lueden",
-                            "script": "Skripte nei lueden"
+                            "script": "Skripte nei lueden",
+                            "zone": "Zone frësch lueden"
                         },
                         "server_management": {
                             "confirm_restart": "Sécher fir Home Assistant frësch ze starten?",
@@ -1583,6 +1604,30 @@
                         "updateDeviceName": "Personaliséiert den Numm fir dësen Apparat an der Iwwersiicht vun den Apparaten."
                     },
                     "title": "Zigbee Haus Automatismen"
+                },
+                "zone": {
+                    "add_zone": "Zon dobäisetzen",
+                    "caption": "Zone",
+                    "confirm_delete": "Sécher fir dës Zon ze läschen?",
+                    "create_zone": "Zon erstellen",
+                    "description": "Zone verwalte an deenen Persounen suivéiert solle ginn.",
+                    "detail": {
+                        "create": "Erstellen",
+                        "delete": "Läschen",
+                        "icon": "Ikon",
+                        "icon_error_msg": "Ikon sollt am format prefix:numm sinn, Beispill: mdi:home",
+                        "latitude": "Breedegrad",
+                        "longitude": "Längegrad",
+                        "name": "Numm",
+                        "new_zone": "Nei Zon",
+                        "passive": "Passiv",
+                        "passive_note": "Passiv Zonë sinn am Frontend verstoppt a ginn net als Standuert fir Apparaten Tracker benotzt. Dëst ass nëtzlech wann Dir et just fir Automatisme wëllt benotzen.",
+                        "radius": "Radius",
+                        "required_error_msg": "Dëst Feld ass erfuerderlech",
+                        "update": "Aktualiséieren"
+                    },
+                    "introduction": "Zonen erlaben Iech verschidde Regiounen op der Äerd ze spezifizéieren. Wann eng Persoun an enger Zone ass, hëlt de Status den Numm aus der Zone. Zonë kënnen och als Ausléiser oder als Konditioun an Automatisme benotzt ginn.",
+                    "no_zones_created_yet": "Et gesäit sou aus wéi wann nach keng Zone erstallt goufen."
                 },
                 "zwave": {
                     "caption": "Z-Wave",

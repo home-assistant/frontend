@@ -411,7 +411,7 @@
             },
             "automation": {
                 "last_triggered": "Ultima attivazione",
-                "trigger": "Attiva"
+                "trigger": "Esegui"
             },
             "camera": {
                 "not_available": "Immagine non disponibile"
@@ -557,6 +557,16 @@
                 "loading_history": "Caricamento storico",
                 "no_history_found": "Nessuno storico trovato"
             },
+            "related-items": {
+                "area": "Area",
+                "automation": "Parte delle seguenti automazioni",
+                "device": "Dispositivo",
+                "entity": "Entità correlate",
+                "group": "Parte dei seguenti gruppi",
+                "integration": "Integrazione",
+                "scene": "Parte delle seguenti scene",
+                "script": "Parte dei seguenti scripts"
+            },
             "relative_time": {
                 "duration": {
                     "day": "{count} {count, plural,\none {giorno}\nother {giorni}\n}",
@@ -598,7 +608,8 @@
                     "remove_intro": "Se l'entità non è più in uso, è possibile ripulirla rimuovendola."
                 },
                 "script": {
-                    "last_action": "Ultima azione"
+                    "last_action": "Ultima azione",
+                    "last_triggered": "Ultima attivazione"
                 },
                 "settings": "Impostazioni dell'entità",
                 "sun": {
@@ -1204,6 +1215,12 @@
                 "entities": {
                     "caption": "Entità",
                     "description": "Panoramica di tutte le entità conosciute.",
+                    "dialog": {
+                        "control": "Controllo",
+                        "dismiss": "Annullare",
+                        "related": "Relazionato",
+                        "settings": "Impostazioni"
+                    },
                     "editor": {
                         "confirm_delete": "Sei sicuro di voler eliminare questa voce?",
                         "confirm_delete2": "L'eliminazione di una voce non comporta la rimozione dell'entità da Home Assistant. A tale scopo, è necessario rimuovere l'integrazione '{platform}' da Home Assistant.",
@@ -1212,6 +1229,8 @@
                         "enabled_cause": "Disabilitato da {cause}.",
                         "enabled_description": "Le entità disabilitate non verranno aggiunte a Home Assistant.",
                         "enabled_label": "Abilita entità",
+                        "entity_id": "ID entità",
+                        "name": "Sovrascrittura del nome",
                         "note": "Nota: questo potrebbe non funzionare ancora con tutte le integrazioni.",
                         "unavailable": "Questa entità non è attualmente disponibile.",
                         "update": "AGGIORNA"
@@ -1422,8 +1441,10 @@
                             "group": "Ricarica i Gruppi",
                             "heading": "Aggiornamento della Configurazione",
                             "introduction": "Alcune parti di Home Assistant possono essere aggiornate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro configurazione attuale e si caricherà la versione aggiornata.",
+                            "person": "Ricarica persone",
                             "scene": "Ricarica le Scene",
-                            "script": "Ricarica gli Script"
+                            "script": "Ricarica gli Script",
+                            "zone": "Ricarica zone"
                         },
                         "server_management": {
                             "confirm_restart": "Sei sicuro di voler riavviare Home Assistant?",
@@ -1526,6 +1547,15 @@
                     "devices": {
                         "header": "Zigbee Home Automation - Dispositivo"
                     },
+                    "group_binding": {
+                        "bind_button_help": "Collega il gruppo selezionato all'insieme dei dispositivi selezionati.",
+                        "bind_button_label": "Collega Gruppo",
+                        "group_picker_label": "Gruppi collegabili",
+                        "header": "Collegamento gruppo",
+                        "introduction": "Collega e scollega gruppi",
+                        "unbind_button_help": "Scollega il gruppo selezionato dall'insieme dei dispositivi selezionati.",
+                        "unbind_button_label": "Scollega Gruppo"
+                    },
                     "groups": {
                         "add_members": "Aggiungi membri",
                         "adding_members": "Aggiunta di membri",
@@ -1572,6 +1602,30 @@
                         "updateDeviceName": "Imposta un nome personalizzato per questo dispositivo nel registro dispositivi."
                     },
                     "title": "Zigbee Home Automation"
+                },
+                "zone": {
+                    "add_zone": "Aggiungi zona",
+                    "caption": "Zone",
+                    "confirm_delete": "Sei sicuro di voler cancellare questa zona?",
+                    "create_zone": "Crea zona",
+                    "description": "Gestisci le zone in cui vuoi rintracciare le persone.",
+                    "detail": {
+                        "create": "Crea",
+                        "delete": "Elimina",
+                        "icon": "Icona",
+                        "icon_error_msg": "L'icona dovrebbe essere nel formato prefisso:nome_icona, ad esempio: mdi:home",
+                        "latitude": "Latitudine",
+                        "longitude": "Logitudine",
+                        "name": "Nome",
+                        "new_zone": "Nuova zona",
+                        "passive": "Passivo",
+                        "passive_note": "Le zone passive sono nascoste nel frontend e non vengono utilizzate come posizione per i tracker dei dispositivi. Ciò è utile se si desidera utilizzarlo solo per le automazioni.",
+                        "radius": "Raggio",
+                        "required_error_msg": "Questo campo è obbligatorio",
+                        "update": "Aggiorna"
+                    },
+                    "introduction": "Le zone ti consentono di specificare determinate regioni sulla terra. Quando una persona si trova all'interno di una zona, lo stato prenderà il nome dalla zona. Le zone possono anche essere utilizzate come trigger o condizioni all'interno delle impostazioni di automazione.",
+                    "no_zones_created_yet": "Sembra che tu non abbia ancora creato nessuna zona."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1764,6 +1818,9 @@
                         "go_to_integrations_page": "Vai alla pagina delle integrazioni.",
                         "no_devices": "Questa pagina ti consente di controllare i tuoi dispositivi, tuttavia sembra che tu non abbia ancora configurato uno. Vai alla pagina delle integrazioni per iniziare.",
                         "title": "Benvenuto a casa"
+                    },
+                    "entities": {
+                        "never_triggered": "Mai attivato"
                     },
                     "picture-elements": {
                         "call_service": "Chiama il servizio {name}",

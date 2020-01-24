@@ -557,6 +557,16 @@
                 "loading_history": "Indlæser tilstandshistorik...",
                 "no_history_found": "Ingen tilstandshistorik fundet."
             },
+            "related-items": {
+                "area": "Område",
+                "automation": "En del af følgende automatiseringer",
+                "device": "Enhed",
+                "entity": "Relaterede entiteter",
+                "group": "En del af følgende grupper",
+                "integration": "Integration",
+                "scene": "En del af følgende scener",
+                "script": "En del af følgende scripts"
+            },
             "relative_time": {
                 "duration": {
                     "day": "{count} {count, plural,\none {dag}\nother {dage}\n}",
@@ -598,7 +608,8 @@
                     "remove_intro": "Hvis entiteten ikke længere er i brug, kan du rydde op ved at fjerne den."
                 },
                 "script": {
-                    "last_action": "Senest udløst"
+                    "last_action": "Senest udløst",
+                    "last_triggered": "Senest udløst"
                 },
                 "settings": "Entitetsindstillinger",
                 "sun": {
@@ -1204,6 +1215,12 @@
                 "entities": {
                     "caption": "Entiteter",
                     "description": "Oversigt over alle kendte entiteter.",
+                    "dialog": {
+                        "control": "Kontrol",
+                        "dismiss": "Afvis",
+                        "related": "Relaterede",
+                        "settings": "Indstillinger"
+                    },
                     "editor": {
                         "confirm_delete": "Er du sikker på, at du vil slette denne post?",
                         "confirm_delete2": "Hvis du sletter en post, fjernes entiteten ikke fra Home Assistant. Hvis du vil gøre dette, skal du fjerne integrationen '{platform}' fra Home Assistant.",
@@ -1212,6 +1229,8 @@
                         "enabled_cause": "Deaktiveret af {cause}.",
                         "enabled_description": "Deaktiverede entiteter tilføjes ikke til Home Assistant.",
                         "enabled_label": "Aktivér entitet",
+                        "entity_id": "Entitets-id",
+                        "name": "Tilsidesættelse af navn",
                         "note": "Bemærk: Dette fungerer muligvis ikke med alle integrationer endnu.",
                         "unavailable": "Denne entitet er ikke tilgængelig i øjeblikket.",
                         "update": "OPDATER"
@@ -1422,8 +1441,10 @@
                             "group": "Genindlæs grupper",
                             "heading": "Genindlæser konfiguration",
                             "introduction": "Nogle dele af Home Assistant kan genindlæses uden en genstart. Tryk på genindlæs for at aflæse den nuværende konfiguration og indlæse den nye.",
+                            "person": "Genindlæs personer",
                             "scene": "Genindlæs scener",
-                            "script": "Genindlæs scripts"
+                            "script": "Genindlæs scripts",
+                            "zone": "Genindlæs zoner"
                         },
                         "server_management": {
                             "confirm_restart": "Er du sikker på, at du vil genstarte Home Assistant?",
@@ -1583,6 +1604,30 @@
                         "updateDeviceName": "Angiv et brugerdefineret navn til denne enhed i enhedsregistret"
                     },
                     "title": "Zigbee Home Automation"
+                },
+                "zone": {
+                    "add_zone": "Tilføj zone",
+                    "caption": "Zoner",
+                    "confirm_delete": "Er du sikker på, at du vil slette denne zone?",
+                    "create_zone": "Opret zone",
+                    "description": "Administrer de zoner, du ønsker at spore personer i.",
+                    "detail": {
+                        "create": "Opret",
+                        "delete": "Slet",
+                        "icon": "Ikon",
+                        "icon_error_msg": "Ikonet skal være i formatet præfiks:ikonnavn, for eksempel: mdi:home",
+                        "latitude": "Breddegrad",
+                        "longitude": "Længdegrad",
+                        "name": "Navn",
+                        "new_zone": "Ny zone",
+                        "passive": "Passiv",
+                        "passive_note": "Passive zoner er skjult i brugerfladen og bruges ikke som lokalitet for enhedssporere. Dette er nyttigt, hvis du bare vil bruge det til automatiseringer.",
+                        "radius": "Radius",
+                        "required_error_msg": "Dette felt er påkrævet",
+                        "update": "Opdater"
+                    },
+                    "introduction": "Zoner giver dig mulighed for at angive bestemte områder på jorden. Når en person er inden for en zone, vil tilstanden antage navnet fra zonen. Zoner kan også bruges som udløser eller tilstand inde i automatiseringsopsætninger.",
+                    "no_zones_created_yet": "Det ser ud til, at du ikke har oprettet nogen zoner endnu."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
