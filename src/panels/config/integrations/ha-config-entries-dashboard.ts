@@ -93,7 +93,7 @@ export class HaConfigManagerDashboard extends LitElement {
             role="listbox"
             selected="{{selectedItem}}"
           >
-            <paper-item @click=${this._toggleShowIgnored}>
+            <paper-item @tap=${this._toggleShowIgnored}>
               ${this.hass.localize(
                 this._showIgnored
                   ? "ui.panel.config.integrations.ignore.hide_ignored"
