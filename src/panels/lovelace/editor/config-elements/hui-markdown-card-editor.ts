@@ -100,14 +100,10 @@ export class HuiMarkdownCardEditor extends LitElement
       return;
     }
     if (target.configValue) {
-      if (target.value === "") {
-        delete this._config[target.configValue!];
-      } else {
-        this._config = {
-          ...this._config,
-          [target.configValue!]: target.value,
-        };
-      }
+      this._config = {
+        ...this._config,
+        [target.configValue!]: target.value,
+      };
     }
     fireEvent(this, "config-changed", { config: this._config });
   }
