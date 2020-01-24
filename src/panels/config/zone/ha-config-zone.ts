@@ -400,6 +400,10 @@ ${this.hass!.localize("ui.panel.config.zone.confirm_delete2")}`)
         margin: 16px auto;
         overflow: hidden;
       }
+      ha-icon,
+      paper-icon-button {
+        color: var(--secondary-text-color);
+      }
       .empty {
         text-align: center;
         padding: 8px;
