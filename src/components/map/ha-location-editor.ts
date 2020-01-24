@@ -42,7 +42,12 @@ class LocationEditor extends LitElement {
     if (!this._leafletMap || !this.location) {
       return;
     }
-    this._leafletMap.setView(this.location, this.fitZoom);
+    if ((this._locationMarker as Circle).getBounds) {
+      this._leafletMap.fitBounds((this._locationMarker as Circle).getBounds());
+    } else {
+      this._leafletMap.setView(this.location, this.fitZoom);
+    }
+    this._ignoreFitToMap = this.location;
   }
 
   protected render(): TemplateResult | void {
@@ -74,7 +79,6 @@ class LocationEditor extends LitElement {
       ) {
         this.fitMap();
       }
-      this._ignoreFitToMap = undefined;
     }
     if (changedProps.has("radius")) {
       this._updateRadius();
@@ -234,6 +238,7 @@ class LocationEditor extends LitElement {
         height: 100%;
       }
       .leaflet-edit-move {
+        border-radius: 50%;
         cursor: move !important;
       }
       .leaflet-edit-resize {

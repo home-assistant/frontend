@@ -21,6 +21,7 @@ export class HaSwitch extends MwcSwitch {
       "slotted",
       Boolean(this._slot.assignedNodes().length)
     );
+    this._slot.addEventListener("click", () => (this.checked = !this.checked));
   }
 
   protected static get styles(): CSSResult[] {
