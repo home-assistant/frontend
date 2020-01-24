@@ -91,7 +91,7 @@ export class HuiEntitiesCardEditor extends LitElement
           @theme-changed="${this._valueChanged}"
         ></hui-theme-select-editor>
         <ha-switch
-          ?checked="${this._config!.show_header_toggle !== false}"
+          .checked="${this._config!.show_header_toggle !== false}"
           .configValue="${"show_header_toggle"}"
           @change="${this._valueChanged}"
           >${this.hass.localize(

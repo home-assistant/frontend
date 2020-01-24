@@ -42,7 +42,7 @@ export class HaDeviceEntitiesCard extends LitElement {
       <ha-card>
         <paper-item>
           <ha-switch
-            ?checked=${this._showDisabled}
+            .checked=${this._showDisabled}
             @change=${this._showDisabledChanged}
             >${this.hass.localize(
               "ui.panel.config.entities.picker.filter.show_disabled"
