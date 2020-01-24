@@ -239,6 +239,7 @@ export class HaAreaDevicesPicker extends SubscribeMixin(LitElement) {
   }
 
   protected updated(changedProps: PropertyValues) {
+    super.updated(changedProps);
     if (changedProps.has("area") && this.area) {
       this._areaPicker = true;
       this.value = this.area;
