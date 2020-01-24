@@ -27,7 +27,7 @@ class DialogBox extends LitElement {
   public async showDialog(params: DialogParams): Promise<void> {
     this._params = params;
     if (params.prompt) {
-      this._text = params.text;
+      this._value = params.default_value;
     }
   }
 
@@ -49,19 +49,19 @@ class DialogBox extends LitElement {
           ${this._params.title
             ? this._params.title
             : this._params.confirmation &&
-              this.hass.localize("ui.dialogs.generic.title")}
+              this.hass.localize("ui.dialogs.generic.default_confirmation_title")}
         </h2>
         <paper-dialog-scrollable>
           ${this._params.prompt
             ? html`
                 <paper-input
                   autofocus
-                  .value=${this._text}
+                  .value=${this._value}
                   @value-changed=${this._textChanged}
-                  label=${this._params.inputLabel
+                  .label=${this._params.inputLabel
                     ? this._params.inputLabel
                     : ""}
-                  type=${this._params.inputType
+                  .type=${this._params.inputType
                     ? this._params.inputType
                     : "text"}
                 ></paper-input>
