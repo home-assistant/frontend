@@ -53,7 +53,7 @@ export class HaLocationsEditor extends LitElement {
   // tslint:disable-next-line
   private _leafletMap?: Map;
   private _locationMarkers?: { [key: string]: Marker | Circle };
-  private _circles: Circle[] = [];
+  private _circles: { [key: string]: Circle } = {};
 
   public fitMap(): void {
     if (
@@ -77,7 +77,16 @@ export class HaLocationsEditor extends LitElement {
     if (!marker) {
       return;
     }
-    this._leafletMap.setView(marker.getLatLng(), this.fitZoom);
+    if (marker.getBounds) {
+      this._leafletMap.fitBounds(marker.getBounds());
+    } else {
+      const circle = this._circles[id];
+      if (circle) {
+        this._leafletMap.fitBounds(circle.getBounds());
+      } else {
+        this._leafletMap.setView(marker.getLatLng(), this.fitZoom);
+      }
+    }
   }
 
   protected render(): TemplateResult | void {
@@ -159,8 +168,8 @@ export class HaLocationsEditor extends LitElement {
       });
       this._locationMarkers = undefined;
 
-      this._circles.forEach((circle) => circle.remove());
-      this._circles = [];
+      Object.values(this._circles).forEach((circle) => circle.remove());
+      this._circles = {};
     }
 
     if (!this.locations || !this.locations.length) {
@@ -226,7 +235,7 @@ export class HaLocationsEditor extends LitElement {
           );
           this._locationMarkers![location.id] = circle;
         } else {
-          this._circles.push(circle);
+          this._circles[location.id] = circle;
         }
       }
       if (!location.radius || !location.editable) {
@@ -282,6 +291,7 @@ export class HaLocationsEditor extends LitElement {
         align-items: center;
         justify-content: center;
         flex-direction: column;
+        text-align: center;
       }
     `;
   }

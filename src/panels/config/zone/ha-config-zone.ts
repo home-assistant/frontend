@@ -12,6 +12,7 @@ import {
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-tooltip/paper-tooltip";
 
 import "../../../components/map/ha-locations-editor";
 
@@ -155,10 +156,22 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                     <paper-item-body>
                       ${state.attributes.friendly_name || state.entity_id}
                     </paper-item-body>
-                    <paper-icon-button
-                      icon="hass:pencil"
-                      disabled
-                    ></paper-icon-button>
+                    <div style="display:inline-block">
+                      <paper-icon-button
+                        .entityId=${state.entity_id}
+                        icon="hass:pencil"
+                        disabled
+                      ></paper-icon-button>
+                      <paper-tooltip position="left">
+                        ${state.entity_id === "zone.home"
+                          ? this.hass.localize(
+                              "ui.panel.config.zone.edit_home_zone"
+                            )
+                          : this.hass.localize(
+                              "ui.panel.config.zone.configured_in_yaml"
+                            )}
+                      </paper-tooltip>
+                    </div>
                   </paper-icon-item>
                 `;
               })}
@@ -304,11 +317,6 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
       "data-id"
     )!;
     this._zoomZone(entityId);
-    if (entityId === "zone.home") {
-      alert(this.hass!.localize("ui.panel.config.zone.edit_home_zone"));
-    } else {
-      alert(this.hass!.localize("ui.panel.config.zone.configured_in_yaml"));
-    }
   }
 
   private _zoomZone(id: string) {
