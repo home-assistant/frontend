@@ -190,7 +190,7 @@ export class HuiPictureEntityCardEditor extends LitElement
         </div>
         <div class="side-by-side">
           <ha-switch
-            ?checked="${this._show_name !== false}"
+            .checked="${this._config!.show_name !== false}"
             .configValue="${"show_name"}"
             @change="${this._valueChanged}"
             >${this.hass.localize(
@@ -198,7 +198,7 @@ export class HuiPictureEntityCardEditor extends LitElement
             )}</ha-switch
           >
           <ha-switch
-            ?checked="${this._show_state !== false}"
+            .checked="${this._config!.show_state !== false}"
             .configValue="${"show_state"}"
             @change="${this._valueChanged}"
             >${this.hass.localize(
