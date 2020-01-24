@@ -9,9 +9,10 @@ import { ConditionalCardConfig } from "./types";
 @customElement("hui-conditional-card")
 class HuiConditionalCard extends HuiConditionalBase implements LovelaceCard {
   public setConfig(config: ConditionalCardConfig): void {
-    super.setConfig(config);
+    this.validateConfig(config);
+
     if (!config.card) {
-      throw new Error("No card option configured.");
+      throw new Error("No card configured.");
     }
 
     this._element = createCardElement(config.card) as LovelaceCard;

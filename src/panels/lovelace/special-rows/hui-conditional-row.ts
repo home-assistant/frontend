@@ -7,9 +7,10 @@ import { LovelaceRow, ConditionalRowConfig } from "../entity-rows/types";
 @customElement("hui-conditional-row")
 class HuiConditionalRow extends HuiConditionalBase implements LovelaceRow {
   public setConfig(config: ConditionalRowConfig): void {
-    super.setConfig(config);
+    this.validateConfig(config);
+
     if (!config.row) {
-      throw new Error("No row option configured.");
+      throw new Error("No row configured.");
     }
 
     this._element = createRowElement(config.row) as LovelaceRow;

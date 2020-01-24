@@ -15,17 +15,19 @@ export class HuiConditionalBase extends UpdatingElement {
   @property() protected _config?: ConditionalCardConfig | ConditionalRowConfig;
   protected _element?: LovelaceCard | LovelaceRow;
 
-  public setConfig(config: ConditionalCardConfig | ConditionalRowConfig): void {
+  protected validateConfig(
+    config: ConditionalCardConfig | ConditionalRowConfig
+  ): void {
     if (!config.conditions) {
-      throw new Error("No conditions option configured.");
+      throw new Error("No conditions configured.");
     }
 
     if (!Array.isArray(config.conditions)) {
-      throw new Error("conditions option is not an array");
+      throw new Error("Conditions should be in an array.");
     }
 
     if (!validateConditionalConfig(config.conditions)) {
-      throw new Error("conditions option is invalid.");
+      throw new Error("Conditions are invalid.");
     }
 
     if (this._element && this._element.parentElement) {
@@ -48,8 +50,6 @@ export class HuiConditionalBase extends UpdatingElement {
       if (!this._element.parentElement) {
         this.appendChild(this._element);
       }
-    } else if (this._element.parentElement) {
-      this.removeChild(this._element);
     }
 
     this.style.setProperty("display", visible ? "" : "none");
