@@ -14,11 +14,11 @@ import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
 
 import { HomeAssistant } from "../../../types";
-import { EntityRow, EntityConfig } from "./types";
+import { LovelaceRow, EntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-climate-entity-row")
-class HuiClimateEntityRow extends LitElement implements EntityRow {
+class HuiClimateEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: EntityConfig;

@@ -14,11 +14,11 @@ import "../../../components/entity/ha-entity-toggle";
 import "../components/hui-warning";
 
 import { HomeAssistant } from "../../../types";
-import { EntityRow, EntityConfig } from "./types";
+import { LovelaceRow, EntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-script-entity-row")
-class HuiScriptEntityRow extends LitElement implements EntityRow {
+class HuiScriptEntityRow extends LitElement implements LovelaceRow {
   public hass?: HomeAssistant;
 
   @property() private _config?: EntityConfig;

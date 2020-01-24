@@ -10,7 +10,7 @@ import {
 import { LovelaceCard, LovelaceBadge, LovelaceHeaderFooter } from "../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { LovelaceElementConfig, LovelaceElement } from "../elements/types";
-import { EntityRow, EntityRowConfig } from "../entity-rows/types";
+import { LovelaceRow, LovelaceRowConfig } from "../entity-rows/types";
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 
 const CUSTOM_TYPE_PREFIX = "custom:";
@@ -20,7 +20,7 @@ interface CreateElementConfigTypes {
   card: { config: LovelaceCardConfig; element: LovelaceCard };
   badge: { config: LovelaceBadgeConfig; element: LovelaceBadge };
   element: { config: LovelaceElementConfig; element: LovelaceElement };
-  row: { config: EntityRowConfig; element: EntityRow };
+  row: { config: LovelaceRowConfig; element: LovelaceRow };
   "header-footer": {
     config: LovelaceHeaderFooterConfig;
     element: LovelaceHeaderFooter;
