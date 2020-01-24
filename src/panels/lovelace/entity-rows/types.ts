@@ -8,6 +8,9 @@ export interface EntityConfig {
   icon?: string;
   image?: string;
 }
+export interface ActionRowConfig extends EntityConfig {
+  action_name?: string;
+}
 export interface EntityFilterEntityConfig extends EntityConfig {
   state_filter?: Array<{ key: string } | string>;
 }
