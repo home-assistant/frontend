@@ -26,7 +26,7 @@ class HuiCallServiceRow extends LitElement implements LovelaceRow {
       throw new Error("Error in card configuration.");
     }
 
-    this._config = { icon: "hass:remote", action_name: "Run", ...config };
+    this._config = { icon: "hass:remote", ...config };
   }
 
   protected render(): TemplateResult | void {
@@ -39,7 +39,9 @@ class HuiCallServiceRow extends LitElement implements LovelaceRow {
       <div class="flex">
         <div>${this._config.name}</div>
         <mwc-button @click="${this._callService}"
-          >${this._config.action_name}</mwc-button
+          >${this._config.action_name
+            ? this._config.action_name
+            : this.hass!.localize("ui.card.service.run")}</mwc-button
         >
       </div>
     `;
