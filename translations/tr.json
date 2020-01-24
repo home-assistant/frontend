@@ -106,7 +106,7 @@
             "armed": "Etkin",
             "armed_away": "Etkin",
             "armed_custom_bypass": "Etkin",
-            "armed_home": "Etkin",
+            "armed_home": "Devrede",
             "armed_night": "Etkin",
             "arming": "Etkinleştir",
             "disarmed": "Etkisiz",
@@ -553,6 +553,13 @@
                 "loading_history": "Durum geçmişi yükleniyor...",
                 "no_history_found": "Durum geçmişi bulunamadı."
             },
+            "related-items": {
+                "area": "Alan",
+                "automation": "Aşağıdaki otomasyonların bir parçası",
+                "device": "Cihaz",
+                "entity": "İlgili varlıklar",
+                "integration": "Entegrasyon"
+            },
             "relative_time": {
                 "duration": {
                     "day": "{count}{count, plural,\n  one { gün }\n  other { gün }\n}",
@@ -579,6 +586,9 @@
                 "ok": "Tamam",
                 "title": "Emin misin?"
             },
+            "domain_toggler": {
+                "title": "Etki Alanlarını Geçiş"
+            },
             "more_info_control": {
                 "dismiss": "İletişim kutusunu kapat",
                 "restored": {
@@ -588,7 +598,8 @@
                     "remove_intro": "Varlık artık kullanılmıyorsa, kaldırarak temizleyebilirsiniz."
                 },
                 "script": {
-                    "last_action": "Son Eylem"
+                    "last_action": "Son Eylem",
+                    "last_triggered": "Son Tetiklenen"
                 },
                 "settings": "Varlık ayarları",
                 "sun": {
@@ -619,7 +630,8 @@
                 "error": "Oops, bir hata oluştu",
                 "found": "Sizin için aşağıdakileri buldum:",
                 "how_can_i_help": "Nasıl yardımcı olabilirim?",
-                "label": "Bir soru yazın ve 'Enter'a basın"
+                "label": "Bir soru yazın ve 'Enter'a basın",
+                "label_voice": "Yazmak için 'Enter'a konuşmak için mikrofona dokunun"
             },
             "zha_device_info": {
                 "buttons": {
@@ -918,7 +930,7 @@
                             "config_documentation": "Config belgeleri",
                             "disable": "Devre dışı bırak",
                             "enable": "Etkinleştir",
-                            "enable_ha_skill": "Home Assistant Alexa skillini etkinleştir",
+                            "enable_ha_skill": "Home Assistant Alexa yeteneğini etkinleştir",
                             "enable_state_reporting": "Durum Raporlamasını Etkinleştir",
                             "info_state_reporting": "Durum raporlamayı etkinleştirirseniz, Home Assistant sergilenmis varlıkların tüm durum değişikliklerini Amazon'a gönderir. Bu, Alexa uygulamasında her zaman en son durumları görmenizi ve rutin oluşturmak için durum değişikliklerini kullanmanızı sağlar.",
                             "manage_entities": "Varlıkları Yönetin",
@@ -1057,6 +1069,7 @@
                         "core": {
                             "core_config": {
                                 "elevation": "Yükseklik",
+                                "elevation_feet": "Ayak",
                                 "elevation_meters": "metre",
                                 "latitude": "Enlem",
                                 "location_name": "Home Assistant kurulumunuzun adı",
@@ -1098,6 +1111,7 @@
                 },
                 "customize": {
                     "attributes_override": "İsterseniz bunları geçersiz kılabilirsin.",
+                    "attributes_set": "Varlığın aşağıdaki öznitelikleri programlı olarak ayarlanır.",
                     "caption": "Özelleştirme",
                     "description": "Varlıklarınızı kişiselleştirin",
                     "pick_attribute": "Geçersiz kılmak için bir özellik seçin",
@@ -1105,7 +1119,8 @@
                         "header": "Özelleştirmeler"
                     },
                     "warning": {
-                        "include_link": "customize.yaml dahil et"
+                        "include_link": "customize.yaml dahil et",
+                        "include_sentence": "Yapılandırmanız Configuration.yaml düzgün bir şekilde görünmüyor"
                     }
                 },
                 "devices": {
@@ -1145,12 +1160,20 @@
                 },
                 "entities": {
                     "caption": "Varlıklar",
+                    "dialog": {
+                        "control": "Kontrol",
+                        "dismiss": "Kapat",
+                        "related": "İlgili",
+                        "settings": "Ayarlar"
+                    },
                     "editor": {
                         "default_name": "Alan Ekle ",
                         "delete": "SİL",
                         "enabled_cause": "{Neden} tarafından devre dışı bırakılmış.",
                         "enabled_description": "Devre dışı bırakılan varlıklar Home Assistant'a eklenmeyecek.",
                         "enabled_label": "Varlığı etkinleştir",
+                        "entity_id": "Varlık kimliği",
+                        "name": "Ad Geçersiz Kılma",
                         "note": "Not: bu henüz tüm entegrasyonlarla çalışmayabilir.",
                         "update": "GÜNCELLEme"
                     },
@@ -1216,6 +1239,7 @@
                         "area_picker_label": "Alan",
                         "close": "Kapat",
                         "created_config": "{name} için ayar oluşturuldu.",
+                        "dismiss": "İletişim kutusunu kapat",
                         "error_saving_area": "Alan kayıt etme hatası: {error}",
                         "external_step": {
                             "open_site": "Web sitesini aç"
@@ -1320,8 +1344,14 @@
                     "description": "Senaryoları oluşturun ve düzenleyin",
                     "editor": {
                         "alias": "Ad",
+                        "delete_script": "Komut dosyasını sil",
+                        "introduction": "Bir dizi eylemi yürütmek için komut dosyalarını kullanın.",
                         "link_available_actions": "Kullanılabilir aksiyonlar hakkında daha fazla bilgi edinin.",
                         "sequence": "Sıra"
+                    },
+                    "picker": {
+                        "edit_script": "Komut dosyasını düzenle",
+                        "trigger_script": "Komut dosyası tetikle"
                     }
                 },
                 "server_control": {
@@ -1333,8 +1363,10 @@
                             "group": "Grupları yeniden yükle",
                             "heading": "Yapılandırma yeniden yükleniyor",
                             "introduction": "Bazı Home Assistant bileşenleri yeniden başlatmadan yenilenebilinir. Yeniden yükle tuşuna basarak güncel yapılandırmayı bırakarak yenisinin yüklenmesini sağlayabilirsiniz.",
+                            "person": "Kişileri yeniden yükle",
                             "scene": "Sahneleri yeniden yükle",
-                            "script": "Senaryoları yeniden yükle"
+                            "script": "Senaryoları yeniden yükle",
+                            "zone": "Bölgeleri yeniden yükle"
                         },
                         "server_management": {
                             "confirm_restart": "Home Assistant'ı yeniden başlatmak istediğinizden emin misin?",
@@ -1415,17 +1447,25 @@
                     "devices": {
                         "header": "Zigbee Ev Otomasyonu - Cihaz"
                     },
+                    "group_binding": {
+                        "bind_button_help": "Seçilen grubu seçilen aygıt kümelerine bağlayın.",
+                        "bind_button_label": "Grupla",
+                        "unbind_button_label": "Grubu Çöz"
+                    },
                     "groups": {
                         "add_members": "Üye ekle",
                         "adding_members": "Üye Ekleme",
+                        "caption": "Gruplar",
                         "create": "Grup oluştur",
                         "create_group": "Zigbee Ev Otomasyonu - Grup Oluştur",
                         "create_group_details": "Yeni bir zigbee grubu oluşturmak için gerekli ayrıntıları girin",
                         "creating_group": "Grup Oluşturma",
+                        "description": "Zigbee grupları oluşturma ve değiştirme",
                         "group_id": "Grup kimliği",
                         "group_info": "Grup Bilgisi",
                         "group_name_placeholder": "Grup Adı",
                         "group_not_found": "Grup bulunamadı!",
+                        "group-header": "Zigbee Ev Otomasyonu - Grup Detayları",
                         "groups": "Gruplar",
                         "introduction": "Zigbee grupları oluşturma ve değiştirme",
                         "manage_groups": "Zigbee Gruplarını Yönetin",
@@ -1445,6 +1485,26 @@
                         "hint_wakeup": "Xiaomi sensörleri gibi bazı cihazlarda, onlarla etkileşime girerken cihazları uyanık tutan ~ 5 saniyelik aralıklarla basabileceğiniz bir uyanma düğmesi bulunur."
                     },
                     "title": "Zigbee Ev Otomasyonu"
+                },
+                "zone": {
+                    "add_zone": "Bölge Ekle",
+                    "caption": "bölgeler",
+                    "confirm_delete": "Bu bölgeyi silmek istediğinizden emin misiniz?",
+                    "create_zone": "Bölge Oluştur",
+                    "detail": {
+                        "create": "Oluştur",
+                        "delete": "Sil",
+                        "icon": "Simge",
+                        "icon_error_msg": "Simge biçim önekinde olmalıdır: simge adı, örneğin: mdi: home",
+                        "latitude": "Enlem",
+                        "longitude": "Boylam",
+                        "name": "Ad",
+                        "new_zone": "Yeni Bölge",
+                        "passive": "Pasif",
+                        "radius": "Yarıçap",
+                        "required_error_msg": "Bu alan gereklidir",
+                        "update": "Güncelle"
+                    }
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1528,6 +1588,8 @@
                     "mqtt": {
                         "description_listen": "Bir konuyu dinle",
                         "description_publish": "Bir paket yayınla",
+                        "listening_to": "Dinliyorum",
+                        "payload": "Yük (şablona izin verilir)",
                         "publish": "Yayınla",
                         "start_listening": "Dinlemeye başla",
                         "stop_listening": "Dinlemeyi bırak",
@@ -1599,6 +1661,9 @@
                         "go_to_integrations_page": "Entegrasyonlar sayfasına gidin.",
                         "title": "Eve Hoşgeldin"
                     },
+                    "entities": {
+                        "never_triggered": "Asla tetiklenmedi"
+                    },
                     "picture-elements": {
                         "call_service": "{name} çağrı servisi",
                         "hold": "Tutun:",
@@ -1633,7 +1698,8 @@
                             "required": "Gerekli"
                         },
                         "entities": {
-                            "name": "Varlıklar"
+                            "name": "Varlıklar",
+                            "toggle": "Varlıklarageçiş."
                         },
                         "entity-button": {
                             "name": "Varlık Düğmesi"
@@ -1775,6 +1841,7 @@
                     },
                     "suggest_card": {
                         "add": "Lovelace kullanıcı arayüzüne ekle",
+                        "create_own": "Farklı kart seç",
                         "header": "Sizin için bir öneri oluşturduk"
                     },
                     "view": {
@@ -1791,7 +1858,7 @@
                     "refresh": "Yenile",
                     "unused_entities": "Kullanılmayan varlıklar"
                 },
-                "reload_lovelace": "Lovelace'ı yeniden yükle",
+                "reload_lovelace": "Arayüzü yeniden yükle",
                 "unused_entities": {
                     "available_entities": "Bunlar sizin elinizde olan ama henüz Lovelace UI'nızda olmayan varlıklardır.",
                     "domain": "Alan adı",
