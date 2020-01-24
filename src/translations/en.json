@@ -577,7 +577,7 @@
       "generic": {
         "cancel": "Cancel",
         "ok": "OK",
-        "title": "Are you sure?"
+        "default_confirmation_title": "Are you sure?"
       },
       "more_info_control": {
         "dismiss": "Dismiss dialog",
