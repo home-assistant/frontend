@@ -2,6 +2,7 @@ import "../cards/hui-alarm-panel-card";
 import "../cards/hui-conditional-card";
 import "../cards/hui-entities-card";
 import "../cards/hui-button-card";
+import "../cards/hui-entity-button-card";
 import "../cards/hui-entity-filter-card";
 import "../cards/hui-glance-card";
 import "../cards/hui-history-graph-card";
@@ -30,6 +31,7 @@ const CARD_TYPES = new Set([
   "conditional",
   "entities",
   "button",
+  "entity-button",
   "entity-filter",
   "error",
   "gauge",
@@ -54,8 +56,4 @@ const CARD_TYPES = new Set([
 ]);
 
 export const createCardElement = (config: LovelaceCardConfig) =>
-  createLovelaceElement(
-    "card",
-    config.type === "entity-button" ? { ...config, type: "button" } : config,
-    CARD_TYPES
-  );
+  createLovelaceElement("card", config, CARD_TYPES);

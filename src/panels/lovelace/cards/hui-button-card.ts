@@ -35,7 +35,7 @@ import { computeActiveState } from "../../../common/entity/compute_active_state"
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 
 @customElement("hui-button-card")
-class HuiButtonCard extends LitElement implements LovelaceCard {
+export class HuiButtonCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(
       /* webpackChunkName: "hui-button-card-editor" */ "../editor/config-elements/hui-button-card-editor"
@@ -154,7 +154,7 @@ class HuiButtonCard extends LitElement implements LovelaceCard {
                   stateObj ? computeActiveState(stateObj) : undefined
                 )}
                 .icon=${this._config.icon ||
-                  ifDefined(stateObj ? stateIcon(stateObj) : undefined)}
+                  (stateObj ? stateIcon(stateObj) : "")}
                 style=${styleMap({
                   filter: stateObj ? this._computeBrightness(stateObj) : "",
                   color: stateObj ? this._computeColor(stateObj) : "",
