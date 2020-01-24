@@ -140,7 +140,7 @@ export class HuiEntityButtonCardEditor extends LitElement
         </div>
         <div class="side-by-side">
           <ha-switch
-            ?checked="${this._config!.show_name !== false}"
+            .checked="${this._config!.show_name !== false}"
             .configValue="${"show_name"}"
             @change="${this._valueChanged}"
             >${this.hass.localize(
@@ -148,7 +148,7 @@ export class HuiEntityButtonCardEditor extends LitElement
             )}</ha-switch
           >
           <ha-switch
-            ?checked="${this._config!.show_icon !== false}"
+            .checked="${this._config!.show_icon !== false}"
             .configValue="${"show_icon"}"
             @change="${this._valueChanged}"
             >${this.hass.localize(
