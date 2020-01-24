@@ -14,16 +14,16 @@ import "../../../components/entity/ha-entity-toggle";
 import "../components/hui-warning";
 
 import { HomeAssistant } from "../../../types";
-import { LovelaceRow, EntityConfig } from "./types";
+import { LovelaceRow, ActionRowConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-script-entity-row")
 class HuiScriptEntityRow extends LitElement implements LovelaceRow {
   public hass?: HomeAssistant;
 
-  @property() private _config?: EntityConfig;
+  @property() private _config?: ActionRowConfig;
 
-  public setConfig(config: EntityConfig): void {
+  public setConfig(config: ActionRowConfig): void {
     if (!config) {
       throw new Error("Configuration error");
     }
@@ -64,7 +64,8 @@ class HuiScriptEntityRow extends LitElement implements LovelaceRow {
             `
           : html`
               <mwc-button @click="${this._callService}">
-                ${this.hass!.localize("ui.card.script.execute")}
+                ${this._config.action_name ||
+                  this.hass!.localize("ui.card.script.execute")}
               </mwc-button>
             `}
       </hui-generic-entity-row>
