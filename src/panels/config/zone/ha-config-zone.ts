@@ -179,10 +179,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           `;
 
     return html`
-      <hass-subpage
-        .header=${hass.localize("ui.panel.config.zone.caption")}
-        .showBackButton=${!this.isWide}
-      >
+      <hass-subpage .header=${hass.localize("ui.panel.config.zone.caption")}>
         ${this.narrow
           ? html`
               <ha-config-section .isWide=${this.isWide}>
