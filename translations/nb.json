@@ -557,6 +557,16 @@
                 "loading_history": "Laster statushistorikk...",
                 "no_history_found": "Ingen statushistorikk funnet."
             },
+            "related-items": {
+                "area": "Område",
+                "automation": "Del av følgende automatiseringer",
+                "device": "Enhet",
+                "entity": "Beslektede enheter",
+                "group": "Del av følgende grupper",
+                "integration": "Integrering",
+                "scene": "Del av følgende scener",
+                "script": "Del av følgende skript"
+            },
             "relative_time": {
                 "duration": {
                     "day": "{count} {count, plural,\n  one {dag}\n  other {dager}\n}",
@@ -598,7 +608,8 @@
                     "remove_intro": "Hvis enheten ikke lenger er i bruk, kan du rense den opp ved å fjerne den."
                 },
                 "script": {
-                    "last_action": "Siste handling"
+                    "last_action": "Siste handling",
+                    "last_triggered": "Sist utløst"
                 },
                 "settings": "Entitetsinnstillinger",
                 "sun": {
@@ -1204,6 +1215,12 @@
                 "entities": {
                     "caption": "Entiteter",
                     "description": "Oversikt over alle kjente entiteter",
+                    "dialog": {
+                        "control": "Kontroll",
+                        "dismiss": "Avvis",
+                        "related": "Relaterte",
+                        "settings": "Innstillinger"
+                    },
                     "editor": {
                         "confirm_delete": "Er du sikker på at du vil slette denne oppføringen?",
                         "confirm_delete2": "Hvis du sletter en oppføring, fjernes ikke entiteten fra Home Assistant. Hvis du vil gjøre dette, må du fjerne integrasjonen {platform} fra Home Assistant.",
@@ -1212,6 +1229,8 @@
                         "enabled_cause": "Deaktivert av {cause}.",
                         "enabled_description": "Deaktiverte entiteter vil ikke bli lagt til i Home Assistant.",
                         "enabled_label": "Aktiver entitet",
+                        "entity_id": "Entitets-ID",
+                        "name": "Overstyr Navn",
                         "note": "Merk: dette fungerer kanskje ikke ennå med alle integrasjoner.",
                         "unavailable": "Denne entiteten er ikke tilgjengelig for øyeblikket.",
                         "update": "OPPDATER"
@@ -1422,8 +1441,10 @@
                             "group": "Last inn grupper på nytt",
                             "heading": "Konfigurasjon lastes på nytt",
                             "introduction": "Noen deler av Home Assistant kan laste inn uten å kreve omstart. Hvis du trykker last på nytt, vil du bytte den nåværende konfigurasjonen med den nye.",
+                            "person": "Last inn personer på nytt",
                             "scene": "Last inn scener på nytt",
-                            "script": "Last inn skript på nytt"
+                            "script": "Last inn skript på nytt",
+                            "zone": "Last inn soner på nytt"
                         },
                         "server_management": {
                             "confirm_restart": "Er du sikker på at du vil starte Home Assistant på nytt?",
@@ -1583,6 +1604,30 @@
                         "updateDeviceName": "Angi et egendefinert navn for denne enheten i enhetsregisteret."
                     },
                     "title": "ZigBee Hjemme Automasjon"
+                },
+                "zone": {
+                    "add_zone": "Legg til sone",
+                    "caption": "Soner",
+                    "confirm_delete": "Er du sikker på at du vil slette denne sonen?",
+                    "create_zone": "Opprett sone",
+                    "description": "Administrer sonene du vil spore personer i.",
+                    "detail": {
+                        "create": "Opprett",
+                        "delete": "Slett",
+                        "icon": "Ikon",
+                        "icon_error_msg": "Ikonet skal være i formatets prefiks: iconname, for eksempel: mdi: home",
+                        "latitude": "Breddegrad",
+                        "longitude": "Lengdegrad",
+                        "name": "Navn",
+                        "new_zone": "Ny sone",
+                        "passive": "Passiv",
+                        "passive_note": "Passive soner er skjult i frontend og brukes ikke som sted for enhetssporere. Dette er nyttig hvis du bare vil bruke det til automatiseringer.",
+                        "radius": "Radius",
+                        "required_error_msg": "Dette feltet er påkrevd",
+                        "update": "Oppdater"
+                    },
+                    "introduction": "Med soner kan du angi bestemte områder på jorden. Når en person er innenfor en sone, vil staten ta navnet fra sonen. Soner kan også brukes som en utløser eller tilstand i automatiserings oppsett.",
+                    "no_zones_created_yet": "Det ser ut til at du ikke har opprettet noen soner enda."
                 },
                 "zwave": {
                     "caption": "Z-Wave",

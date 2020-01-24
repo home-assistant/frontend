@@ -557,6 +557,16 @@
                 "loading_history": "Cargando historial de estado...",
                 "no_history_found": "No se encontró historial de estado."
             },
+            "related-items": {
+                "area": "Área",
+                "automation": "Parte de las siguientes automatizaciones",
+                "device": "Dispositivo",
+                "entity": "Entidades relacionadas",
+                "group": "Parte de los siguientes grupos",
+                "integration": "Integración",
+                "scene": "Parte de las siguientes escenas",
+                "script": "Parte de los siguientes scripts"
+            },
             "relative_time": {
                 "duration": {
                     "day": "{count} {count, plural,\none {día}\nother {días}\n}",
@@ -598,7 +608,8 @@
                     "remove_intro": "Si la entidad ya no está en uso, puedes limpiarla eliminándola."
                 },
                 "script": {
-                    "last_action": "Última acción"
+                    "last_action": "Última acción",
+                    "last_triggered": "Ultima activación"
                 },
                 "settings": "Configuración de la entidad",
                 "sun": {
@@ -762,7 +773,7 @@
                             "delete_confirm": "¿Seguro que quieres eliminarlo?",
                             "duplicate": "Duplicar",
                             "header": "Condiciones",
-                            "introduction": "Las condiciones son una parte opcional de una regla de automatización y se pueden utilizar para evitar que se produzca una acción cuando se desencadena la automatización. Las condiciones se parecen mucho a los desencadenantes, pero son muy diferentes. Un desencadenante analizará los eventos que ocurren en el sistema en cualquier momento, mientras que una condición solo analiza cómo está el sistema en un momento en concreto. Un desencadenante puede detectar que se está activando un interruptor. Una condición solo puede detectar si un interruptor está encendido o apagado.",
+                            "introduction": "Las condiciones son opcionales e impedirán cualquier\nejecución posterior a menos que se cumplan todas las condiciones.",
                             "learn_more": "Aprende más sobre las condiciones",
                             "name": "Condición",
                             "type_select": "Tipo de condición",
@@ -1204,6 +1215,12 @@
                 "entities": {
                     "caption": "Entidades",
                     "description": "Resumen de todas las entidades conocidas.",
+                    "dialog": {
+                        "control": "Control",
+                        "dismiss": "Descartar",
+                        "related": "Relacionado",
+                        "settings": "Configuración"
+                    },
                     "editor": {
                         "confirm_delete": "¿Estás seguro de que deseas eliminar esta entrada?",
                         "confirm_delete2": "Eliminar una entrada no eliminará la entidad de Home Assistant. Para hacer esto, deberás eliminar la integración \"{platform}\" de Home Assistant.",
@@ -1212,6 +1229,8 @@
                         "enabled_cause": "Desactivado por {cause}.",
                         "enabled_description": "Las entidades desactivadas no se añadirán a Home Assistant.",
                         "enabled_label": "Activar entidad",
+                        "entity_id": "ID de entidad",
+                        "name": "Cambio de nombre",
                         "note": "Nota: es posible que esto no funcione aún con todas las integraciones.",
                         "unavailable": "Esta entidad no está disponible actualmente.",
                         "update": "ACTUALIZAR"
@@ -1422,8 +1441,10 @@
                             "group": "Recargar grupos",
                             "heading": "Recargando la configuración",
                             "introduction": "Algunas partes de Home Assistant pueden recargarse sin necesidad de reiniciar. Al pulsar en recargar se descartará la configuración actual y se cargará la nueva.",
+                            "person": "Recargar personas",
                             "scene": "Recargar escenas",
-                            "script": "Recargar scripts"
+                            "script": "Recargar scripts",
+                            "zone": "Recargar zonas"
                         },
                         "server_management": {
                             "confirm_restart": "¿Seguro que quieres reiniciar Home Assistant?",
@@ -1583,6 +1604,30 @@
                         "updateDeviceName": "Establece un nombre personalizado para este dispositivo en el registro de dispositivos."
                     },
                     "title": "Domótica Zigbee"
+                },
+                "zone": {
+                    "add_zone": "Añadir zona",
+                    "caption": "Zonas",
+                    "confirm_delete": "¿Estás seguro de que deseas eliminar esta zona?",
+                    "create_zone": "Crear zona",
+                    "description": "Gestiona las zonas en las que deseas realizar un seguimiento de las personas.",
+                    "detail": {
+                        "create": "Crear",
+                        "delete": "Eliminar",
+                        "icon": "Icono",
+                        "icon_error_msg": "El icono debe estar en el formato prefijo:nombre_del_icono, por ejemplo: mdi:home",
+                        "latitude": "Latitud",
+                        "longitude": "Longitud",
+                        "name": "Nombre",
+                        "new_zone": "Nueva zona",
+                        "passive": "Pasivo",
+                        "passive_note": "Las zonas pasivas están ocultas en la interfaz y no se utilizan como ubicación para rastreadores de dispositivos. Esto es útil si solo quieres usarlo para automatizaciones.",
+                        "radius": "Radio",
+                        "required_error_msg": "Este campo es obligatorio",
+                        "update": "Actualizar"
+                    },
+                    "introduction": "Las zonas permiten especificar determinadas regiones de la tierra. Cuando una persona está dentro de una zona, su estado tomará el nombre de la zona. Las zonas también se pueden utilizar como desencadenante o condición dentro de las configuraciones de automatización.",
+                    "no_zones_created_yet": "Parece que aún no has creado ninguna zona."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1775,6 +1820,9 @@
                         "go_to_integrations_page": "Ir a la página de integraciones.",
                         "no_devices": "Esta página te permite controlar tus dispositivos, aunque parece que aún no has configurado ninguno. Dirígete a la página de integraciones para empezar.",
                         "title": "Bienvenido a casa"
+                    },
+                    "entities": {
+                        "never_triggered": "Nunca activado"
                     },
                     "picture-elements": {
                         "call_service": "Ejecutar servicio {name}",
