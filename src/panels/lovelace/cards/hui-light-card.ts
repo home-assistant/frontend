@@ -100,19 +100,20 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
         <div id="controls">
           <div id="slider">
-            ${supportsFeature(stateObj, SUPPORT_BRIGHTNESS)
-              ? html`
-                  <round-slider
-                    min="0"
-                    .value=${brightness}
-                    @value-changing=${this._dragEvent}
-                    @value-changed=${this._setBrightness}
-                  ></round-slider>
-                `
-              : ""}
+            <round-slider
+              min="0"
+              .value=${brightness}
+              @value-changing=${this._dragEvent}
+              @value-changed=${this._setBrightness}
+              style=${styleMap({
+                visibility: supportsFeature(stateObj, SUPPORT_BRIGHTNESS)
+                  ? "visible"
+                  : "hidden",
+              })}
+            ></round-slider>
             <paper-icon-button
               class="light-button ${classMap({
-                "slider-center": supportsFeature(stateObj, SUPPORT_BRIGHTNESS),
+                "slider-center": true,
                 "state-on": stateObj.state === "on",
                 "state-unavailable": stateObj.state === "unavailable",
               })}"
