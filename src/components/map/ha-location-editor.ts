@@ -42,7 +42,12 @@ class LocationEditor extends LitElement {
     if (!this._leafletMap || !this.location) {
       return;
     }
-    this._leafletMap.setView(this.location, this.fitZoom);
+    if ((this._locationMarker as Circle).getBounds) {
+      this._leafletMap.fitBounds((this._locationMarker as Circle).getBounds());
+    } else {
+      this._leafletMap.setView(this.location, this.fitZoom);
+    }
+    this._ignoreFitToMap = this.location;
   }
 
   protected render(): TemplateResult | void {

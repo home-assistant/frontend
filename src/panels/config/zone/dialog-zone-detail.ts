@@ -9,10 +9,10 @@ import {
 
 import "@polymer/paper-input/paper-input";
 import "@material/mwc-button";
-import "@material/mwc-dialog";
 
 import "../../../components/map/ha-location-editor";
 import "../../../components/ha-switch";
+import "../../../components/ha-dialog";
 
 import { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
 import { HomeAssistant } from "../../../types";
@@ -63,7 +63,7 @@ class DialogZoneDetail extends LitElement {
       return html``;
     }
     return html`
-      <mwc-dialog
+      <ha-dialog
         open
         @closing="${this._close}"
         .title=${this._params.entry
@@ -177,7 +177,7 @@ class DialogZoneDetail extends LitElement {
             ? this.hass!.localize("ui.panel.config.zone.detail.update")
             : this.hass!.localize("ui.panel.config.zone.detail.create")}
         </mwc-button>
-      </mwc-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -243,11 +243,12 @@ class DialogZoneDetail extends LitElement {
   static get styles(): CSSResult[] {
     return [
       css`
-        mwc-dialog {
+        ha-dialog {
           --mdc-dialog-title-ink-color: var(--primary-text-color);
+          --justify-action-buttons: space-between;
         }
         @media only screen and (min-width: 600px) {
-          mwc-dialog {
+          ha-dialog {
             --mdc-dialog-min-width: 600px;
           }
         }

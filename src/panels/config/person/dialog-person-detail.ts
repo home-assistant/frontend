@@ -10,10 +10,10 @@ import memoizeOne from "memoize-one";
 
 import "@polymer/paper-input/paper-input";
 import "@material/mwc-button";
-import "@material/mwc-dialog";
 
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/user/ha-user-picker";
+import "../../../components/ha-dialog";
 import { PersonDetailDialogParams } from "./show-dialog-person-detail";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { HomeAssistant } from "../../../types";
@@ -56,7 +56,7 @@ class DialogPersonDetail extends LitElement {
     }
     const nameInvalid = this._name.trim() === "";
     return html`
-      <mwc-dialog
+      <ha-dialog
         open
         @closing="${this._close}"
         .title=${this._params.entry
@@ -162,7 +162,7 @@ class DialogPersonDetail extends LitElement {
             ? this.hass!.localize("ui.panel.config.person.detail.update")
             : this.hass!.localize("ui.panel.config.person.detail.create")}
         </mwc-button>
-      </mwc-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -224,10 +224,11 @@ class DialogPersonDetail extends LitElement {
   static get styles(): CSSResult[] {
     return [
       css`
-        mwc-dialog {
+        ha-dialog {
           min-width: 400px;
           max-width: 600px;
           --mdc-dialog-title-ink-color: var(--primary-text-color);
+          --justify-action-buttons: space-between;
         }
         .form {
           padding-bottom: 24px;
