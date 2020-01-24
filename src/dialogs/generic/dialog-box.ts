@@ -22,7 +22,7 @@ import { haStyleDialog } from "../../resources/styles";
 class DialogBox extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() private _params?: DialogParams;
-  @property() private _text?: string;
+  @property() private _value?: string;
 
   public async showDialog(params: DialogParams): Promise<void> {
     this._params = params;
@@ -49,15 +49,22 @@ class DialogBox extends LitElement {
           ${this._params.title
             ? this._params.title
             : this._params.confirmation &&
-              this.hass.localize("ui.dialogs.generic.default_confirmation_title")}
+              this.hass.localize(
+                "ui.dialogs.generic.default_confirmation_title"
+              )}
         </h2>
         <paper-dialog-scrollable>
+          ${this._params.text
+            ? html`
+                <p>${this._params.text}</p>
+              `
+            : ""}
           ${this._params.prompt
             ? html`
                 <paper-input
                   autofocus
                   .value=${this._value}
-                  @value-changed=${this._textChanged}
+                  @value-changed=${this._valueChanged}
                   .label=${this._params.inputLabel
                     ? this._params.inputLabel
                     : ""}
@@ -65,10 +72,6 @@ class DialogBox extends LitElement {
                     ? this._params.inputType
                     : "text"}
                 ></paper-input>
-              `
-            : this._params.text
-            ? html`
-                <p>${this._params.text}</p>
               `
             : ""}
         </paper-dialog-scrollable>
@@ -91,8 +94,8 @@ class DialogBox extends LitElement {
     `;
   }
 
-  private _textChanged(ev: PolymerChangedEvent<string>) {
-    this._text = ev.detail.value;
+  private _valueChanged(ev: PolymerChangedEvent<string>) {
+    this._value = ev.detail.value;
   }
 
   private async _dismiss(): Promise<void> {
@@ -104,7 +107,7 @@ class DialogBox extends LitElement {
 
   private async _confirm(): Promise<void> {
     if (this._params!.confirm) {
-      this._params!.confirm(this._text);
+      this._params!.confirm(this._value);
     }
     this._dismiss();
   }
