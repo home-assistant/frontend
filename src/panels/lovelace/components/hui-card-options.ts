@@ -62,7 +62,6 @@ export class HuiCardOptions extends LitElement {
             horizontal-align="right"
             vertical-align="bottom"
             vertical-offset="40"
-            close-on-activate
           >
             <paper-icon-button
               icon="hass:dots-vertical"
