@@ -26,7 +26,7 @@ import { computeDomain } from "../../../common/entity/compute_domain";
 import { HomeAssistant, LightEntity } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { DOMAINS_TOGGLE } from "../../../common/const";
-import { EntityButtonCardConfig } from "./types";
+import { ButtonCardConfig } from "./types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { handleAction } from "../common/handle-action";
@@ -34,13 +34,13 @@ import { ActionHandlerEvent } from "../../../data/lovelace";
 import { computeActiveState } from "../../../common/entity/compute_active_state";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
 
-@customElement("hui-entity-button-card")
-class HuiEntityButtonCard extends LitElement implements LovelaceCard {
+@customElement("hui-button-card")
+class HuiButtonCard extends LitElement implements LovelaceCard {
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(
-      /* webpackChunkName: "hui-entity-button-card-editor" */ "../editor/config-elements/hui-entity-button-card-editor"
+      /* webpackChunkName: "hui-button-card-editor" */ "../editor/config-elements/hui-button-card-editor"
     );
-    return document.createElement("hui-entity-button-card-editor");
+    return document.createElement("hui-button-card-editor");
   }
 
   public static getStubConfig(): object {
@@ -54,14 +54,14 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
 
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: EntityButtonCardConfig;
+  @property() private _config?: ButtonCardConfig;
 
   public getCardSize(): number {
     return 2;
   }
 
-  public setConfig(config: EntityButtonCardConfig): void {
-    if (!isValidEntityId(config.entity)) {
+  public setConfig(config: ButtonCardConfig): void {
+    if (config.entity && !isValidEntityId(config.entity)) {
       throw new Error("Invalid Entity");
     }
 
@@ -74,7 +74,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
       ...config,
     };
 
-    if (DOMAINS_TOGGLE.has(computeDomain(config.entity))) {
+    if (config.entity && DOMAINS_TOGGLE.has(computeDomain(config.entity))) {
       this._config = {
         tap_action: {
           action: "toggle",
@@ -107,8 +107,9 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     }
 
     return (
-      oldHass.states[this._config!.entity] !==
-      this.hass!.states[this._config!.entity]
+      Boolean(this._config!.entity) &&
+      oldHass.states[this._config!.entity!] !==
+        this.hass!.states[this._config!.entity!]
     );
   }
 
@@ -116,9 +117,11 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     if (!this._config || !this.hass) {
       return html``;
     }
-    const stateObj = this.hass.states[this._config.entity];
+    const stateObj = this._config.entity
+      ? this.hass.states[this._config.entity]
+      : undefined;
 
-    if (!stateObj) {
+    if (this._config.entity && !stateObj) {
       return html`
         <hui-warning
           >${this.hass.localize(
@@ -144,12 +147,17 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
         ${this._config.show_icon
           ? html`
               <ha-icon
-                data-domain=${computeStateDomain(stateObj)}
-                data-state=${computeActiveState(stateObj)}
-                .icon=${this._config.icon || stateIcon(stateObj)}
+                data-domain=${ifDefined(
+                  stateObj ? computeStateDomain(stateObj) : undefined
+                )}
+                data-state=${ifDefined(
+                  stateObj ? computeActiveState(stateObj) : undefined
+                )}
+                .icon=${this._config.icon ||
+                  ifDefined(stateObj ? stateIcon(stateObj) : undefined)}
                 style=${styleMap({
-                  filter: this._computeBrightness(stateObj),
-                  color: this._computeColor(stateObj),
+                  filter: stateObj ? this._computeBrightness(stateObj) : "",
+                  color: stateObj ? this._computeColor(stateObj) : "",
                   height: this._config.icon_height
                     ? this._config.icon_height
                     : "auto",
@@ -160,7 +168,8 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
         ${this._config.show_name
           ? html`
               <span>
-                ${this._config.name || computeStateName(stateObj)}
+                ${this._config.name ||
+                  (stateObj ? computeStateName(stateObj) : "")}
               </span>
             `
           : ""}
@@ -176,7 +185,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     }
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
     const oldConfig = changedProps.get("_config") as
-      | EntityButtonCardConfig
+      | ButtonCardConfig
       | undefined;
 
     if (
@@ -242,6 +251,6 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-entity-button-card": HuiEntityButtonCard;
+    "hui-button-card": HuiButtonCard;
   }
 }

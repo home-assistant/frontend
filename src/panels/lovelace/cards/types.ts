@@ -47,8 +47,8 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   state_color?: boolean;
 }
 
-export interface EntityButtonCardConfig extends LovelaceCardConfig {
-  entity: string;
+export interface ButtonCardConfig extends LovelaceCardConfig {
+  entity?: string;
   name?: string;
   show_name?: boolean;
   icon?: string;
