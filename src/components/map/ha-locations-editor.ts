@@ -77,8 +77,9 @@ export class HaLocationsEditor extends LitElement {
     if (!marker) {
       return;
     }
-    if (marker.getBounds) {
-      this._leafletMap.fitBounds(marker.getBounds());
+    if ((marker as Circle).getBounds) {
+      this._leafletMap.fitBounds((marker as Circle).getBounds());
+      (marker as Circle).bringToFront();
     } else {
       const circle = this._circles[id];
       if (circle) {
