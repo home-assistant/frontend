@@ -29,6 +29,8 @@ declare global {
   }
 }
 
+const NO_SIDEBAR_PAGES = ["zone"];
+
 @customElement("ha-panel-config")
 class HaPanelConfig extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -95,8 +97,9 @@ class HaPanelConfig extends LitElement {
     const isWide =
       this.hass.dockedSidebar === "docked" ? this._wideSidebar : this._wide;
 
+    const showSidebar = isWide && !NO_SIDEBAR_PAGES.includes(curPage);
     return html`
-      ${isWide
+      ${showSidebar
         ? html`
             <div class="side-bar">
               <div class="toolbar">Configuration</div>
@@ -137,7 +140,7 @@ class HaPanelConfig extends LitElement {
         .wideSidebar=${this._wideSidebar}
         .showAdvanced=${this._showAdvanced}
         .cloudStatus=${this._cloudStatus}
-        class=${classMap({ "wide-config": isWide })}
+        class=${classMap({ "wide-config": showSidebar })}
       ></ha-config-router>
     `;
   }

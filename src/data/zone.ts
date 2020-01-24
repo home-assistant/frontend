@@ -4,8 +4,8 @@ export interface Zone {
   id: string;
   name: string;
   icon?: string;
-  latitude?: number;
-  longitude?: number;
+  latitude: number;
+  longitude: number;
   passive?: boolean;
   radius?: number;
 }
