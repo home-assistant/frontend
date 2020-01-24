@@ -315,7 +315,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                             <paper-icon-button
                               id="remove-btn"
                               icon="hass:delete"
-                              @click=${this._disableSelected}
+                              @click=${this._removeSelected}
                             ></paper-icon-button>
                             <paper-tooltip for="remove-btn">
                               ${this.hass.localize(
