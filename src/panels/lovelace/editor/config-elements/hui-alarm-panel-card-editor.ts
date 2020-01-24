@@ -155,13 +155,14 @@ export class HuiAlarmPanelCardEditor extends LitElement
     const target = ev.target! as EditorTarget;
     const index = Number(target.value);
     if (index > -1) {
-      const newStates = this._states;
+      const newStates = [...this._states];
       newStates.splice(index, 1);
-      this._config = {
-        ...this._config,
-        states: newStates,
-      };
-      fireEvent(this, "config-changed", { config: this._config });
+      fireEvent(this, "config-changed", {
+        config: {
+          ...this._config,
+          states: newStates,
+        },
+      });
     }
   }
 
@@ -170,17 +171,18 @@ export class HuiAlarmPanelCardEditor extends LitElement
       return;
     }
     const target = ev.target! as EditorTarget;
-    if (!target.value || this._states.indexOf(target.value) >= 0) {
+    if (!target.value || this._states.indexOf(target.value) !== -1) {
       return;
     }
-    const newStates = this._states;
+    const newStates = [...this._states];
     newStates.push(target.value);
-    this._config = {
-      ...this._config,
-      states: newStates,
-    };
     target.value = "";
-    fireEvent(this, "config-changed", { config: this._config });
+    fireEvent(this, "config-changed", {
+      config: {
+        ...this._config,
+        states: newStates,
+      },
+    });
   }
 
   private _valueChanged(ev: EntitiesEditorEvent): void {
