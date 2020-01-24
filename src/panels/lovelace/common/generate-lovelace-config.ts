@@ -18,7 +18,7 @@ import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeDomain } from "../../../common/entity/compute_domain";
 
-import { EntityRowConfig, WeblinkConfig } from "../entity-rows/types";
+import { LovelaceRowConfig, WeblinkConfig } from "../entity-rows/types";
 import { LocalizeFunc } from "../../../common/translations/localize";
 import { EntitiesCardConfig } from "../cards/types";
 import {
@@ -105,7 +105,7 @@ export const computeCards = (
   const cards: LovelaceCardConfig[] = [];
 
   // For entity card
-  const entities: Array<string | EntityRowConfig> = [];
+  const entities: Array<string | LovelaceRowConfig> = [];
 
   for (const [entityId, stateObj] of states) {
     const domain = computeDomain(entityId);

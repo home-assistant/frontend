@@ -10,7 +10,7 @@ import {
 
 import "../../../src/components/ha-icon";
 import {
-  EntityRow,
+  LovelaceRow,
   CastConfig,
 } from "../../../src/panels/lovelace/entity-rows/types";
 import { HomeAssistant } from "../../../src/types";
@@ -18,7 +18,7 @@ import { CastManager } from "../../../src/cast/cast_manager";
 import { castSendShowDemo } from "../../../src/cast/receiver_messages";
 
 @customElement("cast-demo-row")
-class CastDemoRow extends LitElement implements EntityRow {
+class CastDemoRow extends LitElement implements LovelaceRow {
   public hass!: HomeAssistant;
 
   @property() private _castManager?: CastManager | null;
