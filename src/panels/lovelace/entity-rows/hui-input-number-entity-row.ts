@@ -14,13 +14,13 @@ import "../../../components/ha-slider";
 import "../components/hui-warning";
 
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
-import { EntityRow, EntityConfig } from "./types";
+import { LovelaceRow, EntityConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 import { setValue } from "../../../data/input_text";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-input-number-entity-row")
-class HuiInputNumberEntityRow extends LitElement implements EntityRow {
+class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: EntityConfig;

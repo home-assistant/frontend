@@ -1,4 +1,5 @@
 import { HomeAssistant } from "../../../types";
+import { Condition } from "../common/validate-condition";
 
 export interface EntityConfig {
   entity: string;
@@ -38,7 +39,7 @@ export interface CastConfig {
   // Hide the row if either unsupported browser or no API available.
   hide_if_unavailable: boolean;
 }
-export type EntityRowConfig =
+export type LovelaceRowConfig =
   | EntityConfig
   | DividerConfig
   | SectionConfig
@@ -46,7 +47,12 @@ export type EntityRowConfig =
   | CallServiceConfig
   | CastConfig;
 
-export interface EntityRow extends HTMLElement {
+export interface LovelaceRow extends HTMLElement {
   hass?: HomeAssistant;
-  setConfig(config: EntityRowConfig);
+  setConfig(config: LovelaceRowConfig);
+}
+
+export interface ConditionalRowConfig extends EntityConfig {
+  row: EntityConfig;
+  conditions: Condition[];
 }

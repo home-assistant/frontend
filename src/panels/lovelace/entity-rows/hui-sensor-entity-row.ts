@@ -14,7 +14,7 @@ import "../components/hui-timestamp-display";
 import "../components/hui-warning";
 
 import { HomeAssistant } from "../../../types";
-import { EntityRow, EntityConfig } from "./types";
+import { LovelaceRow, EntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 
@@ -23,7 +23,7 @@ interface SensorEntityConfig extends EntityConfig {
 }
 
 @customElement("hui-sensor-entity-row")
-class HuiSensorEntityRow extends LitElement implements EntityRow {
+class HuiSensorEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: SensorEntityConfig;
