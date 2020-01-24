@@ -149,7 +149,7 @@ export class HuiGaugeCardEditor extends LitElement
           ></paper-input>
         </div>
         <ha-switch
-          ?checked="${this._useSeverity !== false}"
+          .checked="${this._useSeverity !== false}"
           @change="${this._toggleSeverity}"
           >${this.hass.localize(
             "ui.panel.lovelace.editor.card.gauge.severity.define"
