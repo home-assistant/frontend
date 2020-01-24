@@ -401,7 +401,7 @@ ${this.hass!.localize("ui.panel.config.zone.confirm_delete2")}`)
         overflow: hidden;
       }
       ha-icon,
-      paper-icon-button {
+      paper-icon-button:not([disabled]) {
         color: var(--secondary-text-color);
       }
       .empty {
