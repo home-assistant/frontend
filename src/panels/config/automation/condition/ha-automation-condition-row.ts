@@ -71,7 +71,7 @@ export default class HaAutomationConditionRow extends LitElement {
                 slot="dropdown-trigger"
               ></paper-icon-button>
               <paper-listbox slot="dropdown-content">
-                <paper-item @click=${this._switchYamlMode}>
+                <paper-item @tap=${this._switchYamlMode}>
                   ${this._yamlMode
                     ? this.hass.localize(
                         "ui.panel.config.automation.editor.edit_ui"
@@ -85,7 +85,7 @@ export default class HaAutomationConditionRow extends LitElement {
                     "ui.panel.config.automation.editor.conditions.duplicate"
                   )}
                 </paper-item>
-                <paper-item @click=${this._onDelete}>
+                <paper-item @tap=${this._onDelete}>
                   ${this.hass.localize(
                     "ui.panel.config.automation.editor.conditions.delete"
                   )}
