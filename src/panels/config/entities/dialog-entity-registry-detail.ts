@@ -62,7 +62,7 @@ export class DialogEntityRegistryDetail extends LitElement {
         <app-toolbar>
           <paper-icon-button
             aria-label=${this.hass.localize(
-              "ui.panel.config.entities.dialog.dismiss"
+              "ui.dialogs.entity_registry.dismiss"
             )}
             icon="hass:close"
             dialog-dismiss
@@ -76,7 +76,7 @@ export class DialogEntityRegistryDetail extends LitElement {
             ? html`
                 <paper-icon-button
                   aria-label=${this.hass.localize(
-                    "ui.panel.config.entities.dialog.control"
+                    "ui.dialogs.entity_registry.control"
                   )}
                   icon="hass:tune"
                   @click=${this._openMoreInfo}
@@ -91,10 +91,10 @@ export class DialogEntityRegistryDetail extends LitElement {
           @selected-item-changed=${this._handleTabSelected}
         >
           <paper-tab id="tab-settings">
-            ${this.hass.localize("ui.panel.config.entities.dialog.settings")}
+            ${this.hass.localize("ui.dialogs.entity_registry.settings")}
           </paper-tab>
           <paper-tab id="tab-related">
-            ${this.hass.localize("ui.panel.config.entities.dialog.related")}
+            ${this.hass.localize("ui.dialogs.entity_registry.related")}
           </paper-tab>
         </paper-tabs>
         ${cache(
