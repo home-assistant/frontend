@@ -1,30 +1,3 @@
-import "@polymer/app-layout/app-header-layout/app-header-layout";
-import "@polymer/app-layout/app-header/app-header";
-import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-item/paper-item";
-import "@material/mwc-button";
-import "@polymer/app-layout/app-toolbar/app-toolbar";
-
-import "../../components/ha-card";
-import "../../components/ha-menu-button";
-import "../../resources/ha-style";
-
-import {
-  getOptimisticFrontendUserDataCollection,
-  CoreFrontendUserData,
-} from "../../data/frontend";
-
-import "./ha-change-password-card";
-import "./ha-mfa-modules-card";
-import "./ha-advanced-mode-card";
-import "./ha-refresh-tokens-card";
-import "./ha-long-lived-access-tokens-card";
-
-import "./ha-pick-language-row";
-import "./ha-pick-theme-row";
-import "./ha-push-notifications-row";
-import "./ha-force-narrow-row";
-import "./ha-set-vibrate-row";
 import {
   LitElement,
   TemplateResult,
@@ -33,6 +6,31 @@ import {
   css,
   property,
 } from "lit-element";
+import "@polymer/app-layout/app-header-layout/app-header-layout";
+import "@polymer/app-layout/app-header/app-header";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-item/paper-item";
+import "@material/mwc-button";
+import "@polymer/app-layout/app-toolbar/app-toolbar";
+
+import "./ha-change-password-card";
+import "./ha-mfa-modules-card";
+import "./ha-refresh-tokens-card";
+import "./ha-long-lived-access-tokens-card";
+import "./ha-advanced-mode-row";
+import "./ha-pick-language-row";
+import "./ha-pick-theme-row";
+import "./ha-push-notifications-row";
+import "./ha-force-narrow-row";
+import "./ha-set-vibrate-row";
+import "../../components/ha-card";
+import "../../components/ha-menu-button";
+import "../../resources/ha-style";
+
+import {
+  getOptimisticFrontendUserDataCollection,
+  CoreFrontendUserData,
+} from "../../data/frontend";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -119,6 +117,15 @@ class HaPanelProfile extends LitElement {
               .narrow=${this.narrow}
               .hass=${this.hass}
             ></ha-push-notifications-row>
+            ${this.hass.user!.is_admin
+              ? html`
+                  <ha-advanced-mode-row
+                    .hass=${this.hass}
+                    .narrow=${this.narrow}
+                    .coreUserData=${this._coreUserData}
+                  ></ha-advanced-mode-row>
+                `
+              : ""}
 
             <div class="card-actions">
               <mwc-button class="warning" @click=${this._handleLogOut}>
@@ -141,15 +148,6 @@ class HaPanelProfile extends LitElement {
             .hass=${this.hass}
             .mfaModules=${this.hass.user!.mfa_modules}
           ></ha-mfa-modules-card>
-
-          ${this.hass.user!.is_admin
-            ? html`
-                <ha-advanced-mode-card
-                  .hass=${this.hass}
-                  .coreUserData=${this._coreUserData}
-                ></ha-advanced-mode-card>
-              `
-            : ""}
 
           <ha-refresh-tokens-card
             .hass=${this.hass}

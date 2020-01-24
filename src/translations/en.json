@@ -1942,9 +1942,10 @@
         },
         "advanced_mode": {
           "title": "Advanced Mode",
-          "description": "Home Assistant hides advanced features and options by default. You can make these features accessible by checking this toggle. This is a user-specific setting and does not impact other users using Home Assistant.",
+          "description": "Unlocks advanced features.",
           "hint_enable": "Missing config options? Enable advanced mode on",
-          "link_profile_page": "your profile page"
+          "link_profile_page": "your profile page",
+          "link_promo": "Learn more"
         },
         "refresh_tokens": {
           "header": "Refresh Tokens",
