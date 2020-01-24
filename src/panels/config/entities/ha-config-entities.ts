@@ -342,7 +342,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                         slot="dropdown-trigger"
                       ></paper-icon-button>
                       <paper-listbox slot="dropdown-content">
-                        <paper-icon-item @click="${this._showDisabledChanged}">
+                        <paper-icon-item @tap="${this._showDisabledChanged}">
                           <paper-checkbox
                             .checked=${this._showDisabled}
                             slot="item-icon"
@@ -351,7 +351,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                             "ui.panel.config.entities.picker.filter.show_disabled"
                           )}
                         </paper-icon-item>
-                        <paper-icon-item @click="${this._showRestoredChanged}">
+                        <paper-icon-item @tap="${this._showRestoredChanged}">
                           <paper-checkbox
                             .checked=${this._showUnavailable}
                             slot="item-icon"
