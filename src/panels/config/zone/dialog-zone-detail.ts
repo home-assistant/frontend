@@ -9,14 +9,15 @@ import {
 
 import "@polymer/paper-input/paper-input";
 import "@material/mwc-button";
-import "@material/mwc-dialog";
 
 import "../../../components/map/ha-location-editor";
 import "../../../components/ha-switch";
+import "../../../components/ha-dialog";
 
 import { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
 import { HomeAssistant } from "../../../types";
 import { ZoneMutableParams } from "../../../data/zone";
+import { addDistanceToCoord } from "../../../common/location/add_distance_to_coord";
 
 class DialogZoneDetail extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -42,10 +43,15 @@ class DialogZoneDetail extends LitElement {
       this._passive = this._params.entry.passive || false;
       this._radius = this._params.entry.radius || 100;
     } else {
+      const movedHomeLocation = addDistanceToCoord(
+        [this.hass.config.latitude, this.hass.config.longitude],
+        500,
+        500
+      );
       this._name = "";
       this._icon = "";
-      this._latitude = this.hass.config.latitude;
-      this._longitude = this.hass.config.longitude;
+      this._latitude = movedHomeLocation[0];
+      this._longitude = movedHomeLocation[1];
       this._passive = false;
       this._radius = 100;
     }
@@ -57,7 +63,7 @@ class DialogZoneDetail extends LitElement {
       return html``;
     }
     return html`
-      <mwc-dialog
+      <ha-dialog
         open
         @closing="${this._close}"
         .title=${this._params.entry
@@ -99,33 +105,35 @@ class DialogZoneDetail extends LitElement {
               class="flex"
               .location=${this._locationValue}
               .radius=${this._radius}
-              .icon=${this._icon || "hass:home"}
+              .icon=${this._icon}
               @change=${this._locationChanged}
             ></ha-location-editor>
-            <paper-input
-              .value=${this._latitude}
-              .configValue=${"latitude"}
-              @value-changed=${this._valueChanged}
-              .label="${this.hass!.localize(
-                "ui.panel.config.zone.detail.latitude"
-              )}"
-              .errorMessage="${this.hass!.localize(
-                "ui.panel.config.zone.detail.required_error_msg"
-              )}"
-              .invalid=${String(this._latitude) === ""}
-            ></paper-input>
-            <paper-input
-              .value=${this._longitude}
-              .configValue=${"longitude"}
-              @value-changed=${this._valueChanged}
-              .label="${this.hass!.localize(
-                "ui.panel.config.zone.detail.longitude"
-              )}"
-              .errorMessage="${this.hass!.localize(
-                "ui.panel.config.zone.detail.required_error_msg"
-              )}"
-              .invalid=${String(this._longitude) === ""}
-            ></paper-input>
+            <div class="location">
+              <paper-input
+                .value=${this._latitude}
+                .configValue=${"latitude"}
+                @value-changed=${this._valueChanged}
+                .label="${this.hass!.localize(
+                  "ui.panel.config.zone.detail.latitude"
+                )}"
+                .errorMessage="${this.hass!.localize(
+                  "ui.panel.config.zone.detail.required_error_msg"
+                )}"
+                .invalid=${String(this._latitude) === ""}
+              ></paper-input>
+              <paper-input
+                .value=${this._longitude}
+                .configValue=${"longitude"}
+                @value-changed=${this._valueChanged}
+                .label="${this.hass!.localize(
+                  "ui.panel.config.zone.detail.longitude"
+                )}"
+                .errorMessage="${this.hass!.localize(
+                  "ui.panel.config.zone.detail.required_error_msg"
+                )}"
+                .invalid=${String(this._longitude) === ""}
+              ></paper-input>
+            </div>
             <paper-input
               .value=${this._radius}
               .configValue=${"radius"}
@@ -169,7 +177,7 @@ class DialogZoneDetail extends LitElement {
             ? this.hass!.localize("ui.panel.config.zone.detail.update")
             : this.hass!.localize("ui.panel.config.zone.detail.create")}
         </mwc-button>
-      </mwc-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -235,16 +243,33 @@ class DialogZoneDetail extends LitElement {
   static get styles(): CSSResult[] {
     return [
       css`
-        mwc-dialog {
+        ha-dialog {
           --mdc-dialog-title-ink-color: var(--primary-text-color);
+          --justify-action-buttons: space-between;
         }
         @media only screen and (min-width: 600px) {
-          mwc-dialog {
+          ha-dialog {
             --mdc-dialog-min-width: 600px;
           }
         }
         .form {
           padding-bottom: 24px;
+        }
+        .location {
+          display: flex;
+        }
+        .location > * {
+          flex-grow: 1;
+          min-width: 0;
+        }
+        .location > *:first-child {
+          margin-right: 4px;
+        }
+        .location > *:last-child {
+          margin-left: 4px;
+        }
+        ha-location-editor {
+          margin-top: 16px;
         }
         ha-user-picker {
           margin-top: 16px;
