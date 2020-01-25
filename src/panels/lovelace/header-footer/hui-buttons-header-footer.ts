@@ -1,10 +1,8 @@
 import {
   html,
   LitElement,
-  PropertyValues,
   TemplateResult,
   customElement,
-  property,
   css,
   CSSResult,
 } from "lit-element";
@@ -18,9 +16,9 @@ import "../components/hui-warning-element";
 import { HomeAssistant } from "../../../types";
 import { LovelaceHeaderFooter } from "../types";
 import { ButtonsHeaderFooterConfig } from "./types";
-import { turnOnOffEntity } from "../common/entity/turn-on-off-entity";
 import { EntityConfig } from "../entity-rows/types";
 import { processConfigEntities } from "../common/process-config-entities";
+import { toggleEntity } from "../common/entity/toggle-entity";
 
 @customElement("hui-buttons-header-footer")
 export class HuiGlanceCard extends LitElement implements LovelaceHeaderFooter {
@@ -28,56 +26,28 @@ export class HuiGlanceCard extends LitElement implements LovelaceHeaderFooter {
     return { entities: [] };
   }
 
-  @property() public hass?: HomeAssistant;
-
-  @property() private _config?: ButtonsHeaderFooterConfig;
-
   private _configEntities?: EntityConfig[];
+  private _hass?: HomeAssistant;
 
   public setConfig(config: ButtonsHeaderFooterConfig): void {
-    if (!config || !Array.isArray(config.entities)) {
-      throw new Error("Entities needs to be a list of entity IDs");
-    }
-    this._config = config;
     this._configEntities = processConfigEntities(config.entities);
-
-    if (this.hass) {
-      this.requestUpdate();
-    }
+    this.requestUpdate();
   }
 
-  protected shouldUpdate(changedProps: PropertyValues): boolean {
-    if (changedProps.has("_config")) {
-      return true;
-    }
-
-    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-
-    if (
-      !oldHass ||
-      oldHass.themes !== this.hass!.themes ||
-      oldHass.language !== this.hass!.language
-    ) {
-      return true;
-    }
-
-    for (const entity of this._configEntities!) {
-      if (oldHass.states[entity.entity] !== this.hass!.states[entity.entity]) {
-        return true;
+  set hass(hass: HomeAssistant) {
+    this._hass = hass;
+    this.shadowRoot!.querySelectorAll("state-badge").forEach(
+      (badge, index: number) => {
+        badge.hass = hass;
+        badge.stateObj = hass.states[this._configEntities![index].entity];
       }
-    }
-
-    return false;
+    );
   }
 
   protected render(): TemplateResult | void {
-    if (!this._config || !this.hass) {
-      return html``;
-    }
-
     return html`
-      ${this._configEntities!.map((entityConf) => {
-        const stateObj = this.hass!.states[entityConf.entity];
+      ${(this._configEntities || []).map((entityConf) => {
+        const stateObj = this._hass!.states[entityConf.entity];
         if (!stateObj) {
           return html`<div class='missing'><iron-icon icon="hass:alert"></div>`;
         }
@@ -86,7 +56,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceHeaderFooter {
           <div>
             <state-badge
               @click=${this._toggle}
-              .hass=${this.hass}
+              .hass=${this._hass}
               .stateObj=${stateObj}
               .overrideIcon=${entityConf.icon}
               .overrideImage=${entityConf.image}
@@ -101,7 +71,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceHeaderFooter {
   }
 
   private async _toggle(ev) {
-    await turnOnOffEntity(this.hass!, ev.target.stateObj.entity_id);
+    await toggleEntity(this._hass!, ev.target.stateObj.entity_id);
   }
 
   static get styles(): CSSResult {
