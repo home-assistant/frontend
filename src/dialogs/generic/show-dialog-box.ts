@@ -15,7 +15,7 @@ interface ConfirmationDialogParams extends AlertDialogParams {
 interface PromptDialogParams extends AlertDialogParams {
   inputLabel?: string;
   inputType?: string;
-  default_value?: string;
+  defaultValue?: string;
 }
 
 export interface DialogParams

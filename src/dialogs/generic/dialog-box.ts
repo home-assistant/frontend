@@ -27,7 +27,7 @@ class DialogBox extends LitElement {
   public async showDialog(params: DialogParams): Promise<void> {
     this._params = params;
     if (params.prompt) {
-      this._value = params.default_value;
+      this._value = params.defaultValue;
     }
   }
 
