@@ -44,8 +44,12 @@ export const showOptionsFlowDialog = (
           : "";
       },
 
-      renderShowFormStepHeader(hass, _step) {
-        return hass.localize(`ui.dialogs.options_flow.form.header`);
+      renderShowFormStepHeader(hass, step) {
+        return (
+          hass.localize(
+            `component.${step.handler}.options.step.${step.step_id}.title`
+          ) || hass.localize(`ui.dialogs.options_flow.form.header`)
+        );
       },
 
       renderShowFormStepDescription(_hass, _step) {
