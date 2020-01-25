@@ -35,11 +35,15 @@ class StateBadge extends LitElement {
       return html``;
     }
 
+    const domain = computeStateDomain(stateObj);
+
     return html`
       <ha-icon
         id="icon"
         data-domain=${ifDefined(
-          this.stateColor ? computeStateDomain(stateObj) : undefined
+          this.stateColor || (domain === "light" && this.stateColor !== false)
+            ? domain
+            : undefined
         )}
         data-state=${computeActiveState(stateObj)}
         .icon=${this.overrideIcon || stateIcon(stateObj)}
@@ -73,14 +77,14 @@ class StateBadge extends LitElement {
         hostStyle.backgroundImage = `url(${imageUrl})`;
         iconStyle.display = "none";
       } else {
-        if (stateObj.attributes.hs_color) {
+        if (stateObj.attributes.hs_color && this.stateColor !== false) {
           const hue = stateObj.attributes.hs_color[0];
           const sat = stateObj.attributes.hs_color[1];
           if (sat > 10) {
             iconStyle.color = `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
           }
         }
-        if (stateObj.attributes.brightness) {
+        if (stateObj.attributes.brightness && this.stateColor !== false) {
           const brightness = stateObj.attributes.brightness;
           if (typeof brightness !== "number") {
             const errorMessage = `Type error: state-badge expected number, but type of ${
