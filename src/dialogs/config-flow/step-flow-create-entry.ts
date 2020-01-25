@@ -25,6 +25,7 @@ import {
 } from "../../data/area_registry";
 import { DataEntryFlowStepCreateEntry } from "../../data/data_entry_flow";
 import { FlowConfig } from "./show-dialog-data-entry-flow";
+import { showPromptDialog } from "../generic/show-dialog-box";
 
 @customElement("step-flow-create-entry")
 class StepFlowCreateEntry extends LitElement {
@@ -93,7 +94,7 @@ class StepFlowCreateEntry extends LitElement {
       <div class="buttons">
         ${this.devices.length > 0
           ? html`
-              <mwc-button @click="${this._addArea}"
+              <mwc-button @click="${this._promptAddArea}"
                 >${localize(
                   "ui.panel.config.integrations.config_flow.add_area"
                 )}</mwc-button
@@ -114,12 +115,7 @@ class StepFlowCreateEntry extends LitElement {
     fireEvent(this, "flow-update", { step: undefined });
   }
 
-  private async _addArea() {
-    const name = prompt(
-      this.hass.localize(
-        "ui.panel.config.integrations.config_flow.name_new_area"
-      )
-    );
+  private async _addArea(name?: string) {
     if (!name) {
       return;
     }
@@ -135,6 +131,18 @@ class StepFlowCreateEntry extends LitElement {
         )
       );
     }
+  }
+
+  private async _promptAddArea() {
+    showPromptDialog(this, {
+      title: this.hass.localize(
+        "ui.panel.config.integrations.config_flow.name_new_area"
+      ),
+      inputLabel: this.hass.localize(
+        "ui.panel.config.integrations.config_flow.area_picker_label"
+      ),
+      confirm: (text) => this._addArea(text),
+    });
   }
 
   private async _handleAreaChanged(ev: Event) {

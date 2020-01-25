@@ -3,7 +3,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "./ha-progress-button";
 import { EventsMixin } from "../../mixins/events-mixin";
-import { showConfirmationDialog } from "../../dialogs/confirmation/show-dialog-confirmation";
+import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 
 /*
  * @appliesMixin EventsMixin

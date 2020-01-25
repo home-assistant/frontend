@@ -29,7 +29,10 @@ import { HaCodeEditor } from "../../components/ha-code-editor";
 import { HomeAssistant } from "../../types";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { LovelaceConfig } from "../../data/lovelace";
-import { showConfirmationDialog } from "../../dialogs/confirmation/show-dialog-confirmation";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../dialogs/generic/show-dialog-box";
 
 const lovelaceStruct = struct.interface({
   title: "string?",
@@ -213,8 +216,8 @@ class LovelaceFullConfigEditor extends LitElement {
         text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.confirm_remove_config_text"
         ),
-        confirmBtnText: this.hass.localize("ui.common.yes"),
-        cancelBtnText: this.hass.localize("ui.common.no"),
+        confirmText: this.hass.localize("ui.common.yes"),
+        dismissText: this.hass.localize("ui.common.no"),
         confirm: () => this._removeConfig(),
       });
       return;
@@ -236,38 +239,38 @@ class LovelaceFullConfigEditor extends LitElement {
     try {
       config = safeLoad(value);
     } catch (err) {
-      alert(
-        this.hass.localize(
+      showAlertDialog(this, {
+        text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_parse_yaml",
           "error",
           err
-        )
-      );
+        ),
+      });
       this._saving = false;
       return;
     }
     try {
       config = lovelaceStruct(config);
     } catch (err) {
-      alert(
-        this.hass.localize(
+      showAlertDialog(this, {
+        text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_invalid_config",
           "error",
           err
-        )
-      );
+        ),
+      });
       return;
     }
     try {
       await this.lovelace!.saveConfig(config);
     } catch (err) {
-      alert(
-        this.hass.localize(
+      showAlertDialog(this, {
+        text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_save_yaml",
           "error",
           err
-        )
-      );
+        ),
+      });
     }
     this._generation = this.yamlEditor
       .codemirror!.getDoc()

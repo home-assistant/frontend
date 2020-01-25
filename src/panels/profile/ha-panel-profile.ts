@@ -35,7 +35,7 @@ import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import { showConfirmationDialog } from "../../dialogs/confirmation/show-dialog-confirmation";
+import { showConfirmationDialog } from "../../dialogs/generic/show-dialog-box";
 
 class HaPanelProfile extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -175,7 +175,7 @@ class HaPanelProfile extends LitElement {
     showConfirmationDialog(this, {
       title: this.hass.localize("ui.panel.profile.logout_title"),
       text: this.hass.localize("ui.panel.profile.logout_text"),
-      confirmBtnText: this.hass.localize("ui.panel.profile.logout"),
+      confirmText: this.hass.localize("ui.panel.profile.logout"),
       confirm: () => fireEvent(this, "hass-logout"),
     });
   }

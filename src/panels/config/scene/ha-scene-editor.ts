@@ -54,7 +54,7 @@ import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import memoizeOne from "memoize-one";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { HassEvent } from "home-assistant-js-websocket";
-import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialog-confirmation";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 
 interface DeviceEntities {
   id: string;
@@ -560,8 +560,8 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
         text: this.hass!.localize(
           "ui.panel.config.scene.editor.unsaved_confirm"
         ),
-        confirmBtnText: this.hass!.localize("ui.common.yes"),
-        cancelBtnText: this.hass!.localize("ui.common.no"),
+        confirmText: this.hass!.localize("ui.common.yes"),
+        dismissText: this.hass!.localize("ui.common.no"),
         confirm: () => this._goBack(),
       });
     } else {
@@ -577,8 +577,8 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   private _deleteTapped(): void {
     showConfirmationDialog(this, {
       text: this.hass!.localize("ui.panel.config.scene.picker.delete_confirm"),
-      confirmBtnText: this.hass!.localize("ui.common.yes"),
-      cancelBtnText: this.hass!.localize("ui.common.no"),
+      confirmText: this.hass!.localize("ui.common.yes"),
+      dismissText: this.hass!.localize("ui.common.no"),
       confirm: () => this._delete(),
     });
   }

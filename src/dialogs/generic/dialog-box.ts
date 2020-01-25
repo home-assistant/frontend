@@ -14,23 +14,29 @@ import "../../components/dialog/ha-paper-dialog";
 import "../../components/ha-switch";
 
 import { HomeAssistant } from "../../types";
-import { ConfirmationDialogParams } from "./show-dialog-confirmation";
+import { DialogParams } from "./show-dialog-box";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
 
-@customElement("dialog-confirmation")
-class DialogConfirmation extends LitElement {
+@customElement("dialog-box")
+class DialogBox extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() private _params?: ConfirmationDialogParams;
+  @property() private _params?: DialogParams;
+  @property() private _value?: string;
 
-  public async showDialog(params: ConfirmationDialogParams): Promise<void> {
+  public async showDialog(params: DialogParams): Promise<void> {
     this._params = params;
+    if (params.prompt) {
+      this._value = params.defaultValue;
+    }
   }
 
   protected render(): TemplateResult | void {
     if (!this._params) {
       return html``;
     }
+
+    const confirmPrompt = this._params.confirmation || this._params.prompt;
 
     return html`
       <ha-paper-dialog
@@ -42,33 +48,67 @@ class DialogConfirmation extends LitElement {
         <h2>
           ${this._params.title
             ? this._params.title
-            : this.hass.localize("ui.dialogs.confirmation.title")}
+            : this._params.confirmation &&
+              this.hass.localize(
+                "ui.dialogs.generic.default_confirmation_title"
+              )}
         </h2>
         <paper-dialog-scrollable>
-          <p>${this._params.text}</p>
+          ${this._params.text
+            ? html`
+                <p>${this._params.text}</p>
+              `
+            : ""}
+          ${this._params.prompt
+            ? html`
+                <paper-input
+                  autofocus
+                  .value=${this._value}
+                  @value-changed=${this._valueChanged}
+                  .label=${this._params.inputLabel
+                    ? this._params.inputLabel
+                    : ""}
+                  .type=${this._params.inputType
+                    ? this._params.inputType
+                    : "text"}
+                ></paper-input>
+              `
+            : ""}
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          <mwc-button @click="${this._dismiss}">
-            ${this._params.cancelBtnText
-              ? this._params.cancelBtnText
-              : this.hass.localize("ui.dialogs.confirmation.cancel")}
-          </mwc-button>
+          ${confirmPrompt &&
+            html`
+              <mwc-button @click="${this._dismiss}">
+                ${this._params.dismissText
+                  ? this._params.dismissText
+                  : this.hass.localize("ui.dialogs.generic.cancel")}
+              </mwc-button>
+            `}
           <mwc-button @click="${this._confirm}">
-            ${this._params.confirmBtnText
-              ? this._params.confirmBtnText
-              : this.hass.localize("ui.dialogs.confirmation.ok")}
+            ${this._params.confirmText
+              ? this._params.confirmText
+              : this.hass.localize("ui.dialogs.generic.ok")}
           </mwc-button>
         </div>
       </ha-paper-dialog>
     `;
   }
 
+  private _valueChanged(ev: PolymerChangedEvent<string>) {
+    this._value = ev.detail.value;
+  }
+
   private async _dismiss(): Promise<void> {
+    if (this._params!.cancel) {
+      this._params!.cancel();
+    }
     this._params = undefined;
   }
 
   private async _confirm(): Promise<void> {
-    this._params!.confirm();
+    if (this._params!.confirm) {
+      this._params!.confirm(this._value);
+    }
     this._dismiss();
   }
 
@@ -107,6 +147,6 @@ class DialogConfirmation extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-confirmation": DialogConfirmation;
+    "dialog-box": DialogBox;
   }
 }
