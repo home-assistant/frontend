@@ -597,6 +597,12 @@
             "domain_toggler": {
                 "title": "Veksle domener"
             },
+            "entity_registry": {
+                "control": "Kontroll",
+                "dismiss": "Avvis",
+                "related": "Relaterte",
+                "settings": "Innstillinger"
+            },
             "more_info_control": {
                 "dismiss": "Avvis dialogboksen",
                 "edit": "Rediger enhet",
@@ -1215,12 +1221,6 @@
                 "entities": {
                     "caption": "Entiteter",
                     "description": "Oversikt over alle kjente entiteter",
-                    "dialog": {
-                        "control": "Kontroll",
-                        "dismiss": "Avvis",
-                        "related": "Relaterte",
-                        "settings": "Innstillinger"
-                    },
                     "editor": {
                         "confirm_delete": "Er du sikker på at du vil slette denne oppføringen?",
                         "confirm_delete2": "Hvis du sletter en oppføring, fjernes ikke entiteten fra Home Assistant. Hvis du vil gjøre dette, må du fjerne integrasjonen {platform} fra Home Assistant.",

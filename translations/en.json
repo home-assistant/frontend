@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Execute"
             },
+            "service": {
+                "run": "Run"
+            },
             "timer": {
                 "actions": {
                     "cancel": "cancel",
@@ -596,6 +599,24 @@
             },
             "domain_toggler": {
                 "title": "Toggle Domains"
+            },
+            "entity_registry": {
+                "control": "Control",
+                "dismiss": "Dismiss",
+                "editor": {
+                    "confirm_delete": "Are you sure you want to delete this entry?",
+                    "delete": "DELETE",
+                    "enabled_cause": "Disabled by {cause}.",
+                    "enabled_description": "Disabled entities will not be added to Home Assistant.",
+                    "enabled_label": "Enable entity",
+                    "entity_id": "Entity ID",
+                    "name": "Name Override",
+                    "note": "Note: this might not work yet with all integrations.",
+                    "unavailable": "This entity is not currently available.",
+                    "update": "UPDATE"
+                },
+                "related": "Related",
+                "settings": "Settings"
             },
             "more_info_control": {
                 "dismiss": "Dismiss dialog",
@@ -1215,12 +1236,6 @@
                 "entities": {
                     "caption": "Entities",
                     "description": "Overview of all known entities.",
-                    "dialog": {
-                        "control": "Control",
-                        "dismiss": "Dismiss",
-                        "related": "Related",
-                        "settings": "Settings"
-                    },
                     "editor": {
                         "confirm_delete": "Are you sure you want to delete this entry?",
                         "confirm_delete2": "Deleting an entry will not remove the entity from Home Assistant. To do this, you will need to remove the integration '{platform}' from Home Assistant.",
@@ -1608,6 +1623,7 @@
                 "zone": {
                     "add_zone": "Add Zone",
                     "caption": "Zones",
+                    "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
                     "confirm_delete": "Are you sure you want to delete this zone?",
                     "create_zone": "Create Zone",
                     "description": "Manage the zones you want to track persons in.",
@@ -1626,6 +1642,7 @@
                         "required_error_msg": "This field is required",
                         "update": "Update"
                     },
+                    "edit_home_zone": "The location of your home can be changed in the gerenal config.",
                     "introduction": "Zones allow you to specify certain regions on earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
                     "no_zones_created_yet": "Looks like you have not created any zones yet."
                 },
@@ -2245,9 +2262,10 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "description": "Home Assistant hides advanced features and options by default. You can make these features accessible by checking this toggle. This is a user-specific setting and does not impact other users using Home Assistant.",
+                    "description": "Unlocks advanced features.",
                     "hint_enable": "Missing config options? Enable advanced mode on",
                     "link_profile_page": "your profile page",
+                    "link_promo": "Learn more",
                     "title": "Advanced Mode"
                 },
                 "change_password": {

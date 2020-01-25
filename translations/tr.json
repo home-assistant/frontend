@@ -589,6 +589,12 @@
             "domain_toggler": {
                 "title": "Etki Alanlarını Geçiş"
             },
+            "entity_registry": {
+                "control": "Kontrol",
+                "dismiss": "Kapat",
+                "related": "İlgili",
+                "settings": "Ayarlar"
+            },
             "more_info_control": {
                 "dismiss": "İletişim kutusunu kapat",
                 "restored": {
@@ -1160,12 +1166,6 @@
                 },
                 "entities": {
                     "caption": "Varlıklar",
-                    "dialog": {
-                        "control": "Kontrol",
-                        "dismiss": "Kapat",
-                        "related": "İlgili",
-                        "settings": "Ayarlar"
-                    },
                     "editor": {
                         "default_name": "Alan Ekle ",
                         "delete": "SİL",
