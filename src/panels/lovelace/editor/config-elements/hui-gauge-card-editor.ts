@@ -39,11 +39,8 @@ export class HuiGaugeCardEditor extends LitElement
 
   @property() private _config?: GaugeCardConfig;
 
-  private _useSeverity?: boolean;
-
   public setConfig(config: GaugeCardConfig): void {
     config = cardConfigStruct(config);
-    this._useSeverity = !!config.severity;
     this._config = config;
   }
 
@@ -106,58 +103,53 @@ export class HuiGaugeCardEditor extends LitElement
           .configValue=${"name"}
           @value-changed="${this._valueChanged}"
         ></paper-input>
-        <div class="side-by-side">
-          <paper-input
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.unit"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .value="${this._unit}"
-            .configValue=${"unit"}
-            @value-changed="${this._valueChanged}"
-          ></paper-input>
-          <hui-theme-select-editor
-            .hass="${this.hass}"
-            .value="${this._theme}"
-            .configValue="${"theme"}"
-            @theme-changed="${this._valueChanged}"
-          ></hui-theme-select-editor>
-        </div>
-        <div class="side-by-side">
-          <paper-input
-            type="number"
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.minimum"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .value="${this._min}"
-            .configValue=${"min"}
-            @value-changed="${this._valueChanged}"
-          ></paper-input>
-          <paper-input
-            type="number"
-            .label="${this.hass.localize(
-              "ui.panel.lovelace.editor.card.generic.maximum"
-            )} (${this.hass.localize(
-              "ui.panel.lovelace.editor.card.config.optional"
-            )})"
-            .value="${this._max}"
-            .configValue=${"max"}
-            @value-changed="${this._valueChanged}"
-          ></paper-input>
-        </div>
+        <paper-input
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.unit"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          .value="${this._unit}"
+          .configValue=${"unit"}
+          @value-changed="${this._valueChanged}"
+        ></paper-input>
+        <hui-theme-select-editor
+          .hass="${this.hass}"
+          .value="${this._theme}"
+          .configValue="${"theme"}"
+          @theme-changed="${this._valueChanged}"
+        ></hui-theme-select-editor>
+        <paper-input
+          type="number"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.minimum"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          .value="${this._min}"
+          .configValue=${"min"}
+          @value-changed="${this._valueChanged}"
+        ></paper-input>
+        <paper-input
+          type="number"
+          .label="${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.maximum"
+          )} (${this.hass.localize(
+            "ui.panel.lovelace.editor.card.config.optional"
+          )})"
+          .value="${this._max}"
+          .configValue=${"max"}
+          @value-changed="${this._valueChanged}"
+        ></paper-input>
         <ha-switch
-          .checked="${this._useSeverity !== false}"
+          .checked="${this._config!.severity !== undefined}"
           @change="${this._toggleSeverity}"
           >${this.hass.localize(
             "ui.panel.lovelace.editor.card.gauge.severity.define"
           )}</ha-switch
         >
-        ${this._useSeverity
+        ${this._config!.severity !== undefined
           ? html`
-            <div class="severity side-by-side">
               <paper-input
                 type="number"
                 .label="${this.hass.localize(
@@ -191,7 +183,6 @@ export class HuiGaugeCardEditor extends LitElement
                 .configValue=${"red"}
                 @value-changed="${this._severityChanged}"
               ></paper-input>
-            </div>
           </div>
           `
           : ""}
@@ -222,15 +213,16 @@ export class HuiGaugeCardEditor extends LitElement
     if (!this._config || !this.hass) {
       return;
     }
-    const target = ev.target! as EditorTarget;
 
-    this._config.severity = target.checked
-      ? {
-          green: 0,
-          yellow: 0,
-          red: 0,
-        }
-      : undefined;
+    if ((ev.target as EditorTarget).checked) {
+      this._config.severity = {
+        green: 0,
+        yellow: 0,
+        red: 0,
+      };
+    } else {
+      delete this._config.severity;
+    }
     fireEvent(this, "config-changed", { config: this._config });
   }
 
