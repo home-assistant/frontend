@@ -45,7 +45,7 @@ import {
   HaDataTable,
   DataTableColumnData,
 } from "../../../components/data-table/ha-data-table";
-import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialog-confirmation";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { DialogEntityRegistryDetail } from "./dialog-entity-registry-detail";
 
@@ -410,8 +410,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       text: this.hass.localize(
         "ui.panel.config.entities.picker.enable_selected.confirm_text"
       ),
-      confirmBtnText: this.hass.localize("ui.common.yes"),
-      cancelBtnText: this.hass.localize("ui.common.no"),
+      confirmText: this.hass.localize("ui.common.yes"),
+      dismissText: this.hass.localize("ui.common.no"),
       confirm: () => {
         this._selectedEntities.forEach((entity) =>
           updateEntityRegistryEntry(this.hass, entity, {
@@ -433,8 +433,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       text: this.hass.localize(
         "ui.panel.config.entities.picker.disable_selected.confirm_text"
       ),
-      confirmBtnText: this.hass.localize("ui.common.yes"),
-      cancelBtnText: this.hass.localize("ui.common.no"),
+      confirmText: this.hass.localize("ui.common.yes"),
+      dismissText: this.hass.localize("ui.common.no"),
       confirm: () => {
         this._selectedEntities.forEach((entity) =>
           updateEntityRegistryEntry(this.hass, entity, {
@@ -460,8 +460,8 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       text: this.hass.localize(
         "ui.panel.config.entities.picker.remove_selected.confirm_text"
       ),
-      confirmBtnText: this.hass.localize("ui.common.yes"),
-      cancelBtnText: this.hass.localize("ui.common.no"),
+      confirmText: this.hass.localize("ui.common.yes"),
+      dismissText: this.hass.localize("ui.common.no"),
       confirm: () => {
         removeableEntities.forEach((entity) =>
           removeEntityRegistryEntry(this.hass, entity)

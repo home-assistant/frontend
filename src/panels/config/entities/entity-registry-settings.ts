@@ -25,7 +25,7 @@ import {
   removeEntityRegistryEntry,
   EntityRegistryEntry,
 } from "../../../data/entity_registry";
-import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialog-confirmation";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("entity-registry-settings")

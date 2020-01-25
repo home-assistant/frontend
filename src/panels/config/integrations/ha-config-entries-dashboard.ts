@@ -43,7 +43,7 @@ import { ConfigEntry, deleteConfigEntry } from "../../../data/config_entries";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
-import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialog-confirmation";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 
 @customElement("ha-config-entries-dashboard")
 export class HaConfigManagerDashboard extends LitElement {
@@ -277,7 +277,7 @@ export class HaConfigManagerDashboard extends LitElement {
       text: this.hass!.localize(
         "ui.panel.config.integrations.ignore.confirm_ignore"
       ),
-      confirmBtnText: this.hass!.localize(
+      confirmText: this.hass!.localize(
         "ui.panel.config.integrations.ignore.ignore"
       ),
       confirm: () => {
@@ -302,7 +302,7 @@ export class HaConfigManagerDashboard extends LitElement {
       text: this.hass!.localize(
         "ui.panel.config.integrations.ignore.confirm_delete_ignore"
       ),
-      confirmBtnText: this.hass!.localize(
+      confirmText: this.hass!.localize(
         "ui.panel.config.integrations.ignore.stop_ignore"
       ),
       confirm: async () => {

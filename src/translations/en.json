@@ -577,10 +577,10 @@
         "label": "Type a question and press 'Enter'",
         "label_voice": "Type and press 'Enter' or tap the microphone to speak"
       },
-      "confirmation": {
+      "generic": {
         "cancel": "Cancel",
         "ok": "OK",
-        "title": "Are you sure?"
+        "default_confirmation_title": "Are you sure?"
       },
       "more_info_control": {
         "dismiss": "Dismiss dialog",
