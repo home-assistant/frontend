@@ -165,7 +165,7 @@ class HaUserEditor extends LitElement {
     ev.currentTarget.blur();
     showPromptDialog(this, {
       title: this.hass!.localize("ui.panel.config.users.editor.enter_new_name"),
-      text: this.user!.name,
+      defaultValue: this.user!.name,
       inputLabel: this.hass!.localize("ui.panel.config.users.add_user.name"),
       confirm: (text) => this._handleRenameUser(text),
     });
