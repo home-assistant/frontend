@@ -244,7 +244,7 @@ class ZHADeviceCard extends LitElement {
                   <paper-input
                     type="string"
                     @change="${this._saveCustomName}"
-                    .value="${this._userGivenName}"
+                    .value="${this._userGivenName || ""}"
                     .placeholder="${this.hass!.localize(
                       "ui.dialogs.zha_device_info.zha_device_card.device_name_placeholder"
                     )}"
