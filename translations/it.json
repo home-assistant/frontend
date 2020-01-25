@@ -597,6 +597,12 @@
             "domain_toggler": {
                 "title": "Attiva/disattiva domini"
             },
+            "entity_registry": {
+                "control": "Controllo",
+                "dismiss": "Annullare",
+                "related": "Relazionato",
+                "settings": "Impostazioni"
+            },
             "more_info_control": {
                 "dismiss": "Chiudi finestra di dialogo",
                 "edit": "Modifica entità",
@@ -1215,12 +1221,6 @@
                 "entities": {
                     "caption": "Entità",
                     "description": "Panoramica di tutte le entità conosciute.",
-                    "dialog": {
-                        "control": "Controllo",
-                        "dismiss": "Annullare",
-                        "related": "Relazionato",
-                        "settings": "Impostazioni"
-                    },
                     "editor": {
                         "confirm_delete": "Sei sicuro di voler eliminare questa voce?",
                         "confirm_delete2": "L'eliminazione di una voce non comporta la rimozione dell'entità da Home Assistant. A tale scopo, è necessario rimuovere l'integrazione '{platform}' da Home Assistant.",
@@ -1550,6 +1550,8 @@
                     "group_binding": {
                         "bind_button_help": "Collega il gruppo selezionato all'insieme dei dispositivi selezionati.",
                         "bind_button_label": "Collega Gruppo",
+                        "cluster_selection_help": "Seleziona i cluster da associare al gruppo selezionato.",
+                        "group_picker_help": "Seleziona un gruppo per emettere un comando.",
                         "group_picker_label": "Gruppi collegabili",
                         "header": "Collegamento gruppo",
                         "introduction": "Collega e scollega gruppi",
