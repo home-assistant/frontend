@@ -119,8 +119,7 @@ class StepFlowCreateEntry extends LitElement {
           border-radius: 4px;
           margin: 4px;
           display: inline-block;
-          width: 210px;
-          flex-grow: 1;
+          width: 250px;
         }
         .buttons > *:last-child {
           margin-left: auto;
