@@ -55,6 +55,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceHeaderFooter {
         return html`
           <div>
             <state-badge
+              .title=${computeTooltip(this.hass, entityConf)}
               @click=${this._toggle}
               .hass=${this._hass}
               .stateObj=${stateObj}
