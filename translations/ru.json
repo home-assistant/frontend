@@ -597,6 +597,12 @@
             "domain_toggler": {
                 "title": "Переключить домены"
             },
+            "entity_registry": {
+                "control": "Управление",
+                "dismiss": "Отклонить",
+                "related": "Зависимости",
+                "settings": "Настройки"
+            },
             "more_info_control": {
                 "dismiss": "Закрыть диалог",
                 "edit": "Изменить объект",
@@ -1215,12 +1221,6 @@
                 "entities": {
                     "caption": "Объекты",
                     "description": "Управляйте доступными объектами",
-                    "dialog": {
-                        "control": "Управление",
-                        "dismiss": "Отклонить",
-                        "related": "Зависимости",
-                        "settings": "Настройки"
-                    },
                     "editor": {
                         "confirm_delete": "Вы уверены, что хотите удалить эту запись?",
                         "confirm_delete2": "Удаление записи не приведет к удалению объекта из Home Assistant. Для того, чтобы удалить объект, удалите интеграцию '{platform}' из Home Assistant.",

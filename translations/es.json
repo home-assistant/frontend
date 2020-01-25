@@ -597,6 +597,12 @@
             "domain_toggler": {
                 "title": "Alternar dominios"
             },
+            "entity_registry": {
+                "control": "Control",
+                "dismiss": "Descartar",
+                "related": "Relacionado",
+                "settings": "Configuración"
+            },
             "more_info_control": {
                 "dismiss": "Descartar diálogo",
                 "edit": "Editar entidad",
@@ -1215,12 +1221,6 @@
                 "entities": {
                     "caption": "Entidades",
                     "description": "Resumen de todas las entidades conocidas.",
-                    "dialog": {
-                        "control": "Control",
-                        "dismiss": "Descartar",
-                        "related": "Relacionado",
-                        "settings": "Configuración"
-                    },
                     "editor": {
                         "confirm_delete": "¿Estás seguro de que deseas eliminar esta entrada?",
                         "confirm_delete2": "Eliminar una entrada no eliminará la entidad de Home Assistant. Para hacer esto, deberás eliminar la integración \"{platform}\" de Home Assistant.",
