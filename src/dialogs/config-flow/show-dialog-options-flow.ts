@@ -52,8 +52,17 @@ export const showOptionsFlowDialog = (
         );
       },
 
-      renderShowFormStepDescription(_hass, _step) {
-        return "";
+      renderShowFormStepDescription(hass, step) {
+        const description = localizeKey(
+          hass.localize,
+          `component.${step.handler}.config.step.${step.step_id}.description`,
+          step.description_placeholders
+        );
+        return description
+          ? html`
+              <ha-markdown allowsvg .content=${description}></ha-markdown>
+            `
+          : "";
       },
 
       renderShowFormStepFieldLabel(hass, step, field) {
