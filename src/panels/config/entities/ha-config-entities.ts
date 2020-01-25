@@ -60,6 +60,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @property() private _filter = "";
   @property() private _selectedEntities: string[] = [];
   @query("ha-data-table") private _dataTable!: HaDataTable;
+  private getDialog?: () => DialogEntityRegistryDetail | undefined;
 
   private _columns = memoize(
     (narrow, _language): DataTableColumnContainer => {
@@ -206,14 +207,14 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   public disconnectedCallback() {
     super.disconnectedCallback();
-    const dialog = document
-      .querySelector("home-assistant")!
-      .shadowRoot!.querySelector("dialog-entity-registry-detail") as
-      | DialogEntityRegistryDetail
-      | undefined;
-    if (dialog) {
-      dialog.closeDialog();
+    if (!this.getDialog) {
+      return;
     }
+    const dialog = this.getDialog();
+    if (!dialog) {
+      return;
+    }
+    dialog.closeDialog();
   }
 
   protected render(): TemplateResult | void {
@@ -482,7 +483,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     if (!entry) {
       return;
     }
-    showEntityRegistryDetailDialog(this, {
+    this.getDialog = showEntityRegistryDetailDialog(this, {
       entry,
     });
   }
