@@ -24,6 +24,11 @@ import {
   SYSTEM_GROUP_ID_ADMIN,
 } from "../../../data/user";
 import { showSaveSuccessToast } from "../../../util/toast-saved-success";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+  showPromptDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 
 declare global {
   interface HASSDomEvents {
@@ -106,12 +111,12 @@ class HaUserEditor extends LitElement {
           </table>
 
           <div class="card-actions">
-            <mwc-button @click=${this._handleRenameUser}>
+            <mwc-button @click=${this._handlePromptRenameUser}>
               ${hass.localize("ui.panel.config.users.editor.rename_user")}
             </mwc-button>
             <mwc-button
               class="warning"
-              @click=${this._deleteUser}
+              @click=${this._promptDeleteUser}
               .disabled=${user.system_generated}
             >
               ${hass.localize("ui.panel.config.users.editor.delete_user")}
@@ -137,12 +142,7 @@ class HaUserEditor extends LitElement {
     );
   }
 
-  private async _handleRenameUser(ev): Promise<void> {
-    ev.currentTarget.blur();
-    const newName = prompt(
-      this.hass!.localize("ui.panel.config.users.editor.enter_new_name"),
-      this.user!.name
-    );
+  private async _handleRenameUser(newName?: string) {
     if (newName === null || newName === this.user!.name) {
       return;
     }
@@ -153,12 +153,22 @@ class HaUserEditor extends LitElement {
       });
       fireEvent(this, "reload-users");
     } catch (err) {
-      alert(
-        `${this.hass!.localize(
+      showAlertDialog(this, {
+        text: `${this.hass!.localize(
           "ui.panel.config.users.editor.user_rename_failed"
-        )} ${err.message}`
-      );
+        )} ${err.message}`,
+      });
     }
+  }
+
+  private async _handlePromptRenameUser(ev): Promise<void> {
+    ev.currentTarget.blur();
+    showPromptDialog(this, {
+      title: this.hass!.localize("ui.panel.config.users.editor.enter_new_name"),
+      defaultValue: this.user!.name,
+      inputLabel: this.hass!.localize("ui.panel.config.users.add_user.name"),
+      confirm: (text) => this._handleRenameUser(text),
+    });
   }
 
   private async _handleGroupChange(ev): Promise<void> {
@@ -171,36 +181,37 @@ class HaUserEditor extends LitElement {
       showSaveSuccessToast(this, this.hass!);
       fireEvent(this, "reload-users");
     } catch (err) {
-      alert(
-        `${this.hass!.localize(
+      showAlertDialog(this, {
+        text: `${this.hass!.localize(
           "ui.panel.config.users.editor.group_update_failed"
-        )} ${err.message}`
-      );
+        )} ${err.message}`,
+      });
       selectEl.value = this.user!.group_ids[0];
     }
   }
 
-  private async _deleteUser(ev): Promise<void> {
-    if (
-      !confirm(
-        this.hass!.localize(
-          "ui.panel.config.users.editor.confirm_user_deletion",
-          "name",
-          this._name
-        )
-      )
-    ) {
-      ev.target.blur();
-      return;
-    }
+  private async _deleteUser() {
     try {
       await deleteUser(this.hass!, this.user!.id);
     } catch (err) {
-      alert(err.code);
+      showAlertDialog(this, {
+        text: err.code,
+      });
       return;
     }
     fireEvent(this, "reload-users");
     navigate(this, "/config/users");
+  }
+
+  private async _promptDeleteUser(_ev): Promise<void> {
+    showConfirmationDialog(this, {
+      text: this.hass!.localize(
+        "ui.panel.config.users.editor.confirm_user_deletion",
+        "name",
+        this._name
+      ),
+      confirm: () => this._deleteUser(),
+    });
   }
 
   static get styles(): CSSResultArray {

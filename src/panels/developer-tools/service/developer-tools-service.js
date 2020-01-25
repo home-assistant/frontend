@@ -11,6 +11,7 @@ import "../../../components/ha-service-picker";
 import "../../../resources/ha-style";
 import "../../../util/app-localstorage-document";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
 const ERROR_SENTINEL = {};
 /*
@@ -290,14 +291,13 @@ class HaPanelDevService extends LocalizeMixin(PolymerElement) {
 
   _callService() {
     if (this.parsedJSON === ERROR_SENTINEL) {
-      // eslint-disable-next-line
-      alert(
-        this.hass.localize(
+      showAlertDialog(this, {
+        text: this.hass.localize(
           "ui.panel.developer-tools.tabs.services.alert_parsing_yaml",
           "data",
           this.serviceData
-        )
-      );
+        ),
+      });
       return;
     }
 

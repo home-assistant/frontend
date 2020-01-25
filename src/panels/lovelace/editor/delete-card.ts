@@ -1,6 +1,9 @@
 import { Lovelace } from "../types";
 import { deleteCard } from "./config-util";
-import { showConfirmationDialog } from "../../../dialogs/confirmation/show-dialog-confirmation";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../types";
 
 export async function confDeleteCard(
@@ -15,7 +18,9 @@ export async function confDeleteCard(
       try {
         await lovelace.saveConfig(deleteCard(lovelace.config, path));
       } catch (err) {
-        alert(`Deleting failed: ${err.message}`);
+        showAlertDialog(element, {
+          text: `Deleting failed: ${err.message}`,
+        });
       }
     },
   });
