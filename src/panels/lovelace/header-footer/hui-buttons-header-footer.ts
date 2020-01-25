@@ -5,6 +5,7 @@ import {
   customElement,
   css,
   CSSResult,
+  queryAll,
 } from "lit-element";
 import "@material/mwc-ripple";
 
@@ -19,15 +20,20 @@ import { ButtonsHeaderFooterConfig } from "./types";
 import { EntityConfig } from "../entity-rows/types";
 import { processConfigEntities } from "../common/process-config-entities";
 import { toggleEntity } from "../common/entity/toggle-entity";
+import { computeTooltip } from "../common/compute-tooltip";
+// tslint:disable-next-line: no-duplicate-imports
+import { StateBadge } from "../../../components/entity/state-badge";
 
 @customElement("hui-buttons-header-footer")
-export class HuiGlanceCard extends LitElement implements LovelaceHeaderFooter {
+export class HuiButtonsHeaderFooter extends LitElement
+  implements LovelaceHeaderFooter {
   public static getStubConfig(): object {
     return { entities: [] };
   }
 
   private _configEntities?: EntityConfig[];
   private _hass?: HomeAssistant;
+  @queryAll("state-badge") private _badges!: StateBadge[];
 
   public setConfig(config: ButtonsHeaderFooterConfig): void {
     this._configEntities = processConfigEntities(config.entities);
@@ -36,12 +42,10 @@ export class HuiGlanceCard extends LitElement implements LovelaceHeaderFooter {
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
-    this.shadowRoot!.querySelectorAll("state-badge").forEach(
-      (badge, index: number) => {
-        badge.hass = hass;
-        badge.stateObj = hass.states[this._configEntities![index].entity];
-      }
-    );
+    this._badges.forEach((badge, index: number) => {
+      badge.hass = hass;
+      badge.stateObj = hass.states[this._configEntities![index].entity];
+    });
   }
 
   protected render(): TemplateResult | void {
@@ -55,7 +59,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceHeaderFooter {
         return html`
           <div>
             <state-badge
-              .title=${computeTooltip(this.hass, entityConf)}
+              title=${computeTooltip(this._hass!, entityConf)}
               @click=${this._toggle}
               .hass=${this._hass}
               .stateObj=${stateObj}
@@ -93,6 +97,6 @@ export class HuiGlanceCard extends LitElement implements LovelaceHeaderFooter {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-buttons-header-footer": HuiGlanceCard;
+    "hui-buttons-header-footer": HuiButtonsHeaderFooter;
   }
 }

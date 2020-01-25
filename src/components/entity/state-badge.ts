@@ -20,7 +20,7 @@ import { computeActiveState } from "../../common/entity/compute_active_state";
 import { ifDefined } from "lit-html/directives/if-defined";
 import { iconColorCSS } from "../../common/style/icon_color_css";
 
-class StateBadge extends LitElement {
+export class StateBadge extends LitElement {
   public hass?: HomeAssistant;
   @property() public stateObj?: HassEntity;
   @property() public overrideIcon?: string;
