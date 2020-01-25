@@ -242,7 +242,17 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         ${this._config!.show_state !== false && entityConf.show_state !== false
           ? html`
               <div>
-                ${entityConf.show_last_changed
+                ${stateObj.attributes.device_class === "timestamp" &&
+                stateObj.state !== "unavailable" &&
+                stateObj.state !== "unknown"
+                  ? html`
+                      <hui-timestamp-display
+                        .hass=${this.hass}
+                        .ts=${new Date(stateObj.state)}
+                        .format=${entityConf.format}
+                      ></hui-timestamp-display>
+                    `
+                  : entityConf.show_last_changed
                   ? relativeTime(
                       new Date(stateObj.last_changed),
                       this.hass!.localize
