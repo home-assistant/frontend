@@ -411,7 +411,7 @@
             },
             "automation": {
                 "last_triggered": "Dernier déclenchement",
-                "trigger": "Déclencher"
+                "trigger": "Exécutez"
             },
             "camera": {
                 "not_available": "Image non disponible"
@@ -557,6 +557,16 @@
                 "loading_history": "Chargement de l'historique des valeurs ...",
                 "no_history_found": "Aucun historique des valeurs trouvé."
             },
+            "related-items": {
+                "area": "Zone",
+                "automation": "Parties des automations suivantes",
+                "device": "Appareil",
+                "entity": "Entités liées",
+                "group": "Partie des groupes suivants",
+                "integration": "Intégration",
+                "scene": "Partie des scènes suivantes",
+                "script": "Partie des scripts suivants"
+            },
             "relative_time": {
                 "duration": {
                     "day": "{count} {count, plural,\none {jour}\nother {jours}\n}",
@@ -587,6 +597,12 @@
             "domain_toggler": {
                 "title": "Changer de domaine"
             },
+            "entity_registry": {
+                "control": "Contrôle",
+                "dismiss": "Ignorer",
+                "related": "Liées",
+                "settings": "Réglages"
+            },
             "more_info_control": {
                 "dismiss": "Fermer la fenêtre de dialogue",
                 "edit": "Modifier l'entité",
@@ -598,7 +614,8 @@
                     "remove_intro": "Si l'entité n'est plus utilisée, vous pouvez la nettoyer en la supprimant."
                 },
                 "script": {
-                    "last_action": "Dernière action"
+                    "last_action": "Dernière action",
+                    "last_triggered": "Dernier déclenchement"
                 },
                 "settings": "Paramètres de l'entité",
                 "sun": {
@@ -762,7 +779,7 @@
                             "delete_confirm": "Voulez-vous vraiment supprimer ?",
                             "duplicate": "Dupliquer",
                             "header": "Conditions",
-                            "introduction": "Les conditions sont une partie optionnelle d'une règle d'automatisation et peuvent être utilisées pour empêcher une action d'avoir lieu lorsque la règle est déclenchée. Les conditions ressemblent aux déclencheurs mais sont très différentes. Un déclencheur regardera les événements sur le système tandis qu'une condition ne regarde que l'état courant du système. Un déclencheur peut observer qu'un interrupteur est en train d'être allumé. Une condition ne peut que voir si l'interrupteur est allumé ou éteint.",
+                            "introduction": "Les conditions sont facultatives et empêcheront toute exécution ultérieure si toutes les conditions ne sont pas remplies.",
                             "learn_more": "En savoir plus sur les conditions",
                             "name": "Condition",
                             "type_select": "Type de condition",
@@ -1193,7 +1210,7 @@
                     "details": "Voici tous les détails de votre appareil.",
                     "device_not_found": "Appareil non trouvé.",
                     "entities": {
-                        "add_entities_lovelace": "Ajouter toutes les entités de périphérique dans Lovelace",
+                        "add_entities_lovelace": "Ajouter toutes les entités de l'appareil à l'interface utilisateur de Lovelace",
                         "entities": "Entités",
                         "none": "Cet appareil n'a pas d'entités"
                     },
@@ -1212,6 +1229,8 @@
                         "enabled_cause": "Désactivé par {cause}.",
                         "enabled_description": "Les entités désactivées ne seront pas ajoutées à Home Assistant.",
                         "enabled_label": "Activer l'entité",
+                        "entity_id": "ID de l'entité",
+                        "name": "Outrepasser le nom",
                         "note": "Note: cela pourrait ne pas encore fonctionner avec toutes les intégrations.",
                         "unavailable": "Cette entité n'est pas disponible actuellement.",
                         "update": "METTRE À JOUR"
@@ -1242,7 +1261,7 @@
                         },
                         "integrations_page": "Page des intégrations",
                         "introduction": "Home Assistant tient un registre de chaque entité qu'il a déjà vu au moins une fois et qui peut être identifié de manière unique. Chacune de ces entités se verra attribuer un identifiant qui sera réservé à cette seule entité.",
-                        "introduction2": "Utilisez le registre d'entités pour remplacer le nom, modifier l'ID d'entité ou supprimer l'entrée d'Home Assistant. Remarque: la suppression de l'entrée de registre d'entité ne supprime pas l'entité. Pour ce faire, suivez le lien ci-dessous et supprimez-le de la page des intégrations.",
+                        "introduction2": "Utilisé le registre des entités pour remplacer le nom, modifier l'ID de l'entité ou supprimer l'entrée de Home Assistant.",
                         "remove_selected": {
                             "button": "Supprimer la sélection",
                             "confirm_text": "Les entités ne peuvent être supprimées que lorsque l'intégration ne fournit plus les entités.",
@@ -1422,8 +1441,10 @@
                             "group": "Recharger les groupes",
                             "heading": "Rechargement de la configuration",
                             "introduction": "Certaines parties de Home Assistant peuvent être rechargées sans nécessiter de redémarrage. Le fait de cliquer sur recharger déchargera leur configuration actuelle et chargera la nouvelle.",
+                            "person": "Recharger des personnes",
                             "scene": "Recharger les scènes",
-                            "script": "Recharger les scripts"
+                            "script": "Recharger les scripts",
+                            "zone": "Recharger les zones"
                         },
                         "server_management": {
                             "confirm_restart": "Êtes-vous sûr de vouloir redémarrer Home Assistant?",
@@ -1583,6 +1604,30 @@
                         "updateDeviceName": "Définissez un nom personnalisé pour ce périphérique dans le registre de périphériques."
                     },
                     "title": "Zigbee Home Automation"
+                },
+                "zone": {
+                    "add_zone": "Ajouter une zone",
+                    "caption": "Zones",
+                    "confirm_delete": "Etes-vous sûr de vouloir supprimer cette zone ?",
+                    "create_zone": "Créer une zone",
+                    "description": "Gérez les zones dans lesquelles vous voulez suivre les personnes.",
+                    "detail": {
+                        "create": "Créer",
+                        "delete": "Effacer",
+                        "icon": "Icône",
+                        "icon_error_msg": "L'icône doit être au format préfixe:nom d'icône, par exemple : mdi:home",
+                        "latitude": "Latitude",
+                        "longitude": "Longitude",
+                        "name": "Nom",
+                        "new_zone": "Nouvelle zone",
+                        "passive": "Passif",
+                        "passive_note": "Les zones passives sont cachées dans le frontend et ne sont pas utilisées comme emplacement pour les traceurs de périphériques. C'est utile si vous voulez seulement les utiliser pour des automatisations.",
+                        "radius": "Rayon",
+                        "required_error_msg": "Ce champ est requis",
+                        "update": "Mettre à jour"
+                    },
+                    "introduction": "Les zones vous permettent de spécifier certaines régions sur la terre. Lorsqu'une personne se trouve dans une zone, l'état prend le nom de la zone. Les zones peuvent également être utilisées comme déclencheur ou condition dans les configurations d'automatisation.",
+                    "no_zones_created_yet": "Il semble que vous n'ayez pas encore créé de zones."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1765,9 +1810,9 @@
             },
             "lovelace": {
                 "add_entities": {
-                    "generated_unsupported": "Vous ne pouvez utiliser cette fonction que lorsque vous avez pris le contrôle de Lovelace.",
-                    "saving_failed": "La sauvegarde de la configuration de Lovelace a échoué.",
-                    "yaml_unsupported": "Vous ne pouvez pas utiliser cette fonction lorsque vous utilisez Lovelace en mode YAML."
+                    "generated_unsupported": "Vous ne pouvez utiliser cette fonction que lorsque vous avez pris le contrôle de Lovelace UI.",
+                    "saving_failed": "La sauvegarde de la configuration de Lovelace UI a échouée.",
+                    "yaml_unsupported": "Vous ne pouvez pas utiliser cette fonction lorsque vous utilisé Lovelace UI en mode YAML."
                 },
                 "cards": {
                     "confirm_delete": "Êtes-vous sûr de vouloir supprimer cette carte?",
@@ -1795,7 +1840,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "La configuration de Lovelace a été modifiée, voulez-vous rafraîchir?",
+                    "message": "La configuration de l'interface utilisateur de Lovelace a été mise à jour, réactualisée pour voir les changements ?",
                     "refresh": "Rafraîchir"
                 },
                 "editor": {
@@ -1938,7 +1983,7 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "Éditer le titre",
-                        "explanation": "Ce titre est affiché au-dessus de toutes vos vues dans Lovelace.",
+                        "explanation": "Ce titre est affiché au-dessus de toutes vos vues dans Lovelace UI.",
                         "header": "Titre de votre UI Lovelace"
                     },
                     "edit_view": {
@@ -1952,7 +1997,7 @@
                     },
                     "header": "Modifier l'interface utilisateur",
                     "menu": {
-                        "open": "Ouvrir le menu Lovelace",
+                        "open": "Ouvrir le menu Lovelace UI",
                         "raw_editor": "Éditeur de configuration"
                     },
                     "migrate": {
@@ -1962,8 +2007,8 @@
                         "para_no_id": "Cet élément n'a pas d'identifiant. Veuillez ajouter un identifiant à cet élément dans 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
-                        "confirm_remove_config_text": "Nous générerons automatiquement vos vues Lovelace avec vos zones et appareils si vous supprimez votre configuration Lovelace.",
-                        "confirm_remove_config_title": "Voulez-vous vraiment supprimer votre configuration Lovelace? Nous générerons automatiquement vos vues Lovelace avec vos zones et appareils.",
+                        "confirm_remove_config_text": "Nous générerons automatiquement vos vues Lovelace UI avec vos zones et appareils si vous supprimez votre configuration Lovelace UI.",
+                        "confirm_remove_config_title": "Êtes-vous sûr de vouloir supprimer votre configuration Lovelace UI? Nous générerons automatiquement vos vues Lovelace UI avec vos zones et vos appareils.",
                         "confirm_unsaved_changes": "Vous avez des changements non enregistrés. Êtes-vous sûr de vouloir quitter?",
                         "confirm_unsaved_comments": "Votre configuration contient des commentaires, ceux-ci ne seront pas sauvegardés. Voulez-vous continuer?",
                         "error_invalid_config": "Votre configuration n'est pas valide : {error}",
@@ -1978,13 +2023,13 @@
                     "save_config": {
                         "cancel": "Oublie ce que j'ai dit, c'est pas grave.",
                         "header": "Prenez le contrôle de votre Interface Lovelace",
-                        "para": "Par défaut, Home Assistant maintient votre interface utilisateur et la met à jour lorsque de nouvelles entités ou de nouveaux composants Lovelace sont disponibles. Si vous prenez le contrôle, nous ne ferons plus les changements automatiquement pour vous.",
+                        "para": "Par défaut, Home Assistant maintient votre interface utilisateur, la met à jour lorsque de nouvelles entités ou de nouveaux composants Lovelace UI sont disponibles. Si vous prenez le contrôle, nous ne ferons plus les changements automatiquement pour vous.",
                         "para_sure": "Êtes-vous sûr de vouloir prendre le contrôle de l'interface utilisateur?",
                         "save": "Prenez le contrôle"
                     },
                     "suggest_card": {
-                        "add": "Ajouter à Lovelace",
-                        "create_own": "Créez votre propre carte",
+                        "add": "Ajouter à Lovelace UI",
+                        "create_own": "Choisissez une autre carte",
                         "header": "Nous avons créé une suggestion pour vous"
                     },
                     "view": {
@@ -2002,7 +2047,7 @@
                     "refresh": "Actualiser",
                     "unused_entities": "Entités inutilisées"
                 },
-                "reload_lovelace": "Recharger Lovelace",
+                "reload_lovelace": "Recharger Lovelace UI",
                 "unused_entities": {
                     "available_entities": "Ce sont les entités dont vous disposez, mais qui ne figurent pas encore dans votre interface utilisateur Lovelace.",
                     "domain": "Domaine",

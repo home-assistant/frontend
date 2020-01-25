@@ -597,6 +597,12 @@
             "domain_toggler": {
                 "title": "Skift domæner"
             },
+            "entity_registry": {
+                "control": "Kontrol",
+                "dismiss": "Afvis",
+                "related": "Relaterede",
+                "settings": "Indstillinger"
+            },
             "more_info_control": {
                 "dismiss": "Afvis dialog",
                 "edit": "Rediger entitet",
@@ -1215,12 +1221,6 @@
                 "entities": {
                     "caption": "Entiteter",
                     "description": "Oversigt over alle kendte entiteter.",
-                    "dialog": {
-                        "control": "Kontrol",
-                        "dismiss": "Afvis",
-                        "related": "Relaterede",
-                        "settings": "Indstillinger"
-                    },
                     "editor": {
                         "confirm_delete": "Er du sikker på, at du vil slette denne post?",
                         "confirm_delete2": "Hvis du sletter en post, fjernes entiteten ikke fra Home Assistant. Hvis du vil gøre dette, skal du fjerne integrationen '{platform}' fra Home Assistant.",
@@ -1366,7 +1366,7 @@
                     "note_about_persons_configured_in_yaml": "Bemærk: Personer, der er konfigureret via 'configuration.yaml' kan ikke redigeres via brugerfladen."
                 },
                 "scene": {
-                    "activated": "Aktiveret scene {name}.",
+                    "activated": "Aktiverede scenen {name}.",
                     "caption": "Scener",
                     "description": "Opret og rediger scener",
                     "editor": {

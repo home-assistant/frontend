@@ -411,7 +411,7 @@
             },
             "automation": {
                 "last_triggered": "Nazadnje sprožen",
-                "trigger": "Sprožilec"
+                "trigger": "Izvedi"
             },
             "camera": {
                 "not_available": "Slika ni na voljo"
@@ -557,6 +557,9 @@
                 "loading_history": "Nalagam zgodovino stanj...",
                 "no_history_found": "Ni najdene zgodovine stanj."
             },
+            "related-items": {
+                "area": "Območje"
+            },
             "relative_time": {
                 "duration": {
                     "day": "{count} {count, plural,\none {Dan}\nother {Dni}\n}",
@@ -586,6 +589,9 @@
             },
             "domain_toggler": {
                 "title": "Preklopi domene"
+            },
+            "entity_registry": {
+                "dismiss": "Opusti"
             },
             "more_info_control": {
                 "dismiss": "Opusti pogovorno okno",
@@ -1100,6 +1106,7 @@
                             "core_config": {
                                 "edit_requires_storage": "Urejevalnik je onemogočen, ker je konfiguracija shranjena v configuration.yaml.",
                                 "elevation": "Nadmorska višina",
+                                "elevation_feet": "Čevljev",
                                 "elevation_meters": "metrov",
                                 "imperial_example": "Fahrenheit, funtov",
                                 "latitude": "Zemljepisna širina",
@@ -1509,6 +1516,10 @@
                         "device_name_placeholder": "Ime, ki ga je dodelil uporabnik",
                         "update_name_button": "Posodobi ime"
                     },
+                    "groups": {
+                        "caption": "Skupine",
+                        "create": "Ustvari skupino"
+                    },
                     "network_management": {
                         "header": "Upravljanje omrežja",
                         "introduction": "Ukazi, ki vplivajo na celotno omrežje"
@@ -1524,6 +1535,15 @@
                         "reconfigure": "Ponovno konfigurirajte napravo ZHA (\"pozdravite\" napravo). To uporabite, če imate z njo težave. Če ta naprava deluje na baterije, se prepričajte, da je budna in sprejema ukaze pri uporabi te storitve.",
                         "remove": "Odstranite napravo iz omrežja ZigBee.",
                         "updateDeviceName": "Nastavite ime po meri za to napravo v registru naprav."
+                    }
+                },
+                "zone": {
+                    "detail": {
+                        "create": "Ustvari",
+                        "delete": "Izbriši",
+                        "icon": "Ikona",
+                        "radius": "Polmer",
+                        "update": "Posodobite"
                     }
                 },
                 "zwave": {
@@ -1706,6 +1726,9 @@
                 "showing_entries": "Prikaz vnosov za"
             },
             "lovelace": {
+                "add_entities": {
+                    "saving_failed": "Shranjevanje nastavitve uporabniškega vmesnika Lovelace ni uspelo."
+                },
                 "cards": {
                     "confirm_delete": "Ali ste prepričani, da želite izbrisati to kartico?",
                     "empty_state": {
@@ -1911,6 +1934,10 @@
                         "para": "Home Assistant bo privzeto vzdrževal vaš uporabniški vmesnik, ga posodabljal, ko bodo na voljo nove entitete ali komponente Lovelace. Če prevzamete nadzor, vam ga ne bo več samodejno popravljal.",
                         "para_sure": "Ali ste prepričani, da želite prevzeti nadzor nad vašim vmesnikom?",
                         "save": "Prevzemite nadzor"
+                    },
+                    "suggest_card": {
+                        "add": "Dodaj v uporabniški vmesnik Lovelace",
+                        "create_own": "Izberite drugačno karto"
                     },
                     "view": {
                         "panel_mode": {
@@ -2150,6 +2177,7 @@
                     "link_promo": "Pomagajte pri prevodu"
                 },
                 "logout": "Odjava",
+                "logout_title": "Odjava?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Ali ste prepričani, da želite izbrisati žeton za dostop za {name} ?",
                     "create": "Ustvari žeton",

@@ -597,6 +597,12 @@
             "domain_toggler": {
                 "title": "Domäner ëmschalten"
             },
+            "entity_registry": {
+                "control": "Kontroll",
+                "dismiss": "Verwerfen",
+                "related": "Relatioun",
+                "settings": "Astellungen"
+            },
             "more_info_control": {
                 "dismiss": "Dialog ofbriechen",
                 "edit": "Entitéit änneren",
@@ -1215,12 +1221,6 @@
                 "entities": {
                     "caption": "Lëscht vun den Entitéiten",
                     "description": "Iwwersiicht vun all bekannten Entitéiten.",
-                    "dialog": {
-                        "control": "Kontroll",
-                        "dismiss": "Verwerfen",
-                        "related": "Relatioun",
-                        "settings": "Astellungen"
-                    },
                     "editor": {
                         "confirm_delete": "Sécher fir dës Entrée ze läsche?",
                         "confirm_delete2": "Beim Läsche vun enger Entrée gëtt dës Entitéit net aus dem Home Assistant erausgeholl. Fir dëst ze maache muss dir d'Integratioun '{platform}' aus dem Home Assistant ewech huelen.",
