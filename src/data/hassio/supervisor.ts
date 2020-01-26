@@ -15,6 +15,10 @@ export interface CreateSessionResponse {
   session: string;
 }
 
+export interface SupervisorOptions {
+  channel: "beta" | "dev" | "stable";
+}
+
 export const fetchHassioHomeAssistantInfo = async (hass: HomeAssistant) => {
   return hassioApiResultExtractor(
     await hass.callApi<HassioResponse<HassioHomeAssistantInfo>>(
@@ -39,4 +43,15 @@ export const createHassioSession = async (hass: HomeAssistant) => {
     "hassio/ingress/session"
   );
   document.cookie = `ingress_session=${response.data.session};path=/api/hassio_ingress/`;
+};
+
+export const setSupervisorOption = async (
+  hass: HomeAssistant,
+  data: SupervisorOptions
+) => {
+  await hass.callApi<HassioResponse<void>>(
+    "POST",
+    "hassio/supervisor/options",
+    data
+  );
 };

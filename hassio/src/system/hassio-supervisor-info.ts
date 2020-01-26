@@ -11,7 +11,11 @@ import {
 } from "lit-element";
 
 import { fireEvent } from "../../../src/common/dom/fire_event";
-import { HassioSupervisorInfo as HassioSupervisorInfoType } from "../../../src/data/hassio/supervisor";
+import {
+  HassioSupervisorInfo as HassioSupervisorInfoType,
+  setSupervisorOption,
+  SupervisorOptions,
+} from "../../../src/data/hassio/supervisor";
 import { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
@@ -146,7 +150,7 @@ class HassioSupervisorInfo extends LitElement {
         : response.body;
   }
 
-  private _joinBeta() {
+  private async _joinBeta() {
     if (
       !confirm(`WARNING:
 Beta releases are for testers and early adopters and can contain unstable code changes. Make sure you have backups of your data before you activate this feature.
@@ -158,39 +162,19 @@ This inludes beta releases for:
     ) {
       return;
     }
-    const method = "POST";
-    const path = "hassio/supervisor/options";
-    const data = { channel: "beta" };
-
-    const eventData: {
-      method: string;
-      path: string;
-      data: { channel: string };
-      success: boolean;
-      response: unknown;
-    } = {
-      method,
-      path,
-      data,
-      success: false,
-      response: "",
+    const data: SupervisorOptions = { channel: "beta" };
+    let eventdata = {
+      success: true,
+      response: undefined,
+      path: "option",
     };
-
-    this.hass
-      .callApi(method, path, data)
-      .then(
-        (resp) => {
-          eventData.success = true;
-          eventData.response = resp;
-        },
-        (resp) => {
-          eventData.success = false;
-          eventData.response = resp;
-        }
-      )
-      .then(() => {
-        fireEvent(this, "hass-api-called", eventData);
-      });
+    try {
+      await setSupervisorOption(this.hass, data);
+    } catch (err) {
+      eventdata.success = false;
+      eventdata.response = err;
+    }
+    fireEvent(this, "hass-api-called", eventdata);
   }
 }
 
