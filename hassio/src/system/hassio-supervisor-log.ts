@@ -15,10 +15,12 @@ import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../ansi-to-html";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
+import { fetchSupervisorLogs } from "../../../src/data/hassio/supervisor";
 
 @customElement("hassio-supervisor-log")
 class HassioSupervisorLog extends LitElement {
   @property() public hass!: HomeAssistant;
+  @property() private _error?: string;
   @query("#content") private _logContent!: HTMLDivElement;
 
   public connectedCallback(): void {
@@ -29,6 +31,11 @@ class HassioSupervisorLog extends LitElement {
   public render(): TemplateResult | void {
     return html`
       <paper-card>
+        ${this._error
+          ? html`
+              <div class="errors">${this._error}</div>
+            `
+          : ""}
         <div class="card-content" id="content"></div>
         <div class="card-actions">
           <mwc-button @click=${this._refresh}>Refresh</mwc-button>
@@ -46,23 +53,26 @@ class HassioSupervisorLog extends LitElement {
         pre {
           white-space: pre-wrap;
         }
+        .errors {
+          color: var(--google-red-500);
+          margin-bottom: 16px;
+        }
       `,
     ];
   }
 
-  private _loadData(): void {
-    this.hass.callApi("GET", "hassio/supervisor/logs").then(
-      (text) => {
-        while (this._logContent.lastChild) {
-          this._logContent.removeChild(this._logContent.lastChild as Node);
-        }
-        this._logContent.appendChild(parseTextToColoredPre(text));
-      },
-      () => {
-        this._logContent.innerHTML =
-          '<span class="fg-red bold">Error fetching logs</span>';
+  private async _loadData(): Promise<void> {
+    this._error = undefined;
+    try {
+      const content = await fetchSupervisorLogs(this.hass);
+      while (this._logContent.lastChild) {
+        this._logContent.removeChild(this._logContent.lastChild as Node);
       }
-    );
+      this._logContent.appendChild(parseTextToColoredPre(content));
+    } catch (err) {
+      this._error = `Failed to get supervisor logs, ${err.body?.message ||
+        err}`;
+    }
   }
 
   private _refresh(): void {
