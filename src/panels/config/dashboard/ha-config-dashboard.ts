@@ -11,6 +11,7 @@ import "@polymer/app-layout/app-header-layout/app-header-layout";
 import "@polymer/app-layout/app-header/app-header";
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import { classMap } from "lit-html/directives/class-map";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 import "../../../components/ha-menu-button";
 
@@ -64,13 +65,17 @@ class HaConfigDashboard extends LitElement {
             ${this.hass.localize("ui.panel.config.introduction")}
           </div>
 
-          <ha-card>
-            <ha-config-navigation
-              .hass=${this.hass}
-              .showAdvanced=${this.showAdvanced}
-              .pages=${[{ page: "cloud", info: this.cloudStatus }]}
-            ></ha-config-navigation>
-          </ha-card>
+          ${isComponentLoaded(this.hass, "cloud")
+            ? html`
+                <ha-card>
+                  <ha-config-navigation
+                    .hass=${this.hass}
+                    .showAdvanced=${this.showAdvanced}
+                    .pages=${[{ page: "cloud", info: this.cloudStatus }]}
+                  ></ha-config-navigation>
+                </ha-card>
+              `
+            : ""}
 
           <ha-card>
             <ha-config-navigation
