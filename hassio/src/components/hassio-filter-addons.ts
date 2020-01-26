@@ -1,4 +1,4 @@
-import { HassioAddonInfo } from "../../../src/data/hassio";
+import { HassioAddonInfo } from "../../../src/data/hassio/addon";
 import * as Fuse from "fuse.js";
 
 export function filterAndSort(addons: HassioAddonInfo[], filter: string) {

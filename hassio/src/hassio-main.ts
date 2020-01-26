@@ -12,17 +12,19 @@ import {
 import { HomeAssistant } from "../../src/types";
 import {
   fetchHassioSupervisorInfo,
-  fetchHassioHostInfo,
-  fetchHassioHassOsInfo,
   fetchHassioHomeAssistantInfo,
   HassioSupervisorInfo,
-  HassioHostInfo,
-  HassioHassOSInfo,
   HassioHomeAssistantInfo,
-  fetchHassioAddonInfo,
   createHassioSession,
   HassioPanelInfo,
-} from "../../src/data/hassio";
+} from "../../src/data/hassio/supervisor";
+import {
+  fetchHassioHostInfo,
+  fetchHassioHassOsInfo,
+  HassioHostInfo,
+  HassioHassOSInfo,
+} from "../../src/data/hassio/host";
+import { fetchHassioAddonInfo } from "../../src/data/hassio/addon";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 // Don't codesplit it, that way the dashboard always loads fast.

@@ -222,7 +222,7 @@ const createHassioConfig = ({ isProdBuild, latestBuild }) => {
   }
   const config = createWebpackConfig({
     entry: {
-      entrypoint: path.resolve(paths.hassio_dir, "src/entrypoint.js"),
+      entrypoint: path.resolve(paths.hassio_dir, "src/entrypoint.ts"),
     },
     outputRoot: "",
     isProdBuild,
