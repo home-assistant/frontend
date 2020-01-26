@@ -128,13 +128,12 @@ class HassioAddonNetwork extends LitElement {
   private _setNetworkConfig(): void {
     const network = this.addon.network || {};
     const description = this.addon.network_description || {};
-    const items: NetworkItem[] = [];
-    Object.keys(network).forEach((key) => {
-      items.push({
+    const items: NetworkItem[] = Object.keys(network).map((key) => {
+      return {
         container: key,
         host: network[key],
         description: description[key],
-      });
+      };
     });
     this._config = items.sort((a, b) => (a.container > b.container ? 1 : -1));
   }
