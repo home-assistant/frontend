@@ -23,12 +23,11 @@ import scrollToTarget from "../../src/common/dom/scroll-to-target";
 import { haStyle } from "../../src/resources/styles";
 import { HomeAssistant, Route } from "../../src/types";
 import { navigate } from "../../src/common/navigate";
+import { HassioHostInfo, HassioHassOSInfo } from "../../src/data/hassio/host";
 import {
   HassioSupervisorInfo,
-  HassioHostInfo,
   HassioHomeAssistantInfo,
-  HassioHassOSInfo,
-} from "../../src/data/hassio";
+} from "../../src/data/hassio/supervisor";
 
 const HAS_REFRESH_BUTTON = ["store", "snapshots"];
 

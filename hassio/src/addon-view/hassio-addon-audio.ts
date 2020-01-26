@@ -19,11 +19,13 @@ import {
 import { HomeAssistant } from "../../../src/types";
 import {
   HassioAddonDetails,
-  HassioHardwareAudioDevice,
-  fetchHassioHardwareAudio,
   setHassioAddonOption,
   HassioAddonSetOptionParams,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/addon";
+import {
+  HassioHardwareAudioDevice,
+  fetchHassioHardwareAudio,
+} from "../../../src/data/hassio/hardware";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 
@@ -34,8 +36,8 @@ class HassioAddonAudio extends LitElement {
   @property() private _error?: string;
   @property() private _inputDevices?: HassioHardwareAudioDevice[];
   @property() private _outputDevices?: HassioHardwareAudioDevice[];
-  @property() private _selectedInput?: string;
-  @property() private _selectedOutput?: string;
+  @property() private _selectedInput!: null | string;
+  @property() private _selectedOutput!: null | string;
 
   protected render(): TemplateResult | void {
     return html`

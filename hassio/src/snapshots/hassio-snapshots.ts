@@ -23,14 +23,14 @@ import { showHassioSnapshotDialog } from "../dialogs/snapshot/show-dialog-hassio
 import { HomeAssistant } from "../../../src/types";
 import {
   HassioSnapshot,
-  HassioSupervisorInfo,
   fetchHassioSnapshots,
   reloadHassioSnapshots,
   HassioFullSnapshotCreateParams,
   HassioPartialSnapshotCreateParams,
   createHassioFullSnapshot,
   createHassioPartialSnapshot,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/snapshot";
+import { HassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 

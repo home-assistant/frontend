@@ -17,7 +17,7 @@ import { HomeAssistant, Route } from "../../../src/types";
 import {
   HassioAddonDetails,
   fetchHassioAddonInfo,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/addon";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 

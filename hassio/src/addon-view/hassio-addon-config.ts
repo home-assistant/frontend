@@ -17,7 +17,7 @@ import {
   HassioAddonDetails,
   setHassioAddonOption,
   HassioAddonSetOptionParams,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/addon";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 import { PolymerChangedEvent } from "../../../src/polymer-types";

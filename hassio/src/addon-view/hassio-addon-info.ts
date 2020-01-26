@@ -29,7 +29,7 @@ import {
   uninstallHassioAddon,
   installHassioAddon,
   fetchHassioAddonChangelog,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/addon";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
@@ -607,6 +607,9 @@ class HassioAddonInfo extends LitElement {
         }
         .security {
           margin-bottom: 16px;
+        }
+        .card-actions {
+          display: flow-root;
         }
         .security h3 {
           margin-bottom: 8px;

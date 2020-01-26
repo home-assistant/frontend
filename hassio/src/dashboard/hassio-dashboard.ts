@@ -11,11 +11,11 @@ import "./hassio-addons";
 import "./hassio-update";
 import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
+import { HassioHassOSInfo } from "../../../src/data/hassio/host";
 import {
   HassioSupervisorInfo,
   HassioHomeAssistantInfo,
-  HassioHassOSInfo,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/supervisor";
 
 @customElement("hassio-dashboard")
 class HassioDashboard extends LitElement {

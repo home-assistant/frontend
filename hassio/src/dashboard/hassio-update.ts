@@ -10,11 +10,11 @@ import {
 import "@polymer/iron-icon/iron-icon";
 
 import { HomeAssistant } from "../../../src/types";
+import { HassioHassOSInfo } from "../../../src/data/hassio/host";
 import {
   HassioHomeAssistantInfo,
-  HassioHassOSInfo,
   HassioSupervisorInfo,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/supervisor";
 
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";

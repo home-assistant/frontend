@@ -14,7 +14,7 @@ import { HomeAssistant } from "../../../src/types";
 import {
   HassioAddonDetails,
   fetchHassioAddonLogs,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/addon";
 import { ANSI_HTML_STYLE, parseTextToColoredPre } from "../ansi-to-html";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";

@@ -20,7 +20,7 @@ import {
 import {
   fetchHassioSnapshotInfo,
   HassioSnapshotDetail,
-} from "../../../../src/data/hassio";
+} from "../../../../src/data/hassio/snapshot";
 import { getSignedPath } from "../../../../src/data/auth";
 import { HassioSnapshotDialogParams } from "./show-dialog-hassio-snapshot";
 import { haStyleDialog } from "../../../../src/resources/styles";

@@ -12,10 +12,10 @@ import {
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 import {
-  HassioSupervisorInfo,
   HassioHostInfo,
   HassioHassOSInfo,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/host";
+import { HassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
 import { HomeAssistant } from "../../../src/types";
 
 import "./hassio-host-info";

@@ -17,7 +17,7 @@ import {
   HassioAddonDetails,
   HassioAddonSetOptionParams,
   setHassioAddonOption,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/addon";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 import { fireEvent } from "../../../src/common/dom/fire_event";

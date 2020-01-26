@@ -15,7 +15,7 @@ import { haStyle } from "../../../src/resources/styles";
 import {
   HassioHostInfo as HassioHostInfoType,
   HassioHassOSInfo,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/host";
 import { HomeAssistant } from "../../../src/types";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 

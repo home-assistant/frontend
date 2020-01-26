@@ -15,7 +15,7 @@ import { HomeAssistant } from "../../../src/types";
 import {
   HassioAddonInfo,
   HassioAddonRepository,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/addon";
 import { navigate } from "../../../src/common/navigate";
 import { filterAndSort } from "../components/hassio-filter-addons";
 

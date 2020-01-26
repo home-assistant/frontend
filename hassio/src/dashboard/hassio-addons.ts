@@ -10,7 +10,7 @@ import {
 } from "lit-element";
 
 import { HomeAssistant } from "../../../src/types";
-import { HassioAddonInfo } from "../../../src/data/hassio";
+import { HassioAddonInfo } from "../../../src/data/hassio/addon";
 import { navigate } from "../../../src/common/navigate";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";

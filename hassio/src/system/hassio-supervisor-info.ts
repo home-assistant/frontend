@@ -11,7 +11,7 @@ import {
 } from "lit-element";
 
 import { fireEvent } from "../../../src/common/dom/fire_event";
-import { HassioSupervisorInfo as HassioSupervisorInfoType } from "../../../src/data/hassio";
+import { HassioSupervisorInfo as HassioSupervisorInfoType } from "../../../src/data/hassio/supervisor";
 import { HomeAssistant } from "../../../src/types";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";

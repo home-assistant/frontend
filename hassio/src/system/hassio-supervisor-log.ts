@@ -53,13 +53,13 @@ class HassioSupervisorLog extends LitElement {
   private _loadData(): void {
     this.hass.callApi("GET", "hassio/supervisor/logs").then(
       (text) => {
-        while (this._logContet.lastChild) {
-          this._logContet.removeChild(this._logContet.lastChild as Node);
+        while (this._logContent.lastChild) {
+          this._logContent.removeChild(this._logContent.lastChild as Node);
         }
-        this._logContet.appendChild(parseTextToColoredPre(text));
+        this._logContent.appendChild(parseTextToColoredPre(text));
       },
       () => {
-        this._logContet.innerHTML =
+        this._logContent.innerHTML =
           '<span class="fg-red bold">Error fetching logs</span>';
       }
     );
