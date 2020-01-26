@@ -161,42 +161,42 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
   private _areaChanged(ev: PolymerChangedEvent<string>) {
     const newValue = ev.detail.value;
 
-    if (newValue === "add_new") {
-      (ev.target as any).value = this._value;
-      showPromptDialog(this, {
-        title: this.hass.localize("ui.components.area-picker.add_dialog.title"),
-        text: this.hass.localize("ui.components.area-picker.add_dialog.text"),
-        confirmText: this.hass.localize(
-          "ui.components.area-picker.add_dialog.add"
-        ),
-        inputLabel: this.hass.localize(
-          "ui.components.area-picker.add_dialog.name"
-        ),
-        confirm: async (name) => {
-          if (!name) {
-            return;
-          }
-          try {
-            const area = await createAreaRegistryEntry(this.hass, {
-              name,
-            });
-            this._areas = [...this._areas!, area];
-            this._setValue(area.area_id);
-          } catch (err) {
-            showAlertDialog(this, {
-              text: this.hass.localize(
-                "ui.components.area-picker.add_dialog.failed_create_area"
-              ),
-            });
-          }
-        },
-      });
+    if (newValue !== "add_new") {
+      if (newValue !== this._value) {
+        this._setValue(newValue);
+      }
       return;
     }
 
-    if (newValue !== this._value) {
-      this._setValue(newValue);
-    }
+    (ev.target as any).value = this._value;
+    showPromptDialog(this, {
+      title: this.hass.localize("ui.components.area-picker.add_dialog.title"),
+      text: this.hass.localize("ui.components.area-picker.add_dialog.text"),
+      confirmText: this.hass.localize(
+        "ui.components.area-picker.add_dialog.add"
+      ),
+      inputLabel: this.hass.localize(
+        "ui.components.area-picker.add_dialog.name"
+      ),
+      confirm: async (name) => {
+        if (!name) {
+          return;
+        }
+        try {
+          const area = await createAreaRegistryEntry(this.hass, {
+            name,
+          });
+          this._areas = [...this._areas!, area];
+          this._setValue(area.area_id);
+        } catch (err) {
+          showAlertDialog(this, {
+            text: this.hass.localize(
+              "ui.components.area-picker.add_dialog.failed_create_area"
+            ),
+          });
+        }
+      },
+    });
   }
 
   private _setValue(value: string) {
