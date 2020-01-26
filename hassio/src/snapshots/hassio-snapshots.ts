@@ -17,19 +17,20 @@ import "@polymer/paper-radio-group/paper-radio-group";
 
 import "../components/hassio-card-content";
 import { hassioStyle } from "../resources/hassio-style";
+import { haStyle } from "../../../src/resources/styles";
 
 import { showHassioSnapshotDialog } from "../dialogs/snapshot/show-dialog-hassio-snapshot";
 import { HomeAssistant } from "../../../src/types";
 import {
   HassioSnapshot,
-  HassioSupervisorInfo,
   fetchHassioSnapshots,
   reloadHassioSnapshots,
   HassioFullSnapshotCreateParams,
   HassioPartialSnapshotCreateParams,
   createHassioFullSnapshot,
   createHassioPartialSnapshot,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/snapshot";
+import { HassioSupervisorInfo } from "../../../src/data/hassio/supervisor";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { fireEvent } from "../../../src/common/dom/fire_event";
 
@@ -334,6 +335,7 @@ class HassioSnapshots extends LitElement {
 
   static get styles(): CSSResultArray {
     return [
+      haStyle,
       hassioStyle,
       css`
         paper-radio-group {

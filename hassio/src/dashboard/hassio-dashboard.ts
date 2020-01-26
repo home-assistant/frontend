@@ -9,17 +9,17 @@ import {
 } from "lit-element";
 import "./hassio-addons";
 import "./hassio-update";
+import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
+import { HassioHassOSInfo } from "../../../src/data/hassio/host";
 import {
   HassioSupervisorInfo,
   HassioHomeAssistantInfo,
-  HassioHassOSInfo,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/supervisor";
 
 @customElement("hassio-dashboard")
 class HassioDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
-
   @property() public supervisorInfo!: HassioSupervisorInfo;
   @property() public hassInfo!: HassioHomeAssistantInfo;
   @property() public hassOsInfo!: HassioHassOSInfo;
@@ -41,12 +41,15 @@ class HassioDashboard extends LitElement {
     `;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .content {
-        margin: 0 auto;
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      haStyle,
+      css`
+        .content {
+          margin: 0 auto;
+        }
+      `,
+    ];
   }
 }
 

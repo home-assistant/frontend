@@ -10,13 +10,14 @@ import {
 import "@polymer/iron-icon/iron-icon";
 
 import { HomeAssistant } from "../../../src/types";
+import { HassioHassOSInfo } from "../../../src/data/hassio/host";
 import {
   HassioHomeAssistantInfo,
-  HassioHassOSInfo,
   HassioSupervisorInfo,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/supervisor";
 
 import { hassioStyle } from "../resources/hassio-style";
+import { haStyle } from "../../../src/resources/styles";
 
 import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
@@ -26,12 +27,10 @@ import "../components/hassio-card-content";
 @customElement("hassio-update")
 export class HassioUpdate extends LitElement {
   @property() public hass!: HomeAssistant;
-
   @property() public hassInfo: HassioHomeAssistantInfo;
   @property() public hassOsInfo?: HassioHassOSInfo;
   @property() public supervisorInfo: HassioSupervisorInfo;
-
-  @property() public error?: string;
+  @property() private _error?: string;
 
   protected render(): TemplateResult | void {
     const updatesAvailable: number = [
@@ -48,9 +47,9 @@ export class HassioUpdate extends LitElement {
 
     return html`
       <div class="content">
-        ${this.error
+        ${this._error
           ? html`
-              <div class="error">Error: ${this.error}</div>
+              <div class="error">Error: ${this._error}</div>
             `
           : ""}
         <div class="card-group">
@@ -134,19 +133,20 @@ export class HassioUpdate extends LitElement {
 
   private _apiCalled(ev) {
     if (ev.detail.success) {
-      this.error = "";
+      this._error = "";
       return;
     }
 
     const response = ev.detail.response;
 
     typeof response.body === "object"
-      ? (this.error = response.body.message || "Unknown error")
-      : (this.error = response.body);
+      ? (this._error = response.body.message || "Unknown error")
+      : (this._error = response.body);
   }
 
   static get styles(): CSSResult[] {
     return [
+      haStyle,
       hassioStyle,
       css`
         :host {
