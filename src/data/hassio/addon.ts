@@ -159,7 +159,7 @@ export const setHassioAddonSecurity = async (
 };
 
 export const installHassioAddon = async (hass: HomeAssistant, slug: string) => {
-  return await hass.callApi<HassioResponse<void>>(
+  return hass.callApi<HassioResponse<void>>(
     "POST",
     `hassio/addons/${slug}/install`
   );
