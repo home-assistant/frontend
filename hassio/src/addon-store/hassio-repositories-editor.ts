@@ -17,7 +17,7 @@ import "../../../src/components/buttons/ha-call-api-button";
 import "../components/hassio-card-content";
 import { hassioStyle } from "../resources/hassio-style";
 import { HomeAssistant } from "../../../src/types";
-import { HassioAddonRepository } from "../../../src/data/hassio";
+import { HassioAddonRepository } from "../../../src/data/hassio/addon";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { repeat } from "lit-html/directives/repeat";
 

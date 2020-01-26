@@ -14,7 +14,7 @@ import {
   HassioAddonInfo,
   fetchHassioAddonsInfo,
   reloadHassioAddons,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/addon";
 import "../../../src/layouts/loading-screen";
 import "../components/hassio-search-input";
 
