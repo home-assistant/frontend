@@ -322,7 +322,7 @@ class DataEntryFlowDialog extends LitElement {
       haStyleDialog,
       css`
         ha-paper-dialog {
-          max-width: 500px;
+          max-width: 600px;
         }
         ha-paper-dialog > * {
           margin: 0;
