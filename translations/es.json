@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Ejecutar"
             },
+            "service": {
+                "run": "Ejecutar"
+            },
             "timer": {
                 "actions": {
                     "cancel": "Cancelar",
@@ -600,6 +603,18 @@
             "entity_registry": {
                 "control": "Control",
                 "dismiss": "Descartar",
+                "editor": {
+                    "confirm_delete": "¿Estás seguro de que quieres borrar esta entrada?",
+                    "delete": "BORRAR",
+                    "enabled_cause": "Desactivado por {cause}.",
+                    "enabled_description": "Las entidades deshabilitadas no se agregarán a Home Assistant.",
+                    "enabled_label": "Habilitar entidad",
+                    "entity_id": "ID de la entidad",
+                    "name": "Anular el nombre",
+                    "note": "Nota: esto podría no funcionar todavía con todas las integraciones.",
+                    "unavailable": "Esta entidad no está disponible actualmente.",
+                    "update": "ACTUALIZAR"
+                },
                 "related": "Relacionado",
                 "settings": "Configuración"
             },
@@ -1608,6 +1623,7 @@
                 "zone": {
                     "add_zone": "Añadir zona",
                     "caption": "Zonas",
+                    "configured_in_yaml": "Las zonas configuradas a través de configuration.yaml no se pueden editar a través de la interfaz de usuario.",
                     "confirm_delete": "¿Estás seguro de que deseas eliminar esta zona?",
                     "create_zone": "Crear zona",
                     "description": "Gestiona las zonas en las que deseas realizar un seguimiento de las personas.",
@@ -1626,6 +1642,7 @@
                         "required_error_msg": "Este campo es obligatorio",
                         "update": "Actualizar"
                     },
+                    "edit_home_zone": "La ubicación de su hogar se puede cambiar en la configuración gerenal.",
                     "introduction": "Las zonas permiten especificar determinadas regiones de la tierra. Cuando una persona está dentro de una zona, su estado tomará el nombre de la zona. Las zonas también se pueden utilizar como desencadenante o condición dentro de las configuraciones de automatización.",
                     "no_zones_created_yet": "Parece que aún no has creado ninguna zona."
                 },
@@ -2248,6 +2265,7 @@
                     "description": "Home Assistant oculta las funciones y opciones avanzadas de forma predeterminada. Puedes hacer que estas funciones sean accesibles marcando esta opción. Esta es una configuración específica del usuario y no afecta a otros usuarios que usan Home Assistant.",
                     "hint_enable": "¿Faltan opciones de configuración? Activa el modo avanzado",
                     "link_profile_page": "tu página de perfil",
+                    "link_promo": "Aprender más",
                     "title": "Modo avanzado"
                 },
                 "change_password": {

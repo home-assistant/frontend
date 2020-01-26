@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Utfør"
             },
+            "service": {
+                "run": "Kjør"
+            },
             "timer": {
                 "actions": {
                     "cancel": "Avbryt",
@@ -600,6 +603,10 @@
             "entity_registry": {
                 "control": "Kontroll",
                 "dismiss": "Avvis",
+                "editor": {
+                    "delete": "SLETT",
+                    "update": "OPPDATER"
+                },
                 "related": "Relaterte",
                 "settings": "Innstillinger"
             },
@@ -2248,6 +2255,7 @@
                     "description": "Home Assistant skjuler avanserte funksjoner og alternativer som standard. Du kan gjøre disse funksjonene tilgjengelige ved å merke av i denne veksleknappen. Dette er en brukerspesifikk innstilling som ikke påvirker andre brukere ved hjelp av Home Assistant.",
                     "hint_enable": "Manglende konfigurasjonsalternativer? Aktivér avansert modus",
                     "link_profile_page": "profilsiden din",
+                    "link_promo": "Lær mer",
                     "title": "Avansert modus"
                 },
                 "change_password": {
