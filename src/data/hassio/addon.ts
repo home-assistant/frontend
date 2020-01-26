@@ -124,14 +124,14 @@ export const fetchHassioAddonChangelog = async (
   hass: HomeAssistant,
   slug: string
 ) => {
-  return await hass.callApi<string>("GET", `hassio/addons/${slug}/changelog`);
+  return hass.callApi<string>("GET", `hassio/addons/${slug}/changelog`);
 };
 
 export const fetchHassioAddonLogs = async (
   hass: HomeAssistant,
   slug: string
 ) => {
-  return await hass.callApi<string>("GET", `hassio/addons/${slug}/logs`);
+  return hass.callApi<string>("GET", `hassio/addons/${slug}/logs`);
 };
 
 export const setHassioAddonOption = async (
