@@ -19,7 +19,7 @@ import { HomeAssistant } from "../../../src/types";
 @customElement("hassio-supervisor-log")
 class HassioSupervisorLog extends LitElement {
   @property() public hass!: HomeAssistant;
-  @query("#content") private _logContet!: any;
+  @query("#content") private _logContent!: HTMLDivElement;
 
   public connectedCallback(): void {
     super.connectedCallback();
