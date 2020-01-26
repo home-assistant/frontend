@@ -21,7 +21,7 @@ class HassioAddons extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addons?: HassioAddonInfo[];
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div class="content card-group">
         <div class="title">Add-ons</div>

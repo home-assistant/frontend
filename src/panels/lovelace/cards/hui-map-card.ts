@@ -135,7 +135,7 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config) {
       return html``;
     }

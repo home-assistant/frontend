@@ -50,7 +50,7 @@ class ZHAAddDevicesPage extends LitElement {
     this._formattedEvents = "";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <hass-subpage
         header="${this.hass!.localize(

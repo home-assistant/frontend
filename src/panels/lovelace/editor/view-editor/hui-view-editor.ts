@@ -73,7 +73,7 @@ export class HuiViewEditor extends LitElement {
     this._config = config;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }

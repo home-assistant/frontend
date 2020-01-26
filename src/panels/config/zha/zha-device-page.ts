@@ -68,7 +68,7 @@ export class ZHADevicePage extends LitElement {
     super.update(changedProperties);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <hass-subpage
         .header=${this.hass!.localize("ui.panel.config.zha.devices.header")}

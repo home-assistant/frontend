@@ -50,7 +50,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
   @property() private _loading = false;
   @property() private _steps?: OnboardingStep[];
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const step = this._curStep()!;
 
     if (this._loading || !step) {
@@ -79,6 +79,7 @@ class HaOnboarding extends litLocalizeLiteMixin(HassElement) {
         ></onboarding-integrations>
       `;
     }
+    return html``;
   }
 
   protected firstUpdated(changedProps: PropertyValues) {

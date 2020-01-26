@@ -145,7 +145,7 @@ class HaEntityPicker extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const states = this._getStates(
       this._hass,
       this.includeDomains,

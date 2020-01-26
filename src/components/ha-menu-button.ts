@@ -42,7 +42,7 @@ class HaMenuButton extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const hasNotifications =
       (this.narrow || this.hass.dockedSidebar === "always_hidden") &&
       (this._hasNotifications ||

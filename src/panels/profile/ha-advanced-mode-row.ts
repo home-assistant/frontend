@@ -22,7 +22,7 @@ class AdvancedModeRow extends LitElement {
   @property() public narrow!: boolean;
   @property() public coreUserData?: CoreFrontendUserData;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-settings-row .narrow=${this.narrow}>
         <span slot="heading">

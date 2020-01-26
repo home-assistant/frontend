@@ -34,7 +34,7 @@ class HuiGenericEntityRow extends LitElement {
 
   @property() public showSecondary: boolean = true;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this.config) {
       return html``;
     }

@@ -9,7 +9,7 @@ import {
 
 @customElement("onboarding-loading")
 class OnboardingLoading extends LitElement {
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div class="loader"></div>
     `;

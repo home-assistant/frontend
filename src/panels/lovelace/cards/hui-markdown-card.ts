@@ -71,7 +71,7 @@ export class HuiMarkdownCard extends LitElement implements LovelaceCard {
     this._connect();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config) {
       return html``;
     }

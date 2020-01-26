@@ -45,7 +45,7 @@ export class HaConfigAreas extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || this._areas === undefined) {
       return html`
         <hass-loading-screen></hass-loading-screen>

@@ -110,7 +110,7 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
     return false;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }

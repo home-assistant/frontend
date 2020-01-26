@@ -217,7 +217,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     dialog.closeDialog();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || this._entities === undefined) {
       return html`
         <hass-loading-screen></hass-loading-screen>

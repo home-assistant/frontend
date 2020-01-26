@@ -52,7 +52,7 @@ export class HaStateLabelBadge extends LitElement {
     this.clearInterval();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const state = this.state;
 
     if (!state) {

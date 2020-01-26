@@ -54,7 +54,7 @@ class HuiInputNumberEntityRow extends LitElement implements LovelaceRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }

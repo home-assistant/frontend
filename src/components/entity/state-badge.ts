@@ -28,7 +28,7 @@ class StateBadge extends LitElement {
   @property({ type: Boolean }) public stateColor?: boolean;
   @query("ha-icon") private _icon!: HaIcon;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const stateObj = this.stateObj;
 
     if (!stateObj) {

@@ -72,7 +72,7 @@ class MoreInfoWeather extends LitElement {
     return false;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this.stateObj) {
       return html``;
     }

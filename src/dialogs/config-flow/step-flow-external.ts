@@ -28,7 +28,7 @@ class StepFlowExternal extends LitElement {
   @property()
   private step!: DataEntryFlowStepExternal;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const localize = this.hass.localize;
 
     return html`

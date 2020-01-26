@@ -35,7 +35,7 @@ class HuiClimateEntityRow extends LitElement implements LovelaceRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
     }

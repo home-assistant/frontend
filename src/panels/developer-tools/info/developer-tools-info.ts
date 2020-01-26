@@ -19,7 +19,7 @@ const OPT_IN_PANEL = "states";
 class HaPanelDevInfo extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const hass = this.hass;
     const customUiList: Array<{ name: string; url: string; version: string }> =
       (window as any).CUSTOM_UI_LIST || [];
