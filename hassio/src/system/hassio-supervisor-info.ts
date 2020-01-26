@@ -163,7 +163,7 @@ This inludes beta releases for:
       return;
     }
     const data: SupervisorOptions = { channel: "beta" };
-    let eventdata = {
+    const eventdata = {
       success: true,
       response: undefined,
       path: "option",

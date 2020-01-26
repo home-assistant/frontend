@@ -16,6 +16,7 @@ import {
   HassioHostInfo as HassioHostInfoType,
   HassioHassOSInfo,
 } from "../../../src/data/hassio/host";
+import { fetchHassioHardwareInfo } from "../../../src/data/hassio/hardware";
 import { HomeAssistant } from "../../../src/types";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
 
@@ -184,19 +185,21 @@ class HassioHostInfo extends LitElement {
         : response.body;
   }
 
-  private _showHardware(): void {
-    this.hass
-      .callApi("GET", "hassio/hardware/info")
-      .then(
-        (resp) => this._objectToMarkdown((resp as any).data),
-        () => "Error getting hardware info"
-      )
-      .then((content) => {
-        showHassioMarkdownDialog(this, {
-          title: "Hardware",
-          content,
-        });
+  private async _showHardware(): Promise<void> {
+    try {
+      const content = this._objectToMarkdown(
+        await fetchHassioHardwareInfo(this.hass)
+      );
+      showHassioMarkdownDialog(this, {
+        title: "Hardware",
+        content,
       });
+    } catch (err) {
+      showHassioMarkdownDialog(this, {
+        title: "Hardware",
+        content: "Error getting hardware info",
+      });
+    }
   }
 
   private _objectToMarkdown(obj, indent = ""): string {
@@ -216,6 +219,7 @@ class HassioHostInfo extends LitElement {
         }
       }
     });
+
     return data;
   }
 
