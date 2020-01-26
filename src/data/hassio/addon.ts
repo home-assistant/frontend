@@ -103,11 +103,9 @@ export const reloadHassioAddons = async (hass: HomeAssistant) => {
 };
 
 export const fetchHassioAddonsInfo = async (hass: HomeAssistant) => {
-  const result = await hass.callApi<HassioResponse<HassioAddonsInfo>>(
-    "GET",
-    `hassio/addons`
+  return hassioApiResultExtractor(
+    await hass.callApi<HassioResponse<HassioAddonsInfo>>("GET", `hassio/addons`)
   );
-  return hassioApiResultExtractor(result);
 };
 
 export const fetchHassioAddonInfo = async (

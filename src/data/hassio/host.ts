@@ -20,9 +20,10 @@ export const fetchHassioHostInfo = async (hass: HomeAssistant) => {
 };
 
 export const fetchHassioHassOsInfo = async (hass: HomeAssistant) => {
-  const response = await hass.callApi<HassioResponse<HassioHassOSInfo>>(
-    "GET",
-    "hassio/hassos/info"
+  return hassioApiResultExtractor(
+    await hass.callApi<HassioResponse<HassioHassOSInfo>>(
+      "GET",
+      "hassio/hassos/info"
+    )
   );
-  return hassioApiResultExtractor(response);
 };

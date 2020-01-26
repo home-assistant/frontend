@@ -11,9 +11,10 @@ interface HassioHardwareAudioList {
 }
 
 export const fetchHassioHardwareAudio = async (hass: HomeAssistant) => {
-  const response = await hass.callApi<HassioResponse<HassioHardwareAudioList>>(
-    "GET",
-    "hassio/hardware/audio"
+  return hassioApiResultExtractor(
+    await hass.callApi<HassioResponse<HassioHardwareAudioList>>(
+      "GET",
+      "hassio/hardware/audio"
+    )
   );
-  return hassioApiResultExtractor(response);
 };

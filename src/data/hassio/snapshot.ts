@@ -33,34 +33,49 @@ export interface HassioPartialSnapshotCreateParams {
   password?: string;
 }
 
-export const fetchHassioSnapshots = (hass: HomeAssistant) =>
-  hass
-    .callApi<HassioResponse<{ snapshots: HassioSnapshot[] }>>(
+export const fetchHassioSnapshots = async (hass: HomeAssistant) => {
+  return hassioApiResultExtractor(
+    await hass.callApi<HassioResponse<{ snapshots: HassioSnapshot[] }>>(
       "GET",
       "hassio/snapshots"
     )
-    .then((resp) => resp.data.snapshots);
+  ).snapshots;
+};
 
-export const reloadHassioSnapshots = (hass: HomeAssistant) =>
-  hass.callApi<unknown>("POST", `hassio/snapshots/reload`);
-
-export const createHassioFullSnapshot = (
-  hass: HomeAssistant,
-  data: HassioFullSnapshotCreateParams
-) => hass.callApi<unknown>("POST", "hassio/snapshots/new/full", data);
-
-export const createHassioPartialSnapshot = (
-  hass: HomeAssistant,
-  data: HassioPartialSnapshotCreateParams
-) => hass.callApi<unknown>("POST", "hassio/snapshots/new/partial", data);
-
-export const fetchHassioSnapshotInfo = (
+export const fetchHassioSnapshotInfo = async (
   hass: HomeAssistant,
   snapshot: string
-) =>
-  hass
-    .callApi<HassioResponse<HassioSnapshotDetail>>(
+) => {
+  return hassioApiResultExtractor(
+    await hass.callApi<HassioResponse<HassioSnapshotDetail>>(
       "GET",
       `hassio/snapshots/${snapshot}/info`
     )
-    .then(hassioApiResultExtractor);
+  );
+};
+
+export const reloadHassioSnapshots = async (hass: HomeAssistant) => {
+  await hass.callApi<HassioResponse<void>>("POST", `hassio/snapshots/reload`);
+};
+
+export const createHassioFullSnapshot = async (
+  hass: HomeAssistant,
+  data: HassioFullSnapshotCreateParams
+) => {
+  await hass.callApi<HassioResponse<void>>(
+    "POST",
+    `hassio/snapshots/new/full`,
+    data
+  );
+};
+
+export const createHassioPartialSnapshot = async (
+  hass: HomeAssistant,
+  data: HassioFullSnapshotCreateParams
+) => {
+  await hass.callApi<HassioResponse<void>>(
+    "POST",
+    `hassio/snapshots/new/partial`,
+    data
+  );
+};

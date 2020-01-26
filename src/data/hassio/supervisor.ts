@@ -15,21 +15,23 @@ export interface CreateSessionResponse {
   session: string;
 }
 
-export const fetchHassioHomeAssistantInfo = (hass: HomeAssistant) =>
-  hass
-    .callApi<HassioResponse<HassioHomeAssistantInfo>>(
+export const fetchHassioHomeAssistantInfo = async (hass: HomeAssistant) => {
+  return hassioApiResultExtractor(
+    await hass.callApi<HassioResponse<HassioHomeAssistantInfo>>(
       "GET",
       "hassio/homeassistant/info"
     )
-    .then(hassioApiResultExtractor);
+  );
+};
 
-export const fetchHassioSupervisorInfo = (hass: HomeAssistant) =>
-  hass
-    .callApi<HassioResponse<HassioSupervisorInfo>>(
+export const fetchHassioSupervisorInfo = async (hass: HomeAssistant) => {
+  return hassioApiResultExtractor(
+    await hass.callApi<HassioResponse<HassioSupervisorInfo>>(
       "GET",
       "hassio/supervisor/info"
     )
-    .then(hassioApiResultExtractor);
+  );
+};
 
 export const createHassioSession = async (hass: HomeAssistant) => {
   const response = await hass.callApi<HassioResponse<CreateSessionResponse>>(
