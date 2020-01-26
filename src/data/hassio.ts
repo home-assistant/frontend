@@ -84,8 +84,8 @@ export interface HassioAddonDetails extends HassioAddonInfo {
   devicetree: boolean;
   docker_api: boolean;
   audio: boolean;
-  audio_input: string;
-  audio_output: string;
+  audio_input: null | string;
+  audio_output: null | string;
   services_role: string[];
   discovery: string[];
   ip_address: string;
