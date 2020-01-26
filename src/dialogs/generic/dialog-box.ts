@@ -17,6 +17,7 @@ import { HomeAssistant } from "../../types";
 import { DialogParams } from "./show-dialog-box";
 import { PolymerChangedEvent } from "../../polymer-types";
 import { haStyleDialog } from "../../resources/styles";
+import { classMap } from "lit-html/directives/class-map";
 
 @customElement("dialog-box")
 class DialogBox extends LitElement {
@@ -56,7 +57,13 @@ class DialogBox extends LitElement {
         <paper-dialog-scrollable>
           ${this._params.text
             ? html`
-                <p>${this._params.text}</p>
+                <p
+                  class=${classMap({
+                    "no-bottom-padding": Boolean(this._params.prompt),
+                  })}
+                >
+                  ${this._params.text}
+                </p>
               `
             : ""}
           ${this._params.prompt
@@ -136,6 +143,9 @@ class DialogBox extends LitElement {
           padding-top: 6px;
           padding-bottom: 24px;
           color: var(--primary-text-color);
+        }
+        .no-bottom-padding {
+          padding-bottom: 0;
         }
         .secondary {
           color: var(--secondary-text-color);
