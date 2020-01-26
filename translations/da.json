@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Udløs"
             },
+            "service": {
+                "run": "Kør"
+            },
             "timer": {
                 "actions": {
                     "cancel": "annuller",
@@ -600,6 +603,18 @@
             "entity_registry": {
                 "control": "Kontrol",
                 "dismiss": "Afvis",
+                "editor": {
+                    "confirm_delete": "Er du sikker på, at du vil slette denne post?",
+                    "delete": "SLET",
+                    "enabled_cause": "Deaktiveret af {cause}.",
+                    "enabled_description": "Deaktiverede entiteter tilføjes ikke til Home Assistant.",
+                    "enabled_label": "Aktivér entitet",
+                    "entity_id": "Entitets-id",
+                    "name": "Tilsidesættelse af navn",
+                    "note": "Bemærk: Dette virker muligvis ikke med alle integrationer endnu.",
+                    "unavailable": "Denne entitet er ikke tilgængelig i øjeblikket.",
+                    "update": "OPDATER"
+                },
                 "related": "Relaterede",
                 "settings": "Indstillinger"
             },
@@ -779,7 +794,7 @@
                             "delete_confirm": "Er du sikker på, at du vil slette?",
                             "duplicate": "Dupliker",
                             "header": "Betingelser",
-                            "introduction": "Betingelser er en valgfri del af en automatiseringsregel og kan bruges til at forhindre, at en handling sker, når den udløses. Betingelser ligner udløsere, men er meget anderledes. En udløser vil se på hændelser der sker i systemet, mens en tilstand kun ser på, hvordan systemet ser ud lige nu. En udløser kan observere, at der er tændt for en kontakt. En tilstand kan kun se, om en kontakt i øjeblikket er til eller fra.",
+                            "introduction": "Betingelser er valgfri og forhindrer yderligere udførelse, medmindre alle betingelser er opfyldt.",
                             "learn_more": "Lær om betingelser",
                             "name": "Betingelse",
                             "type_select": "Betingelsestype",
@@ -1608,6 +1623,7 @@
                 "zone": {
                     "add_zone": "Tilføj zone",
                     "caption": "Zoner",
+                    "configured_in_yaml": "Zoner der er konfigureret via configuration.yaml, kan ikke redigeres via brugerfladen.",
                     "confirm_delete": "Er du sikker på, at du vil slette denne zone?",
                     "create_zone": "Opret zone",
                     "description": "Administrer de zoner, du ønsker at spore personer i.",
@@ -1626,6 +1642,7 @@
                         "required_error_msg": "Dette felt er påkrævet",
                         "update": "Opdater"
                     },
+                    "edit_home_zone": "Lokaliteten af dit hjem kan ændres i den generelle konfiguration.",
                     "introduction": "Zoner giver dig mulighed for at angive bestemte områder på jorden. Når en person er inden for en zone, vil tilstanden antage navnet fra zonen. Zoner kan også bruges som udløser eller tilstand inde i automatiseringsopsætninger.",
                     "no_zones_created_yet": "Det ser ud til, at du ikke har oprettet nogen zoner endnu."
                 },
@@ -2245,9 +2262,10 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "description": "Home Assistant skjuler avancerede funktioner og muligheder som standard. Du kan gøre disse funktioner tilgængelige ved at markere denne knap. Dette er en brugerspecifik indstilling og påvirker ikke andre brugere, der bruger Home Assistant.",
+                    "description": "Låser op for avancerede funktioner.",
                     "hint_enable": "Mangler der konfigurationsindstillinger? Aktivér avanceret tilstand",
                     "link_profile_page": "din profilside",
+                    "link_promo": "Lær mere",
                     "title": "Avanceret tilstand"
                 },
                 "change_password": {

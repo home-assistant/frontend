@@ -618,6 +618,11 @@
                 "related": "Related",
                 "settings": "Settings"
             },
+            "generic": {
+                "cancel": "Cancel",
+                "default_confirmation_title": "Are you sure?",
+                "ok": "OK"
+            },
             "more_info_control": {
                 "dismiss": "Dismiss dialog",
                 "edit": "Edit entity",
