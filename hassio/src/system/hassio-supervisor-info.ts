@@ -26,7 +26,7 @@ import "../../../src/components/buttons/ha-call-api-button";
 class HassioSupervisorInfo extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public supervisorInfo!: HassioSupervisorInfoType;
-  @property() protected errors?: string;
+  @property() private _errors?: string;
 
   public render(): TemplateResult | void {
     return html`
@@ -53,9 +53,9 @@ class HassioSupervisorInfo extends LitElement {
                 : ""}
             </tbody>
           </table>
-          ${this.errors
+          ${this._errors
             ? html`
-                <div class="errors">Error: ${this.errors}</div>
+                <div class="errors">Error: ${this._errors}</div>
               `
             : ""}
         </div>
@@ -138,13 +138,13 @@ class HassioSupervisorInfo extends LitElement {
 
   private _apiCalled(ev): void {
     if (ev.detail.success) {
-      this.errors = undefined;
+      this._errors = undefined;
       return;
     }
 
     const response = ev.detail.response;
 
-    this.errors =
+    this._errors =
       typeof response.body === "object"
         ? response.body.message || "Unknown error"
         : response.body;
@@ -162,19 +162,18 @@ This inludes beta releases for:
     ) {
       return;
     }
-    const data: SupervisorOptions = { channel: "beta" };
-    const eventdata = {
-      success: true,
-      response: undefined,
-      path: "option",
-    };
     try {
+      const data: SupervisorOptions = { channel: "beta" };
       await setSupervisorOption(this.hass, data);
+      const eventdata = {
+        success: true,
+        response: undefined,
+        path: "option",
+      };
+      fireEvent(this, "hass-api-called", eventdata);
     } catch (err) {
-      eventdata.success = false;
-      eventdata.response = err;
+      this._errors = `Error joining beta channel, ${err.body?.message || err}`;
     }
-    fireEvent(this, "hass-api-called", eventdata);
   }
 }
 

@@ -27,7 +27,7 @@ class HassioHostInfo extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public hostInfo!: HassioHostInfoType;
   @property() public hassOsInfo!: HassioHassOSInfo;
-  @property() protected errors?: string;
+  @property() private _errors?: string;
 
   public render(): TemplateResult | void {
     return html`
@@ -68,9 +68,9 @@ class HassioHostInfo extends LitElement {
                 </mwc-button>
               `
             : ""}
-          ${this.errors
+          ${this._errors
             ? html`
-                <div class="errors">Error: ${this.errors}</div>
+                <div class="errors">Error: ${this._errors}</div>
               `
             : ""}
         </div>
@@ -173,13 +173,13 @@ class HassioHostInfo extends LitElement {
 
   private _apiCalled(ev): void {
     if (ev.detail.success) {
-      this.errors = undefined;
+      this._errors = undefined;
       return;
     }
 
     const response = ev.detail.response;
 
-    this.errors =
+    this._errors =
       typeof response.body === "object"
         ? response.body.message || "Unknown error"
         : response.body;

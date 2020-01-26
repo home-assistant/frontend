@@ -23,9 +23,9 @@ class HassioSupervisorLog extends LitElement {
   @property() private _error?: string;
   @query("#content") private _logContent!: HTMLDivElement;
 
-  public connectedCallback(): void {
+  public async connectedCallback(): Promise<void> {
     super.connectedCallback();
-    this._loadData();
+    await this._loadData();
   }
 
   public render(): TemplateResult | void {
@@ -75,8 +75,8 @@ class HassioSupervisorLog extends LitElement {
     }
   }
 
-  private _refresh(): void {
-    this._loadData();
+  private async _refresh(): Promise<void> {
+    await this._loadData();
   }
 }
 
