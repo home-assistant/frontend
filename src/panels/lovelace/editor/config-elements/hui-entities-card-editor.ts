@@ -31,7 +31,7 @@ import {
   EntitiesCardConfig,
   EntitiesCardEntityConfig,
 } from "../../cards/types";
-import { pictureHeaderFooterConfigStruct } from "../../header-footer/types";
+import { headerFooterConfigStructs } from "../../header-footer/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -39,8 +39,8 @@ const cardConfigStruct = struct({
   theme: "string?",
   show_header_toggle: "boolean?",
   entities: [entitiesConfigStruct],
-  header: struct.optional(pictureHeaderFooterConfigStruct),
-  footer: struct.optional(pictureHeaderFooterConfigStruct),
+  header: struct.optional(headerFooterConfigStructs),
+  footer: struct.optional(headerFooterConfigStructs),
 });
 
 @customElement("hui-entities-card-editor")
