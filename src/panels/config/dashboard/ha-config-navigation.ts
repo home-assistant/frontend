@@ -32,7 +32,7 @@ class HaConfigNavigation extends LitElement {
   @property() public pages!: ConfigPageNavigation[];
   @property() public curPage!: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <paper-listbox attr-for-selected="data-page" .selected=${this.curPage}>
         ${this.pages.map(({ page, core, advanced, info }) =>

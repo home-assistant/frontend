@@ -19,7 +19,7 @@ class MoreInfoAutomation extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public stateObj?: HassEntity;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this.stateObj) {
       return html``;
     }

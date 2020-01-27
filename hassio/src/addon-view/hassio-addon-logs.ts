@@ -31,7 +31,7 @@ class HassioAddonLogs extends LitElement {
     await this._loadData();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <paper-card heading="Log">
         ${this._error

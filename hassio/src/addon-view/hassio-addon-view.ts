@@ -33,7 +33,7 @@ class HassioAddonView extends LitElement {
   @property() public route!: Route;
   @property() public addon?: HassioAddonDetails;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.addon) {
       return html`
         <paper-spinner-lite active></paper-spinner-lite>

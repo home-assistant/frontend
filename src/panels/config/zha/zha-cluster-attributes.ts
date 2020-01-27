@@ -58,7 +58,7 @@ export class ZHAClusterAttributes extends LitElement {
     super.update(changedProperties);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-config-section .isWide="${this.isWide}">
         <div class="header" slot="header">

@@ -112,7 +112,7 @@ export class HuiUnusedEntities extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this.lovelace) {
       return html``;
     }

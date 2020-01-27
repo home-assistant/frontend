@@ -14,7 +14,7 @@ class HcLaunchScreen extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public error?: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div class="container">
         <img

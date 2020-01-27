@@ -34,7 +34,7 @@ export class HuiDialogEditView extends LitElement {
     (this.shadowRoot!.children[0] as any).showDialog();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }

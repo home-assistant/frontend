@@ -20,7 +20,7 @@ class HassLoadingScreen extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public narrow?: boolean;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <app-toolbar>
         ${this.rootnav

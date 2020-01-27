@@ -39,7 +39,7 @@ class HassioAddonAudio extends LitElement {
   @property() private _selectedInput!: null | string;
   @property() private _selectedOutput!: null | string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <paper-card heading="Audio">
         <div class="card-content">

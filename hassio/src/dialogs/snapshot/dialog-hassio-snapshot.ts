@@ -102,7 +102,7 @@ class HassioSnapshotDialog extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.snapshot) {
       return html``;
     }

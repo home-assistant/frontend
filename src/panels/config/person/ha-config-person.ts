@@ -36,7 +36,7 @@ class HaConfigPerson extends LitElement {
   @property() private _configItems?: Person[];
   private _usersLoad?: Promise<User[]>;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (
       !this.hass ||
       this._storageItems === undefined ||

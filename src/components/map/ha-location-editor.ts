@@ -50,7 +50,7 @@ class LocationEditor extends LitElement {
     this._ignoreFitToMap = this.location;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div id="map"></div>
     `;

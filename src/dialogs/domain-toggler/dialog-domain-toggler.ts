@@ -22,7 +22,7 @@ class DomainTogglerDialog extends LitElement {
     this._params = params;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }

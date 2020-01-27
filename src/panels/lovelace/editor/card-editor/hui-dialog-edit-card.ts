@@ -61,7 +61,7 @@ export class HuiDialogEditCard extends LitElement {
     return this.shadowRoot!.querySelector("hui-card-editor");
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }

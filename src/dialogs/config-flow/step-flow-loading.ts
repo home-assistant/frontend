@@ -10,7 +10,7 @@ import "@polymer/paper-spinner/paper-spinner-lite";
 
 @customElement("step-flow-loading")
 class StepFlowLoading extends LitElement {
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div class="init-spinner">
         <paper-spinner-lite active></paper-spinner-lite>

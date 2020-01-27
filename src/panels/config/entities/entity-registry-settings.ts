@@ -41,6 +41,7 @@ export class EntityRegistrySettings extends LitElement {
   private _origEntityId!: string;
 
   protected updated(changedProperties: PropertyValues) {
+    super.updated(changedProperties);
     if (changedProperties.has("entry")) {
       this._error = undefined;
       this._name = this.entry.name || "";
@@ -50,9 +51,9 @@ export class EntityRegistrySettings extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (this.entry.entity_id !== this._origEntityId) {
-      return;
+      return html``;
     }
     const stateObj: HassEntity | undefined = this.hass.states[
       this.entry.entity_id

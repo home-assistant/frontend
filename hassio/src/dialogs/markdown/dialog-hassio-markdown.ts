@@ -32,7 +32,7 @@ class HassioMarkdownDialog extends LitElement {
     this._dialog.open();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-paper-dialog id="dialog" with-backdrop="">
         <app-toolbar>

@@ -42,7 +42,7 @@ class HaCameraStream extends LitElement {
     this._attached = false;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.stateObj || !this._attached) {
       return html``;
     }

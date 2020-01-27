@@ -100,7 +100,7 @@ class ZHAConfigDashboard extends LitElement {
     this._firstUpdatedCalled = true;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <hass-subpage
         .header=${this.hass.localize("ui.panel.config.zha.title")}

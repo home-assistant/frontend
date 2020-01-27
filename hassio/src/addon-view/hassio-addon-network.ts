@@ -44,7 +44,7 @@ class HassioAddonNetwork extends LitElement {
     this._setNetworkConfig();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config) {
       return html``;
     }

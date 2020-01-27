@@ -23,7 +23,7 @@ class HassioCardContent extends LitElement {
   @property() public iconClass?: string;
   @property() public icon = "hass:help-circle";
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <iron-icon
         class=${this.iconClass}

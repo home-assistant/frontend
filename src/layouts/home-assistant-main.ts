@@ -38,11 +38,11 @@ class HomeAssistantMain extends LitElement {
   @property() public route?: Route;
   @property({ type: Boolean }) private narrow?: boolean;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const hass = this.hass;
 
     if (!hass) {
-      return;
+      return html``;
     }
 
     const sidebarNarrow = this._sidebarNarrow;

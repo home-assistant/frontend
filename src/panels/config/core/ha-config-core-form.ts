@@ -33,7 +33,7 @@ class ConfigCoreForm extends LitElement {
   @property() private _unitSystem!: ConfigUpdateValues["unit_system"];
   @property() private _timeZone!: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const canEdit = ["storage", "default"].includes(
       this.hass.config.config_source
     );

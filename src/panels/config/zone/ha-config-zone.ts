@@ -95,7 +95,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (
       !this.hass ||
       this._storageItems === undefined ||

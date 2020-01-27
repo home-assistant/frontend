@@ -40,7 +40,7 @@ export class HuiSaveConfig extends LitElement {
     return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-paper-dialog with-backdrop>
         <h2>

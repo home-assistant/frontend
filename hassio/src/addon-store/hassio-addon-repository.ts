@@ -36,7 +36,7 @@ class HassioAddonRepositoryEl extends LitElement {
     }
   );
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const repo = this.repo;
     const addons = this._getAddons(this.addons, this.filter);
 
