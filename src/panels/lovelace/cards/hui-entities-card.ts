@@ -14,7 +14,11 @@ import "../components/hui-entities-toggle";
 
 import { HomeAssistant } from "../../../types";
 import { LovelaceRow } from "../entity-rows/types";
-import { LovelaceCard, LovelaceCardEditor } from "../types";
+import {
+  LovelaceCard,
+  LovelaceCardEditor,
+  LovelaceHeaderFooter,
+} from "../types";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createRowElement } from "../create-element/create-row-element";
 import { EntitiesCardConfig, EntitiesCardEntityConfig } from "./types";
@@ -46,6 +50,11 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     this.shadowRoot!.querySelectorAll("#states > div > *").forEach(
       (element: unknown) => {
         (element as LovelaceRow).hass = hass;
+      }
+    );
+    this.shadowRoot!.querySelectorAll(".header-footer > *").forEach(
+      (element: unknown) => {
+        (element as LovelaceHeaderFooter).hass = hass;
       }
     );
     const entitiesToggle = this.shadowRoot!.querySelector(
@@ -135,6 +144,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
             this.renderEntity(entityConf)
           )}
         </div>
+
         ${this._config.footer
           ? this.renderHeaderFooter(this._config.footer, "footer")
           : ""}
@@ -192,7 +202,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
       element.hass = this._hass;
     }
     return html`
-      <div class=${className}>${element}</div>
+      <div class=${"header-footer " + className}>${element}</div>
     `;
   }
 
