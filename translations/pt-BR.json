@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Executar"
             },
+            "service": {
+                "run": "Executar"
+            },
             "timer": {
                 "actions": {
                     "cancel": "cancelar",
@@ -556,6 +559,16 @@
                 "loading_history": "Carregando histórico do estado ...",
                 "no_history_found": "Histórico de estado não encontrado."
             },
+            "related-items": {
+                "area": "Área",
+                "automation": "Parte das seguintes automações",
+                "device": "Dispositivo",
+                "entity": "Entidades relacionadas",
+                "group": "Parte dos seguintes grupos",
+                "integration": "Integração",
+                "scene": "Parte das seguintes cenas",
+                "script": "Parte dos seguintes scripts"
+            },
             "relative_time": {
                 "duration": {
                     "day": "{count} {count, plural,\n  one {dia}\n other {dias}\n}",
@@ -586,11 +599,35 @@
             "domain_toggler": {
                 "title": "Alternar Domínios"
             },
+            "entity_registry": {
+                "control": "Controle",
+                "dismiss": "Dispensar",
+                "editor": {
+                    "confirm_delete": "Tem certeza que você deseja excluir esta entrada?",
+                    "delete": "APAGAR",
+                    "enabled_cause": "Desativado por {cause}.",
+                    "enabled_description": "Entidades desativadas não serão adicionadas ao Home Assistant.",
+                    "enabled_label": "Ativar entidade",
+                    "entity_id": "ID da entidade",
+                    "name": "Sobrescrever nome",
+                    "note": "Nota: isso talvez ainda não funcione com todas as integrações.",
+                    "unavailable": "Esta entidade não está disponível no momento.",
+                    "update": "ATUALIZAR"
+                },
+                "related": "Relacionado",
+                "settings": "Configurações"
+            },
+            "generic": {
+                "cancel": "Cancelar",
+                "default_confirmation_title": "Você tem certeza?",
+                "ok": "OK"
+            },
             "more_info_control": {
                 "dismiss": "Dispensar diálogo",
                 "edit": "Editar entidade",
                 "script": {
-                    "last_action": "Última Ação"
+                    "last_action": "Última Ação",
+                    "last_triggered": "Último disparo"
                 },
                 "settings": "Configurações da entidade",
                 "sun": {
@@ -605,7 +642,7 @@
             "more_info_settings": {
                 "back": "Voltar",
                 "entity_id": "ID da entidade",
-                "name": "Substituição de nome",
+                "name": "Sobrescrever o nome",
                 "save": "Salvar"
             },
             "options_flow": {
@@ -629,6 +666,9 @@
                     "add": "Adicionar Dispositivos",
                     "reconfigure": "Reconfigurar O Dispositivo",
                     "remove": "Remover dispositivo"
+                },
+                "confirmations": {
+                    "remove": "Tem a certeza que quer remover o dispositivo?"
                 },
                 "last_seen": "Visto pela última vez",
                 "manuf": "por {manufacturer}",
@@ -1137,12 +1177,12 @@
                     "attributes_customize": "Os seguintes atributos já estão configurados no customize.yaml",
                     "attributes_not_set": "Os seguintes atributos não foram definidos. Defina-os se quiser.",
                     "attributes_outside": "Os seguintes atributos são customizados por fora do customize.yaml",
-                    "attributes_override": "Você pode substituí-los, se quiser.",
+                    "attributes_override": "Você pode sobrescreve-los se quiser",
                     "attributes_set": "Os seguintes atributos da entidade são definidos de forma programática.",
                     "caption": "Customizações",
                     "description": "Personalizar suas entidades",
                     "different_include": "Possivelmente por meio de um domínio, um glob ou uma inclusão diferente.",
-                    "pick_attribute": "Escolha um atributo para substituir",
+                    "pick_attribute": "Escolha um atributo para sobrescrever",
                     "picker": {
                         "header": "Personalizações",
                         "introduction": "Ajustar atributos por entidade. As personalizações adicionadas / editadas entrarão em vigor imediatamente. As personalizações removidas entrarão em vigor quando a entidade for atualizada."
@@ -1195,6 +1235,8 @@
                         "enabled_cause": "Desativado por {cause}.",
                         "enabled_description": "As entidades desativadas não serão adicionadas ao Home Assistant.",
                         "enabled_label": "Ativar entidade",
+                        "entity_id": "ID da entidade",
+                        "name": "Sobrescrever o nome",
                         "note": "Nota: isso pode não funcionar ainda com todas as integrações.",
                         "unavailable": "Esta entidade não está disponível no momento.",
                         "update": "ATUALIZAR"
@@ -1209,7 +1251,7 @@
                         },
                         "integrations_page": "Página de integrações",
                         "introduction": "O Home Assistant mantém um registro de todas as entidades que já viu e que podem ser identificadas exclusivamente. Cada uma dessas entidades terá um ID de entidade atribuído, que será reservado apenas para essa entidade.",
-                        "introduction2": "Use o registro da entidade para substituir o nome, alterar o ID da entidade ou remover a entrada do Home Assistant. Observe que a remoção do registro de entidade não removerá a entidade totalmente. Para fazer isso, siga o link abaixo e remova-o da página de integrações.",
+                        "introduction2": "Use o registro da entidade para sobrescrever o nome, alterar o ID da entidade ou remover a entrada do Home Assistant. Observe que a remoção do registro de entidade não removerá a entidade totalmente. Para fazer isso, siga o link abaixo e remova-o da página de integrações.",
                         "show_disabled": "Mostrar entidades desativadas",
                         "unavailable": "(indisponível)"
                     }
@@ -1240,6 +1282,7 @@
                         "area_picker_label": "Área",
                         "close": "Fechar",
                         "created_config": "Configuração criada para {name}.",
+                        "dismiss": "Dispensar diálogo",
                         "error_saving_area": "Erro ao salvar a área: {error}",
                         "external_step": {
                             "description": "Esta etapa exige que você visite um site externo para ser concluída.",
@@ -1377,8 +1420,10 @@
                             "group": "Recarregar os grupos",
                             "heading": "Recarregando a configuração",
                             "introduction": "Algumas partes do Home Assistant podem ser recarregadas sem a necessidade de reiniciar. Pressionar recarregar descarregará sua configuração atual e carregará a nova.",
+                            "person": "Recarregar pessoas",
                             "scene": "Recarregar cenas",
-                            "script": "Recarregar os scripts"
+                            "script": "Recarregar os scripts",
+                            "zone": "Recarregar zonas"
                         },
                         "server_management": {
                             "confirm_restart": "Tem certeza de que deseja reiniciar o Home Assistant?",
@@ -1439,7 +1484,8 @@
                         "spinner": "Procurando por dispositivos ZHA Zigbee…"
                     },
                     "add": {
-                        "caption": "Adicionar Dispositivos"
+                        "caption": "Adicionar Dispositivos",
+                        "description": "Adicionar dispositivos à rede Zigbee"
                     },
                     "caption": "ZHA",
                     "cluster_attributes": {
@@ -1467,7 +1513,7 @@
                         "add_devices": "Adicionar Dispositivos",
                         "clusters": "Clusters",
                         "devices": "Dispositivos",
-                        "manufacturer_code_override": "Substituir Código do Fabricante",
+                        "manufacturer_code_override": "Sobrescrever Código do Fabricante",
                         "value": "Valor"
                     },
                     "description": "Gerenciamento de rede Zigbee Home Automation",
@@ -1476,8 +1522,25 @@
                         "device_name_placeholder": "Nome dado pelo usuário",
                         "update_name_button": "Atualizar Nome"
                     },
+                    "devices": {
+                        "header": "Zigbee Home Automation - Dispositivo"
+                    },
+                    "group_binding": {
+                        "bind_button_help": "Vincule o grupo selecionado aos clusters de dispositivos selecionados.",
+                        "bind_button_label": "Vincular Grupo",
+                        "cluster_selection_help": "Selecione clusters para vincular ao grupo selecionado.",
+                        "group_picker_help": "Selecione um grupo para emitir um comando de vinculação.",
+                        "group_picker_label": "Grupos vinculáveis",
+                        "header": "Vinculação de Grupo",
+                        "introduction": "Vincular e desvincular grupos.",
+                        "unbind_button_help": "Desvincular o grupo selecionado dos clusters de dispositivos selecionados.",
+                        "unbind_button_label": "Desvincular grupo"
+                    },
                     "groups": {
-                        "caption": "Grupos"
+                        "caption": "Grupos",
+                        "description": "Criar e modificar grupos Zigbee",
+                        "group-header": "Zigbee Home Automation - Detalhes do Grupo",
+                        "groups-header": "Zigbee Home Automation - Gerenciamento de grupos"
                     },
                     "network_management": {
                         "header": "Gerenciamento de Rede",
@@ -1495,6 +1558,32 @@
                         "remove": "Remova um dispositivo da rede Zigbee.",
                         "updateDeviceName": "Definir um nome personalizado para este dispositivo no registro de dispositivos."
                     }
+                },
+                "zone": {
+                    "add_zone": "Adicionar Zona",
+                    "caption": "Zonas",
+                    "configured_in_yaml": "Zonas configuradas via configuration.yaml não podem ser editadas pela interface do usuário.",
+                    "confirm_delete": "Tem certeza de que deseja excluir esta zona?",
+                    "create_zone": "Criar Zona",
+                    "description": "Gerencie as zonas nas quais deseja rastrear pessoas.",
+                    "detail": {
+                        "create": "Criar",
+                        "delete": "Excluir",
+                        "icon": "Ícone",
+                        "icon_error_msg": "O ícone deve estar no formato prefixo:nomedoícone, por exemplo: mdi:home",
+                        "latitude": "Latitude",
+                        "longitude": "Longitude",
+                        "name": "Nome",
+                        "new_zone": "Nova Zona",
+                        "passive": "Passivo",
+                        "passive_note": "Zonas passivas estão ocultas no frontend e não são usadas como local para rastreadores de dispositivos. Isso é útil se você quiser usá-las apenas para automações.",
+                        "radius": "Raio",
+                        "required_error_msg": "Este campo é obrigatório",
+                        "update": "Atualizar"
+                    },
+                    "edit_home_zone": "A localização da sua casa pode ser alterada nas configurações gerais",
+                    "introduction": "As zonas permitem especificar determinadas regiões da Terra. Quando uma pessoa está dentro de uma zona, o estado assume o nome da zona. As zonas também podem ser usadas como gatilho ou condição nas configurações de automações.",
+                    "no_zones_created_yet": "Parece que você ainda não criou nenhuma zona."
                 },
                 "zwave": {
                     "caption": "",
@@ -1683,6 +1772,9 @@
                         "no_devices": "Esta página permite que você controle seus dispositivos, no entanto, parece que você ainda não tem dispositivos configurados. Vá até a página de integrações para começar.",
                         "title": "Bem-vindo a casa"
                     },
+                    "entities": {
+                        "never_triggered": "Nunca disparado"
+                    },
                     "picture-elements": {
                         "call_service": "Iniciar Serviço {name}",
                         "hold": "Aguarde:",
@@ -1813,6 +1905,7 @@
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "Este cartão requer que a integração `shopping_list` tenha sido configurada.",
                             "name": "Lista de compras"
                         },
                         "thermostat": {
@@ -2098,6 +2191,7 @@
                     "description": "O Home Assistant oculta os recursos e opções avançados por padrão. Você pode tornar esses recursos acessíveis marcando essa opção. Essa é uma configuração específica do usuário e não afeta outros usuários usando o Home Assistant.",
                     "hint_enable": "Faltam opções de configuração? Ative o modo avançado",
                     "link_profile_page": "sua página de perfil",
+                    "link_promo": "Saiba mais",
                     "title": "Modo Avançado"
                 },
                 "change_password": {
@@ -2120,6 +2214,8 @@
                     "link_promo": "Ajude a traduzir"
                 },
                 "logout": "Sair",
+                "logout_text": "Tem certeza que deseja sair?",
+                "logout_title": "Sair",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Tem certeza de que deseja excluir o token de acesso para {name} ?",
                     "create": "Criar token",

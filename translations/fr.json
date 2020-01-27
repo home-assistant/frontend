@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Exécuter"
             },
+            "service": {
+                "run": "Exécuter"
+            },
             "timer": {
                 "actions": {
                     "cancel": "annuler",
@@ -600,8 +603,24 @@
             "entity_registry": {
                 "control": "Contrôle",
                 "dismiss": "Ignorer",
+                "editor": {
+                    "confirm_delete": "Voulez-vous vraiment supprimer cette entrée ?",
+                    "delete": "SUPPRIMER",
+                    "enabled_cause": "Désactivé par {cause} .",
+                    "enabled_description": "Les entités désactivées ne seront pas ajoutées à Home Assistant.",
+                    "enabled_label": "Activer l'entité",
+                    "entity_id": "ID d'entité",
+                    "note": "Remarque: cela peut ne pas encore fonctionner avec toutes les intégrations.",
+                    "unavailable": "Cette entité n'est pas disponible actuellement.",
+                    "update": "MISE À JOUR"
+                },
                 "related": "Liées",
                 "settings": "Réglages"
+            },
+            "generic": {
+                "cancel": "Annuler",
+                "default_confirmation_title": "Êtes-vous sûr ?",
+                "ok": "OK"
             },
             "more_info_control": {
                 "dismiss": "Fermer la fenêtre de dialogue",
@@ -1608,6 +1627,7 @@
                 "zone": {
                     "add_zone": "Ajouter une zone",
                     "caption": "Zones",
+                    "configured_in_yaml": "Les zones configurées via configuration.yaml ne peuvent pas être modifiées via l'interface utilisateur.",
                     "confirm_delete": "Etes-vous sûr de vouloir supprimer cette zone ?",
                     "create_zone": "Créer une zone",
                     "description": "Gérez les zones dans lesquelles vous voulez suivre les personnes.",
@@ -1626,6 +1646,7 @@
                         "required_error_msg": "Ce champ est requis",
                         "update": "Mettre à jour"
                     },
+                    "edit_home_zone": "L'emplacement de votre maison peut être modifié dans la configuration générale.",
                     "introduction": "Les zones vous permettent de spécifier certaines régions sur la terre. Lorsqu'une personne se trouve dans une zone, l'état prend le nom de la zone. Les zones peuvent également être utilisées comme déclencheur ou condition dans les configurations d'automatisation.",
                     "no_zones_created_yet": "Il semble que vous n'ayez pas encore créé de zones."
                 },
@@ -2248,6 +2269,7 @@
                     "description": "Home Assistant cache les fonctionnalités et options avancées par défaut. Vous pouvez rendre ces fonctionnalités accessibles en cochant cette case. Il s'agit d'un paramètre spécifique à l'utilisateur et n'a pas d'impact sur les autres utilisateurs utilisant Home Assistant.",
                     "hint_enable": "Options de configuration manquantes? Activer le mode avancé",
                     "link_profile_page": "votre page de profil",
+                    "link_promo": "Apprendre encore plus",
                     "title": "Mode avancé"
                 },
                 "change_password": {

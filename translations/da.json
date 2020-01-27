@@ -618,6 +618,11 @@
                 "related": "Relaterede",
                 "settings": "Indstillinger"
             },
+            "generic": {
+                "cancel": "Annuller",
+                "default_confirmation_title": "Er du sikker?",
+                "ok": "OK"
+            },
             "more_info_control": {
                 "dismiss": "Afvis dialog",
                 "edit": "Rediger entitet",
