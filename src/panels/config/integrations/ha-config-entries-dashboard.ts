@@ -334,6 +334,7 @@ export class HaConfigManagerDashboard extends LitElement {
     });
     return states;
   }
+
   static get styles(): CSSResult {
     return css`
       ha-card {

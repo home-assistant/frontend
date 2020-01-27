@@ -28,7 +28,7 @@ class OnboardingCreateUser extends LitElement {
   @property() private _loading = false;
   @property() private _errorMsg?: string = undefined;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
     <p>
       ${this.localize("ui.panel.page-onboarding.intro")}

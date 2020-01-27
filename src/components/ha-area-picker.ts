@@ -85,9 +85,9 @@ export class HaAreaPicker extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._areas) {
-      return;
+      return html``;
     }
     return html`
       <vaadin-combo-box-light

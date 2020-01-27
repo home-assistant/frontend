@@ -39,7 +39,7 @@ class HcCast extends LitElement {
   @property() private askWrite = false;
   @property() private lovelaceConfig?: LovelaceConfig | null;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (this.lovelaceConfig === undefined) {
       return html`
         <loading-screen></loading-screen>>

@@ -30,7 +30,7 @@ export class HuiCardOptions extends LitElement {
 
   @property() public path?: [number, number];
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <slot></slot>
       <div class="options">

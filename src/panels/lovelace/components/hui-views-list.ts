@@ -27,7 +27,7 @@ class HuiViewsList extends LitElement {
   @property() private lovelaceConfig?: LovelaceConfig | undefined;
   @property() private selected?: number | undefined;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.lovelaceConfig) {
       return html``;
     }

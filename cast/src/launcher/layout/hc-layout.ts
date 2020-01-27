@@ -22,7 +22,7 @@ class HcLayout extends LitElement {
   @property() public connection?: Connection;
   @property() public user?: HassUser;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-card>
         <div class="layout">

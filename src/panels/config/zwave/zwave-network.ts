@@ -48,7 +48,7 @@ export class ZwaveNetwork extends LitElement {
     this._subscribe();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-config-section .isWide="${this.isWide}">
         <div class="sectionHeader" slot="header">

@@ -27,7 +27,7 @@ class CastDemoRow extends LitElement implements LovelaceRow {
     // No config possible.
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (
       !this._castManager ||
       this._castManager.castState === "NO_DEVICES_AVAILABLE"

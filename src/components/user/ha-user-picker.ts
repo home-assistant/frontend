@@ -34,7 +34,7 @@ class HaUserPicker extends LitElement {
       .sort((a, b) => compare(a.name, b.name));
   });
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <paper-dropdown-menu-light .label=${this.label}>
         <paper-listbox

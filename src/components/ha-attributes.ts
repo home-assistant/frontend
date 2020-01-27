@@ -16,7 +16,7 @@ class HaAttributes extends LitElement {
   @property() public stateObj?: HassEntity;
   @property() public extraFilters?: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.stateObj) {
       return html``;
     }

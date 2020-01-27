@@ -60,7 +60,7 @@ export class HuiDialogSuggestCard extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-paper-dialog with-backdrop opened>
         <h2>

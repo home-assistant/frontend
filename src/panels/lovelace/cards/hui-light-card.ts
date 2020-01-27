@@ -60,7 +60,7 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     this._config = { theme: "default", ...config };
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
     }

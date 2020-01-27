@@ -23,7 +23,7 @@ export class CloudAlexaPref extends LitElement {
   @property() public cloudStatus?: CloudStatusLoggedIn;
   @property() private _syncing = false;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.cloudStatus) {
       return html``;
     }

@@ -29,7 +29,7 @@ class HuiDividerRow extends LitElement implements LovelaceRow {
     };
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config) {
       return html``;
     }

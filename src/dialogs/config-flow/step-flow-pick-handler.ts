@@ -59,7 +59,7 @@ class StepFlowPickHandler extends LitElement {
     );
   });
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const handlers = this._getHandlers(this.handlers, this.filter);
 
     return html`

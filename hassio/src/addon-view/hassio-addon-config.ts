@@ -31,7 +31,7 @@ class HassioAddonConfig extends LitElement {
   @property() private _config!: string;
   @property({ type: Boolean }) private _configHasChanged = false;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <paper-card heading="Config">
         <div class="card-content">

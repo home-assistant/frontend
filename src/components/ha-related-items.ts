@@ -64,7 +64,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._related) {
       return html``;
     }

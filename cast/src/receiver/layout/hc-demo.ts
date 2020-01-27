@@ -16,7 +16,7 @@ class HcDemo extends HassElement {
   @property() public lovelacePath!: string;
   @property() private _lovelaceConfig?: LovelaceConfig;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._lovelaceConfig) {
       return html``;
     }

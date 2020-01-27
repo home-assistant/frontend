@@ -32,7 +32,7 @@ class HaConfigDashboard extends LitElement {
   @property() public cloudStatus?: CloudStatus;
   @property() public showAdvanced!: boolean;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <app-header-layout has-scrolling-region>
         <app-header fixed slot="header">

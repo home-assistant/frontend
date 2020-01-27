@@ -38,7 +38,7 @@ export class HaScriptEditor extends LitElement {
   @property() private _dirty?: boolean;
   @property() private _errors?: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-app-layout has-scrolling-region>
         <app-header slot="header" fixed>

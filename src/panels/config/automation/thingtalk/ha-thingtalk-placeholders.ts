@@ -112,7 +112,7 @@ export class ThingTalkPlaceholders extends SubscribeMixin(LitElement) {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-paper-dialog
         modal

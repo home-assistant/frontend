@@ -72,7 +72,7 @@ export class HuiGaugeCardEditor extends LitElement
     return this._config!.severity || undefined;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }

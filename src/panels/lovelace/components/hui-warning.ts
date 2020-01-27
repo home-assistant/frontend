@@ -9,7 +9,7 @@ import {
 
 @customElement("hui-warning")
 export class HuiWarning extends LitElement {
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <slot></slot>
     `;

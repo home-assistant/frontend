@@ -71,7 +71,7 @@ export class HuiMapCardEditor extends LitElement implements LovelaceCardEditor {
     return this._config!.dark_mode || false;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }

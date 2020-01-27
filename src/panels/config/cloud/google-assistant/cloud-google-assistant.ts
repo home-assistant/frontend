@@ -71,7 +71,7 @@ class CloudGoogleAssistant extends LitElement {
     )
   );
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (this._entities === undefined) {
       return html`
         <hass-loading-screen></hass-loading-screen>

@@ -86,7 +86,7 @@ export class HUIView extends LitElement {
     return element;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       ${this.renderStyles()}
       <div id="badges"></div>
