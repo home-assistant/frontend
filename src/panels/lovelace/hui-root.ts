@@ -80,7 +80,7 @@ class HUIRoot extends LitElement {
     );
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
     <app-route .route="${this.route}" pattern="/:view" data="${
       this._routeData

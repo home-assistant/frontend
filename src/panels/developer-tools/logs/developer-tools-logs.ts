@@ -30,7 +30,7 @@ export class HaPanelDevLogs extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div class="content">
         <system-log-card .hass=${this.hass}></system-log-card>

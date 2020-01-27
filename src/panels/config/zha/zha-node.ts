@@ -27,7 +27,7 @@ export class ZHANode extends LitElement {
   @property() public device?: ZHADevice;
   @property() private _showHelp: boolean = false;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-config-section .isWide="${this.isWide}">
         <div class="header" slot="header">

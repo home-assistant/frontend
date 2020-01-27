@@ -32,7 +32,7 @@ export class HassioUpdate extends LitElement {
   @property() public supervisorInfo: HassioSupervisorInfo;
   @property() private _error?: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const updatesAvailable: number = [
       this.hassInfo,
       this.supervisorInfo,

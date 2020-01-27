@@ -79,7 +79,7 @@ export class HuiGlanceCardEditor extends LitElement
     return this._config!.show_state || true;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }

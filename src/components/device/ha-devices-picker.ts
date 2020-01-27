@@ -37,9 +37,9 @@ class HaDevicesPicker extends LitElement {
   public pickedDeviceLabel?: string;
   @property({ attribute: "pick-device-label" }) public pickDeviceLabel?: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
-      return;
+      return html``;
     }
 
     const currentDevices = this._currentDevices;

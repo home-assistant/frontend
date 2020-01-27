@@ -59,7 +59,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
     return this._config!.theme || "Backend-selected";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }

@@ -33,7 +33,7 @@ class HassioRepositoriesEditor extends LitElement {
       .sort((a, b) => (a.name < b.name ? -1 : 1))
   );
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const repos = this._sortedRepos(this.repos);
     return html`
       <div class="card-group">

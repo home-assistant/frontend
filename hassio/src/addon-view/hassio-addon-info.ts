@@ -95,7 +95,7 @@ class HassioAddonInfo extends LitElement {
   @property() public addon!: HassioAddonDetails;
   @property() private _error?: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       ${
         this._computeUpdateAvailable

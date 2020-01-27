@@ -58,7 +58,7 @@ class DialogThingtalk extends LitElement {
     this._opened = true;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }

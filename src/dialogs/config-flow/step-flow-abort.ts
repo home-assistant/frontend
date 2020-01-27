@@ -24,7 +24,7 @@ class StepFlowAbort extends LitElement {
   @property()
   private step!: DataEntryFlowStepAbort;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <h2>
         ${this.hass.localize(

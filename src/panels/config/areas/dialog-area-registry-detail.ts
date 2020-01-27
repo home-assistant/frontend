@@ -32,7 +32,7 @@ class DialogAreaDetail extends LitElement {
     await this.updateComplete;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }

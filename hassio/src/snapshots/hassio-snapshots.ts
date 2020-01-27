@@ -76,7 +76,7 @@ class HassioSnapshots extends LitElement {
     await this._updateSnapshots();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div class="content">
         <div class="card-group">

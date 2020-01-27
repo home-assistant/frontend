@@ -41,7 +41,7 @@ class OnboardingCoreConfig extends LitElement {
   @property() private _unitSystem!: ConfigUpdateValues["unit_system"];
   @property() private _timeZone!: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <p>
         ${this.onboardingLocalize(

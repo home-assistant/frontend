@@ -12,7 +12,7 @@ class HaBadgesCard extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public states?: HassEntity[];
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this.states) {
       return html``;
     }

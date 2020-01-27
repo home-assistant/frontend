@@ -27,7 +27,7 @@ class HuiSectionRow extends LitElement implements LovelaceRow {
     this._config = config;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config) {
       return html``;
     }

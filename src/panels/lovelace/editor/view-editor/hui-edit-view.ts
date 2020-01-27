@@ -103,7 +103,7 @@ export class HuiEditView extends LitElement {
     );
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     let content;
     switch (this._curTab) {
       case "tab-settings":

@@ -39,7 +39,7 @@ class MoreInfoClimate extends LitElement {
   @property() public stateObj?: ClimateEntity;
   private _resizeDebounce?: number;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.stateObj) {
       return html``;
     }

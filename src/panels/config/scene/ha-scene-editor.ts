@@ -146,9 +146,9 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
-      return;
+      return html``;
     }
     const { devices, entities } = this._getEntitiesDevices(
       this._entities,

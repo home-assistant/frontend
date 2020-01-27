@@ -63,7 +63,7 @@ class HaPanelProfile extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <app-header-layout has-scrolling-region>
         <app-header slot="header" fixed>

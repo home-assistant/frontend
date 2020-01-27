@@ -14,7 +14,7 @@ import "../../../components/ha-icon";
 export class HuiWarningElement extends LitElement {
   @property() public label?: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-icon icon="hass:alert" .title="${this.label}"></ha-icon>
     `;
