@@ -36,7 +36,7 @@ class StepFlowCreateEntry extends LitElement {
   @property()
   public devices!: DeviceRegistryEntry[];
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const localize = this.hass.localize;
 
     return html`

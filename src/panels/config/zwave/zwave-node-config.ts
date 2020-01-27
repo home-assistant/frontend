@@ -37,7 +37,7 @@ export class ZwaveNodeConfig extends LitElement {
   @property() private _selectedConfigParameter: number = -1;
   @property() private _selectedConfigValue: number | string = -1;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div class="content">
         <ha-card

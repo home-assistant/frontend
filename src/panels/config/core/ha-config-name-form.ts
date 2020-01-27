@@ -24,7 +24,7 @@ class ConfigNameForm extends LitElement {
 
   @property() private _name!: ConfigUpdateValues["location_name"];
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const canEdit = ["storage", "default"].includes(
       this.hass.config.config_source
     );

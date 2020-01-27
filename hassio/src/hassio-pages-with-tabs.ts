@@ -41,7 +41,7 @@ class HassioPagesWithTabs extends LitElement {
   @property() public hassInfo!: HassioHomeAssistantInfo;
   @property() public hassOsInfo!: HassioHassOSInfo;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const page = this._page;
     return html`
       <app-header-layout has-scrolling-region>

@@ -116,7 +116,7 @@ class DataEntryFlowDialog extends LitElement {
     this._scheduleCenterDialog();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }

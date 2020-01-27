@@ -34,7 +34,7 @@ class DialogZHADeviceInfo extends LitElement {
     this._dialog.open();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._params || !this._device) {
       return html``;
     }

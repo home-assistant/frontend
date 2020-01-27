@@ -22,7 +22,7 @@ class HcLovelace extends LitElement {
 
   @property() public viewPath?: string | number;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const index = this._viewIndex;
     if (index === undefined) {
       return html`

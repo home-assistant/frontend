@@ -19,7 +19,7 @@ export class HuiConfiguratorNotificationItem extends LitElement {
 
   @property() public notification?: PersitentNotificationEntity;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this.notification) {
       return html``;
     }

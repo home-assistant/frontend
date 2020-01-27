@@ -26,7 +26,7 @@ export class ZwaveValues extends LitElement {
   @property() public values: ZWaveValue[] = [];
   @property() private _selectedValue: number = -1;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div class="content">
         <ha-card

@@ -32,7 +32,7 @@ class HaScriptPicker extends LitElement {
   @property() public scripts!: HassEntity[];
   @property() public isWide!: boolean;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <hass-subpage
         .showBackButton=${!this.isWide}

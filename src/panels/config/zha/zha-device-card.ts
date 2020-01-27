@@ -139,7 +139,7 @@ class ZHADeviceCard extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-card header="${this.showName ? this.device!.name : ""}">
         ${

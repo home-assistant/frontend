@@ -33,7 +33,7 @@ class HaSceneDashboard extends LitElement {
   @property() public isWide!: boolean;
   @property() public scenes!: SceneEntity[];
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <hass-subpage
         .showBackButton=${!this.isWide}

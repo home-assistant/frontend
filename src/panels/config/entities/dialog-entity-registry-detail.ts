@@ -46,7 +46,7 @@ export class DialogEntityRegistryDetail extends LitElement {
     this._params = undefined;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }

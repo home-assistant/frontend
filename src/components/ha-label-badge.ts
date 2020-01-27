@@ -17,7 +17,7 @@ class HaLabelBadge extends LitElement {
   @property() public description?: string;
   @property() public image?: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div class="badge-container">
         <div class="label-badge" id="badge">

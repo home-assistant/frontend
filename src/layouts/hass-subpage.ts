@@ -20,7 +20,7 @@ class HassSubpage extends LitElement {
   @property({ type: Boolean })
   public hassio = false;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div class="toolbar">
         <ha-paper-icon-button-arrow-prev

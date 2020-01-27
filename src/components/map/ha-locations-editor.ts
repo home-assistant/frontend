@@ -90,7 +90,7 @@ export class HaLocationsEditor extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div id="map"></div>
     `;

@@ -39,7 +39,7 @@ class HaAutomationPicker extends LitElement {
   @property() public isWide!: boolean;
   @property() public automations!: AutomationEntity[];
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <hass-subpage
         .showBackButton=${!this.isWide}

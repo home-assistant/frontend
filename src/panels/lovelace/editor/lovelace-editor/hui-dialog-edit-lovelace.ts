@@ -52,7 +52,7 @@ export class HuiDialogEditLovelace extends LitElement {
     return this.shadowRoot!.querySelector("ha-paper-dialog")!;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-paper-dialog with-backdrop modal>
         <h2>

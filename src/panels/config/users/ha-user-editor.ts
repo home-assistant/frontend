@@ -43,7 +43,7 @@ class HaUserEditor extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public user?: User;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const hass = this.hass;
     const user = this.user;
     if (!hass || !user) {

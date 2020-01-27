@@ -40,7 +40,7 @@ class StepFlowForm extends LitElement {
   @property()
   private _errorMsg?: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const step = this.step;
     const stepData = this._stepDataProcessed;
 

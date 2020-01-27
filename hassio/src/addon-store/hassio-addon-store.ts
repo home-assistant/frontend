@@ -48,7 +48,7 @@ class HassioAddonStore extends LitElement {
     await this._loadData();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._addons || !this._repos) {
       return html`
         <loading-screen></loading-screen>

@@ -23,7 +23,7 @@ class HassioIngressView extends LitElement {
   @property() public route!: Route;
   @property() private _addon?: HassioAddonDetails;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._addon) {
       return html`
         <hass-loading-screen></hass-loading-screen>
