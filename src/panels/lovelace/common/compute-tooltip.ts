@@ -1,9 +1,8 @@
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { HomeAssistant } from "../../../types";
-import { LovelaceElementConfig } from "../elements/types";
 import { ActionConfig } from "../../../data/lovelace";
 
-interface Config extends LovelaceElementConfig {
+interface Config {
   entity?: string;
   title?: string;
   tap_action?: ActionConfig;
@@ -28,6 +27,10 @@ export const computeTooltip = (hass: HomeAssistant, config: Config): string => {
       config.entity in hass.states
         ? computeStateName(hass.states[config.entity])
         : config.entity;
+  }
+
+  if (!config.tap_action && !config.hold_action) {
+    return stateName;
   }
 
   const tapTooltip = config.tap_action
