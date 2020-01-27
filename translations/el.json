@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Εκτέλεση"
             },
+            "service": {
+                "run": "Εκτέλεση"
+            },
             "timer": {
                 "actions": {
                     "cancel": "Ακύρωση",
@@ -585,6 +588,14 @@
             },
             "domain_toggler": {
                 "title": "Εναλλαγή τομέων"
+            },
+            "entity_registry": {
+                "editor": {
+                    "enabled_cause": "Απενεργοποιήθηκε από  {cause}.",
+                    "enabled_label": "Ενεργοποίηση οντότητας",
+                    "entity_id": "Αναγνωριστικό οντότητας",
+                    "unavailable": "Αυτή η οντότητα δεν είναι προς το παρόν διαθέσιμη."
+                }
             },
             "more_info_control": {
                 "dismiss": "Κλείσιμο διαλόγου.",

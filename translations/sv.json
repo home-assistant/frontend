@@ -936,6 +936,7 @@
                             "link_learn_how_it_works": "Lär dig hur det fungerar"
                         },
                         "sign_out": "Logga ut",
+                        "thank_you_note": "Tack för att du är en del av Home Assistant Cloud. Det är tack vare personer som dig som vi kan göra en fantastisk hemautomationsupplevelse för alla. Tack!",
                         "webhooks": {
                             "loading": "Laddar...",
                             "title": ""
@@ -972,7 +973,7 @@
                         "alert_password_change_required": "Du måste ändra ditt lösenord innan du loggar in.",
                         "email": "E-postadress",
                         "forgot_password": "glömt lösenordet?",
-                        "introduction": "Home Assistant Cloud ger dig en säker koppling till din installation när du befinner dig hemifrån. Det låter dig också ansluta till tjänster ned enbart molnstöd: Amazon Alexa och Google Assistant.",
+                        "introduction": "Home Assistant Cloud ger dig en säker koppling till din installation när du befinner dig hemifrån. Det låter dig också ansluta till tjänster med enbart molnstöd: Amazon Alexa och Google Assistant.",
                         "introduction2": "Denna tjänst drivs av vår partner ",
                         "introduction2a": ", ett företag grundat av grundarna av Home Assistant och Hass.io.",
                         "introduction3": "Home Assistant Cloud är en prenumerationstjänst med en kostnadsfri testperiod på en månad. Ingen betalningsinformation behövs.",

@@ -610,6 +610,11 @@
                 "related": "Relaterte",
                 "settings": "Innstillinger"
             },
+            "generic": {
+                "cancel": "Avbryt",
+                "default_confirmation_title": "Er du sikker?",
+                "ok": "OK"
+            },
             "more_info_control": {
                 "dismiss": "Avvis dialogboksen",
                 "edit": "Rediger enhet",
