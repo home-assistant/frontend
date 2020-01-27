@@ -618,6 +618,11 @@
                 "related": "Зависимости",
                 "settings": "Настройки"
             },
+            "generic": {
+                "cancel": "Отмена",
+                "default_confirmation_title": "Вы уверены?",
+                "ok": "Да"
+            },
             "more_info_control": {
                 "dismiss": "Закрыть диалог",
                 "edit": "Изменить объект",

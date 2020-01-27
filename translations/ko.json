@@ -478,6 +478,9 @@
             "script": {
                 "execute": "실행"
             },
+            "service": {
+                "run": "실행"
+            },
             "timer": {
                 "actions": {
                     "cancel": "취소",
@@ -557,6 +560,12 @@
                 "loading_history": "상태 기록 내용 읽는 중...",
                 "no_history_found": "상태 기록 내용이 없습니다."
             },
+            "related-items": {
+                "area": "영역",
+                "device": "기기",
+                "entity": "관련된 구성요소",
+                "integration": "통합 구성요소"
+            },
             "relative_time": {
                 "duration": {
                     "day": "{count} {count, plural,\none {일}\nother {일}\n}",
@@ -587,6 +596,29 @@
             "domain_toggler": {
                 "title": "도메인 토글"
             },
+            "entity_registry": {
+                "control": "제어하기",
+                "dismiss": "해제",
+                "editor": {
+                    "confirm_delete": "이 구성요소를 제거하시겠습니까?",
+                    "delete": "삭제",
+                    "enabled_cause": "{cause} 에 의해 비활성화 되었습니다.",
+                    "enabled_description": "비활성화 된 구성요소는 Home Assistant 에 추가되지 않습니다.",
+                    "enabled_label": "구성요소 활성화",
+                    "entity_id": "구성요소 ID",
+                    "name": "대체 이름",
+                    "note": "참고 : 아직 모든 통합 구성요소에 적용되지 않을 수 있습니다.",
+                    "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
+                    "update": "업데이트"
+                },
+                "related": "관련된",
+                "settings": "설정"
+            },
+            "generic": {
+                "cancel": "취소",
+                "default_confirmation_title": "다시 한번 확인해주세요",
+                "ok": "확인"
+            },
             "more_info_control": {
                 "dismiss": "대화창 닫기",
                 "edit": "구성요소 편집",
@@ -598,7 +630,8 @@
                     "remove_intro": "구성요소를 더 이상 사용하지 않는 경우, 이를 제거하여 정리할 수 있습니다."
                 },
                 "script": {
-                    "last_action": "최근 동작"
+                    "last_action": "최근 동작",
+                    "last_triggered": "최근 트리거 됨"
                 },
                 "settings": "구성요소 설정내용",
                 "sun": {
@@ -1212,6 +1245,8 @@
                         "enabled_cause": "{cause} 에 의해 비활성화 되었습니다.",
                         "enabled_description": "비활성화 된 구성요소는 Home Assistant 에 추가되지 않습니다.",
                         "enabled_label": "구성요소 활성화",
+                        "entity_id": "구성요소 ID",
+                        "name": "대체 이름",
                         "note": "참고 : 아직 모든 통합 구성요소에 적용되지 않을 수 있습니다.",
                         "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
                         "update": "업데이트"
@@ -1422,8 +1457,10 @@
                             "group": "그룹 새로고침",
                             "heading": "구성 내용 새로고침",
                             "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어들일 수 있습니다. 새로고침을 누르면 현재 구성 내용을 내리고 새로운 구성 내용을 읽어들입니다.",
+                            "person": "구성원 새로고침",
                             "scene": "씬 다시읽기",
-                            "script": "스크립트 새로고침"
+                            "script": "스크립트 새로고침",
+                            "zone": "구역 새로고침"
                         },
                         "server_management": {
                             "confirm_restart": "Home Assistant 를 재시작하시겠습니까?",
@@ -1583,6 +1620,31 @@
                         "updateDeviceName": "이 기기의 사용자 정의 이름을 기기 레지스트리에 설정합니다."
                     },
                     "title": "Zigbee 홈 자동화"
+                },
+                "zone": {
+                    "add_zone": "구역 추가",
+                    "caption": "구역들",
+                    "configured_in_yaml": "configuration.yaml 에서 구성된 구역은 UI 에서 편집 할 수 없습니다.",
+                    "confirm_delete": "이 구역을 삭제하시겠습니까?",
+                    "create_zone": "구역 만들기",
+                    "description": "구성원을 추적하려는 구역을 관리하세요.",
+                    "detail": {
+                        "create": "만들기",
+                        "delete": "삭제",
+                        "icon": "아이콘",
+                        "icon_error_msg": "아이콘은 접두사:아이콘이름 형식이어야합니다, 예: mdi:home",
+                        "latitude": "위도",
+                        "longitude": "경도",
+                        "name": "이름",
+                        "new_zone": "새로운 구역",
+                        "passive": "자동화 전용",
+                        "passive_note": "자동화 전용은 프런트엔드에 숨겨져 있으며 추적 기기의 위치로 사용되지 않습니다. 자동화에 사용하려는 경우에 유용합니다.",
+                        "radius": "반경",
+                        "required_error_msg": "이 필드는 필수 요소입니다",
+                        "update": "업데이트"
+                    },
+                    "edit_home_zone": "집의 위치는 일반 설정에서 변경할 수 있습니다.",
+                    "no_zones_created_yet": "아직 생성된 구역이 없는 것 같습니다."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -2203,6 +2265,7 @@
                     "description": "Home Assistant 의 고급 기능과 옵션은 기본적으로 숨겨져 있으며 토글을 활성화하여 이러한 기능을 사용하실 수 있습니다. 이 설정은 사용자별 설정이며 Home Assistant 를 사용하는 다른 사용자에게 영향을 미치지 않습니다.",
                     "hint_enable": "구성 옵션이 보이지 않으신가요? 고급 모드를 사용해보세요",
                     "link_profile_page": "프로필 페이지",
+                    "link_promo": "더 알아보기",
                     "title": "고급 모드"
                 },
                 "change_password": {
