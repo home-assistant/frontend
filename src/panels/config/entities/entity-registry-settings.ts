@@ -1,32 +1,29 @@
+import "@polymer/paper-input/paper-input";
+import { HassEntity } from "home-assistant-js-websocket";
 import {
-  LitElement,
-  html,
   css,
   CSSResult,
-  TemplateResult,
-  property,
   customElement,
+  html,
+  LitElement,
+  property,
   PropertyValues,
+  TemplateResult,
 } from "lit-element";
-import "@polymer/paper-input/paper-input";
-
-import "../../../components/ha-switch";
-
-import { PolymerChangedEvent } from "../../../polymer-types";
-import { HomeAssistant } from "../../../types";
-import { HassEntity } from "home-assistant-js-websocket";
-// tslint:disable-next-line: no-duplicate-imports
-import { HaSwitch } from "../../../components/ha-switch";
-
+import { fireEvent } from "../../../common/dom/fire_event";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import "../../../components/ha-switch";
+// tslint:disable-next-line: no-duplicate-imports
+import { HaSwitch } from "../../../components/ha-switch";
 import {
-  updateEntityRegistryEntry,
-  removeEntityRegistryEntry,
   EntityRegistryEntry,
+  removeEntityRegistryEntry,
+  updateEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import { fireEvent } from "../../../common/dom/fire_event";
+import { PolymerChangedEvent } from "../../../polymer-types";
+import { HomeAssistant } from "../../../types";
 
 @customElement("entity-registry-settings")
 export class EntityRegistrySettings extends LitElement {
