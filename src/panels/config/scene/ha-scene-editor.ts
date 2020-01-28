@@ -39,6 +39,7 @@ import {
   SceneEntities,
   applyScene,
   activateScene,
+  getSceneEditorInitData,
 } from "../../../data/scene";
 import { fireEvent } from "../../../common/dom/fire_event";
 import {
@@ -391,6 +392,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
     super.updated(changedProps);
 
     const oldscene = changedProps.get("scene") as SceneEntity;
+
     if (
       changedProps.has("scene") &&
       this.scene &&
@@ -403,10 +405,16 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
 
     if (changedProps.has("creatingNew") && this.creatingNew && this.hass) {
       this._dirty = false;
+      const initData = getSceneEditorInitData();
       this._config = {
         name: this.hass.localize("ui.panel.config.scene.editor.default_name"),
         entities: {},
+        ...initData,
       };
+      if (initData) {
+        this._initEntities(this._config);
+        this._dirty = true;
+      }
     }
 
     if (changedProps.has("_entityRegistryEntries")) {
@@ -458,24 +466,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
       config.entities = {};
     }
 
-    this._entities = Object.keys(config.entities);
-
-    this._entities.forEach((entity) => {
-      this._storeState(entity);
-    });
-
-    const filteredEntityReg = this._entityRegistryEntries.filter((entityReg) =>
-      this._entities.includes(entityReg.entity_id)
-    );
-
-    for (const entityReg of filteredEntityReg) {
-      if (!entityReg.device_id) {
-        continue;
-      }
-      if (!this._devices.includes(entityReg.device_id)) {
-        this._devices = [...this._devices, entityReg.device_id];
-      }
-    }
+    this._initEntities(config);
 
     const { context } = await activateScene(this.hass, this.scene!.entity_id);
 
@@ -487,6 +478,29 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
 
     this._dirty = false;
     this._config = config;
+  }
+
+  private _initEntities(config: SceneConfig) {
+    console.log("Scene config", config);
+    this._entities = Object.keys(config.entities);
+    this._entities.forEach((entity) => this._storeState(entity));
+
+    console.log(this._entityRegistryEntries);
+
+    const filteredEntityReg = this._entityRegistryEntries.filter((entityReg) =>
+      this._entities.includes(entityReg.entity_id)
+    );
+    console.log(filteredEntityReg);
+    this._devices = [];
+
+    for (const entityReg of filteredEntityReg) {
+      if (!entityReg.device_id) {
+        continue;
+      }
+      if (!this._devices.includes(entityReg.device_id)) {
+        this._devices = [...this._devices, entityReg.device_id];
+      }
+    }
   }
 
   private _entityPicked(ev: CustomEvent) {
