@@ -12,7 +12,7 @@ import {
 } from "../../data/frontend";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { PolymerElement } from "@polymer/polymer";
-import { ConfigPageNavigation } from "./dashboard/ha-config-navigation";
+import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 
 declare global {
   // for fire event
@@ -21,34 +21,116 @@ declare global {
   }
 }
 
-export const configSections: ConfigPageNavigation[][] = [
+export const configSections: PageNavigation[][] = [
   [
-    { page: "integrations", icon: "hass:sitemap", core: true },
-    { page: "devices", icon: "hass:devices", core: true },
-    { page: "entities", icon: "hass:shape", core: true },
-    { page: "areas", icon: "hass:floor-plan", core: true },
-  ],
-  [
-    { page: "automation", icon: "hass:cogs" },
-    { page: "scene", icon: "hass:tune" },
-    { page: "script", icon: "hass:script-text" },
-  ],
-  [
-    { page: "person", icon: "hass:account" },
-    { page: "zone", icon: "hass:map-marker-radius", core: true },
-    { page: "users", icon: "hass:account-badge-horizontal", core: true },
-  ],
-  [
-    { page: "core", icon: "hass:home-assistant", core: true },
-    { page: "server_control", icon: "hass:server", core: true },
     {
-      page: "customize",
+      component: "integrations",
+      path: "/config/integrations",
+      translationKey: "ui.panel.config.integrations.caption",
+      icon: "hass:puzzle",
+      core: true,
+    },
+    {
+      component: "devices",
+      path: "/config/devices",
+      translationKey: "ui.panel.config.devices.caption",
+      icon: "hass:devices",
+      core: true,
+    },
+    {
+      component: "entities",
+      path: "/config/entities",
+      translationKey: "ui.panel.config.entities.caption",
+      icon: "hass:shape",
+      core: true,
+    },
+    {
+      component: "areas",
+      path: "/config/areas",
+      translationKey: "ui.panel.config.areas.caption",
+      icon: "hass:sofa",
+      core: true,
+    },
+  ],
+  [
+    {
+      component: "automation",
+      path: "/config/automation",
+      translationKey: "ui.panel.config.automation.caption",
+      icon: "hass:robot",
+    },
+    {
+      component: "scene",
+      path: "/config/scene",
+      translationKey: "ui.panel.config.scene.caption",
+      icon: "hass:palette",
+    },
+    {
+      component: "script",
+      path: "/config/script",
+      translationKey: "ui.panel.config.script.caption",
+      icon: "hass:script-text",
+    },
+  ],
+  [
+    {
+      component: "person",
+      path: "/config/person",
+      translationKey: "ui.panel.config.person.caption",
+      icon: "hass:account",
+    },
+    {
+      component: "zone",
+      path: "/config/zone",
+      translationKey: "ui.panel.config.zone.caption",
+      icon: "hass:map-marker-radius",
+      core: true,
+    },
+    {
+      component: "users",
+      path: "/config/users",
+      translationKey: "ui.panel.config.users.caption",
+      icon: "hass:account-badge-horizontal",
+      core: true,
+    },
+  ],
+  [
+    {
+      component: "core",
+      path: "/config/core",
+      translationKey: "ui.panel.config.core.caption",
+      icon: "hass:home-assistant",
+      core: true,
+    },
+    {
+      component: "server_control",
+      path: "/config/server_control",
+      translationKey: "ui.panel.config.server_control.caption",
+      icon: "hass:server",
+      core: true,
+    },
+    {
+      component: "customize",
+      path: "/config/customize",
+      translationKey: "ui.panel.config.customize.caption",
       icon: "hass:pencil",
       core: true,
-      advanced: true,
+      exportOnly: true,
     },
-    { page: "zha", icon: "hass:zigbee" },
-    { page: "zwave", icon: "hass:z-wave" },
+  ],
+  [
+    {
+      component: "zha",
+      path: "/config/zha",
+      translationKey: "ui.panel.config.zha.caption",
+      icon: "hass:zigbee",
+    },
+    {
+      component: "zwave",
+      path: "/config/zwave",
+      translationKey: "ui.panel.config.zwave.caption",
+      icon: "hass:z-wave",
+    },
   ],
 ];
 
@@ -230,6 +312,9 @@ class HaPanelConfig extends HassRouterPage {
     if (isComponentLoaded(this.hass, "cloud")) {
       this._updateCloudStatus();
     }
+    this.addEventListener("ha-refresh-cloud-status", () =>
+      this._updateCloudStatus()
+    );
     this.style.setProperty(
       "--app-header-background-color",
       "var(--sidebar-background-color)"
@@ -241,9 +326,6 @@ class HaPanelConfig extends HassRouterPage {
     this.style.setProperty(
       "--app-header-border-bottom",
       "1px solid var(--divider-color)"
-    );
-    this.addEventListener("ha-refresh-cloud-status", () =>
-      this._updateCloudStatus()
     );
   }
 

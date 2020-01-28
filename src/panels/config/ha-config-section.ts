@@ -1,16 +1,57 @@
-import { customElement } from "lit-element";
+import { customElement, LitElement, html, css, property } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 
 @customElement("ha-config-section")
-export class HaConfigSection extends HTMLElement {
-  constructor() {
-    super();
-    this.attachShadow({ mode: "open" });
-    this.shadowRoot!.innerHTML = `
-    <style>
+export class HaConfigSection extends LitElement {
+  @property() public isWide: boolean = false;
+
+  protected render() {
+    return html`
+      <div
+        class="content ${classMap({
+          narrow: !this.isWide,
+        })}"
+      >
+        <div class="header"><slot name="header"></slot></div>
+        <div
+          class="together layout ${classMap({
+            narrow: !this.isWide,
+            vertical: !this.isWide,
+            horizontal: this.isWide,
+          })}"
+        >
+          <div class="intro"><slot name="introduction"></slot></div>
+          <div class="panel flex-auto"><slot></slot></div>
+        </div>
+      </div>
+    `;
+  }
+
+  static get styles() {
+    return css`
+      :host {
+        display: block;
+      }
       .content {
         padding: 28px 20px 0;
-        max-width: 640px;
+        max-width: 1040px;
         margin: 0 auto;
+      }
+
+      .layout {
+        display: flex;
+      }
+
+      .horizontal {
+        flex-direction: row;
+      }
+
+      .vertical {
+        flex-direction: column;
+      }
+
+      .flex-auto {
+        flex: 1 1 auto;
       }
 
       .header {
@@ -26,7 +67,7 @@ export class HaConfigSection extends HTMLElement {
       }
 
       .together {
-        margin-top: 20px;
+        margin-top: 32px;
       }
 
       .intro {
@@ -37,8 +78,8 @@ export class HaConfigSection extends HTMLElement {
         font-weight: var(--paper-font-subhead_-_font-weight);
         line-height: var(--paper-font-subhead_-_line-height);
         width: 100%;
-        width: 100%;
-        max-width: 500px;
+        max-width: 400px;
+        margin-right: 40px;
         opacity: var(--dark-primary-opacity);
         font-size: 14px;
         padding-bottom: 20px;
@@ -52,14 +93,18 @@ export class HaConfigSection extends HTMLElement {
         margin-top: 24px;
         display: block;
       }
-    </style>
-    <div class="content">
-      <div class="header"><slot name="header"></slot></div>
-      <div class="together">
-        <div class="intro"><slot name="introduction"></slot></div>
-        <div class="panel"><slot></slot></div>
-      </div>
-    </div>
+
+      .narrow.content {
+        max-width: 640px;
+      }
+      .narrow .together {
+        margin-top: 20px;
+      }
+      .narrow .intro {
+        padding-bottom: 20px;
+        margin-right: 0;
+        max-width: 500px;
+      }
     `;
   }
 }

@@ -463,7 +463,7 @@ ${this.hass!.localize("ui.panel.config.zone.confirm_delete2")}`)
         right: 24px;
       }
       ha-fab[narrow] {
-        bottom: 76px;
+        bottom: 84px;
       }
     `;
   }

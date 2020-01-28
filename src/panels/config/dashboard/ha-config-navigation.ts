@@ -17,40 +17,41 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
-
-export interface ConfigPageNavigation {
-  page: string;
-  core?: boolean;
-  advanced?: boolean;
-  icon?: string;
-  info?: any;
-}
+import { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 
 @customElement("ha-config-navigation")
 class HaConfigNavigation extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public showAdvanced!: boolean;
-  @property() public pages!: ConfigPageNavigation[];
+  @property() public pages!: PageNavigation[];
 
   protected render(): TemplateResult {
     return html`
-      ${this.pages.map(({ page, core, advanced, info, icon }) =>
-        (core || isComponentLoaded(this.hass, page)) &&
-        (!advanced || this.showAdvanced)
+      ${this.pages.map((page) =>
+        (!page.component ||
+          page.core ||
+          isComponentLoaded(this.hass, page.component)) &&
+        (!page.exportOnly || this.showAdvanced)
           ? html`
-              <a href=${`/config/${page}`} aria-role="option" tabindex="-1">
+              <a
+                href=${`/config/${page.component}`}
+                aria-role="option"
+                tabindex="-1"
+              >
                 <paper-icon-item>
-                  <ha-icon .icon=${icon} slot="item-icon"></ha-icon>
+                  <ha-icon .icon=${page.icon} slot="item-icon"></ha-icon>
                   <paper-item-body two-line>
-                    ${this.hass.localize(`ui.panel.config.${page}.caption`)}
-                    ${page === "cloud" && (info as CloudStatus)
-                      ? info.logged_in
+                    ${this.hass.localize(
+                      `ui.panel.config.${page.component}.caption`
+                    )}
+                    ${page.component === "cloud" && (page.info as CloudStatus)
+                      ? page.info.logged_in
                         ? html`
                             <div secondary>
                               ${this.hass.localize(
                                 "ui.panel.config.cloud.description_login",
                                 "email",
-                                (info as CloudStatusLoggedIn).email
+                                (page.info as CloudStatusLoggedIn).email
                               )}
                             </div>
                           `
@@ -64,7 +65,7 @@ class HaConfigNavigation extends LitElement {
                       : html`
                           <div secondary>
                             ${this.hass.localize(
-                              `ui.panel.config.${page}.description`
+                              `ui.panel.config.${page.component}.description`
                             )}
                           </div>
                         `}
@@ -86,6 +87,10 @@ class HaConfigNavigation extends LitElement {
         position: relative;
         display: block;
         outline: 0;
+      }
+      ha-icon,
+      ha-icon-next {
+        color: var(--secondary-text-color);
       }
       .iron-selected paper-item::before,
       a:not(.iron-selected):focus::before {

@@ -42,7 +42,6 @@ class HaConfigDashboard extends LitElement {
               .hass=${this.hass}
               .narrow=${this.narrow}
             ></ha-menu-button>
-            <div main-title>${this.hass.localize("panel.config")}</div>
           </app-toolbar>
         </app-header>
 
@@ -63,7 +62,9 @@ class HaConfigDashboard extends LitElement {
                     .showAdvanced=${this.showAdvanced}
                     .pages=${[
                       {
-                        page: "cloud",
+                        component: "cloud",
+                        path: "/config/cloud",
+                        translationKey: "ui.panel.config.cloud.caption",
                         info: this.cloudStatus,
                         icon: "hass:cloud-lock",
                       },
@@ -83,14 +84,6 @@ class HaConfigDashboard extends LitElement {
               </ha-card>
             `
           )}
-          <ha-card>
-            <ha-config-navigation
-              .hass=${this.hass}
-              .showAdvanced=${this.showAdvanced}
-              .pages=${[{ page: "zha" }, { page: "zwave" }]}
-            ></ha-config-navigation>
-          </ha-card>
-
           ${!this.showAdvanced
             ? html`
                 <div class="promo-advanced">
@@ -115,11 +108,13 @@ class HaConfigDashboard extends LitElement {
       haStyle,
       css`
         app-header {
-          border-bottom: 1px solid var(--divider-color);
+          --app-header-background-color: var(--primary-background-color);
         }
-
         ha-config-navigation:last-child {
           margin-bottom: 24px;
+        }
+        ha-config-section {
+          margin-top: -20px;
         }
         ha-card {
           overflow: hidden;

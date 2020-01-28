@@ -229,7 +229,7 @@ class HaAutomationPicker extends LitElement {
           right: 24px;
         }
         ha-fab[narrow] {
-          bottom: 76px;
+          bottom: 84px;
         }
         ha-fab[rtl] {
           right: auto;

@@ -369,7 +369,7 @@ export class HaConfigManagerDashboard extends LitElement {
         z-index: 1;
       }
       ha-fab[narrow] {
-        bottom: 76px;
+        bottom: 84px;
       }
       ha-fab[rtl] {
         right: auto;

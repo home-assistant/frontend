@@ -43,7 +43,7 @@ class HaUserPicker extends EventsMixin(
           left: 16px;
         }
         ha-fab[narrow] {
-          bottom: 76px;
+          bottom: 84px;
         }
         ha-fab[rtl][is-wide] {
           bottom: 24px;

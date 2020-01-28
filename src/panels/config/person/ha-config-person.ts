@@ -239,7 +239,7 @@ ${this.hass!.localize("ui.panel.config.person.confirm_delete2")}`)
         z-index: 1;
       }
       ha-fab[narrow] {
-        bottom: 76px;
+        bottom: 84px;
       }
       ha-fab[is-wide] {
         bottom: 24px;

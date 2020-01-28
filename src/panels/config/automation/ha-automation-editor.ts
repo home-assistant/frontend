@@ -403,7 +403,7 @@ export class HaAutomationEditor extends LitElement {
           right: 24px;
         }
         ha-fab[narrow] {
-          bottom: 76px;
+          bottom: 84px;
           margin-bottom: -140px;
         }
         ha-fab[dirty] {
