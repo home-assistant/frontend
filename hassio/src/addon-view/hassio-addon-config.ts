@@ -11,6 +11,7 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import { classMap } from "lit-html/directives/class-map";
 
 import { HomeAssistant } from "../../../src/types";
 import {
@@ -29,6 +30,7 @@ class HassioAddonConfig extends LitElement {
   @property() public addon!: HassioAddonDetails;
   @property() private _error?: string;
   @property() private _config!: string;
+  @property({ type: Boolean }) private _syntaxError = false;
   @property({ type: Boolean }) private _configHasChanged = false;
 
   protected render(): TemplateResult {
@@ -41,6 +43,7 @@ class HassioAddonConfig extends LitElement {
               `
             : ""}
           <iron-autogrow-textarea
+            class=${classMap({ syntaxerror: this._syntaxError })}
             @value-changed=${this._configChanged}
             .value=${this._config}
           ></iron-autogrow-textarea>
@@ -51,7 +54,7 @@ class HassioAddonConfig extends LitElement {
           </mwc-button>
           <mwc-button
             @click=${this._saveTapped}
-            .disabled=${!this._configHasChanged}
+            .disabled=${this._syntaxError || !this._configHasChanged}
           >
             Save
           </mwc-button>
@@ -98,6 +101,14 @@ class HassioAddonConfig extends LitElement {
   }
 
   private _configChanged(ev: PolymerChangedEvent<string>): void {
+    try {
+      JSON.parse(ev.detail.value);
+      this._error = undefined;
+      this._syntaxError = false;
+    } catch (err) {
+      this._error = err;
+      this._syntaxError = true;
+    }
     this._config =
       ev.detail.value || JSON.stringify(this.addon.options, null, 2);
     this._configHasChanged =
@@ -106,6 +117,7 @@ class HassioAddonConfig extends LitElement {
 
   private async _resetTapped(): Promise<void> {
     this._error = undefined;
+    this._syntaxError = false;
     const data: HassioAddonSetOptionParams = {
       options: null,
     };
