@@ -538,6 +538,10 @@ class HassioAddonInfo extends LitElement {
         .light-color {
           color: var(--secondary-text-color);
         }
+        .addon-header {
+          font-size: 24px;
+          color: var(--paper-card-header-color, #000);
+        }
         .addon-version {
           float: right;
           font-size: 15px;
