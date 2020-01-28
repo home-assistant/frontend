@@ -544,10 +544,24 @@
             "yes": "Oui"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Ajouter",
+                    "failed_create_area": "Échec de la création de la zone.",
+                    "name": "Nom",
+                    "text": "Entrez le nom de la nouvelle zone.",
+                    "title": "Ajouter une zone"
+                },
+                "add_new": "Ajouter une zone...",
+                "area": "Zone",
+                "clear": "Effacer",
+                "show_areas": "Afficher les zones"
+            },
             "device-picker": {
                 "clear": "Effacer",
                 "device": "Appareil",
-                "show_devices": "Afficher les appareils"
+                "show_devices": "Afficher les appareils",
+                "toggle": "Permuter"
             },
             "entity": {
                 "entity-picker": {
@@ -610,6 +624,7 @@
                     "enabled_description": "Les entités désactivées ne seront pas ajoutées à Home Assistant.",
                     "enabled_label": "Activer l'entité",
                     "entity_id": "ID d'entité",
+                    "name": "Remplacement de nom",
                     "note": "Remarque: cela peut ne pas encore fonctionner avec toutes les intégrations.",
                     "unavailable": "Cette entité n'est pas disponible actuellement.",
                     "update": "MISE À JOUR"
@@ -1234,8 +1249,10 @@
                         "none": "Cet appareil n'a pas d'entités"
                     },
                     "info": "Infos sur l'appareil",
+                    "name": "Nom",
                     "unknown_error": "Erreur inconnue",
-                    "unnamed_device": "Appareil sans nom"
+                    "unnamed_device": "Appareil sans nom",
+                    "update": "Mettre à jour"
                 },
                 "entities": {
                     "caption": "Entités",
