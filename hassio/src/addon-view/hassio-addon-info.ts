@@ -95,7 +95,7 @@ class HassioAddonInfo extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
   @property() private _error?: string;
-  @property() private _installing?: boolean;
+  @property({ type: Boolean }) private _installing = false;
 
   protected render(): TemplateResult {
     return html`
