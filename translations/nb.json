@@ -544,10 +544,24 @@
             "yes": "Ja"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Legg til",
+                    "failed_create_area": "Kunne ikke opprette område.",
+                    "name": "Navn",
+                    "text": "Skriv inn navnet på det nye området.",
+                    "title": "Legg til nytt område"
+                },
+                "add_new": "Legg til nytt område ...",
+                "area": "Område",
+                "clear": "Tøm",
+                "show_areas": "Vis områder"
+            },
             "device-picker": {
                 "clear": "Tøm",
                 "device": "Enhet",
-                "show_devices": "Vis enheter"
+                "show_devices": "Vis enheter",
+                "toggle": "Veksle"
             },
             "entity": {
                 "entity-picker": {
@@ -604,7 +618,15 @@
                 "control": "Kontroll",
                 "dismiss": "Avvis",
                 "editor": {
+                    "confirm_delete": "Er du sikker på at du vil slette denne oppføringen?",
                     "delete": "SLETT",
+                    "enabled_cause": "Deaktivert av {cause}.",
+                    "enabled_description": "Deaktiverte entiteter vil ikke bli lagt til i Home Assistant.",
+                    "enabled_label": "Aktiver entitet",
+                    "entity_id": "Entitets-ID",
+                    "name": "Overstyr Navn",
+                    "note": "Merk: dette fungerer kanskje ikke ennå med alle integrasjoner.",
+                    "unavailable": "Denne entiteten er ikke tilgjengelig for øyeblikket.",
                     "update": "OPPDATER"
                 },
                 "related": "Relaterte",
@@ -1227,8 +1249,10 @@
                         "none": "Denne enheten har ingen enheter"
                     },
                     "info": "Enhetsinformasjon",
+                    "name": "Navn",
                     "unknown_error": "Ukjent feil",
-                    "unnamed_device": "Enhet uten navn"
+                    "unnamed_device": "Enhet uten navn",
+                    "update": "Oppdater"
                 },
                 "entities": {
                     "caption": "Entiteter",
@@ -1620,6 +1644,7 @@
                 "zone": {
                     "add_zone": "Legg til sone",
                     "caption": "Soner",
+                    "configured_in_yaml": "Soner som er konfigurert via configuration.yaml kan ikke redigeres via brukergrensesnittet.",
                     "confirm_delete": "Er du sikker på at du vil slette denne sonen?",
                     "create_zone": "Opprett sone",
                     "description": "Administrer sonene du vil spore personer i.",
@@ -1638,6 +1663,7 @@
                         "required_error_msg": "Dette feltet er påkrevd",
                         "update": "Oppdater"
                     },
+                    "edit_home_zone": "Plasseringen av hjemmet ditt kan endres i gerenal-konfigurasjonen.",
                     "introduction": "Med soner kan du angi bestemte områder på jorden. Når en person er innenfor en sone, vil staten ta navnet fra sonen. Soner kan også brukes som en utløser eller tilstand i automatiserings oppsett.",
                     "no_zones_created_yet": "Det ser ut til at du ikke har opprettet noen soner enda."
                 },
@@ -2257,7 +2283,7 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "description": "Home Assistant skjuler avanserte funksjoner og alternativer som standard. Du kan gjøre disse funksjonene tilgjengelige ved å merke av i denne veksleknappen. Dette er en brukerspesifikk innstilling som ikke påvirker andre brukere ved hjelp av Home Assistant.",
+                    "description": "Låser opp avanserte funksjoner.",
                     "hint_enable": "Manglende konfigurasjonsalternativer? Aktivér avansert modus",
                     "link_profile_page": "profilsiden din",
                     "link_promo": "Lær mer",
