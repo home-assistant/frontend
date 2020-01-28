@@ -1,6 +1,6 @@
 import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-icon-item";
 
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
@@ -17,70 +17,65 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
-
-export interface ConfigPageNavigation {
-  page: string;
-  core?: boolean;
-  advanced?: boolean;
-  info?: any;
-}
+import { PageNavigation } from "../../../layouts/hass-tabs-subpage";
 
 @customElement("ha-config-navigation")
 class HaConfigNavigation extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public showAdvanced!: boolean;
-  @property() public pages!: ConfigPageNavigation[];
-  @property() public curPage!: string;
+  @property() public pages!: PageNavigation[];
 
   protected render(): TemplateResult {
     return html`
-      <paper-listbox attr-for-selected="data-page" .selected=${this.curPage}>
-        ${this.pages.map(({ page, core, advanced, info }) =>
-          (core || isComponentLoaded(this.hass, page)) &&
-          (!advanced || this.showAdvanced)
-            ? html`
-                <a
-                  href=${`/config/${page}`}
-                  aria-role="option"
-                  data-page="${page}"
-                  tabindex="-1"
-                >
-                  <paper-item>
-                    <paper-item-body two-line>
-                      ${this.hass.localize(`ui.panel.config.${page}.caption`)}
-                      ${page === "cloud" && (info as CloudStatus)
-                        ? info.logged_in
-                          ? html`
-                              <div secondary>
-                                ${this.hass.localize(
-                                  "ui.panel.config.cloud.description_login",
-                                  "email",
-                                  (info as CloudStatusLoggedIn).email
-                                )}
-                              </div>
-                            `
-                          : html`
-                              <div secondary>
-                                ${this.hass.localize(
-                                  "ui.panel.config.cloud.description_features"
-                                )}
-                              </div>
-                            `
+      ${this.pages.map((page) =>
+        (!page.component ||
+          page.core ||
+          isComponentLoaded(this.hass, page.component)) &&
+        (!page.exportOnly || this.showAdvanced)
+          ? html`
+              <a
+                href=${`/config/${page.component}`}
+                aria-role="option"
+                tabindex="-1"
+              >
+                <paper-icon-item>
+                  <ha-icon .icon=${page.icon} slot="item-icon"></ha-icon>
+                  <paper-item-body two-line>
+                    ${this.hass.localize(
+                      `ui.panel.config.${page.component}.caption`
+                    )}
+                    ${page.component === "cloud" && (page.info as CloudStatus)
+                      ? page.info.logged_in
+                        ? html`
+                            <div secondary>
+                              ${this.hass.localize(
+                                "ui.panel.config.cloud.description_login",
+                                "email",
+                                (page.info as CloudStatusLoggedIn).email
+                              )}
+                            </div>
+                          `
                         : html`
                             <div secondary>
                               ${this.hass.localize(
-                                `ui.panel.config.${page}.description`
+                                "ui.panel.config.cloud.description_features"
                               )}
                             </div>
-                          `}
-                    </paper-item-body>
-                    <ha-icon-next></ha-icon-next>
-                  </paper-item>
-                </a>
-              `
-            : ""
-        )}
-      </paper-listbox>
+                          `
+                      : html`
+                          <div secondary>
+                            ${this.hass.localize(
+                              `ui.panel.config.${page.component}.description`
+                            )}
+                          </div>
+                        `}
+                  </paper-item-body>
+                  <ha-icon-next></ha-icon-next>
+                </paper-icon-item>
+              </a>
+            `
+          : ""
+      )}
     `;
   }
 
@@ -92,6 +87,10 @@ class HaConfigNavigation extends LitElement {
         position: relative;
         display: block;
         outline: 0;
+      }
+      ha-icon,
+      ha-icon-next {
+        color: var(--secondary-text-color);
       }
       .iron-selected paper-item::before,
       a:not(.iron-selected):focus::before {
@@ -105,10 +104,6 @@ class HaConfigNavigation extends LitElement {
         transition: opacity 15ms linear;
         will-change: opacity;
       }
-      .iron-selected paper-item::before {
-        background-color: var(--sidebar-selected-icon-color);
-        opacity: 0.12;
-      }
       a:not(.iron-selected):focus::before {
         background-color: currentColor;
         opacity: var(--dark-divider-opacity);
@@ -116,12 +111,6 @@ class HaConfigNavigation extends LitElement {
       .iron-selected paper-item:focus::before,
       .iron-selected:focus paper-item::before {
         opacity: 0.2;
-      }
-      .iron-selected paper-item[pressed]::before {
-        opacity: 0.37;
-      }
-      paper-listbox {
-        padding: 0;
       }
     `;
   }

@@ -50,6 +50,11 @@ class HassLoadingScreen extends LitElement {
     return [
       haStyle,
       css`
+        :host {
+          display: block;
+          height: 100%;
+          background-color: var(--primary-background-color);
+        }
         .content {
           height: calc(100% - 64px);
           display: flex;

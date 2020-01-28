@@ -3,7 +3,7 @@ import "@polymer/paper-item/paper-item-body";
 import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
-import "../../../layouts/hass-subpage";
+import "../../../layouts/hass-tabs-subpage";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
@@ -13,6 +13,7 @@ import NavigateMixin from "../../../mixins/navigate-mixin";
 import { EventsMixin } from "../../../mixins/events-mixin";
 
 import { computeRTL } from "../../../common/util/compute_rtl";
+import { configSections } from "../ha-panel-config";
 
 let registeredDialog = false;
 
@@ -41,6 +42,9 @@ class HaUserPicker extends EventsMixin(
           right: auto;
           left: 16px;
         }
+        ha-fab[narrow] {
+          bottom: 84px;
+        }
         ha-fab[rtl][is-wide] {
           bottom: 24px;
           right: auto;
@@ -58,9 +62,12 @@ class HaUserPicker extends EventsMixin(
         }
       </style>
 
-      <hass-subpage
-        header="[[localize('ui.panel.config.users.picker.title')]]"
-        show-back-button="[[!isWide]]"
+      <hass-tabs-subpage
+        hass="[[hass]]"
+        narrow="[[narrow]]"
+        route="[[route]]"
+        back-path="/config"
+        tabs="[[_computeTabs()]]"
       >
         <ha-card>
           <template is="dom-repeat" items="[[users]]" as="user">
@@ -84,12 +91,13 @@ class HaUserPicker extends EventsMixin(
 
         <ha-fab
           is-wide$="[[isWide]]"
+          narrow$="[[narrow]]"
           icon="hass:plus"
           title="[[localize('ui.panel.config.users.picker.add_user')]]"
           on-click="_addUser"
           rtl$="[[rtl]]"
         ></ha-fab>
-      </hass-subpage>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -98,6 +106,8 @@ class HaUserPicker extends EventsMixin(
       hass: Object,
       users: Array,
       isWide: Boolean,
+      narrow: Boolean,
+      route: Object,
       rtl: {
         type: Boolean,
         reflectToAttribute: true,
@@ -136,6 +146,10 @@ class HaUserPicker extends EventsMixin(
 
   _computeRTL(hass) {
     return computeRTL(hass);
+  }
+
+  _computeTabs() {
+    return configSections.persons;
   }
 
   _addUser() {
