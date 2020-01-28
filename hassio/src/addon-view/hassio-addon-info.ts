@@ -565,6 +565,7 @@ class HassioAddonInfo extends LitElement {
         }
         .state iron-icon {
           width: 16px;
+          height: 16px;
           color: var(--secondary-text-color);
         }
         ha-switch {
