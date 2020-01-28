@@ -54,6 +54,7 @@ class HaConfigScene extends HassRouterPage {
     pageEl.hass = this.hass;
     pageEl.narrow = this.narrow;
     pageEl.isWide = this.isWide;
+    pageEl.route = this.routeTail;
     pageEl.showAdvanced = this.showAdvanced;
 
     if (this.hass) {

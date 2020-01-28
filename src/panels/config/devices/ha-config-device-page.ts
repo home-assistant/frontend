@@ -9,7 +9,7 @@ import {
 
 import memoizeOne from "memoize-one";
 
-import "../../../layouts/hass-subpage";
+import "../../../layouts/hass-tabs-subpage";
 import "../../../layouts/hass-error-screen";
 import "../ha-config-section";
 
@@ -18,7 +18,7 @@ import "./device-detail/ha-device-triggers-card";
 import "./device-detail/ha-device-conditions-card";
 import "./device-detail/ha-device-actions-card";
 import "./device-detail/ha-device-entities-card";
-import { HomeAssistant } from "../../../types";
+import { HomeAssistant, Route } from "../../../types";
 import { ConfigEntry } from "../../../data/config_entries";
 import {
   EntityRegistryEntry,
@@ -45,6 +45,7 @@ import {
 import { compare } from "../../../common/string/compare";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { createValidEntityId } from "../../../common/entity/valid_entity_id";
+import { configSections } from "../ha-panel-config";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string;
@@ -60,6 +61,7 @@ export class HaConfigDevicePage extends LitElement {
   @property() public deviceId!: string;
   @property() public narrow!: boolean;
   @property() public showAdvanced!: boolean;
+  @property() public route!: Route;
   @property() private _triggers: DeviceTrigger[] = [];
   @property() private _conditions: DeviceCondition[] = [];
   @property() private _actions: DeviceAction[] = [];
@@ -133,7 +135,12 @@ export class HaConfigDevicePage extends LitElement {
     const entities = this._entities(this.deviceId, this.entities);
 
     return html`
-      <hass-subpage .header=${device.name_by_user || device.name}>
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .tabs=${configSections.integrations}
+        .route=${this.route}
+      >
         <paper-icon-button
           slot="toolbar-icon"
           icon="hass:settings"
@@ -201,7 +208,7 @@ export class HaConfigDevicePage extends LitElement {
               `
             : html``}
         </ha-config-section>
-      </hass-subpage>
+      </hass-tabs-subpage>
     `;
   }
 

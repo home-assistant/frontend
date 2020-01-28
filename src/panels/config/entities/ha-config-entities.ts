@@ -1,59 +1,59 @@
-import {
-  LitElement,
-  TemplateResult,
-  html,
-  css,
-  CSSResult,
-  property,
-  query,
-  customElement,
-} from "lit-element";
-import { styleMap } from "lit-html/directives/style-map";
-
 import "@polymer/paper-checkbox/paper-checkbox";
 import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
-
-import { HomeAssistant } from "../../../types";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
-  EntityRegistryEntry,
-  computeEntityRegistryName,
-  subscribeEntityRegistry,
-  removeEntityRegistryEntry,
-  updateEntityRegistryEntry,
-} from "../../../data/entity_registry";
-import "../../../layouts/hass-subpage";
-import "../../../layouts/hass-loading-screen";
-import "../../../components/data-table/ha-data-table";
-import "../../../components/ha-icon";
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  query,
+  TemplateResult,
+} from "lit-element";
+import { styleMap } from "lit-html/directives/style-map";
+import memoize from "memoize-one";
+import { computeDomain } from "../../../common/entity/compute_domain";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { stateIcon } from "../../../common/entity/state_icon";
-import { computeDomain } from "../../../common/entity/compute_domain";
-import {
-  showEntityRegistryDetailDialog,
-  loadEntityRegistryDetailDialog,
-} from "./show-dialog-entity-registry-detail";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
-import memoize from "memoize-one";
+import "../../../components/data-table/ha-data-table";
 // tslint:disable-next-line
 import {
   DataTableColumnContainer,
+  DataTableColumnData,
+  HaDataTable,
   RowClickedEvent,
   SelectionChangedEvent,
-  HaDataTable,
-  DataTableColumnData,
 } from "../../../components/data-table/ha-data-table";
+import "../../../components/ha-icon";
+import {
+  computeEntityRegistryName,
+  EntityRegistryEntry,
+  removeEntityRegistryEntry,
+  subscribeEntityRegistry,
+  updateEntityRegistryEntry,
+} from "../../../data/entity_registry";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import "../../../layouts/hass-loading-screen";
+import "../../../layouts/hass-tabs-subpage";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
+import { HomeAssistant, Route } from "../../../types";
 import { DialogEntityRegistryDetail } from "./dialog-entity-registry-detail";
+import {
+  loadEntityRegistryDetailDialog,
+  showEntityRegistryDetailDialog,
+} from "./show-dialog-entity-registry-detail";
+import { configSections } from "../ha-panel-config";
 
 @customElement("ha-config-entities")
 export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
   @property() public isWide!: boolean;
   @property() public narrow!: boolean;
+  @property() public route!: Route;
   @property() private _entities?: EntityRegistryEntry[];
   @property() private _showDisabled = false;
   @property() private _showUnavailable = true;
@@ -224,9 +224,12 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       `;
     }
     return html`
-      <hass-subpage
-        .header="${this.hass.localize("ui.panel.config.entities.caption")}"
-        .showBackButton=${!this.isWide}
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config"
+        .route=${this.route}
+        .tabs=${configSections.integrations}
       >
         <div class="content">
           <div class="intro">
@@ -367,7 +370,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
             </div>
           </ha-data-table>
         </div>
-      </hass-subpage>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -490,6 +493,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   static get styles(): CSSResult {
     return css`
+      hass-loading-screen {
+        --app-header-background-color: var(--sidebar-background-color);
+        --app-header-text-color: var(--sidebar-text-color);
+      }
       a {
         color: var(--primary-color);
       }

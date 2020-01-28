@@ -33,6 +33,8 @@ class HaConfigAutomation extends PolymerElement {
           hass="[[hass]]"
           automations="[[automations]]"
           is-wide="[[isWide]]"
+          narrow="[[narrow]]"
+          route="[[route]]"
         ></ha-automation-picker>
       </template>
 
@@ -41,6 +43,8 @@ class HaConfigAutomation extends PolymerElement {
           hass="[[hass]]"
           automation="[[automation]]"
           is-wide="[[isWide]]"
+          narrow="[[narrow]]"
+          route="[[route]]"
           creating-new="[[_creatingNew]]"
         ></ha-automation-editor>
       </template>
@@ -52,6 +56,7 @@ class HaConfigAutomation extends PolymerElement {
       hass: Object,
       route: Object,
       isWide: Boolean,
+      narrow: Boolean,
       _routeData: Object,
       _routeMatches: Boolean,
       _creatingNew: Boolean,
