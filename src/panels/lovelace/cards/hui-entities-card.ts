@@ -39,11 +39,11 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     return { entities: [] };
   }
 
-  @property() protected _config?: EntitiesCardConfig;
+  @property() private _config?: EntitiesCardConfig;
 
-  protected _hass?: HomeAssistant;
+  private _hass?: HomeAssistant;
 
-  protected _configEntities?: EntitiesCardEntityConfig[];
+  private _configEntities?: EntitiesCardEntityConfig[];
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
