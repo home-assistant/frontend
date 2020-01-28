@@ -557,7 +557,7 @@ class HassioAddonInfo extends LitElement {
         }
         .state {
           display: flex;
-          margin: 8px 0;
+          margin: 33px 0;
         }
         .state div {
           width: 180px;
@@ -568,7 +568,7 @@ class HassioAddonInfo extends LitElement {
           color: var(--secondary-text-color);
         }
         ha-switch {
-          display: inline;
+          display: flex;
         }
         iron-icon.running {
           color: var(--paper-green-400);
