@@ -544,10 +544,24 @@
             "yes": "Ja"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Tilføj",
+                    "failed_create_area": "Området kunne ikke oprettes.",
+                    "name": "Navn",
+                    "text": "Angiv navnet på det nye område.",
+                    "title": "Tilføj nyt område"
+                },
+                "add_new": "Tilføj nyt område...",
+                "area": "Område",
+                "clear": "Ryd",
+                "show_areas": "Vis områder"
+            },
             "device-picker": {
                 "clear": "Ryd",
                 "device": "Enhed",
-                "show_devices": "Vis enheder"
+                "show_devices": "Vis enheder",
+                "toggle": "Til/fra"
             },
             "entity": {
                 "entity-picker": {
@@ -1235,8 +1249,10 @@
                         "none": "Denne enhed har ingen entiteter"
                     },
                     "info": "Oplysninger om enhed",
+                    "name": "Navn",
                     "unknown_error": "Ukendt fejl",
-                    "unnamed_device": "Enhed uden navn"
+                    "unnamed_device": "Enhed uden navn",
+                    "update": "Opdater"
                 },
                 "entities": {
                     "caption": "Entiteter",

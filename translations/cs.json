@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Vykonat"
             },
+            "service": {
+                "run": "Spustit"
+            },
             "timer": {
                 "actions": {
                     "cancel": "Zrušit",
@@ -541,10 +544,24 @@
             "yes": "Ano"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Přidat",
+                    "failed_create_area": "Nepodařilo se vytvořit oblast.",
+                    "name": "Jméno",
+                    "text": "Zadejte název nové oblasti.",
+                    "title": "Přidat novou oblast"
+                },
+                "add_new": "Přidat novou oblast ...",
+                "area": "Oblast",
+                "clear": "Vymazat",
+                "show_areas": "Zobrazit oblasti"
+            },
             "device-picker": {
                 "clear": "Zrušit",
                 "device": "Zařízení",
-                "show_devices": "Zobrazit zařízení"
+                "show_devices": "Zobrazit zařízení",
+                "toggle": "Přepnout"
             },
             "entity": {
                 "entity-picker": {
@@ -556,6 +573,16 @@
             "history_charts": {
                 "loading_history": "Historie stavu se načítá...",
                 "no_history_found": "Historie stavu chybí."
+            },
+            "related-items": {
+                "area": "Oblast",
+                "automation": "Část následujících automatizací",
+                "device": "Zařízení",
+                "entity": "Související entity",
+                "group": "Část následujících skupin",
+                "integration": "Integrace",
+                "scene": "Část následujících scén",
+                "script": "Část následujících skriptů"
             },
             "relative_time": {
                 "duration": {
@@ -587,6 +614,29 @@
             "domain_toggler": {
                 "title": "Přepnout domény"
             },
+            "entity_registry": {
+                "control": "Řízení",
+                "dismiss": "Zavrhnout",
+                "editor": {
+                    "confirm_delete": "Opravdu chcete tuto položku smazat?",
+                    "delete": "Odstranit",
+                    "enabled_cause": "Zakázáno {cause}.",
+                    "enabled_description": "Zakázané entity nebudou přidány do Home Assistant.",
+                    "enabled_label": "Povolit entitu",
+                    "entity_id": "Entity ID",
+                    "name": "Přepsání názvu",
+                    "note": "Poznámka: to nemusí fungovat se všemi integracemi.",
+                    "unavailable": "Tato entita není momentálně k dispozici.",
+                    "update": "Aktualizovat"
+                },
+                "related": "Související",
+                "settings": "Nastavení"
+            },
+            "generic": {
+                "cancel": "Zrušit",
+                "default_confirmation_title": "Opravdu?",
+                "ok": "OK"
+            },
             "more_info_control": {
                 "dismiss": "Zavřít dialog",
                 "edit": "Upravit entitu",
@@ -598,7 +648,8 @@
                     "remove_intro": "Pokud se entita již delší dobu nepoužívá, můžete ji vyčistit jejím odebráním."
                 },
                 "script": {
-                    "last_action": "Poslední akce"
+                    "last_action": "Poslední akce",
+                    "last_triggered": "Naposledy spuštěno"
                 },
                 "settings": "Nastavení entity",
                 "sun": {
@@ -637,6 +688,9 @@
                     "add": "Přidat zařízení",
                     "reconfigure": "Překonfigurovat zařízení",
                     "remove": "Odebrat zařízení"
+                },
+                "confirmations": {
+                    "remove": "Opravdu chcete zařízení odebrat?"
                 },
                 "last_seen": "Naposledy viděn",
                 "manuf": "od {manufacturer}",
@@ -1101,6 +1155,7 @@
                             "core_config": {
                                 "edit_requires_storage": "Editor je zakázán, protože konfigurace je uložena v configuration.yaml.",
                                 "elevation": "Nadmořská výška",
+                                "elevation_feet": "stopy",
                                 "elevation_meters": "metrů",
                                 "imperial_example": "Stupně Fahrenheita, libry",
                                 "latitude": "Zeměpisná šířka",
@@ -1149,6 +1204,7 @@
                     "attributes_set": "Následující vlastnosti entit jsou nastaveny programově.",
                     "caption": "Přizpůsobení",
                     "description": "Přizpůsobte své entity",
+                    "different_include": "Možné přidat přes doménu",
                     "pick_attribute": "Vyberte vlastnost, kterou chcete přepsat",
                     "picker": {
                         "header": "Přizpůsobení",
@@ -1193,8 +1249,10 @@
                         "none": "Toto zařízení nemá žádné entity"
                     },
                     "info": "Informace o zařízení",
+                    "name": "Jméno",
                     "unknown_error": "Neznámá chyba",
-                    "unnamed_device": "Nepojmenované zařízení"
+                    "unnamed_device": "Nepojmenované zařízení",
+                    "update": "Aktualizovat"
                 },
                 "entities": {
                     "caption": "Registr entit",
@@ -1207,6 +1265,8 @@
                         "enabled_cause": "Zakázáno {cause}.",
                         "enabled_description": "Zakázané entity nebudou přidány do Home Assistant.",
                         "enabled_label": "Povolit entitu",
+                        "entity_id": "ID entity",
+                        "name": "Přepsání názvu",
                         "note": "Poznámka: Tato akce nemusí být dosud funkční se všemi integracemi.",
                         "unavailable": "Tato entita není momentálně k dispozici.",
                         "update": "UPRAVIT"
@@ -1417,8 +1477,10 @@
                             "group": "Znovu načíst skupiny",
                             "heading": "Konfigurace se načítá",
                             "introduction": "Některé části Home Assistant lze načíst bez nutnosti restartování. Volba načtení zahodí jejich aktuální konfiguraci a načte novou.",
+                            "person": "Znovu načíst osoby",
                             "scene": "Znovu načíst scény",
-                            "script": "Znovu načíst skripty"
+                            "script": "Znovu načíst skripty",
+                            "zone": "Znovu načíst zóny"
                         },
                         "server_management": {
                             "confirm_restart": "Opravdu chcete restartovat Home Assistant?",
@@ -1521,6 +1583,17 @@
                     "devices": {
                         "header": "Zigbee Home Automation - Zařízení"
                     },
+                    "group_binding": {
+                        "bind_button_help": "Připojit vybranou skupinu s vybranými clustery zařízení.",
+                        "bind_button_label": "Připojit skupinu",
+                        "cluster_selection_help": "Vyberte clustery, které chcete propojit s vybranou skupinou.",
+                        "group_picker_help": "Vyberte skupinu, která může propojovat",
+                        "group_picker_label": "Propojitelné skupiny",
+                        "header": "Slučovnání skupin",
+                        "introduction": "Rozdělit a sloučit skupiny",
+                        "unbind_button_help": "Odpojit vybranou skupinu od vybraných clusterů zařízení.",
+                        "unbind_button_label": "Odpojit skupinu"
+                    },
                     "groups": {
                         "add_members": "Přidání členů",
                         "adding_members": "Přidání členů",
@@ -1567,6 +1640,32 @@
                         "updateDeviceName": "V registru zařízení nastavte vlastní název tohoto zařízení."
                     },
                     "title": "Zigbee Home Automation"
+                },
+                "zone": {
+                    "add_zone": "Přidat zónu",
+                    "caption": "Zóny",
+                    "configured_in_yaml": "Zóny konfigurované pomocí configuration.yaml nelze upravovat pomocí UI.",
+                    "confirm_delete": "Opravdu chcete tuto zónu smazat?",
+                    "create_zone": "Vytvořit zónu",
+                    "description": "Spravujte zóny, ve kterých chcete sledovat osoby.",
+                    "detail": {
+                        "create": "Vytvořit",
+                        "delete": "Smazat",
+                        "icon": "Ikona",
+                        "icon_error_msg": "Ikona by měla být ve formátu předpona:jménoIcony, například: mdi:home",
+                        "latitude": "Zeměpisná šířka",
+                        "longitude": "Zeměpisná délka",
+                        "name": "Název",
+                        "new_zone": "Nová zóna",
+                        "passive": "Pasivní",
+                        "passive_note": "Pasivní zóny jsou v uživatelském rozhraní skryté a nepoužívají se pro sledování zařízení. je to užitečné, pokud jej chcete použít pouze pro automatizaci.",
+                        "radius": "Poloměr",
+                        "required_error_msg": "Toto pole je povinné",
+                        "update": "Aktualizovat"
+                    },
+                    "edit_home_zone": "Umístění vašeho domova lze změnit v konfiguraci.",
+                    "introduction": "Zóny umožňují určit určité oblasti na zemi. Když je osoba v zóně, stav převezme název ze zóny. Zóny lze také použít jako aktivační událost nebo podmínku v nastavení automatizace.",
+                    "no_zones_created_yet": "Vypadá to, že nejsou vytvořené žádné zóny."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1760,6 +1859,9 @@
                         "no_devices": "Tato stránka umožňuje ovládat vaše zařízení; zdá se však, že ještě nemáte žádné zařízení nastavené. Nejprve tedy přejděte na stránku integrace.",
                         "title": "Vítejte doma"
                     },
+                    "entities": {
+                        "never_triggered": "Nikdy nespuštěno"
+                    },
                     "picture-elements": {
                         "call_service": "Zavolat službu {name}",
                         "hold": "Podržte:",
@@ -1890,6 +1992,7 @@
                             "name": "Senzor"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "Tato karta vyžaduje integraci `shopping_list`.",
                             "name": "Nákupní seznam"
                         },
                         "thermostat": {
@@ -2183,6 +2286,7 @@
                     "description": "Home Assistant standardně skrývá pokročilé funkce a předvolby. Zapnutím této funkce je můžete zpřístupnit. Toto nastavení je specifické pro každého uživatele a neovlivňuje ostatní uživatele Home Assistantu.",
                     "hint_enable": "Chybí vám možnosti konfigurace? Zapněte rozšířený režim",
                     "link_profile_page": "stránka vašeho profilu",
+                    "link_promo": "Další informace",
                     "title": "Pokročilý režim"
                 },
                 "change_password": {
@@ -2205,6 +2309,8 @@
                     "link_promo": "Pomoc s překladem"
                 },
                 "logout": "Odhlásit",
+                "logout_text": "Opravdu se chcete odhlásit?",
+                "logout_title": "Odhlásit se?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Opravdu chcete smazat přístupový token pro {name} ?",
                     "create": "Vytvořte token",
