@@ -1271,6 +1271,9 @@
           "name": "Name",
           "update": "Update",
           "automation": {
+            "automations": "Automations",
+            "no_automations": "No automations",
+            "create": "Create automation with device",
             "triggers": {
               "caption": "Do something when..."
             },
@@ -1281,15 +1284,25 @@
               "caption": "When something is triggered..."
             }
           },
+          "script": {
+            "scripts": "Scripts",
+            "no_scripts": "No scripts",
+            "create": "Create script with device"
+          },
+          "scene": {
+            "scenes": "Scenes",
+            "no_scenes": "No scenes",
+            "create": "Create scene with device"
+          },
+          "cant_edit": "You can only edit items that are created in the UI.",
           "device_not_found": "Device not found.",
-          "info": "Device info",
-          "details": "Here are all the details of your device.",
           "entities": {
             "entities": "Entities",
-            "add_entities_lovelace": "Add all device entities to Lovelace UI",
+            "add_entities_lovelace": "Add to Lovelace",
             "none": "This device has no entities"
           },
-          "automations": "Automations",
+          "scripts": "Scripts",
+          "scenes": "Scenes",
           "confirm_rename_entity_ids": "Do you also want to rename the entity id's of your entities?",
           "data_table": {
             "device": "Device",

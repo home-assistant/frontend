@@ -20,6 +20,7 @@ import {
   ScriptEntity,
   ScriptConfig,
   deleteScript,
+  getScriptEditorInitData,
 } from "../../../data/script";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
@@ -188,10 +189,12 @@ export class HaScriptEditor extends LitElement {
     }
 
     if (changedProps.has("creatingNew") && this.creatingNew && this.hass) {
-      this._dirty = false;
+      const initData = getScriptEditorInitData();
+      this._dirty = initData ? true : false;
       this._config = {
         alias: this.hass.localize("ui.panel.config.script.editor.default_name"),
         sequence: [{ service: "" }],
+        ...initData,
       };
     }
   }

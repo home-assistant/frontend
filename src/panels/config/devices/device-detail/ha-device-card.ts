@@ -1,5 +1,3 @@
-import "../../../../components/ha-card";
-
 import {
   DeviceRegistryEntry,
   computeDeviceName,
@@ -27,63 +25,63 @@ export class HaDeviceCard extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-card>
-        <div class="card-content">
-          <div class="info">
-            <div class="model">${this.device.model}</div>
-            ${this.device.manufacturer
-              ? html`
-                  <div class="manuf">
-                    ${this.hass.localize(
-                      "ui.panel.config.integrations.config_entry.manuf",
-                      "manufacturer",
-                      this.device.manufacturer
-                    )}
-                  </div>
-                `
-              : ""}
-            ${this.device.area_id
-              ? html`
-                  <div class="area">
-                    <div class="extra-info">
-                      ${this.hass.localize(
-                        "ui.panel.config.integrations.config_entry.area",
-                        "area",
-                        this._computeArea(this.areas, this.device)
-                      )}
-                    </div>
-                  </div>
-                `
-              : ""}
-          </div>
-          ${this.device.via_device_id
-            ? html`
+      <div class="info">
+        ${this.device.model
+          ? html`
+              <div class="model">${this.device.model}</div>
+            `
+          : ""}
+        ${this.device.manufacturer
+          ? html`
+              <div class="manuf">
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.manuf",
+                  "manufacturer",
+                  this.device.manufacturer
+                )}
+              </div>
+            `
+          : ""}
+        ${this.device.area_id
+          ? html`
+              <div class="area">
                 <div class="extra-info">
                   ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.via"
-                  )}
-                  <span class="hub"
-                    >${this._computeDeviceName(
-                      this.devices,
-                      this.device.via_device_id
-                    )}</span
-                  >
-                </div>
-              `
-            : ""}
-          ${this.device.sw_version
-            ? html`
-                <div class="extra-info">
-                  ${this.hass.localize(
-                    "ui.panel.config.integrations.config_entry.firmware",
-                    "version",
-                    this.device.sw_version
+                    "ui.panel.config.integrations.config_entry.area",
+                    "area",
+                    this._computeArea(this.areas, this.device)
                   )}
                 </div>
-              `
-            : ""}
-        </div>
-      </ha-card>
+              </div>
+            `
+          : ""}
+        ${this.device.via_device_id
+          ? html`
+              <div class="extra-info">
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.via"
+                )}
+                <span class="hub"
+                  >${this._computeDeviceName(
+                    this.devices,
+                    this.device.via_device_id
+                  )}</span
+                >
+              </div>
+            `
+          : ""}
+        ${this.device.sw_version
+          ? html`
+              <div class="extra-info">
+                ${this.hass.localize(
+                  "ui.panel.config.integrations.config_entry.firmware",
+                  "version",
+                  this.device.sw_version
+                )}
+              </div>
+            `
+          : ""}
+      </div>
     `;
   }
 
