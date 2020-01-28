@@ -14,6 +14,7 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 
 import "../../../src/components/buttons/ha-call-api-button";
+import "../../../src/components/buttons/ha-progress-button";
 import "../../../src/components/ha-label-badge";
 import "../../../src/components/ha-markdown";
 import "../../../src/components/ha-switch";
@@ -94,6 +95,7 @@ class HassioAddonInfo extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
   @property() private _error?: string;
+  @property({ type: Boolean }) private _installing = false;
 
   protected render(): TemplateResult {
     return html`
@@ -445,13 +447,14 @@ class HassioAddonInfo extends LitElement {
                       </p>
                     `
                   : ""}
-                <mwc-button
+                <ha-progress-button
                   .disabled=${!this.addon.available}
+                  .progress=${this._installing}
                   class="right"
                   @click=${this._installClicked}
                 >
                   Install
-                </mwc-button>
+                </ha-progress-button>
               `}
         </div>
       </paper-card>
@@ -749,6 +752,7 @@ class HassioAddonInfo extends LitElement {
 
   private async _installClicked(): Promise<void> {
     this._error = undefined;
+    this._installing = true;
     try {
       await installHassioAddon(this.hass, this.addon.slug);
       const eventdata = {
@@ -760,6 +764,7 @@ class HassioAddonInfo extends LitElement {
     } catch (err) {
       this._error = `Failed to install addon, ${err.body?.message || err}`;
     }
+    this._installing = false;
   }
 
   private async _uninstallClicked(): Promise<void> {
