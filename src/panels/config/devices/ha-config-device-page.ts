@@ -476,6 +476,10 @@ export class HaConfigDevicePage extends LitElement {
         width: 100%;
       }
 
+      :host([narrow]) .container {
+        margin-top: 0;
+      }
+
       paper-item {
         cursor: pointer;
       }
