@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Esegui"
             },
+            "service": {
+                "run": "Esegui"
+            },
             "timer": {
                 "actions": {
                     "cancel": "annulla",
@@ -541,10 +544,24 @@
             "yes": "Sì"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Aggiungi",
+                    "failed_create_area": "Impossibile creare l'area.",
+                    "name": "Nome",
+                    "text": "Inserisci il nome della nuova area.",
+                    "title": "Aggiungi nuova area"
+                },
+                "add_new": "Aggiungi nuova area ...",
+                "area": "Area",
+                "clear": "Cancella",
+                "show_areas": "Mostra le aree"
+            },
             "device-picker": {
                 "clear": "Cancella",
                 "device": "Dispositivo",
-                "show_devices": "Mostra dispositivi"
+                "show_devices": "Mostra dispositivi",
+                "toggle": "Attivare/Disattivare"
             },
             "entity": {
                 "entity-picker": {
@@ -600,8 +617,25 @@
             "entity_registry": {
                 "control": "Controllo",
                 "dismiss": "Annullare",
+                "editor": {
+                    "confirm_delete": "Sei sicuro di voler eliminare questa voce?",
+                    "delete": "ELIMINA",
+                    "enabled_cause": "Disabilitato da {cause}.",
+                    "enabled_description": "Le entità disabilitate non saranno aggiunte a Home Assistant",
+                    "enabled_label": "Abilita entità",
+                    "entity_id": "ID Entità",
+                    "name": "Sostituzione nome",
+                    "note": "Nota: questo potrebbe non funzionare ancora con tutte le integrazioni.",
+                    "unavailable": "Questa entità non è attualmente disponibile.",
+                    "update": "AGGIORNA"
+                },
                 "related": "Relazionato",
                 "settings": "Impostazioni"
+            },
+            "generic": {
+                "cancel": "Annulla",
+                "default_confirmation_title": "Sei sicuro?",
+                "ok": "OK"
             },
             "more_info_control": {
                 "dismiss": "Chiudi finestra di dialogo",
@@ -710,7 +744,7 @@
                     "description": "Panoramica di tutte le aree della tua casa.",
                     "editor": {
                         "create": "CREA",
-                        "default_name": "Nuova area",
+                        "default_name": "Nuova Area",
                         "delete": "ELIMINA",
                         "update": "AGGIORNA"
                     },
@@ -721,7 +755,7 @@
                         "integrations_page": "Integrazioni",
                         "introduction": "Le aree sono utilizzate per organizzare dove sono i dispositivi. Queste informazioni saranno utilizzate in Home Assistant per aiutarti ad organizzare la tua interfaccia, permessi e integrazioni con altri sistemi.",
                         "introduction2": "Per posizionare i dispositivi in un'area, utilizzare il seguente collegamento per accedere alla pagina delle integrazioni e quindi fare clic su un'integrazione configurata per accedere alle schede del dispositivo.",
-                        "no_areas": "Sembra che tu non abbia ancora delle aree!"
+                        "no_areas": "Sembra che non ci siano ancora Aree!"
                     }
                 },
                 "automation": {
@@ -779,7 +813,7 @@
                             "delete_confirm": "Sicuro di voler eliminare?",
                             "duplicate": "Duplica",
                             "header": "Condizioni",
-                            "introduction": "Le Condizioni sono una parte facoltativa di una regola di automazione e possono essere utilizzate per impedire che un'Azione si verifichi quando viene attivata. Le Condizioni sembrano molto simili alle Attivazioni (o Triggers), ma in realtà sono molto diverse. Una Attivazione (o Trigger) analizzerà gli eventi che stanno accadendo nel sistema, mentre una Condizione analizza solo l'aspetto istantaneo del sistema. Una Attivazione (o Trigger) può osservare che un interruttore è in fase di accensione. Una Condizione può solo vedere se un interruttore è acceso o meno.",
+                            "introduction": "Le Condizioni sono facoltative e impediranno un'ulteriore esecuzione se non saranno soddisfatte tutte.",
                             "learn_more": "Per saperne di più sulle Condizioni",
                             "name": "Condizione",
                             "type_select": "Tipo di Condizione",
@@ -1210,13 +1244,15 @@
                     "details": "Ecco tutti i dettagli del tuo dispositivo.",
                     "device_not_found": "Dispositivo non trovato.",
                     "entities": {
-                        "add_entities_lovelace": "Aggiungere tutte le entità del dispositivo a Lovelace",
+                        "add_entities_lovelace": "Aggiungere tutte le entità dispositivo all'Interfaccia Utente di Lovelace",
                         "entities": "Entità",
                         "none": "Questo dispositivo non ha entità"
                     },
                     "info": "Informazioni sul dispositivo",
+                    "name": "Nome",
                     "unknown_error": "Errore sconosciuto",
-                    "unnamed_device": "Dispositivo senza nome"
+                    "unnamed_device": "Dispositivo senza nome",
+                    "update": "Aggiorna"
                 },
                 "entities": {
                     "caption": "Entità",
@@ -1608,6 +1644,7 @@
                 "zone": {
                     "add_zone": "Aggiungi zona",
                     "caption": "Zone",
+                    "configured_in_yaml": "Le zone configurate tramite configuration.yaml non possono essere modificate tramite l'interfaccia utente.",
                     "confirm_delete": "Sei sicuro di voler cancellare questa zona?",
                     "create_zone": "Crea zona",
                     "description": "Gestisci le zone in cui vuoi rintracciare le persone.",
@@ -1626,6 +1663,7 @@
                         "required_error_msg": "Questo campo è obbligatorio",
                         "update": "Aggiorna"
                     },
+                    "edit_home_zone": "La posizione della tua casa può essere cambiata nella configurazione generale.",
                     "introduction": "Le zone ti consentono di specificare determinate regioni sulla terra. Quando una persona si trova all'interno di una zona, lo stato prenderà il nome dalla zona. Le zone possono anche essere utilizzate come trigger o condizioni all'interno delle impostazioni di automazione.",
                     "no_zones_created_yet": "Sembra che tu non abbia ancora creato nessuna zona."
                 },
@@ -1810,9 +1848,9 @@
             },
             "lovelace": {
                 "add_entities": {
-                    "generated_unsupported": "Questa funzione può essere utilizzata solo dopo aver preso il controllo di Lovelace.",
-                    "saving_failed": "Salvataggio della configurazione di Lovelace non riuscito.",
-                    "yaml_unsupported": "Non è possibile utilizzare questa funzione quando si utilizza Lovelace in modalità YAML."
+                    "generated_unsupported": "Questa funzione può essere utilizzata solo dopo aver preso il controllo dell'Interfaccia Utente di Lovelace.",
+                    "saving_failed": "Salvataggio della configurazione dell'Interfaccia Utente di Lovelace non riuscito.",
+                    "yaml_unsupported": "Non è possibile utilizzare questa funzione quando si utilizza l'Interfaccia Utente di Lovelace in modalità YAML."
                 },
                 "cards": {
                     "confirm_delete": "Sei sicuro di voler cancellare questa scheda?",
@@ -1840,7 +1878,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "La configurazione di Lovelace è stata aggiornata, desideri aggiornare?",
+                    "message": "La configurazione dell'Interfaccia Utente di Lovelace è stata aggiornata, ricaricare per visualizzare i cambiamenti?",
                     "refresh": "Aggiorna"
                 },
                 "editor": {
@@ -1983,7 +2021,7 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "Modifica titolo",
-                        "explanation": "Questo titolo è mostrato sopra tutte le tue viste in Lovelace.",
+                        "explanation": "Questo titolo è mostrato sopra tutte le tue viste nell'Interfaccia Utente di Lovelace.",
                         "header": "Titolo della tua interfaccia utente di Lovelace"
                     },
                     "edit_view": {
@@ -1997,7 +2035,7 @@
                     },
                     "header": "Modifica dell'interfaccia utente",
                     "menu": {
-                        "open": "Apri il menu Lovelace",
+                        "open": "Apri il menu dell'Interfaccia Utente di Lovelace",
                         "raw_editor": "Editor di Configurazione testuale"
                     },
                     "migrate": {
@@ -2007,8 +2045,8 @@
                         "para_no_id": "Questo elemento non ha un ID. Aggiungi un ID a questo elemento in 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
-                        "confirm_remove_config_text": "Genereremo automaticamente le tue viste Lovelace con le tue aree e dispositivi se rimuovi la configurazione di Lovelace.",
-                        "confirm_remove_config_title": "Sei sicuro di voler rimuovere la tua configurazione Lovelace? Genereremo automaticamente le tue viste Lovelace con le tue aree e dispositivi.",
+                        "confirm_remove_config_text": "Genereremo automaticamente le tue viste dell'Interfaccia Utente di Lovelace con le tue Aree e Dispositivi se rimuovi la tua configurazione dell'Interfaccia Utente di Lovelace.",
+                        "confirm_remove_config_title": "Sei sicuro di voler rimuovere la tua configurazione dell'Interfaccia Utente di Lovelace? Genereremo automaticamente le tue viste Lovelace con le tue Aree e Dispositivi.",
                         "confirm_unsaved_changes": "Hai delle modifiche non salvate, sei sicuro di voler uscire?",
                         "confirm_unsaved_comments": "La tua configurazione contiene commenti, questi non verranno salvati. Vuoi continuare?",
                         "error_invalid_config": "La tua configurazione non è valida: {error}",
@@ -2023,13 +2061,13 @@
                     "save_config": {
                         "cancel": "Rinuncia",
                         "header": "Prendi il controllo della tua interfaccia utente di Lovelace",
-                        "para": "Per impostazione predefinita, Home Assistant manterrà l'interfaccia utente, aggiornandola quando nuove entità o componenti Lovelace diventano disponibili. Se prendi il controllo non effettueremo più automaticamente le modifiche per te.",
+                        "para": "Per impostazione predefinita, Home Assistant gestirà l'Interfaccia Utente, aggiornandola quando nuove entità o componenti dell'IU Lovelace diventano disponibili. Se prendi il controllo non effettueremo più automaticamente le modifiche per te.",
                         "para_sure": "Sei sicuro di voler prendere il controllo della tua interfaccia utente?",
                         "save": "Prendere il controllo"
                     },
                     "suggest_card": {
-                        "add": "Aggiungi a Lovelace",
-                        "create_own": "Crea il tuo",
+                        "add": "Aggiungi all'Interfaccia Utente di Lovelace",
+                        "create_own": "Scegliere una scheda diversa",
                         "header": "Abbiamo creato un suggerimento per te"
                     },
                     "view": {
@@ -2047,7 +2085,7 @@
                     "refresh": "Aggiorna",
                     "unused_entities": "Entità non utilizzate"
                 },
-                "reload_lovelace": "Ricarica Lovelace",
+                "reload_lovelace": "Ricaricare l'Interfaccia Utente",
                 "unused_entities": {
                     "available_entities": "Queste sono le entità che hai a disposizione, ma non sono ancora nella tua interfaccia utente di Lovelace.",
                     "domain": "Dominio",
@@ -2245,9 +2283,10 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "description": "Home Assistant nasconde le funzioni e le opzioni avanzate per impostazione predefinita. È possibile rendere accessibili queste funzionalità selezionando questo interruttore. Si tratta di un'impostazione specifica dell'utente e non influisce sugli altri utenti che utilizzano Home Assistant.",
+                    "description": "Sblocca funzionalità avanzate.",
                     "hint_enable": "Opzioni di configurazione mancanti? Abilita la modalità avanzata",
                     "link_profile_page": "la pagina del tuo profilo",
+                    "link_promo": "Per saperne di più",
                     "title": "Modalità avanzata"
                 },
                 "change_password": {

@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Futtatás"
             },
+            "service": {
+                "run": "Futtatás"
+            },
             "timer": {
                 "actions": {
                     "cancel": "elvet",
@@ -541,10 +544,24 @@
             "yes": "Igen"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "hozzáadás",
+                    "failed_create_area": "Nem sikerült létrehozni a területet.",
+                    "name": "Név",
+                    "text": "Adja meg az új terület nevét.",
+                    "title": "Új terület hozzáadása"
+                },
+                "add_new": "Új terület hozzáadása...",
+                "area": "Terület",
+                "clear": "Törlés",
+                "show_areas": "Területek megjelenítése"
+            },
             "device-picker": {
                 "clear": "Törlés",
                 "device": "Eszköz",
-                "show_devices": "Eszközök megjelenítése"
+                "show_devices": "Eszközök megjelenítése",
+                "toggle": "Váltás"
             },
             "entity": {
                 "entity-picker": {
@@ -556,6 +573,16 @@
             "history_charts": {
                 "loading_history": "Állapot előzmények betöltése...",
                 "no_history_found": "Nem található előzmény."
+            },
+            "related-items": {
+                "area": "Terület",
+                "automation": "A következő automatizálások része",
+                "device": "Eszköz",
+                "entity": "Kapcsolódó entitások",
+                "group": "A következő csoportok része",
+                "integration": "Integráció",
+                "scene": "A következő jelenetek része",
+                "script": "A következő szkriptek része"
             },
             "relative_time": {
                 "duration": {
@@ -587,17 +614,42 @@
             "domain_toggler": {
                 "title": "Domainek váltása"
             },
+            "entity_registry": {
+                "control": "Ellenőrzés",
+                "dismiss": "Elvetés",
+                "editor": {
+                    "confirm_delete": "Biztosan törölni szeretnéd ezt a bejegyzést?",
+                    "delete": "TÖRLÉS",
+                    "enabled_cause": "Letiltva. ({cause})",
+                    "enabled_description": "A letiltott entitások nem lesznek a Home Assistant-hoz hozzáadva.",
+                    "enabled_label": "Entitás engedélyezése",
+                    "entity_id": "Entitás ID",
+                    "name": "Név felülbírálása",
+                    "note": "Megjegyzés: lehet, hogy ez még nem működik minden integrációval.",
+                    "unavailable": "Ez az entitás jelenleg nem elérhető.",
+                    "update": "FRISSÍTÉS"
+                },
+                "related": "Kapcsolódás",
+                "settings": "Beállítások"
+            },
+            "generic": {
+                "cancel": "Mégse",
+                "default_confirmation_title": "Biztos?",
+                "ok": "OK"
+            },
             "more_info_control": {
                 "dismiss": "Elvetés párbeszédpanel",
                 "edit": "Entitás szerkesztése",
                 "restored": {
                     "confirm_remove_text": "Biztosan el szeretnéd távolítani ezt az entitást?",
                     "confirm_remove_title": "Eltávolítod az entitást?",
+                    "not_provided": "Ez az entitás jelenleg nem érhető el és árva, mert egy integráció vagy eszköz eltávolított, megváltozott vagy diszfunkcionális.",
                     "remove_action": "Entitás eltávolítása",
                     "remove_intro": "Ha az entitás már nincs használatban, akkor nyugodtan eltávolíthatod."
                 },
                 "script": {
-                    "last_action": "Utolsó Művelet"
+                    "last_action": "Utolsó Művelet",
+                    "last_triggered": "Utoljára aktivált"
                 },
                 "settings": "Entitás beállítások",
                 "sun": {
@@ -636,6 +688,9 @@
                     "add": "Eszközök hozzáadása",
                     "reconfigure": "Eszköz újrakonfigurálása",
                     "remove": "Eszköz eltávolítása"
+                },
+                "confirmations": {
+                    "remove": "Biztos benne, hogy el akarja távolítani az eszközt?"
                 },
                 "last_seen": "Utolsó jelentés",
                 "manuf": "{manufacturer} által",
@@ -963,11 +1018,12 @@
                             "manage_entities": "Entitások kezelése",
                             "security_devices": "Biztonsági eszközök",
                             "sync_entities": "Entitások szinkronizálása a Google-lal",
+                            "sync_entities_404_message": "Nem sikerült szinkronizálni az entitásokat a Google-lal, kérje meg a Google \"Hey Google, sync my devices\" az entitások szinkronizálását.",
                             "title": "Google Asszisztens"
                         },
                         "integrations": "Integrációk",
                         "integrations_introduction": "A Home Assistant Felhő integrációi úgy biztosítanak lehetőséget felhő szolgáltatásokhoz való csatlakozáshoz, hogy közben nem kell kinyitnod a Home Assistant rendszered publikusan az interneten.",
-                        "integrations_introduction2": "Nézd meg a weboldalt a ",
+                        "integrations_introduction2": "Nézd meg a weboldalt a",
                         "integrations_link_all_features": "az összes elérhető funkció",
                         "manage_account": "Fiók kezelése",
                         "nabu_casa_account": "Nabu Casa fiók",
@@ -989,7 +1045,7 @@
                             "link_learn_more": "Tudj meg többet a webhook-alapú automatizálások létrehozásáról.",
                             "loading": "Betöltés...",
                             "manage": "Kezelés",
-                            "no_hooks_yet": "Úgy tűnik, még nincs egy webhookod sem. Kezdéshez konfigurálj egy ",
+                            "no_hooks_yet": "Úgy tűnik, még nincs egy webhookod sem. Kezdéshez konfigurálj egy",
                             "no_hooks_yet_link_automation": "webhook automatizálást",
                             "no_hooks_yet_link_integration": "webhook-alapú integrációt",
                             "no_hooks_yet2": "vagy hozz létre egy",
@@ -1051,7 +1107,7 @@
                         "email_error_msg": "Érvénytelen email",
                         "forgot_password": "elfelejtett jelszó?",
                         "introduction": "A Home Assistant Felhő biztonságos távoli kapcsolatot nyújt a példányodhoz, miközben távol vagy. Azt is lehetővé teszi, hogy csak felhőn alapuló szolgáltatásokhoz csatlakozz: Amazon Alexa, Google Asszisztens.",
-                        "introduction2": "Ezt a szolgáltatást partnerünk a ",
+                        "introduction2": "Ezt a szolgáltatást partnerünk üzemelteti, a",
                         "introduction2a": " vállalat üzemelteti, amelyet a Home Assistant és a Hass.io alapítói alapítottak.",
                         "introduction3": "A Home Assistant Felhő egy előfizetéses szolgáltatás egy hónapos ingyenes próbaverzióval. Nincs szükség fizetési információk megadására.",
                         "learn_more_link": "Tudj meg többet a Home Assistant Felhőről",
@@ -1074,7 +1130,7 @@
                         "headline": "Indítsd el az ingyenes próbaidőszakot",
                         "information": "Hozz létre egy fiókot ahhoz, hogy elindíthasd az egy hónapos ingyenes Home Assistant Felhő próbaidőszakodat. Nincs szükség fizetési információk megadására.",
                         "information2": "A próbaidőszak hozzáférést biztosít a Home Assistant Felhő minden előnyéhez, beleértve a következőket:",
-                        "information3": "Ezt a szolgáltatást partnerünk a ",
+                        "information3": "Ezt a szolgáltatást partnerünk üzemelteti, a",
                         "information3a": ", vállalat üzemelteti, amelyet a Home Assistant és a Hass.io alapítói alapítottak.",
                         "information4": "Fiók regisztrálásával elfogadod az alábbi feltételeket.",
                         "link_privacy_policy": "Adatvédelmi irányelvek",
@@ -1193,8 +1249,10 @@
                         "none": "Ennek az eszköznek nincsenek entitásai"
                     },
                     "info": "Eszköz infó",
+                    "name": "Név",
                     "unknown_error": "Ismeretlen hiba",
-                    "unnamed_device": "Névtelen eszköz"
+                    "unnamed_device": "Névtelen eszköz",
+                    "update": "Frissítés"
                 },
                 "entities": {
                     "caption": "Entitások",
@@ -1207,6 +1265,8 @@
                         "enabled_cause": "Letiltva. ({cause})",
                         "enabled_description": "A letiltott entitások nem lesznek hozzáadva a Home Assistant-hoz.",
                         "enabled_label": "Entitás engedélyezése",
+                        "entity_id": "Entitás ID",
+                        "name": "Név felülbírálása",
                         "note": "Megjegyzés: lehet, hogy ez még nem működik minden integrációval.",
                         "unavailable": "Ez az entitás jelenleg nem elérhető.",
                         "update": "FRISSÍTÉS"
@@ -1312,7 +1372,7 @@
                     "new": "Új integráció beállítása",
                     "none": "Még semmi sincs beállítva",
                     "note_about_integrations": "Még nem minden integráció konfigurálható a felhasználói felületen keresztül.",
-                    "note_about_website_reference": "Továbbiak érhetőek el itt: "
+                    "note_about_website_reference": "Továbbiak érhetőek el itt:"
                 },
                 "introduction": "Itt a komponenseket és a Home Assistant szervert lehet beállítani. Még nem lehet mindent a felületről, de dolgozunk rajta.",
                 "person": {
@@ -1417,8 +1477,10 @@
                             "group": "Csoportok újratöltése",
                             "heading": "Konfiguráció újratöltés",
                             "introduction": "A Home Assistant bizonyos részei újraindítás nélkül újratölthetőek. Az újratöltés az aktuális konfiguráció helyére betölti az újat.",
+                            "person": "Személyek újratöltése",
                             "scene": "Jelenetek újratöltése",
-                            "script": "Szkriptek újratöltése"
+                            "script": "Szkriptek újratöltése",
+                            "zone": "Zónák újratöltése"
                         },
                         "server_management": {
                             "confirm_restart": "Biztosan újra akarod indítani a Home Assistantet?",
@@ -1502,7 +1564,8 @@
                     },
                     "clusters": {
                         "header": "Klaszterek",
-                        "help_cluster_dropdown": "Válassz egy klasztert az attribútumok és parancsok megtekintéséhez."
+                        "help_cluster_dropdown": "Válassz egy klasztert az attribútumok és parancsok megtekintéséhez.",
+                        "introduction": "A zigbee-funkciók építőkövei a fürtök. A funkcionalitást logikai egységekre bontják. Vannak ügyfél- és kiszolgálótípusok, amelyek attribútumokból és parancsokból állnak."
                     },
                     "common": {
                         "add_devices": "Eszközök hozzáadása",
@@ -1520,11 +1583,23 @@
                     "devices": {
                         "header": "Zigbee Home Automation - Eszköz"
                     },
+                    "group_binding": {
+                        "bind_button_help": "Csatlakoztassa a kiválasztott csoportot a kiválasztott eszközfürtökhöz.",
+                        "bind_button_label": "Csoporthoz fűzés",
+                        "cluster_selection_help": "Jelölje ki a kijelölt csoporthoz kötni kívánt fürtöket.",
+                        "group_picker_help": "Jelöljön ki egy csoportot a kötési parancs kiadásához.",
+                        "group_picker_label": "Köthető csoportok",
+                        "header": "Csoportkötés",
+                        "introduction": "Csoportok kötése és lebontása",
+                        "unbind_button_help": "A kijelölt csoport lebontása a kijelölt eszközfürtökből.",
+                        "unbind_button_label": "Csoport bontás"
+                    },
                     "groups": {
                         "add_members": "Tagok hozzáadása",
                         "adding_members": "Tagok hozzáadása",
                         "caption": "Csoportok",
                         "create": "Csoport létrehozása",
+                        "create_group": "Zigbee Home Automation - Csoport létrehozása",
                         "create_group_details": "Add meg a szükséges adatokat egy új zigbee csoport létrehozásához",
                         "creating_group": "Csoport létrehozása",
                         "description": "Zigbee csoportok létrehozása és módosítása",
@@ -1563,7 +1638,34 @@
                         "reconfigure": "A ZHA készülék újratelepítése (eszköz rendbehozatala). Ezt a funkciót használd, ha problémáid vannak a készülékkel. Ha a kérdéses eszköz akkumulátoros, győződj meg róla, hogy nincs alvó állapotban és fogadja a parancsokat, amikor ezt a szolgáltatást használod.",
                         "remove": "Eszköz eltávolítása a Zigbee hálózatból",
                         "updateDeviceName": "Egyedi név beállítása ehhez az eszközhöz az eszköz nyilvántartásban"
-                    }
+                    },
+                    "title": "Zigbee Home Automation"
+                },
+                "zone": {
+                    "add_zone": "Zóna hozzáadása",
+                    "caption": "Zónák",
+                    "configured_in_yaml": "A configuration.yaml fájlban konfigurált zónák nem szerkeszthetők a felhasználói felületen.",
+                    "confirm_delete": "Biztosan törli ezt a zónát?",
+                    "create_zone": "Zóna létrehozása",
+                    "description": "Kezelje azokat a zónákat, ahol nyomon szeretné követni a személyeket.",
+                    "detail": {
+                        "create": "Létrehozás",
+                        "delete": "Törlés",
+                        "icon": "Ikon",
+                        "icon_error_msg": "Az ikonnak az előtag:ikonnév formátumban kell lennie, például: mdi:home",
+                        "latitude": "Szélesség",
+                        "longitude": "Hosszúság",
+                        "name": "Név",
+                        "new_zone": "Új zóna",
+                        "passive": "Passzív",
+                        "passive_note": "A passzív zónák az előlapon nem láthatóak, és nem használják helyként az eszköz keresők sem. Ez akkor hasznos, ha csak automatizáláshoz kívánja majd használni.",
+                        "radius": "Sugár",
+                        "required_error_msg": "Ez a mező kötelező",
+                        "update": "Frissítés"
+                    },
+                    "edit_home_zone": "Az otthona címét az általános konfigurációnál változtathatja meg.",
+                    "introduction": "A zónák lehetővé teszik a Föld bizonyos területeinek megadását. Ha egy személy egy zónán belül van, az állapota felveszi a zóna nevét veszi fel. A zónák eseményindítóként vagy feltételként is használhatók az automatizálási beállításokon belül.",
+                    "no_zones_created_yet": "Úgy tűnik, még nem hoztál létre zónákat."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1745,6 +1847,11 @@
                 "showing_entries": "Bejegyzések megjelenítése"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "Ezt a funkciót csak akkor használhatja, ha átvette a Lovelace felhasználói felületének irányítását.",
+                    "saving_failed": "A Lovelace felhasználói felület beállításának mentése sikertelen.",
+                    "yaml_unsupported": "Ezt a funkciót nem használhatja, ha YAML módban működteti a Lovelace felhasználói felületet."
+                },
                 "cards": {
                     "confirm_delete": "Biztosan törölni szeretnéd ezt a kártyát?",
                     "empty_state": {
@@ -1885,6 +1992,7 @@
                             "name": "Érzékelő"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "Ez a kártya megköveteli a „shopping_list” integráció beállítását.",
                             "name": "Bevásárló lista"
                         },
                         "thermostat": {
@@ -1937,6 +2045,8 @@
                         "para_no_id": "Ez az elem nem rendelkezik ID-val. Kérlek, adj hozzá egyet az 'ui-lovelace.yaml' fájlban!"
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Automatikusan létrehozzuk a lovelace felhasználói felületi nézeteit területekkel és eszközökkel, ha eltávolítja a Lovelace felhasználói felületkonfigurációját.",
+                        "confirm_remove_config_title": "Biztosan eltávolítja a Lovelace felhasználói felületkonfigurációját? A Lovelace felhasználói felületi nézeteit automatikusan létrehozzuk a területeivel és eszközeivel.",
                         "confirm_unsaved_changes": "Vannak nem mentett módosítások, biztosan ki akarsz lépni?",
                         "confirm_unsaved_comments": "A konfiguráció megjegyzéseket tartalmaz, amik nem kerülnek elmentésre. Biztosan folytatod?",
                         "error_invalid_config": "A konfiguráció érvénytelen: {error}",
@@ -1957,7 +2067,8 @@
                     },
                     "suggest_card": {
                         "add": "Hozzáadás a Lovelace-hez",
-                        "create_own": "Készítsd el a sajátod"
+                        "create_own": "Készítsd el a sajátod",
+                        "header": "Létrehoztunk önnek egy javaslatot"
                     },
                     "view": {
                         "panel_mode": {
@@ -2175,6 +2286,7 @@
                     "description": "A Home Assistant alapértelmezés szerint elrejti a haladó funkciókat és beállításokat, de ezzel a kapcsolóval elérhetővé teheted őket. Ez egy felhasználó-specifikus beállítás, ami nem befolyásolja a többi felhasználó felületét.",
                     "hint_enable": "Hiányzó konfigurációs beállítások? Kapcsold be a haladó üzemmódot",
                     "link_profile_page": "a profiloldalad",
+                    "link_promo": "Tudj meg többet",
                     "title": "Haladó üzemmód"
                 },
                 "change_password": {
