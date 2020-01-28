@@ -26,8 +26,6 @@ import {
 @customElement("dialog-device-automation")
 export class DialogDeviceAutomation extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() private _deviceId!: string;
-  @property() private _script = false;
   @property() private _triggers: DeviceTrigger[] = [];
   @property() private _conditions: DeviceCondition[] = [];
   @property() private _actions: DeviceAction[] = [];
@@ -35,47 +33,52 @@ export class DialogDeviceAutomation extends LitElement {
 
   public async showDialog(params: DeviceAutomationDialogParams): Promise<void> {
     this._params = params;
-    this._script = params.script || false;
-    this._deviceId = params.deviceId;
     await this.updateComplete;
   }
 
   protected updated(changedProps): void {
     super.updated(changedProps);
 
-    if (changedProps.has("_deviceId")) {
-      if (this._deviceId) {
-        fetchDeviceActions(this.hass, this._deviceId).then(
-          (actions) => (this._actions = actions)
-        );
-        if (this._script) {
-          return;
-        }
-        fetchDeviceTriggers(this.hass, this._deviceId).then(
-          (triggers) => (this._triggers = triggers)
-        );
-        fetchDeviceConditions(this.hass, this._deviceId).then(
-          (conditions) => (this._conditions = conditions)
-        );
-      } else {
-        this._triggers = [];
-        this._conditions = [];
-        this._actions = [];
-      }
+    if (!changedProps.has("_params")) {
+      return;
     }
+
+    this._triggers = [];
+    this._conditions = [];
+    this._actions = [];
+
+    if (!this._params) {
+      return;
+    }
+
+    const { deviceId, script } = this._params;
+
+    fetchDeviceActions(this.hass, deviceId).then(
+      (actions) => (this._actions = actions)
+    );
+    if (script) {
+      return;
+    }
+    fetchDeviceTriggers(this.hass, deviceId).then(
+      (triggers) => (this._triggers = triggers)
+    );
+    fetchDeviceConditions(this.hass, deviceId).then(
+      (conditions) => (this._conditions = conditions)
+    );
   }
 
   protected render(): TemplateResult | void {
     if (!this._params) {
       return html``;
     }
+
     return html`
       <ha-dialog
         open
         @closing="${this._close}"
         .title=${this.hass.localize(
           `ui.panel.config.devices.${
-            this._script ? "script" : "automation"
+            this._params.script ? "script" : "automation"
           }.create`
         )}
       >
@@ -105,7 +108,7 @@ export class DialogDeviceAutomation extends LitElement {
                       <ha-device-actions-card
                         .hass=${this.hass}
                         .automations=${this._actions}
-                        .script=${this._script}
+                        .script=${this._params.script}
                       ></ha-device-actions-card>
                     `
                   : ""}
