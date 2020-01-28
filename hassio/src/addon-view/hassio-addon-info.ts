@@ -184,8 +184,8 @@ class HassioAddonInfo extends LitElement {
             ${this.addon.description}.<br />
             Visit
             <a href="${this.addon.url}" target="_blank">
-              ${this.addon.name} page
-            </a>
+              ${this.addon.name} page</a
+            >
             for details.
           </div>
           ${this.addon.logo
