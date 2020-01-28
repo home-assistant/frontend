@@ -15,7 +15,7 @@ import "../../../components/ha-menu-button";
 
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { CloudStatus, CloudStatusLoggedIn } from "../../../data/cloud";
+import { CloudStatus } from "../../../data/cloud";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 import "../../../components/ha-card";

@@ -24,8 +24,8 @@ declare global {
 export const configSections: ConfigPageNavigation[][] = [
   [
     { page: "integrations", icon: "hass:sitemap", core: true },
-    { page: "devices", icon: "hass:home-assistant", core: true },
-    { page: "entities", icon: "hass:home-assistant", core: true },
+    { page: "devices", icon: "hass:devices", core: true },
+    { page: "entities", icon: "hass:shape", core: true },
     { page: "areas", icon: "hass:floor-plan", core: true },
   ],
   [

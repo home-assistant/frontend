@@ -162,6 +162,10 @@ class HassTabsSubpage extends LitElement {
         height: 64px;
       }
 
+      .name {
+        white-space: nowrap;
+      }
+
       .tab.active {
         color: var(--primary-color);
       }
