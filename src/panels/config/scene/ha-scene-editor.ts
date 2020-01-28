@@ -26,7 +26,7 @@ import "../../../layouts/ha-app-layout";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import { HomeAssistant, Route } from "../../../types";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import {
@@ -55,6 +55,7 @@ import memoizeOne from "memoize-one";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { HassEvent } from "home-assistant-js-websocket";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { configSections } from "../ha-panel-config";
 
 interface DeviceEntities {
   id: string;
@@ -69,7 +70,9 @@ interface DeviceEntitiesLookup {
 @customElement("ha-scene-editor")
 export class HaSceneEditor extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
-  @property() public isWide?: boolean;
+  @property() public narrow!: boolean;
+  @property() public isWide!: boolean;
+  @property() public route!: Route;
   @property() public scene?: SceneEntity;
   @property() public creatingNew?: boolean;
   @property() public showAdvanced!: boolean;
@@ -157,39 +160,36 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
       this._deviceRegistryEntries
     );
     return html`
-      <ha-app-layout has-scrolling-region>
-        <app-header slot="header" fixed>
-          <app-toolbar>
-            <ha-paper-icon-button-arrow-prev
-              @click=${this._backTapped}
-            ></ha-paper-icon-button-arrow-prev>
-            <div main-title>
-              ${this.scene
-                ? computeStateName(this.scene)
-                : this.hass.localize(
-                    "ui.panel.config.scene.editor.default_name"
-                  )}
-            </div>
-            ${this.creatingNew
-              ? ""
-              : html`
-                  <paper-icon-button
-                    title="${this.hass.localize(
-                      "ui.panel.config.scene.picker.delete_scene"
-                    )}"
-                    icon="hass:delete"
-                    @click=${this._deleteTapped}
-                  ></paper-icon-button>
-                `}
-          </app-toolbar>
-        </app-header>
+        <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .route=${this.route}
+        .backCallback=${() => this._backTapped()}
+        .tabs=${configSections[1]}
+      >
 
-        <div class="content">
-          ${this._errors
-            ? html`
-                <div class="errors">${this._errors}</div>
-              `
-            : ""}
+      ${
+        this.creatingNew
+          ? ""
+          : html`
+              <paper-icon-button
+                slot="toolbar-icon"
+                title="${this.hass.localize(
+                  "ui.panel.config.scene.picker.delete_scene"
+                )}"
+                icon="hass:delete"
+                @click=${this._deleteTapped}
+              ></paper-icon-button>
+            `
+      }
+
+          ${
+            this._errors
+              ? html`
+                  <div class="errors">${this._errors}</div>
+                `
+              : ""
+          }
           <div
             id="root"
             class="${classMap({
@@ -198,11 +198,13 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
           >
             <ha-config-section .isWide=${this.isWide}>
               <div slot="header">
-                ${this.scene
-                  ? computeStateName(this.scene)
-                  : this.hass.localize(
-                      "ui.panel.config.scene.editor.default_name"
-                    )}
+                ${
+                  this.scene
+                    ? computeStateName(this.scene)
+                    : this.hass.localize(
+                        "ui.panel.config.scene.editor.default_name"
+                      )
+                }
               </div>
               <div slot="introduction">
                 ${this.hass.localize(
@@ -291,87 +293,88 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
               </ha-card>
             </ha-config-section>
 
-            ${this.showAdvanced
-              ? html`
-                  <ha-config-section .isWide=${this.isWide}>
-                    <div slot="header">
-                      ${this.hass.localize(
-                        "ui.panel.config.scene.editor.entities.header"
-                      )}
-                    </div>
-                    <div slot="introduction">
-                      ${this.hass.localize(
-                        "ui.panel.config.scene.editor.entities.introduction"
-                      )}
-                    </div>
-                    ${entities.length
-                      ? html`
-                          <ha-card
-                            class="entities"
-                            .header=${this.hass.localize(
-                              "ui.panel.config.scene.editor.entities.without_device"
-                            )}
-                          >
-                            ${entities.map((entityId) => {
-                              const stateObj = this.hass.states[entityId];
-                              if (!stateObj) {
-                                return html``;
-                              }
-                              return html`
-                                <paper-icon-item
-                                  .entityId=${entityId}
-                                  @click=${this._showMoreInfo}
-                                  class="device-entity"
-                                >
-                                  <state-badge
-                                    .stateObj=${stateObj}
-                                    slot="item-icon"
-                                  ></state-badge>
-                                  <paper-item-body>
-                                    ${computeStateName(stateObj)}
-                                  </paper-item-body>
-                                  <paper-icon-button
-                                    icon="hass:delete"
-                                    .entityId=${entityId}
-                                    .title="${this.hass.localize(
-                                      "ui.panel.config.scene.editor.entities.delete"
-                                    )}"
-                                    @click=${this._deleteEntity}
-                                  ></paper-icon-button>
-                                </paper-icon-item>
-                              `;
-                            })}
-                          </ha-card>
-                        `
-                      : ""}
-
-                    <ha-card
-                      header=${this.hass.localize(
-                        "ui.panel.config.scene.editor.entities.add"
-                      )}
-                    >
-                      <div class="card-content">
+            ${
+              this.showAdvanced
+                ? html`
+                    <ha-config-section .isWide=${this.isWide}>
+                      <div slot="header">
                         ${this.hass.localize(
-                          "ui.panel.config.scene.editor.entities.device_entities"
+                          "ui.panel.config.scene.editor.entities.header"
                         )}
-                        <ha-entity-picker
-                          @value-changed=${this._entityPicked}
-                          .excludeDomains=${SCENE_IGNORED_DOMAINS}
-                          .hass=${this.hass}
-                          label=${this.hass.localize(
-                            "ui.panel.config.scene.editor.entities.add"
-                          )}
-                        />
                       </div>
-                    </ha-card>
-                  </ha-config-section>
-                `
-              : ""}
+                      <div slot="introduction">
+                        ${this.hass.localize(
+                          "ui.panel.config.scene.editor.entities.introduction"
+                        )}
+                      </div>
+                      ${entities.length
+                        ? html`
+                            <ha-card
+                              class="entities"
+                              .header=${this.hass.localize(
+                                "ui.panel.config.scene.editor.entities.without_device"
+                              )}
+                            >
+                              ${entities.map((entityId) => {
+                                const stateObj = this.hass.states[entityId];
+                                if (!stateObj) {
+                                  return html``;
+                                }
+                                return html`
+                                  <paper-icon-item
+                                    .entityId=${entityId}
+                                    @click=${this._showMoreInfo}
+                                    class="device-entity"
+                                  >
+                                    <state-badge
+                                      .stateObj=${stateObj}
+                                      slot="item-icon"
+                                    ></state-badge>
+                                    <paper-item-body>
+                                      ${computeStateName(stateObj)}
+                                    </paper-item-body>
+                                    <paper-icon-button
+                                      icon="hass:delete"
+                                      .entityId=${entityId}
+                                      .title="${this.hass.localize(
+                                        "ui.panel.config.scene.editor.entities.delete"
+                                      )}"
+                                      @click=${this._deleteEntity}
+                                    ></paper-icon-button>
+                                  </paper-icon-item>
+                                `;
+                              })}
+                            </ha-card>
+                          `
+                        : ""}
+
+                      <ha-card
+                        header=${this.hass.localize(
+                          "ui.panel.config.scene.editor.entities.add"
+                        )}
+                      >
+                        <div class="card-content">
+                          ${this.hass.localize(
+                            "ui.panel.config.scene.editor.entities.device_entities"
+                          )}
+                          <ha-entity-picker
+                            @value-changed=${this._entityPicked}
+                            .excludeDomains=${SCENE_IGNORED_DOMAINS}
+                            .hass=${this.hass}
+                            label=${this.hass.localize(
+                              "ui.panel.config.scene.editor.entities.add"
+                            )}
+                          />
+                        </div>
+                      </ha-card>
+                    </ha-config-section>
+                  `
+                : ""
+            }
           </div>
-        </div>
         <ha-fab
-          slot="fab"
           ?is-wide="${this.isWide}"
+          ?narrow="${this.narrow}"
           ?dirty="${this._dirty}"
           icon="hass:content-save"
           .title="${this.hass.localize("ui.panel.config.scene.editor.save")}"
@@ -706,7 +709,10 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
           bottom: 24px;
           right: 24px;
         }
-
+        ha-fab[narrow] {
+          bottom: 76px;
+          margin-bottom: -140px;
+        }
         ha-fab[dirty] {
           margin-bottom: 0;
         }

@@ -22,6 +22,7 @@ export interface ConfigPageNavigation {
   page: string;
   core?: boolean;
   advanced?: boolean;
+  icon?: string;
   info?: any;
 }
 
@@ -30,57 +31,49 @@ class HaConfigNavigation extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public showAdvanced!: boolean;
   @property() public pages!: ConfigPageNavigation[];
-  @property() public curPage!: string;
 
   protected render(): TemplateResult {
     return html`
-      <paper-listbox attr-for-selected="data-page" .selected=${this.curPage}>
-        ${this.pages.map(({ page, core, advanced, info }) =>
-          (core || isComponentLoaded(this.hass, page)) &&
-          (!advanced || this.showAdvanced)
-            ? html`
-                <a
-                  href=${`/config/${page}`}
-                  aria-role="option"
-                  data-page="${page}"
-                  tabindex="-1"
-                >
-                  <paper-item>
-                    <paper-item-body two-line>
-                      ${this.hass.localize(`ui.panel.config.${page}.caption`)}
-                      ${page === "cloud" && (info as CloudStatus)
-                        ? info.logged_in
-                          ? html`
-                              <div secondary>
-                                ${this.hass.localize(
-                                  "ui.panel.config.cloud.description_login",
-                                  "email",
-                                  (info as CloudStatusLoggedIn).email
-                                )}
-                              </div>
-                            `
-                          : html`
-                              <div secondary>
-                                ${this.hass.localize(
-                                  "ui.panel.config.cloud.description_features"
-                                )}
-                              </div>
-                            `
+      ${this.pages.map(({ page, core, advanced, info }) =>
+        (core || isComponentLoaded(this.hass, page)) &&
+        (!advanced || this.showAdvanced)
+          ? html`
+              <a href=${`/config/${page}`} aria-role="option" tabindex="-1">
+                <paper-item>
+                  <paper-item-body two-line>
+                    ${this.hass.localize(`ui.panel.config.${page}.caption`)}
+                    ${page === "cloud" && (info as CloudStatus)
+                      ? info.logged_in
+                        ? html`
+                            <div secondary>
+                              ${this.hass.localize(
+                                "ui.panel.config.cloud.description_login",
+                                "email",
+                                (info as CloudStatusLoggedIn).email
+                              )}
+                            </div>
+                          `
                         : html`
                             <div secondary>
                               ${this.hass.localize(
-                                `ui.panel.config.${page}.description`
+                                "ui.panel.config.cloud.description_features"
                               )}
                             </div>
-                          `}
-                    </paper-item-body>
-                    <ha-icon-next></ha-icon-next>
-                  </paper-item>
-                </a>
-              `
-            : ""
-        )}
-      </paper-listbox>
+                          `
+                      : html`
+                          <div secondary>
+                            ${this.hass.localize(
+                              `ui.panel.config.${page}.description`
+                            )}
+                          </div>
+                        `}
+                  </paper-item-body>
+                  <ha-icon-next></ha-icon-next>
+                </paper-item>
+              </a>
+            `
+          : ""
+      )}
     `;
   }
 
@@ -105,10 +98,6 @@ class HaConfigNavigation extends LitElement {
         transition: opacity 15ms linear;
         will-change: opacity;
       }
-      .iron-selected paper-item::before {
-        background-color: var(--sidebar-selected-icon-color);
-        opacity: 0.12;
-      }
       a:not(.iron-selected):focus::before {
         background-color: currentColor;
         opacity: var(--dark-divider-opacity);
@@ -116,12 +105,6 @@ class HaConfigNavigation extends LitElement {
       .iron-selected paper-item:focus::before,
       .iron-selected:focus paper-item::before {
         opacity: 0.2;
-      }
-      .iron-selected paper-item[pressed]::before {
-        opacity: 0.37;
-      }
-      paper-listbox {
-        padding: 0;
       }
     `;
   }

@@ -10,7 +10,7 @@ import {
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 
-import { HomeAssistant } from "../../../types";
+import { HomeAssistant, Route } from "../../../types";
 import {
   AreaRegistryEntry,
   updateAreaRegistryEntry,
@@ -20,7 +20,7 @@ import {
 } from "../../../data/area_registry";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
-import "../../../layouts/hass-subpage";
+import "../../../layouts/hass-tabs-subpage";
 import "../../../layouts/hass-loading-screen";
 import "../ha-config-section";
 import {
@@ -30,11 +30,14 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { configSections } from "../ha-panel-config";
 
 @customElement("ha-config-areas")
 export class HaConfigAreas extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public isWide?: boolean;
+  @property() public narrow!: boolean;
+  @property() public route!: Route;
   @property() private _areas?: AreaRegistryEntry[];
   private _unsubAreas?: UnsubscribeFunc;
 
@@ -52,9 +55,12 @@ export class HaConfigAreas extends LitElement {
       `;
     }
     return html`
-      <hass-subpage
-        .header="${this.hass.localize("ui.panel.config.areas.caption")}"
-        .showBackButton=${!this.isWide}
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config"
+        .route=${this.route}
+        .tabs=${configSections[0]}
       >
         <ha-config-section .isWide=${this.isWide}>
           <span slot="header">
@@ -95,10 +101,11 @@ export class HaConfigAreas extends LitElement {
               : html``}
           </ha-card>
         </ha-config-section>
-      </hass-subpage>
+      </hass-tabs-subpage>
 
       <ha-fab
         ?is-wide=${this.isWide}
+        ?narrow=${this.narrow}
         icon="hass:plus"
         title="${this.hass.localize("ui.panel.config.areas.create_area")}"
         @click=${this._createArea}
@@ -162,6 +169,10 @@ All devices in this area will become unassigned.`)
 
   static get styles(): CSSResult {
     return css`
+      hass-loading-screen {
+        --app-header-background-color: var(--sidebar-background-color);
+        --app-header-text-color: var(--sidebar-text-color);
+      }
       a {
         color: var(--primary-color);
       }
@@ -189,7 +200,9 @@ All devices in this area will become unassigned.`)
         bottom: 24px;
         right: 24px;
       }
-
+      ha-fab[narrow] {
+        bottom: 76px;
+      }
       ha-fab.rtl {
         right: auto;
         left: 16px;

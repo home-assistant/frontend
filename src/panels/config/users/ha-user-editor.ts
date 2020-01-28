@@ -10,10 +10,10 @@ import {
 import { until } from "lit-html/directives/until";
 import "@material/mwc-button";
 
-import "../../../layouts/hass-subpage";
+import "../../../layouts/hass-tabs-subpage";
 import { haStyle } from "../../../resources/styles";
 import "../../../components/ha-card";
-import { HomeAssistant } from "../../../types";
+import { HomeAssistant, Route } from "../../../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { navigate } from "../../../common/navigate";
 import {
@@ -29,6 +29,7 @@ import {
   showConfirmationDialog,
   showPromptDialog,
 } from "../../../dialogs/generic/show-dialog-box";
+import { configSections } from "../ha-panel-config";
 
 declare global {
   interface HASSDomEvents {
@@ -42,6 +43,8 @@ const GROUPS = [SYSTEM_GROUP_ID_USER, SYSTEM_GROUP_ID_ADMIN];
 class HaUserEditor extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public user?: User;
+  @property() public narrow?: boolean;
+  @property() public route!: Route;
 
   protected render(): TemplateResult {
     const hass = this.hass;
@@ -51,8 +54,11 @@ class HaUserEditor extends LitElement {
     }
 
     return html`
-      <hass-subpage
-        .header=${hass.localize("ui.panel.config.users.editor.caption")}
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .route=${this.route}
+        .tabs=${configSections[2]}
       >
         <ha-card .header=${this._name}>
           <table class="card-content">
@@ -130,7 +136,7 @@ class HaUserEditor extends LitElement {
               : ""}
           </div>
         </ha-card>
-      </hass-subpage>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -225,7 +231,7 @@ class HaUserEditor extends LitElement {
         }
         ha-card {
           max-width: 600px;
-          margin: 0 auto 16px;
+          margin: 16px auto 16px;
         }
         hass-subpage ha-card:first-of-type {
           direction: ltr;

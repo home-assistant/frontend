@@ -369,7 +369,7 @@ class CloudGoogleAssistant extends LitElement {
       }
       ha-card {
         margin: 4px;
-        flex-basis: 300px;
+        width: 300px;
         flex-grow: 1;
       }
       .card-content {

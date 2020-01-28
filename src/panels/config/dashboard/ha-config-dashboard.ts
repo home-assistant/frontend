@@ -23,6 +23,7 @@ import "../../../components/ha-icon-next";
 
 import "../ha-config-section";
 import "./ha-config-navigation";
+import { configSections } from "../ha-panel-config";
 
 @customElement("ha-config-dashboard")
 class HaConfigDashboard extends LitElement {
@@ -86,36 +87,22 @@ class HaConfigDashboard extends LitElement {
                 </ha-card>
               `
             : ""}
-
+          ${configSections.map(
+            (section) => html`
+              <ha-card>
+                <ha-config-navigation
+                  .hass=${this.hass}
+                  .showAdvanced=${this.showAdvanced}
+                  .pages=${section}
+                ></ha-config-navigation>
+              </ha-card>
+            `
+          )}
           <ha-card>
             <ha-config-navigation
               .hass=${this.hass}
               .showAdvanced=${this.showAdvanced}
-              .pages=${[
-                { page: "integrations", core: true },
-                { page: "devices", core: true },
-                { page: "entities", core: true },
-                { page: "automation" },
-                { page: "script" },
-                { page: "scene" },
-              ]}
-            ></ha-config-navigation>
-          </ha-card>
-          <ha-card>
-            <ha-config-navigation
-              .hass=${this.hass}
-              .showAdvanced=${this.showAdvanced}
-              .pages=${[
-                { page: "core", core: true },
-                { page: "server_control", core: true },
-                { page: "areas", core: true },
-                { page: "zone" },
-                { page: "person" },
-                { page: "users", core: true },
-                { page: "zha" },
-                { page: "zwave" },
-                { page: "customize", core: true, advanced: true },
-              ]}
+              .pages=${[{ page: "zha" }, { page: "zwave" }]}
             ></ha-config-navigation>
           </ha-card>
 
@@ -142,6 +129,12 @@ class HaConfigDashboard extends LitElement {
     return [
       haStyle,
       css`
+        app-header {
+          --app-header-background-color: var(--sidebar-background-color);
+          --app-header-text-color: var(--sidebar-text-color);
+          border-bottom: 1px solid var(--divider-color);
+        }
+
         ha-config-navigation:last-child {
           margin-bottom: 24px;
         }

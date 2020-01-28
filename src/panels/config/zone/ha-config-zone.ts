@@ -16,10 +16,10 @@ import "@polymer/paper-tooltip/paper-tooltip";
 
 import "../../../components/map/ha-locations-editor";
 
-import { HomeAssistant } from "../../../types";
+import { HomeAssistant, Route } from "../../../types";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
-import "../../../layouts/hass-subpage";
+import "../../../layouts/hass-tabs-subpage";
 import "../../../layouts/hass-loading-screen";
 import { compare } from "../../../common/string/compare";
 import "../ha-config-section";
@@ -42,12 +42,14 @@ import { HassEntity, UnsubscribeFunc } from "home-assistant-js-websocket";
 import memoizeOne from "memoize-one";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
+import { configSections } from "../ha-panel-config";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
   @property() public hass!: HomeAssistant;
   @property() public isWide?: boolean;
   @property() public narrow?: boolean;
+  @property() public route!: Route;
   @property() private _storageItems?: Zone[];
   @property() private _stateItems?: HassEntity[];
   @property() private _activeEntry: string = "";
@@ -179,7 +181,13 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           `;
 
     return html`
-      <hass-subpage .header=${hass.localize("ui.panel.config.zone.caption")}>
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .route=${this.route}
+        back-path="/config"
+        .tabs=${configSections[2]}
+      >
         ${this.narrow
           ? html`
               <ha-config-section .isWide=${this.isWide}>
@@ -206,10 +214,11 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
               </div>
             `
           : ""}
-      </hass-subpage>
+      </hass-tabs-subpage>
 
       <ha-fab
         ?is-wide=${this.isWide}
+        ?narrow=${this.narrow}
         icon="hass:plus"
         title="${hass.localize("ui.panel.config.zone.add_zone")}"
         @click=${this._createZone}
@@ -389,6 +398,10 @@ ${this.hass!.localize("ui.panel.config.zone.confirm_delete2")}`)
 
   static get styles(): CSSResult {
     return css`
+      hass-loading-screen {
+        --app-header-background-color: var(--sidebar-background-color);
+        --app-header-text-color: var(--sidebar-text-color);
+      }
       a {
         color: var(--primary-color);
       }
@@ -448,6 +461,9 @@ ${this.hass!.localize("ui.panel.config.zone.confirm_delete2")}`)
       ha-fab[is-wide] {
         bottom: 24px;
         right: 24px;
+      }
+      ha-fab[narrow] {
+        bottom: 76px;
       }
     `;
   }
