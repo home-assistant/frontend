@@ -73,7 +73,7 @@ class HaConfigDashboard extends LitElement {
                 </ha-card>
               `
             : ""}
-          ${configSections.map(
+          ${Object.values(configSections).map(
             (section) => html`
               <ha-card>
                 <ha-config-navigation

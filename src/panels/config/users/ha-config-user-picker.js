@@ -149,7 +149,7 @@ class HaUserPicker extends EventsMixin(
   }
 
   _computeTabs() {
-    return configSections[2];
+    return configSections.persons;
   }
 
   _addUser() {

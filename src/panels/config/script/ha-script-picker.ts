@@ -42,7 +42,7 @@ class HaScriptPicker extends LitElement {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections[1]}
+        .tabs=${configSections.automation}
       >
         <ha-config-section .isWide=${this.isWide}>
           <div slot="header">

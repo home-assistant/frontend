@@ -58,7 +58,7 @@ class HaUserEditor extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         .route=${this.route}
-        .tabs=${configSections[2]}
+        .tabs=${configSections.persons}
       >
         <ha-card .header=${this._name}>
           <table class="card-content">

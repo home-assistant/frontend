@@ -47,7 +47,7 @@ export class HaScriptEditor extends LitElement {
         .narrow=${this.narrow}
         .route=${this.route}
         .backCallback=${() => this._backTapped()}
-        .tabs=${configSections[1]}
+        .tabs=${configSections.automation}
       >
         ${this.creatingNew
           ? ""

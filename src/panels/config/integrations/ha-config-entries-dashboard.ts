@@ -80,7 +80,7 @@ export class HaConfigManagerDashboard extends LitElement {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections[0]}
+        .tabs=${configSections.integrations}
       >
         <paper-menu-button
           close-on-activate

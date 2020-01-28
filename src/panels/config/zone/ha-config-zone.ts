@@ -186,7 +186,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         .route=${this.route}
         back-path="/config"
-        .tabs=${configSections[2]}
+        .tabs=${configSections.persons}
       >
         ${this.narrow
           ? html`

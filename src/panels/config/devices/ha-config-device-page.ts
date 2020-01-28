@@ -138,7 +138,7 @@ export class HaConfigDevicePage extends LitElement {
       <hass-tabs-subpage
         .hass=${this.hass}
         .narrow=${this.narrow}
-        .tabs=${configSections[0]}
+        .tabs=${configSections.integrations}
         .route=${this.route}
       >
         <paper-icon-button

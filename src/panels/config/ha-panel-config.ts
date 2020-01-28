@@ -21,8 +21,8 @@ declare global {
   }
 }
 
-export const configSections: PageNavigation[][] = [
-  [
+export const configSections: { [name: string]: PageNavigation[] } = {
+  integrations: [
     {
       component: "integrations",
       path: "/config/integrations",
@@ -52,7 +52,7 @@ export const configSections: PageNavigation[][] = [
       core: true,
     },
   ],
-  [
+  automation: [
     {
       component: "automation",
       path: "/config/automation",
@@ -72,7 +72,7 @@ export const configSections: PageNavigation[][] = [
       icon: "hass:script-text",
     },
   ],
-  [
+  persons: [
     {
       component: "person",
       path: "/config/person",
@@ -94,7 +94,7 @@ export const configSections: PageNavigation[][] = [
       core: true,
     },
   ],
-  [
+  general: [
     {
       component: "core",
       path: "/config/core",
@@ -118,7 +118,7 @@ export const configSections: PageNavigation[][] = [
       exportOnly: true,
     },
   ],
-  [
+  other: [
     {
       component: "zha",
       path: "/config/zha",
@@ -132,7 +132,7 @@ export const configSections: PageNavigation[][] = [
       icon: "hass:z-wave",
     },
   ],
-];
+};
 
 @customElement("ha-panel-config")
 class HaPanelConfig extends HassRouterPage {

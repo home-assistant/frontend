@@ -229,7 +229,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections[0]}
+        .tabs=${configSections.integrations}
       >
         <div class="content">
           <div class="intro">

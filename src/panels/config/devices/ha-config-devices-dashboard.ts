@@ -35,7 +35,7 @@ export class HaConfigDeviceDashboard extends LitElement {
         .hass=${this.hass}
         .narrow=${this.narrow}
         back-path="/config"
-        .tabs=${configSections[0]}
+        .tabs=${configSections.integrations}
         .route=${this.route}
       >
         <div class="content">

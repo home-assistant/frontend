@@ -60,7 +60,7 @@ export class HaConfigAreas extends LitElement {
         .narrow=${this.narrow}
         back-path="/config"
         .route=${this.route}
-        .tabs=${configSections[0]}
+        .tabs=${configSections.persons}
       >
         <ha-config-section .isWide=${this.isWide}>
           <span slot="header">

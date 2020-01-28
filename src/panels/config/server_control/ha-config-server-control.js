@@ -64,7 +64,7 @@ class HaConfigServerControl extends LocalizeMixin(PolymerElement) {
   }
 
   _computeTabs() {
-    return configSections[3];
+    return configSections.general;
   }
 
   computeClasses(isWide) {
