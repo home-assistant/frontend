@@ -481,16 +481,12 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   }
 
   private _initEntities(config: SceneConfig) {
-    console.log("Scene config", config);
     this._entities = Object.keys(config.entities);
     this._entities.forEach((entity) => this._storeState(entity));
-
-    console.log(this._entityRegistryEntries);
 
     const filteredEntityReg = this._entityRegistryEntries.filter((entityReg) =>
       this._entities.includes(entityReg.entity_id)
     );
-    console.log(filteredEntityReg);
     this._devices = [];
 
     for (const entityReg of filteredEntityReg) {
