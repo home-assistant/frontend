@@ -1,6 +1,6 @@
 import "@polymer/iron-icon/iron-icon";
 import "@polymer/paper-item/paper-item-body";
-import "@polymer/paper-item/paper-item";
+import "@polymer/paper-item/paper-icon-item";
 
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
@@ -34,12 +34,13 @@ class HaConfigNavigation extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      ${this.pages.map(({ page, core, advanced, info }) =>
+      ${this.pages.map(({ page, core, advanced, info, icon }) =>
         (core || isComponentLoaded(this.hass, page)) &&
         (!advanced || this.showAdvanced)
           ? html`
               <a href=${`/config/${page}`} aria-role="option" tabindex="-1">
-                <paper-item>
+                <paper-icon-item>
+                  <ha-icon .icon=${icon} slot="item-icon"></ha-icon>
                   <paper-item-body two-line>
                     ${this.hass.localize(`ui.panel.config.${page}.caption`)}
                     ${page === "cloud" && (info as CloudStatus)
@@ -69,7 +70,7 @@ class HaConfigNavigation extends LitElement {
                         `}
                   </paper-item-body>
                   <ha-icon-next></ha-icon-next>
-                </paper-item>
+                </paper-icon-item>
               </a>
             `
           : ""

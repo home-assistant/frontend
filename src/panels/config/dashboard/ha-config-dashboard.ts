@@ -58,32 +58,17 @@ class HaConfigDashboard extends LitElement {
           ${this.cloudStatus && isComponentLoaded(this.hass, "cloud")
             ? html`
                 <ha-card>
-                  <a href="/config/cloud" tabindex="-1">
-                    <paper-item>
-                      <paper-item-body two-line="">
-                        ${this.hass.localize("ui.panel.config.cloud.caption")}
-                        ${this.cloudStatus.logged_in
-                          ? html`
-                              <div secondary="">
-                                ${this.hass.localize(
-                                  "ui.panel.config.cloud.description_login",
-                                  "email",
-                                  (this.cloudStatus as CloudStatusLoggedIn)
-                                    .email
-                                )}
-                              </div>
-                            `
-                          : html`
-                              <div secondary="">
-                                ${this.hass.localize(
-                                  "ui.panel.config.cloud.description_features"
-                                )}
-                              </div>
-                            `}
-                      </paper-item-body>
-                      <ha-icon-next></ha-icon-next>
-                    </paper-item>
-                  </a>
+                  <ha-config-navigation
+                    .hass=${this.hass}
+                    .showAdvanced=${this.showAdvanced}
+                    .pages=${[
+                      {
+                        page: "cloud",
+                        info: this.cloudStatus,
+                        icon: "hass:cloud-lock",
+                      },
+                    ]}
+                  ></ha-config-navigation>
                 </ha-card>
               `
             : ""}
@@ -130,8 +115,6 @@ class HaConfigDashboard extends LitElement {
       haStyle,
       css`
         app-header {
-          --app-header-background-color: var(--sidebar-background-color);
-          --app-header-text-color: var(--sidebar-text-color);
           border-bottom: 1px solid var(--divider-color);
         }
 

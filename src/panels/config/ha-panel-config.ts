@@ -23,32 +23,32 @@ declare global {
 
 export const configSections: ConfigPageNavigation[][] = [
   [
-    { page: "integrations", icon: "hass:home-assistant", core: true },
+    { page: "integrations", icon: "hass:sitemap", core: true },
     { page: "devices", icon: "hass:home-assistant", core: true },
     { page: "entities", icon: "hass:home-assistant", core: true },
-    { page: "areas", icon: "hass:home-assistant", core: true },
+    { page: "areas", icon: "hass:floor-plan", core: true },
   ],
   [
-    { page: "automation", icon: "hass:home-assistant" },
-    { page: "scene", icon: "hass:home-assistant" },
-    { page: "script", icon: "hass:home-assistant" },
+    { page: "automation", icon: "hass:cogs" },
+    { page: "scene", icon: "hass:tune" },
+    { page: "script", icon: "hass:script-text" },
   ],
   [
-    { page: "person", icon: "hass:home-assistant" },
-    { page: "zone", icon: "hass:home-assistant", core: true },
-    { page: "users", icon: "hass:home-assistant", core: true },
+    { page: "person", icon: "hass:account" },
+    { page: "zone", icon: "hass:map-marker-radius", core: true },
+    { page: "users", icon: "hass:account-badge-horizontal", core: true },
   ],
   [
     { page: "core", icon: "hass:home-assistant", core: true },
-    { page: "server_control", icon: "hass:home-assistant", core: true },
+    { page: "server_control", icon: "hass:server", core: true },
     {
       page: "customize",
-      icon: "hass:home-assistant",
+      icon: "hass:pencil",
       core: true,
       advanced: true,
     },
-    { page: "zha" },
-    { page: "zwave" },
+    { page: "zha", icon: "hass:zigbee" },
+    { page: "zwave", icon: "hass:z-wave" },
   ],
 ];
 
