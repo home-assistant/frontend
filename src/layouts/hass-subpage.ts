@@ -59,6 +59,7 @@ class HassSubpage extends LitElement {
         background-color: var(--app-header-background-color);
         font-weight: 400;
         color: var(--app-header-text-color, white);
+        border-bottom: var(--app-header-border-bottom, none);
       }
 
       ha-menu-button,

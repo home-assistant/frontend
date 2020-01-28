@@ -12,7 +12,7 @@ import "../../../components/ha-card";
 import "../../../components/ha-icon-next";
 import "../../../components/ha-fab";
 import "../../../components/entity/ha-state-icon";
-import "../../../layouts/hass-subpage";
+import "../../../layouts/hass-tabs-subpage";
 import "../../../resources/ha-style";
 import "../../../components/ha-icon";
 
@@ -38,18 +38,21 @@ import {
   css,
   CSSResult,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
+import { HomeAssistant, Route } from "../../../types";
 import { ConfigEntry, deleteConfigEntry } from "../../../data/config_entries";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { DataEntryFlowProgress } from "../../../data/data_entry_flow";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { configSections } from "../ha-panel-config";
 
 @customElement("ha-config-entries-dashboard")
 export class HaConfigManagerDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public showAdvanced!: boolean;
   @property() public isWide!: boolean;
+  @property() public narrow!: boolean;
+  @property() public route!: Route;
 
   @property() private configEntries!: ConfigEntry[];
 
@@ -72,9 +75,12 @@ export class HaConfigManagerDashboard extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <hass-subpage
-        .showBackButton=${!this.isWide}
-        .header=${this.hass.localize("ui.panel.config.integrations.caption")}
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config"
+        .route=${this.route}
+        .tabs=${configSections.integrations}
       >
         <paper-menu-button
           close-on-activate
@@ -247,8 +253,9 @@ export class HaConfigManagerDashboard extends LitElement {
           title=${this.hass.localize("ui.panel.config.integrations.new")}
           @click=${this._createFlow}
           ?rtl=${computeRTL(this.hass!)}
+          ?narrow=${this.narrow}
         ></ha-fab>
-      </hass-subpage>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -361,7 +368,9 @@ export class HaConfigManagerDashboard extends LitElement {
         right: 16px;
         z-index: 1;
       }
-
+      ha-fab[narrow] {
+        bottom: 84px;
+      }
       ha-fab[rtl] {
         right: auto;
         left: 16px;

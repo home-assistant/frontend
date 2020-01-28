@@ -100,6 +100,7 @@ class HaConfigDevices extends HassRouterPage {
     pageEl.narrow = this.narrow;
     pageEl.isWide = this.isWide;
     pageEl.showAdvanced = this.showAdvanced;
+    pageEl.route = this.routeTail;
   }
 
   private _loadData() {

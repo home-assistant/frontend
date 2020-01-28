@@ -11,7 +11,6 @@ import {
   TemplateResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
-import { computeStateName } from "../../../common/entity/compute_state_name";
 import { navigate } from "../../../common/navigate";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import "../../../components/ha-fab";
@@ -25,14 +24,17 @@ import {
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import "../../../layouts/ha-app-layout";
 import { haStyle } from "../../../resources/styles";
-import { HomeAssistant } from "../../../types";
+import { HomeAssistant, Route } from "../../../types";
 import "../automation/action/ha-automation-action";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
+import { configSections } from "../ha-panel-config";
 
 export class HaScriptEditor extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public script!: ScriptEntity;
   @property() public isWide?: boolean;
+  @property() public narrow!: boolean;
+  @property() public route!: Route;
   @property() public creatingNew?: boolean;
   @property() private _config?: ScriptConfig;
   @property() private _dirty?: boolean;
@@ -40,32 +42,25 @@ export class HaScriptEditor extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <ha-app-layout has-scrolling-region>
-        <app-header slot="header" fixed>
-          <app-toolbar>
-            <ha-paper-icon-button-arrow-prev
-              @click=${this._backTapped}
-            ></ha-paper-icon-button-arrow-prev>
-            <div main-title>
-              ${this.script
-                ? computeStateName(this.script)
-                : this.hass.localize(
-                    "ui.panel.config.script.editor.default_name"
-                  )}
-            </div>
-            ${this.creatingNew
-              ? ""
-              : html`
-                  <paper-icon-button
-                    title="${this.hass.localize(
-                      "ui.panel.config.script.editor.delete_script"
-                    )}"
-                    icon="hass:delete"
-                    @click=${this._deleteConfirm}
-                  ></paper-icon-button>
-                `}
-          </app-toolbar>
-        </app-header>
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .route=${this.route}
+        .backCallback=${() => this._backTapped()}
+        .tabs=${configSections.automation}
+      >
+        ${this.creatingNew
+          ? ""
+          : html`
+              <paper-icon-button
+                slot="toolbar-icon"
+                title="${this.hass.localize(
+                  "ui.panel.config.script.editor.delete_script"
+                )}"
+                icon="hass:delete"
+                @click=${this._deleteConfirm}
+              ></paper-icon-button>
+            `}
 
         <div class="content">
           ${this._errors
@@ -134,9 +129,9 @@ export class HaScriptEditor extends LitElement {
           </div>
         </div>
         <ha-fab
-          slot="fab"
-          ?is-wide="${this.isWide}"
-          ?dirty="${this._dirty}"
+          ?is-wide=${this.isWide}
+          ?narrow=${this.narrow}
+          ?dirty=${this._dirty}
           icon="hass:content-save"
           .title="${this.hass.localize("ui.common.save")}"
           @click=${this._saveScript}
@@ -144,7 +139,7 @@ export class HaScriptEditor extends LitElement {
             rtl: computeRTL(this.hass),
           })}"
         ></ha-fab>
-      </ha-app-layout>
+      </hass-tabs-subpage>
     `;
   }
 
@@ -301,7 +296,10 @@ export class HaScriptEditor extends LitElement {
           bottom: 24px;
           right: 24px;
         }
-
+        ha-fab[narrow] {
+          bottom: 84px;
+          margin-bottom: -140px;
+        }
         ha-fab[dirty] {
           margin-bottom: 0;
         }
