@@ -455,8 +455,7 @@ class HassioAddonInfo extends LitElement {
                 >
                   Install
                 </ha-progress-button>
-              `
-        }
+              `}
         </div>
       </paper-card>
 
