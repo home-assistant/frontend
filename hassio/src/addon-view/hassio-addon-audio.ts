@@ -51,7 +51,7 @@ class HassioAddonAudio extends LitElement {
 
           <paper-dropdown-menu
             label="Input"
-            @selected-item-changed=${this._setInputDevice}
+            @iron-select=${this._setInputDevice}
           >
             <paper-listbox
               slot="dropdown-content"
@@ -68,7 +68,7 @@ class HassioAddonAudio extends LitElement {
           </paper-dropdown-menu>
           <paper-dropdown-menu
             label="Output"
-            @selected-item-changed=${this._setOutputDevice}
+            @iron-select=${this._setOutputDevice}
           >
             <paper-listbox
               slot="dropdown-content"
@@ -123,14 +123,14 @@ class HassioAddonAudio extends LitElement {
   }
 
   private _setInputDevice(ev): void {
-    const device = ev.detail.device;
+    const device = ev.detail.item.attributes.device.value;
     if (device) {
       this._selectedInput = device;
     }
   }
 
   private _setOutputDevice(ev): void {
-    const device = ev.detail.device;
+    const device = ev.detail.item.attributes.device.value;
     if (device) {
       this._selectedOutput = device;
     }
