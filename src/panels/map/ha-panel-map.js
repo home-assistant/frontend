@@ -4,6 +4,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../components/ha-menu-button";
 import "../../components/ha-icon";
+import { navigate } from "../../common/navigate";
 
 import "./ha-entity-marker";
 
@@ -33,6 +34,10 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
       <app-toolbar>
         <ha-menu-button hass="[[hass]]" narrow="[[narrow]]"></ha-menu-button>
         <div main-title>[[localize('panel.map')]]</div>
+        <paper-icon-button
+          icon="hass:settings"
+          on-click="openZonesEditor"
+        ></paper-icon-button>
       </app-toolbar>
 
       <div id="map"></div>
@@ -65,6 +70,10 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
     if (this._map) {
       this._map.remove();
     }
+  }
+
+  openZonesEditor() {
+    navigate(this, "/config/zone");
   }
 
   fitMap() {
