@@ -272,6 +272,7 @@ class DialogZoneDetail extends LitElement {
             --mdc-dialog-min-width: 100vw;
             --mdc-dialog-max-height: 100vh;
             --mdc-dialog-shape-radius: 0px;
+            --vertial-align-dialog: flex-end;
           }
         }
         .form {
