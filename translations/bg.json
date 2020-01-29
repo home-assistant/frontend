@@ -629,7 +629,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Регистър на областите",
                     "create_area": "СЪЗДАВАНЕ НА ОБЛАСТ",
                     "description": "Преглед на всички области във Вашия дом.",
@@ -907,7 +907,7 @@
                     "caption": "Устройства",
                     "description": "Управление на свързани устройства"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Регистър на обектите",
                     "description": "Преглед на всички известни обекти.",
                     "editor": {

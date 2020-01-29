@@ -37,7 +37,7 @@ class HuiEntitiesToggle extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._toggleEntities) {
       return html``;
     }
@@ -47,7 +47,7 @@ class HuiEntitiesToggle extends LitElement {
         aria-label=${this.hass!.localize(
           "ui.panel.lovelace.card.entities.toggle"
         )}
-        ?checked="${this._toggleEntities!.some((entityId) => {
+        .checked="${this._toggleEntities!.some((entityId) => {
           const stateObj = this.hass!.states[entityId];
           return stateObj && stateObj.state === "on";
         })}"

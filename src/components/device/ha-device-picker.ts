@@ -203,9 +203,9 @@ export class HaDevicePicker extends SubscribeMixin(LitElement) {
     ];
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.devices || !this.areas || !this.entities) {
-      return;
+      return html``;
     }
     const devices = this._getDevices(
       this.devices,

@@ -35,9 +35,9 @@ class SystemHealthCard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() private _info?: SystemHealthInfo;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
-      return;
+      return html``;
     }
     const sections: TemplateResult[] = [];
 

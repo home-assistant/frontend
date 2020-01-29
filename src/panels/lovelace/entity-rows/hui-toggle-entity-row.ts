@@ -13,11 +13,11 @@ import "../components/hui-warning";
 
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { HomeAssistant } from "../../../types";
-import { EntityRow, EntityConfig } from "./types";
+import { LovelaceRow, EntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-toggle-entity-row")
-class HuiToggleEntityRow extends LitElement implements EntityRow {
+class HuiToggleEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: EntityConfig;
@@ -33,7 +33,7 @@ class HuiToggleEntityRow extends LitElement implements EntityRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }

@@ -8,6 +8,7 @@ import {
   CSSResult,
   PropertyValues,
 } from "lit-element";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 import "../../../components/entity/state-badge";
 import "../components/hui-warning-element";
@@ -38,7 +39,7 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -66,7 +67,11 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
+        tabindex=${ifDefined(
+          hasAction(this._config.tap_action) ? "0" : undefined
+        )}
         .overrideIcon=${this._config.icon}
+        stateColor
       ></state-badge>
     `;
   }
@@ -75,6 +80,11 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
     return css`
       :host {
         cursor: pointer;
+      }
+      state-badge:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 100%;
       }
     `;
   }

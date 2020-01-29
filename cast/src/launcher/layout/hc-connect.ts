@@ -70,7 +70,7 @@ export class HcConnect extends LitElement {
   @property() private castManager?: CastManager | null;
   private openDemo = false;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (this.cannotConnect) {
       const tokens = loadTokens();
       return html`

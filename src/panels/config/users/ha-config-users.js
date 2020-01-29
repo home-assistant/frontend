@@ -27,6 +27,9 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
         <ha-config-user-picker
           hass="[[hass]]"
           users="[[_users]]"
+          is-wide="[[isWide]]"
+          narrow="[[narrow]]"
+          route="[[route]]"
         ></ha-config-user-picker>
       </template>
       <template
@@ -37,6 +40,8 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
         <ha-user-editor
           hass="[[hass]]"
           user="[[_computeUser(_users, _routeData.user)]]"
+          narrow="[[narrow]]"
+          route="[[route]]"
         ></ha-user-editor>
       </template>
     `;
@@ -45,6 +50,8 @@ class HaConfigUsers extends NavigateMixin(PolymerElement) {
   static get properties() {
     return {
       hass: Object,
+      isWide: Boolean,
+      narrow: Boolean,
       route: {
         type: Object,
         observer: "_checkRoute",

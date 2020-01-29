@@ -20,7 +20,7 @@ class HaSetVibrateRow extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-settings-row .narrow=${this.narrow}>
         <span slot="heading">

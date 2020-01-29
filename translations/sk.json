@@ -655,7 +655,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Register oblastí",
                     "create_area": "VYTVORIŤ OBLASŤ",
                     "description": "Prehľad všetkých oblastí vo vašej domácnosti.",
@@ -1061,7 +1061,7 @@
                     "caption": "Zariadenia",
                     "description": "Spravovať pripojené zariadenia"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Register entít",
                     "description": "Prehľad všetkých známych entít.",
                     "editor": {

@@ -11,6 +11,7 @@ import "../../../components/ha-code-editor";
 import "../../../resources/ha-style";
 import { EventsMixin } from "../../../mixins/events-mixin";
 import LocalizeMixin from "../../../mixins/localize-mixin";
+import { showAlertDialog } from "../../../dialogs/generic/show-dialog-box";
 
 const ERROR_SENTINEL = {};
 /*
@@ -257,11 +258,11 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
   handleSetState() {
     if (!this._entityId) {
-      alert(
-        this.hass.localize(
+      showAlertDialog(this, {
+        text: this.hass.localize(
           "ui.panel.developer-tools.tabs.states.alert_entity_field"
-        )
-      );
+        ),
+      });
       return;
     }
     this.hass.callApi("POST", "states/" + this._entityId, {

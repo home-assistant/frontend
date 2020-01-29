@@ -1,15 +1,18 @@
 import { property, PropertyValues, customElement } from "lit-element";
+import "@polymer/paper-item/paper-item-body";
+import "@polymer/paper-item/paper-item";
 import "../../layouts/hass-loading-screen";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
-import { HomeAssistant } from "../../types";
+import { HomeAssistant, Route } from "../../types";
 import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
 import { listenMediaQuery } from "../../common/dom/media_query";
-import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import {
-  CoreFrontendUserData,
   getOptimisticFrontendUserDataCollection,
+  CoreFrontendUserData,
 } from "../../data/frontend";
+import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { PolymerElement } from "@polymer/polymer";
+import { PageNavigation } from "../../layouts/hass-tabs-subpage";
 
 declare global {
   // for fire event
@@ -18,21 +21,135 @@ declare global {
   }
 }
 
+export const configSections: { [name: string]: PageNavigation[] } = {
+  integrations: [
+    {
+      component: "integrations",
+      path: "/config/integrations",
+      translationKey: "ui.panel.config.integrations.caption",
+      icon: "hass:puzzle",
+      core: true,
+    },
+    {
+      component: "devices",
+      path: "/config/devices",
+      translationKey: "ui.panel.config.devices.caption",
+      icon: "hass:devices",
+      core: true,
+    },
+    {
+      component: "entities",
+      path: "/config/entities",
+      translationKey: "ui.panel.config.entities.caption",
+      icon: "hass:shape",
+      core: true,
+    },
+    {
+      component: "areas",
+      path: "/config/areas",
+      translationKey: "ui.panel.config.areas.caption",
+      icon: "hass:sofa",
+      core: true,
+    },
+  ],
+  automation: [
+    {
+      component: "automation",
+      path: "/config/automation",
+      translationKey: "ui.panel.config.automation.caption",
+      icon: "hass:robot",
+    },
+    {
+      component: "scene",
+      path: "/config/scene",
+      translationKey: "ui.panel.config.scene.caption",
+      icon: "hass:palette",
+    },
+    {
+      component: "script",
+      path: "/config/script",
+      translationKey: "ui.panel.config.script.caption",
+      icon: "hass:script-text",
+    },
+  ],
+  persons: [
+    {
+      component: "person",
+      path: "/config/person",
+      translationKey: "ui.panel.config.person.caption",
+      icon: "hass:account",
+    },
+    {
+      component: "zone",
+      path: "/config/zone",
+      translationKey: "ui.panel.config.zone.caption",
+      icon: "hass:map-marker-radius",
+      core: true,
+    },
+    {
+      component: "users",
+      path: "/config/users",
+      translationKey: "ui.panel.config.users.caption",
+      icon: "hass:account-badge-horizontal",
+      core: true,
+    },
+  ],
+  general: [
+    {
+      component: "core",
+      path: "/config/core",
+      translationKey: "ui.panel.config.core.caption",
+      icon: "hass:home-assistant",
+      core: true,
+    },
+    {
+      component: "server_control",
+      path: "/config/server_control",
+      translationKey: "ui.panel.config.server_control.caption",
+      icon: "hass:server",
+      core: true,
+    },
+    {
+      component: "customize",
+      path: "/config/customize",
+      translationKey: "ui.panel.config.customize.caption",
+      icon: "hass:pencil",
+      core: true,
+      exportOnly: true,
+    },
+  ],
+  other: [
+    {
+      component: "zha",
+      path: "/config/zha",
+      translationKey: "ui.panel.config.zha.caption",
+      icon: "hass:zigbee",
+    },
+    {
+      component: "zwave",
+      path: "/config/zwave",
+      translationKey: "ui.panel.config.zwave.caption",
+      icon: "hass:z-wave",
+    },
+  ],
+};
+
 @customElement("ha-panel-config")
 class HaPanelConfig extends HassRouterPage {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
+  @property() public route!: Route;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboard",
     cacheAll: true,
     preloadAll: true,
     routes: {
-      area_registry: {
-        tag: "ha-config-area-registry",
+      areas: {
+        tag: "ha-config-areas",
         load: () =>
           import(
-            /* webpackChunkName: "panel-config-area-registry" */ "./area_registry/ha-config-area-registry"
+            /* webpackChunkName: "panel-config-areas" */ "./areas/ha-config-areas"
           ),
       },
       automation: {
@@ -84,11 +201,11 @@ class HaPanelConfig extends HassRouterPage {
             /* webpackChunkName: "panel-config-dashboard" */ "./dashboard/ha-config-dashboard"
           ),
       },
-      entity_registry: {
-        tag: "ha-config-entity-registry",
+      entities: {
+        tag: "ha-config-entities",
         load: () =>
           import(
-            /* webpackChunkName: "panel-config-entity-registry" */ "./entity_registry/ha-config-entity-registry"
+            /* webpackChunkName: "panel-config-entities" */ "./entities/ha-config-entities"
           ),
       },
       integrations: {
@@ -126,6 +243,13 @@ class HaPanelConfig extends HassRouterPage {
             /* webpackChunkName: "panel-config-users" */ "./users/ha-config-users"
           ),
       },
+      zone: {
+        tag: "ha-config-zone",
+        load: () =>
+          import(
+            /* webpackChunkName: "panel-config-zone" */ "./zone/ha-config-zone"
+          ),
+      },
       zha: {
         tag: "zha-config-dashboard-router",
         load: () =>
@@ -146,6 +270,7 @@ class HaPanelConfig extends HassRouterPage {
   @property() private _wideSidebar: boolean = false;
   @property() private _wide: boolean = false;
   @property() private _coreUserData?: CoreFrontendUserData;
+  @property() private _showAdvanced = false;
   @property() private _cloudStatus?: CloudStatus;
 
   private _listeners: Array<() => void> = [];
@@ -168,6 +293,9 @@ class HaPanelConfig extends HassRouterPage {
         "core"
       ).subscribe((coreUserData) => {
         this._coreUserData = coreUserData || {};
+        this._showAdvanced = !!(
+          this._coreUserData && this._coreUserData.showAdvanced
+        );
       })
     );
   }
@@ -187,12 +315,21 @@ class HaPanelConfig extends HassRouterPage {
     this.addEventListener("ha-refresh-cloud-status", () =>
       this._updateCloudStatus()
     );
+    this.style.setProperty(
+      "--app-header-background-color",
+      "var(--sidebar-background-color)"
+    );
+    this.style.setProperty(
+      "--app-header-text-color",
+      "var(--sidebar-text-color)"
+    );
+    this.style.setProperty(
+      "--app-header-border-bottom",
+      "1px solid var(--divider-color)"
+    );
   }
 
   protected updatePageEl(el) {
-    const showAdvanced = !!(
-      this._coreUserData && this._coreUserData.showAdvanced
-    );
     const isWide =
       this.hass.dockedSidebar === "docked" ? this._wideSidebar : this._wide;
 
@@ -201,7 +338,7 @@ class HaPanelConfig extends HassRouterPage {
       (el as PolymerElement).setProperties({
         route: this.routeTail,
         hass: this.hass,
-        showAdvanced,
+        showAdvanced: this._showAdvanced,
         isWide,
         narrow: this.narrow,
         cloudStatus: this._cloudStatus,
@@ -209,7 +346,7 @@ class HaPanelConfig extends HassRouterPage {
     } else {
       el.route = this.routeTail;
       el.hass = this.hass;
-      el.showAdvanced = showAdvanced;
+      el.showAdvanced = this._showAdvanced;
       el.isWide = isWide;
       el.narrow = this.narrow;
       el.cloudStatus = this._cloudStatus;

@@ -120,7 +120,7 @@ export default class HaAutomationActionRow extends LitElement {
               ></paper-icon-button>
               <paper-listbox slot="dropdown-content">
                 <paper-item
-                  @click=${this._switchYamlMode}
+                  @tap=${this._switchYamlMode}
                   .disabled=${selected === -1}
                 >
                   ${yamlMode
@@ -136,7 +136,7 @@ export default class HaAutomationActionRow extends LitElement {
                     "ui.panel.config.automation.editor.actions.duplicate"
                   )}
                 </paper-item>
-                <paper-item @click=${this._onDelete}>
+                <paper-item @tap=${this._onDelete}>
                   ${this.hass.localize(
                     "ui.panel.config.automation.editor.actions.delete"
                   )}

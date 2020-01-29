@@ -22,7 +22,11 @@ const createWebpackConfig = ({
   isProdBuild,
   latestBuild,
   isStatsBuild,
+  dontHash,
 }) => {
+  if (!dontHash) {
+    dontHash = new Set();
+  }
   return {
     mode: isProdBuild ? "production" : "development",
     devtool: isProdBuild ? "source-map" : "inline-cheap-module-source-map",
@@ -103,8 +107,6 @@ const createWebpackConfig = ({
     },
     output: {
       filename: ({ chunk }) => {
-        const dontHash = new Set();
-
         if (!isProdBuild || dontHash.has(chunk.name)) {
           return `${chunk.name}.js`;
         }
@@ -222,11 +224,12 @@ const createHassioConfig = ({ isProdBuild, latestBuild }) => {
   }
   const config = createWebpackConfig({
     entry: {
-      entrypoint: path.resolve(paths.hassio_dir, "src/entrypoint.js"),
+      entrypoint: path.resolve(paths.hassio_dir, "src/entrypoint.ts"),
     },
     outputRoot: "",
     isProdBuild,
     latestBuild,
+    dontHash: new Set(["entrypoint"]),
   });
 
   config.output.path = paths.hassio_root;

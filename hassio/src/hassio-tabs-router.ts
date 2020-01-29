@@ -11,12 +11,11 @@ import "./dashboard/hassio-dashboard";
 import "./snapshots/hassio-snapshots";
 import "./addon-store/hassio-addon-store";
 import "./system/hassio-system";
+import { HassioHostInfo, HassioHassOSInfo } from "../../src/data/hassio/host";
 import {
   HassioSupervisorInfo,
-  HassioHostInfo,
   HassioHomeAssistantInfo,
-  HassioHassOSInfo,
-} from "../../src/data/hassio";
+} from "../../src/data/hassio/supervisor";
 
 @customElement("hassio-tabs-router")
 class HassioTabsRouter extends HassRouterPage {

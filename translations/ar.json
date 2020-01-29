@@ -443,12 +443,6 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
-                    "picker": {
-                        "create_area": "إنشاء منطقة",
-                        "no_areas": "يبدو أنه لا توجد أي مناطق معرفة!"
-                    }
-                },
                 "automation": {
                     "caption": "التشغيل التلقائي",
                     "description": "إنشاء وتحرير التشغيل الألي",

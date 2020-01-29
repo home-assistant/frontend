@@ -47,7 +47,7 @@ export class HuiCardPicker extends LitElement {
 
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div class="cards-container">
         ${cards.map((card: string) => {

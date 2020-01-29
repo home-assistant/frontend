@@ -7,6 +7,7 @@ import {
   CSSResult,
   customElement,
 } from "lit-element";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 import "../../../components/ha-icon";
 
@@ -31,7 +32,7 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
     this._config = config;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -45,6 +46,9 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
+        tabindex=${ifDefined(
+          hasAction(this._config.tap_action) ? "0" : undefined
+        )}
       ></ha-icon>
     `;
   }
@@ -57,6 +61,11 @@ export class HuiIconElement extends LitElement implements LovelaceElement {
     return css`
       :host {
         cursor: pointer;
+      }
+      ha-icon:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 100%;
       }
     `;
   }

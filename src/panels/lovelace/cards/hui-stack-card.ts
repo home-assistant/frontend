@@ -1,6 +1,6 @@
 import { html, LitElement, TemplateResult, CSSResult, css } from "lit-element";
 
-import { createCardElement } from "../common/create-card-element";
+import { createCardElement } from "../create-element/create-card-element";
 import { LovelaceCard } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
@@ -41,7 +41,7 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
     });
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config) {
       return html``;
     }

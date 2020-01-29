@@ -10,7 +10,7 @@ import {
 
 @customElement("loading-screen")
 class LoadingScreen extends LitElement {
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <paper-spinner-lite active></paper-spinner-lite>
     `;

@@ -145,7 +145,7 @@ export class HaDevicesDataTable extends LitElement {
                 return html`
                   ${name}<br />
                   ${device.area} | ${device.integration}<br />
-                  ${battery
+                  ${battery && !isNaN(battery.state as any)
                     ? html`
                         ${battery.state}%
                         <ha-state-icon
@@ -205,7 +205,7 @@ export class HaDevicesDataTable extends LitElement {
                 const battery = batteryEntity
                   ? this.hass.states[batteryEntity]
                   : undefined;
-                return battery
+                return battery && !isNaN(battery.state as any)
                   ? html`
                       ${battery.state}%
                       <ha-state-icon

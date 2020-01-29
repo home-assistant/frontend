@@ -206,11 +206,6 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
-                    "picker": {
-                        "create_area": "Crea un area"
-                    }
-                },
                 "automation": {
                     "editor": {
                         "conditions": {

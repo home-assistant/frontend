@@ -666,13 +666,13 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Áreas",
                     "create_area": "CRIAR ÁREA",
                     "description": "Visão geral de todas as áreas da sua casa.",
                     "editor": {
                         "create": "CRIAR",
-                        "default_name": "Nova área",
+                        "default_name": "Nova Área",
                         "delete": "APAGAR",
                         "update": "ATUALIZAR"
                     },
@@ -1124,7 +1124,7 @@
                     "unknown_error": "Erro desconhecido",
                     "unnamed_device": "Dispositivo sem nome"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Entidades",
                     "description": "Visão geral de todas as entidades conhecidas.",
                     "editor": {

@@ -1,20 +1,59 @@
 import "@polymer/app-layout/app-toolbar/app-toolbar";
 import "@polymer/paper-dialog-scrollable/paper-dialog-scrollable";
 import "@polymer/paper-icon-button/paper-icon-button";
-import { html } from "@polymer/polymer/lib/utils/html-tag";
-import { PolymerElement } from "@polymer/polymer/polymer-element";
-
-import "../../../../src/components/ha-markdown";
-import "../../../../src/resources/ha-style";
-import "../../../../src/components/dialog/ha-paper-dialog";
-import { customElement } from "lit-element";
 import { PaperDialogElement } from "@polymer/paper-dialog";
+import {
+  css,
+  CSSResult,
+  customElement,
+  html,
+  LitElement,
+  property,
+  TemplateResult,
+  query,
+} from "lit-element";
+
+import { hassioStyle } from "../../resources/hassio-style";
+import { haStyleDialog } from "../../../../src/resources/styles";
+import { HassioMarkdownDialogParams } from "./show-dialog-hassio-markdown";
+
+import "../../../../src/components/dialog/ha-paper-dialog";
+import "../../../../src/components/ha-markdown";
 
 @customElement("dialog-hassio-markdown")
-class HassioMarkdownDialog extends PolymerElement {
-  static get template() {
+class HassioMarkdownDialog extends LitElement {
+  @property() public title!: string;
+  @property() public content!: string;
+  @query("#dialog") private _dialog!: PaperDialogElement;
+
+  public showDialog(params: HassioMarkdownDialogParams) {
+    this.title = params.title;
+    this.content = params.content;
+    this._dialog.open();
+  }
+
+  protected render(): TemplateResult {
     return html`
-      <style include="ha-style-dialog">
+      <ha-paper-dialog id="dialog" with-backdrop="">
+        <app-toolbar>
+          <paper-icon-button
+            icon="hassio:close"
+            dialog-dismiss=""
+          ></paper-icon-button>
+          <div main-title="">${this.title}</div>
+        </app-toolbar>
+        <paper-dialog-scrollable>
+          <ha-markdown .content=${this.content || ""}></ha-markdown>
+        </paper-dialog-scrollable>
+      </ha-paper-dialog>
+    `;
+  }
+
+  static get styles(): CSSResult[] {
+    return [
+      haStyleDialog,
+      hassioStyle,
+      css`
         ha-paper-dialog {
           min-width: 350px;
           font-size: 14px;
@@ -52,32 +91,8 @@ class HassioMarkdownDialog extends PolymerElement {
             background-color: var(--primary-color);
           }
         }
-      </style>
-      <ha-paper-dialog id="dialog" with-backdrop="">
-        <app-toolbar>
-          <paper-icon-button
-            icon="hassio:close"
-            dialog-dismiss=""
-          ></paper-icon-button>
-          <div main-title="">[[title]]</div>
-        </app-toolbar>
-        <paper-dialog-scrollable>
-          <ha-markdown content="[[content]]"></ha-markdown>
-        </paper-dialog-scrollable>
-      </ha-paper-dialog>
-    `;
-  }
-
-  static get properties() {
-    return {
-      title: String,
-      content: String,
-    };
-  }
-
-  public showDialog(params) {
-    this.setProperties(params);
-    (this.$.dialog as PaperDialogElement).open();
+      `,
+    ];
   }
 }
 

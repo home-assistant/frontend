@@ -411,7 +411,7 @@
             },
             "automation": {
                 "last_triggered": "Nazadnje sprožen",
-                "trigger": "Sprožilec"
+                "trigger": "Izvedi"
             },
             "camera": {
                 "not_available": "Slika ni na voljo"
@@ -533,6 +533,7 @@
         },
         "common": {
             "cancel": "Prekliči",
+            "close": "Zapri",
             "loading": "Nalaganje",
             "no": "Ne",
             "save": "Shrani",
@@ -555,6 +556,9 @@
             "history_charts": {
                 "loading_history": "Nalagam zgodovino stanj...",
                 "no_history_found": "Ni najdene zgodovine stanj."
+            },
+            "related-items": {
+                "area": "Območje"
             },
             "relative_time": {
                 "duration": {
@@ -586,8 +590,18 @@
             "domain_toggler": {
                 "title": "Preklopi domene"
             },
+            "entity_registry": {
+                "dismiss": "Opusti"
+            },
             "more_info_control": {
                 "dismiss": "Opusti pogovorno okno",
+                "restored": {
+                    "confirm_remove_text": "Ali ste prepričani, da želite odstraniti to entiteto?",
+                    "confirm_remove_title": "Ali želite odstraniti entiteto?",
+                    "not_provided": "Ta entiteta trenutno ni na voljo in je osirotelo odstranjene, spremenjene ali nefunkcionalne integracije ali naprave.",
+                    "remove_action": "Odstranite entiteto",
+                    "remove_intro": "Če entiteta ni več v uporabi, jo lahko očistite tako, da jo odstranite."
+                },
                 "script": {
                     "last_action": "Zadnje Dejanje"
                 },
@@ -675,7 +689,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Območja",
                     "create_area": "USTVARITE OBMOČJE",
                     "description": "Pregled vseh območij v vašem domu.",
@@ -955,6 +969,7 @@
                             "manage_entities": "Upravljajte entitete",
                             "security_devices": "Varnostne naprave",
                             "sync_entities": "Sinhronizirajte entitete z Googlom",
+                            "sync_entities_404_message": "Ni bilo mogoče sinhronizirati vaših entitet z Googlom, prosite Google »Hej Google, sinhroniziraj moje naprave«, da bi sinhroniziral vaše entitete.",
                             "title": "Pomočnik Google"
                         },
                         "integrations": "Integracije",
@@ -1091,6 +1106,7 @@
                             "core_config": {
                                 "edit_requires_storage": "Urejevalnik je onemogočen, ker je konfiguracija shranjena v configuration.yaml.",
                                 "elevation": "Nadmorska višina",
+                                "elevation_feet": "Čevljev",
                                 "elevation_meters": "metrov",
                                 "imperial_example": "Fahrenheit, funtov",
                                 "latitude": "Zemljepisna širina",
@@ -1178,11 +1194,16 @@
                     "description": "Upravljajte povezane naprave",
                     "details": "Tu so vse podrobnosti vaše naprave.",
                     "device_not_found": "Naprave ni bilo mogoče najti",
+                    "entities": {
+                        "add_entities_lovelace": "Dodajte vse entitete naprave v uporabniški vmesnik Lovelace",
+                        "entities": "Entitete",
+                        "none": "Ta naprava nima entitet"
+                    },
                     "info": "Informacije o napravi",
                     "unknown_error": "Neznana napaka",
                     "unnamed_device": "Neimenovana naprava"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Entitete",
                     "description": "Pregled vseh znanih entitet.",
                     "editor": {
@@ -1198,17 +1219,42 @@
                         "update": "POSODOBITEV"
                     },
                     "picker": {
+                        "disable_selected": {
+                            "button": "Onemogoči izbrane",
+                            "confirm_text": "Onemogočeni subjekti ne bodo dodani v Home Assistant-a.",
+                            "confirm_title": "Ali želite onemogočiti {number} entiteto/i/e?"
+                        },
+                        "enable_selected": {
+                            "button": "Omogoči izbrane",
+                            "confirm_text": "Naprave bodo znova na voljo v  Home Assistant-u, če so zdaj onemogočene.",
+                            "confirm_title": "Ali želite omogočiti {number} entiteto/i/e?"
+                        },
+                        "filter": {
+                            "filter": "Filter",
+                            "show_disabled": "Pokaži onemogočene subjekte",
+                            "show_unavailable": "Pokaži nerazpoložljive entitete"
+                        },
                         "header": "Entitete",
                         "headers": {
                             "enabled": "Omogočeno",
                             "entity_id": "ID subjekta",
                             "integration": "Integracija",
-                            "name": "Ime"
+                            "name": "Ime",
+                            "status": "Stanje"
                         },
                         "integrations_page": "Stran za integracije",
                         "introduction": "Home Assistant vodi register vseh entitet, ki jih je kdajkoli videl in jih je mogoče enolično identificirati. Vsak od teh entitet ima dodeljen ID entitete, ki bo rezerviran samo za to entiteto.",
                         "introduction2": "Z registrom entitet preglasite ime, spremenite ID entitete ali odstranite vnos iz Home Assistent-a. Opomba, odstranitev vnosa registra entitet ne bo odstranila entitete. Če želite to narediti, sledite spodnji povezavi in jo odstranite s strani za integracijo.",
+                        "remove_selected": {
+                            "button": "Odstrani izbrane"
+                        },
+                        "selected": "{številka} izbrana/ih",
                         "show_disabled": "Pokaži onemogočene subjekte",
+                        "status": {
+                            "disabled": "Onemogočeno",
+                            "ok": "V redu",
+                            "unavailable": "Ni na voljo"
+                        },
                         "unavailable": "(ni na voljo)"
                     }
                 },
@@ -1470,6 +1516,10 @@
                         "device_name_placeholder": "Ime, ki ga je dodelil uporabnik",
                         "update_name_button": "Posodobi ime"
                     },
+                    "groups": {
+                        "caption": "Skupine",
+                        "create": "Ustvari skupino"
+                    },
                     "network_management": {
                         "header": "Upravljanje omrežja",
                         "introduction": "Ukazi, ki vplivajo na celotno omrežje"
@@ -1485,6 +1535,15 @@
                         "reconfigure": "Ponovno konfigurirajte napravo ZHA (\"pozdravite\" napravo). To uporabite, če imate z njo težave. Če ta naprava deluje na baterije, se prepričajte, da je budna in sprejema ukaze pri uporabi te storitve.",
                         "remove": "Odstranite napravo iz omrežja ZigBee.",
                         "updateDeviceName": "Nastavite ime po meri za to napravo v registru naprav."
+                    }
+                },
+                "zone": {
+                    "detail": {
+                        "create": "Ustvari",
+                        "delete": "Izbriši",
+                        "icon": "Ikona",
+                        "radius": "Polmer",
+                        "update": "Posodobite"
                     }
                 },
                 "zwave": {
@@ -1667,6 +1726,9 @@
                 "showing_entries": "Prikaz vnosov za"
             },
             "lovelace": {
+                "add_entities": {
+                    "saving_failed": "Shranjevanje nastavitve uporabniškega vmesnika Lovelace ni uspelo."
+                },
                 "cards": {
                     "confirm_delete": "Ali ste prepričani, da želite izbrisati to kartico?",
                     "empty_state": {
@@ -1872,6 +1934,10 @@
                         "para": "Home Assistant bo privzeto vzdrževal vaš uporabniški vmesnik, ga posodabljal, ko bodo na voljo nove entitete ali komponente Lovelace. Če prevzamete nadzor, vam ga ne bo več samodejno popravljal.",
                         "para_sure": "Ali ste prepričani, da želite prevzeti nadzor nad vašim vmesnikom?",
                         "save": "Prevzemite nadzor"
+                    },
+                    "suggest_card": {
+                        "add": "Dodaj v uporabniški vmesnik Lovelace",
+                        "create_own": "Izberite drugačno karto"
                     },
                     "view": {
                         "panel_mode": {
@@ -2111,6 +2177,7 @@
                     "link_promo": "Pomagajte pri prevodu"
                 },
                 "logout": "Odjava",
+                "logout_title": "Odjava?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Ali ste prepričani, da želite izbrisati žeton za dostop za {name} ?",
                     "create": "Ustvari žeton",

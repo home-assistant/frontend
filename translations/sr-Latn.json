@@ -96,7 +96,7 @@
                 "cloud": {
                     "caption": "Home Assistant Cloud"
                 },
-                "entity_registry": {
+                "entities": {
                     "picker": {
                         "header": "Entiteter"
                     }

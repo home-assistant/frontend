@@ -26,7 +26,7 @@ export class HuiEmptyStateCard extends LitElement implements LovelaceCard {
     // tslint:disable-next-line
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
