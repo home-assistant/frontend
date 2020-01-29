@@ -16,6 +16,9 @@ export class HaDialog extends MwcDialog {
         .mdc-dialog__actions {
           justify-content: var(--justify-action-buttons, flex-end);
         }
+        .mdc-dialog__container {
+          align-items: var(--vertial-align-dialog, center);
+        }
       `,
     ];
   }
