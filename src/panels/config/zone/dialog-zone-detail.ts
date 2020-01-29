@@ -62,13 +62,26 @@ class DialogZoneDetail extends LitElement {
     if (!this._params) {
       return html``;
     }
+    const title = html`
+      ${this._params.entry
+        ? this._params.entry.name
+        : this.hass!.localize("ui.panel.config.zone.detail.new_zone")}
+      <paper-icon-button
+        aria-label=${this.hass.localize(
+          "ui.panel.config.integrations.config_flow.dismiss"
+        )}
+        icon="hass:close"
+        dialogAction="close"
+        style="position: absolute; right: 16px; top: 12px;"
+      ></paper-icon-button>
+    `;
     return html`
       <ha-dialog
         open
         @closing="${this._close}"
-        .title=${this._params.entry
-          ? this._params.entry.name
-          : this.hass!.localize("ui.panel.config.zone.detail.new_zone")}
+        scrimClickAction=""
+        escapeKeyAction=""
+        .title=${title}
       >
         <div>
           ${this._error
@@ -250,6 +263,16 @@ class DialogZoneDetail extends LitElement {
         @media only screen and (min-width: 600px) {
           ha-dialog {
             --mdc-dialog-min-width: 600px;
+          }
+        }
+
+        /* make dialog fullscreen on small screens */
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-dialog {
+            --mdc-dialog-min-width: 100vw;
+            --mdc-dialog-max-height: 100vh;
+            --mdc-dialog-shape-radius: 0px;
+            --vertial-align-dialog: flex-end;
           }
         }
         .form {
