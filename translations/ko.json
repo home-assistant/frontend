@@ -405,7 +405,7 @@
                 "arm_home": "재실 경비",
                 "arm_night": "야간 경비",
                 "armed_custom_bypass": "사용자 우회",
-                "clear_code": "지움",
+                "clear_code": "지우기",
                 "code": "비밀번호",
                 "disarm": "경비 해제"
             },
@@ -544,10 +544,24 @@
             "yes": "예"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "추가",
+                    "failed_create_area": "영역을 만들지 못했습니다.",
+                    "name": "이름",
+                    "text": "새로운 영역의 이름을 입력해주세요.",
+                    "title": "새로운 영역 추가"
+                },
+                "add_new": "새로운 영역 추가...",
+                "area": "영역",
+                "clear": "지우기",
+                "show_areas": "영역 표시"
+            },
             "device-picker": {
                 "clear": "지우기",
                 "device": "기기",
-                "show_devices": "기기 표시"
+                "show_devices": "기기 표시",
+                "toggle": "토글"
             },
             "entity": {
                 "entity-picker": {
@@ -562,9 +576,13 @@
             },
             "related-items": {
                 "area": "영역",
+                "automation": "다음 자동화의 일부",
                 "device": "기기",
                 "entity": "관련된 구성요소",
-                "integration": "통합 구성요소"
+                "group": "다음 그룹의 일부",
+                "integration": "통합 구성요소",
+                "scene": "다음 씬의 일부",
+                "script": "다음 스크립트의 일부"
             },
             "relative_time": {
                 "duration": {
@@ -1231,8 +1249,10 @@
                         "none": "이 기기는 구성요소가 없습니다"
                     },
                     "info": "기기 정보",
+                    "name": "이름",
                     "unknown_error": "알 수 없는 오류",
-                    "unnamed_device": "이름이 없는 기기"
+                    "unnamed_device": "이름이 없는 기기",
+                    "update": "업데이트"
                 },
                 "entities": {
                     "caption": "구성요소",
@@ -1327,7 +1347,7 @@
                         },
                         "failed_create_area": "영역을 만들지 못했습니다.",
                         "finish": "완료",
-                        "name_new_area": "새 영역의 이름?",
+                        "name_new_area": "새로운 영역의 이름?",
                         "not_all_required_fields": "필수 입력란이 모두 채워지지 않았습니다.",
                         "submit": "확인"
                     },
@@ -1644,6 +1664,7 @@
                         "update": "업데이트"
                     },
                     "edit_home_zone": "집의 위치는 일반 설정에서 변경할 수 있습니다.",
+                    "introduction": "영역을 사용하면 지구 상의 특정 지역을 지정할 수 있습니다. 구성원이 구역 내에 있으면 구성요소 상태에서 구역의 이름을 가져옵니다. 자동화 설정 내에서 영역을 트리거 또는 조건으로 사용할 수도 있습니다.",
                     "no_zones_created_yet": "아직 생성된 구역이 없는 것 같습니다."
                 },
                 "zwave": {
@@ -2269,11 +2290,11 @@
                     "title": "고급 모드"
                 },
                 "change_password": {
-                    "confirm_new_password": "새 비밀번호 확인",
+                    "confirm_new_password": "새로운  비밀번호 확인",
                     "current_password": "현재 비밀번호",
                     "error_required": "필수 요소",
                     "header": "비밀번호 변경",
-                    "new_password": "새 비밀번호",
+                    "new_password": "새로운 비밀번호",
                     "submit": "변경하기"
                 },
                 "current_user": "현재 {fullName} 로(으로) 로그인 한 상태 입니다.",

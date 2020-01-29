@@ -556,6 +556,11 @@
                 "loading_history": "Laddar historik...",
                 "no_history_found": "Ingen historik hittad."
             },
+            "related-items": {
+                "area": "Område",
+                "device": "Enhet",
+                "integration": "Integration"
+            },
             "relative_time": {
                 "duration": {
                     "day": "{count} {count, plural,\none {dag}\nother {dagar}\n}",
@@ -585,6 +590,9 @@
             },
             "domain_toggler": {
                 "title": "Växla domäner"
+            },
+            "generic": {
+                "default_confirmation_title": "Är du säker?"
             },
             "more_info_control": {
                 "dismiss": "Avfärda",
@@ -921,6 +929,7 @@
                         "alexa": {
                             "title": ""
                         },
+                        "connected": "Ansluten",
                         "fetching_subscription": "Hämtar prenumeration...",
                         "google": {
                             "config_documentation": "Konfigureringsdokumentation",
@@ -932,6 +941,7 @@
                         "integrations_link_all_features": " alla tillgängliga funktioner",
                         "manage_account": "Hantera konto",
                         "nabu_casa_account": "Nabu Casa konto",
+                        "not_connected": "Ej ansluten",
                         "remote": {
                             "link_learn_how_it_works": "Lär dig hur det fungerar"
                         },
