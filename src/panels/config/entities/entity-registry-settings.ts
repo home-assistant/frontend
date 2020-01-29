@@ -20,6 +20,7 @@ import {
   EntityRegistryEntry,
   removeEntityRegistryEntry,
   updateEntityRegistryEntry,
+  EntityRegistryEntryUpdateParams,
 } from "../../../data/entity_registry";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { PolymerChangedEvent } from "../../../polymer-types";
@@ -159,12 +160,15 @@ export class EntityRegistrySettings extends LitElement {
 
   private async _updateEntry(): Promise<void> {
     this._submitting = true;
+    const params: Partial<EntityRegistryEntryUpdateParams> = {
+      name: this._name.trim() || null,
+      new_entity_id: this._entityId.trim(),
+    };
+    if (this._disabledBy === null || this._disabledBy === "user") {
+      params.disabled_by = this._disabledBy;
+    }
     try {
-      await updateEntityRegistryEntry(this.hass!, this._origEntityId, {
-        name: this._name.trim() || null,
-        disabled_by: this._disabledBy,
-        new_entity_id: this._entityId.trim(),
-      });
+      await updateEntityRegistryEntry(this.hass!, this._origEntityId, params);
       fireEvent(this as HTMLElement, "close-dialog");
     } catch (err) {
       this._error = err.message || "Unknown error";
