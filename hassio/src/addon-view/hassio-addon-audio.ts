@@ -61,7 +61,7 @@ class HassioAddonAudio extends LitElement {
               ${this._inputDevices &&
                 this._inputDevices.map((item) => {
                   return html`
-                    <paper-item device=${item.device}>${item.name}</paper-item>
+                    <paper-item .device=${item.device}>${item.name}</paper-item>
                   `;
                 })}
             </paper-listbox>
@@ -78,7 +78,7 @@ class HassioAddonAudio extends LitElement {
               ${this._outputDevices &&
                 this._outputDevices.map((item) => {
                   return html`
-                    <paper-item device=${item.device}>${item.name}</paper-item>
+                    <paper-item .device=${item.device}>${item.name}</paper-item>
                   `;
                 })}
             </paper-listbox>
@@ -123,14 +123,14 @@ class HassioAddonAudio extends LitElement {
   }
 
   private _setInputDevice(ev): void {
-    const device = ev.detail.item.attributes.device.value;
+    const device = ev.detail.item.device;
     if (device) {
       this._selectedInput = device;
     }
   }
 
   private _setOutputDevice(ev): void {
-    const device = ev.detail.item.attributes.device.value;
+    const device = ev.detail.item.device;
     if (device) {
       this._selectedOutput = device;
     }
