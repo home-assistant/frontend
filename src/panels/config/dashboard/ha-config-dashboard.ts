@@ -88,11 +88,11 @@ class HaConfigDashboard extends LitElement {
             ? html`
                 <div class="promo-advanced">
                   ${this.hass.localize(
-                    "ui.panel.profile.advanced_mode.hint_enable"
+                    "ui.panel.config.advanced_mode.hint_enable"
                   )}
                   <a href="/profile"
                     >${this.hass.localize(
-                      "ui.panel.profile.advanced_mode.link_profile_page"
+                      "ui.panel.config.advanced_mode.link_profile_page"
                     )}</a
                   >.
                 </div>
