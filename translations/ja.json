@@ -21,6 +21,7 @@
         "sensor": "センサー",
         "sun": "太陽",
         "switch": "スイッチ",
+        "system_health": "システムの正常性",
         "updater": "アップデーター",
         "zwave": "Z-Wave"
     },
@@ -411,6 +412,7 @@
             },
             "more_info_control": {
                 "dismiss": "ダイアログを閉じる",
+                "edit": "エンティティを編集",
                 "settings": "エンティティ設定",
                 "sun": {
                     "elevation": "高度",
@@ -463,7 +465,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "エリア",
                     "description": "すべて自宅のエリアの一覧",
                     "picker": {
@@ -492,6 +494,7 @@
                                 },
                                 "event": {
                                     "event": "イベント：",
+                                    "label": "イベントを実行",
                                     "service_data": "サービスデータ"
                                 },
                                 "service": {
@@ -662,6 +665,7 @@
                     "section": {
                         "core": {
                             "core_config": {
+                                "elevation_feet": "フィート",
                                 "time_zone": "タイムゾーン"
                             },
                             "header": "一般的な設定"
@@ -672,12 +676,12 @@
                                 "core": "コアの再読込",
                                 "group": "グループの再読込",
                                 "heading": "設定の再読込",
-                                "introduction": "Home Assistantの一部は、再起動を必要とせずに再読込できます。再読込を押すと、現在の設定をアンロードし、新しい設定を読み込みます。",
+                                "introduction": "Home Assistant の一部は、再起動を必要とせずに再読込できます。再読込を押すと、現在の設定をアンロードし、新しい設定を読み込みます。",
                                 "script": "スクリプトの再読込"
                             },
                             "server_management": {
                                 "heading": "サーバー管理",
-                                "introduction": "Home AssistantからHome Assistantサーバーを操作します。",
+                                "introduction": "Home Assistant から Home Assistant サーバーを操作します。",
                                 "restart": "再起動",
                                 "stop": "停止"
                             },
@@ -723,7 +727,7 @@
                     "unknown_error": "不明なエラー",
                     "unnamed_device": "名前のないデバイス"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "エンティティ",
                     "description": "すべて既知のエンティティの一覧",
                     "picker": {
@@ -758,7 +762,7 @@
                 },
                 "person": {
                     "caption": "人",
-                    "description": "Home Assistant を追跡しています人を管理します。",
+                    "description": "Home Assistant を追跡している人の管理。",
                     "detail": {
                         "create": "作成",
                         "delete": "削除",
@@ -827,14 +831,20 @@
                             "core": "ロケーションとカスタマイズの再読込",
                             "group": "グループの再読込",
                             "heading": "設定の再読込",
-                            "introduction": "Home Assistantの一部は、再起動を必要とせずに再読込できます。再読込を押すと、現在の設定をアンロードし、新しい設定を読み込みます。",
+                            "introduction": "Home Assistant の一部は、再起動を必要とせずに再読込できます。再読込を押すと、現在の設定をアンロードし、新しい設定を読み込みます。",
                             "scene": "シーンの再読込",
                             "script": "スクリプトの再読込"
                         },
                         "server_management": {
                             "confirm_restart": "Home Assistant を再起動してもよろしいですか？",
+                            "heading": "サーバー管理",
+                            "introduction": "Home Assistant から Home Assistant サーバーを操作します。",
                             "restart": "再起動",
                             "stop": "停止"
+                        },
+                        "validation": {
+                            "check_config": "設定を確認",
+                            "heading": "設定の検証"
                         }
                     }
                 },
@@ -898,8 +908,9 @@
             "developer-tools": {
                 "tabs": {
                     "events": {
-                        "fire_event": "火災イベント",
+                        "fire_event": "イベントを実行",
                         "listening_to": "リッスンします",
+                        "notification_event_fired": "{type} のイベント が正常に実行されました！",
                         "start_listening": "リッスンを開始",
                         "stop_listening": "リッスンを停止",
                         "subscribe_to": "サブスクライブするイベント",
@@ -907,10 +918,14 @@
                         "type": "イベントの種類"
                     },
                     "info": {
+                        "frontend_version": "フロントエンドバージョン: {version} - {type}",
                         "lovelace_ui": "Lovelace UI に移動",
+                        "path_configuration": "ディスク上に configuration.yaml へのパス: {path}",
                         "remove": "削除",
                         "server": "サーバー",
                         "set": "設定",
+                        "states_ui": "States UI に移動",
+                        "system_health_error": "「システムの正常性」コンポーネントが有効されていません、configuration.yaml に 'system_health:' を追加してください。",
                         "title": "情報"
                     },
                     "logs": {
@@ -971,7 +986,8 @@
                 "period": "期間"
             },
             "logbook": {
-                "entries_not_found": "ログブックエントリが見つかりません。"
+                "entries_not_found": "ログブックエントリが見つかりません。",
+                "period": "期間"
             },
             "lovelace": {
                 "cards": {

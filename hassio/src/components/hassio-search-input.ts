@@ -16,7 +16,7 @@ import "@material/mwc-button";
 class HassioSearchInput extends LitElement {
   @property() private filter?: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div class="search-container">
         <paper-input

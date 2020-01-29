@@ -32,23 +32,35 @@ export const addEntitiesToLovelaceView = async (
       return;
     }
   }
+  if (!lovelaceConfig.views.length) {
+    alert(
+      "You don't have any Lovelace views, first create a view in Lovelace."
+    );
+    return;
+  }
+  if (!saveConfigFunc) {
+    saveConfigFunc = async (newConfig: LovelaceConfig): Promise<void> => {
+      try {
+        await saveConfig(hass!, newConfig);
+      } catch {
+        alert(
+          hass.localize("ui.panel.config.devices.add_entities.saving_failed")
+        );
+      }
+    };
+  }
+  if (lovelaceConfig.views.length === 1) {
+    showSuggestCardDialog(element, {
+      lovelaceConfig: lovelaceConfig!,
+      saveConfig: saveConfigFunc,
+      path: [0],
+      entities,
+    });
+    return;
+  }
   showSelectViewDialog(element, {
     lovelaceConfig,
     viewSelectedCallback: (view) => {
-      if (!saveConfigFunc) {
-        saveConfigFunc = async (newConfig: LovelaceConfig): Promise<void> => {
-          try {
-            await saveConfig(hass!, newConfig);
-          } catch {
-            alert(
-              hass.localize(
-                "ui.panel.config.devices.add_entities.saving_failed"
-              )
-            );
-          }
-        };
-      }
-
       showSuggestCardDialog(element, {
         lovelaceConfig: lovelaceConfig!,
         saveConfig: saveConfigFunc,

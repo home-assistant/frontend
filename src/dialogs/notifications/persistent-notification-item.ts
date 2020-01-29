@@ -23,7 +23,7 @@ export class HuiPersistentNotificationItem extends LitElement {
 
   @property() public notification?: PersistentNotification;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this.notification) {
       return html``;
     }

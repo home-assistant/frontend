@@ -255,7 +255,9 @@ export class HaDataTable extends BaseElement {
                           <ha-checkbox
                             class="mdc-data-table__row-checkbox"
                             @change=${this._handleRowCheckboxChange}
-                            .checked=${this._checkedRows.includes(row[this.id])}
+                            .checked=${this._checkedRows.includes(
+                              String(row[this.id])
+                            )}
                           >
                           </ha-checkbox>
                         </td>

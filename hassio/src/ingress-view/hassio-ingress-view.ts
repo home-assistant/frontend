@@ -9,11 +9,11 @@ import {
   css,
 } from "lit-element";
 import { HomeAssistant, Route } from "../../../src/types";
+import { createHassioSession } from "../../../src/data/hassio/supervisor";
 import {
-  createHassioSession,
   HassioAddonDetails,
   fetchHassioAddonInfo,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/addon";
 import "../../../src/layouts/hass-loading-screen";
 import "../../../src/layouts/hass-subpage";
 
@@ -23,7 +23,7 @@ class HassioIngressView extends LitElement {
   @property() public route!: Route;
   @property() private _addon?: HassioAddonDetails;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._addon) {
       return html`
         <hass-loading-screen></hass-loading-screen>

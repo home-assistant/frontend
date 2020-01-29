@@ -29,7 +29,7 @@ export class CloudRemotePref extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public cloudStatus?: CloudStatusLoggedIn;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.cloudStatus) {
       return html``;
     }

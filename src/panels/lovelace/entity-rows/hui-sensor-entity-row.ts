@@ -14,7 +14,7 @@ import "../components/hui-timestamp-display";
 import "../components/hui-warning";
 
 import { HomeAssistant } from "../../../types";
-import { EntityRow, EntityConfig } from "./types";
+import { LovelaceRow, EntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 
@@ -23,7 +23,7 @@ interface SensorEntityConfig extends EntityConfig {
 }
 
 @customElement("hui-sensor-entity-row")
-class HuiSensorEntityRow extends LitElement implements EntityRow {
+class HuiSensorEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: SensorEntityConfig;
@@ -39,7 +39,7 @@ class HuiSensorEntityRow extends LitElement implements EntityRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -62,7 +62,8 @@ class HuiSensorEntityRow extends LitElement implements EntityRow {
       <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
         <div>
           ${stateObj.attributes.device_class === "timestamp" &&
-          stateObj.state !== "unavailable"
+          stateObj.state !== "unavailable" &&
+          stateObj.state !== "unknown"
             ? html`
                 <hui-timestamp-display
                   .hass="${this.hass}"

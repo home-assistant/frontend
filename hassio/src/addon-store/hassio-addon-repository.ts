@@ -15,7 +15,7 @@ import { HomeAssistant } from "../../../src/types";
 import {
   HassioAddonInfo,
   HassioAddonRepository,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/addon";
 import { navigate } from "../../../src/common/navigate";
 import { filterAndSort } from "../components/hassio-filter-addons";
 
@@ -36,7 +36,7 @@ class HassioAddonRepositoryEl extends LitElement {
     }
   );
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const repo = this.repo;
     const addons = this._getAddons(this.addons, this.filter);
 

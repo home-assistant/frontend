@@ -35,7 +35,7 @@ export class HuiLovelaceEditor extends LitElement {
     return this.config.title || "";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       ${configElementStyle}
       <div class="card-config">

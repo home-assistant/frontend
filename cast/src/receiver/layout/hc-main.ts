@@ -50,7 +50,7 @@ export class HcMain extends HassElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (this._showDemo) {
       return html`
         <hc-demo .lovelacePath=${this._lovelacePath}></hc-demo>

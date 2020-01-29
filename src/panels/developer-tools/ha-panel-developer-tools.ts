@@ -30,7 +30,7 @@ class PanelDeveloperTools extends LitElement {
   @property() public route!: Route;
   @property() public narrow!: boolean;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const page = this._page;
     return html`
       <app-header-layout has-scrolling-region>

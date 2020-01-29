@@ -12,12 +12,12 @@ import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
 
 import { HomeAssistant } from "../../../types";
-import { EntityRow, EntityConfig } from "./types";
+import { LovelaceRow, EntityConfig } from "./types";
 import { setValue } from "../../../data/input_text";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-input-text-entity-row")
-class HuiInputTextEntityRow extends LitElement implements EntityRow {
+class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: EntityConfig;
@@ -33,7 +33,7 @@ class HuiInputTextEntityRow extends LitElement implements EntityRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }

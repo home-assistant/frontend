@@ -12,7 +12,7 @@ import {
 export class HuiUnavailable extends LitElement {
   @property() public text?: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div class="disabled-overlay">
         <div>${this.text}</div>

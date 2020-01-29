@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Εκτέλεση"
             },
+            "service": {
+                "run": "Εκτέλεση"
+            },
             "timer": {
                 "actions": {
                     "cancel": "Ακύρωση",
@@ -586,6 +589,14 @@
             "domain_toggler": {
                 "title": "Εναλλαγή τομέων"
             },
+            "entity_registry": {
+                "editor": {
+                    "enabled_cause": "Απενεργοποιήθηκε από  {cause}.",
+                    "enabled_label": "Ενεργοποίηση οντότητας",
+                    "entity_id": "Αναγνωριστικό οντότητας",
+                    "unavailable": "Αυτή η οντότητα δεν είναι προς το παρόν διαθέσιμη."
+                }
+            },
             "more_info_control": {
                 "dismiss": "Κλείσιμο διαλόγου.",
                 "script": {
@@ -675,7 +686,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Περιοχή Μητρώου",
                     "create_area": "ΔΗΜΙΟΥΡΓΙΑ ΠΕΡΙΟΧΗΣ",
                     "description": "Επισκόπηση όλων των περιοχών στο σπίτι σας.",
@@ -1182,7 +1193,7 @@
                     "unknown_error": "Άγνωστο σφάλμα",
                     "unnamed_device": "Συσκευή χωρίς όνομα"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Μητρώο οντοτήτων",
                     "description": "Επισκόπηση όλων των γνωστών οντοτήτων.",
                     "editor": {

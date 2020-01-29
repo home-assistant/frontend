@@ -16,7 +16,7 @@ class ErrorLogCard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() private _errorLog?: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <p class="error-log-intro">
         ${this._errorLog

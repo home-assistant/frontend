@@ -42,6 +42,7 @@ import { navigate } from "../../../common/navigate";
 import { UnsubscribeFunc, HassEvent } from "home-assistant-js-websocket";
 import { formatAsPaddedHex } from "./functions";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { addEntitiesToLovelaceView } from "../../lovelace/editor/add-entities-to-view";
 
 declare global {
   // for fire event
@@ -58,8 +59,11 @@ class ZHADeviceCard extends LitElement {
   @property() public device?: ZHADevice;
   @property({ type: Boolean }) public narrow?: boolean;
   @property({ type: Boolean }) public showHelp?: boolean = false;
-  @property({ type: Boolean }) public showActions?: boolean;
-  @property({ type: Boolean }) public isJoinPage?: boolean;
+  @property({ type: Boolean }) public showActions?: boolean = true;
+  @property({ type: Boolean }) public showName?: boolean = true;
+  @property({ type: Boolean }) public showEntityDetail?: boolean = true;
+  @property({ type: Boolean }) public showModelInfo?: boolean = true;
+  @property({ type: Boolean }) public showEditableInfo?: boolean = true;
   @property() private _serviceData?: NodeServiceData;
   @property() private _areas: AreaRegistryEntry[] = [];
   @property() private _selectedAreaIndex: number = -1;
@@ -106,9 +110,6 @@ class ZHADeviceCard extends LitElement {
     this.addEventListener("hass-service-called", (ev) =>
       this.serviceCalled(ev)
     );
-    this._serviceData = {
-      ieee_address: this.device!.ieee,
-    };
   }
 
   protected updated(changedProperties: PropertyValues): void {
@@ -122,6 +123,9 @@ class ZHADeviceCard extends LitElement {
           ) + 1;
       }
       this._userGivenName = this.device!.user_given_name;
+      this._serviceData = {
+        ieee_address: this.device!.ieee,
+      };
     }
     super.update(changedProperties);
   }
@@ -135,11 +139,11 @@ class ZHADeviceCard extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
-      <ha-card header="${this.isJoinPage ? this.device!.name : ""}">
+      <ha-card header="${this.showName ? this.device!.name : ""}">
         ${
-          this.isJoinPage
+          this.showModelInfo
             ? html`
                 <div class="info">
                   <div class="model">${this.device!.model}</div>
@@ -160,6 +164,8 @@ class ZHADeviceCard extends LitElement {
             <dd class="zha-info">${this.device!.ieee}</dd>
             <dt>Nwk:</dt>
             <dd class="zha-info">${formatAsPaddedHex(this.device!.nwk)}</dd>
+            <dt>Device Type:</dt>
+            <dd class="zha-info">${this.device!.device_type}</dd>
             <dt>LQI:</dt>
             <dd class="zha-info">${this.device!.lqi ||
               this.hass!.localize("ui.dialogs.zha_device_info.unknown")}</dd>
@@ -202,7 +208,7 @@ class ZHADeviceCard extends LitElement {
                   .stateObj="${this.hass!.states[entity.entity_id]}"
                   slot="item-icon"
                 ></state-badge>
-                ${!this.isJoinPage
+                ${this.showEntityDetail
                   ? html`
                       <paper-item-body>
                         <div class="name">
@@ -218,40 +224,61 @@ class ZHADeviceCard extends LitElement {
             `
           )}
         </div>
-        <div class="editable">
-          <paper-input
-            type="string"
-            @change="${this._saveCustomName}"
-            .value="${this._userGivenName}"
-            placeholder="${this.hass!.localize(
-              "ui.dialogs.zha_device_info.zha_device_card.device_name_placeholder"
-            )}"
-          ></paper-input>
-        </div>
-        <div class="node-picker">
-          <paper-dropdown-menu
-            label="${this.hass!.localize(
-              "ui.dialogs.zha_device_info.zha_device_card.area_picker_label"
-            )}"
-            class="menu"
-          >
-            <paper-listbox
-              slot="dropdown-content"
-              .selected="${this._selectedAreaIndex}"
-              @iron-select="${this._selectedAreaChanged}"
-            >
-              <paper-item>
-                ${this.hass!.localize("ui.dialogs.zha_device_info.no_area")}
-              </paper-item>
+        ${
+          this.device!.entities && this.device!.entities.length > 0
+            ? html`
+                <div class="card-actions">
+                  <mwc-button @click=${this._addToLovelaceView}>
+                    ${this.hass.localize(
+                      "ui.panel.config.devices.entities.add_entities_lovelace"
+                    )}
+                  </mwc-button>
+                </div>
+              `
+            : ""
+        }
+        ${
+          this.showEditableInfo
+            ? html`
+                <div class="editable">
+                  <paper-input
+                    type="string"
+                    @change="${this._saveCustomName}"
+                    .value="${this._userGivenName || ""}"
+                    .placeholder="${this.hass!.localize(
+                      "ui.dialogs.zha_device_info.zha_device_card.device_name_placeholder"
+                    )}"
+                  ></paper-input>
+                </div>
+                <div class="node-picker">
+                  <paper-dropdown-menu
+                    .label="${this.hass!.localize(
+                      "ui.dialogs.zha_device_info.zha_device_card.area_picker_label"
+                    )}"
+                    class="menu"
+                  >
+                    <paper-listbox
+                      slot="dropdown-content"
+                      .selected="${this._selectedAreaIndex}"
+                      @iron-select="${this._selectedAreaChanged}"
+                    >
+                      <paper-item>
+                        ${this.hass!.localize(
+                          "ui.dialogs.zha_device_info.no_area"
+                        )}
+                      </paper-item>
 
-              ${this._areas.map(
-                (entry) => html`
-                  <paper-item area="${entry}">${entry.name}</paper-item>
-                `
-              )}
-            </paper-listbox>
-          </paper-dropdown-menu>
-        </div>
+                      ${this._areas.map(
+                        (entry) => html`
+                          <paper-item>${entry.name}</paper-item>
+                        `
+                      )}
+                    </paper-listbox>
+                  </paper-dropdown-menu>
+                </div>
+              `
+            : ""
+        }
         ${
           this.showActions
             ? html`
@@ -275,6 +302,9 @@ class ZHADeviceCard extends LitElement {
                     .hass="${this.hass}"
                     domain="zha"
                     service="remove"
+                    .confirmation=${this.hass!.localize(
+                      "ui.dialogs.zha_device_info.confirmations.remove"
+                    )}
                     .serviceData="${this._serviceData}"
                   >
                     ${this.hass!.localize(
@@ -290,7 +320,8 @@ class ZHADeviceCard extends LitElement {
                         </div>
                       `
                     : ""}
-                  ${this.device!.power_source === "Mains"
+                  ${this.device!.power_source === "Mains" &&
+                  this.device!.device_type === "Router"
                     ? html`
                         <mwc-button @click=${this._onAddDevicesClick}>
                           ${this.hass!.localize(
@@ -377,6 +408,14 @@ class ZHADeviceCard extends LitElement {
 
   private _onAddDevicesClick() {
     navigate(this, "/config/zha/add/" + this.device!.ieee);
+  }
+
+  private _addToLovelaceView(): void {
+    addEntitiesToLovelaceView(
+      this,
+      this.hass,
+      this.device!.entities.map((entity) => entity.entity_id)
+    );
   }
 
   static get styles(): CSSResult[] {

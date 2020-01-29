@@ -42,7 +42,7 @@ class HaMenuButton extends LitElement {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const hasNotifications =
       (this.narrow || this.hass.dockedSidebar === "always_hidden") &&
       (this._hasNotifications ||
@@ -135,7 +135,7 @@ class HaMenuButton extends LitElement {
         top: 5px;
         right: 2px;
         border-radius: 50%;
-        border: 2px solid var(--primary-color);
+        border: 2px solid var(--app-header-background-color);
       }
     `;
   }

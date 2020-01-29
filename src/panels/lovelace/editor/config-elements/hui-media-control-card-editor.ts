@@ -36,7 +36,7 @@ export class HuiMediaControlCardEditor extends LitElement
     return this._config!.entity || "";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }

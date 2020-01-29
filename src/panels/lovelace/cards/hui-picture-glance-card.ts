@@ -9,6 +9,7 @@ import {
   PropertyValues,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 import "../../../components/ha-card";
 import "../../../components/ha-icon";
@@ -148,7 +149,7 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -168,6 +169,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             hasHold: hasAction(this._config!.hold_action),
             hasDoubleClick: hasAction(this._config!.double_tap_action),
           })}
+          tabindex=${ifDefined(
+            hasAction(this._config.tap_action) ? "0" : undefined
+          )}
           .config=${this._config}
           .hass=${this.hass}
           .image=${this._config.image}
@@ -230,6 +234,9 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             hasHold: hasAction(entityConf.hold_action),
             hasDoubleClick: hasAction(entityConf.double_tap_action),
           })}
+          tabindex=${ifDefined(
+            hasAction(entityConf.tap_action) ? "0" : undefined
+          )}
           .config=${entityConf}
           class="${classMap({
             "state-on": !STATES_OFF.has(stateObj.state),
@@ -317,6 +324,11 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
         height: 20px;
         padding-bottom: 4px;
         padding-top: 4px;
+      }
+      ha-icon:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 100%;
       }
       .state {
         display: block;
