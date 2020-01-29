@@ -50,13 +50,12 @@ class HcLayout extends LitElement {
         </div>
       </ha-card>
       <div class="footer">
-        <a href="./faq.html">Frequently Asked Questions</a> – Found a bug? Let
-        @balloob know
-        <!-- <a
+        <a href="./faq.html">Frequently Asked Questions</a> – Found a bug?
+        <a
           href="https://github.com/home-assistant/home-assistant-polymer/issues"
           target="_blank"
           >Let us know!</a
-        > -->
+        >
       </div>
     `;
   }
