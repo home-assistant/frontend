@@ -10,10 +10,10 @@ import memoizeOne from "memoize-one";
 
 import "@polymer/paper-input/paper-input";
 import "@material/mwc-button";
-import "@material/mwc-dialog";
 
 import "../../../components/entity/ha-entities-picker";
 import "../../../components/user/ha-user-picker";
+import "../../../components/ha-dialog";
 import { PersonDetailDialogParams } from "./show-dialog-person-detail";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { HomeAssistant } from "../../../types";
@@ -50,18 +50,31 @@ class DialogPersonDetail extends LitElement {
     await this.updateComplete;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }
     const nameInvalid = this._name.trim() === "";
+    const title = html`
+      ${this._params.entry
+        ? this._params.entry.name
+        : this.hass!.localize("ui.panel.config.person.detail.new_person")}
+      <paper-icon-button
+        aria-label=${this.hass.localize(
+          "ui.panel.config.integrations.config_flow.dismiss"
+        )}
+        icon="hass:close"
+        dialogAction="close"
+        style="position: absolute; right: 16px; top: 12px;"
+      ></paper-icon-button>
+    `;
     return html`
-      <mwc-dialog
+      <ha-dialog
         open
         @closing="${this._close}"
-        .title=${this._params.entry
-          ? this._params.entry.name
-          : this.hass!.localize("ui.panel.config.person.detail.new_person")}
+        scrimClickAction=""
+        escapeKeyAction=""
+        .title=${title}
       >
         <div>
           ${this._error
@@ -162,7 +175,7 @@ class DialogPersonDetail extends LitElement {
             ? this.hass!.localize("ui.panel.config.person.detail.update")
             : this.hass!.localize("ui.panel.config.person.detail.create")}
         </mwc-button>
-      </mwc-dialog>
+      </ha-dialog>
     `;
   }
 
@@ -224,9 +237,20 @@ class DialogPersonDetail extends LitElement {
   static get styles(): CSSResult[] {
     return [
       css`
-        mwc-dialog {
-          min-width: 400px;
-          max-width: 600px;
+        ha-dialog {
+          --mdc-dialog-min-width: 400px;
+          --mdc-dialog-max-width: 600px;
+          --mdc-dialog-title-ink-color: var(--primary-text-color);
+          --justify-action-buttons: space-between;
+        }
+        /* make dialog fullscreen on small screens */
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-dialog {
+            --mdc-dialog-min-width: 100vw;
+            --mdc-dialog-max-height: 100vh;
+            --mdc-dialog-shape-radius: 0px;
+            --vertial-align-dialog: flex-end;
+          }
         }
         .form {
           padding-bottom: 24px;
@@ -242,6 +266,9 @@ class DialogPersonDetail extends LitElement {
         }
         a {
           color: var(--primary-color);
+        }
+        p {
+          color: var(--primary-text-color);
         }
       `,
     ];

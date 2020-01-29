@@ -30,7 +30,7 @@ export class HuiCardOptions extends LitElement {
 
   @property() public path?: [number, number];
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <slot></slot>
       <div class="options">
@@ -72,12 +72,12 @@ export class HuiCardOptions extends LitElement {
               )}
             ></paper-icon-button>
             <paper-listbox slot="dropdown-content">
-              <paper-item @click="${this._moveCard}">
+              <paper-item @tap="${this._moveCard}">
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.move"
                 )}</paper-item
               >
-              <paper-item .class="delete-item" @click="${this._deleteCard}">
+              <paper-item .class="delete-item" @tap="${this._deleteCard}">
                 ${this.hass!.localize(
                   "ui.panel.lovelace.editor.edit_card.delete"
                 )}</paper-item

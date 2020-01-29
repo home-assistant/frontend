@@ -79,7 +79,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
   }
 
   get _camera_view(): string {
-    return this._config!.camera_view || this._camera_image ? "auto" : "";
+    return this._config!.camera_view || "auto";
   }
 
   get _state_image(): {} {
@@ -110,7 +110,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
     return this._config!.theme || "Backend-selected";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }

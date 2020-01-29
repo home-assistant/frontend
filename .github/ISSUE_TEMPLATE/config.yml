@@ -1,0 +1,14 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Report a bug that is NOT related to the UI, Frontend or Lovelace
+    url: https://github.com/home-assistant/home-assistant/issues
+    about: This is the issue tracker for our frontend. Please report other issues with the backend repository.
+  - name: Report incorrect or missing information on our website
+    url: https://github.com/home-assistant/home-assistant.io/issues
+    about: Our documentation has its own issue tracker. Please report issues with the website there.
+  - name: I have a question or need support
+    url: https://www.home-assistant.io/help
+    about: We use GitHub for tracking bugs, check our website for resources on getting help.
+  - name: I'm unsure where to go
+    url: https://www.home-assistant.io/join-chat
+    about: If you are unsure where to go, then joining our chat is recommended; Just ask!

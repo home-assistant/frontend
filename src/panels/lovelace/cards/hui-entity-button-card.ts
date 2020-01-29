@@ -10,6 +10,7 @@ import {
 } from "lit-element";
 import { HassEntity } from "home-assistant-js-websocket";
 import { styleMap } from "lit-html/directives/style-map";
+import { ifDefined } from "lit-html/directives/if-defined";
 import "@material/mwc-ripple";
 
 import "../../../components/ha-card";
@@ -30,6 +31,8 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { handleAction } from "../common/handle-action";
 import { ActionHandlerEvent } from "../../../data/lovelace";
+import { computeActiveState } from "../../../common/entity/compute_active_state";
+import { iconColorCSS } from "../../../common/style/icon_color_css";
 
 @customElement("hui-entity-button-card")
 class HuiEntityButtonCard extends LitElement implements LovelaceCard {
@@ -109,7 +112,7 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
     );
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -134,20 +137,23 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
+        tabindex=${ifDefined(
+          hasAction(this._config.tap_action) ? "0" : undefined
+        )}
       >
         ${this._config.show_icon
           ? html`
               <ha-icon
-                data-domain="${computeStateDomain(stateObj)}"
-                data-state="${stateObj.state}"
-                .icon="${this._config.icon || stateIcon(stateObj)}"
-                style="${styleMap({
+                data-domain=${computeStateDomain(stateObj)}
+                data-state=${computeActiveState(stateObj)}
+                .icon=${this._config.icon || stateIcon(stateObj)}
+                style=${styleMap({
                   filter: this._computeBrightness(stateObj),
                   color: this._computeColor(stateObj),
                   height: this._config.icon_height
                     ? this._config.icon_height
                     : "auto",
-                })}"
+                })}
               ></ha-icon>
             `
           : ""}
@@ -195,23 +201,18 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
         font-size: 1.2rem;
       }
 
+      ha-card:focus {
+        outline: none;
+        background: var(--divider-color);
+      }
+
       ha-icon {
         width: 40%;
         height: auto;
         color: var(--paper-item-icon-color, #44739e);
       }
 
-      ha-icon[data-domain="light"][data-state="on"],
-      ha-icon[data-domain="switch"][data-state="on"],
-      ha-icon[data-domain="binary_sensor"][data-state="on"],
-      ha-icon[data-domain="fan"][data-state="on"],
-      ha-icon[data-domain="sun"][data-state="above_horizon"] {
-        color: var(--paper-item-icon-active-color, #fdd835);
-      }
-
-      ha-icon[data-state="unavailable"] {
-        color: var(--state-icon-unavailable-color);
-      }
+      ${iconColorCSS}
     `;
   }
 

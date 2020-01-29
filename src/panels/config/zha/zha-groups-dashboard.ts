@@ -47,9 +47,9 @@ export class ZHAGroupsDashboard extends LitElement {
   protected render(): TemplateResult {
     return html`
       <hass-subpage
-        .header="${this.hass!.localize(
+        .header=${this.hass!.localize(
           "ui.panel.config.zha.groups.groups-header"
-        )}"
+        )}
       >
         <paper-icon-button
           slot="toolbar-icon"
@@ -105,7 +105,10 @@ export class ZHAGroupsDashboard extends LitElement {
   private _handleRemoveSelectionChanged(ev: CustomEvent): void {
     const changedSelection = ev.detail as SelectionChangedEvent;
     const groupId = Number(changedSelection.id);
-    if (changedSelection.selected) {
+    if (
+      changedSelection.selected &&
+      !this._selectedGroupsToRemove.includes(groupId)
+    ) {
       this._selectedGroupsToRemove.push(groupId);
     } else {
       const index = this._selectedGroupsToRemove.indexOf(groupId);

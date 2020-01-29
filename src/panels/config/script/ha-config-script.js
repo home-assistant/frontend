@@ -34,6 +34,8 @@ class HaConfigScript extends PolymerElement {
           hass="[[hass]]"
           scripts="[[scripts]]"
           is-wide="[[isWide]]"
+          narrow="[[narrow]]"
+          route="[[route]]"
         ></ha-script-picker>
       </template>
 
@@ -42,6 +44,8 @@ class HaConfigScript extends PolymerElement {
           hass="[[hass]]"
           script="[[script]]"
           is-wide="[[isWide]]"
+          narrow="[[narrow]]"
+          route="[[route]]"
           creating-new="[[_creatingNew]]"
         ></ha-script-editor>
       </template>
@@ -53,6 +57,7 @@ class HaConfigScript extends PolymerElement {
       hass: Object,
       route: Object,
       isWide: Boolean,
+      narrow: Boolean,
       _routeData: Object,
       _routeMatches: Boolean,
       _creatingNew: Boolean,

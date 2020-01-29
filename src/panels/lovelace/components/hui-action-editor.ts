@@ -62,7 +62,7 @@ export class HuiActionEditor extends LitElement {
     return config.service || "";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this.actions) {
       return html``;
     }

@@ -28,7 +28,7 @@ class HaEntityToggle extends LitElement {
   @property() public stateObj?: HassEntity;
   @property() private _isOn: boolean = false;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.stateObj) {
       return html`
         <ha-switch disabled></ha-switch>

@@ -36,7 +36,7 @@ export class HuiDialogSelectView extends LitElement {
     );
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }

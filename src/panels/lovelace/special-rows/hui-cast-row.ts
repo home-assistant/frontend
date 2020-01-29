@@ -9,7 +9,7 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 
-import { EntityRow, CastConfig } from "../entity-rows/types";
+import { LovelaceRow, CastConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 
 import "../../../components/ha-icon";
@@ -20,7 +20,7 @@ import {
 } from "../../../cast/receiver_messages";
 
 @customElement("hui-cast-row")
-class HuiCastRow extends LitElement implements EntityRow {
+class HuiCastRow extends LitElement implements LovelaceRow {
   public hass!: HomeAssistant;
 
   @property() private _config?: CastConfig;
@@ -41,7 +41,7 @@ class HuiCastRow extends LitElement implements EntityRow {
     };
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config) {
       return html``;
     }

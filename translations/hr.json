@@ -646,7 +646,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Registar područja",
                     "create_area": "STVARANJE PODRUČJA",
                     "description": "Pregled svih područja u vašem domu.",
@@ -1019,7 +1019,7 @@
                     "unknown_error": "Nepoznata pogreška",
                     "unnamed_device": "Neimenovani uređaj"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Registar entiteta",
                     "description": "Pregled svih poznatih entiteta.",
                     "editor": {

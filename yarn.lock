@@ -1662,10 +1662,10 @@
   dependencies:
     "@material/feature-targeting" "^4.0.0"
 
-"@mdi/svg@4.7.95":
-  version "4.7.95"
-  resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-4.7.95.tgz#52eb856be80a6fd7021674d4193c6ff21b5d066c"
-  integrity sha512-zvOaCRMmK9lYJ+k6QCiREoyR/pqytWgQD+/ZjtbzxTHkKkriJN1oUWjL1BqSNOGJWB5nzS1Kkq8gFr9SXpVfQA==
+"@mdi/svg@4.8.95":
+  version "4.8.95"
+  resolved "https://registry.yarnpkg.com/@mdi/svg/-/svg-4.8.95.tgz#a48c3cb027bca12a3aa73ad3ef686d0284251109"
+  integrity sha512-jG+e5B8Y3/vlGWtpKHvDXUCl/evd782GQ4x2Zfpdi6oexZELy+euaXfZNKlqWGUbXVAxqSHyBo6nyAsn60UB5A==
 
 "@polymer/app-layout@^3.0.2":
   version "3.0.2"
@@ -2472,6 +2472,20 @@
   version "0.6.0"
   resolved "https://registry.yarnpkg.com/@types/launchpad/-/launchpad-0.6.0.tgz#37296109b7f277f6e6c5fd7e0c0706bc918fbb51"
   integrity sha1-NylhCbfyd/bmxf1+DAcGvJGPu1E=
+
+"@types/leaflet-draw@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@types/leaflet-draw/-/leaflet-draw-1.0.1.tgz#66e0c2c8b93b23487f836a8d65a769b98aa0bc5b"
+  integrity sha512-/urwtXkpvv7rtre5A6plvXHSUDmFvDrwqpQRKseBCC2bIhIhBtMDf+plqQmi0vhvSk0Pqgk8qH1rtC8EVxPdmg==
+  dependencies:
+    "@types/leaflet" "*"
+
+"@types/leaflet@*":
+  version "1.5.8"
+  resolved "https://registry.yarnpkg.com/@types/leaflet/-/leaflet-1.5.8.tgz#1c550803672fc5866b8b2c38512009f2b5d4205d"
+  integrity sha512-qpi5n4LmwenUFZ+VZ7ytRgHK+ZAclIvloL2zoKCmmj244WD2hBcLbUZ6Szvajfe3sIkSYEJ8WZ1p9VYl8tRsMA==
+  dependencies:
+    "@types/geojson" "*"
 
 "@types/leaflet@^1.4.3":
   version "1.4.3"
@@ -6246,6 +6260,11 @@ etag@~1.8.1:
   resolved "https://registry.yarnpkg.com/etag/-/etag-1.8.1.tgz#41ae2eeb65efa62268aebfea83ac7d79299b0887"
   integrity sha1-Qa4u62XvpiJorr/qg6x9eSmbCIc=
 
+event-target-shim@^5.0.1:
+  version "5.0.1"
+  resolved "https://registry.yarnpkg.com/event-target-shim/-/event-target-shim-5.0.1.tgz#5d4d3ebdf9583d63a5333ce2deb7480ab2b05789"
+  integrity sha512-i/2XbnSz/uxRCU6+NdVJgKWDTM427+MqYbkQzD321DuCQJUqOuJKIA0IM2+W2xtYHdKOmZ4dR6fExsd4SXL+WQ==
+
 eventemitter3@3.1.0, eventemitter3@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-3.1.0.tgz#090b4d6cdbd645ed10bf750d4b5407942d7ba163"
@@ -8644,6 +8663,11 @@ lead@^1.0.0:
   dependencies:
     flush-write-stream "^1.0.2"
 
+leaflet-draw@^1.0.4:
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/leaflet-draw/-/leaflet-draw-1.0.4.tgz#45be92f378ed253e7202fdeda1fcc71885198d46"
+  integrity sha512-rsQ6saQO5ST5Aj6XRFylr5zvarWgzWnrg46zQ1MEOEIHsppdC/8hnN8qMoFvACsPvTioAuysya/TVtog15tyAQ==
+
 leaflet@^1.4.0:
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/leaflet/-/leaflet-1.4.0.tgz#d5f56eeb2aa32787c24011e8be4c77e362ae171b"
@@ -8751,7 +8775,7 @@ listr@^0.14.2:
     p-map "^2.0.0"
     rxjs "^6.3.3"
 
-lit-element@^2.2.1:
+lit-element@^2.0.0, lit-element@^2.2.1:
   version "2.2.1"
   resolved "https://registry.yarnpkg.com/lit-element/-/lit-element-2.2.1.tgz#79c94d8cfdc2d73b245656e37991bd1e4811d96f"
   integrity sha512-ipDcgQ1EpW6Va2Z6dWm79jYdimVepO5GL0eYkZrFvdr0OD/1N260Q9DH+K5HXHFrRoC7dOg+ZpED2XE0TgGdXw==
@@ -8762,6 +8786,17 @@ lit-html@^1.0.0, lit-html@^1.1.0, lit-html@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/lit-html/-/lit-html-1.1.2.tgz#2e3560a7075210243649c888ad738eaf0daa8374"
   integrity sha512-FFlUMKHKi+qG1x1iHNZ1hrtc/zHmfYTyrSvs3/wBTvaNtpZjOZGWzU7efGYVpgp6KvWeKF6ql9/KsCq6Z/mEDA==
+
+lit-virtualizer@^0.4.2:
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/lit-virtualizer/-/lit-virtualizer-0.4.2.tgz#8c66e26c0e50cd8e3fc7f2dfeab932967b40050a"
+  integrity sha512-aytx/Qym8h7eIh3u17oT2FfgmhOixnk4IuJAOMIbA6E8szkbpnKUDSLDWlN9ihQyCb0eijV213P+4mlekOWKxA==
+  dependencies:
+    event-target-shim "^5.0.1"
+    lit-element "^2.0.0"
+    lit-html "^1.0.0"
+    resize-observer-polyfill "^1.5.1"
+    tslib "^1.10.0"
 
 load-json-file@^1.0.0:
   version "1.1.0"
@@ -11621,6 +11656,11 @@ requires-port@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
   integrity sha1-kl0mAdOaxIXgkc8NpcbmlNw9yv8=
+
+resize-observer-polyfill@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/resize-observer-polyfill/-/resize-observer-polyfill-1.5.1.tgz#0e9020dd3d21024458d4ebd27e23e40269810464"
+  integrity sha512-LwZrotdHOo12nQuZlHEmtuXdqGoOD0OhaxopaNFxWzInpEgaLWoVuAMbTzixuosCx2nEG58ngzW3vxdWoxIgdg==
 
 resolve-cwd@^2.0.0:
   version "2.0.0"

@@ -121,6 +121,8 @@ export class ZHAGroupPage extends LitElement {
                     .hass=${this.hass}
                     .device=${member}
                     .narrow=${this.narrow}
+                    .showActions=${false}
+                    .showEditableInfo=${false}
                   ></zha-device-card>
                 `
               )
@@ -224,7 +226,10 @@ export class ZHAGroupPage extends LitElement {
   private _handleAddSelectionChanged(ev: CustomEvent): void {
     const changedSelection = ev.detail as SelectionChangedEvent;
     const entity = changedSelection.id;
-    if (changedSelection.selected) {
+    if (
+      changedSelection.selected &&
+      !this._selectedDevicesToAdd.includes(entity)
+    ) {
       this._selectedDevicesToAdd.push(entity);
     } else {
       const index = this._selectedDevicesToAdd.indexOf(entity);
@@ -238,7 +243,10 @@ export class ZHAGroupPage extends LitElement {
   private _handleRemoveSelectionChanged(ev: CustomEvent): void {
     const changedSelection = ev.detail as SelectionChangedEvent;
     const entity = changedSelection.id;
-    if (changedSelection.selected) {
+    if (
+      changedSelection.selected &&
+      !this._selectedDevicesToRemove.includes(entity)
+    ) {
       this._selectedDevicesToRemove.push(entity);
     } else {
       const index = this._selectedDevicesToRemove.indexOf(entity);

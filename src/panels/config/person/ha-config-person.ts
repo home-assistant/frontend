@@ -9,7 +9,7 @@ import {
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-item/paper-item-body";
 
-import { HomeAssistant } from "../../../types";
+import { HomeAssistant, Route } from "../../../types";
 import {
   Person,
   fetchPersons,
@@ -19,7 +19,7 @@ import {
 } from "../../../data/person";
 import "../../../components/ha-card";
 import "../../../components/ha-fab";
-import "../../../layouts/hass-subpage";
+import "../../../layouts/hass-tabs-subpage";
 import "../../../layouts/hass-loading-screen";
 import { compare } from "../../../common/string/compare";
 import "../ha-config-section";
@@ -28,15 +28,18 @@ import {
   loadPersonDetailDialog,
 } from "./show-dialog-person-detail";
 import { User, fetchUsers } from "../../../data/user";
+import { configSections } from "../ha-panel-config";
 
 class HaConfigPerson extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public isWide?: boolean;
+  @property() public narrow?: boolean;
+  @property() public route!: Route;
   @property() private _storageItems?: Person[];
   @property() private _configItems?: Person[];
   private _usersLoad?: Promise<User[]>;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (
       !this.hass ||
       this._storageItems === undefined ||
@@ -48,7 +51,13 @@ class HaConfigPerson extends LitElement {
     }
     const hass = this.hass;
     return html`
-      <hass-subpage header=${hass.localize("ui.panel.config.person.caption")}>
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        .route=${this.route}
+        back-path="/config"
+        .tabs=${configSections.persons}
+      >
         <ha-config-section .isWide=${this.isWide}>
           <span slot="header"
             >${hass.localize("ui.panel.config.person.caption")}</span
@@ -106,10 +115,11 @@ class HaConfigPerson extends LitElement {
               `
             : ""}
         </ha-config-section>
-      </hass-subpage>
+      </hass-tabs-subpage>
 
       <ha-fab
         ?is-wide=${this.isWide}
+        ?narrow=${this.narrow}
         icon="hass:plus"
         title="${hass.localize("ui.panel.config.person.add_person")}"
         @click=${this._createPerson}
@@ -228,7 +238,9 @@ ${this.hass!.localize("ui.panel.config.person.confirm_delete2")}`)
         right: 16px;
         z-index: 1;
       }
-
+      ha-fab[narrow] {
+        bottom: 84px;
+      }
       ha-fab[is-wide] {
         bottom: 24px;
         right: 24px;

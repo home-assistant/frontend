@@ -27,7 +27,7 @@ class StateCardInputSelect extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public stateObj!: InputSelectEntity;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <state-badge .stateObj=${this.stateObj}></state-badge>
       <paper-dropdown-menu-light

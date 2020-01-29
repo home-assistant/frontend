@@ -16,7 +16,7 @@ class IntegrationBadge extends LitElement {
   @property() public badgeIcon?: string;
   @property({ type: Boolean, reflect: true }) public clickable = false;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div class="icon">
         <iron-icon .icon=${this.icon}></iron-icon>

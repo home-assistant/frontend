@@ -80,8 +80,6 @@ hassAttributeUtil.LOGIC_STATE_ATTRIBUTES = hassAttributeUtil.LOGIC_STATE_ATTRIBU
   },
   haaska_hidden: undefined,
   haaska_name: undefined,
-  homebridge_hidden: { type: "boolean" },
-  homebridge_name: { type: "string" },
   supported_features: undefined,
   attribution: undefined,
   restored: undefined,

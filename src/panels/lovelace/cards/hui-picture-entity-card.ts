@@ -9,6 +9,7 @@ import {
   PropertyValues,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 import "../../../components/ha-card";
 import "../components/hui-image";
@@ -94,7 +95,7 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     }
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -156,6 +157,9 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
             hasHold: hasAction(this._config!.hold_action),
             hasDoubleClick: hasAction(this._config!.double_tap_action),
           })}
+          tabindex=${ifDefined(
+            hasAction(this._config.tap_action) ? "0" : undefined
+          )}
           class=${classMap({
             clickable: stateObj.state !== UNAVAILABLE,
           })}

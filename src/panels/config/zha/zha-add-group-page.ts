@@ -117,7 +117,10 @@ export class ZHAAddGroupPage extends LitElement {
   private _handleAddSelectionChanged(ev: CustomEvent): void {
     const changedSelection = ev.detail as SelectionChangedEvent;
     const entity = changedSelection.id;
-    if (changedSelection.selected) {
+    if (
+      changedSelection.selected &&
+      !this._selectedDevicesToAdd.includes(entity)
+    ) {
       this._selectedDevicesToAdd.push(entity);
     } else {
       const index = this._selectedDevicesToAdd.indexOf(entity);

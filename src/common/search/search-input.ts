@@ -20,7 +20,7 @@ class SearchInput extends LitElement {
     this.shadowRoot!.querySelector("paper-input")!.focus();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div class="search-container">
         <paper-input

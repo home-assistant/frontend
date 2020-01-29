@@ -46,7 +46,7 @@ export class HuiIframeCardEditor extends LitElement
     return this._config!.aspect_ratio || "";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }

@@ -20,7 +20,7 @@ export class HuiInputListEditor extends LitElement {
   @property() protected hass?: HomeAssistant;
   @property() protected inputLabel?: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.value) {
       return html``;
     }

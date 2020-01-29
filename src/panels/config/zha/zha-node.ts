@@ -27,7 +27,7 @@ export class ZHANode extends LitElement {
   @property() public device?: ZHADevice;
   @property() private _showHelp: boolean = false;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-config-section .isWide="${this.isWide}">
         <div class="header" slot="header">
@@ -55,16 +55,29 @@ export class ZHANode extends LitElement {
             "ui.panel.config.zha.node_management.hint_wakeup"
           )}
         </span>
-        <zha-device-card
-          class="card"
-          .hass=${this.hass}
-          .device=${this.device}
-          .narrow=${!this.isWide}
-          .showHelp=${this._showHelp}
-          isJoinPage
-          showActions
-          @zha-device-removed=${this._onDeviceRemoved}
-        ></zha-device-card>
+        <div class="content">
+          ${this.device
+            ? html`
+                <zha-device-card
+                  class="card"
+                  .hass=${this.hass}
+                  .device=${this.device}
+                  .narrow=${!this.isWide}
+                  .showHelp=${this._showHelp}
+                  showName
+                  showModelInfo
+                  .showEntityDetail=${false}
+                  .showActions="${this.device.device_type !== "Coordinator"}"
+                  @zha-device-removed=${this._onDeviceRemoved}
+                ></zha-device-card>
+              `
+            : html`
+                <paper-spinner
+                  active
+                  alt=${this.hass!.localize("ui.common.loading")}
+                ></paper-spinner>
+              `}
+        </div>
       </ha-config-section>
     `;
   }
@@ -93,17 +106,13 @@ export class ZHANode extends LitElement {
           padding-bottom: 16px;
         }
 
-        ha-card {
-          margin: 0 auto;
-          max-width: 600px;
+        .content {
+          max-width: 680px;
         }
 
         .card {
+          padding: 28px 20px 0;
           margin-top: 24px;
-          box-sizing: border-box;
-          display: flex;
-          flex: 1;
-          word-wrap: break-word;
         }
 
         ha-service-description {
@@ -123,6 +132,7 @@ export class ZHANode extends LitElement {
           float: right;
           top: 6px;
           right: 0;
+          padding-right: 0px;
           color: var(--primary-color);
         }
       `,

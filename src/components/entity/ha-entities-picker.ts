@@ -40,9 +40,9 @@ class HaEntitiesPickerLight extends LitElement {
   public pickedEntityLabel?: string;
   @property({ attribute: "pick-entity-label" }) public pickEntityLabel?: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
-      return;
+      return html``;
     }
 
     const currentEntities = this._currentEntities;

@@ -7,6 +7,7 @@ import {
   css,
   CSSResult,
 } from "lit-element";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 import "../components/hui-image";
 
@@ -35,7 +36,7 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
     this._config = config;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -56,6 +57,9 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
+        tabindex=${ifDefined(
+          hasAction(this._config.tap_action) ? "0" : undefined
+        )}
       ></hui-image>
     `;
   }
@@ -69,6 +73,11 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
       }
       hui-image {
         -webkit-user-select: none !important;
+      }
+      hui-image:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 100%;
       }
     `;
   }

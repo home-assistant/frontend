@@ -24,7 +24,7 @@ export class HuiEntityEditor extends LitElement {
 
   @property() protected label?: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.entities) {
       return html``;
     }

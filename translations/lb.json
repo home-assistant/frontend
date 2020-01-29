@@ -533,6 +533,7 @@
         },
         "common": {
             "cancel": "Ofbriechen",
+            "close": "Zoumaachen",
             "loading": "Lued",
             "no": "Nee",
             "save": "Späicheren",
@@ -555,6 +556,16 @@
             "history_charts": {
                 "loading_history": "Lued Status Verlaaf",
                 "no_history_found": "Keen Status Verlaaf fonnt"
+            },
+            "related-items": {
+                "area": "Beräich",
+                "automation": "Deel vun de folgenden Automatismen",
+                "device": "Apparat",
+                "entity": "Entitéiten a Relatioun",
+                "group": "Deel vun de folgende Gruppen",
+                "integration": "Integratioun",
+                "scene": "Deel vun de folgende Zeenen",
+                "script": "Deel vun de folgende Skripten"
             },
             "relative_time": {
                 "duration": {
@@ -586,10 +597,25 @@
             "domain_toggler": {
                 "title": "Domäner ëmschalten"
             },
+            "entity_registry": {
+                "control": "Kontroll",
+                "dismiss": "Verwerfen",
+                "related": "Relatioun",
+                "settings": "Astellungen"
+            },
             "more_info_control": {
                 "dismiss": "Dialog ofbriechen",
+                "edit": "Entitéit änneren",
+                "restored": {
+                    "confirm_remove_text": "Sécher fir dës Entitéit ze läsche?",
+                    "confirm_remove_title": "Entitéit läschen?",
+                    "not_provided": "Dës Entitéit ass fir de Momment net ereechbar an ass ee Weesekand  vun enger geläschter, geännerter oder futtisser Integratioun oder Apparat.",
+                    "remove_action": "Entitéit läschen",
+                    "remove_intro": "Falls d'Entitéit net méi benotzt gëtt kënnt dir sie botzen andeems dir sie läscht."
+                },
                 "script": {
-                    "last_action": "Läscht Aktioun"
+                    "last_action": "Läscht Aktioun",
+                    "last_triggered": "Läscht ausgeléist"
                 },
                 "settings": "Astellunge vun der Entitéit",
                 "sun": {
@@ -628,6 +654,9 @@
                     "add": "Apparater dobäisetzen",
                     "reconfigure": "Apparat frësch konfiguréieren",
                     "remove": "Apparat läschen"
+                },
+                "confirmations": {
+                    "remove": "Sécher fir den Apparat ze läsche?"
                 },
                 "last_seen": "Fir d'läscht gesinn",
                 "manuf": "vun {manufacturer}",
@@ -675,7 +704,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Lëscht vun de Beräicher",
                     "create_area": "Beräich erstellen",
                     "description": "Iwwersiicht vun de Beräicher am Haus",
@@ -955,6 +984,7 @@
                             "manage_entities": "Entitéiten verwalten",
                             "security_devices": "Sécherheets Apparater",
                             "sync_entities": "Entitéiten mat Google synchroniséieren",
+                            "sync_entities_404_message": "Feeler bei der Synchronisatioun vun den Entitéiten mat Google. Froot Google 'Hey Google, synchroniséier meng Apparater' fir d'Entitéiten ze synchroniséieren.",
                             "title": "Google Assistant"
                         },
                         "integrations": "Integratioune",
@@ -1091,6 +1121,7 @@
                             "core_config": {
                                 "edit_requires_storage": "Editeur ass desaktivéiert well d'Konfiguratioun an der configuration.yaml gespäichert ass.",
                                 "elevation": "Héicht",
+                                "elevation_feet": "Féiss",
                                 "elevation_meters": "Meter",
                                 "imperial_example": "Fahrenheit, Pënner",
                                 "latitude": "Breedegrad",
@@ -1178,11 +1209,16 @@
                     "description": "Verwalt verbonnen Apparater",
                     "details": "Hei sinn all Detailer vun ärem Apparat.",
                     "device_not_found": "Apparat net fonnt.",
+                    "entities": {
+                        "add_entities_lovelace": "All Entitéiten zu Lovelace bäisetzen",
+                        "entities": "Entitéiten",
+                        "none": "Dësen Appart huet keng Entitéiten."
+                    },
                     "info": "Informatioune vum Apparat",
                     "unknown_error": "Onbekannten Feeler",
                     "unnamed_device": "Apparat ouni Numm"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Lëscht vun den Entitéiten",
                     "description": "Iwwersiicht vun all bekannten Entitéiten.",
                     "editor": {
@@ -1193,22 +1229,51 @@
                         "enabled_cause": "Desaktivéiert duerch {cause}.",
                         "enabled_description": "Desaktivéiert Entitéiten ginn net am Home Assistant bäigesat.",
                         "enabled_label": "Entitéit aktivéieren",
+                        "entity_id": "ID vun der Entitéit",
+                        "name": "Numm iwwerschreiwen",
                         "note": "Nott: dëst funktionéiert villäicht nach net mat all Integratioun.",
                         "unavailable": "Dës Entitéit ass net erreechbar fir de Moment.",
                         "update": "Aktualiséieren"
                     },
                     "picker": {
+                        "disable_selected": {
+                            "button": "Ausgewielte deaktivéieren",
+                            "confirm_text": "Deaktivéiert Entitéiten ginn net am Home Assistant bäigesat.",
+                            "confirm_title": "Wëllt dir {number} Entitéite deaktivéieren?"
+                        },
+                        "enable_selected": {
+                            "button": "Ausgewielten aktivéieren",
+                            "confirm_text": "Dës mecht sie rëm am Home Assistant siichtbar wann sie fir de Moment deaktivéiert sinn.",
+                            "confirm_title": "Wëllt dir {number} Entitéite aktivéieren?"
+                        },
+                        "filter": {
+                            "filter": "Filter",
+                            "show_disabled": "Deaktivéiert Entitéiten uweisen",
+                            "show_unavailable": "Net ereechbar Entitéite uweisen"
+                        },
                         "header": "Lëscht vun den Entitéiten",
                         "headers": {
                             "enabled": "Aktivéiert",
                             "entity_id": "ID vun der Entitéit",
                             "integration": "Integratioun",
-                            "name": "Numm"
+                            "name": "Numm",
+                            "status": "Status"
                         },
                         "integrations_page": "Integratiouns Säit",
                         "introduction": "Home Assistant hält eng Lëscht vun all Entitéit's ID déi eenzel erkennbar ass a bis elo vum System erkannt gouf. All eenzel vun dësen Entitéite kritt eng ID zougewise welch nëmme fir dës Entitéit reservéiert ass.",
                         "introduction2": "Benotzt d'Lëscht vun den Entitéite fir d'Nimm z'änneren, d'Entitéits ID z'änneren oder d'Entrée aus dem Home Assistant ze läschen. Remarque: Läsche vun der Entitéit aus der Lëscht läscht d'Entitéit selwer net. Fir dës ze läsche follegt dem Link ënnen a läscht et op der Integratiouns Säit.",
+                        "remove_selected": {
+                            "button": "Ausgewielte läschen",
+                            "confirm_text": "Entitéiten kënne nëmmen geläscht gin wann d'Integratioun d'Entitéiten net méi zur Verfügung stellt.",
+                            "confirm_title": "Wëllt dir {number} Entitéite läschen?"
+                        },
+                        "selected": "{number} ausgewielt",
                         "show_disabled": "Desaktivéiert Entitéiten uweisen",
+                        "status": {
+                            "disabled": "Deaktivéiert",
+                            "ok": "Ok",
+                            "unavailable": "Net erreechbar"
+                        },
                         "unavailable": "(net verfügbar)"
                     }
                 },
@@ -1238,6 +1303,7 @@
                         "area_picker_label": "Beräich",
                         "close": "Zoumaachen",
                         "created_config": "Konfiguratioun erstallt fir {name}.",
+                        "dismiss": "Dialog ofbriechen",
                         "error_saving_area": "Feeler beim späicheren vum Beräich: {error}",
                         "external_step": {
                             "description": "Fir dës Etapp ofzeschléisse muss dir eng externe Internetsäit besichen.",
@@ -1375,8 +1441,10 @@
                             "group": "Gruppe nei lueden",
                             "heading": "Konfiguratioun gëtt frësch gelueden",
                             "introduction": "E puer Deeler vum Home Assistant kënne frësch geluede ginn ouni datt een Neistart néideg ass. Klick op nei luede fir di aktuell Konfiguratioun z'entlueden an di nei Konfiguratioun ze lueden.",
+                            "person": "Persoune frësch lueden",
                             "scene": "Szeene néi lueden",
-                            "script": "Skripte nei lueden"
+                            "script": "Skripte nei lueden",
+                            "zone": "Zone frësch lueden"
                         },
                         "server_management": {
                             "confirm_restart": "Sécher fir Home Assistant frësch ze starten?",
@@ -1436,6 +1504,10 @@
                         "search_again": "Nach emol sichen",
                         "spinner": "Sicht no ZHA Zigbee Apparater..."
                     },
+                    "add": {
+                        "caption": "Apparater bäisetzen",
+                        "description": "Apparater am Zigbee Netzwierk bäisetzen"
+                    },
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributer vum ausgewielten Cluster",
@@ -1455,7 +1527,9 @@
                         "issue_zigbee_command": "Zigbee Kommando ausginn"
                     },
                     "clusters": {
-                        "help_cluster_dropdown": "Wielt ee Cluster aus fir Attributer anKommandoe ze gesinn."
+                        "header": "Clusters",
+                        "help_cluster_dropdown": "Wielt ee Cluster aus fir Attributer anKommandoe ze gesinn.",
+                        "introduction": "Clusters si Bausteng fir Zigbee Funktionalitéiten. Si trennen d'Funktionalitéit a logesch Eenheeten. Et gi Client a Server Typen an déi bestinn aus Attributer a Befeeler."
                     },
                     "common": {
                         "add_devices": "Apparater dobäisetzen",
@@ -1470,6 +1544,49 @@
                         "device_name_placeholder": "Virnumm",
                         "update_name_button": "Numm änneren"
                     },
+                    "devices": {
+                        "header": "Zigbee Haus Automatismen - Apparat"
+                    },
+                    "group_binding": {
+                        "bind_button_help": "Verbannt den gewielte Grupp mat de gewielten Cluster vun Apparaten.",
+                        "bind_button_label": "Grupp bannen",
+                        "cluster_selection_help": "Wielt Cluster aus fir mam gewielte Grupp ze verbannen",
+                        "group_picker_help": "Wielt e Grupp fir e Verbannung's Kommando auszeféieren.",
+                        "group_picker_label": "Gruppen déi kënne gebonne ginn",
+                        "header": "Gruppenandeelung",
+                        "introduction": "Gruppe verbannen an opléisen",
+                        "unbind_button_help": "De gewielte Grupp aus dem gewielte Cluster eraushuelen.",
+                        "unbind_button_label": "Grupp opléisen"
+                    },
+                    "groups": {
+                        "add_members": "Membere bäisetzen",
+                        "adding_members": "Membere gi bäigesat",
+                        "caption": "Gruppe",
+                        "create": "Grupp erstellen",
+                        "create_group": "Zigbee Haus Automatismen - Grupp erstellen",
+                        "create_group_details": "Gitt déi néideg Detailer an fir eng nei Zigbee Grupp z'erstellen",
+                        "creating_group": "Grupp gëtt erstallt",
+                        "description": "Zigbee Gruppen erstellen an änneren",
+                        "group_details": "Hei sinn all Detailer vun der ausgewielter Zigbee Grupp.",
+                        "group_id": "ID vun der Grupp",
+                        "group_info": "Grupp Informatiounen",
+                        "group_name_placeholder": "Numm vum Grupp",
+                        "group_not_found": "Grupp net fonnt!",
+                        "group-header": "Zigbee Haus Automatismen - Grupp Detailer",
+                        "groups": "Gruppe",
+                        "groups-header": "Zigbee Haus Automatismen - Gruppemanagement",
+                        "header": "Zigbee Haus Automatismen - Gruppemanagement",
+                        "introduction": "Zigbe Gruppen erstellen an änneren",
+                        "manage_groups": "Zigbee Gruppen verwalten",
+                        "members": "Membere",
+                        "remove_groups": "Gruppe läschen",
+                        "remove_members": "Membere läschen",
+                        "removing_groups": "Gruppe gi geläscht",
+                        "removing_members": "Membere gi geläscht.",
+                        "zha_zigbee_groups": "ZHA Zigbee Gruppen"
+                    },
+                    "header": "Zigbee Home Automation konfiguréieren",
+                    "introduction": "Hei ass et méiglech de ZHA Komponent ze konfiguréieren. Net alles ass fir de Moment méiglech fir iwwert den Interface anzestellen, mee mir schaffen drun.",
                     "network_management": {
                         "header": "Verwaltung vum Netzwierk",
                         "introduction": "Kommandoe mat Impakt op d'gesamt Netzwierk"
@@ -1485,7 +1602,32 @@
                         "reconfigure": "ZHA Apparat rekonfiguréieren (Apparat heelen). Benotzt dëst am Fall vu Problemer mam Apparat. Falls den Apparat duerch eng Batterie gespeist gëtt stellt sécher dass en un ass a Befeeler entgéint kann huelen",
                         "remove": "Een Apparat vum Zigbee Reseau läschen.",
                         "updateDeviceName": "Personaliséiert den Numm fir dësen Apparat an der Iwwersiicht vun den Apparaten."
-                    }
+                    },
+                    "title": "Zigbee Haus Automatismen"
+                },
+                "zone": {
+                    "add_zone": "Zon dobäisetzen",
+                    "caption": "Zone",
+                    "confirm_delete": "Sécher fir dës Zon ze läschen?",
+                    "create_zone": "Zon erstellen",
+                    "description": "Zone verwalte an deenen Persounen suivéiert solle ginn.",
+                    "detail": {
+                        "create": "Erstellen",
+                        "delete": "Läschen",
+                        "icon": "Ikon",
+                        "icon_error_msg": "Ikon sollt am format prefix:numm sinn, Beispill: mdi:home",
+                        "latitude": "Breedegrad",
+                        "longitude": "Längegrad",
+                        "name": "Numm",
+                        "new_zone": "Nei Zon",
+                        "passive": "Passiv",
+                        "passive_note": "Passiv Zonë sinn am Frontend verstoppt a ginn net als Standuert fir Apparaten Tracker benotzt. Dëst ass nëtzlech wann Dir et just fir Automatisme wëllt benotzen.",
+                        "radius": "Radius",
+                        "required_error_msg": "Dëst Feld ass erfuerderlech",
+                        "update": "Aktualiséieren"
+                    },
+                    "introduction": "Zonen erlaben Iech verschidde Regiounen op der Äerd ze spezifizéieren. Wann eng Persoun an enger Zone ass, hëlt de Status den Numm aus der Zone. Zonë kënnen och als Ausléiser oder als Konditioun an Automatisme benotzt ginn.",
+                    "no_zones_created_yet": "Et gesäit sou aus wéi wann nach keng Zone erstallt goufen."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1667,12 +1809,20 @@
                 "showing_entries": "Weist Beiträg fir"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "Dës Funktioun kann nëmme benotzt gi wann dir d'Kontroll iwwert Lovelace iwwerholl hutt.",
+                    "saving_failed": "Feeler beim Späicheren vun der Lovelace Konfiguratioun",
+                    "yaml_unsupported": "Dës Funktioun kann net benotz gi wann de Lovelace am YAML Modus bedriwwe gëtt."
+                },
                 "cards": {
                     "confirm_delete": "Sécher fir dës Kaart ze läschen?",
                     "empty_state": {
                         "go_to_integrations_page": "Zur Integratiouns Säit goen",
                         "no_devices": "Dës Säit erlaabt et iech är Apparater ze kontrolléiere, awer wéi et schéngt sinn nach keng Apparater ageriicht. Gitt op d'Integratioun's Säit fir unzefänken.",
                         "title": "Wëllkomm Doheem"
+                    },
+                    "entities": {
+                        "never_triggered": "Ni ausgeléist"
                     },
                     "picture-elements": {
                         "call_service": "Service {name} opruffen",
@@ -1804,6 +1954,7 @@
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "Dës Kaart erfuerdert dass d'Integratioun `shopping_list ageriicht ass.",
                             "name": "Akafslëscht"
                         },
                         "thermostat": {
@@ -1856,10 +2007,13 @@
                         "para_no_id": "Dëst Element huet keng ID. Definéiert w.e.g. eng ID fir dëst Element am 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Mir erstellen automatesch är Lovelace Usiichte mat äre Beräicher an Apparaten wann dir är Lovelace Konfiguratioun läscht.",
+                        "confirm_remove_config_title": "Sécher fir är Lovelace Konfiguratioun ze läschen? Mir erstellen automatesch är Lovelace Usiichte mat äre Beräicher an Apparaten.",
                         "confirm_unsaved_changes": "Dir hutt net gespäichert Ännerungen, sécher fir eraus ze goen?",
                         "confirm_unsaved_comments": "Är Konfiguratioun enthält Kommentaren, dës ginn net gespäichert. Wëllt dir weiderfueren?",
                         "error_invalid_config": "Är Konfiguratioun ass ongëlteg: {error}",
                         "error_parse_yaml": "Kann de YAML net analyséieren: {error}",
+                        "error_remove": "Kann Konfiguratioun net läschen: {error}",
                         "error_save_yaml": "Kann de YAML net späicheren: {error}",
                         "header": "Konfiguratioun änneren",
                         "save": "Späicheren",
@@ -1872,6 +2026,11 @@
                         "para": "Standardméisseg verwalt Home Assistant de Benotzer Interface an aktualiséiert en soubal nei Entitéiten oder Lovelace-Komponenten disponibel sinn. Wann dir d'Kontrolle iwwerhuelt, kënne mir keng automatesch Ännerung méi fir iech maachen.",
                         "para_sure": "Sécher fir d'Kontrolle iwwert de Benotzer Interface z'iwwerhuelen?",
                         "save": "Kontroll iwwerhuelen"
+                    },
+                    "suggest_card": {
+                        "add": "Zu Lovelace bäisetzen",
+                        "create_own": "Erstellt är eegen",
+                        "header": "Mir hun eng Suggestioun fir iech erstallt"
                     },
                     "view": {
                         "panel_mode": {
@@ -2111,6 +2270,8 @@
                     "link_promo": "Hëllef beim Iwwersetzen"
                 },
                 "logout": "Ausloggen",
+                "logout_text": "Sécher fir sech ofzemellen?",
+                "logout_title": "Ofmellen",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Sécher fir den Accèss Jeton fir {name} ze läsche?",
                     "create": "Jeton erstellen",

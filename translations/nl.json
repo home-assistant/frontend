@@ -533,6 +533,7 @@
         },
         "common": {
             "cancel": "Annuleren",
+            "close": "Sluiten",
             "loading": "Bezig met laden",
             "no": "Nee",
             "save": "Opslaan",
@@ -588,6 +589,13 @@
             },
             "more_info_control": {
                 "dismiss": "Dialoogvenster sluiten",
+                "restored": {
+                    "confirm_remove_text": "Weet u zeker dat u dit item wilt verwijderen?",
+                    "confirm_remove_title": "Entiteit verwijderen?",
+                    "not_provided": "Deze entiteit is momenteel niet beschikbaar en is een wees voor een verwijderde, gewijzigde of disfunctionele integratie of apparaat.",
+                    "remove_action": "Entiteit verwijderen",
+                    "remove_intro": "Als de entiteit niet meer in gebruik is, kunt u deze opruimen door deze te verwijderen."
+                },
                 "script": {
                     "last_action": "Laatste actie"
                 },
@@ -675,7 +683,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Gebieden",
                     "create_area": "MAAK GEBIED",
                     "description": "Overzicht van alle gebieden in je huis.",
@@ -687,12 +695,12 @@
                     },
                     "no_areas": "Het lijkt erop dat je nog geen gebieden hebt!",
                     "picker": {
-                        "create_area": "MAAK RUIMTE",
+                        "create_area": "MAAK GEBIED",
                         "header": "Gebieden",
                         "integrations_page": "Integratiespagina",
                         "introduction": "Gebieden worden gebruikt om te bepalen waar apparaten zijn. Deze informatie wordt overal in de Home Assistant gebruikt om je te helpen bij het organiseren van je interface, machtigingen en integraties met andere systemen.",
                         "introduction2": "Als u apparaten in een gebied wilt plaatsen, gebruikt u de onderstaande koppeling om naar de integratiespagina te gaan en vervolgens op een geconfigureerde integratie te klikken om naar de apparaatkaarten te gaan.",
-                        "no_areas": "Het lijkt erop dat je nog geen ruimtes hebt!"
+                        "no_areas": "Het lijkt erop dat je nog geen gebieden hebt!"
                     }
                 },
                 "automation": {
@@ -1178,11 +1186,16 @@
                     "description": "Beheer verbonden apparaten",
                     "details": "Hier zijn alle details van uw apparaat",
                     "device_not_found": "Apparaat niet gevonden.",
+                    "entities": {
+                        "add_entities_lovelace": "Voeg alle apparaatentiteiten toe aan Lovelace",
+                        "entities": "Entiteiten",
+                        "none": "Dit apparaat heeft geen entiteiten"
+                    },
                     "info": "Apparaat info",
                     "unknown_error": "Onbekende fout",
                     "unnamed_device": "Naamloos apparaat"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Entiteiten",
                     "description": "Overzicht van alle geregistreerde entiteiten",
                     "editor": {
@@ -1198,6 +1211,11 @@
                         "update": "BIJWERKEN"
                     },
                     "picker": {
+                        "filter": {
+                            "filter": "filter",
+                            "show_disabled": "Uitgeschakelde entiteiten weergeven",
+                            "show_unavailable": "Uitgeschakelde entiteiten weergeven"
+                        },
                         "header": "Entiteiten",
                         "headers": {
                             "enabled": "Ingeschakeld",
@@ -1208,7 +1226,14 @@
                         "integrations_page": "Integratiespagina",
                         "introduction": "Home Assistant houdt een register bij van elke entiteit die het ooit heeft gezien en die uniek kan worden geïdentificeerd. Elk van deze entiteiten krijgt een entiteit-ID toegewezen die alleen voor deze entiteit wordt gereserveerd.",
                         "introduction2": "Gebruik het entiteitenregister om de naam te overschrijven, de entiteits-ID te wijzigen of het item te verwijderen uit Home Assistant. Opmerking: als u de entiteitsregistervermelding verwijdert, wordt de entiteit niet verwijderd. Hiertoe volgt u de onderstaande koppeling en verwijdert u deze van de integratiespagina.",
+                        "remove_selected": {
+                            "button": "Verwijder geselecteerde"
+                        },
                         "show_disabled": "Uitgeschakelde entiteiten weergeven",
+                        "status": {
+                            "disabled": "Uitgeschakeld",
+                            "unavailable": "Onbeschikbaar"
+                        },
                         "unavailable": "(niet beschikbaar)"
                     }
                 },
@@ -1469,6 +1494,16 @@
                         "area_picker_label": "Gebied",
                         "device_name_placeholder": "Door gebruiker ingegeven naam",
                         "update_name_button": "Naam bijwerken"
+                    },
+                    "groups": {
+                        "group_id": "Groep",
+                        "group_info": "Groepsinformatie",
+                        "groups": "groepen",
+                        "header": "Zigbee groep management",
+                        "introduction": "Maak en verwijder zigbee groepen",
+                        "members": "Leden",
+                        "remove_groups": "verwijder groepen",
+                        "removing_groups": "groepen verwijderen"
                     },
                     "network_management": {
                         "header": "Netwerkbeheer",
@@ -2111,6 +2146,7 @@
                     "link_promo": "Help met vertalen"
                 },
                 "logout": "Uitloggen",
+                "logout_title": "Afmelden?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Weet je zeker dat je de toegangstoken voor {name} wilt verwijderen?",
                     "create": "Token aanmaken",

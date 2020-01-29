@@ -520,10 +520,13 @@ class HaSidebar extends LitElement {
       }
 
       a {
+        text-decoration: none;
         color: var(--sidebar-text-color);
         font-weight: 500;
         font-size: 14px;
-        text-decoration: none;
+        position: relative;
+        display: block;
+        outline: 0;
       }
 
       paper-icon-item {
@@ -546,7 +549,8 @@ class HaSidebar extends LitElement {
         color: var(--sidebar-icon-color);
       }
 
-      .iron-selected paper-icon-item:before {
+      .iron-selected paper-icon-item::before,
+      a:not(.iron-selected):focus::before {
         border-radius: 4px;
         position: absolute;
         top: 0;
@@ -555,10 +559,21 @@ class HaSidebar extends LitElement {
         left: 0;
         pointer-events: none;
         content: "";
-        background-color: var(--sidebar-selected-icon-color);
-        opacity: 0.12;
         transition: opacity 15ms linear;
         will-change: opacity;
+      }
+      .iron-selected paper-icon-item::before {
+        background-color: var(--sidebar-selected-icon-color);
+        opacity: 0.12;
+      }
+      a:not(.iron-selected):focus::before {
+        background-color: currentColor;
+        opacity: var(--dark-divider-opacity);
+        margin: 4px 8px;
+      }
+      .iron-selected paper-icon-item:focus::before,
+      .iron-selected:focus paper-icon-item::before {
+        opacity: 0.2;
       }
 
       .iron-selected paper-icon-item[pressed]:before {

@@ -41,7 +41,7 @@ export class SystemLogCard extends LitElement {
     this._items = await fetchSystemLog(this.hass!);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div class="system-log-intro">
         <ha-card>
