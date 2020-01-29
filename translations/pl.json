@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Uruchom"
             },
+            "service": {
+                "run": "Uruchom"
+            },
             "timer": {
                 "actions": {
                     "cancel": "anuluj",
@@ -541,10 +544,24 @@
             "yes": "Tak"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Dodaj",
+                    "failed_create_area": "Nie udało się utworzyć obszaru.",
+                    "name": "Nazwa",
+                    "text": "Wprowadź nazwę nowego obszaru.",
+                    "title": "Dodaj nowy obszar"
+                },
+                "add_new": "Dodaj nowy obszar...",
+                "area": "Obszar",
+                "clear": "Wyczyść",
+                "show_areas": "Pokaż obszary"
+            },
             "device-picker": {
                 "clear": "Wyczyść",
                 "device": "Urządzenie",
-                "show_devices": "Wyświetl urządzenia"
+                "show_devices": "Wyświetl urządzenia",
+                "toggle": "Przełącz"
             },
             "entity": {
                 "entity-picker": {
@@ -556,6 +573,16 @@
             "history_charts": {
                 "loading_history": "Ładowanie historii...",
                 "no_history_found": "Nie znaleziono historii."
+            },
+            "related-items": {
+                "area": "Obszar",
+                "automation": "Element następujących automatyzacji",
+                "device": "Urządzenie",
+                "entity": "Powiązane encje",
+                "group": "Element następujących grup",
+                "integration": "Integracja",
+                "scene": "Element następujących scen",
+                "script": "Element następujących skryptów"
             },
             "relative_time": {
                 "duration": {
@@ -587,6 +614,29 @@
             "domain_toggler": {
                 "title": "Przełączanie domen"
             },
+            "entity_registry": {
+                "control": "Kontrola",
+                "dismiss": "Odrzuć",
+                "editor": {
+                    "confirm_delete": "Na pewno chcesz usunąć ten wpis?",
+                    "delete": "USUŃ",
+                    "enabled_cause": "Wyłączone przez {cause}.",
+                    "enabled_description": "Wyłączone encje nie zostaną dodane do Home Assistant'a.",
+                    "enabled_label": "Włącz encję",
+                    "entity_id": "Identyfikator encji",
+                    "name": "Nadpisanie nazwy",
+                    "note": "Uwaga: może to jeszcze nie działać ze wszystkimi integracjami.",
+                    "unavailable": "Ta encja nie jest obecnie dostępna.",
+                    "update": "AKTUALIZUJ"
+                },
+                "related": "Powiązane",
+                "settings": "Ustawienia"
+            },
+            "generic": {
+                "cancel": "Anuluj",
+                "default_confirmation_title": "Jesteś pewny?",
+                "ok": "OK"
+            },
             "more_info_control": {
                 "dismiss": "Zamknij okno dialogowe",
                 "edit": "Edytuj encję",
@@ -598,7 +648,8 @@
                     "remove_intro": "Jeśli encja nie jest używana możesz ją usunąć."
                 },
                 "script": {
-                    "last_action": "Ostatnia akcja"
+                    "last_action": "Ostatnia akcja",
+                    "last_triggered": "Ostatnie uruchomienie"
                 },
                 "settings": "Ustawienia encji",
                 "sun": {
@@ -695,7 +746,7 @@
                         "create": "UTWÓRZ",
                         "default_name": "Nowy obszar",
                         "delete": "USUŃ",
-                        "update": "UAKTUALNIJ"
+                        "update": "AKTUALIZUJ"
                     },
                     "no_areas": "Wygląda na to, że jeszcze nie masz zdefiniowanych obszarów!",
                     "picker": {
@@ -1198,8 +1249,10 @@
                         "none": "To urządzenie nie ma żadnych encji"
                     },
                     "info": "Informacje o urządzeniu",
+                    "name": "Nazwa",
                     "unknown_error": "Nieznany błąd",
-                    "unnamed_device": "Nienazwane urządzenie"
+                    "unnamed_device": "Nienazwane urządzenie",
+                    "update": "Aktualizuj"
                 },
                 "entities": {
                     "caption": "Rejestr encji",
@@ -1212,9 +1265,11 @@
                         "enabled_cause": "Wyłączone przez {cause}.",
                         "enabled_description": "Wyłączone encje nie będą dodawane do Home Assistant'a.",
                         "enabled_label": "Włącz encję",
+                        "entity_id": "Identyfikator encji",
+                        "name": "Nadpisanie nazwy",
                         "note": "Uwaga: może to jeszcze nie działać ze wszystkimi integracjami.",
                         "unavailable": "Ta encja nie jest obecnie dostępna.",
-                        "update": "UAKTUALNIJ"
+                        "update": "AKTUALIZUJ"
                     },
                     "picker": {
                         "disable_selected": {
@@ -1422,8 +1477,10 @@
                             "group": "Grupy",
                             "heading": "Ponowne wczytanie konfiguracji",
                             "introduction": "Niektóre części konfiguracji można wczytać od nowa bez konieczności ponownego uruchamiania Home Assistant'a. Naciśnięcie poniższych przycisków wczyta ponownie daną część konfiguracji.",
+                            "person": "Osoby",
                             "scene": "Sceny",
-                            "script": "Skrypty"
+                            "script": "Skrypty",
+                            "zone": "Strefy"
                         },
                         "server_management": {
                             "confirm_restart": "Na pewno chcesz ponownie uruchomić Home Assistant'a?",
@@ -1583,6 +1640,32 @@
                         "updateDeviceName": "Ustaw niestandardową nazwę tego urządzenia w rejestrze urządzeń."
                     },
                     "title": "Zigbee Home Automation"
+                },
+                "zone": {
+                    "add_zone": "Dodaj strefę",
+                    "caption": "Strefy",
+                    "configured_in_yaml": "Stref skonfigurowanych za pomocą pliku configuration.yaml nie można edytować za pomocą interfejsu użytkownika.",
+                    "confirm_delete": "Na pewno chcesz usunąć tę strefę?",
+                    "create_zone": "Utwórz strefę",
+                    "description": "Zarządzaj strefami, w których chcesz śledzić osoby.",
+                    "detail": {
+                        "create": "Utwórz",
+                        "delete": "Usuń",
+                        "icon": "Ikona",
+                        "icon_error_msg": "Ikona powinna mieć format prefiks:nazwa-ikony, na przykład: mdi:home",
+                        "latitude": "Szerokość geograficzna",
+                        "longitude": "Długość geograficzna",
+                        "name": "Nazwa",
+                        "new_zone": "Nowa strefa",
+                        "passive": "Pasywna",
+                        "passive_note": "Strefy pasywne są ukryte w interfejsie użytkownika i nie są używane jako lokalizacje dla śledzonych urządzeń. Są one przydatne, jeśli chcesz w automatyzacjach.",
+                        "radius": "Promień",
+                        "required_error_msg": "To pole jest wymagane",
+                        "update": "Aktualizuj"
+                    },
+                    "edit_home_zone": "Lokalizację domu można zmienić w konfiguracji ogólnej.",
+                    "introduction": "Strefy pozwalają określić regiony na ziemi. Gdy dana osoba znajduje się w strefie, jej encja pobierze stan z nazwy strefy. Strefy mogą być również używane jako wyzwalacz lub warunek w automatyzacjach.",
+                    "no_zones_created_yet": "Wygląda na to, że nie utworzyłeś jeszcze żadnych stref."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1775,6 +1858,9 @@
                         "go_to_integrations_page": "Przejdź do strony integracji.",
                         "no_devices": "Ta strona pozwala kontrolować urządzenia, ale wygląda na to, że nie masz jeszcze żadnych skonfigurowanych. Przejdź na stronę integracji, aby rozpocząć.",
                         "title": "Witaj w domu"
+                    },
+                    "entities": {
+                        "never_triggered": "Nigdy nie uruchomiono"
                     },
                     "picture-elements": {
                         "call_service": "Wywołaj usługę {name}",
@@ -2200,6 +2286,7 @@
                     "description": "Home Assistant domyślnie ukrywa zaawansowane funkcje i opcje. Możesz włączyć do nich dostęp za pomocą tej opcji. Jest to ustawienie przyporządkowane do użytkownika i nie wpływa na pozostałych użytkowników korzystających z Home Assistant'a.",
                     "hint_enable": "Brakuje opcji konfiguracji? Włącz tryb zaawansowany",
                     "link_profile_page": "strona Twojego profilu",
+                    "link_promo": "Dowiedz się więcej",
                     "title": "Tryb zaawansowany"
                 },
                 "change_password": {
