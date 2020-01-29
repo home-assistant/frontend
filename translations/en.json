@@ -1222,14 +1222,18 @@
                         "actions": {
                             "caption": "When something is triggered..."
                         },
+                        "automations": "Automations",
                         "conditions": {
                             "caption": "Only do something if..."
                         },
+                        "create": "Create automation with device",
+                        "no_automations": "No automations",
                         "triggers": {
                             "caption": "Do something when..."
                         }
                     },
                     "automations": "Automations",
+                    "cant_edit": "You can only edit items that are created in the UI.",
                     "caption": "Devices",
                     "confirm_rename_entity_ids": "Do you also want to rename the entity id's of your entities?",
                     "data_table": {
@@ -1244,12 +1248,24 @@
                     "details": "Here are all the details of your device.",
                     "device_not_found": "Device not found.",
                     "entities": {
-                        "add_entities_lovelace": "Add all device entities to Lovelace UI",
+                        "add_entities_lovelace": "Add to Lovelace",
                         "entities": "Entities",
                         "none": "This device has no entities"
                     },
                     "info": "Device info",
                     "name": "Name",
+                    "scene": {
+                        "create": "Create scene with device",
+                        "no_scenes": "No scenes",
+                        "scenes": "Scenes"
+                    },
+                    "scenes": "Scenes",
+                    "script": {
+                        "create": "Create script with device",
+                        "no_scripts": "No scripts",
+                        "scripts": "Scripts"
+                    },
+                    "scripts": "Scripts",
                     "unknown_error": "Unknown error",
                     "unnamed_device": "Unnamed device",
                     "update": "Update"
