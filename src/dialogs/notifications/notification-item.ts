@@ -28,7 +28,7 @@ export class HuiNotificationItem extends LitElement {
     return false;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this.notification) {
       return html``;
     }

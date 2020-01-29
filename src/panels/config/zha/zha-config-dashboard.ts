@@ -48,7 +48,6 @@ class ZHAConfigDashboard extends LitElement {
         ...device,
         name: device.user_given_name ? device.user_given_name : device.name,
         nwk: formatAsPaddedHex(device.nwk),
-        id: device.ieee,
       };
     });
 
@@ -101,9 +100,12 @@ class ZHAConfigDashboard extends LitElement {
     this._firstUpdatedCalled = true;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
-      <hass-subpage .header=${this.hass.localize("ui.panel.config.zha.title")}>
+      <hass-subpage
+        .header=${this.hass.localize("ui.panel.config.zha.title")}
+        .showBackButton=${!this.isWide}
+      >
         <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
           <div slot="header">
             ${this.hass.localize("ui.panel.config.zha.header")}
@@ -139,6 +141,7 @@ class ZHAConfigDashboard extends LitElement {
               .columns=${this._columns(this.narrow)}
               .data=${this._memoizeDevices(this._devices)}
               @row-click=${this._handleDeviceClicked}
+              .id=${"ieee"}
             ></ha-data-table>
           </ha-card>
         </ha-config-section>

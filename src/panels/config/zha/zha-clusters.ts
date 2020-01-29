@@ -21,7 +21,7 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { Cluster, fetchClustersForZhaNode, ZHADevice } from "../../../data/zha";
 import { haStyle } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
-import { formatAsPaddedHex } from "./functions";
+import { computeClusterKey } from "./functions";
 import { ItemSelectedEvent } from "./types";
 
 declare global {
@@ -32,12 +32,6 @@ declare global {
     };
   }
 }
-
-const computeClusterKey = (cluster: Cluster): string => {
-  return `${cluster.name} (Endpoint id: ${
-    cluster.endpoint_id
-  }, Id: ${formatAsPaddedHex(cluster.id)}, Type: ${cluster.type})`;
-};
 
 export class ZHAClusters extends LitElement {
   @property() public hass?: HomeAssistant;
@@ -59,7 +53,7 @@ export class ZHAClusters extends LitElement {
     super.update(changedProperties);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-config-section .isWide="${this.isWide}">
         <div class="header" slot="header">
@@ -152,8 +146,7 @@ export class ZHAClusters extends LitElement {
         }
 
         ha-card {
-          margin: 0 auto;
-          max-width: 600px;
+          max-width: 680px;
         }
 
         .node-picker {
@@ -167,6 +160,7 @@ export class ZHAClusters extends LitElement {
           float: right;
           top: -6px;
           right: 0;
+          padding-right: 0px;
           color: var(--primary-color);
         }
 

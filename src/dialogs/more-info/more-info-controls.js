@@ -12,6 +12,7 @@ import "../../state-summary/state-card-content";
 
 import "./controls/more-info-content";
 
+import { navigate } from "../../common/navigate";
 import { computeStateName } from "../../common/entity/compute_state_name";
 import { computeStateDomain } from "../../common/entity/compute_state_domain";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
@@ -20,9 +21,13 @@ import { EventsMixin } from "../../mixins/events-mixin";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import { computeRTL } from "../../common/util/compute_rtl";
 import { removeEntityRegistryEntry } from "../../data/entity_registry";
-import { showConfirmationDialog } from "../confirmation/show-dialog-confirmation";
+import { showConfirmationDialog } from "../generic/show-dialog-box";
+import { showEntityRegistryDetailDialog } from "../../panels/config/entities/show-dialog-entity-registry-detail";
 
 const DOMAINS_NO_INFO = ["camera", "configurator", "history_graph"];
+const EDITABLE_DOMAINS_WITH_ID = ["scene", "automation"];
+const EDITABLE_DOMAINS = ["script"];
+
 /*
  * @appliesMixin EventsMixin
  */
@@ -83,11 +88,18 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <div class="main-title" main-title="" on-click="enlarge">
           [[_computeStateName(stateObj)]]
         </div>
-        <template is="dom-if" if="[[canConfigure]]">
+        <template is="dom-if" if="[[registryEntry]]">
           <paper-icon-button
             aria-label$="[[localize('ui.dialogs.more_info_control.settings')]]"
             icon="hass:settings"
             on-click="_gotoSettings"
+          ></paper-icon-button>
+        </template>
+        <template is="dom-if" if="[[_computeEdit(hass, stateObj)]]">
+          <paper-icon-button
+            aria-label$="[[localize('ui.dialogs.more_info_control.edit')]]"
+            icon="hass:pencil"
+            on-click="_gotoEdit"
           ></paper-icon-button>
         </template>
       </app-toolbar>
@@ -147,7 +159,7 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
       },
 
       dialogElement: Object,
-      canConfigure: Boolean,
+      registryEntry: Object,
 
       domain: {
         type: String,
@@ -209,6 +221,16 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return stateObj ? computeStateName(stateObj) : "";
   }
 
+  _computeEdit(hass, stateObj) {
+    const domain = this._computeDomain(stateObj);
+    return (
+      stateObj &&
+      hass.user.is_admin &&
+      ((EDITABLE_DOMAINS_WITH_ID.includes(domain) && stateObj.attributes.id) ||
+        EDITABLE_DOMAINS.includes(domain))
+    );
+  }
+
   _stateObjChanged(newVal) {
     if (!newVal) {
       return;
@@ -230,15 +252,29 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
       text: this.localize(
         "ui.dialogs.more_info_control.restored.confirm_remove_text"
       ),
-      confirmBtnText: this.localize("ui.common.yes"),
-      cancelBtnText: this.localize("ui.common.no"),
+      confirmText: this.localize("ui.common.yes"),
+      dismissText: this.localize("ui.common.no"),
       confirm: () =>
         removeEntityRegistryEntry(this.hass, this.stateObj.entity_id),
     });
   }
 
   _gotoSettings() {
-    this.fire("more-info-page", { page: "settings" });
+    showEntityRegistryDetailDialog(this, { entry: this.registryEntry });
+    this.fire("hass-more-info", { entityId: null });
+  }
+
+  _gotoEdit() {
+    const domain = this._computeDomain(this.stateObj);
+    navigate(
+      this,
+      `/config/${domain}/edit/${
+        EDITABLE_DOMAINS_WITH_ID.includes(domain)
+          ? this.stateObj.attributes.id
+          : this.stateObj.entity_id
+      }`
+    );
+    this.fire("hass-more-info", { entityId: null });
   }
 
   _computeRTL(hass) {

@@ -41,7 +41,7 @@ class OnboardingCoreConfig extends LitElement {
   @property() private _unitSystem!: ConfigUpdateValues["unit_system"];
   @property() private _timeZone!: string;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <p>
         ${this.onboardingLocalize(
@@ -116,9 +116,13 @@ class OnboardingCoreConfig extends LitElement {
           @value-changed=${this._handleChange}
         >
           <span slot="suffix">
-            ${this.hass.localize(
-              "ui.panel.config.core.section.core.core_config.elevation_meters"
-            )}
+            ${this._unitSystem === "metric"
+              ? this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.elevation_meters"
+                )
+              : this.hass.localize(
+                  "ui.panel.config.core.section.core.core_config.elevation_feet"
+                )}
           </span>
         </paper-input>
       </div>
@@ -266,7 +270,7 @@ class OnboardingCoreConfig extends LitElement {
       });
     } catch (err) {
       this._working = false;
-      alert("FAIL");
+      alert(`Failed to save: ${err.message}`);
     }
   }
 

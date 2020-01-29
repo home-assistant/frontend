@@ -54,7 +54,7 @@ export class HuiLightCardEditor extends LitElement
     return this._config!.icon || "";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }

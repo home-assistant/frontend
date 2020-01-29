@@ -18,9 +18,15 @@ import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { computeStateDomain } from "../../../common/entity/compute_state_domain";
 import { computeDomain } from "../../../common/entity/compute_domain";
 
-import { EntityRowConfig, WeblinkConfig } from "../entity-rows/types";
+import { LovelaceRowConfig, WeblinkConfig } from "../entity-rows/types";
 import { LocalizeFunc } from "../../../common/translations/localize";
-import { EntitiesCardConfig } from "../cards/types";
+import {
+  EntitiesCardConfig,
+  AlarmPanelCardConfig,
+  PictureEntityCardConfig,
+  ThermostatCardConfig,
+  LightCardConfig,
+} from "../cards/types";
 import {
   subscribeAreaRegistry,
   AreaRegistryEntry,
@@ -39,17 +45,17 @@ import { processEditorEntities } from "../editor/process-editor-entities";
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const DOMAINS_BADGES = [
   "binary_sensor",
-  "person",
-  "device_tracker",
   "mailbox",
+  "person",
   "sensor",
   "sun",
   "timer",
 ];
 const HIDE_DOMAIN = new Set([
-  "persistent_notification",
   "configurator",
+  "device_tracker",
   "geo_location",
+  "persistent_notification",
 ]);
 
 let subscribedRegistries = false;
@@ -105,66 +111,88 @@ export const computeCards = (
   const cards: LovelaceCardConfig[] = [];
 
   // For entity card
-  const entities: Array<string | EntityRowConfig> = [];
+  const entities: Array<string | LovelaceRowConfig> = [];
+
+  const titlePrefix = entityCardOptions.title
+    ? `${entityCardOptions.title} `
+    : undefined;
 
   for (const [entityId, stateObj] of states) {
     const domain = computeDomain(entityId);
 
     if (domain === "alarm_control_panel") {
-      cards.push({
+      const cardConfig: AlarmPanelCardConfig = {
         type: "alarm-panel",
         entity: entityId,
-      });
+      };
+      cards.push(cardConfig);
     } else if (domain === "camera") {
-      cards.push({
+      const cardConfig: PictureEntityCardConfig = {
         type: "picture-entity",
         entity: entityId,
-      });
+      };
+      cards.push(cardConfig);
     } else if (domain === "climate") {
-      cards.push({
+      const cardConfig: ThermostatCardConfig = {
         type: "thermostat",
         entity: entityId,
-      });
+      };
+      cards.push(cardConfig);
     } else if (domain === "history_graph" && stateObj) {
-      cards.push({
+      const cardConfig = {
         type: "history-graph",
         entities: stateObj.attributes.entity_id,
         hours_to_show: stateObj.attributes.hours_to_show,
         title: stateObj.attributes.friendly_name,
         refresh_interval: stateObj.attributes.refresh,
-      });
+      };
+      cards.push(cardConfig);
     } else if (domain === "light" && single) {
-      cards.push({
+      const cardConfig: LightCardConfig = {
         type: "light",
         entity: entityId,
-      });
+      };
+      cards.push(cardConfig);
     } else if (domain === "media_player") {
-      cards.push({
+      const cardConfig = {
         type: "media-control",
         entity: entityId,
-      });
+      };
+      cards.push(cardConfig);
     } else if (domain === "plant") {
-      cards.push({
+      const cardConfig = {
         type: "plant-status",
         entity: entityId,
-      });
+      };
+      cards.push(cardConfig);
     } else if (domain === "weather") {
-      cards.push({
+      const cardConfig = {
         type: "weather-forecast",
         entity: entityId,
-      });
+      };
+      cards.push(cardConfig);
     } else if (domain === "weblink" && stateObj) {
       const conf: WeblinkConfig = {
         type: "weblink",
         url: stateObj.state,
-        name: computeStateName(stateObj),
       };
       if ("icon" in stateObj.attributes) {
         conf.icon = stateObj.attributes.icon;
       }
       entities.push(conf);
     } else {
-      entities.push(entityId);
+      let name: string;
+      const entityConf =
+        titlePrefix &&
+        stateObj &&
+        (name = computeStateName(stateObj)).startsWith(titlePrefix)
+          ? {
+              entity: entityId,
+              name: name.substr(titlePrefix.length),
+            }
+          : entityId;
+
+      entities.push(entityConf);
     }
   }
 

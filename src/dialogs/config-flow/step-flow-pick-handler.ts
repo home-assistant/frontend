@@ -19,6 +19,7 @@ import "../../components/ha-icon-next";
 import "../../common/search/search-input";
 import { styleMap } from "lit-html/directives/style-map";
 import { FlowConfig } from "./show-dialog-data-entry-flow";
+import { configFlowContentStyles } from "./styles";
 
 interface HandlerObj {
   name: string;
@@ -58,7 +59,7 @@ class StepFlowPickHandler extends LitElement {
     );
   });
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const handlers = this._getHandlers(this.handlers, this.filter);
 
     return html`
@@ -133,28 +134,27 @@ class StepFlowPickHandler extends LitElement {
     });
   }
 
-  static get styles(): CSSResult {
-    return css`
-      h2 {
-        margin-bottom: 2px;
-        padding-left: 16px;
-      }
-      div {
-        overflow: auto;
-        max-height: 600px;
-      }
-      paper-item {
-        cursor: pointer;
-      }
-      p {
-        text-align: center;
-        padding: 16px;
-        margin: 0;
-      }
-      p > a {
-        color: var(--primary-color);
-      }
-    `;
+  static get styles(): CSSResult[] {
+    return [
+      configFlowContentStyles,
+      css`
+        div {
+          overflow: auto;
+          max-height: 600px;
+        }
+        paper-item {
+          cursor: pointer;
+        }
+        p {
+          text-align: center;
+          padding: 16px;
+          margin: 0;
+        }
+        p > a {
+          color: var(--primary-color);
+        }
+      `,
+    ];
   }
 }
 

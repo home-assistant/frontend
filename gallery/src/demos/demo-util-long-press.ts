@@ -6,7 +6,7 @@ import { actionHandler } from "../../../src/panels/lovelace/common/directives/ac
 import { ActionHandlerEvent } from "../../../src/data/lovelace";
 
 export class DemoUtilLongPress extends LitElement {
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       ${this.renderStyle()}
       ${[1, 2, 3].map(

@@ -625,7 +625,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Områderegister",
                     "create_area": "LAG OMRÅDE",
                     "description": "Oversikt over områda i heimen din.",
@@ -637,7 +637,7 @@
                     },
                     "no_areas": "Ser ut til at du ikkje har noko område endå!",
                     "picker": {
-                        "create_area": "Skap område",
+                        "create_area": "LAG OMRÅDE",
                         "header": "Områderegister",
                         "integrations_page": "Integrasjonsside",
                         "introduction": "Områda vert brukt til å organisere kvar einingar er. Denne informasjonen vil bli brukt av Home Assistant for å hjelpe deg å organisere brukargrensesnittet, løyver og integrasjoner med andre system.",
@@ -917,7 +917,7 @@
                     "description": "Administrer tilkopla einingar",
                     "info": "Enhetsinformasjon"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Oppføringsregister",
                     "description": "Oversikt over alle kjende oppføringar.",
                     "editor": {

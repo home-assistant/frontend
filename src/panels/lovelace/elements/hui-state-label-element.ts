@@ -8,6 +8,7 @@ import {
   CSSResult,
   PropertyValues,
 } from "lit-element";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 import "../components/hui-warning-element";
 
@@ -38,7 +39,7 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }
@@ -65,6 +66,9 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
+        tabindex=${ifDefined(
+          hasAction(this._config.tap_action) ? "0" : undefined
+        )}
       >
         ${this._config.prefix}${stateObj
           ? computeStateDisplay(
@@ -89,6 +93,11 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
       div {
         padding: 8px;
         white-space: nowrap;
+      }
+      div:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 100%;
       }
     `;
   }

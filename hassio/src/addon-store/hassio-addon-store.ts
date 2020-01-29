@@ -14,7 +14,7 @@ import {
   HassioAddonInfo,
   fetchHassioAddonsInfo,
   reloadHassioAddons,
-} from "../../../src/data/hassio";
+} from "../../../src/data/hassio/addon";
 import "../../../src/layouts/loading-screen";
 import "../components/hassio-search-input";
 
@@ -48,7 +48,7 @@ class HassioAddonStore extends LitElement {
     await this._loadData();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._addons || !this._repos) {
       return html`
         <loading-screen></loading-screen>

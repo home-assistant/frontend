@@ -17,7 +17,7 @@ import "../../../src/components/buttons/ha-call-api-button";
 import "../components/hassio-card-content";
 import { hassioStyle } from "../resources/hassio-style";
 import { HomeAssistant } from "../../../src/types";
-import { HassioAddonRepository } from "../../../src/data/hassio";
+import { HassioAddonRepository } from "../../../src/data/hassio/addon";
 import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { repeat } from "lit-html/directives/repeat";
 
@@ -33,7 +33,7 @@ class HassioRepositoriesEditor extends LitElement {
       .sort((a, b) => (a.name < b.name ? -1 : 1))
   );
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const repos = this._sortedRepos(this.repos);
     return html`
       <div class="card-group">

@@ -22,6 +22,7 @@ export interface ZHADevice {
   user_given_name?: string;
   power_source?: string;
   area_id?: string;
+  device_type: string;
 }
 
 export interface Attribute {
@@ -124,6 +125,32 @@ export const unbindDevices = (
     type: "zha/devices/unbind",
     source_ieee: sourceIEEE,
     target_ieee: targetIEEE,
+  });
+
+export const bindDeviceToGroup = (
+  hass: HomeAssistant,
+  deviceIEEE: string,
+  groupId: number,
+  clusters: Cluster[]
+): Promise<void> =>
+  hass.callWS({
+    type: "zha/groups/bind",
+    source_ieee: deviceIEEE,
+    group_id: groupId,
+    bindings: clusters,
+  });
+
+export const unbindDeviceFromGroup = (
+  hass: HomeAssistant,
+  deviceIEEE: string,
+  groupId: number,
+  clusters: Cluster[]
+): Promise<void> =>
+  hass.callWS({
+    type: "zha/groups/unbind",
+    source_ieee: deviceIEEE,
+    group_id: groupId,
+    bindings: clusters,
   });
 
 export const readAttributeValue = (

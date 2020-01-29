@@ -20,7 +20,7 @@ class HassLoadingScreen extends LitElement {
   @property() public hass?: HomeAssistant;
   @property() public narrow?: boolean;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <app-toolbar>
         ${this.rootnav
@@ -50,6 +50,11 @@ class HassLoadingScreen extends LitElement {
     return [
       haStyle,
       css`
+        :host {
+          display: block;
+          height: 100%;
+          background-color: var(--primary-background-color);
+        }
         .content {
           height: calc(100% - 64px);
           display: flex;

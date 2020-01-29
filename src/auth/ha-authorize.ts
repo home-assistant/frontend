@@ -91,7 +91,6 @@ class HaAuthorize extends litLocalizeLiteMixin(LitElement) {
         .redirectUri="${this.redirectUri}"
         .oauth2State="${this.oauth2State}"
         .authProvider="${this._authProvider}"
-        .step="{{step}}"
       ></ha-auth-flow>
 
       ${inactiveProviders.length > 0

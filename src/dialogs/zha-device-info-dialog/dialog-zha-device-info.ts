@@ -34,7 +34,7 @@ class DialogZHADeviceInfo extends LitElement {
     this._dialog.open();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._params || !this._device) {
       return html``;
     }
@@ -54,9 +54,9 @@ class DialogZHADeviceInfo extends LitElement {
                 class="card"
                 .hass=${this.hass}
                 .device=${this._device}
-                showActions
-                isJoinPage
                 @zha-device-removed=${this._onDeviceRemoved}
+                .showEntityDetail=${false}
+                .showActions="${this._device.device_type !== "Coordinator"}"
               ></zha-device-card>
             `}
       </ha-paper-dialog>

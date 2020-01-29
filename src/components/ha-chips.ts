@@ -47,12 +47,9 @@ export class HaChips extends LitElement {
   }
 
   private _handleClick(ev) {
-    fireEvent(
-      this,
-      "chip-clicked",
-      { index: ev.target.closest("button").index },
-      { bubbles: false }
-    );
+    fireEvent(this, "chip-clicked", {
+      index: ev.target.closest("button").index,
+    });
   }
 
   static get styles(): CSSResult {

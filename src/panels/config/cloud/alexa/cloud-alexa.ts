@@ -72,7 +72,7 @@ class CloudAlexa extends LitElement {
     )
   );
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (this._entities === undefined) {
       return html`
         <hass-loading-screen></hass-loading-screen>
@@ -346,8 +346,8 @@ class CloudAlexa extends LitElement {
       }
       ha-card {
         margin: 4px;
-        width: 100%;
-        max-width: 300px;
+        width: 300px;
+        flex-grow: 1;
       }
       .card-content {
         padding-bottom: 12px;

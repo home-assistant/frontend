@@ -5,6 +5,7 @@ import {
   HassEntityBase,
   HassEntityAttributeBase,
 } from "home-assistant-js-websocket";
+import { navigate } from "../common/navigate";
 
 export interface ScriptEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & {
@@ -65,3 +66,19 @@ export const triggerScript = (
 
 export const deleteScript = (hass: HomeAssistant, objectId: string) =>
   hass.callApi("DELETE", `config/script/config/${objectId}`);
+
+let inititialScriptEditorData: Partial<ScriptConfig> | undefined;
+
+export const showScriptEditor = (
+  el: HTMLElement,
+  data?: Partial<ScriptConfig>
+) => {
+  inititialScriptEditorData = data;
+  navigate(el, "/config/script/new");
+};
+
+export const getScriptEditorInitData = () => {
+  const data = inititialScriptEditorData;
+  inititialScriptEditorData = undefined;
+  return data;
+};

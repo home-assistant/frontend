@@ -394,7 +394,7 @@
     },
     "ui": {
         "auth_store": {
-            "ask": "현재 로그인을 저장 하시겠습니까?",
+            "ask": "현재 로그인을 저장하시겠습니까?",
             "confirm": "로그인 저장하기",
             "decline": "아니요, 괜찮습니다"
         },
@@ -405,13 +405,13 @@
                 "arm_home": "재실 경비",
                 "arm_night": "야간 경비",
                 "armed_custom_bypass": "사용자 우회",
-                "clear_code": "지움",
+                "clear_code": "지우기",
                 "code": "비밀번호",
                 "disarm": "경비 해제"
             },
             "automation": {
                 "last_triggered": "최근 트리거 됨",
-                "trigger": "트리거"
+                "trigger": "실행"
             },
             "camera": {
                 "not_available": "이미지 사용 불가"
@@ -478,6 +478,9 @@
             "script": {
                 "execute": "실행"
             },
+            "service": {
+                "run": "실행"
+            },
             "timer": {
                 "actions": {
                     "cancel": "취소",
@@ -533,6 +536,7 @@
         },
         "common": {
             "cancel": "취소",
+            "close": "닫기",
             "loading": "읽는 중",
             "no": "아니오",
             "save": "저장",
@@ -540,10 +544,24 @@
             "yes": "예"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "추가",
+                    "failed_create_area": "영역을 만들지 못했습니다.",
+                    "name": "이름",
+                    "text": "새로운 영역의 이름을 입력해주세요.",
+                    "title": "새로운 영역 추가"
+                },
+                "add_new": "새로운 영역 추가...",
+                "area": "영역",
+                "clear": "지우기",
+                "show_areas": "영역 표시"
+            },
             "device-picker": {
                 "clear": "지우기",
                 "device": "기기",
-                "show_devices": "기기 표시"
+                "show_devices": "기기 표시",
+                "toggle": "토글"
             },
             "entity": {
                 "entity-picker": {
@@ -555,6 +573,16 @@
             "history_charts": {
                 "loading_history": "상태 기록 내용 읽는 중...",
                 "no_history_found": "상태 기록 내용이 없습니다."
+            },
+            "related-items": {
+                "area": "영역",
+                "automation": "다음 자동화의 일부",
+                "device": "기기",
+                "entity": "관련된 구성요소",
+                "group": "다음 그룹의 일부",
+                "integration": "통합 구성요소",
+                "scene": "다음 씬의 일부",
+                "script": "다음 스크립트의 일부"
             },
             "relative_time": {
                 "duration": {
@@ -586,10 +614,42 @@
             "domain_toggler": {
                 "title": "도메인 토글"
             },
+            "entity_registry": {
+                "control": "제어하기",
+                "dismiss": "해제",
+                "editor": {
+                    "confirm_delete": "이 구성요소를 제거하시겠습니까?",
+                    "delete": "삭제",
+                    "enabled_cause": "{cause} 에 의해 비활성화 되었습니다.",
+                    "enabled_description": "비활성화 된 구성요소는 Home Assistant 에 추가되지 않습니다.",
+                    "enabled_label": "구성요소 활성화",
+                    "entity_id": "구성요소 ID",
+                    "name": "대체 이름",
+                    "note": "참고 : 아직 모든 통합 구성요소에 적용되지 않을 수 있습니다.",
+                    "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
+                    "update": "업데이트"
+                },
+                "related": "관련된",
+                "settings": "설정"
+            },
+            "generic": {
+                "cancel": "취소",
+                "default_confirmation_title": "다시 한번 확인해주세요",
+                "ok": "확인"
+            },
             "more_info_control": {
-                "dismiss": "대화 상자 해제",
+                "dismiss": "대화창 닫기",
+                "edit": "구성요소 편집",
+                "restored": {
+                    "confirm_remove_text": "이 구성요소를 제거하시겠습니까?",
+                    "confirm_remove_title": "구성요소를 제거하시겠습니까?",
+                    "not_provided": "이 구성요소는 현재 사용할 수 없으며 제거, 변경 또는 기능 장애가 있는 통합 구성요소이거나 기기의 남겨진 잔여데이터 입니다.",
+                    "remove_action": "구성요소 제거",
+                    "remove_intro": "구성요소를 더 이상 사용하지 않는 경우, 이를 제거하여 정리할 수 있습니다."
+                },
                 "script": {
-                    "last_action": "최근 동작"
+                    "last_action": "최근 동작",
+                    "last_triggered": "최근 트리거 됨"
                 },
                 "settings": "구성요소 설정내용",
                 "sun": {
@@ -628,6 +688,9 @@
                     "add": "기기 추가",
                     "reconfigure": "기기 재설정",
                     "remove": "기기 제거"
+                },
+                "confirmations": {
+                    "remove": "이 기기를 제거하시겠습니까?"
                 },
                 "last_seen": "마지막 확인",
                 "manuf": "{manufacturer} 제조",
@@ -675,7 +738,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "영역",
                     "create_area": "영역 만들기",
                     "description": "영역을 만들고 편집합니다",
@@ -691,7 +754,7 @@
                         "header": "영역",
                         "integrations_page": "통합 구성요소 페이지",
                         "introduction": "영역은 기기가 있는 위치를 설정하는데 사용합니다. 이 정보는 인터페이스와 권한 그리고 다른 시스템과의 연동을 구성하는 데 도움이 되도록 Home Assistant 에 사용됩니다.",
-                        "introduction2": "특정 영역에 기기를 배치하려면 아래 링크를 따라 통합 구성요소 페이지로 이동 한 다음, 설정된 구성요소의 기기를 클릭하여 영역을 설정해주세요.",
+                        "introduction2": "특정 영역에 기기를 배치하려면 아래 링크를 따라 통합 구성요소 페이지로 이동 한 다음, 설정된 통합 구성요소의 기기를 클릭하여 영역을 설정해주세요.",
                         "no_areas": "등록된 영역이 없습니다. 거실, 침실과 같이 영역을 등록해보세요!"
                     }
                 },
@@ -750,7 +813,7 @@
                             "delete_confirm": "정말 삭제하시겠습니까?",
                             "duplicate": "복제",
                             "header": "조건",
-                            "introduction": "조건은 자동화 규칙의 선택사항이며 트리거 될 때 발생하는 동작을 방지하는 데 사용할 수 있습니다. 조건은 트리거와 비슷해 보이지만 매우 다릅니다. 트리거는 시스템에서 발생하는 이벤트를 검사하고 조건은 시스템의 현재 상태를 검사합니다. 스위치를 예로 들면, 트리거는 스위치가 켜지는 것(이벤트)을, 조건은 스위치가 현재 켜져 있는지 혹은 꺼져 있는지(상태)를 검사합니다.",
+                            "introduction": "조건은 자동화 규칙의 선택사항이며 트리거 될 때 설정된 모든 조건이 충족되지 않으면 동작되지 않도록 사용할 수 있습니다.",
                             "learn_more": "조건에 대해 더 알아보기",
                             "name": "조건",
                             "type_select": "조건 유형",
@@ -912,7 +975,7 @@
                     "picker": {
                         "add_automation": "자동화 추가하기",
                         "delete_automation": "자동화 삭제",
-                        "delete_confirm": "이 자동화를 삭제 하시겠습니까?",
+                        "delete_confirm": "이 자동화를 삭제하시겠습니까?",
                         "edit_automation": "자동화 편집",
                         "header": "자동화 편집",
                         "introduction": "자동화 편집기를 사용하여 자동화를 작성하고 편집할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
@@ -955,10 +1018,11 @@
                             "manage_entities": "구성요소 관리",
                             "security_devices": "보안 기기",
                             "sync_entities": "구성요소를 Google 에 동기화",
+                            "sync_entities_404_message": "구성요소를 Google 과 동기화하지 못했습니다. Google 에 'Hey Google, 기기 동기화해줘' 라고 말씀하셔서 구성요소를 동기화해주세요.",
                             "title": "Google 어시스턴트"
                         },
                         "integrations": "서비스 연동",
-                        "integrations_introduction": "Home Assistant Cloud 연동을 통해 Home Assistant 구성요소를 인터넷상에 공개 노출시키지 않고도 클라우드의 서비스에 연결시킬 수 있습니다.",
+                        "integrations_introduction": "Home Assistant Cloud 연동으로 Home Assistant 구성요소를 인터넷상에 직접 공개 노출시키지 않고도 클라우드를 통해 서비스에 연결시킬 수 있습니다.",
                         "integrations_introduction2": "웹사이트를 방문하여 다음을 확인해보세요. ",
                         "integrations_link_all_features": "사용 가능한 모든 기능",
                         "manage_account": "계정 관리",
@@ -989,7 +1053,7 @@
                         }
                     },
                     "alexa": {
-                        "banner": "configuration.yaml 에서 구성요소 필터를 구성했기 때문에 UI 를 통해 노출된 구성요소를 편집 할 수 없습니다.",
+                        "banner": "configuration.yaml 에서 구성요소 필터를 구성했기 때문에 UI 에서 노출된 구성요소를 편집 할 수 없습니다.",
                         "expose": "Alexa 에 노출",
                         "exposed_entities": "노출된 구성요소",
                         "not_exposed_entities": "노출되지 않은 구성요소",
@@ -1009,7 +1073,7 @@
                     "dialog_cloudhook": {
                         "available_at": "Webhook 는 다음의 URL 을 사용해 주세요:",
                         "close": "닫기",
-                        "confirm_disable": "이 Webhook 를 비활성화 하시겠습니까?",
+                        "confirm_disable": "이 Webhook 를 비활성화하시겠습니까?",
                         "copied_to_clipboard": "클립보드에 복사됨",
                         "info_disable_webhook": "이 Webhook 를 더 이상 사용하지 않으려면, 다음을 해보세요: ",
                         "link_disable_webhook": "비활성화",
@@ -1020,14 +1084,14 @@
                     "forgot_password": {
                         "check_your_email": "비밀번호를 재설정하는 방법은 보내드린 이메일을 확인해주세요.",
                         "email": "이메일",
-                        "email_error_msg": "잘못된 이메일 형식",
+                        "email_error_msg": "이메일 형식이 잘못되었습니다",
                         "instructions": "이메일 주소를 입력하시면 비밀번호를 재설정 할 수 있는 링크를 보내드립니다.",
                         "send_reset_email": "재설정 이메일 보내기",
                         "subtitle": "비밀번호 재설정 하기",
                         "title": "비밀번호 찾기"
                     },
                     "google": {
-                        "banner": "configuration.yaml 에서 구성요소 필터를 구성했기 때문에 UI 를 통해 노출된 구성요소를 편집 할 수 없습니다.",
+                        "banner": "configuration.yaml 에서 구성요소 필터를 구성했기 때문에 UI 에서 노출된 구성요소를 편집 할 수 없습니다.",
                         "disable_2FA": "2단계 인증 비활성화",
                         "expose": "Google 어시스턴트에 노출",
                         "exposed_entities": "노출된 구성요소",
@@ -1040,10 +1104,10 @@
                         "alert_password_change_required": "로그인하기 전에 비밀번호를 변경해야 합니다.",
                         "dismiss": "로그인 취소",
                         "email": "이메일",
-                        "email_error_msg": "잘못된 이메일 형식",
+                        "email_error_msg": "이메일 형식이 잘못되었습니다",
                         "forgot_password": "비밀번호가 기억나지 않으세요?",
                         "introduction": "Home Assistant Cloud 는 집 밖에서도 구성요소에 대한 안전한 원격 연결을 제공해드립니다. 또한 Amazon Alexa 및 Google 어시스턴트와 같은 클라우드 전용 서비스에 연결할 수 있습니다.",
-                        "introduction2": "이 서비스는 Home Assistant 와 Hass.io 의 설립자가 설립한 회사인 ",
+                        "introduction2": "이 서비스는 Home Assistant 와 Hass.io 의 창립자가 설립한 회사인 ",
                         "introduction2a": " 에 의해 운영되고 있습니다.",
                         "introduction3": "Home Assistant Cloud 는 1개월 무료 평가판이 포함된 구독 서비스입니다. 결제 정보는 필요하지 않습니다.",
                         "learn_more_link": "Home Assistant Cloud 에 대해 더 알아보기",
@@ -1058,7 +1122,7 @@
                         "account_created": "계정이 생성되었습니다! 계정을 활성화 하는 방법은 보내드린 이메일을 확인해주세요.",
                         "create_account": "계정 만들기",
                         "email_address": "이메일 주소",
-                        "email_error_msg": "잘못된 이메일 형식",
+                        "email_error_msg": "이메일 형식이 잘못되었습니다",
                         "feature_amazon_alexa": "Amazon Alexa 연동",
                         "feature_google_home": "Google 어시스턴트 연동",
                         "feature_remote_control": "집 밖에서 Home Assistant 를 제어",
@@ -1066,7 +1130,7 @@
                         "headline": "1개월 무료 평가판 사용해 보기",
                         "information": "1개월간 무료로 사용해 볼 수 있는 Home Assistant Cloud 계정을 만들어보세요. 결제 정보는 필요하지 않습니다.",
                         "information2": "평가판을 사용하면 다음을 포함하는 Home Assistant Cloud 의 모든 기능을 이용해 볼 수 있습니다:",
-                        "information3": "이 서비스는 Home Assistant 와 Hass.io 의 설립자가 설립한 회사인 ",
+                        "information3": "이 서비스는 Home Assistant 와 Hass.io 의 창립자가 설립한 회사인 ",
                         "information3a": " 에 의해 운영되고 있습니다.",
                         "information4": "계정 등록은 다음 이용 약관의 동의를 포함합니다.",
                         "link_privacy_policy": "개인 정보 정책",
@@ -1091,6 +1155,7 @@
                             "core_config": {
                                 "edit_requires_storage": "구성내용이 configuration.yaml 에 저장되어 있기 때문에 편집기가 비활성화 되었습니다.",
                                 "elevation": "고도",
+                                "elevation_feet": "피트",
                                 "elevation_meters": "미터",
                                 "imperial_example": "화씨, 파운드",
                                 "latitude": "위도",
@@ -1178,37 +1243,73 @@
                     "description": "연결된 기기를 관리합니다",
                     "details": "기기의 모든 세부 정보는 다음과 같습니다.",
                     "device_not_found": "기기를 찾을 수 없습니다.",
+                    "entities": {
+                        "add_entities_lovelace": "Lovelace UI 에 모든 기기 구성요소 추가",
+                        "entities": "구성요소",
+                        "none": "이 기기는 구성요소가 없습니다"
+                    },
                     "info": "기기 정보",
+                    "name": "이름",
                     "unknown_error": "알 수 없는 오류",
-                    "unnamed_device": "이름이 없는 기기"
+                    "unnamed_device": "이름이 없는 기기",
+                    "update": "업데이트"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "구성요소",
                     "description": "등록된 구성요소를 편집합니다",
                     "editor": {
-                        "confirm_delete": "이 구성요소를 제거 하시겠습니까?",
+                        "confirm_delete": "이 구성요소를 제거하시겠습니까?",
                         "confirm_delete2": "구성요소 항목을 제거해도 Home Assistant 에서 실제로 구성요소가 제거되는것은 아닙니다. 완전히 제거하려면, Home Assistant 에서 '{platform}' 통합 구성요소를 제거해주세요.",
                         "default_name": "새로운 영역",
                         "delete": "삭제",
                         "enabled_cause": "{cause} 에 의해 비활성화 되었습니다.",
                         "enabled_description": "비활성화 된 구성요소는 Home Assistant 에 추가되지 않습니다.",
                         "enabled_label": "구성요소 활성화",
-                        "note": "참고 : 아직 모든 통합 구성요소와 함께 작동하지 않을 수 있습니다.",
+                        "entity_id": "구성요소 ID",
+                        "name": "대체 이름",
+                        "note": "참고 : 아직 모든 통합 구성요소에 적용되지 않을 수 있습니다.",
                         "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
                         "update": "업데이트"
                     },
                     "picker": {
+                        "disable_selected": {
+                            "button": "선택된 구성요소 비활성화",
+                            "confirm_text": "비활성화 된 구성요소는 Home Assistant 에 추가되지 않습니다.",
+                            "confirm_title": "{number} 개의 구성요소를 비활성화하시겠습니까?"
+                        },
+                        "enable_selected": {
+                            "button": "선택된 구성요소 활성화",
+                            "confirm_text": "이제 비활성화 된 경우 Home Assistant 에서 다시 사용할 수 있게 됩니다.",
+                            "confirm_title": "{number} 개의 구성요소를 활성화하시겠습니까?"
+                        },
+                        "filter": {
+                            "filter": "필터",
+                            "show_disabled": "비활성화 된 구성요소 표시",
+                            "show_unavailable": "사용할 수 없는 구성요소 표시"
+                        },
                         "header": "구성요소",
                         "headers": {
                             "enabled": "활성화됨",
                             "entity_id": "구성요소 ID",
                             "integration": "통합 구성요소",
-                            "name": "이름"
+                            "name": "이름",
+                            "status": "상태"
                         },
                         "integrations_page": "통합 구성요소 페이지",
                         "introduction": "Home Assistant 는 구성요소의 식별을 위해 모든 구성요소에 고유한 레지스트리를 부여합니다. 각각의 구성요소들은 자신만의 고유한 구성요소 ID 를 가집니다.",
-                        "introduction2": "구성요소를 편집하여 이름을 대체하거나 구성요소 ID를 변경하고 Home Assistant 에서 항목을 제거할 수 있습니다. 단, 구성요소 편집창에서 구성요소를 삭제해도 구성요소가 완전히 제거되는 것은 아닙니다. 완전히 제거하려면, 아래 링크를 따라 통합 구성요소 페이지에서 제거해주세요.",
+                        "introduction2": "구성요소 레지스트리를 사용하여 이름을 대체하거나 구성요소 ID 변경 또는 Home Assistant 에서 항목을 제거할 수 있습니다.",
+                        "remove_selected": {
+                            "button": "선택된 구성요소 제거",
+                            "confirm_text": "통합 구성요소가 더 이상 구성요소를 제공하지 않는 경우에만 구성요소를 제거할 수 있습니다.",
+                            "confirm_title": "{number} 개의 구성요소를 제거하시겠습니까?"
+                        },
+                        "selected": "{number} 개 선택됨",
                         "show_disabled": "비활성화 된 구성요소 표시",
+                        "status": {
+                            "disabled": "비활성화",
+                            "ok": "확인",
+                            "unavailable": "사용불가"
+                        },
                         "unavailable": "(사용불가)"
                     }
                 },
@@ -1216,9 +1317,9 @@
                 "integrations": {
                     "caption": "통합 구성요소",
                     "config_entry": {
-                        "area": "{area}에 있슴",
+                        "area": "{area}에 위치",
                         "delete_button": "{integration} 삭제",
-                        "delete_confirm": "이 통합 구성요소를 제거 하시겠습니까?",
+                        "delete_confirm": "이 통합 구성요소를 제거하시겠습니까?",
                         "device_unavailable": "기기 사용불가",
                         "entity_unavailable": "구성요소 사용불가",
                         "firmware": "펌웨어: {version}",
@@ -1238,6 +1339,7 @@
                         "area_picker_label": "영역",
                         "close": "닫기",
                         "created_config": "{name} 에 대한 구성을 만들었습니다.",
+                        "dismiss": "대화창 닫기",
                         "error_saving_area": "영역 저장 오류: {error}",
                         "external_step": {
                             "description": "이 단계는 외부 웹사이트 방문이 필요합니다.",
@@ -1245,12 +1347,12 @@
                         },
                         "failed_create_area": "영역을 만들지 못했습니다.",
                         "finish": "완료",
-                        "name_new_area": "새 영역의 이름?",
+                        "name_new_area": "새로운 영역의 이름?",
                         "not_all_required_fields": "필수 입력란이 모두 채워지지 않았습니다.",
                         "submit": "확인"
                     },
                     "configure": "설정하기",
-                    "configured": "설정된 구성요소",
+                    "configured": "설정된 통합 구성요소",
                     "description": "통합 구성요소를 관리하고 설정합니다",
                     "details": "통합 구성요소 상세정보",
                     "discovered": "발견된 구성요소",
@@ -1262,21 +1364,21 @@
                         "confirm_ignore_title": "발견된 {name} 기기를 무시하시겠습니까?",
                         "hide_ignored": "무시된 통합 구성요소 숨김",
                         "ignore": "무시",
-                        "ignored": "무시",
+                        "ignored": "무시된 통합 구성요소",
                         "show_ignored": "무시된 통합 구성요소 표시",
                         "stop_ignore": "무시 중지"
                     },
                     "integration_not_found": "통합 구성요소를 찾을 수 없습니다.",
                     "new": "새로운 통합 구성요소 설정",
-                    "none": "설정된 구성요소가 없습니다",
-                    "note_about_integrations": "아직 UI 에서 모든 통합 구성요소를 구성할 수 있는것은 아닙니다.",
+                    "none": "설정된 통합 구성요소가 없습니다",
+                    "note_about_integrations": "아직 UI 에서 모든 통합 구성요소를 구성할 수 있는 것은 아닙니다.",
                     "note_about_website_reference": "더 많은 구성요소는 다음에서 살펴 봐주세요. "
                 },
                 "introduction": "여기에서 구성요소와  Home Assistant 를 설정 할 수 있습니다. 아직 여기서 모두 설정 할 수는 없지만, 모든 내용을 설정 할 수 있도록 작업 중입니다.",
                 "person": {
                     "add_person": "구성원 추가하기",
                     "caption": "구성원",
-                    "confirm_delete": "이 구성원을 삭제 하시겠습니까?",
+                    "confirm_delete": "이 구성원을 삭제하시겠습니까?",
                     "confirm_delete2": "이 구성원에게 속한 모든 기기는 비할당 상태로 남게됩니다.",
                     "create_person": "구성원 만들기",
                     "description": "Home Assistant 가 추적하는 구성원을 관리합니다",
@@ -1297,7 +1399,7 @@
                     },
                     "introduction": "Home Assistant 에서 추적 할 구성원을 정의 할 수 있습니다.",
                     "no_persons_created_yet": "아직 생성된 구성원이 없는 것 같습니다.",
-                    "note_about_persons_configured_in_yaml": "참고: configuration.yaml 에서 구성된 구성원은 UI 를 통해 편집 할 수 없습니다."
+                    "note_about_persons_configured_in_yaml": "참고: configuration.yaml 에서 구성된 구성원은 UI 에서 편집 할 수 없습니다."
                 },
                 "scene": {
                     "activated": "{name} 씬이 활성화 됨.",
@@ -1328,7 +1430,7 @@
                     },
                     "picker": {
                         "add_scene": "씬 추가",
-                        "delete_confirm": "이 씬을 삭제 하시겠습니까?",
+                        "delete_confirm": "이 씬을 삭제하시겠습니까?",
                         "delete_scene": "씬 삭제",
                         "edit_scene": "씬 편집",
                         "header": "씬 편집기",
@@ -1346,7 +1448,7 @@
                     "editor": {
                         "alias": "이름",
                         "default_name": "새로운 스크립트",
-                        "delete_confirm": "이 스크립트를 삭제 하시겠습니까?",
+                        "delete_confirm": "이 스크립트를 삭제하시겠습니까?",
                         "delete_script": "스크립트 삭제",
                         "header": "스크립트: {name}",
                         "introduction": "스크립트를 사용하여 동작의 시퀀스를 실행합니다.",
@@ -1359,7 +1461,7 @@
                         "add_script": "스크립트 추가",
                         "edit_script": "스크립트 편집",
                         "header": "스크립트 편집기",
-                        "introduction": "스크립트 편집기를 사용하여 스크립트를 작성하고 편집 할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
+                        "introduction": "스크립트 편집기를 사용하여 스크립트를 작성하고 편집할 수 있습니다. 아래 링크를 따라 안내사항을 읽고 Home Assistant 를 올바르게 구성했는지 확인해보세요.",
                         "learn_more": "스크립트에 대해 더 알아보기",
                         "no_scripts": "편집 가능한 스크립트를 찾을 수 없습니다",
                         "trigger_script": "스크립트 트리거"
@@ -1375,12 +1477,14 @@
                             "group": "그룹 새로고침",
                             "heading": "구성 내용 새로고침",
                             "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어들일 수 있습니다. 새로고침을 누르면 현재 구성 내용을 내리고 새로운 구성 내용을 읽어들입니다.",
+                            "person": "구성원 새로고침",
                             "scene": "씬 다시읽기",
-                            "script": "스크립트 새로고침"
+                            "script": "스크립트 새로고침",
+                            "zone": "구역 새로고침"
                         },
                         "server_management": {
-                            "confirm_restart": "Home Assistant 를 재시작 하시겠습니까?",
-                            "confirm_stop": "Home Assistant 를 중지 하시겠습니까?",
+                            "confirm_restart": "Home Assistant 를 재시작하시겠습니까?",
+                            "confirm_stop": "Home Assistant 를 중지하시겠습니까?",
                             "heading": "서버 관리",
                             "introduction": "Home Assistant 서버를 제어합니다.",
                             "restart": "재시작",
@@ -1410,7 +1514,7 @@
                         "active": "활성화",
                         "caption": "사용자 보기",
                         "change_password": "비밀번호 변경",
-                        "confirm_user_deletion": "{name} 을(를) 삭제 하시겠습니까?",
+                        "confirm_user_deletion": "{name} 을(를) 삭제하시겠습니까?",
                         "deactivate_user": "사용자 비활성화",
                         "delete_user": "사용자 삭제",
                         "enter_new_name": "새로운 이름을 입력해주세요",
@@ -1420,7 +1524,7 @@
                         "owner": "소유자",
                         "rename_user": "사용자 이름 변경",
                         "system_generated": "시스템 자동 생성",
-                        "system_generated_users_not_removable": "시스템 자동 생성 사용자는 제거 할 수 없습니다.",
+                        "system_generated_users_not_removable": "시스템 자동 생성 사용자는 제거할 수 없습니다.",
                         "unnamed_user": "이름이 없는 사용자",
                         "user_rename_failed": "사용자 이름 변경이 실패했습니다:"
                     },
@@ -1435,6 +1539,10 @@
                         "header": "Zigbee 홈 자동화 - 기기 추가",
                         "search_again": "다시 검색",
                         "spinner": "ZHA Zigbee 기기를 찾고있습니다..."
+                    },
+                    "add": {
+                        "caption": "기기 추가",
+                        "description": "Zigbee 네트워크에 기기를 추가합니다"
                     },
                     "caption": "ZHA",
                     "cluster_attributes": {
@@ -1455,7 +1563,9 @@
                         "issue_zigbee_command": "Zigbee 명령 실행"
                     },
                     "clusters": {
-                        "help_cluster_dropdown": "속성과 명령을 보려면 클러스터를 선택해주세요."
+                        "header": "클러스터",
+                        "help_cluster_dropdown": "속성과 명령을 보려면 클러스터를 선택해주세요.",
+                        "introduction": "클러스터는 Zigbee 기능의 빌딩 블록이며 기능을 논리 단위로 분리해서 구성합니다. 클라이언트 및 서버 유형이 있으며 속성 및 명령으로 구성됩니다."
                     },
                     "common": {
                         "add_devices": "기기 추가",
@@ -1470,6 +1580,49 @@
                         "device_name_placeholder": "사용자 지정 이름",
                         "update_name_button": "이름 업데이트"
                     },
+                    "devices": {
+                        "header": "Zigbee 홈 자동화 - 기기"
+                    },
+                    "group_binding": {
+                        "bind_button_help": "선택한 그룹을 선택한 기기 클러스터에서 바인딩해주세요.",
+                        "bind_button_label": "그룹 바인딩",
+                        "cluster_selection_help": "선택한 그룹에 바인딩 할 클러스터를 선택해주세요.",
+                        "group_picker_help": "바인딩 명령을 발행할 그룹을 선택해주세요.",
+                        "group_picker_label": "바인딩 가능한 그룹",
+                        "header": "그룹 바인딩",
+                        "introduction": "그룹 바인딩 및 바인딩 해제",
+                        "unbind_button_help": "선택한 그룹을 선택한 기기 클러스터에서 바인딩을 해제해주세요.",
+                        "unbind_button_label": "그룹 바인딩 해제"
+                    },
+                    "groups": {
+                        "add_members": "구성원 추가",
+                        "adding_members": "구성원 추가",
+                        "caption": "그룹",
+                        "create": "그룹 생성",
+                        "create_group": "Zigbee 홈 자동화 - 그룹 만들기",
+                        "create_group_details": "새로운 Zigbee 그룹을 생성하기 위해 필요한 세부 사항을 입력해주세요",
+                        "creating_group": "그룹 생성",
+                        "description": "Zigbee 그룹 생성 및 수정",
+                        "group_details": "선택된 Zigbee 그룹의 모든 세부 정보는 다음과 같습니다.",
+                        "group_id": "그룹 ID",
+                        "group_info": "그룹 정보",
+                        "group_name_placeholder": "그룹 이름",
+                        "group_not_found": "그룹을 찾을 수 없습니다!",
+                        "group-header": "Zigbee 홈 자동화 - 그룹 상세정보",
+                        "groups": "그룹",
+                        "groups-header": "Zigbee 홈 자동화 - 그룹 관리",
+                        "header": "Zigbee 홈 자동화 - 그룹 관리",
+                        "introduction": "Zigbee 그룹 생성 및 수정",
+                        "manage_groups": "Zigbee 그룹 관리",
+                        "members": "구성원",
+                        "remove_groups": "그룹 제거",
+                        "remove_members": "구성원 제거",
+                        "removing_groups": "그룹 제거",
+                        "removing_members": "구성원 제거",
+                        "zha_zigbee_groups": "ZHA Zigbee 그룹"
+                    },
+                    "header": "Zigbee 홈 자동화 구성",
+                    "introduction": "여기에서 ZHA 구성요소를 설정 할 수 있습니다. 아직 여기서 모두 설정 할 수는 없지만, 모든 내용을 설정 할 수 있도록 작업 중입니다.",
                     "network_management": {
                         "header": "네트워크 관리",
                         "introduction": "전체 네트워크에 영향을 미치는 명령"
@@ -1485,7 +1638,34 @@
                         "reconfigure": "ZHA 기기를 다시 구성 합니다. (기기 복구). 기기에 문제가 있는 경우 사용해주세요. 기기가 배터리로 작동하는 경우, 이 서비스를 사용할 때 기기가 켜져있고 통신이 가능한 상태인지 확인해주세요.",
                         "remove": "Zigbee 네트워크에서 기기 제거",
                         "updateDeviceName": "이 기기의 사용자 정의 이름을 기기 레지스트리에 설정합니다."
-                    }
+                    },
+                    "title": "Zigbee 홈 자동화"
+                },
+                "zone": {
+                    "add_zone": "구역 추가",
+                    "caption": "구역들",
+                    "configured_in_yaml": "configuration.yaml 에서 구성된 구역은 UI 에서 편집 할 수 없습니다.",
+                    "confirm_delete": "이 구역을 삭제하시겠습니까?",
+                    "create_zone": "구역 만들기",
+                    "description": "구성원을 추적하려는 구역을 관리하세요.",
+                    "detail": {
+                        "create": "만들기",
+                        "delete": "삭제",
+                        "icon": "아이콘",
+                        "icon_error_msg": "아이콘은 접두사:아이콘이름 형식이어야합니다, 예: mdi:home",
+                        "latitude": "위도",
+                        "longitude": "경도",
+                        "name": "이름",
+                        "new_zone": "새로운 구역",
+                        "passive": "자동화 전용",
+                        "passive_note": "자동화 전용은 프런트엔드에 숨겨져 있으며 추적 기기의 위치로 사용되지 않습니다. 자동화에 사용하려는 경우에 유용합니다.",
+                        "radius": "반경",
+                        "required_error_msg": "이 필드는 필수 요소입니다",
+                        "update": "업데이트"
+                    },
+                    "edit_home_zone": "집의 위치는 일반 설정에서 변경할 수 있습니다.",
+                    "introduction": "영역을 사용하면 지구 상의 특정 지역을 지정할 수 있습니다. 구성원이 구역 내에 있으면 구성요소 상태에서 구역의 이름을 가져옵니다. 자동화 설정 내에서 영역을 트리거 또는 조건으로 사용할 수도 있습니다.",
+                    "no_zones_created_yet": "아직 생성된 구역이 없는 것 같습니다."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1667,12 +1847,20 @@
                 "showing_entries": "다음 날짜의 항목을 표시"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "Lovelace UI 를 직접 관리하는 경우에만 이 기능을 사용할 수 있습니다.",
+                    "saving_failed": "Lovelace UI 구성을 저장하지 못했습니다.",
+                    "yaml_unsupported": "Lovelace UI 를 YAML 모드로 사용하는 경우 이 기능은 사용할 수 없습니다."
+                },
                 "cards": {
-                    "confirm_delete": "이 카드를 삭제 하시겠습니까?",
+                    "confirm_delete": "이 카드를 삭제하시겠습니까?",
                     "empty_state": {
                         "go_to_integrations_page": "통합 페이지로 이동하기.",
                         "no_devices": "이 페이지에서 기기를 제어 할 수 있지만, 기기가 아직 설정되지 않은 것 같습니다. 시작하려면 통합 페이지로 이동해주세요.",
                         "title": "집에 오신 것을 환영합니다"
+                    },
+                    "entities": {
+                        "never_triggered": "트리거 된 적 없음"
                     },
                     "picture-elements": {
                         "call_service": "{name} 서비스 호출",
@@ -1690,7 +1878,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace 구성이 업데이트되었습니다. 새로고침 하시겠습니까?",
+                    "message": "Lovelace UI 구성이 업데이트되었습니다. 새로고침 하시겠습니까?",
                     "refresh": "새로고침"
                 },
                 "editor": {
@@ -1804,6 +1992,7 @@
                             "name": "센서"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "이 카드를 설정하려면 `shopping_list` 통합 구성요소가 필요합니다.",
                             "name": "장보기목록"
                         },
                         "thermostat": {
@@ -1823,8 +2012,8 @@
                         "header": "카드 구성",
                         "move": "보기로 이동",
                         "options": "옵션 더보기",
-                        "pick_card": "어떤 카드를 추가 하시겠습니까?",
-                        "pick_card_view_title": "{name} 뷰에 어떤 카드를 추가 하시겠습니까?",
+                        "pick_card": "어떤 카드를 추가하시겠습니까?",
+                        "pick_card_view_title": "{name} 뷰에 어떤 카드를 추가하시겠습니까?",
                         "save": "저장하기",
                         "show_code_editor": "코드 편집기 보기",
                         "show_visual_editor": "비주얼 편집기 보기",
@@ -1832,7 +2021,7 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "제목 편집",
-                        "explanation": "이 제목은 Lovelace 의 모든 화면의 상단에 표시됩니다.",
+                        "explanation": "이 제목은 Lovelace UI 모든 뷰의 상단에 표시됩니다.",
                         "header": "Lovelace UI 의 제목"
                     },
                     "edit_view": {
@@ -1846,7 +2035,7 @@
                     },
                     "header": "UI 편집",
                     "menu": {
-                        "open": "Lovelace 메뉴 열기",
+                        "open": "Lovelace UI 메뉴 열기",
                         "raw_editor": "구성 코드 편집기"
                     },
                     "migrate": {
@@ -1856,10 +2045,13 @@
                         "para_no_id": "이 구성요소에는 ID가 없습니다. 'ui-lovelace.yaml' 에 구성요소의 ID를 추가해주세요."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Lovelace UI 구성을 제거하면, 영역 및 기기와 함께 Lovelace UI 뷰가 자동으로 생성됩니다.",
+                        "confirm_remove_config_title": "Lovelace UI 구성을 제거하시겠습니까? 영역 및 기기와 함께 Lovelace UI 뷰를 자동으로 생성해드립니다.",
                         "confirm_unsaved_changes": "저장되지 않은 변경 사항이 있습니다. 종료하시겠습니까?",
                         "confirm_unsaved_comments": "구성 내용에 주석이 포함되어 있지만 저장되지는 않습니다. 계속하시겠습니까?",
                         "error_invalid_config": "구성이 잘못되었습니다: {error}",
                         "error_parse_yaml": "YAML 을 구문 분석할 수 없습니다: {error}",
+                        "error_remove": "구성을 제거할 수 없습니다: {error}",
                         "error_save_yaml": "YAML 을 저장할 수 없습니다: {error}",
                         "header": "구성 코드 편집",
                         "save": "저장하기",
@@ -1872,6 +2064,11 @@
                         "para": "기본적으로 Home Assistant 는 사용자 인터페이스를 유지 관리하고, 사용할 수 있는 새로운 구성요소 또는 Lovelace 구성요소가 있을 때 업데이트를 합니다. 사용자가 직접 관리하는 경우 Home Assistant 는 더 이상 자동으로 변경하지 않습니다.",
                         "para_sure": "사용자 인터페이스를 직접 관리하시겠습니까?",
                         "save": "직접 관리할게요"
+                    },
+                    "suggest_card": {
+                        "add": "Lovelace UI 에 추가",
+                        "create_own": "다른 카드를 선택해주세요",
+                        "header": "제안 드리는 카드"
                     },
                     "view": {
                         "panel_mode": {
@@ -1888,7 +2085,7 @@
                     "refresh": "새로고침",
                     "unused_entities": "미사용 구성요소"
                 },
-                "reload_lovelace": "Lovelace 새로고침",
+                "reload_lovelace": "UI 새로고침",
                 "unused_entities": {
                     "available_entities": "사용 가능한 구성요소이지만 아직 Lovelace UI 에는 등록되지 않았습니다.",
                     "domain": "도메인",
@@ -1899,7 +2096,7 @@
                     "title": "미사용 구성요소"
                 },
                 "views": {
-                    "confirm_delete": "이 뷰를 삭제 하시겠습니까?",
+                    "confirm_delete": "이 뷰를 삭제하시겠습니까?",
                     "existing_cards": "카드가 포함된 뷰는 삭제할 수 없습니다. 먼저 카드를 제거해주세요."
                 },
                 "warning": {
@@ -1909,7 +2106,7 @@
             },
             "mailbox": {
                 "delete_button": "삭제",
-                "delete_prompt": "이 메시지를 삭제 하시겠습니까?",
+                "delete_prompt": "이 메시지를 삭제하시겠습니까?",
                 "empty": "메시지가 존재하지 않습니다",
                 "playback_title": "메시지 재생"
             },
@@ -2089,14 +2286,15 @@
                     "description": "Home Assistant 의 고급 기능과 옵션은 기본적으로 숨겨져 있으며 토글을 활성화하여 이러한 기능을 사용하실 수 있습니다. 이 설정은 사용자별 설정이며 Home Assistant 를 사용하는 다른 사용자에게 영향을 미치지 않습니다.",
                     "hint_enable": "구성 옵션이 보이지 않으신가요? 고급 모드를 사용해보세요",
                     "link_profile_page": "프로필 페이지",
+                    "link_promo": "더 알아보기",
                     "title": "고급 모드"
                 },
                 "change_password": {
-                    "confirm_new_password": "새 비밀번호 확인",
+                    "confirm_new_password": "새로운  비밀번호 확인",
                     "current_password": "현재 비밀번호",
                     "error_required": "필수 요소",
                     "header": "비밀번호 변경",
-                    "new_password": "새 비밀번호",
+                    "new_password": "새로운 비밀번호",
                     "submit": "변경하기"
                 },
                 "current_user": "현재 {fullName} 로(으로) 로그인 한 상태 입니다.",
@@ -2111,8 +2309,10 @@
                     "link_promo": "번역 도와주기"
                 },
                 "logout": "로그아웃",
+                "logout_text": "로그 아웃 하시겠습니까?",
+                "logout_title": "로그 아웃",
                 "long_lived_access_tokens": {
-                    "confirm_delete": "{name} 액세스 토큰을 삭제 하시겠습니까?",
+                    "confirm_delete": "{name} 액세스 토큰을 삭제하시겠습니까?",
                     "create": "토큰 만들기",
                     "create_failed": "액세스 토큰을 생성을 할 수 없습니다.",
                     "created_at": "{date} 에 생성 됨",
@@ -2134,7 +2334,7 @@
                     "title_success": "성공!"
                 },
                 "mfa": {
-                    "confirm_disable": "{name} 을(를) 비활성화 하시겠습니까?",
+                    "confirm_disable": "{name} 을(를) 비활성화하시겠습니까?",
                     "disable": "비활성화",
                     "enable": "활성화",
                     "header": "다단계 인증 모듈"
@@ -2148,7 +2348,7 @@
                     "push_notifications": "푸시 알림"
                 },
                 "refresh_tokens": {
-                    "confirm_delete": "{name} 의 리프레시 토큰을 삭제 하시겠습니까?",
+                    "confirm_delete": "{name} 의 리프레시 토큰을 삭제하시겠습니까?",
                     "created_at": "{date} 에 생성 됨",
                     "current_token_tooltip": "현재 리프레시 토큰을 삭제할 수 없음",
                     "delete_failed": "리프레시 토큰을 삭제할 수 없습니다.",

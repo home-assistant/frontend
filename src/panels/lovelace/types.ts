@@ -4,6 +4,7 @@ import {
   LovelaceConfig,
   LovelaceBadgeConfig,
 } from "../../data/lovelace";
+import { LovelaceHeaderFooterConfig } from "./header-footer/types";
 
 declare global {
   // tslint:disable-next-line
@@ -34,6 +35,11 @@ export interface LovelaceCard extends HTMLElement {
   isPanel?: boolean;
   getCardSize(): number;
   setConfig(config: LovelaceCardConfig): void;
+}
+
+export interface LovelaceHeaderFooter extends HTMLElement {
+  hass?: HomeAssistant;
+  setConfig(config: LovelaceHeaderFooterConfig): void;
 }
 
 export interface LovelaceCardEditor extends HTMLElement {

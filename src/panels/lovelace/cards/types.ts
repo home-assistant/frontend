@@ -3,6 +3,7 @@ import { Condition } from "../common/validate-condition";
 import { EntityConfig, EntityFilterEntityConfig } from "../entity-rows/types";
 import { LovelaceElementConfig } from "../elements/types";
 import { HuiImage } from "../components/hui-image";
+import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 
 export interface AlarmPanelCardConfig extends LovelaceCardConfig {
   entity: string;
@@ -31,6 +32,7 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+  state_color?: boolean;
 }
 
 export interface EntitiesCardConfig extends LovelaceCardConfig {
@@ -40,6 +42,9 @@ export interface EntitiesCardConfig extends LovelaceCardConfig {
   entities: EntitiesCardEntityConfig[];
   theme?: string;
   icon?: string;
+  header?: LovelaceHeaderFooterConfig;
+  footer?: LovelaceHeaderFooterConfig;
+  state_color?: boolean;
 }
 
 export interface EntityButtonCardConfig extends LovelaceCardConfig {
@@ -173,7 +178,7 @@ export interface PictureEntityCardConfig extends LovelaceCardConfig {
   camera_image?: string;
   camera_view?: HuiImage["cameraView"];
   state_image?: {};
-  state_filter: string[];
+  state_filter?: string[];
   aspect_ratio?: string;
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;

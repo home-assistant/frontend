@@ -239,7 +239,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Sričių registras",
                     "create_area": "SUKURTI SRITĮ",
                     "description": "Visų jūsų namų sričių apžvalga.",
@@ -251,10 +251,10 @@
                     },
                     "no_areas": "Atrodo, kad dar neturite registruotų sričių!",
                     "picker": {
-                        "create_area": "SUKURTI ERDVĘ",
+                        "create_area": "SUKURTI SRITĮ",
                         "header": "Sričių registras",
                         "integrations_page": "Integracijų puslapis",
-                        "no_areas": "Atrodo, kad dar neturite registruotų erdvių!"
+                        "no_areas": "Atrodo, kad dar neturite registruotų sričių!"
                     }
                 },
                 "automation": {
@@ -371,7 +371,7 @@
                     },
                     "description": "Tvarkyti prijungtus įrenginius"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Subjektų registras",
                     "description": "Visų žinomų subjektų apžvalga.",
                     "editor": {
