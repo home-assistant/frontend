@@ -55,13 +55,26 @@ class DialogPersonDetail extends LitElement {
       return html``;
     }
     const nameInvalid = this._name.trim() === "";
+    const title = html`
+      ${this._params.entry
+        ? this._params.entry.name
+        : this.hass!.localize("ui.panel.config.person.detail.new_person")}
+      <paper-icon-button
+        aria-label=${this.hass.localize(
+          "ui.panel.config.integrations.config_flow.dismiss"
+        )}
+        icon="hass:close"
+        dialogAction="close"
+        style="position: absolute; right: 16px; top: 12px;"
+      ></paper-icon-button>
+    `;
     return html`
       <ha-dialog
         open
         @closing="${this._close}"
-        .title=${this._params.entry
-          ? this._params.entry.name
-          : this.hass!.localize("ui.panel.config.person.detail.new_person")}
+        scrimClickAction=""
+        escapeKeyAction=""
+        .title=${title}
       >
         <div>
           ${this._error
@@ -225,10 +238,18 @@ class DialogPersonDetail extends LitElement {
     return [
       css`
         ha-dialog {
-          min-width: 400px;
-          max-width: 600px;
+          --mdc-dialog-min-width: 400px;
+          --mdc-dialog-max-width: 600px;
           --mdc-dialog-title-ink-color: var(--primary-text-color);
           --justify-action-buttons: space-between;
+        }
+        /* make dialog fullscreen on small screens */
+        @media all and (max-width: 450px), all and (max-height: 500px) {
+          ha-dialog {
+            --mdc-dialog-min-width: 100vw;
+            --mdc-dialog-max-height: 100vh;
+            --mdc-dialog-shape-radius: 0px;
+          }
         }
         .form {
           padding-bottom: 24px;
