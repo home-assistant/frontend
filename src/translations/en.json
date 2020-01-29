@@ -712,6 +712,10 @@
       "config": {
         "header": "Configure Home Assistant",
         "introduction": "Here it is possible to configure your components and Home Assistant. Not everything is possible to configure from the UI yet, but we're working on it.",
+        "advanced_mode": {
+          "hint_enable": "Missing config options? Enable advanced mode on",
+          "link_profile_page": "your profile page"
+        },
         "common": {
           "editor": {
             "confirm_unsaved": "You have unsaved changes. Are you sure you want to leave?"
@@ -1972,8 +1976,6 @@
         "advanced_mode": {
           "title": "Advanced Mode",
           "description": "Unlocks advanced features.",
-          "hint_enable": "Missing config options? Enable advanced mode on",
-          "link_profile_page": "your profile page",
           "link_promo": "Learn more"
         },
         "refresh_tokens": {
