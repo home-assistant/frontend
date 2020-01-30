@@ -86,7 +86,7 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
   @property() private _entityRegistryEntries: EntityRegistryEntry[] = [];
   private _storedStates: SceneEntities = {};
   private _unsubscribeEvents?: () => void;
-  private _deviceEntityLookup: DeviceEntitiesLookup = {};
+  @property() private _deviceEntityLookup: DeviceEntitiesLookup = {};
   private _activateContextId?: string;
 
   private _getEntitiesDevices = memoizeOne(
@@ -411,8 +411,8 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
         entities: {},
         ...initData,
       };
+      this._initEntities(this._config);
       if (initData) {
-        this._initEntities(this._config);
         this._dirty = true;
       }
     }
@@ -432,6 +432,12 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
           !this._deviceEntityLookup[entity.device_id].includes(entity.entity_id)
         ) {
           this._deviceEntityLookup[entity.device_id].push(entity.entity_id);
+        }
+        if (
+          this._entities.includes(entity.entity_id) &&
+          !this._devices.includes(entity.device_id)
+        ) {
+          this._devices = [...this._devices, entity.device_id];
         }
       }
     }
