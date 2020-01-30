@@ -683,6 +683,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Ontbrekende configuratie-opties? Schakel geavanceerde modus in",
+                    "link_profile_page": "je profielpagina"
+                },
                 "areas": {
                     "caption": "Gebieden",
                     "create_area": "MAAK GEBIED",
@@ -2122,8 +2126,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant verbergt standaard geavanceerde functies en opties. U kunt deze functies toegankelijk maken door deze schakelaar aan te zetten. Dit is een gebruikersspecifieke instelling en heeft geen invloed op andere gebruikers die Home Assistant gebruiken.",
-                    "hint_enable": "Ontbrekende configuratie-opties? Schakel geavanceerde modus in",
-                    "link_profile_page": "je profielpagina",
                     "title": "Geavanceerde modus"
                 },
                 "change_password": {

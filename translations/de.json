@@ -687,6 +687,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Fehlende Konfigurationsoptionen? Aktiviere den erweiterten Modus.",
+                    "link_profile_page": "deine Profilseite"
+                },
                 "areas": {
                     "caption": "Bereichsregister",
                     "create_area": "BEREICH ERSTELLEN",
@@ -2194,8 +2198,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home-Assistent verbirgt standardmäßig erweiterte Funktionen und Optionen. Mache diese Funktionen zugänglich, indem diese Option aktiviert wird. Dies ist eine benutzerspezifische Einstellung, die sich nicht auf andere Benutzer auswirkt, die Home Assistant verwenden.",
-                    "hint_enable": "Fehlende Konfigurationsoptionen? Aktiviere den erweiterten Modus.",
-                    "link_profile_page": "deine Profilseite",
                     "title": "Erweiterter Modus"
                 },
                 "change_password": {

@@ -629,6 +629,9 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "link_profile_page": "profiilisivusi"
+                },
                 "areas": {
                     "caption": "Aluerekisteri",
                     "create_area": "LUO ALUE",
@@ -1801,7 +1804,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant piilottaa lisäominaisuudet ja -asetukset oletuksena. Voit aktivoida nämä ominaisuudet painamalla tästä kytkimestä. Tämä on käyttäjäkohtainen asetus, eikä se vaikuta muihin Home Assistantia käyttäviin käyttäjiin.",
-                    "link_profile_page": "profiilisivusi",
                     "title": "Lisäasetukset"
                 },
                 "change_password": {
