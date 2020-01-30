@@ -363,14 +363,10 @@ class CloudGoogleAssistant extends LitElement {
         padding: 0 8px;
       }
       .content {
-        display: flex;
-        flex-wrap: wrap;
-        padding: 4px;
-      }
-      ha-card {
-        margin: 4px;
-        width: 300px;
-        flex-grow: 1;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        grid-gap: 8px 8px;
+        padding: 8px;
       }
       .card-content {
         padding-bottom: 12px;

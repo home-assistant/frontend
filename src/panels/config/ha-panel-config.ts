@@ -84,7 +84,6 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       path: "/config/zone",
       translationKey: "ui.panel.config.zone.caption",
       icon: "hass:map-marker-radius",
-      core: true,
     },
     {
       component: "users",

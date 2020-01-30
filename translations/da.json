@@ -738,6 +738,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Mangler der konfigurationsindstillinger? Aktivér avanceret tilstand",
+                    "link_profile_page": "din profilside"
+                },
                 "areas": {
                     "caption": "Områder",
                     "create_area": "OPRET OMRÅDE",
@@ -1222,14 +1226,18 @@
                         "actions": {
                             "caption": "Når noget udløses..."
                         },
+                        "automations": "Automatiseringer",
                         "conditions": {
                             "caption": "Gør kun noget, hvis..."
                         },
+                        "create": "Opret automatisering med enhed",
+                        "no_automations": "Ingen automatiseringer",
                         "triggers": {
                             "caption": "Gør noget, når..."
                         }
                     },
                     "automations": "Automatiseringer",
+                    "cant_edit": "Du kan kun redigere elementer, der er oprettet i brugerfladen.",
                     "caption": "Enheder",
                     "confirm_rename_entity_ids": "Vil du også omdøbe entitet-id'et for dine entiteter?",
                     "data_table": {
@@ -1244,12 +1252,24 @@
                     "details": "Her er alle oplysninger om din enhed.",
                     "device_not_found": "Enhed blev ikke fundet.",
                     "entities": {
-                        "add_entities_lovelace": "Tilføj alle enheds-entiteter til Lovelace-brugerflade",
+                        "add_entities_lovelace": "Tilføj til Lovelace",
                         "entities": "Entiteter",
                         "none": "Denne enhed har ingen entiteter"
                     },
                     "info": "Oplysninger om enhed",
                     "name": "Navn",
+                    "scene": {
+                        "create": "Opret scene med enhed",
+                        "no_scenes": "Ingen scener",
+                        "scenes": "Scener"
+                    },
+                    "scenes": "Scener",
+                    "script": {
+                        "create": "Opret script med enhed",
+                        "no_scripts": "Ingen scripts",
+                        "scripts": "Scripts"
+                    },
+                    "scripts": "Scripts",
                     "unknown_error": "Ukendt fejl",
                     "unnamed_device": "Enhed uden navn",
                     "update": "Opdater"
@@ -2284,8 +2304,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Låser op for avancerede funktioner.",
-                    "hint_enable": "Mangler der konfigurationsindstillinger? Aktivér avanceret tilstand",
-                    "link_profile_page": "din profilside",
                     "link_promo": "Lær mere",
                     "title": "Avanceret tilstand"
                 },

@@ -280,6 +280,9 @@ export class HaLocationsEditor extends LitElement {
       #map {
         height: 100%;
       }
+      .light {
+        color: #000000;
+      }
       .leaflet-marker-draggable {
         cursor: move !important;
       }

@@ -675,6 +675,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "חסרים אפשרויות תצורה? אפשר מצב מתקדם פועל",
+                    "link_profile_page": "דף הפרופיל שלך"
+                },
                 "areas": {
                     "caption": "מאגר האזורים",
                     "create_area": "צור איזור",
@@ -2075,8 +2079,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant מסתיר תכונות ואפשרויות מתקדמות כברירת מחדל. ביכולתך לחשוף אותן ע\"י בחירת תיבת הסימון זו. הגדרה זו היא עבור המשתמש הנוכחי ולא תשפיע על משתמשים אחרים ב Home Assistant.",
-                    "hint_enable": "חסרים אפשרויות תצורה? אפשר מצב מתקדם פועל",
-                    "link_profile_page": "דף הפרופיל שלך",
                     "title": "מצב מתקדם"
                 },
                 "change_password": {
