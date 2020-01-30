@@ -65,6 +65,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Mankas agordaj opcioj? Ebligu altnivelan reĝimon",
+                    "link_profile_page": "via profilpaĝo"
+                },
                 "automation": {
                     "editor": {
                         "actions": {
@@ -543,8 +547,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant kaŝas altnivelajn funkciojn kaj opciojn defaŭlte. Vi povas fari ĉi tiujn funkciojn alireblaj per kontroli ĉi tiun ŝaltilon. Ĉi tio estas uzant-specifa aranĝo kaj ne influas aliajn uzantojn per Home Assistant.",
-                    "hint_enable": "Mankas agordaj opcioj? Ebligu altnivelan reĝimon",
-                    "link_profile_page": "via profilpaĝo",
                     "title": "Altnivela Modo"
                 }
             }

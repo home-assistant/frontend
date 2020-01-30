@@ -210,7 +210,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                   @radius-updated=${this._radiusUpdated}
                   @marker-clicked=${this._markerClicked}
                 ></ha-locations-editor>
-                ${listBox}
+                <div class="overflow">
+                  ${listBox}
+                </div>
               </div>
             `
           : ""}
@@ -422,6 +424,10 @@ ${this.hass!.localize("ui.panel.config.zone.confirm_delete2")}`)
         display: flex;
         height: 100%;
       }
+      .overflow {
+        height: 100%;
+        overflow: auto;
+      }
       ha-locations-editor {
         flex-grow: 1;
         height: 100%;
@@ -435,8 +441,10 @@ ${this.hass!.localize("ui.panel.config.zone.confirm_delete2")}`)
         padding-top: 4px;
         padding-bottom: 4px;
       }
+      .overflow paper-icon-item:last-child {
+        margin-bottom: 80px;
+      }
       paper-icon-item.iron-selected:before {
-        border-radius: 4px;
         position: absolute;
         top: 0;
         right: 0;
@@ -448,6 +456,9 @@ ${this.hass!.localize("ui.panel.config.zone.confirm_delete2")}`)
         opacity: 0.12;
         transition: opacity 15ms linear;
         will-change: opacity;
+      }
+      ha-card {
+        margin-bottom: 100px;
       }
       ha-card paper-item {
         cursor: pointer;

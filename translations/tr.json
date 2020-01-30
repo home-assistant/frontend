@@ -688,6 +688,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Eksik yapılandırma seçenekleri? Gelişmiş modunu etkinleştir",
+                    "link_profile_page": "profil sayfanız"
+                },
                 "areas": {
                     "caption": "Alanları",
                     "create_area": "ALAN OLUŞTUR",
@@ -2042,8 +2046,6 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "hint_enable": "Eksik yapılandırma seçenekleri? Gelişmiş modunu etkinleştir",
-                    "link_profile_page": "profil sayfanız",
                     "title": "Gelişmiş mod"
                 },
                 "change_password": {

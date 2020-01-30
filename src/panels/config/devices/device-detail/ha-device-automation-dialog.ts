@@ -113,7 +113,9 @@ export class DialogDeviceAutomation extends LitElement {
                     `
                   : ""}
               `
-            : html``}
+            : this.hass.localize(
+                "ui.panel.config.devices.automation.no_device_automations"
+              )}
         </div>
         <mwc-button slot="primaryAction" @click="${this._close}">
           Close
@@ -126,54 +128,17 @@ export class DialogDeviceAutomation extends LitElement {
     this._params = undefined;
   }
 
-  static get styles(): CSSResult[] {
-    return [
-      css`
+  static get styles(): CSSResult {
+    return css`
+      ha-dialog {
+        --mdc-dialog-title-ink-color: var(--primary-text-color);
+      }
+      @media only screen and (min-width: 600px) {
         ha-dialog {
-          --mdc-dialog-title-ink-color: var(--primary-text-color);
-          --justify-action-buttons: space-between;
+          --mdc-dialog-min-width: 600px;
         }
-        @media only screen and (min-width: 600px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 600px;
-          }
-        }
-        .form {
-          padding-bottom: 24px;
-        }
-        .location {
-          display: flex;
-        }
-        .location > * {
-          flex-grow: 1;
-          min-width: 0;
-        }
-        .location > *:first-child {
-          margin-right: 4px;
-        }
-        .location > *:last-child {
-          margin-left: 4px;
-        }
-        ha-location-editor {
-          margin-top: 16px;
-        }
-        ha-user-picker {
-          margin-top: 16px;
-        }
-        mwc-button.warning {
-          --mdc-theme-primary: var(--google-red-500);
-        }
-        .error {
-          color: var(--google-red-500);
-        }
-        a {
-          color: var(--primary-color);
-        }
-        p {
-          color: var(--primary-text-color);
-        }
-      `,
-    ];
+      }
+    `;
   }
 }
 
