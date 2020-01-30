@@ -724,6 +724,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "¿Faltan opciones de configuración? Activa el modo avanzado",
+                    "link_profile_page": "tu página de perfil"
+                },
                 "areas": {
                     "caption": "Áreas",
                     "create_area": "CREAR ÁREA",
@@ -2268,8 +2272,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant oculta las funciones y opciones avanzadas de forma predeterminada. Puedes hacer que estas funciones sean accesibles marcando esta opción. Esta es una configuración específica del usuario y no afecta a otros usuarios que usan Home Assistant.",
-                    "hint_enable": "¿Faltan opciones de configuración? Activa el modo avanzado",
-                    "link_profile_page": "tu página de perfil",
                     "link_promo": "Saber más",
                     "title": "Modo avanzado"
                 },

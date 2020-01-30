@@ -49,7 +49,7 @@ class DialogZoneDetail extends LitElement {
         500
       );
       this._name = "";
-      this._icon = "";
+      this._icon = "mdi:map-marker";
       this._latitude = movedHomeLocation[0];
       this._longitude = movedHomeLocation[1];
       this._passive = false;
@@ -75,6 +75,15 @@ class DialogZoneDetail extends LitElement {
         style="position: absolute; right: 16px; top: 12px;"
       ></paper-icon-button>
     `;
+    const nameValid = this._name.trim() === "";
+    const iconValid = !this._icon.trim().includes(":");
+    const latValid = String(this._latitude) === "";
+    const lngValid = String(this._longitude) === "";
+    const radiusValid = String(this._radius) === "";
+
+    const valid =
+      !nameValid && !iconValid && !latValid && !lngValid && !radiusValid;
+
     return html`
       <ha-dialog
         open
@@ -100,7 +109,7 @@ class DialogZoneDetail extends LitElement {
               .errorMessage="${this.hass!.localize(
                 "ui.panel.config.zone.detail.required_error_msg"
               )}"
-              .invalid=${this._name.trim() === ""}
+              .invalid=${nameValid}
             ></paper-input>
             <paper-input
               .value=${this._icon}
@@ -112,7 +121,7 @@ class DialogZoneDetail extends LitElement {
               .errorMessage="${this.hass!.localize(
                 "ui.panel.config.zone.detail.icon_error_msg"
               )}"
-              .invalid=${!this._icon.trim().includes(":")}
+              .invalid=${iconValid}
             ></paper-input>
             <ha-location-editor
               class="flex"
@@ -132,7 +141,7 @@ class DialogZoneDetail extends LitElement {
                 .errorMessage="${this.hass!.localize(
                   "ui.panel.config.zone.detail.required_error_msg"
                 )}"
-                .invalid=${String(this._latitude) === ""}
+                .invalid=${latValid}
               ></paper-input>
               <paper-input
                 .value=${this._longitude}
@@ -144,7 +153,7 @@ class DialogZoneDetail extends LitElement {
                 .errorMessage="${this.hass!.localize(
                   "ui.panel.config.zone.detail.required_error_msg"
                 )}"
-                .invalid=${String(this._longitude) === ""}
+                .invalid=${lngValid}
               ></paper-input>
             </div>
             <paper-input
@@ -157,7 +166,7 @@ class DialogZoneDetail extends LitElement {
               .errorMessage="${this.hass!.localize(
                 "ui.panel.config.zone.detail.required_error_msg"
               )}"
-              .invalid=${String(this._radius) === ""}
+              .invalid=${radiusValid}
             ></paper-input>
             <p>
               ${this.hass!.localize("ui.panel.config.zone.detail.passive_note")}
@@ -184,7 +193,7 @@ class DialogZoneDetail extends LitElement {
         <mwc-button
           slot="primaryAction"
           @click="${this._updateEntry}"
-          .disabled=${this._submitting}
+          .disabled=${!valid || this._submitting}
         >
           ${this._params.entry
             ? this.hass!.localize("ui.panel.config.zone.detail.update")
@@ -277,6 +286,7 @@ class DialogZoneDetail extends LitElement {
         }
         .form {
           padding-bottom: 24px;
+          color: var(--primary-text-color);
         }
         .location {
           display: flex;

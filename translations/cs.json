@@ -738,6 +738,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Chybí vám možnosti konfigurace? Zapněte rozšířený režim",
+                    "link_profile_page": "stránka vašeho profilu"
+                },
                 "areas": {
                     "caption": "Registr oblastí",
                     "create_area": "VYTVOŘIT OBLAST",
@@ -2284,8 +2288,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant standardně skrývá pokročilé funkce a předvolby. Zapnutím této funkce je můžete zpřístupnit. Toto nastavení je specifické pro každého uživatele a neovlivňuje ostatní uživatele Home Assistantu.",
-                    "hint_enable": "Chybí vám možnosti konfigurace? Zapněte rozšířený režim",
-                    "link_profile_page": "stránka vašeho profilu",
                     "link_promo": "Další informace",
                     "title": "Pokročilý režim"
                 },

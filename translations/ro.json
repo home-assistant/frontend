@@ -633,6 +633,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Lipsesc opțiunile de configurare? Activați modul avansat",
+                    "link_profile_page": "Pagina de profil"
+                },
                 "areas": {
                     "caption": "Zone",
                     "create_area": "CREARE ZONĂ",
@@ -1532,10 +1536,6 @@
                 }
             },
             "profile": {
-                "advanced_mode": {
-                    "hint_enable": "Lipsesc opțiunile de configurare? Activați modul avansat",
-                    "link_profile_page": "Pagina de profil"
-                },
                 "change_password": {
                     "confirm_new_password": "Confirmați Noua Parolă",
                     "current_password": "Parola Curentă",

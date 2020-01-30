@@ -716,6 +716,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Faltam opções de configuração? Ative o modo avançado",
+                    "link_profile_page": "sua página de perfil"
+                },
                 "areas": {
                     "caption": "Registro de Áreas",
                     "create_area": "CRIAR ÁREA",
@@ -2189,8 +2193,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "O Home Assistant oculta os recursos e opções avançados por padrão. Você pode tornar esses recursos acessíveis marcando essa opção. Essa é uma configuração específica do usuário e não afeta outros usuários usando o Home Assistant.",
-                    "hint_enable": "Faltam opções de configuração? Ative o modo avançado",
-                    "link_profile_page": "sua página de perfil",
                     "link_promo": "Saiba mais",
                     "title": "Modo Avançado"
                 },
