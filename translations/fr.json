@@ -738,6 +738,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Options de configuration manquantes? Activer le mode avancé",
+                    "link_profile_page": "votre page de profil"
+                },
                 "areas": {
                     "caption": "Pièces",
                     "create_area": "CRÉER UNE PIÈCE",
@@ -1222,14 +1226,18 @@
                         "actions": {
                             "caption": "Quand quelque chose est déclenché ..."
                         },
+                        "automations": "Automatisations",
                         "conditions": {
                             "caption": "Ne faire quelque chose que si ..."
                         },
+                        "create": "Créer une automatisation avec l'appareil",
+                        "no_automations": "Aucune automatisation",
                         "triggers": {
                             "caption": "Faire quelque chose quand ..."
                         }
                     },
                     "automations": "Automations",
+                    "cant_edit": "Vous ne pouvez modifier que les éléments créés dans l'interface utilisateur.",
                     "caption": "Appareils",
                     "confirm_rename_entity_ids": "Voulez-vous aussi renommer les ID de vos entités?",
                     "data_table": {
@@ -1250,6 +1258,18 @@
                     },
                     "info": "Infos sur l'appareil",
                     "name": "Nom",
+                    "scene": {
+                        "create": "Créer une scène avec l'appareil",
+                        "no_scenes": "Pas de scènes",
+                        "scenes": "Scènes"
+                    },
+                    "scenes": "Scènes",
+                    "script": {
+                        "create": "Créer un script avec l'appareil",
+                        "no_scripts": "Pas de scripts",
+                        "scripts": "Scripts"
+                    },
+                    "scripts": "Scripts",
                     "unknown_error": "Erreur inconnue",
                     "unnamed_device": "Appareil sans nom",
                     "update": "Mettre à jour"
@@ -2284,8 +2304,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant cache les fonctionnalités et options avancées par défaut. Vous pouvez rendre ces fonctionnalités accessibles en cochant cette case. Il s'agit d'un paramètre spécifique à l'utilisateur et n'a pas d'impact sur les autres utilisateurs utilisant Home Assistant.",
-                    "hint_enable": "Options de configuration manquantes? Activer le mode avancé",
-                    "link_profile_page": "votre page de profil",
                     "link_promo": "Apprendre encore plus",
                     "title": "Mode avancé"
                 },

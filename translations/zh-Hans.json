@@ -687,6 +687,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "缺少某些配置选项？请启用高级模式",
+                    "link_profile_page": "您的个人资料页面"
+                },
                 "areas": {
                     "caption": "区域注册",
                     "create_area": "创建区域",
@@ -2145,8 +2149,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant 默认隐藏高级功能和选项。您可以选中此开关来使用它们。这是用户个人的设置，不会影响使用 Home Assistant 的其他用户。",
-                    "hint_enable": "缺少某些配置选项？请启用高级模式",
-                    "link_profile_page": "您的个人资料页面",
                     "title": "高级模式"
                 },
                 "change_password": {

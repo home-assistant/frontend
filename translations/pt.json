@@ -666,6 +666,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Falta de opções de configuração? Ativar o modo avançado em",
+                    "link_profile_page": "sua página de perfil"
+                },
                 "areas": {
                     "caption": "Áreas",
                     "create_area": "CRIAR ÁREA",
@@ -1902,8 +1906,6 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "hint_enable": "Falta de opções de configuração? Ativar o modo avançado em",
-                    "link_profile_page": "sua página de perfil",
                     "title": "Modo avançado"
                 },
                 "change_password": {
