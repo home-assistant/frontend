@@ -53,13 +53,14 @@ class HassSubpage extends LitElement {
         display: flex;
         align-items: center;
         font-size: 20px;
-        height: 64px;
+        height: 65px;
         padding: 0 16px;
         pointer-events: none;
         background-color: var(--app-header-background-color);
         font-weight: 400;
         color: var(--app-header-text-color, white);
         border-bottom: var(--app-header-border-bottom, none);
+        box-sizing: border-box;
       }
 
       ha-menu-button,
@@ -81,7 +82,7 @@ class HassSubpage extends LitElement {
       .content {
         position: relative;
         width: 100%;
-        height: calc(100% - 64px);
+        height: calc(100% - 65px);
         overflow-y: auto;
         overflow: auto;
         -webkit-overflow-scrolling: touch;
