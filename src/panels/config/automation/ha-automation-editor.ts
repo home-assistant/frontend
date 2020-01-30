@@ -264,7 +264,7 @@ export class HaAutomationEditor extends LitElement {
           }
         );
     }
-    console.log(changedProps);
+
     if (changedProps.has("creatingNew") && this.creatingNew && this.hass) {
       const initData = getAutomationEditorInitData();
       this._dirty = initData ? true : false;
