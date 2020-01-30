@@ -738,6 +738,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Brakuje opcji konfiguracji? Włącz tryb zaawansowany",
+                    "link_profile_page": "strona Twojego profilu"
+                },
                 "areas": {
                     "caption": "Rejestr obszarów",
                     "create_area": "UTWÓRZ OBSZAR",
@@ -2284,8 +2288,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant domyślnie ukrywa zaawansowane funkcje i opcje. Możesz włączyć do nich dostęp za pomocą tej opcji. Jest to ustawienie przyporządkowane do użytkownika i nie wpływa na pozostałych użytkowników korzystających z Home Assistant'a.",
-                    "hint_enable": "Brakuje opcji konfiguracji? Włącz tryb zaawansowany",
-                    "link_profile_page": "strona Twojego profilu",
                     "link_promo": "Dowiedz się więcej",
                     "title": "Tryb zaawansowany"
                 },

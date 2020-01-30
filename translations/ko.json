@@ -738,6 +738,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "구성 옵션이 보이지 않으신가요? 고급 모드를 사용해보세요",
+                    "link_profile_page": "프로필 페이지"
+                },
                 "areas": {
                     "caption": "영역",
                     "create_area": "영역 만들기",
@@ -2284,8 +2288,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant 의 고급 기능과 옵션은 기본적으로 숨겨져 있으며 토글을 활성화하여 이러한 기능을 사용하실 수 있습니다. 이 설정은 사용자별 설정이며 Home Assistant 를 사용하는 다른 사용자에게 영향을 미치지 않습니다.",
-                    "hint_enable": "구성 옵션이 보이지 않으신가요? 고급 모드를 사용해보세요",
-                    "link_profile_page": "프로필 페이지",
                     "link_promo": "더 알아보기",
                     "title": "고급 모드"
                 },

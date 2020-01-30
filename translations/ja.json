@@ -465,6 +465,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "設定オプションが見つかりませんか？アドバイスモードを有効にしてください。",
+                    "link_profile_page": "プロフィールページ"
+                },
                 "areas": {
                     "caption": "エリア",
                     "description": "すべて自宅のエリアの一覧",
@@ -1200,8 +1204,6 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "hint_enable": "設定オプションが見つかりませんか？アドバイスモードを有効にしてください。",
-                    "link_profile_page": "プロフィールページ",
                     "title": "高度モード"
                 },
                 "change_password": {

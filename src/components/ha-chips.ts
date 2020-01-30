@@ -55,6 +55,10 @@ export class HaChips extends LitElement {
   static get styles(): CSSResult {
     return css`
       ${unsafeCSS(chipStyles)}
+      .mdc-chip {
+        background-color: rgba(var(--rgb-primary-text-color), 0.15);
+        color: var(--primary-text-color);
+      }
     `;
   }
 }

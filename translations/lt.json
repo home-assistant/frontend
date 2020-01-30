@@ -239,6 +239,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Trūksta konfigūracijos parinkčių? Įjungti išplėstinį režimą",
+                    "link_profile_page": "jūsų profilio puslapis"
+                },
                 "areas": {
                     "caption": "Sričių registras",
                     "create_area": "SUKURTI SRITĮ",
@@ -578,10 +582,6 @@
                 }
             },
             "profile": {
-                "advanced_mode": {
-                    "hint_enable": "Trūksta konfigūracijos parinkčių? Įjungti išplėstinį režimą",
-                    "link_profile_page": "jūsų profilio puslapis"
-                },
                 "change_password": {
                     "current_password": "Dabartinis slaptažodis",
                     "header": "Keisti slaptažodį",
