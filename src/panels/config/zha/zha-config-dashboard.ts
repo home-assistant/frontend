@@ -102,10 +102,7 @@ class ZHAConfigDashboard extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <hass-subpage
-        .header=${this.hass.localize("ui.panel.config.zha.title")}
-        .showBackButton=${!this.isWide}
-      >
+      <hass-subpage .header=${this.hass.localize("ui.panel.config.zha.title")}>
         <ha-config-section .narrow=${this.narrow} .isWide=${this.isWide}>
           <div slot="header">
             ${this.hass.localize("ui.panel.config.zha.header")}
