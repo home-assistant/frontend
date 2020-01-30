@@ -738,6 +738,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Missing config options? Enable advanced mode on",
+                    "link_profile_page": "your profile page"
+                },
                 "areas": {
                     "caption": "Areas",
                     "create_area": "CREATE AREA",
@@ -2300,8 +2304,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Unlocks advanced features.",
-                    "hint_enable": "Missing config options? Enable advanced mode on",
-                    "link_profile_page": "your profile page",
                     "link_promo": "Learn more",
                     "title": "Advanced Mode"
                 },

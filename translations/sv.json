@@ -683,6 +683,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Saknas konfigurationsalternativ? Aktivera avancerat läge på",
+                    "link_profile_page": "din profilsida"
+                },
                 "areas": {
                     "caption": "Områden",
                     "create_area": "SKAPA OMRÅDE",
@@ -2018,8 +2022,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant döljer avancerade funktioner och alternativ som standard. Du kan göra dessa funktioner tillgängliga genom att växla här. Det är en användarspecifik inställning och påverkar inte andra användare i Home Assistant.",
-                    "hint_enable": "Saknas konfigurationsalternativ? Aktivera avancerat läge på",
-                    "link_profile_page": "din profilsida",
                     "title": "Avancerat läge"
                 },
                 "change_password": {

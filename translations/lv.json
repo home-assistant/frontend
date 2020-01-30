@@ -635,6 +635,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Trūkst konfigurācijas opciju? Iespējot uzlaboto režīmu",
+                    "link_profile_page": "Jūsu profila lapa"
+                },
                 "areas": {
                     "caption": "Apgabali",
                     "create_area": "IZVEIDOT APGABALU",
@@ -1534,10 +1538,6 @@
                 }
             },
             "profile": {
-                "advanced_mode": {
-                    "hint_enable": "Trūkst konfigurācijas opciju? Iespējot uzlaboto režīmu",
-                    "link_profile_page": "Jūsu profila lapa"
-                },
                 "change_password": {
                     "confirm_new_password": "Apstipriniet jauno paroli",
                     "current_password": "Pašreizējā parole",

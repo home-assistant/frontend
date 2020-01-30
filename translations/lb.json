@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Ausféieren"
             },
+            "service": {
+                "run": "Ausféieren"
+            },
             "timer": {
                 "actions": {
                     "cancel": "Ofbriechen",
@@ -541,10 +544,24 @@
             "yes": "Jo"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Dobäisetzen",
+                    "failed_create_area": "Feeler beim erstellen vum Beräich.",
+                    "name": "Numm",
+                    "text": "Gitt den numm vun neien Beräich un.",
+                    "title": "Neien Beräich dobäisetzen"
+                },
+                "add_new": "Neien Beräich dobäisetzen...",
+                "area": "Beräich",
+                "clear": "Läschen",
+                "show_areas": "Beräicher uweisen"
+            },
             "device-picker": {
                 "clear": "Läschen",
                 "device": "Apparat",
-                "show_devices": "Apparater uweisen"
+                "show_devices": "Apparater uweisen",
+                "toggle": "Ëmschalten"
             },
             "entity": {
                 "entity-picker": {
@@ -600,8 +617,25 @@
             "entity_registry": {
                 "control": "Kontroll",
                 "dismiss": "Verwerfen",
+                "editor": {
+                    "confirm_delete": "Sécher fir dës Entrée ze läsche?",
+                    "delete": "LÄSCHEN",
+                    "enabled_cause": "Desaktivéiert duerch {cause}.",
+                    "enabled_description": "Deaktivéiert Entitéiten ginn net am Home Assistant bäigesat.",
+                    "enabled_label": "Entitéit aktivéieren",
+                    "entity_id": "ID vun der Entitéit",
+                    "name": "Numm iwwerschreiwen",
+                    "note": "Nott: dëst funktionéiert villäicht nach net mat all Integratioun.",
+                    "unavailable": "Dës Entitéit ass net erreechbar fir de Moment.",
+                    "update": "AKTUALISEIEREN"
+                },
                 "related": "Relatioun",
                 "settings": "Astellungen"
+            },
+            "generic": {
+                "cancel": "Ofbriechen",
+                "default_confirmation_title": "Sécher?",
+                "ok": "OK"
             },
             "more_info_control": {
                 "dismiss": "Dialog ofbriechen",
@@ -704,6 +738,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Feelen Konfiguratioun's Optiounen? Avancéierte Modus aschalten op",
+                    "link_profile_page": "är Profil Säit"
+                },
                 "areas": {
                     "caption": "Lëscht vun de Beräicher",
                     "create_area": "Beräich erstellen",
@@ -1188,14 +1226,18 @@
                         "actions": {
                             "caption": "Wann eppes ausgeléist gëtt"
                         },
+                        "automations": "Automatismen",
                         "conditions": {
                             "caption": "Nëmmen eppes maachen wann..."
                         },
+                        "create": "Automatisme mat Apparat erstellen",
+                        "no_automations": "Keng Automatismen",
                         "triggers": {
                             "caption": "Maach eppes wann..."
                         }
                     },
                     "automations": "Automatisme",
+                    "cant_edit": "Dir kënnt nëmmen Elementer änneren déi an der UI erstallt goufen.",
                     "caption": "Apparater",
                     "confirm_rename_entity_ids": "Wëllt Dir och d'Entitéiten-ID vun Ären Entitéiten ëmbenennen?",
                     "data_table": {
@@ -1215,8 +1257,22 @@
                         "none": "Dësen Appart huet keng Entitéiten."
                     },
                     "info": "Informatioune vum Apparat",
+                    "name": "Numm",
+                    "scene": {
+                        "create": "Zeen mat Apparat erstellen",
+                        "no_scenes": "Keng Zeenen",
+                        "scenes": "Zeenen"
+                    },
+                    "scenes": "Zeenen",
+                    "script": {
+                        "create": "Skript mat Apparat erstellen",
+                        "no_scripts": "Keng Skripten",
+                        "scripts": "Skripten"
+                    },
+                    "scripts": "Skripten",
                     "unknown_error": "Onbekannten Feeler",
-                    "unnamed_device": "Apparat ouni Numm"
+                    "unnamed_device": "Apparat ouni Numm",
+                    "update": "Aktualiséieren"
                 },
                 "entities": {
                     "caption": "Lëscht vun den Entitéiten",
@@ -1608,6 +1664,7 @@
                 "zone": {
                     "add_zone": "Zon dobäisetzen",
                     "caption": "Zone",
+                    "configured_in_yaml": "Zonen déi iwwer Configuratioun.yaml konfiguréiert goufen kënnen net iwwer d'UI geännert ginn.",
                     "confirm_delete": "Sécher fir dës Zon ze läschen?",
                     "create_zone": "Zon erstellen",
                     "description": "Zone verwalte an deenen Persounen suivéiert solle ginn.",
@@ -1626,6 +1683,7 @@
                         "required_error_msg": "Dëst Feld ass erfuerderlech",
                         "update": "Aktualiséieren"
                     },
+                    "edit_home_zone": "De Standuert vun Ärem Doheem kann an der allgemenger Konfiguratioun geännert ginn.",
                     "introduction": "Zonen erlaben Iech verschidde Regiounen op der Äerd ze spezifizéieren. Wann eng Persoun an enger Zone ass, hëlt de Status den Numm aus der Zone. Zonë kënnen och als Ausléiser oder als Konditioun an Automatisme benotzt ginn.",
                     "no_zones_created_yet": "Et gesäit sou aus wéi wann nach keng Zone erstallt goufen."
                 },
@@ -2246,8 +2304,7 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant verstoppt standardméisseg avancéiert Features an Optiounen. Dir kënnt dës Funktiounen zougänglech maachen andeems Dir dës Optioun aktivéiert. Dës ass eng Benotzer spezifesch Astellung an huet keen Impakt op aner Home Assistant Benotzer.",
-                    "hint_enable": "Feelen Konfiguratioun's Optiounen? Avancéierte Modus aschalten op",
-                    "link_profile_page": "är Profil Säit",
+                    "link_promo": "Méi liesen",
                     "title": "Avancéierte Modus"
                 },
                 "change_password": {

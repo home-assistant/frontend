@@ -646,6 +646,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Nedostaju opcije konfiguracije? Uključite napredni način rada na",
+                    "link_profile_page": "vašoj stranici profila"
+                },
                 "areas": {
                     "caption": "Registar područja",
                     "create_area": "STVARANJE PODRUČJA",
@@ -1672,10 +1676,6 @@
                 }
             },
             "profile": {
-                "advanced_mode": {
-                    "hint_enable": "Nedostaju opcije konfiguracije? Uključite napredni način rada na",
-                    "link_profile_page": "vašoj stranici profila"
-                },
                 "change_password": {
                     "confirm_new_password": "Potvrdite novu lozinku",
                     "current_password": "Trenutna lozinka",
