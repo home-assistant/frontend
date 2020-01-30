@@ -80,10 +80,6 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
           display: none;
         }
 
-        ha-paper-icon-button-arrow-prev[hide] {
-          visibility: hidden;
-        }
-
         .toggle-help-icon {
           position: absolute;
           top: -6px;
@@ -95,7 +91,6 @@ class HaConfigZwave extends LocalizeMixin(EventsMixin(PolymerElement)) {
         <app-header slot="header" fixed="">
           <app-toolbar>
             <ha-paper-icon-button-arrow-prev
-              hide$="[[isWide]]"
               on-click="_backTapped"
             ></ha-paper-icon-button-arrow-prev>
             <div main-title="">
