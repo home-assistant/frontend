@@ -406,7 +406,7 @@ class HaSidebar extends LitElement {
     if (!this._tooltipHideTimeout) {
       this._tooltipHideTimeout = window.setTimeout(() => {
         this._tooltipHideTimeout = undefined;
-        // this._tooltip.style.display = "none";
+        this._tooltip.style.display = "none";
       }, 10);
     }
   }
