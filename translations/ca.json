@@ -540,10 +540,21 @@
             "yes": "Sí"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Afegeix",
+                    "name": "Nom"
+                },
+                "add_new": "Afegir àrea nova...",
+                "area": "Àrea",
+                "clear": "Esborra",
+                "show_areas": "Mostra àrees"
+            },
             "device-picker": {
                 "clear": "Esborra",
                 "device": "Dispositiu",
-                "show_devices": "Mostra dispositius"
+                "show_devices": "Mostra dispositius",
+                "toggle": "Commuta"
             },
             "entity": {
                 "entity-picker": {
@@ -585,6 +596,10 @@
             },
             "domain_toggler": {
                 "title": "Commutació de dominis"
+            },
+            "generic": {
+                "cancel": "Cancel·la",
+                "default_confirmation_title": "Estàs segur?"
             },
             "more_info_control": {
                 "dismiss": "Desestimar el diàleg",
@@ -678,6 +693,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Falten opcions de configuració? Activa el mode avançat",
+                    "link_profile_page": "la teva pàgina de perfil"
+                },
                 "areas": {
                     "caption": "Registre d'àrees",
                     "create_area": "CREA ÀREA",
@@ -1161,9 +1180,11 @@
                         "actions": {
                             "caption": "Quan es dispara alguna cosa..."
                         },
+                        "automations": "Automatitzacions",
                         "conditions": {
                             "caption": "Només fer alguna cosa si..."
                         },
+                        "no_automations": "No hi ha automatitzacions",
                         "triggers": {
                             "caption": "Feu alguna cosa quan..."
                         }
@@ -1183,8 +1204,20 @@
                     "details": "Aquí tens tots els detalls del dispositiu.",
                     "device_not_found": "Dispositiu no trobat.",
                     "info": "Informació del dispositiu",
+                    "name": "Nom",
+                    "scene": {
+                        "no_scenes": "No hi ha escenes",
+                        "scenes": "Escenes"
+                    },
+                    "scenes": "Escenes",
+                    "script": {
+                        "no_scripts": "No hi ha scripts",
+                        "scripts": "Scripts"
+                    },
+                    "scripts": "Scripts",
                     "unknown_error": "Error desconegut",
-                    "unnamed_device": "Dispositiu sense nom"
+                    "unnamed_device": "Dispositiu sense nom",
+                    "update": "Actualitza"
                 },
                 "entities": {
                     "caption": "Registre d'entitats",
@@ -2135,8 +2168,7 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant oculta de manera predeterminada les funcions i opcions avançades. Pots accedir a aquestes funcions commutant aquest interruptor. Aquesta és una configuració específica per a usuari i no afecta altres usuaris que utilitzin Home Assistant.",
-                    "hint_enable": "Falten opcions de configuració? Activa el mode avançat",
-                    "link_profile_page": "la teva pàgina de perfil",
+                    "link_promo": "Més informació",
                     "title": "Mode avançat"
                 },
                 "change_password": {

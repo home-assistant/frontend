@@ -689,6 +689,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Ali manjkajo možnosti konfiguracije? Vključi napredni način",
+                    "link_profile_page": "stran profila"
+                },
                 "areas": {
                     "caption": "Območja",
                     "create_area": "USTVARITE OBMOČJE",
@@ -2153,8 +2157,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant privzeto skrije napredne funkcije in možnosti. Do teh funkcij lahko dostopate tako, da vklopite to stikalo. To je uporabniško določena nastavitev, ki ne vpliva na druge uporabnike.",
-                    "hint_enable": "Ali manjkajo možnosti konfiguracije? Vključi napredni način",
-                    "link_profile_page": "stran profila",
                     "title": "Napredni način"
                 },
                 "change_password": {

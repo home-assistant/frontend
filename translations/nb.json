@@ -738,6 +738,10 @@
         },
         "panel": {
             "config": {
+                "advanced_mode": {
+                    "hint_enable": "Manglende konfigurasjonsalternativer? Aktivér avansert modus",
+                    "link_profile_page": "profilsiden din"
+                },
                 "areas": {
                     "caption": "Områder",
                     "create_area": "OPPRETT OMRÅDE",
@@ -1222,14 +1226,18 @@
                         "actions": {
                             "caption": "Når noe er utløst..."
                         },
+                        "automations": "Automasjoner",
                         "conditions": {
                             "caption": "Bare gjør noe hvis..."
                         },
+                        "create": "Lag automatisering med enheten",
+                        "no_automations": "Ingen automatiseringer",
                         "triggers": {
                             "caption": "Gjør noe når ..."
                         }
                     },
                     "automations": "Automasjoner",
+                    "cant_edit": "Du kan bare redigere elementer som er opprettet i UI.",
                     "caption": "Enheter",
                     "confirm_rename_entity_ids": "Vil du også endre navn på entitets-ID-en for entitetene dine?",
                     "data_table": {
@@ -1244,12 +1252,24 @@
                     "details": "Her er alle detaljer for enheten.",
                     "device_not_found": "Enhet ikke funnet",
                     "entities": {
-                        "add_entities_lovelace": "Legg til alle enhetsenheter i Lovelace UI",
+                        "add_entities_lovelace": "Legg til i Lovelace",
                         "entities": "Enheter",
                         "none": "Denne enheten har ingen enheter"
                     },
                     "info": "Enhetsinformasjon",
                     "name": "Navn",
+                    "scene": {
+                        "create": "Lag scene med enheten",
+                        "no_scenes": "Ingen scener",
+                        "scenes": "Scener"
+                    },
+                    "scenes": "Scener",
+                    "script": {
+                        "create": "Lag skript med enheten",
+                        "no_scripts": "Ingen skript",
+                        "scripts": "Skript"
+                    },
+                    "scripts": "Skript",
                     "unknown_error": "Ukjent feil",
                     "unnamed_device": "Enhet uten navn",
                     "update": "Oppdater"
@@ -2284,8 +2304,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Låser opp avanserte funksjoner.",
-                    "hint_enable": "Manglende konfigurasjonsalternativer? Aktivér avansert modus",
-                    "link_profile_page": "profilsiden din",
                     "link_promo": "Lær mer",
                     "title": "Avansert modus"
                 },
