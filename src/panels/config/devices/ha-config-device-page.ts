@@ -41,6 +41,7 @@ import { RelatedResult, findRelated } from "../../../data/search";
 import { SceneEntities, showSceneEditor } from "../../../data/scene";
 import { navigate } from "../../../common/navigate";
 import { showDeviceAutomationDialog } from "./device-detail/show-dialog-device-automation";
+import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 
 export interface EntityRegistryStateEntry extends EntityRegistryEntry {
   stateName?: string;
@@ -152,144 +153,165 @@ export class HaConfigDevicePage extends LitElement {
           </div>
           <div class="right">
             <div class="column">
-              <ha-card
-                .header=${this.hass.localize(
-                  "ui.panel.config.devices.automation.automations"
-                )}
-                >${
-                  this._related?.automation?.length
-                    ? this._related.automation.map((automation) => {
-                        const state = this.hass.states[automation];
-                        return state
-                          ? html`
-                              <div>
-                                <paper-item
-                                  .automation=${state}
-                                  @click=${this._openAutomation}
-                                  .disabled=${!state.attributes.id}
-                                >
-                                  <paper-item-body>
-                                    ${state.attributes.friendly_name ||
-                                      automation}
-                                  </paper-item-body>
-                                  <ha-icon-next></ha-icon-next>
-                                </paper-item>
-                                ${!state.attributes.id
-                                  ? html`
-                                      <paper-tooltip
-                                        >${this.hass.localize(
-                                          "ui.panel.config.devices.cant_edit"
-                                        )}
-                                      </paper-tooltip>
-                                    `
-                                  : ""}
-                              </div>
-                            `
-                          : "";
-                      })
-                    : html`
-                        <paper-item class="no-link"
-                          >${this.hass.localize(
-                            "ui.panel.config.devices.automation.no_automations"
-                          )}</paper-item
-                        >
-                      `
-                }
-                <div class="card-actions">
-                  <mwc-button @click=${this._showAutomationDialog}>
-                  ${this.hass.localize(
-                    "ui.panel.config.devices.automation.create"
-                  )}
-                  </mwc-button>
-                </div>
-              </ha-card>
+            ${
+              isComponentLoaded(this.hass, "automation")
+                ? html`
+                    <ha-card
+                      .header=${this.hass.localize(
+                        "ui.panel.config.devices.automation.automations"
+                      )}
+                      >${this._related?.automation?.length
+                        ? this._related.automation.map((automation) => {
+                            const state = this.hass.states[automation];
+                            return state
+                              ? html`
+                                  <div>
+                                    <paper-item
+                                      .automation=${state}
+                                      @click=${this._openAutomation}
+                                      .disabled=${!state.attributes.id}
+                                    >
+                                      <paper-item-body>
+                                        ${state.attributes.friendly_name ||
+                                          automation}
+                                      </paper-item-body>
+                                      <ha-icon-next></ha-icon-next>
+                                    </paper-item>
+                                    ${!state.attributes.id
+                                      ? html`
+                                          <paper-tooltip
+                                            >${this.hass.localize(
+                                              "ui.panel.config.devices.cant_edit"
+                                            )}
+                                          </paper-tooltip>
+                                        `
+                                      : ""}
+                                  </div>
+                                `
+                              : "";
+                          })
+                        : html`
+                            <paper-item class="no-link"
+                              >${this.hass.localize(
+                                "ui.panel.config.devices.automation.no_automations"
+                              )}</paper-item
+                            >
+                          `}
+                      <div class="card-actions">
+                        <mwc-button @click=${this._showAutomationDialog}>
+                          ${this.hass.localize(
+                            "ui.panel.config.devices.automation.create"
+                          )}
+                        </mwc-button>
+                      </div>
+                    </ha-card>
+                  `
+                : ""
+            }
             </div>
             <div class="column">
-              <ha-card
-                .header=${this.hass.localize(
-                  "ui.panel.config.devices.scene.scenes"
-                )}
-                >${
-                  this._related?.scene?.length
-                    ? this._related.scene.map((scene) => {
-                        const state = this.hass.states[scene];
-                        return state
-                          ? html`
-                              <div>
-                                <paper-item
-                                  .scene=${state}
-                                  @click=${this._openScene}
-                                  .disabled=${!state.attributes.id}
-                                >
-                                  <paper-item-body>
-                                    ${state.attributes.friendly_name || scene}
-                                  </paper-item-body>
-                                  <ha-icon-next></ha-icon-next>
-                                </paper-item>
-                                ${!state.attributes.id
-                                  ? html`
-                                      <paper-tooltip
-                                        >${this.hass.localize(
-                                          "ui.panel.config.devices.cant_edit"
-                                        )}
-                                      </paper-tooltip>
-                                    `
-                                  : ""}
-                              </div>
-                            `
-                          : "";
-                      })
-                    : html`
-                        <paper-item class="no-link"
-                          >${this.hass.localize(
-                            "ui.panel.config.devices.scene.no_scenes"
-                          )}</paper-item
-                        >
-                      `
-                }
-                <div class="card-actions">
-                  <mwc-button @click=${this._createScene}>
-                  ${this.hass.localize(
-                    "ui.panel.config.devices.scene.create"
-                  )}                  </mwc-button>
-                </div>
-              </ha-card>
-              <ha-card
-                .header=${this.hass.localize(
-                  "ui.panel.config.devices.script.scripts"
-                )}
-                >${
-                  this._related?.script?.length
-                    ? this._related.script.map((script) => {
-                        const state = this.hass.states[script];
-                        return state
-                          ? html`
-                              <paper-item
-                                .script=${script}
-                                @click=${this._openScript}
+            ${
+              isComponentLoaded(this.hass, "scene")
+                ? html`
+                    <ha-card
+                      .header=${this.hass.localize(
+                        "ui.panel.config.devices.scene.scenes"
+                      )}
+                      >${this._related?.scene?.length
+                        ? this._related.scene.map((scene) => {
+                            const state = this.hass.states[scene];
+                            return state
+                              ? html`
+                                  <div>
+                                    <paper-item
+                                      .scene=${state}
+                                      @click=${this._openScene}
+                                      .disabled=${!state.attributes.id}
+                                    >
+                                      <paper-item-body>
+                                        ${state.attributes.friendly_name ||
+                                          scene}
+                                      </paper-item-body>
+                                      <ha-icon-next></ha-icon-next>
+                                    </paper-item>
+                                    ${!state.attributes.id
+                                      ? html`
+                                          <paper-tooltip
+                                            >${this.hass.localize(
+                                              "ui.panel.config.devices.cant_edit"
+                                            )}
+                                          </paper-tooltip>
+                                        `
+                                      : ""}
+                                  </div>
+                                `
+                              : "";
+                          })
+                        : html`
+                            <paper-item class="no-link"
+                              >${this.hass.localize(
+                                "ui.panel.config.devices.scene.no_scenes"
+                              )}</paper-item
+                            >
+                          `}
+                      ${entities.length
+                        ? html`
+                            <div class="card-actions">
+                              <mwc-button @click=${this._createScene}>
+                                ${this.hass.localize(
+                                  "ui.panel.config.devices.scene.create"
+                                )}
+                              </mwc-button>
+                            </div>
+                          `
+                        : ""}
+                    </ha-card>
+                  `
+                : ""
+            }
+              ${
+                isComponentLoaded(this.hass, "script")
+                  ? html`
+                      <ha-card
+                        .header=${this.hass.localize(
+                          "ui.panel.config.devices.script.scripts"
+                        )}
+                        >${this._related?.script?.length
+                          ? this._related.script.map((script) => {
+                              const state = this.hass.states[script];
+                              return state
+                                ? html`
+                                    <paper-item
+                                      .script=${script}
+                                      @click=${this._openScript}
+                                    >
+                                      <paper-item-body>
+                                        ${state.attributes.friendly_name ||
+                                          script}
+                                      </paper-item-body>
+                                      <ha-icon-next></ha-icon-next>
+                                    </paper-item>
+                                  `
+                                : "";
+                            })
+                          : html`
+                              <paper-item class="no-link">
+                                ${this.hass.localize(
+                                  "ui.panel.config.devices.script.no_scripts"
+                                )}</paper-item
                               >
-                                <paper-item-body>
-                                  ${state.attributes.friendly_name || script}
-                                </paper-item-body>
-                                <ha-icon-next></ha-icon-next>
-                              </paper-item>
-                            `
-                          : "";
-                      })
-                    : html`
-                        <paper-item class="no-link">
-                          ${this.hass.localize(
-                            "ui.panel.config.devices.script.no_scripts"
-                          )}</paper-item
-                        >
-                      `
-                }
-                <div class="card-actions">
-                  <mwc-button @click=${this._showScriptDialog}>
-                  ${this.hass.localize("ui.panel.config.devices.script.create")}
-                  </mwc-button>
-                </div>
-              </ha-card>
+                            `}
+                        <div class="card-actions">
+                          <mwc-button @click=${this._showScriptDialog}>
+                            ${this.hass.localize(
+                              "ui.panel.config.devices.script.create"
+                            )}
+                          </mwc-button>
+                        </div>
+                      </ha-card>
+                    `
+                  : ""
+              }
             </div>
           </div>
         </div>
