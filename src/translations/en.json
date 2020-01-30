@@ -1286,7 +1286,8 @@
             },
             "actions": {
               "caption": "When something is triggered..."
-            }
+            },
+            "no_device_automations": "There are no automations available for this device."
           },
           "script": {
             "scripts": "Scripts",
