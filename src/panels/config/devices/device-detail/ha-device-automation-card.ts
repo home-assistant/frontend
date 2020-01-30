@@ -1,4 +1,11 @@
-import { LitElement, TemplateResult, html, property } from "lit-element";
+import {
+  LitElement,
+  TemplateResult,
+  html,
+  property,
+  CSSResult,
+  css,
+} from "lit-element";
 import { HomeAssistant } from "../../../../types";
 import { DeviceAutomation } from "../../../../data/device_automation";
 
@@ -75,5 +82,13 @@ export abstract class HaDeviceAutomationCard<
     const data = {};
     data[this.type] = [automation];
     showAutomationEditor(this, data);
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      h3 {
+        color: var(--primary-text-color);
+      }
+    `;
   }
 }

@@ -50,6 +50,10 @@ class HaConfigScene extends HassRouterPage {
     });
   });
 
+  public disconnectedCallback() {
+    super.disconnectedCallback();
+  }
+
   protected updatePageEl(pageEl, changedProps: PropertyValues) {
     pageEl.hass = this.hass;
     pageEl.narrow = this.narrow;
@@ -65,6 +69,7 @@ class HaConfigScene extends HassRouterPage {
       (!changedProps || changedProps.has("route")) &&
       this._currentPage === "edit"
     ) {
+      pageEl.creatingNew = undefined;
       const sceneId = this.routeTail.path.substr(1);
       pageEl.creatingNew = sceneId === "new" ? true : false;
       pageEl.scene =
