@@ -34,10 +34,12 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
       <app-toolbar>
         <ha-menu-button hass="[[hass]]" narrow="[[narrow]]"></ha-menu-button>
         <div main-title>[[localize('panel.map')]]</div>
-        <paper-icon-button
-          icon="hass:pencil"
-          on-click="openZonesEditor"
-        ></paper-icon-button>
+        <template is="dom-if" if="[[!computeDemo()]]">
+          <paper-icon-button
+            icon="hass:pencil"
+            on-click="openZonesEditor"
+          ></paper-icon-button>
+        </template>
       </app-toolbar>
 
       <div id="map"></div>
@@ -70,6 +72,10 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
     if (this._map) {
       this._map.remove();
     }
+  }
+
+  computeDemo() {
+    return __DEMO__;
   }
 
   openZonesEditor() {
