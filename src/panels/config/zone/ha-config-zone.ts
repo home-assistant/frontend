@@ -436,6 +436,8 @@ ${this.hass!.localize("ui.panel.config.zone.confirm_delete2")}`)
       .flex .empty {
         border-left: 1px solid var(--divider-color);
         width: 250px;
+        min-height: 100%;
+        box-sizing: border-box;
       }
       paper-icon-item {
         padding-top: 4px;
