@@ -179,7 +179,7 @@ export class HaDeviceEntitiesCard extends LitElement {
         color: var(--secondary-text-color);
       }
       #entities > * {
-        margin: 8px;
+        margin: 8px 16px 8px 8px;
       }
       paper-icon-item {
         min-height: 40px;
