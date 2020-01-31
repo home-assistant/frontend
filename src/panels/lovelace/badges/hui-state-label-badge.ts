@@ -19,6 +19,7 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
+import { computeDomain } from "../../../common/entity/compute_domain";
 
 @customElement("hui-state-label-badge")
 export class HuiStateLabelBadge extends LitElement implements LovelaceBadge {
@@ -49,7 +50,9 @@ export class HuiStateLabelBadge extends LitElement implements LovelaceBadge {
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
         tabindex=${ifDefined(
-          hasAction(this._config.tap_action) ? "0" : undefined
+          hasAction(this._config.tap_action) || this._config.entity
+            ? "0"
+            : undefined
         )}
       ></ha-state-label-badge>
     `;
