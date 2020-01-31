@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Uitvoeren"
             },
+            "service": {
+                "run": "Uitvoeren"
+            },
             "timer": {
                 "actions": {
                     "cancel": "annuleren",
@@ -541,6 +544,19 @@
             "yes": "Ja"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Toevoegen",
+                    "failed_create_area": "Kan het gebied niet maken.",
+                    "name": "Naam",
+                    "text": "Geef de naam op van het nieuwe gebied.",
+                    "title": "Gebied toevoegen"
+                },
+                "add_new": "Gebied toevoegen...",
+                "area": "Gebied",
+                "clear": "Wis",
+                "show_areas": "Toon gebieden"
+            },
             "device-picker": {
                 "clear": "Wis",
                 "device": "Apparaat",
@@ -556,6 +572,9 @@
             "history_charts": {
                 "loading_history": "Geschiedenis laden ...",
                 "no_history_found": "Geen geschiedenis gevonden"
+            },
+            "related-items": {
+                "area": "Gebied"
             },
             "relative_time": {
                 "duration": {
@@ -586,6 +605,25 @@
             },
             "domain_toggler": {
                 "title": "Domeinen in- en uitschakelen"
+            },
+            "entity_registry": {
+                "editor": {
+                    "confirm_delete": "Weet je zeker dat je dit item wilt verwijderen?",
+                    "delete": "VERWIJDEREN",
+                    "enabled_cause": "Uitgeschakeld vanwege {cause}",
+                    "enabled_description": "Uitgeschakelde entiteiten zullen niet aan Home Assistant worden toegevoegd",
+                    "enabled_label": "Schakel entiteit in",
+                    "entity_id": "Entiteits-ID",
+                    "name": "Naam overschrijven",
+                    "note": "Nota bene: dit werkt mogelijk nog niet met alle integraties.",
+                    "unavailable": "Deze entiteit is momenteel niet beschikbaar.",
+                    "update": "BIJWERKEN"
+                }
+            },
+            "generic": {
+                "cancel": "Annuleren",
+                "default_confirmation_title": "Weet je het zeker?",
+                "ok": "OK"
             },
             "more_info_control": {
                 "dismiss": "Dialoogvenster sluiten",
@@ -1169,14 +1207,18 @@
                         "actions": {
                             "caption": "Wanneer iets wordt getriggerd..."
                         },
+                        "automations": "Automatiseringen",
                         "conditions": {
                             "caption": "Doe alleen iets als..."
                         },
+                        "create": "Maak een automatisering aan met het apparaat",
+                        "no_automations": "Geen automatiseringen",
                         "triggers": {
                             "caption": "Doe iets wanneer..."
                         }
                     },
                     "automations": "Automatiseringen",
+                    "cant_edit": "Je kunt alleen items bewerken die in de gebruikersinterface zijn gemaakt.",
                     "caption": "Apparaten",
                     "confirm_rename_entity_ids": "Wil je ook de entiteits-ID's van je entiteiten hernoemen?",
                     "data_table": {
@@ -1191,13 +1233,27 @@
                     "details": "Hier zijn alle details van uw apparaat",
                     "device_not_found": "Apparaat niet gevonden.",
                     "entities": {
-                        "add_entities_lovelace": "Voeg alle apparaatentiteiten toe aan Lovelace",
+                        "add_entities_lovelace": "Voeg toe aan de Lovelace gebruikersinterface",
                         "entities": "Entiteiten",
                         "none": "Dit apparaat heeft geen entiteiten"
                     },
                     "info": "Apparaat info",
+                    "name": "Naam",
+                    "scene": {
+                        "create": "Maak een scène aan met het apparaat",
+                        "no_scenes": "Geen scènes",
+                        "scenes": "Scènes"
+                    },
+                    "scenes": "Scènes",
+                    "script": {
+                        "create": "Maak een script aan met het apparaat",
+                        "no_scripts": "Geen scripts",
+                        "scripts": "Scripts"
+                    },
+                    "scripts": "Scripts",
                     "unknown_error": "Onbekende fout",
-                    "unnamed_device": "Naamloos apparaat"
+                    "unnamed_device": "Naamloos apparaat",
+                    "update": "Bijwerken"
                 },
                 "entities": {
                     "caption": "Entiteiten",
@@ -1299,7 +1355,7 @@
                     "new": "Stel een nieuwe integratie in",
                     "none": "Er is nog niets geconfigureerd",
                     "note_about_integrations": "Nog niet alle integraties kunnen via de UI worden geconfigureerd.",
-                    "note_about_website_reference": "Meer zijn beschikbaar op de"
+                    "note_about_website_reference": "Meer zijn beschikbaar op de "
                 },
                 "introduction": "Hier kun je je componenten en Home Assistant configureren. Het is nog niet mogelijk om alles te configureren vanuit de interface, maar we werken er aan.",
                 "person": {
@@ -1500,10 +1556,11 @@
                         "update_name_button": "Naam bijwerken"
                     },
                     "groups": {
+                        "create_group": "Zigbee Home Automation - Aanmaken groep",
                         "group_id": "Groep",
                         "group_info": "Groepsinformatie",
                         "groups": "groepen",
-                        "header": "Zigbee groep management",
+                        "header": "Zigbee Home Automation - Groepsbeheer",
                         "introduction": "Maak en verwijder zigbee groepen",
                         "members": "Leden",
                         "remove_groups": "verwijder groepen",
@@ -1525,6 +1582,18 @@
                         "remove": "Verwijder een apparaat uit het Zigbee-netwerk.",
                         "updateDeviceName": "Stel een aangepaste naam in voor dit apparaat in het apparaatregister."
                     }
+                },
+                "zone": {
+                    "configured_in_yaml": "Zones die via configuration.yaml zijn geconfigureerd kunnen niet worden bewerkt in de gebruikrs",
+                    "detail": {
+                        "create": "Aanmaken",
+                        "delete": "Verwijder",
+                        "passive": "Passief",
+                        "passive_note": "Passieve zones zijn verborgen in het frontend en worden niet gebruikt als locaties voor apparaat trackers. Dit is handig als je de zone wilt gebruiken voor automatiseringen.",
+                        "required_error_msg": "Dit veld is verplicht",
+                        "update": "Bijwerken"
+                    },
+                    "edit_home_zone": "De locatie van je huis kan worden gewijzigd bij de algemene configuratie"
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1706,6 +1775,11 @@
                 "showing_entries": "Toont gegevens van"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "Je kan deze functie alleen gebruiken als je de controle over de Lovelace gebruikersinterface hebt overgenomen",
+                    "saving_failed": "Opslaan van de Lovelace gebruikersinterface is mislukt.",
+                    "yaml_unsupported": "Je kan deze functie niet gebruiken wanneer je de Lovelace gebruikersinterface gebruikt in YAML modus"
+                },
                 "cards": {
                     "confirm_delete": "Weet je zeker dat je deze kaart wilt verwijderen?",
                     "empty_state": {
@@ -1895,6 +1969,8 @@
                         "para_no_id": "Dit element heeft geen ID. Voeg een ID toe aan dit element in 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "We zullen je Lovelace gebruikersinterface automatisch genereren met je gebieden en apparaten als je de huidige Lovelace gebruikersinterface verwijdert.",
+                        "confirm_remove_config_title": "Weet je zeker dat je de huidige Lovelace gebruikersinterface wilt verwijderen? We zullen automatisch een nieuwe Lovelace gebruikersinterface genereren op basis van je gebieden en apparaten.",
                         "confirm_unsaved_changes": "Er zijn nog niet-opgeslagen wijzigingen, weet u zeker dat u wilt afsluiten?",
                         "confirm_unsaved_comments": "Uw configuratie bevat commentaren, deze worden niet opgeslagen. Wil je doorgaan?",
                         "error_invalid_config": "Uw configuratie is niet geldig: {error}",
@@ -1911,6 +1987,10 @@
                         "para": "Normaal gesproken onderhoudt Home Assistant je gebruikersinterface en update die met nieuwe entiteiten of Lovelace-onderdelen wanneer deze beschikbaar zijn. Als je het beheer overneemt, zullen we niet langer automatisch wijzigingen aanbrengen.",
                         "para_sure": "Weet je zeker dat je de controle wilt over je gebruikersinterface?",
                         "save": "Neem over"
+                    },
+                    "suggest_card": {
+                        "add": "Voeg toe aan de Lovelace gebruikersinterface",
+                        "create_own": "Kies een andere kaart"
                     },
                     "view": {
                         "panel_mode": {
@@ -2126,6 +2206,7 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant verbergt standaard geavanceerde functies en opties. U kunt deze functies toegankelijk maken door deze schakelaar aan te zetten. Dit is een gebruikersspecifieke instelling en heeft geen invloed op andere gebruikers die Home Assistant gebruiken.",
+                    "link_promo": "Meer informatie",
                     "title": "Geavanceerde modus"
                 },
                 "change_password": {
