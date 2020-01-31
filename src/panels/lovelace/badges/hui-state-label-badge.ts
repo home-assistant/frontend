@@ -49,7 +49,9 @@ export class HuiStateLabelBadge extends LitElement implements LovelaceBadge {
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
         tabindex=${ifDefined(
-          hasAction(this._config.tap_action) ? "0" : undefined
+          hasAction(this._config.tap_action) || this._config.entity
+            ? "0"
+            : undefined
         )}
       ></ha-state-label-badge>
     `;
