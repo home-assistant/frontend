@@ -1226,14 +1226,18 @@
                         "actions": {
                             "caption": "Wykonaj akcje..."
                         },
+                        "automations": "Automatyzacje",
                         "conditions": {
                             "caption": "Jeśli..."
                         },
+                        "create": "Utwórz automatyzację z urządzeniem",
+                        "no_automations": "Brak automatyzacji",
                         "triggers": {
                             "caption": "Gdy..."
                         }
                     },
                     "automations": "Automatyzacje",
+                    "cant_edit": "Możesz edytować tylko elementy utworzone w interfejsie użytkownika.",
                     "caption": "Urządzenia",
                     "confirm_rename_entity_ids": "Czy chcesz także zmienić identyfikatory encji?",
                     "data_table": {
@@ -1248,12 +1252,24 @@
                     "details": "Oto wszystkie szczegóły dotyczące twojego urządzenia.",
                     "device_not_found": "Urządzenie nie zostało znalezione.",
                     "entities": {
-                        "add_entities_lovelace": "Dodaj wszystkie encje urządzenia do interfejsu użytkownika Lovelace",
+                        "add_entities_lovelace": "Dodaj do interfejsu użytkownika Lovelace",
                         "entities": "Encje",
                         "none": "To urządzenie nie ma żadnych encji"
                     },
                     "info": "Informacje o urządzeniu",
                     "name": "Nazwa",
+                    "scene": {
+                        "create": "Utwórz scenę z urządzeniem",
+                        "no_scenes": "Brak scen",
+                        "scenes": "Sceny"
+                    },
+                    "scenes": "Sceny",
+                    "script": {
+                        "create": "Utwórz skrypt z urządzeniem",
+                        "no_scripts": "Bez skryptów",
+                        "scripts": "Skrypty"
+                    },
+                    "scripts": "Skrypty",
                     "unknown_error": "Nieznany błąd",
                     "unnamed_device": "Nienazwane urządzenie",
                     "update": "Aktualizuj"
@@ -1307,7 +1323,7 @@
                             "confirm_text": "Encje mogą zostać usunięte tylko wtedy, gdy ich integracja na to zezwala.",
                             "confirm_title": "Czy chcesz usunąć {number} encj(-e/-i)?"
                         },
-                        "selected": "wybrano {numer}",
+                        "selected": "wybrano {number}",
                         "show_disabled": "Wyświetlaj nieużywane encje",
                         "status": {
                             "disabled": "Wyłączone",
@@ -1477,7 +1493,7 @@
                     "section": {
                         "reloading": {
                             "automation": "Automatyzacje",
-                            "core": "Rdzeń",
+                            "core": "Lokacje i dostosowywanie",
                             "group": "Grupy",
                             "heading": "Ponowne wczytanie konfiguracji",
                             "introduction": "Niektóre części konfiguracji można wczytać od nowa bez konieczności ponownego uruchamiania Home Assistant'a. Naciśnięcie poniższych przycisków wczyta ponownie daną część konfiguracji.",
@@ -1651,7 +1667,7 @@
                     "configured_in_yaml": "Stref skonfigurowanych za pomocą pliku configuration.yaml nie można edytować za pomocą interfejsu użytkownika.",
                     "confirm_delete": "Na pewno chcesz usunąć tę strefę?",
                     "create_zone": "Utwórz strefę",
-                    "description": "Zarządzaj strefami, w których chcesz śledzić osoby.",
+                    "description": "Zarządzaj strefami, w których chcesz śledzić osoby",
                     "detail": {
                         "create": "Utwórz",
                         "delete": "Usuń",
@@ -1882,7 +1898,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Zaktualizowano konfigurację interfejsu użytkownika, czy chcesz ją wczytać ponownie?",
+                    "message": "Zaktualizowano konfigurację interfejsu użytkownika Lovelace, czy chcesz ją wczytać ponownie?",
                     "refresh": "Wczytaj ponownie"
                 },
                 "editor": {
@@ -2025,8 +2041,8 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "Edytuj tytuł",
-                        "explanation": "Tytuł jest wyświetlany ponad wszystkimi widokami interfejsu użytkownika",
-                        "header": "Tytuł interfejsu użytkownika"
+                        "explanation": "Tytuł jest wyświetlany ponad wszystkimi widokami interfejsu użytkownika Lovelace",
+                        "header": "Tytuł interfejsu użytkownika Lovelace"
                     },
                     "edit_view": {
                         "add": "Dodaj widok",
@@ -2065,7 +2081,7 @@
                     "save_config": {
                         "cancel": "Nieważne",
                         "header": "Przejmij kontrolę nad interfejsem użytkownika Lovelace",
-                        "para": "Domyślnie asystent domowy będzie utrzymywał interfejs użytkownika, aktualizując go, gdy pojawią się nowe elementy lub komponenty Lovelace. Jeśli przejmiesz kontrolę, nie będziemy już dokonywać zmian automatycznie.",
+                        "para": "Domyślnie Home Assistant będzie zarządzać interfejsem użytkownika, aktualizując go, gdy pojawią się nowe encje lub komponenty Lovelace. Jeśli przejmiesz kontrolę, Home Assistant nie będzie już automatycznie wprowadzać dla ciebie zmian.",
                         "para_sure": "Na pewno chcesz przejąć kontrolę nad interfejsem użytkownika?",
                         "save": "Przejmuję kontrolę"
                     },
