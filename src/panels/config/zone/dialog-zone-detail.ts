@@ -127,6 +127,7 @@ class DialogZoneDetail extends LitElement {
               class="flex"
               .location=${this._locationValue}
               .radius=${this._radius}
+              .radiusColor=${this._passive ? "#9b9b9b" : "#FF9800"}
               .icon=${this._icon}
               @change=${this._locationChanged}
             ></ha-location-editor>
