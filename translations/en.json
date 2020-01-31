@@ -1232,6 +1232,7 @@
                         },
                         "create": "Create automation with device",
                         "no_automations": "No automations",
+                        "no_device_automations": "There are no automations available for this device.",
                         "triggers": {
                             "caption": "Do something when..."
                         }
