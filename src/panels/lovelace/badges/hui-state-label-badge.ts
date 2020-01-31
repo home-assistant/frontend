@@ -19,7 +19,6 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
-import { computeDomain } from "../../../common/entity/compute_domain";
 
 @customElement("hui-state-label-badge")
 export class HuiStateLabelBadge extends LitElement implements LovelaceBadge {
