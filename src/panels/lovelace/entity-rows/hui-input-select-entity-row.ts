@@ -91,9 +91,7 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
-        tabindex=${ifDefined(
-          hasAction(this._config.tap_action) ? "0" : undefined
-        )}
+        tabindex=${ifDefined(pointer ? "0" : undefined)}
       ></state-badge>
       <ha-paper-dropdown-menu
         .label=${this._config.name || computeStateName(stateObj)}
