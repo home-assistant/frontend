@@ -28,6 +28,7 @@ import { hasAction } from "../common/has-action";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
 import { subscribeRenderTemplate } from "../../../data/ws-templates";
+import { embeddedHaMarkdownCSS } from "../../../common/style/embedded_ha-markdown_css";
 
 class HuiGenericEntityRow extends LitElement {
   @property() public showSecondary: boolean = true;
@@ -268,24 +269,7 @@ class HuiGenericEntityRow extends LitElement {
       .padSecondary {
         padding: 4px 0px;
       }
-      ha-markdown {
-        display: block;
-        -ms-user-select: initial;
-        -webkit-user-select: initial;
-        -moz-user-select: initial;
-      }
-      ha-markdown > *:first-child {
-        margin-top: 0;
-      }
-      ha-markdown > *:last-child {
-        margin-bottom: 0;
-      }
-      ha-markdown a {
-        color: var(--primary-color);
-      }
-      ha-markdown img {
-        max-width: 100%;
-      }
+      ${embeddedHaMarkdownCSS}
     `;
   }
 }
