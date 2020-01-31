@@ -74,9 +74,7 @@ class HuiGenericEntityRow extends LitElement {
           hasHold: hasAction(this.config!.hold_action),
           hasDoubleClick: hasAction(this.config!.double_tap_action),
         })}
-        tabindex=${ifDefined(
-          hasAction(this.config.tap_action) ? "0" : undefined
-        )}
+        tabindex=${ifDefined(pointer ? "0" : undefined)}
       ></state-badge>
       <div class="flex">
         <div
