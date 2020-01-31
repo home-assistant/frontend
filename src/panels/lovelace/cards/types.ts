@@ -24,7 +24,7 @@ export interface EmptyStateCardConfig extends LovelaceCardConfig {
 
 export interface EntitiesCardEntityConfig extends EntityConfig {
   type?: string;
-  secondary_info?: "entity-id" | "last-changed";
+  secondary_info?: "entity-id" | "last-changed" | "last-triggered" | "markdown";
   action_name?: string;
   service?: string;
   service_data?: object;
@@ -33,6 +33,8 @@ export interface EntitiesCardEntityConfig extends EntityConfig {
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
   state_color?: boolean;
+  content?: string;
+  entity_id?: string | string[];
 }
 
 export interface EntitiesCardConfig extends LovelaceCardConfig {
@@ -142,7 +144,7 @@ export interface MarkdownCardConfig extends LovelaceCardConfig {
   content: string;
   title?: string;
   card_size?: number;
-  entity_ids?: string | string[];
+  entity_id?: string | string[];
   theme?: string;
 }
 
