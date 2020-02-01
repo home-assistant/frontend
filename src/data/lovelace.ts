@@ -63,6 +63,9 @@ export interface UrlActionConfig extends BaseActionConfig {
 
 export interface MoreInfoActionConfig extends BaseActionConfig {
   action: "more-info";
+  service_data?: {
+    entity_id?: string | [string];
+  };
 }
 
 export interface NoActionConfig extends BaseActionConfig {
