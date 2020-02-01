@@ -27,7 +27,6 @@ class HassioCardContent extends LitElement {
   @property() public iconImage?: string;
 
   protected render(): TemplateResult {
-    console.log(this.available);
     return html`
       ${this.iconImage
         ? html`
