@@ -61,7 +61,7 @@ class HassioAddonAudio extends LitElement {
               ${this._inputDevices &&
                 this._inputDevices.map((item) => {
                   return html`
-                    <paper-item .device=${item.device}>${item.name}</paper-item>
+                    <paper-item device=${item.device}>${item.name}</paper-item>
                   `;
                 })}
             </paper-listbox>
@@ -78,7 +78,7 @@ class HassioAddonAudio extends LitElement {
               ${this._outputDevices &&
                 this._outputDevices.map((item) => {
                   return html`
-                    <paper-item .device=${item.device}>${item.name}</paper-item>
+                    <paper-item device=${item.device}>${item.name}</paper-item>
                   `;
                 })}
             </paper-listbox>
