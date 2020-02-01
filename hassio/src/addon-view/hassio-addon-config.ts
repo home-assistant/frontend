@@ -25,6 +25,7 @@ import { fireEvent } from "../../../src/common/dom/fire_event";
 import "../../../src/components/ha-yaml-editor";
 // tslint:disable-next-line: no-duplicate-imports
 import { HaYamlEditor } from "../../../src/components/ha-yaml-editor";
+import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
 
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
@@ -115,6 +116,16 @@ class HassioAddonConfig extends LitElement {
   }
 
   private async _resetTapped(): Promise<void> {
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.addon.name,
+      text: "Are you sure you want to reset all your options?",
+      confirmText: "reset options",
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
     this._error = undefined;
     const data: HassioAddonSetOptionParams = {
       options: null,
