@@ -1,6 +1,6 @@
 import { fireEvent } from "../../common/dom/fire_event";
 
-interface AlertDialogParams {
+export interface AlertDialogParams {
   confirmText?: string;
   text?: string;
   title?: string;
