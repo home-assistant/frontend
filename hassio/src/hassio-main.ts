@@ -178,10 +178,7 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
 
     const createSessionPromise = createHassioSession(this.hass).then(
       () => true,
-      (err) => {
-        console.error(err);
-        return false;
-      }
+      () => false
     );
 
     let addon;
