@@ -6,6 +6,7 @@ import {
   css,
   CSSResult,
   queryAll,
+  property,
 } from "lit-element";
 import "@material/mwc-ripple";
 
@@ -21,25 +22,21 @@ import { StateBadge } from "../../../components/entity/state-badge";
 
 @customElement("hui-buttons-base")
 export class HuiButtonsBase extends LitElement {
-  public static getStubConfig(): object {
-    return { entities: [] };
-  }
-
-  protected _configEntities?: EntityConfig[];
-  protected _hass?: HomeAssistant;
+  @property() public configEntities?: EntityConfig[];
   @queryAll("state-badge") protected _badges!: StateBadge[];
+  private _hass?: HomeAssistant;
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
     this._badges.forEach((badge, index: number) => {
       badge.hass = hass;
-      badge.stateObj = hass.states[this._configEntities![index].entity];
+      badge.stateObj = hass.states[this.configEntities![index].entity];
     });
   }
 
   protected render(): TemplateResult | void {
     return html`
-      ${(this._configEntities || []).map((entityConf) => {
+      ${(this.configEntities || []).map((entityConf) => {
         const stateObj = this._hass!.states[entityConf.entity];
         if (!stateObj) {
           return html`<div class='missing'><iron-icon icon="hass:alert"></div>`;
