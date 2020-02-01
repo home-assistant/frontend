@@ -1027,7 +1027,7 @@
                         },
                         "integrations": "Integrációk",
                         "integrations_introduction": "A Home Assistant Felhő integrációi úgy biztosítanak lehetőséget felhő szolgáltatásokhoz való csatlakozáshoz, hogy közben nem kell kinyitnod a Home Assistant rendszered publikusan az interneten.",
-                        "integrations_introduction2": "Nézd meg a weboldalt a",
+                        "integrations_introduction2": "Nézd meg a weboldalt a ",
                         "integrations_link_all_features": "az összes elérhető funkció",
                         "manage_account": "Fiók kezelése",
                         "nabu_casa_account": "Nabu Casa fiók",
@@ -1049,7 +1049,7 @@
                             "link_learn_more": "Tudj meg többet a webhook-alapú automatizálások létrehozásáról.",
                             "loading": "Betöltés...",
                             "manage": "Kezelés",
-                            "no_hooks_yet": "Úgy tűnik, még nincs egy webhookod sem. Kezdéshez konfigurálj egy",
+                            "no_hooks_yet": "Úgy tűnik, még nincs egy webhookod sem. Kezdéshez konfigurálj egy ",
                             "no_hooks_yet_link_automation": "webhook automatizálást",
                             "no_hooks_yet_link_integration": "webhook-alapú integrációt",
                             "no_hooks_yet2": "vagy hozz létre egy",
@@ -1111,7 +1111,7 @@
                         "email_error_msg": "Érvénytelen email",
                         "forgot_password": "elfelejtett jelszó?",
                         "introduction": "A Home Assistant Felhő biztonságos távoli kapcsolatot nyújt a példányodhoz, miközben távol vagy. Azt is lehetővé teszi, hogy csak felhőn alapuló szolgáltatásokhoz csatlakozz: Amazon Alexa, Google Asszisztens.",
-                        "introduction2": "Ezt a szolgáltatást partnerünk üzemelteti, a",
+                        "introduction2": "Ezt a szolgáltatást partnerünk üzemelteti, a ",
                         "introduction2a": " vállalat üzemelteti, amelyet a Home Assistant és a Hass.io alapítói alapítottak.",
                         "introduction3": "A Home Assistant Felhő egy előfizetéses szolgáltatás egy hónapos ingyenes próbaverzióval. Nincs szükség fizetési információk megadására.",
                         "learn_more_link": "Tudj meg többet a Home Assistant Felhőről",
@@ -1134,7 +1134,7 @@
                         "headline": "Indítsd el az ingyenes próbaidőszakot",
                         "information": "Hozz létre egy fiókot ahhoz, hogy elindíthasd az egy hónapos ingyenes Home Assistant Felhő próbaidőszakodat. Nincs szükség fizetési információk megadására.",
                         "information2": "A próbaidőszak hozzáférést biztosít a Home Assistant Felhő minden előnyéhez, beleértve a következőket:",
-                        "information3": "Ezt a szolgáltatást partnerünk üzemelteti, a",
+                        "information3": "Ezt a szolgáltatást partnerünk üzemelteti, a ",
                         "information3a": ", vállalat üzemelteti, amelyet a Home Assistant és a Hass.io alapítói alapítottak.",
                         "information4": "Fiók regisztrálásával elfogadod az alábbi feltételeket.",
                         "link_privacy_policy": "Adatvédelmi irányelvek",
@@ -1226,14 +1226,19 @@
                         "actions": {
                             "caption": "Ha valami triggerelődik, akkor..."
                         },
+                        "automations": "Automatizálások",
                         "conditions": {
                             "caption": "Csak akkor csinálj valamit, ha a(z)..."
                         },
+                        "create": "Automatizálás létrehozása eszközzel",
+                        "no_automations": "Nincs automatizálás",
+                        "no_device_automations": "Ehhez az eszközhöz nem állnak rendelkezésre automatizálások.",
                         "triggers": {
                             "caption": "Kezdj el csinálni valamit, amikor a(z)..."
                         }
                     },
                     "automations": "Automatizálások",
+                    "cant_edit": "Kizárólag az UI-ben létrehozott elemeket szerkesztheti.",
                     "caption": "Eszközök",
                     "confirm_rename_entity_ids": "Szeretnéd átnevezni az entitások ID-ját is?",
                     "data_table": {
@@ -1254,6 +1259,18 @@
                     },
                     "info": "Eszköz infó",
                     "name": "Név",
+                    "scene": {
+                        "create": "Jelenet létrehozása eszközzel",
+                        "no_scenes": "Nincsenek jelenetek",
+                        "scenes": "Jelenetek"
+                    },
+                    "scenes": "Jelenetek",
+                    "script": {
+                        "create": "Szkript létrehozása eszköz alapján",
+                        "no_scripts": "Nincs szkript",
+                        "scripts": "Szkriptek"
+                    },
+                    "scripts": "Szkriptek",
                     "unknown_error": "Ismeretlen hiba",
                     "unnamed_device": "Névtelen eszköz",
                     "update": "Frissítés"
@@ -1376,7 +1393,7 @@
                     "new": "Új integráció beállítása",
                     "none": "Még semmi sincs beállítva",
                     "note_about_integrations": "Még nem minden integráció konfigurálható a felhasználói felületen keresztül.",
-                    "note_about_website_reference": "Továbbiak érhetőek el itt:"
+                    "note_about_website_reference": "Továbbiak érhetőek el itt: "
                 },
                 "introduction": "Itt a komponenseket és a Home Assistant szervert lehet beállítani. Még nem lehet mindent a felületről, de dolgozunk rajta.",
                 "person": {

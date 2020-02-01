@@ -474,6 +474,9 @@
             "script": {
                 "execute": "Yürüt"
             },
+            "service": {
+                "run": "Çalıştır"
+            },
             "timer": {
                 "actions": {
                     "cancel": "İptal",
@@ -537,10 +540,24 @@
             "yes": "Evet"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Ekle",
+                    "failed_create_area": "Alan oluşturulamadı.",
+                    "name": "Ad",
+                    "text": "Yeni alanın adını girin.",
+                    "title": "Yeni alan ekle"
+                },
+                "add_new": "Yeni alan ekle…",
+                "area": "Alan",
+                "clear": "Temizle",
+                "show_areas": "Alanları göster"
+            },
             "device-picker": {
                 "clear": "Temiz",
                 "device": "Cihaz",
-                "show_devices": "Cihazları göster"
+                "show_devices": "Cihazları göster",
+                "toggle": "Geçiş"
             },
             "entity": {
                 "entity-picker": {
@@ -592,11 +609,28 @@
             "entity_registry": {
                 "control": "Kontrol",
                 "dismiss": "Kapat",
+                "editor": {
+                    "confirm_delete": "Bu girişi silmek istediğinizden emin misiniz?",
+                    "delete": "SİL",
+                    "enabled_cause": "{cause} tarafından devre dışı bırakılmış.",
+                    "enabled_description": "Devre dışı bırakılan varlıklar Home Assistant'a eklenmeyecek.",
+                    "enabled_label": "Varlığı etkinleştir",
+                    "entity_id": "Varlık kimliği",
+                    "name": "Ad Geçersiz Kılma",
+                    "unavailable": "Bu varlık şu anda kullanılamıyor.",
+                    "update": "GÜNCELLE"
+                },
                 "related": "İlgili",
                 "settings": "Ayarlar"
             },
+            "generic": {
+                "cancel": "İptal",
+                "default_confirmation_title": "Emin misin?",
+                "ok": "Tamam"
+            },
             "more_info_control": {
                 "dismiss": "İletişim kutusunu kapat",
+                "edit": "Varlığı düzenle",
                 "restored": {
                     "confirm_remove_text": "Bu varlığı kaldırmak istediğinizden emin misiniz?",
                     "confirm_remove_title": "Varlık kaldırılsın mı?",
@@ -649,6 +683,7 @@
                 "manuf": "{manufacturer} tarafından",
                 "no_area": "Alan Yok",
                 "power_source": "Güç kaynağı",
+                "quirk": "Orijinal",
                 "services": {
                     "remove": "Bir cihazı Zigbee ağından kaldır."
                 },
@@ -1139,14 +1174,19 @@
                         "actions": {
                             "caption": "Bir şey tetiklendiğinde..."
                         },
+                        "automations": "Otomasyonlar",
                         "conditions": {
                             "caption": "Sadece bir şey yapmak eğer ..."
                         },
+                        "create": "Cihazla otomasyon oluşturun",
+                        "no_automations": "Otomasyon yok",
+                        "no_device_automations": "Bu cihaz için kullanılabilir otomasyon yok.",
                         "triggers": {
                             "caption": "Aşağıdaki durumlarda bir şeyler yap..."
                         }
                     },
                     "automations": "Otomasyonlar",
+                    "cant_edit": "Yalnızca kullanıcı arayüzünde oluşturulan öğeleri düzenleyebilirsiniz.",
                     "caption": "Cihazlar",
                     "data_table": {
                         "area": "Alan",
@@ -1165,8 +1205,22 @@
                         "none": "Bu cihazın varlığı yok"
                     },
                     "info": "Cihaz bilgileri",
+                    "name": "Ad",
+                    "scene": {
+                        "create": "Aygıtla sahne oluşturma",
+                        "no_scenes": "Sahne yok",
+                        "scenes": "Sahneler"
+                    },
+                    "scenes": "Sahneler",
+                    "script": {
+                        "create": "Aygıtla sahne oluşturma",
+                        "no_scripts": "Komut dosyası yok",
+                        "scripts": "Komut dosyaları"
+                    },
+                    "scripts": "Komut dosyaları",
                     "unknown_error": "Bilinmeyen hata",
-                    "unnamed_device": "Adsız cihaz"
+                    "unnamed_device": "Adsız cihaz",
+                    "update": "Güncelle"
                 },
                 "entities": {
                     "caption": "Varlıklar",
@@ -1354,7 +1408,9 @@
                         "sequence": "Sıra"
                     },
                     "picker": {
+                        "add_script": "Komut dosyası ekle",
                         "edit_script": "Komut dosyasını düzenle",
+                        "header": "Komut Dosyası Düzenleyicisi",
                         "trigger_script": "Komut dosyası tetikle"
                     }
                 },
@@ -1437,8 +1493,15 @@
                         "get_zigbee_attribute": "Zigbee Özelliğini al",
                         "set_zigbee_attribute": "Zigbee Özniteliğini Ayarla"
                     },
+                    "cluster_commands": {
+                        "header": "Küme Komutları"
+                    },
+                    "clusters": {
+                        "header": "Kümeler"
+                    },
                     "common": {
                         "add_devices": "Cihaz Ekle",
+                        "clusters": "Kümeler",
                         "devices": "Cihazlar",
                         "value": "Değer"
                     },
@@ -1471,6 +1534,7 @@
                         "group_not_found": "Grup bulunamadı!",
                         "group-header": "Zigbee Ev Otomasyonu - Grup Detayları",
                         "groups": "Gruplar",
+                        "groups-header": "Zigbee Ev Otomasyonu - Grup Yönetimi",
                         "introduction": "Zigbee grupları oluşturma ve değiştirme",
                         "manage_groups": "Zigbee Gruplarını Yönetin",
                         "members": "Üyeler",
@@ -1508,7 +1572,8 @@
                         "radius": "Yarıçap",
                         "required_error_msg": "Bu alan gereklidir",
                         "update": "Güncelle"
-                    }
+                    },
+                    "edit_home_zone": "Evinizin konumu genel konfigürasyonda değiştirilebilir."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1551,10 +1616,13 @@
                     "events": {
                         "alert_event_type": "Olay türü zorunlu bir alandır",
                         "available_events": "Mevcut Etkinlikler",
+                        "count_listeners": " ({count} dinleyiciler)",
                         "data": "Olay Verileri (YAML, isteğe bağlı)",
                         "description": "Etkinlik otobüsünde bir etkinlik başlat.",
                         "documentation": "Olaylar Dökümantasyonu.",
                         "fire_event": "Olayı Çalıştır",
+                        "listen_to_events": "Olayları dinleyin",
+                        "listening_to": "Dinliyorum",
                         "notification_event_fired": "{type} etkinliği başarıyla başlatıldı!",
                         "start_listening": "Dinlemeye başla",
                         "stop_listening": "Dinlemeyi bırak",
@@ -1576,6 +1644,7 @@
                         "server": "sunucu",
                         "set": "Ayarlamak",
                         "source": "Kaynak:",
+                        "states_ui": "Kullanıcı arayüzüne git",
                         "system_health_error": "Sistem Sağlığı bileşeni yüklü değil. configuration.yaml içine 'system_health:' ekleyin",
                         "title": "Bilgi"
                     },
@@ -1724,6 +1793,7 @@
                             "camera_view": "Kamera Görünümü",
                             "entities": "Varlıklar",
                             "entity": "Varlık",
+                            "hold_action": "Eylemi Tut",
                             "hours_to_show": "Gösterilecek Saatler",
                             "icon": "Simge",
                             "maximum": "Maksimum",
@@ -1733,6 +1803,7 @@
                             "show_icon": "Simgeyi Göster?",
                             "show_name": "Adı göster?",
                             "show_state": "Durumu göster",
+                            "tap_action": "Eylem'e dokunun",
                             "theme": "Tema",
                             "title": "Başlık",
                             "unit": "Birim",
@@ -2046,6 +2117,7 @@
             },
             "profile": {
                 "advanced_mode": {
+                    "link_promo": "Daha fazla bilgi edinin",
                     "title": "Gelişmiş mod"
                 },
                 "change_password": {
@@ -2121,6 +2193,7 @@
                     "link_promo": "Temalar hakkında bilgi edinin"
                 },
                 "vibrate": {
+                    "description": "Cihazları kontrol ederken bu cihazdaki titreşimi etkinleştirin veya devre dışı bırakın.",
                     "header": "Titreşim"
                 }
             },

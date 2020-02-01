@@ -1232,6 +1232,7 @@
                         },
                         "create": "Utwórz automatyzację z urządzeniem",
                         "no_automations": "Brak automatyzacji",
+                        "no_device_automations": "Brak dostępnych automatyzacji dla tego urządzenia.",
                         "triggers": {
                             "caption": "Gdy..."
                         }
