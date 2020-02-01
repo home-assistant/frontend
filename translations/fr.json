@@ -1232,6 +1232,7 @@
                         },
                         "create": "Créer une automation avec l'appareil",
                         "no_automations": "Aucune automation",
+                        "no_device_automations": "Aucune automatisation n'est disponible pour cet appareil.",
                         "triggers": {
                             "caption": "Faire quelque chose quand ..."
                         }
