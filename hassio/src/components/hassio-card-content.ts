@@ -80,7 +80,7 @@ class HassioCardContent extends LitElement {
       iron-icon {
         margin-right: 24px;
         margin-left: 8px;
-        margin-top: 16px;
+        margin-top: 12px;
         float: left;
         color: var(--secondary-text-color);
       }
