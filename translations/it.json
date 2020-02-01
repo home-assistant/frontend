@@ -1248,7 +1248,7 @@
                     "details": "Ecco tutti i dettagli del tuo dispositivo.",
                     "device_not_found": "Dispositivo non trovato.",
                     "entities": {
-                        "add_entities_lovelace": "Aggiungere tutte le entità dispositivo all'Interfaccia Utente di Lovelace",
+                        "add_entities_lovelace": "Aggiungi a Lovelace",
                         "entities": "Entità",
                         "none": "Questo dispositivo non ha entità"
                     },

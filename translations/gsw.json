@@ -519,6 +519,9 @@
                         }
                     }
                 },
+                "devices": {
+                    "scripts": "Scripts"
+                },
                 "integrations": {
                     "caption": "Integratione",
                     "config_entry": {
