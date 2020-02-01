@@ -1,6 +1,5 @@
 import { HomeAssistant } from "../../../types";
 import { Condition } from "../common/validate-condition";
-import { Attribute } from "../../../data/zha";
 
 export interface EntityConfig {
   entity: string;
