@@ -319,6 +319,7 @@ class HassioAddonInfo extends LitElement {
                   <ha-switch
                     @change=${this._startOnBootToggled}
                     .checked=${this.addon.boot === "auto"}
+                    haptic
                   ></ha-switch>
                 </div>
                 <div class="state">
@@ -326,6 +327,7 @@ class HassioAddonInfo extends LitElement {
                   <ha-switch
                     @change=${this._autoUpdateToggled}
                     .checked=${this.addon.auto_update}
+                    haptic
                   ></ha-switch>
                 </div>
                 ${this.addon.ingress
@@ -336,6 +338,7 @@ class HassioAddonInfo extends LitElement {
                           @change=${this._panelToggled}
                           .checked=${this.addon.ingress_panel}
                           .disabled=${this._computeCannotIngressSidebar}
+                          haptic
                         ></ha-switch>
                         ${this._computeCannotIngressSidebar
                           ? html`
@@ -363,6 +366,7 @@ class HassioAddonInfo extends LitElement {
                         <ha-switch
                           @change=${this._protectionToggled}
                           .checked=${this.addon.protected}
+                          haptic
                         ></ha-switch>
                       </div>
                     `

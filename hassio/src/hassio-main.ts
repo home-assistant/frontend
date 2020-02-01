@@ -76,7 +76,6 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
       },
     },
   };
-
   @property() private _supervisorInfo: HassioSupervisorInfo;
   @property() private _hostInfo: HassioHostInfo;
   @property() private _hassOsInfo?: HassioHassOSInfo;
@@ -110,6 +109,14 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
         bubbles: false,
       })
     );
+
+    // Forward haptic events to parent window.
+    window.addEventListener("haptic", (ev) => {
+      // @ts-ignore
+      fireEvent(window.parent, ev.type, ev.detail, {
+        bubbles: false,
+      });
+    });
 
     makeDialogManager(this, document.body);
   }
