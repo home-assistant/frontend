@@ -23,7 +23,7 @@ export class HaYamlEditor extends LitElement {
   @property() public value?: any;
   @property() public isValid = true;
   @property() public label?: string;
-  @property() private _yaml?: string;
+  @property() private _yaml: string = "";
   @query("ha-code-editor") private _editor?: HaCodeEditor;
 
   public setValue(value) {
@@ -40,7 +40,9 @@ export class HaYamlEditor extends LitElement {
   }
 
   protected firstUpdated() {
-    this.setValue(this.value);
+    if (this.value) {
+      this.setValue(this.value);
+    }
   }
 
   protected render() {
@@ -83,9 +85,7 @@ export class HaYamlEditor extends LitElement {
     this.value = parsed;
     this.isValid = isValid;
 
-    if (isValid) {
-      fireEvent(this, "value-changed", { value: parsed });
-    }
+    fireEvent(this, "value-changed", { value: parsed, isValid } as any);
   }
 }
 
