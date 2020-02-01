@@ -67,10 +67,8 @@ export const handleAction = (
       ) {
         fireEvent(node, "hass-more-info", {
           entityId: actionConfig.service_data.entity_id
-          ? actionConfig.service_data.entity_id
-          : (config.entity 
-            ? config.entity 
-            : config.camera_image
+            ? actionConfig.service_data.entity_id
+            : (config.entity ? config.entity : config.camera_image
             )!,
         });
       }
