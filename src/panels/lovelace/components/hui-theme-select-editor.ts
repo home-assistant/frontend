@@ -29,7 +29,7 @@ export class HuiThemeSelectEditor extends LitElement {
   @property() public label?: string;
   @property() public hass?: HomeAssistant;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const themes = ["Backend-selected", "default"].concat(
       Object.keys(this.hass!.themes.themes).sort()
     );

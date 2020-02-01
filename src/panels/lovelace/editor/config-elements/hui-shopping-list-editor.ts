@@ -1,5 +1,7 @@
 import {
   html,
+  CSSResult,
+  css,
   LitElement,
   TemplateResult,
   customElement,
@@ -14,6 +16,7 @@ import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { ShoppingListCardConfig } from "../../cards/types";
 
+import { isComponentLoaded } from "../../../../common/config/is_component_loaded";
 import "../../components/hui-theme-select-editor";
 
 const cardConfigStruct = struct({
@@ -42,13 +45,22 @@ export class HuiShoppingListEditor extends LitElement
     return this._config!.theme || "Backend-selected";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
 
     return html`
       <div class="card-config">
+        ${!isComponentLoaded(this.hass, "shopping_list")
+          ? html`
+              <div class="error">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.editor.card.shopping-list.integration_not_loaded"
+                )}
+              </div>
+            `
+          : ""}
         <paper-input
           .label="${this.hass.localize(
             "ui.panel.lovelace.editor.card.generic.title"
@@ -89,6 +101,14 @@ export class HuiShoppingListEditor extends LitElement
       }
     }
     fireEvent(this, "config-changed", { config: this._config });
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      .error {
+        color: var(--google-red-500);
+      }
+    `;
   }
 }
 

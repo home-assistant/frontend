@@ -8,6 +8,7 @@ import {
   customElement,
   PropertyValues,
 } from "lit-element";
+import { ifDefined } from "lit-html/directives/if-defined";
 import "@polymer/paper-item/paper-item";
 import "@polymer/paper-listbox/paper-listbox";
 
@@ -18,7 +19,7 @@ import "../components/hui-warning";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import { HomeAssistant, InputSelectEntity } from "../../../types";
-import { EntityRow } from "./types";
+import { LovelaceRow } from "./types";
 import { setInputSelectOption } from "../../../data/input-select";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { forwardHaptic } from "../../../data/haptics";
@@ -33,7 +34,7 @@ import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
 
 @customElement("hui-input-select-entity-row")
-class HuiInputSelectEntityRow extends LitElement implements EntityRow {
+class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: EntitiesCardEntityConfig;
@@ -50,7 +51,7 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
     }
@@ -79,6 +80,9 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
     return html`
       <state-badge
         .stateObj=${stateObj}
+        .stateColor=${this._config.state_color}
+        .overrideIcon=${this._config.icon}
+        .overrideImage=${this._config.image}
         class=${classMap({
           pointer,
         })}
@@ -87,7 +91,7 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
           hasHold: hasAction(this._config!.hold_action),
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
-        tabindex="0"
+        tabindex=${ifDefined(pointer ? "0" : undefined)}
       ></state-badge>
       <ha-paper-dropdown-menu
         .label=${this._config.name || computeStateName(stateObj)}
@@ -141,13 +145,17 @@ class HuiInputSelectEntityRow extends LitElement implements EntityRow {
         margin-left: 16px;
         flex: 1;
       }
-
       paper-item {
         cursor: pointer;
         min-width: 200px;
       }
       .pointer {
         cursor: pointer;
+      }
+      state-badge:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 100%;
       }
     `;
   }

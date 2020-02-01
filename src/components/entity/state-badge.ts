@@ -16,26 +16,36 @@ import { HassEntity } from "home-assistant-js-websocket";
 // tslint:disable-next-line
 import { HaIcon } from "../ha-icon";
 import { HomeAssistant } from "../../types";
+import { computeActiveState } from "../../common/entity/compute_active_state";
+import { ifDefined } from "lit-html/directives/if-defined";
+import { iconColorCSS } from "../../common/style/icon_color_css";
 
-class StateBadge extends LitElement {
+export class StateBadge extends LitElement {
   public hass?: HomeAssistant;
   @property() public stateObj?: HassEntity;
   @property() public overrideIcon?: string;
   @property() public overrideImage?: string;
+  @property({ type: Boolean }) public stateColor?: boolean;
   @query("ha-icon") private _icon!: HaIcon;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     const stateObj = this.stateObj;
 
     if (!stateObj) {
       return html``;
     }
 
+    const domain = computeStateDomain(stateObj);
+
     return html`
       <ha-icon
         id="icon"
-        data-domain=${computeStateDomain(stateObj)}
-        data-state=${stateObj.state}
+        data-domain=${ifDefined(
+          this.stateColor || (domain === "light" && this.stateColor !== false)
+            ? domain
+            : undefined
+        )}
+        data-state=${computeActiveState(stateObj)}
         .icon=${this.overrideIcon || stateIcon(stateObj)}
       ></ha-icon>
     `;
@@ -67,14 +77,14 @@ class StateBadge extends LitElement {
         hostStyle.backgroundImage = `url(${imageUrl})`;
         iconStyle.display = "none";
       } else {
-        if (stateObj.attributes.hs_color) {
+        if (stateObj.attributes.hs_color && this.stateColor !== false) {
           const hue = stateObj.attributes.hs_color[0];
           const sat = stateObj.attributes.hs_color[1];
           if (sat > 10) {
             iconStyle.color = `hsl(${hue}, 100%, ${100 - sat / 2}%)`;
           }
         }
-        if (stateObj.attributes.brightness) {
+        if (stateObj.attributes.brightness && this.stateColor !== false) {
           const brightness = stateObj.attributes.brightness;
           if (typeof brightness !== "number") {
             const errorMessage = `Type error: state-badge expected number, but type of ${
@@ -111,19 +121,7 @@ class StateBadge extends LitElement {
         transition: color 0.3s ease-in-out, filter 0.3s ease-in-out;
       }
 
-      /* Color the icon if light or sun is on */
-      ha-icon[data-domain="light"][data-state="on"],
-      ha-icon[data-domain="switch"][data-state="on"],
-      ha-icon[data-domain="binary_sensor"][data-state="on"],
-      ha-icon[data-domain="fan"][data-state="on"],
-      ha-icon[data-domain="sun"][data-state="above_horizon"] {
-        color: var(--paper-item-icon-active-color, #fdd835);
-      }
-
-      /* Color the icon if unavailable */
-      ha-icon[data-state="unavailable"] {
-        color: var(--state-icon-unavailable-color);
-      }
+      ${iconColorCSS}
     `;
   }
 }

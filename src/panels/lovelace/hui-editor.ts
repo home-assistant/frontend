@@ -1,4 +1,12 @@
-import { LitElement, html, TemplateResult, CSSResult, css } from "lit-element";
+import {
+  customElement,
+  LitElement,
+  html,
+  TemplateResult,
+  CSSResult,
+  css,
+  property,
+} from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { safeDump, safeLoad } from "js-yaml";
 
@@ -20,6 +28,11 @@ import "../../components/ha-code-editor";
 import { HaCodeEditor } from "../../components/ha-code-editor";
 import { HomeAssistant } from "../../types";
 import { computeRTL } from "../../common/util/compute_rtl";
+import { LovelaceConfig } from "../../data/lovelace";
+import {
+  showAlertDialog,
+  showConfirmationDialog,
+} from "../../dialogs/generic/show-dialog-box";
 
 const lovelaceStruct = struct.interface({
   title: "string?",
@@ -27,23 +40,15 @@ const lovelaceStruct = struct.interface({
   resources: struct.optional(["object"]),
 });
 
+@customElement("hui-editor")
 class LovelaceFullConfigEditor extends LitElement {
-  public hass!: HomeAssistant;
-  public lovelace?: Lovelace;
-  public closeEditor?: () => void;
-  private _saving?: boolean;
-  private _changed?: boolean;
-  private _generation = 1;
+  @property() public hass!: HomeAssistant;
+  @property() public lovelace?: Lovelace;
+  @property() public closeEditor?: () => void;
+  @property() private _saving?: boolean;
+  @property() private _changed?: boolean;
 
-  static get properties() {
-    return {
-      hass: {},
-      lovelace: {},
-      closeEditor: {},
-      _saving: {},
-      _changed: {},
-    };
-  }
+  private _generation = 1;
 
   public render(): TemplateResult | void {
     return html`
@@ -73,7 +78,10 @@ class LovelaceFullConfigEditor extends LitElement {
                     "ui.panel.lovelace.editor.raw_editor.saved"
                   )}
             </div>
-            <mwc-button raised @click="${this._handleSave}"
+            <mwc-button
+              raised
+              @click="${this._handleSave}"
+              .disabled=${!this._changed}
               >${this.hass!.localize(
                 "ui.panel.lovelace.editor.raw_editor.save"
               )}</mwc-button
@@ -114,6 +122,11 @@ class LovelaceFullConfigEditor extends LitElement {
         app-toolbar {
           background-color: var(--dark-background-color, #455a64);
           color: var(--dark-text-color);
+        }
+
+        mwc-button[disabled] {
+          background-color: var(--mdc-theme-on-primary);
+          border-radius: 4px;
         }
 
         .comments {
@@ -172,8 +185,43 @@ class LovelaceFullConfigEditor extends LitElement {
     }
   }
 
+  private async _removeConfig() {
+    try {
+      await this.lovelace!.deleteConfig();
+    } catch (err) {
+      alert(
+        this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.error_remove",
+          "error",
+          err
+        )
+      );
+    }
+    window.onbeforeunload = null;
+    if (this.closeEditor) {
+      this.closeEditor();
+    }
+  }
+
   private async _handleSave() {
     this._saving = true;
+
+    const value = this.yamlEditor.value;
+
+    if (!value) {
+      showConfirmationDialog(this, {
+        title: this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.confirm_remove_config_title"
+        ),
+        text: this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.confirm_remove_config_text"
+        ),
+        confirmText: this.hass.localize("ui.common.yes"),
+        dismissText: this.hass.localize("ui.common.no"),
+        confirm: () => this._removeConfig(),
+      });
+      return;
+    }
 
     if (this.yamlEditor.hasComments) {
       if (
@@ -187,42 +235,42 @@ class LovelaceFullConfigEditor extends LitElement {
       }
     }
 
-    let value;
+    let config: LovelaceConfig;
     try {
-      value = safeLoad(this.yamlEditor.value);
+      config = safeLoad(value);
     } catch (err) {
-      alert(
-        this.hass.localize(
+      showAlertDialog(this, {
+        text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_parse_yaml",
           "error",
           err
-        )
-      );
+        ),
+      });
       this._saving = false;
       return;
     }
     try {
-      value = lovelaceStruct(value);
+      config = lovelaceStruct(config);
     } catch (err) {
-      alert(
-        this.hass.localize(
+      showAlertDialog(this, {
+        text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_invalid_config",
           "error",
           err
-        )
-      );
+        ),
+      });
       return;
     }
     try {
-      await this.lovelace!.saveConfig(value);
+      await this.lovelace!.saveConfig(config);
     } catch (err) {
-      alert(
-        this.hass.localize(
+      showAlertDialog(this, {
+        text: this.hass.localize(
           "ui.panel.lovelace.editor.raw_editor.error_save_yaml",
           "error",
           err
-        )
-      );
+        ),
+      });
     }
     this._generation = this.yamlEditor
       .codemirror!.getDoc()
@@ -242,5 +290,3 @@ declare global {
     "hui-editor": LovelaceFullConfigEditor;
   }
 }
-
-customElements.define("hui-editor", LovelaceFullConfigEditor);

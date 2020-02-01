@@ -8,13 +8,13 @@ import {
   CSSResult,
 } from "lit-element";
 
-import { EntityRow, SectionConfig } from "../entity-rows/types";
+import { LovelaceRow, SectionConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 
 import "../../../components/ha-icon";
 
 @customElement("hui-section-row")
-class HuiSectionRow extends LitElement implements EntityRow {
+class HuiSectionRow extends LitElement implements LovelaceRow {
   public hass?: HomeAssistant;
 
   @property() private _config?: SectionConfig;
@@ -27,7 +27,7 @@ class HuiSectionRow extends LitElement implements EntityRow {
     this._config = config;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config) {
       return html``;
     }

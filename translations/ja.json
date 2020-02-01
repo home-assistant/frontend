@@ -21,6 +21,7 @@
         "sensor": "センサー",
         "sun": "太陽",
         "switch": "スイッチ",
+        "system_health": "システムの正常性",
         "updater": "アップデーター",
         "zwave": "Z-Wave"
     },
@@ -276,6 +277,11 @@
         }
     },
     "ui": {
+        "auth_store": {
+            "ask": "このログインの保存をよろしいですか？",
+            "confirm": "ログインを保存",
+            "decline": "結構です"
+        },
         "card": {
             "alarm_control_panel": {
                 "clear_code": "削除",
@@ -381,6 +387,9 @@
                 "no_history_found": "状態履歴がありません。"
             },
             "relative_time": {
+                "duration": {
+                    "hour": "{count} {count, plural,\n  one {時間}\n  other {時間}\n}"
+                },
                 "future": "{time}以内",
                 "past": "{time}前"
             },
@@ -403,6 +412,7 @@
             },
             "more_info_control": {
                 "dismiss": "ダイアログを閉じる",
+                "edit": "エンティティを編集",
                 "settings": "エンティティ設定",
                 "sun": {
                     "elevation": "高度",
@@ -455,7 +465,11 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "advanced_mode": {
+                    "hint_enable": "設定オプションが見つかりませんか？アドバイスモードを有効にしてください。",
+                    "link_profile_page": "プロフィールページ"
+                },
+                "areas": {
                     "caption": "エリア",
                     "description": "すべて自宅のエリアの一覧",
                     "picker": {
@@ -484,6 +498,7 @@
                                 },
                                 "event": {
                                     "event": "イベント：",
+                                    "label": "イベントを実行",
                                     "service_data": "サービスデータ"
                                 },
                                 "service": {
@@ -637,6 +652,7 @@
                         "view_documentation": "ドキュメントを見る"
                     },
                     "google": {
+                        "disable_2FA": "多要素認証を無効にする",
                         "expose": "Google Assistant に公開",
                         "title": "Google Assistant"
                     },
@@ -653,6 +669,7 @@
                     "section": {
                         "core": {
                             "core_config": {
+                                "elevation_feet": "フィート",
                                 "time_zone": "タイムゾーン"
                             },
                             "header": "一般的な設定"
@@ -663,12 +680,12 @@
                                 "core": "コアの再読込",
                                 "group": "グループの再読込",
                                 "heading": "設定の再読込",
-                                "introduction": "Home Assistantの一部は、再起動を必要とせずに再読込できます。再読込を押すと、現在の設定をアンロードし、新しい設定を読み込みます。",
+                                "introduction": "Home Assistant の一部は、再起動を必要とせずに再読込できます。再読込を押すと、現在の設定をアンロードし、新しい設定を読み込みます。",
                                 "script": "スクリプトの再読込"
                             },
                             "server_management": {
                                 "heading": "サーバー管理",
-                                "introduction": "Home AssistantからHome Assistantサーバーを操作します。",
+                                "introduction": "Home Assistant から Home Assistant サーバーを操作します。",
                                 "restart": "再起動",
                                 "stop": "停止"
                             },
@@ -710,12 +727,11 @@
                     "description": "接続されたデバイスの管理",
                     "details": "これらはデバイスの詳細な情報です。",
                     "device_not_found": "デバイスが見つかりません。",
-                    "entities": "エンティティ",
                     "info": "デバイス情報",
                     "unknown_error": "不明なエラー",
                     "unnamed_device": "名前のないデバイス"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "エンティティ",
                     "description": "すべて既知のエンティティの一覧",
                     "picker": {
@@ -750,7 +766,7 @@
                 },
                 "person": {
                     "caption": "人",
-                    "description": "Home Assistant を追跡しています人を管理します。",
+                    "description": "Home Assistant を追跡している人の管理。",
                     "detail": {
                         "create": "作成",
                         "delete": "削除",
@@ -819,14 +835,20 @@
                             "core": "ロケーションとカスタマイズの再読込",
                             "group": "グループの再読込",
                             "heading": "設定の再読込",
-                            "introduction": "Home Assistantの一部は、再起動を必要とせずに再読込できます。再読込を押すと、現在の設定をアンロードし、新しい設定を読み込みます。",
+                            "introduction": "Home Assistant の一部は、再起動を必要とせずに再読込できます。再読込を押すと、現在の設定をアンロードし、新しい設定を読み込みます。",
                             "scene": "シーンの再読込",
                             "script": "スクリプトの再読込"
                         },
                         "server_management": {
                             "confirm_restart": "Home Assistant を再起動してもよろしいですか？",
+                            "heading": "サーバー管理",
+                            "introduction": "Home Assistant から Home Assistant サーバーを操作します。",
                             "restart": "再起動",
                             "stop": "停止"
+                        },
+                        "validation": {
+                            "check_config": "設定を確認",
+                            "heading": "設定の検証"
                         }
                     }
                 },
@@ -890,8 +912,9 @@
             "developer-tools": {
                 "tabs": {
                     "events": {
-                        "fire_event": "火災イベント",
+                        "fire_event": "イベントを実行",
                         "listening_to": "リッスンします",
+                        "notification_event_fired": "{type} のイベント が正常に実行されました！",
                         "start_listening": "リッスンを開始",
                         "stop_listening": "リッスンを停止",
                         "subscribe_to": "サブスクライブするイベント",
@@ -899,10 +922,14 @@
                         "type": "イベントの種類"
                     },
                     "info": {
+                        "frontend_version": "フロントエンドバージョン: {version} - {type}",
                         "lovelace_ui": "Lovelace UI に移動",
+                        "path_configuration": "ディスク上に configuration.yaml へのパス: {path}",
                         "remove": "削除",
                         "server": "サーバー",
                         "set": "設定",
+                        "states_ui": "States UI に移動",
+                        "system_health_error": "「システムの正常性」コンポーネントが有効されていません、configuration.yaml に 'system_health:' を追加してください。",
                         "title": "情報"
                     },
                     "logs": {
@@ -963,7 +990,8 @@
                 "period": "期間"
             },
             "logbook": {
-                "entries_not_found": "ログブックエントリが見つかりません。"
+                "entries_not_found": "ログブックエントリが見つかりません。",
+                "period": "期間"
             },
             "lovelace": {
                 "cards": {
@@ -988,6 +1016,9 @@
                         },
                         "gauge": {
                             "name": "ゲージ"
+                        },
+                        "generic": {
+                            "theme": "テーマ"
                         },
                         "history-graph": {
                             "name": "履歴グラフ"
@@ -1073,6 +1104,7 @@
                 "empty": "メッセージはありません"
             },
             "page-authorize": {
+                "abort_intro": "ログインが中止されました",
                 "form": {
                     "providers": {
                         "command_line": {
@@ -1086,7 +1118,13 @@
                             "step": {
                                 "init": {
                                     "data": {
-                                        "password": "パスワード"
+                                        "password": "パスワード",
+                                        "username": "ユーザー名"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "多要素認証コード"
                                     }
                                 }
                             }
@@ -1094,10 +1132,60 @@
                         "homeassistant": {
                             "abort": {
                                 "login_expired": "セッションの有効期限が切れました、もう一度ログインしてください。"
+                            },
+                            "error": {
+                                "invalid_auth": "無効なユーザー名またはパスワード",
+                                "invalid_code": "無効な認証コード"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "パスワード",
+                                        "username": "ユーザー名"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "多要素認証コード"
+                                    }
+                                }
+                            }
+                        },
+                        "legacy_api_password": {
+                            "abort": {
+                                "login_expired": "セッションがタイムアウトしました、再度ログインしてください。"
+                            },
+                            "error": {
+                                "invalid_auth": "無効な API パスワード",
+                                "invalid_code": "無効な認証コード"
+                            },
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "password": "API パスワード"
+                                    }
+                                },
+                                "mfa": {
+                                    "data": {
+                                        "code": "多要素認証コード"
+                                    }
+                                }
+                            }
+                        },
+                        "trusted_networks": {
+                            "step": {
+                                "init": {
+                                    "data": {
+                                        "user": "ユーザー"
+                                    }
+                                }
                             }
                         }
-                    }
-                }
+                    },
+                    "unknown_error": "エラーが発生しました",
+                    "working": "お待ちください"
+                },
+                "initializing": "初期化中"
             },
             "page-demo": {
                 "config": {
@@ -1116,12 +1204,25 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "hint_enable": "設定オプションが見つかりませんか？アドバイスモードを有効にしてください。",
-                    "link_profile_page": "プロフィールページ",
                     "title": "高度モード"
+                },
+                "change_password": {
+                    "current_password": "現在のパスワード",
+                    "header": "パスワードの変更"
+                },
+                "force_narrow": {
+                    "header": "サイドバーを常に非表示にする"
+                },
+                "language": {
+                    "dropdown_label": "言語",
+                    "header": "言語",
+                    "link_promo": "翻訳を助ける"
                 },
                 "mfa_setup": {
                     "close": "閉じる"
+                },
+                "mfa": {
+                    "header": "多要素認証モジュール"
                 },
                 "push_notifications": {
                     "description": "このデバイスに通知を送信します。",
@@ -1129,6 +1230,15 @@
                     "header": "プッシュ通知",
                     "link_promo": "もっと見る",
                     "push_notifications": "プッシュ通知"
+                },
+                "themes": {
+                    "dropdown_label": "テーマ",
+                    "error_no_theme": "利用可能なテーマはありません。",
+                    "header": "テーマ",
+                    "link_promo": "テーマの情報をもっと見る。"
+                },
+                "vibrate": {
+                    "header": "バイブレーション機能"
                 }
             },
             "shopping-list": {
@@ -1137,6 +1247,7 @@
             }
         },
         "sidebar": {
+            "external_app_configuration": "アプリの構成",
             "log_out": "ログアウト",
             "sidebar_toggle": "サイドバーの切り替え"
         }

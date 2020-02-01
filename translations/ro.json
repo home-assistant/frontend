@@ -388,7 +388,7 @@
             },
             "query_stage": {
                 "dead": "Inactiv ({query_stage})",
-                "initializing": "Se inițializează ( {query_stage} )"
+                "initializing": "Se inițializează ({query_stage})"
             }
         }
     },
@@ -633,7 +633,11 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "advanced_mode": {
+                    "hint_enable": "Lipsesc opțiunile de configurare? Activați modul avansat",
+                    "link_profile_page": "Pagina de profil"
+                },
+                "areas": {
                     "caption": "Zone",
                     "create_area": "CREARE ZONĂ",
                     "description": "Privire de ansamblu asupra tuturor zonelor din casa ta.",
@@ -935,7 +939,7 @@
                     "caption": "Dispozitive",
                     "description": "Gestionați dispozitivele conectate"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Entități",
                     "description": "Prezentare generală a tuturor entităților cunoscute.",
                     "editor": {
@@ -1532,10 +1536,6 @@
                 }
             },
             "profile": {
-                "advanced_mode": {
-                    "hint_enable": "Lipsesc opțiunile de configurare? Activați modul avansat",
-                    "link_profile_page": "Pagina de profil"
-                },
                 "change_password": {
                     "confirm_new_password": "Confirmați Noua Parolă",
                     "current_password": "Parola Curentă",

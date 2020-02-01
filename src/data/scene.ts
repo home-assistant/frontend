@@ -4,6 +4,7 @@ import {
 } from "home-assistant-js-websocket";
 
 import { HomeAssistant, ServiceCallResponse } from "../types";
+import { navigate } from "../common/navigate";
 
 export const SCENE_IGNORED_DOMAINS = [
   "sensor",
@@ -17,6 +18,22 @@ export const SCENE_IGNORED_DOMAINS = [
   "weather",
   "zone",
 ];
+
+let inititialSceneEditorData: Partial<SceneConfig> | undefined;
+
+export const showSceneEditor = (
+  el: HTMLElement,
+  data?: Partial<SceneConfig>
+) => {
+  inititialSceneEditorData = data;
+  navigate(el, "/config/scene/edit/new");
+};
+
+export const getSceneEditorInitData = () => {
+  const data = inititialSceneEditorData;
+  inititialSceneEditorData = undefined;
+  return data;
+};
 
 export interface SceneEntity extends HassEntityBase {
   attributes: HassEntityAttributeBase & { id?: string };

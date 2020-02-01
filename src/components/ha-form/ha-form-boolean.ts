@@ -51,7 +51,7 @@ export class HaFormBoolean extends LitElement implements HaFormElement {
   static get styles(): CSSResult {
     return css`
       paper-checkbox {
-        display: inline-block;
+        display: block;
         padding: 22px 0;
       }
     `;

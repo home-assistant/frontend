@@ -66,7 +66,7 @@ export class HuiHistoryGraphCardEditor extends LitElement
     return this._config!.refresh_interval || 0;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }

@@ -621,8 +621,8 @@
         },
         "duration": {
             "day": "{count} {count, plural,\n  one {dan}\n  other {dani}\n}",
-            "hour": "{broj} {broj, množina, jedan {sat} drugi {sati}}",
-            "minute": "{broj} {broj, množina, jedna {minuta}, druge {minute}}",
+            "hour": "{count} {count, plural,\n  one {sat}\n  other {sati}\n }",
+            "minute": "{count} {count, plural,\n  one {minuta}\n  other {minute}\n }",
             "second": "{count} {count, plural,\n  one {sekunde}\n  other {sekunde}\n}",
             "week": "{count} {count, plural,\n  one {tjedan}\n  other {tjedni}\n}"
         },
@@ -646,7 +646,11 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "advanced_mode": {
+                    "hint_enable": "Nedostaju opcije konfiguracije? Uključite napredni način rada na",
+                    "link_profile_page": "vašoj stranici profila"
+                },
+                "areas": {
                     "caption": "Registar područja",
                     "create_area": "STVARANJE PODRUČJA",
                     "description": "Pregled svih područja u vašem domu.",
@@ -1015,12 +1019,11 @@
                     "description": "Upravljanje povezanim uređajima",
                     "details": "Ovdje su sve pojedinosti vašeg uređaja.",
                     "device_not_found": "Uređaj nije pronađen.",
-                    "entities": "Entiteti",
                     "info": "Informacije o uređaju",
                     "unknown_error": "Nepoznata pogreška",
                     "unnamed_device": "Neimenovani uređaj"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Registar entiteta",
                     "description": "Pregled svih poznatih entiteta.",
                     "editor": {
@@ -1673,10 +1676,6 @@
                 }
             },
             "profile": {
-                "advanced_mode": {
-                    "hint_enable": "Nedostaju opcije konfiguracije? Uključite napredni način rada na",
-                    "link_profile_page": "vašoj stranici profila"
-                },
                 "change_password": {
                     "confirm_new_password": "Potvrdite novu lozinku",
                     "current_password": "Trenutna lozinka",

@@ -14,11 +14,11 @@ import "../components/hui-warning";
 import { computeStateDisplay } from "../../../common/entity/compute_state_display";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { HomeAssistant } from "../../../types";
-import { EntityRow, EntityConfig } from "./types";
+import { LovelaceRow, EntityConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-group-entity-row")
-class HuiGroupEntityRow extends LitElement implements EntityRow {
+class HuiGroupEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: EntityConfig;
@@ -34,7 +34,7 @@ class HuiGroupEntityRow extends LitElement implements EntityRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config || !this.hass) {
       return html``;
     }

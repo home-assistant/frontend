@@ -58,10 +58,10 @@ export class ZHAClusterAttributes extends LitElement {
     super.update(changedProperties);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-config-section .isWide="${this.isWide}">
-        <div style="position: relative" slot="header">
+        <div class="header" slot="header">
           <span>
             ${this.hass!.localize(
               "ui.panel.config.zha.cluster_attributes.header"
@@ -86,7 +86,7 @@ export class ZHAClusterAttributes extends LitElement {
               label="${this.hass!.localize(
                 "ui.panel.config.zha.cluster_attributes.attributes_of_cluster"
               )}"
-              class="flex"
+              class="menu"
             >
               <paper-listbox
                 slot="dropdown-content"
@@ -270,12 +270,8 @@ export class ZHAClusterAttributes extends LitElement {
     return [
       haStyle,
       css`
-        .flex {
-          -ms-flex: 1 1 0.000000001px;
-          -webkit-flex: 1;
-          flex: 1;
-          -webkit-flex-basis: 0.000000001px;
-          flex-basis: 0.000000001px;
+        .menu {
+          width: 100%;
         }
 
         .content {
@@ -283,8 +279,7 @@ export class ZHAClusterAttributes extends LitElement {
         }
 
         ha-card {
-          margin: 0 auto;
-          max-width: 600px;
+          max-width: 680px;
         }
 
         .card-actions.warning ha-call-service-button {
@@ -292,14 +287,6 @@ export class ZHAClusterAttributes extends LitElement {
         }
 
         .attribute-picker {
-          display: -ms-flexbox;
-          display: -webkit-flex;
-          display: flex;
-          -ms-flex-direction: row;
-          -webkit-flex-direction: row;
-          flex-direction: row;
-          -ms-flex-align: center;
-          -webkit-align-items: center;
           align-items: center;
           padding-left: 28px;
           padding-right: 28px;
@@ -312,10 +299,15 @@ export class ZHAClusterAttributes extends LitElement {
           padding-bottom: 10px;
         }
 
+        .header {
+          flex-grow: 1;
+        }
+
         .toggle-help-icon {
-          position: absolute;
+          float: right;
           top: -6px;
           right: 0;
+          padding-right: 0px;
           color: var(--primary-color);
         }
 

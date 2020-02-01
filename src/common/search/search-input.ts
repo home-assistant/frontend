@@ -14,13 +14,13 @@ import "@material/mwc-button";
 
 @customElement("search-input")
 class SearchInput extends LitElement {
-  @property() private filter?: string;
+  @property() public filter?: string;
 
   public focus() {
     this.shadowRoot!.querySelector("paper-input")!.focus();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <div class="search-container">
         <paper-input

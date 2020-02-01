@@ -629,7 +629,10 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "advanced_mode": {
+                    "link_profile_page": "profiilisivusi"
+                },
+                "areas": {
                     "caption": "Aluerekisteri",
                     "create_area": "LUO ALUE",
                     "description": "Yleiskuva kaikista kotisi alueista.",
@@ -646,7 +649,7 @@
                         "integrations_page": "Integraatiot",
                         "introduction": "Alueita käytetään laitteiden järjestämiseen. Näitä tietoja käytetään Home Assistantissa käyttöliittymän ja käyttöoikeuksien järjestämiseen sekä integroinnin muihin järjestelmiin.",
                         "introduction2": "Voit sijoittaa laitteita alueelle siirtymällä alla olevan linkin avulla integraatiot-sivulle ja sitten napauttamalla määritettyyn integraatioon, jotta pääset laitteet -kortteihin.",
-                        "no_areas": "Et ole vielä luonut alueita!"
+                        "no_areas": "Näyttää siltä, että sinulla ei ole vielä alueita!"
                     }
                 },
                 "automation": {
@@ -1050,12 +1053,11 @@
                     "description": "Hallitse yhdistettyjä laitteita",
                     "details": "Tässä ovat kaikki laitteesi tiedot.",
                     "device_not_found": "Laitetta ei löydy.",
-                    "entities": "Kohteet",
                     "info": "Laitteen tiedot",
                     "unknown_error": "Tuntematon virhe",
                     "unnamed_device": "Nimeämätön laite"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Olemusrekisteri",
                     "description": "Yleiskuva kaikista tunnetuista entiteeteistä.",
                     "editor": {
@@ -1802,7 +1804,6 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant piilottaa lisäominaisuudet ja -asetukset oletuksena. Voit aktivoida nämä ominaisuudet painamalla tästä kytkimestä. Tämä on käyttäjäkohtainen asetus, eikä se vaikuta muihin Home Assistantia käyttäviin käyttäjiin.",
-                    "link_profile_page": "profiilisivusi",
                     "title": "Lisäasetukset"
                 },
                 "change_password": {

@@ -28,7 +28,15 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
     return html`
       <style include="ha-style">
         .content {
-          padding: 0 16px 16px;
+          padding: 0 16px 0 16px;
+        }
+
+        ha-logbook {
+          height: calc(100vh - 136px);
+        }
+
+        :host([narrow]) ha-logbook {
+          height: calc(100vh - 198px);
         }
 
         paper-spinner {
@@ -40,6 +48,15 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
 
         .wrap {
           margin-bottom: 24px;
+        }
+
+        .filters {
+          display: flex;
+          align-items: center;
+        }
+
+        :host([narrow]) .filters {
+          flex-wrap: wrap;
         }
 
         vaadin-date-picker {
@@ -65,8 +82,13 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
 
         ha-entity-picker {
           display: inline-block;
-          width: 100%;
+          flex-grow: 1;
           max-width: 400px;
+        }
+
+        :host([narrow]) ha-entity-picker {
+          max-width: none;
+          width: 100%;
         }
 
         [hidden] {
@@ -106,7 +128,7 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
             alt="[[localize('ui.common.loading')]]"
           ></paper-spinner>
 
-          <div class="flex layout horizontal wrap">
+          <div class="filters">
             <vaadin-date-picker
               id="picker"
               value="{{_currentDate}}"
@@ -158,7 +180,8 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
   static get properties() {
     return {
       hass: Object,
-      narrow: Boolean,
+
+      narrow: { type: Boolean, reflectToAttribute: true },
 
       // ISO8601 formatted date string
       _currentDate: {

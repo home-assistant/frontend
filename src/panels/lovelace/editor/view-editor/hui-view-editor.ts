@@ -73,7 +73,7 @@ export class HuiViewEditor extends LitElement {
     this._config = config;
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }
@@ -119,7 +119,7 @@ export class HuiViewEditor extends LitElement {
           @theme-changed=${this._valueChanged}
         ></hui-theme-select-editor>
         <ha-switch
-          ?checked=${this._panel !== false}
+          .checked=${this._panel !== false}
           .configValue=${"panel"}
           @change=${this._valueChanged}
           >${this.hass.localize(

@@ -655,7 +655,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Register oblastí",
                     "create_area": "VYTVORIŤ OBLASŤ",
                     "description": "Prehľad všetkých oblastí vo vašej domácnosti.",
@@ -790,7 +790,7 @@
                         },
                         "introduction": "Použite automatizácie, aby váš domov ožil",
                         "load_error_not_editable": "Len automatizácie v automations.yaml je možné upravovať.",
-                        "load_error_unknown": "Chyba pri načítaní automatizácie ( {err_no} ).",
+                        "load_error_unknown": "Chyba pri načítaní automatizácie ({err_no}).",
                         "save": "Uložiť",
                         "triggers": {
                             "add": "Pridať spúšťač",
@@ -1061,7 +1061,7 @@
                     "caption": "Zariadenia",
                     "description": "Spravovať pripojené zariadenia"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Register entít",
                     "description": "Prehľad všetkých známych entít.",
                     "editor": {
@@ -1142,8 +1142,12 @@
                     },
                     "introduction": "Tu môžete definovať každú osobu, ktorá vás zaujíma v Home Assistant."
                 },
+                "scene": {
+                    "caption": "Scény",
+                    "description": "Vytvárajte a upravujte scény"
+                },
                 "script": {
-                    "caption": "Skript",
+                    "caption": "Skripty",
                     "description": "Vytvárajte a upravujte skripty",
                     "editor": {
                         "default_name": "Nový skript",
@@ -1164,7 +1168,7 @@
                     "section": {
                         "reloading": {
                             "automation": "Znovu načítať automatizácie",
-                            "core": "Znovu načítať jadro",
+                            "core": "Znovu načítať polohu a jadro",
                             "group": "Znovu načítať skupiny",
                             "heading": "Načítavanie novej konfigurácie",
                             "introduction": "Niektoré časti aplikácie Home Assistant sa môžu načítať bez nutnosti reštartovania. Opätovným načítaním sa zahodí aktuálna konfigurácia a načíta sa nová.",
@@ -1316,7 +1320,7 @@
                 "tabs": {
                     "events": {
                         "alert_event_type": "Typ udalosti je povinné pole",
-                        "count_listeners": "( {count} poslucháčov)",
+                        "count_listeners": " ({count} poslucháčov)",
                         "data": "Údaje o udalosti (YAML, voliteľné)",
                         "description": "Spustite udalosť na zbernicu udalostí.",
                         "documentation": "Dokumentácia udalostí.",
@@ -1357,6 +1361,7 @@
                         "loading_log": "Načítava sa denník chýb...",
                         "multiple_messages": "správa sa prvýkrát vyskytla o {time} a opakuje sa {counter} krát",
                         "no_errors": "Neboli hlásené žiadne chyby.",
+                        "no_issues": "Žiadne nové chyby!",
                         "refresh": "Obnoviť",
                         "title": "Logy"
                     },
@@ -1379,6 +1384,7 @@
                         "column_description": "Popis",
                         "column_example": "Príklad",
                         "column_parameter": "Parameter",
+                        "data": "Údaje o službe (YAML, voliteľné)",
                         "description": "Vývojársky nástroj vám umožňuje zavolať akúkoľvek dostupnú službu v Home Assistant.",
                         "fill_example_data": "Vyplniť vzorové údaje",
                         "no_description": "Nie je k dispozícii žiadny popis",
@@ -1392,9 +1398,13 @@
                         "description1": "Nastavte zobrazenie zariadenia v Home Assistant",
                         "description2": "Toto nebude komunikovať so skutočným zariadením.",
                         "entity": "Entita",
+                        "filter_attributes": "Filtrovať atribúty",
+                        "filter_entities": "Filtrovať entity",
+                        "filter_states": "Filtrovať stavy",
                         "more_info": "Viac informácií",
                         "set_state": "Nastaviť stav",
                         "state": "Stav",
+                        "state_attributes": "Atribúty stavu (YAML, voliteľné)",
                         "title": "Stavy"
                     },
                     "templates": {

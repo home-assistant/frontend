@@ -2,10 +2,12 @@ import { Map } from "leaflet";
 
 // Sets up a Leaflet map on the provided DOM element
 export type LeafletModuleType = typeof import("leaflet");
+export type LeafletDrawModuleType = typeof import("leaflet-draw");
 
 export const setupLeafletMap = async (
   mapElement: HTMLElement,
-  darkMode = false
+  darkMode = false,
+  draw = false
 ): Promise<[Map, LeafletModuleType]> => {
   if (!mapElement.parentNode) {
     throw new Error("Cannot setup Leaflet map on disconnected element");
@@ -15,6 +17,10 @@ export const setupLeafletMap = async (
     /* webpackChunkName: "leaflet" */ "leaflet"
   )) as LeafletModuleType;
   Leaflet.Icon.Default.imagePath = "/static/images/leaflet/images/";
+
+  if (draw) {
+    await import(/* webpackChunkName: "leaflet-draw" */ "leaflet-draw");
+  }
 
   const map = Leaflet.map(mapElement);
   const style = document.createElement("link");

@@ -77,7 +77,7 @@ export class HuiSensorCardEditor extends LitElement
     return this._config!.hours_to_show || "24";
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
     }

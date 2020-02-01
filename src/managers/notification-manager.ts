@@ -58,7 +58,7 @@ class NotificationManager extends LitElement {
     });
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     return html`
       <ha-toast .noCancelOnOutsideClick=${this._noCancelOnOutsideClick}>
         ${this._action

@@ -1,4 +1,4 @@
-import "../../../layouts/hass-subpage";
+import "../../../layouts/hass-tabs-subpage";
 import "./ha-devices-data-table";
 
 import {
@@ -10,26 +10,33 @@ import {
   CSSResult,
   css,
 } from "lit-element";
-import { HomeAssistant } from "../../../types";
+import { HomeAssistant, Route } from "../../../types";
 import { DeviceRegistryEntry } from "../../../data/device_registry";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { ConfigEntry } from "../../../data/config_entries";
 import { AreaRegistryEntry } from "../../../data/area_registry";
+import { configSections } from "../ha-panel-config";
 
 @customElement("ha-config-devices-dashboard")
 export class HaConfigDeviceDashboard extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public narrow = false;
+  @property() public isWide = false;
   @property() public devices!: DeviceRegistryEntry[];
   @property() public entries!: ConfigEntry[];
   @property() public entities!: EntityRegistryEntry[];
   @property() public areas!: AreaRegistryEntry[];
   @property() public domain!: string;
+  @property() public route!: Route;
 
   protected render(): TemplateResult {
     return html`
-      <hass-subpage
-        header=${this.hass.localize("ui.panel.config.devices.caption")}
+      <hass-tabs-subpage
+        .hass=${this.hass}
+        .narrow=${this.narrow}
+        back-path="/config"
+        .tabs=${configSections.integrations}
+        .route=${this.route}
       >
         <div class="content">
           <ha-devices-data-table
@@ -42,7 +49,7 @@ export class HaConfigDeviceDashboard extends LitElement {
             .domain=${this.domain}
           ></ha-devices-data-table>
         </div>
-      </hass-subpage>
+      </hass-tabs-subpage>
     `;
   }
 

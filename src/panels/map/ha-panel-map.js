@@ -4,6 +4,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import "../../components/ha-menu-button";
 import "../../components/ha-icon";
+import { navigate } from "../../common/navigate";
 
 import "./ha-entity-marker";
 
@@ -33,6 +34,12 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
       <app-toolbar>
         <ha-menu-button hass="[[hass]]" narrow="[[narrow]]"></ha-menu-button>
         <div main-title>[[localize('panel.map')]]</div>
+        <template is="dom-if" if="[[!computeDemo()]]">
+          <paper-icon-button
+            icon="hass:pencil"
+            on-click="openZonesEditor"
+          ></paper-icon-button>
+        </template>
       </app-toolbar>
 
       <div id="map"></div>
@@ -67,6 +74,14 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
     }
   }
 
+  computeDemo() {
+    return __DEMO__;
+  }
+
+  openZonesEditor() {
+    navigate(this, "/config/zone");
+  }
+
   fitMap() {
     var bounds;
 
@@ -98,9 +113,15 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
     }
     var mapItems = (this._mapItems = []);
 
+    if (this._mapZones) {
+      this._mapZones.forEach(function(marker) {
+        marker.remove();
+      });
+    }
+    var mapZones = (this._mapZones = []);
+
     Object.keys(hass.states).forEach((entityId) => {
       var entity = hass.states[entityId];
-      var title = computeStateName(entity);
 
       if (
         (entity.attributes.hidden && computeStateDomain(entity) !== "zone") ||
@@ -111,6 +132,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
         return;
       }
 
+      var title = computeStateName(entity);
       var icon;
 
       if (computeStateDomain(entity) === "zone") {
@@ -136,7 +158,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
         });
 
         // create marker with the icon
-        mapItems.push(
+        mapZones.push(
           this.Leaflet.marker(
             [entity.attributes.latitude, entity.attributes.longitude],
             {
@@ -148,7 +170,7 @@ class HaPanelMap extends LocalizeMixin(PolymerElement) {
         );
 
         // create circle around it
-        mapItems.push(
+        mapZones.push(
           this.Leaflet.circle(
             [entity.attributes.latitude, entity.attributes.longitude],
             {

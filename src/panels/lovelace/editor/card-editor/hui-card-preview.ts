@@ -2,7 +2,7 @@ import "@polymer/paper-input/paper-textarea";
 
 import deepClone from "deep-clone-simple";
 
-import { createCardElement } from "../../common/create-card-element";
+import { createCardElement } from "../../create-element/create-card-element";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { LovelaceCard } from "../../types";

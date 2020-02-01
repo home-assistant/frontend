@@ -51,7 +51,7 @@ class HuiTimestampDisplay extends LitElement {
     this._clearInterval();
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.ts || !this.hass) {
       return html``;
     }

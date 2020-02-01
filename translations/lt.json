@@ -239,7 +239,11 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "advanced_mode": {
+                    "hint_enable": "Trūksta konfigūracijos parinkčių? Įjungti išplėstinį režimą",
+                    "link_profile_page": "jūsų profilio puslapis"
+                },
+                "areas": {
                     "caption": "Sričių registras",
                     "create_area": "SUKURTI SRITĮ",
                     "description": "Visų jūsų namų sričių apžvalga.",
@@ -251,10 +255,10 @@
                     },
                     "no_areas": "Atrodo, kad dar neturite registruotų sričių!",
                     "picker": {
-                        "create_area": "SUKURTI ERDVĘ",
+                        "create_area": "SUKURTI SRITĮ",
                         "header": "Sričių registras",
                         "integrations_page": "Integracijų puslapis",
-                        "no_areas": "Atrodo, kad dar neturite registruotų erdvių!"
+                        "no_areas": "Atrodo, kad dar neturite registruotų sričių!"
                     }
                 },
                 "automation": {
@@ -369,10 +373,9 @@
                         "device": "Įrenginys",
                         "model": "Modelis"
                     },
-                    "description": "Tvarkyti prijungtus įrenginius",
-                    "entities": "Subjektai"
+                    "description": "Tvarkyti prijungtus įrenginius"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Subjektų registras",
                     "description": "Visų žinomų subjektų apžvalga.",
                     "editor": {
@@ -510,8 +513,8 @@
                         "confirm_unsaved_changes": "Turite neišsaugotų pakeitimų, ar tikrai norite išeiti?",
                         "confirm_unsaved_comments": "Jūsų konfigūracijoje yra komentarų (-ų), jie nebus išsaugoti. Ar norite tęsti?",
                         "error_invalid_config": "Jūsų konfigūracija netinkama: {error}",
-                        "error_parse_yaml": "Neįmanoma išanalizuoti YAML: {Error}",
-                        "error_save_yaml": "Neįmanoma įrašyti YAML: {klaida}",
+                        "error_parse_yaml": "Neįmanoma išanalizuoti YAML: {error}",
+                        "error_save_yaml": "Neįmanoma įrašyti YAML: {error}",
                         "header": "Redaguoti konfigūraciją",
                         "save": "Išsaugoti",
                         "saved": "Išsaugota",
@@ -579,10 +582,6 @@
                 }
             },
             "profile": {
-                "advanced_mode": {
-                    "hint_enable": "Trūksta konfigūracijos parinkčių? Įjungti išplėstinį režimą",
-                    "link_profile_page": "jūsų profilio puslapis"
-                },
                 "change_password": {
                     "current_password": "Dabartinis slaptažodis",
                     "header": "Keisti slaptažodį",

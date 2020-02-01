@@ -13,7 +13,7 @@ import "@polymer/paper-icon-button/paper-icon-button";
 import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
 
-import { EntityRow, EntityConfig } from "./types";
+import { LovelaceRow, EntityConfig } from "./types";
 import { HomeAssistant } from "../../../types";
 import { HassEntity } from "home-assistant-js-websocket";
 import { supportsFeature } from "../../../common/entity/supports-feature";
@@ -26,7 +26,7 @@ import {
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 
 @customElement("hui-media-player-entity-row")
-class HuiMediaPlayerEntityRow extends LitElement implements EntityRow {
+class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
 
   @property() private _config?: EntityConfig;
@@ -43,7 +43,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements EntityRow {
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this._config) {
       return html``;
     }

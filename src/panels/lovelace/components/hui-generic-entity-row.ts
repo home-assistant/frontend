@@ -8,6 +8,7 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
+import { ifDefined } from "lit-html/directives/if-defined";
 
 import "../../../components/entity/state-badge";
 import "../../../components/ha-relative-time";
@@ -33,7 +34,7 @@ class HuiGenericEntityRow extends LitElement {
 
   @property() public showSecondary: boolean = true;
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this.hass || !this.config) {
       return html``;
     }
@@ -67,12 +68,13 @@ class HuiGenericEntityRow extends LitElement {
         .stateObj=${stateObj}
         .overrideIcon=${this.config.icon}
         .overrideImage=${this.config.image}
+        .stateColor=${this.config.state_color}
         @action=${this._handleAction}
         .actionHandler=${actionHandler({
           hasHold: hasAction(this.config!.hold_action),
           hasDoubleClick: hasAction(this.config!.double_tap_action),
         })}
-        tabindex="0"
+        tabindex=${ifDefined(pointer ? "0" : undefined)}
       ></state-badge>
       <div class="flex">
         <div
@@ -105,14 +107,17 @@ class HuiGenericEntityRow extends LitElement {
                     .datetime=${stateObj.last_changed}
                   ></ha-relative-time>
                 `
-              : this.config.secondary_info === "last-triggered" &&
-                stateObj.attributes.last_triggered
-              ? html`
-                  <ha-relative-time
-                    .hass=${this.hass}
-                    .datetime=${stateObj.attributes.last_triggered}
-                  ></ha-relative-time>
-                `
+              : this.config.secondary_info === "last-triggered"
+              ? stateObj.attributes.last_triggered
+                ? html`
+                    <ha-relative-time
+                      .hass=${this.hass}
+                      .datetime=${stateObj.attributes.last_triggered}
+                    ></ha-relative-time>
+                  `
+                : this.hass.localize(
+                    "ui.panel.lovelace.cards.entities.never_triggered"
+                  )
               : ""}
           </div>
         </div>
@@ -170,6 +175,11 @@ class HuiGenericEntityRow extends LitElement {
       }
       state-badge {
         flex: 0 0 40px;
+      }
+      state-badge:focus {
+        outline: none;
+        background: var(--divider-color);
+        border-radius: 100%;
       }
       :host([rtl]) .flex {
         margin-left: 0;

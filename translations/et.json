@@ -660,7 +660,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Alade register",
                     "create_area": "LOO ALA",
                     "description": "Ülevaade kõikidest oma kodu aladest.",
@@ -1094,12 +1094,11 @@
                     },
                     "description": "Halda ühendatud seadmeid",
                     "device_not_found": "Seadet ei leitud.",
-                    "entities": "Olemid",
                     "info": "Seadme info",
                     "unknown_error": "Tundmatu viga",
                     "unnamed_device": "Nimetu seade"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Olemite register",
                     "description": "Ülevaade kõikidest teadaolevatest olemitest.",
                     "editor": {

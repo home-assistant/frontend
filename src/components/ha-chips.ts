@@ -47,17 +47,18 @@ export class HaChips extends LitElement {
   }
 
   private _handleClick(ev) {
-    fireEvent(
-      this,
-      "chip-clicked",
-      { index: ev.target.closest("button").index },
-      { bubbles: false }
-    );
+    fireEvent(this, "chip-clicked", {
+      index: ev.target.closest("button").index,
+    });
   }
 
   static get styles(): CSSResult {
     return css`
       ${unsafeCSS(chipStyles)}
+      .mdc-chip {
+        background-color: rgba(var(--rgb-primary-text-color), 0.15);
+        color: var(--primary-text-color);
+      }
     `;
   }
 }

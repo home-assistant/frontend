@@ -576,7 +576,7 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "areas": {
                     "caption": "Gebiedsregister",
                     "create_area": "SKEP GEBIED",
                     "description": "Oorsig van alle gebiede in u huis.",
@@ -841,7 +841,7 @@
                         "introduction": "Verfyn per-entiteit eienskappe. Bygevoegde / gewysigde aanpassings sal onmiddellik in werking tree. Verwyderde aanpassings sal in werking tree wanneer die entiteit opgedateer word."
                     }
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Entiteit Register",
                     "description": "Oorsig van alle bekende entiteite.",
                     "editor": {
@@ -884,6 +884,9 @@
                     "configured": "Opgestel",
                     "description": "Bestuur gekoppelde toestelle en dienste",
                     "discovered": "Ontdek",
+                    "ignore": {
+                        "stop_ignore": "Deixar de ignorar"
+                    },
                     "new": "Stel 'n nuwe integrasie op",
                     "none": "Nog niks is opgestel nie"
                 },

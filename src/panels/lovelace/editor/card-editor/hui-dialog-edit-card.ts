@@ -61,7 +61,7 @@ export class HuiDialogEditCard extends LitElement {
     return this.shadowRoot!.querySelector("hui-card-editor");
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._params) {
       return html``;
     }
@@ -86,7 +86,7 @@ export class HuiDialogEditCard extends LitElement {
     }
 
     return html`
-      <ha-paper-dialog with-backdrop opened modal>
+      <ha-paper-dialog with-backdrop opened modal @keyup=${this._handleKeyUp}>
         <h2>
           ${heading}
         </h2>
@@ -262,6 +262,12 @@ export class HuiDialogEditCard extends LitElement {
   private _handleConfigChanged(ev) {
     this._cardConfig = ev.detail.config;
     this._error = ev.detail.error;
+  }
+
+  private _handleKeyUp(ev: KeyboardEvent) {
+    if (ev.keyCode === 27) {
+      this._close();
+    }
   }
 
   private _close(): void {

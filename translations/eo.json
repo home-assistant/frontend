@@ -1,0 +1,558 @@
+{
+    "ui": {
+        "card": {
+            "climate": {
+                "cooling": "{name} malvarmigo",
+                "current_temperature": "{name} aktuala temperaturo",
+                "heating": "{name} hejtado",
+                "high": "alta",
+                "low": "malalta",
+                "target_temperature_entity": "{name} cela temperaturo",
+                "target_temperature_mode": "{name} cela temperaturo {mode}"
+            },
+            "counter": {
+                "actions": {
+                    "decrement": "dekreto",
+                    "increment": "pliigo",
+                    "reset": "restarigi"
+                }
+            }
+        },
+        "common": {
+            "no": "Ne",
+            "yes": "Jes"
+        },
+        "components": {
+            "device-picker": {
+                "clear": "Klarigi",
+                "device": "Aparato",
+                "show_devices": "Montri aparatojn"
+            },
+            "entity": {
+                "entity-picker": {
+                    "clear": "Klarigi",
+                    "show_entities": "Montri entojn"
+                }
+            }
+        },
+        "dialogs": {
+            "confirmation": {
+                "cancel": "Nuligi",
+                "ok": "Bone",
+                "title": "Ĉu vi certas?"
+            },
+            "domain_toggler": {
+                "title": "Baskuligi Domajnojn"
+            },
+            "more_info_control": {
+                "dismiss": "Malakcepti dialogon",
+                "settings": "Agordoj pri entoj"
+            },
+            "more_info_settings": {
+                "back": "Reiri"
+            },
+            "voice_command": {
+                "did_not_hear": "Home Assistant nenion aŭdis",
+                "error": "Ho ve, eraro okazis",
+                "found": "Mi trovis jenon por vi:",
+                "how_can_i_help": "Kiel mi povas helpi?",
+                "label": "Tajpu demandon kaj premu 'Enter'",
+                "label_voice": "Tajpu kaj premu 'Enter' aŭ frapu la mikrofonon por paroli"
+            }
+        },
+        "notification_drawer": {
+            "close": "Fermi"
+        },
+        "panel": {
+            "config": {
+                "advanced_mode": {
+                    "hint_enable": "Mankas agordaj opcioj? Ebligu altnivelan reĝimon",
+                    "link_profile_page": "via profilpaĝo"
+                },
+                "automation": {
+                    "editor": {
+                        "actions": {
+                            "name": "Ago",
+                            "type": {
+                                "device_id": {
+                                    "extra_fields": {
+                                        "code": "Kodo"
+                                    }
+                                }
+                            }
+                        },
+                        "conditions": {
+                            "name": "Kondiĉo"
+                        },
+                        "edit_ui": "Redakti kun UI",
+                        "edit_yaml": "Redakti kiel YAML",
+                        "triggers": {
+                            "name": "Ellasilo"
+                        }
+                    },
+                    "picker": {
+                        "delete_automation": "Forigi aŭtomatigon",
+                        "delete_confirm": "Ĉu vi certas, ke vi volas forigi ĉi tiun aŭtomatigon?",
+                        "edit_automation": "Redakti aŭtomatigon",
+                        "only_editable": "Nur aŭtomatoj difinitaj en automations.yaml estas redakteblaj.",
+                        "show_info_automation": "Montri informojn pri aŭtomatigon"
+                    }
+                },
+                "customize": {
+                    "attributes_customize": "La sekvaj atributoj estas jam agorditaj en customize.yaml",
+                    "attributes_not_set": "La sekvaj atributoj ne estis agorditaj. Agordu ilin, se vi volas",
+                    "attributes_outside": "La sekvaj atributoj estas agorditaj de ekstere de customize.yaml",
+                    "attributes_override": "Vi povas superregi ilin, se vi volas.",
+                    "attributes_set": "La sekvaj atributoj de la ento estas agorditaj laŭprogramaj.",
+                    "different_include": "Eble per domajno, globo aŭ malsama inkluzivo.",
+                    "pick_attribute": "Elektu atributon por superregi",
+                    "warning": {
+                        "include_link": "inkluzivi customize.yaml",
+                        "include_sentence": "Ŝajnas, ke via configuration.yaml ne taŭgas",
+                        "not_applied": "Ŝanĝoj faritaj ĉi tie estas skribita en ĝi, sed ne estos aplikita post agordo reŝarĝo krom se la inkluzivo estas en loko."
+                    }
+                },
+                "devices": {
+                    "area_picker_label": "Areo",
+                    "automations": "Aŭtomatigoj",
+                    "confirm_rename_entity_ids": "Ĉu vi ankaŭ volas alinomi la identigilon de viaj entoj?",
+                    "data_table": {
+                        "area": "Areo",
+                        "battery": "Baterio",
+                        "device": "Aparato",
+                        "integration": "Integriĝo",
+                        "manufacturer": "Fabrikisto",
+                        "model": "Modelo"
+                    },
+                    "details": "Jen ĉiuj detaloj de via aparato.",
+                    "device_not_found": "Aparato ne trovita.",
+                    "info": "Aparato informoj",
+                    "unknown_error": "Nekonata eraro",
+                    "unnamed_device": "Nenomita aparato"
+                },
+                "entities": {
+                    "editor": {
+                        "note": "Noto: ĉi tio ankoraŭ ne funkcias kun ĉiuj integriĝoj."
+                    }
+                },
+                "integrations": {
+                    "config_entry": {
+                        "area": "En {area}",
+                        "delete_button": "Forigi {integration}",
+                        "settings_button": "Redakti agordojn por {integration}",
+                        "system_options_button": "Sistemaj opcioj por {integration}"
+                    },
+                    "config_flow": {
+                        "aborted": "Abortigita",
+                        "add_area": "Aldoni Areon",
+                        "area_picker_label": "Areo",
+                        "close": "Fermi",
+                        "created_config": "Kreita agordo por {name}.",
+                        "error_saving_area": "Eraro pri konservado de eraro: {error}",
+                        "failed_create_area": "Malsukcesis krei areon.",
+                        "finish": "Fini",
+                        "name_new_area": "Nomo de la nova areo?",
+                        "not_all_required_fields": "Ne ĉiuj bezonataj kampoj estas plenigitaj",
+                        "submit": "Sendu"
+                    },
+                    "details": "Detaloj pri integriĝo",
+                    "ignore": {
+                        "confirm_delete_ignore": "Ĉi tio igos la integriĝon aperi en viaj malkovritaj integriĝoj, kiam ĝi estos malkovrita. Ĉi tio eble postulas rekomenci aŭ daŭri iom da tempo.",
+                        "confirm_delete_ignore_title": "Ĉu haltu ignori {name} ?",
+                        "confirm_ignore": "Ĉu vi certas, ke vi ne volas agordi ĉi tiun integriĝon? Vi povas malfari tion alklakante \"Montri ignoratajn integriĝojn\" en la superfluta menuo en la supra dekstra.",
+                        "confirm_ignore_title": "Ĉu ignori malkovron de {name} ?",
+                        "hide_ignored": "Kaŝu ignoratajn integriĝojn",
+                        "ignore": "Ignori",
+                        "ignored": "Ignorata",
+                        "show_ignored": "Montru ignoratajn integriĝojn",
+                        "stop_ignore": "Halti ignori"
+                    },
+                    "integration_not_found": "Integriĝo ne trovita."
+                },
+                "scene": {
+                    "activated": "Aktivigita sceno {name}.",
+                    "caption": "Scenoj",
+                    "description": "Krei kaj redakti scenojn",
+                    "editor": {
+                        "default_name": "Nova Sceno",
+                        "devices": {
+                            "add": "Aldoni aparaton",
+                            "delete": "Forigi aparaton",
+                            "header": "Aparatoj",
+                            "introduction": "Aldoni la aparatojn kiu vi volas esti inkluzivita en via sceno. Agordi ĉiuj aparatoj al la stato vi deziras por ĉi tiu sceno."
+                        },
+                        "entities": {
+                            "add": "Aldoni enton",
+                            "delete": "Forigi enton",
+                            "device_entities": "Se vi aldonas enton, kiu apartenas al aparato, la aparato estos aldonita.",
+                            "header": "Entoj",
+                            "introduction": "Entoj ne apartenantaj al aparato povas esti starigitaj ĉi tie.",
+                            "without_device": "Entoj sen aparato"
+                        },
+                        "introduction": "Uzi scenojn alporti vian hejmon viva.",
+                        "load_error_not_editable": "Nur scenoj en scenes.yaml estas redakteblaj.",
+                        "load_error_unknown": "Eraro ŝarĝo sceno ({err_no}).",
+                        "name": "Nomo",
+                        "save": "Konservi",
+                        "unsaved_confirm": "Vi havas nekonservitajn ŝanĝojn. Ĉu vi estas certa, ke vi volas foriri?"
+                    },
+                    "picker": {
+                        "add_scene": "Aldoni scenon",
+                        "delete_confirm": "Ĉu vi certas, ke vi volas forigi ĉi tiun scenon?",
+                        "delete_scene": "Forigi scenon",
+                        "edit_scene": "Redakti scenon",
+                        "header": "Scenredaktilo",
+                        "introduction": "La scenredaktilo permesas krei kaj redakti scenojn. Bonvolu sekvi la suban ligilon por legi la instrukciojn por certigi, ke vi agordis Home Assistant ĝuste.",
+                        "learn_more": "Lerni pli da pri scenoj",
+                        "no_scenes": "Ni ne povis trovi iujn ajn redakteblajn scenojn",
+                        "only_editable": "Nur scenoj difinitaj en scenes.yaml estas redakteblaj.",
+                        "pick_scene": "Elektu scenon por redakti",
+                        "show_info_scene": "Montri informojn pri sceno"
+                    }
+                },
+                "script": {
+                    "editor": {
+                        "alias": "Nomo",
+                        "delete_script": "Forigi skripton",
+                        "introduction": "Uzu skriptojn por ekzekuti sinsekvon de agoj.",
+                        "link_available_actions": "Lernu pli pri disponeblaj agoj.",
+                        "sequence": "Sekvenco",
+                        "sequence_sentence": "La sekvenco de agoj de ĉi tiu skribo."
+                    },
+                    "picker": {
+                        "edit_script": "Redakti skripton",
+                        "trigger_script": "Ekruli skripton"
+                    }
+                },
+                "users": {
+                    "editor": {
+                        "active": "Aktiva",
+                        "confirm_user_deletion": "Ĉu vi certas, ke vi volas forigi {name} ?",
+                        "enter_new_name": "Eniri novan nomon",
+                        "group": "Grupo",
+                        "group_update_failed": "Ĝisdatigo de grupo malsukcesis:",
+                        "id": "ID",
+                        "owner": "Mastro",
+                        "system_generated": "Sistemo generita",
+                        "system_generated_users_not_removable": "Ne eblis forigi la sistemo generita uzantoj.",
+                        "unnamed_user": "Nenomita Uzanto",
+                        "user_rename_failed": "Renomita uzanto malsukcesis:"
+                    },
+                    "picker": {
+                        "system_generated": "Sistemo generita"
+                    }
+                },
+                "zha": {
+                    "add_device_page": {
+                        "search_again": "Serĉi Denove"
+                    },
+                    "cluster_attributes": {
+                        "attributes_of_cluster": "Atributoj de la elektita areto",
+                        "get_zigbee_attribute": "Akiri Zigbee Atributo",
+                        "header": "Grapoloj Atributoj",
+                        "help_attribute_dropdown": "Elekti atributon por vidi aŭ agordi ĝian valoron.",
+                        "help_get_zigbee_attribute": "Akiri la valoron por la elektita atributo.",
+                        "help_set_zigbee_attribute": "Agordi atributvaloron por la specifita grupo sur la specifita ento.",
+                        "introduction": "Vidi kaj redakti grapolo atributoj.",
+                        "set_zigbee_attribute": "Fiksi Zigbee-Atributo"
+                    },
+                    "cluster_commands": {
+                        "commands_of_cluster": "Komandoj de la elektita grapolo",
+                        "header": "Grapoloj Komandoj",
+                        "help_command_dropdown": "Elekti komando por interagi kun.",
+                        "introduction": "Vidi kaj eldoni grapoloj komandoj.",
+                        "issue_zigbee_command": "Eldoni Zigbee Command"
+                    },
+                    "clusters": {
+                        "help_cluster_dropdown": "Elekti grapolon por vidi atributoj kaj komandoj."
+                    },
+                    "common": {
+                        "add_devices": "Aldoni Aparatojn",
+                        "clusters": "Grapoloj",
+                        "devices": "Aparatoj",
+                        "manufacturer_code_override": "Fabrikkodo Nuligo",
+                        "value": "Valoro"
+                    },
+                    "network_management": {
+                        "header": "Retadministrado",
+                        "introduction": "Komandoj, kiuj efikas sur la tutan reton"
+                    },
+                    "node_management": {
+                        "header": "Administra aparato",
+                        "help_node_dropdown": "Elekti aparato por vidi po-aparato ebloj.",
+                        "hint_battery_devices": "Noto: Dormaj (bateriaj) aparatoj bezonas esti vekitaj kiam vi plenumas komandojn kontraŭ ili. Vi ĝenerale povas veki dormigan aparaton ekigante ĝin.",
+                        "hint_wakeup": "Iuj aparatoj kiel Xiaomi-sensiloj havas butonon de vekiĝo, kiun vi povas premi je ~ 5 duaj intertempoj, kiuj tenas aparatojn vekitaj dum vi interagas kun ili.",
+                        "introduction": "Ruli ZHA-komandojn, kiuj efikas al unuopa aparato. Elektu aparaton por vidi liston de disponeblaj komandoj."
+                    }
+                },
+                "zwave": {
+                    "learn_more": "Lerni pli pri Z-Wave",
+                    "ozw_log": {
+                        "header": "OZW Protokolo",
+                        "introduction": "Rigardu la protokolon. 0 estas la minimumo (ŝarĝas tutan protokolo) kaj 1000 estas la maksimumo. Ŝarĝo montros statikan protokolon kaj vosto aŭtomate ĝisdatigos kun la lasta specifita nombro da linioj de la protokolo."
+                    }
+                }
+            },
+            "custom": {
+                "external_panel": {
+                    "complete_access": "Ĝi havos aliron al ĉiuj datumoj en Home Assistant.",
+                    "hide_message": "Kontrolu dokumentojn pri la panel_custom komponento por kaŝi ĉi tiun mesaĝon",
+                    "question_trust": "Ĉu vi fidas la eksteran panelon {name} ĉe {link} ?"
+                }
+            },
+            "developer-tools": {
+                "tabs": {
+                    "events": {
+                        "alert_event_type": "Eventa tipo estas deviga kampo",
+                        "available_events": "Haveblaj Eventoj",
+                        "count_listeners": " ({count} aŭskultantoj)",
+                        "data": "Eventaj datumoj (YAML, nedeviga)",
+                        "description": "Ekbruligu eventon sur la eventa buso.",
+                        "documentation": "Eventoj Dokumentado.",
+                        "event_fired": "Evento {name} furoris",
+                        "fire_event": "Furori okazaĵo",
+                        "listen_to_events": "Aŭskultu eventojn",
+                        "listening_to": "Aŭskulti",
+                        "notification_event_fired": "Evento {type} sukcese furoris!",
+                        "start_listening": "Komenci aŭskulti",
+                        "stop_listening": "Halti aŭskulti",
+                        "subscribe_to": "Evento por aboni",
+                        "type": "Eventa Tipo"
+                    },
+                    "info": {
+                        "built_using": "Konstruita uzante",
+                        "custom_uis": "Propraj UIoj:",
+                        "default_ui": "{action} {name} kiel defaŭlta paĝo en ĉi tiu aparato",
+                        "developed_by": "Disvolvita de amaso da mojosaj homoj.",
+                        "frontend": "frontend-ui",
+                        "frontend_version": "Frontendversio: {version} - {type}",
+                        "home_assistant_logo": "Logo de Home Assistant",
+                        "icons_by": "Ikonoj de",
+                        "license": "Publikigita sub la permesilo Apache 2.0",
+                        "lovelace_ui": "Iri al la Lovelace-UI",
+                        "path_configuration": "Pado al configuration.yaml: {path}",
+                        "remove": "Forigi",
+                        "server": "servilo",
+                        "set": "Fiksi",
+                        "source": "Fonto:",
+                        "states_ui": "Iri al la ŝtatoj UI",
+                        "system_health_error": "Komponento pri Sistema Sano ne estas ŝarĝita. Aldonu 'system_health:' al configuration.yaml"
+                    },
+                    "logs": {
+                        "clear": "Klarigi",
+                        "details": "Logaj Detaloj ({level})",
+                        "load_full_log": "Ŝargi Plena Home Assistant Protokolo",
+                        "loading_log": "Ŝarĝante eraran protokolon ...",
+                        "multiple_messages": "mesaĝo unuafoje okazis je {time} kaj aperas {counter} fojojn",
+                        "no_errors": "Neniuj eraroj estis raportitaj.",
+                        "no_issues": "Ne estas novaj aferoj!",
+                        "refresh": "Refreŝigi"
+                    },
+                    "mqtt": {
+                        "description_listen": "Aŭskulti temon",
+                        "description_publish": "Publikigi pakaĵon",
+                        "listening_to": "Aŭskulti",
+                        "message_received": "Mesaĝo {id} ricevita sur {topic} je {time} :",
+                        "payload": "Pagŝarĝo (ŝablono permesita)",
+                        "publish": "Publikigi",
+                        "start_listening": "Komenci aŭskulti",
+                        "stop_listening": "Halti aŭskulti",
+                        "subscribe_to": "Temo por aboni",
+                        "topic": "temo"
+                    },
+                    "services": {
+                        "alert_parsing_yaml": "Eraro dum analizado de YAML: {data}",
+                        "call_service": "Voka Servo",
+                        "column_description": "Priskribo",
+                        "column_example": "Ekzemplo",
+                        "column_parameter": "Parametro",
+                        "data": "Servaj Datumoj (YAML, nedeviga)",
+                        "description": "La ilo de servo programisto permesas vin vokas ajn servon haveblan en Home Assistant",
+                        "fill_example_data": "Plenigi Ekzemplajn Datumojn",
+                        "no_description": "Neniu priskribo haveblas",
+                        "no_parameters": "Ĉi tiu servo prenas neniujn parametrojn.",
+                        "select_service": "Elektu servon por vidi la priskribon"
+                    },
+                    "states": {
+                        "alert_entity_field": "Ento estas deviga kampo",
+                        "attributes": "Atributoj",
+                        "copied": "Kopiis al tondujo",
+                        "copy_entity_attribute": "Kopii atributojn",
+                        "copy_entity_id": "Kopii ID",
+                        "copy_entity_state": "Kopii stato",
+                        "current_entities": "Aktualaj entoj",
+                        "description1": "Fiksita la reprezentado de aparato ene de Home Assistant.",
+                        "description2": "Ĉi tio ne komunikos kun la efektiva aparato.",
+                        "entity": "Ento",
+                        "filter_attributes": "Filtri atributoj",
+                        "filter_entities": "Filtri entoj",
+                        "filter_states": "Filtri ŝtatoj",
+                        "more_info": "Pli da Informoj",
+                        "no_entities": "Neniuj entoj",
+                        "set_state": "Fiksita Stato",
+                        "state": "Stato",
+                        "state_attributes": "Stataj atributoj (YAML, laŭvola)"
+                    },
+                    "templates": {
+                        "description": "Ŝablonoj estas bildigitaj per la Jinja2-ŝablono kun iuj Home Assistant specifaj etendoj.",
+                        "editor": "Ŝablono redaktilo",
+                        "jinja_documentation": "Jinja2 ŝablono dokumentado",
+                        "template_extensions": "Home Assistant ŝablono etendoj",
+                        "unknown_error_template": "Nekonata eraro bildigi ŝablonon"
+                    }
+                }
+            },
+            "logbook": {
+                "entries_not_found": "Neniu taglibroj eniroj trovis."
+            },
+            "lovelace": {
+                "cards": {
+                    "confirm_delete": "Ĉu vi certas, ke vi volas forigi ĉi tiun karton?"
+                },
+                "editor": {
+                    "card": {
+                        "alarm-panel": {
+                            "available_states": "Haveblaj Ŝtatoj",
+                            "name": "Alarmo Panelo"
+                        },
+                        "conditional": {
+                            "name": "Kondicionalo"
+                        },
+                        "entities": {
+                            "name": "Entoj",
+                            "toggle": "Baskuligi entojn."
+                        },
+                        "entity-button": {
+                            "name": "Ento Prembutonon"
+                        },
+                        "entity-filter": {
+                            "name": "Ento-Filtrilo"
+                        },
+                        "gauge": {
+                            "name": "Mezurilo"
+                        },
+                        "glance": {
+                            "name": "Rigardo"
+                        },
+                        "history-graph": {
+                            "name": "Historia Grafiko"
+                        },
+                        "horizontal-stack": {
+                            "name": "Horizontala Pilo"
+                        },
+                        "iframe": {
+                            "name": "iFrame"
+                        },
+                        "light": {
+                            "name": "Lumo"
+                        },
+                        "map": {
+                            "name": "Mapo"
+                        },
+                        "markdown": {
+                            "name": "Markdown"
+                        },
+                        "media-control": {
+                            "name": "Amaskomunikilaro Kontrolo"
+                        },
+                        "picture-elements": {
+                            "name": "Bildaj Elementoj"
+                        },
+                        "picture-entity": {
+                            "name": "Bildo Ento"
+                        },
+                        "picture-glance": {
+                            "name": "Bildo Ekrigardo"
+                        },
+                        "picture": {
+                            "name": "Bildo"
+                        },
+                        "plant-status": {
+                            "name": "Planto-Statuso"
+                        },
+                        "sensor": {
+                            "name": "Sensilo"
+                        },
+                        "shopping-list": {
+                            "name": "Aĉetlisto"
+                        },
+                        "thermostat": {
+                            "name": "Termostato"
+                        },
+                        "vertical-stack": {
+                            "name": "Vertikala Pilo"
+                        },
+                        "weather-forecast": {
+                            "name": "Veterprognozo"
+                        }
+                    },
+                    "edit_card": {
+                        "options": "Pli da ebloj",
+                        "pick_card_view_title": "Kiun karton vi ŝatus aldoni al via {name} vido?",
+                        "show_code_editor": "Montri Kodo Redaktilo",
+                        "show_visual_editor": "Montri Vida Redaktoro"
+                    },
+                    "edit_lovelace": {
+                        "edit_title": "Redakti titolon"
+                    },
+                    "edit_view": {
+                        "header_name": "{name} Vidu Agordo",
+                        "move_left": "Movi vidon al la maldekstren",
+                        "move_right": "Movi vidon al la dekstren"
+                    },
+                    "menu": {
+                        "open": "Malfermi Lovelace menuo"
+                    },
+                    "raw_editor": {
+                        "confirm_unsaved_changes": "Vi havas ne konservitajn ŝanĝojn, ĉu vi certas, ke vi volas eliri?",
+                        "confirm_unsaved_comments": "Via agordo enhavas komento(j)n, tiuj ne konserviĝos. Ĉu vi volas daŭrigi?",
+                        "error_invalid_config": "Via config ne estas valida: {error}",
+                        "error_parse_yaml": "Ne eblas analizi YAML: {error}",
+                        "error_save_yaml": "Ne eblas konservi YAML: {error}"
+                    },
+                    "view": {
+                        "panel_mode": {
+                            "description": "Ĉi tio redonas la unuan karton je plena larĝo; aliaj kartoj laŭ ĉi tiu vido ne estos redonitaj.",
+                            "title": "Panela Modo?"
+                        }
+                    }
+                },
+                "menu": {
+                    "close": "Fermi",
+                    "exit_edit_mode": "Eliri UI-redaktreĝimon"
+                },
+                "unused_entities": {
+                    "available_entities": "Ĉi tiuj estas la entoj, kiujn vi disponis, sed ankoraŭ ne estas en via Lovelace-UI.",
+                    "domain": "Domajno",
+                    "entity": "Ento",
+                    "entity_id": "ID-ento",
+                    "last_changed": "Laste Ŝanĝita",
+                    "select_to_add": "Elektu la entojn, kiujn vi volas aldoni al karto, kaj tiam alklaku la aldonan butonon.",
+                    "title": "Neuzataj entoj"
+                },
+                "views": {
+                    "confirm_delete": "Ĉu vi certas, ke vi volas forigi ĉi tiun vidon?",
+                    "existing_cards": "Vi ne povas forigi vidon, kiu havas kartojn. Forigu la kartojn unue."
+                }
+            },
+            "page-demo": {
+                "config": {
+                    "arsaboo": {
+                        "names": {
+                            "temperature_study": "Studo pri Temperaturo"
+                        }
+                    }
+                }
+            },
+            "profile": {
+                "advanced_mode": {
+                    "description": "Home Assistant kaŝas altnivelajn funkciojn kaj opciojn defaŭlte. Vi povas fari ĉi tiujn funkciojn alireblaj per kontroli ĉi tiun ŝaltilon. Ĉi tio estas uzant-specifa aranĝo kaj ne influas aliajn uzantojn per Home Assistant.",
+                    "title": "Altnivela Modo"
+                }
+            }
+        },
+        "sidebar": {
+            "sidebar_toggle": "Flankobarilo Baskulo"
+        }
+    }
+}

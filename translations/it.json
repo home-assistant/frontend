@@ -411,7 +411,7 @@
             },
             "automation": {
                 "last_triggered": "Ultima attivazione",
-                "trigger": "Attiva"
+                "trigger": "Esegui"
             },
             "camera": {
                 "not_available": "Immagine non disponibile"
@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Esegui"
             },
+            "service": {
+                "run": "Esegui"
+            },
             "timer": {
                 "actions": {
                     "cancel": "annulla",
@@ -533,6 +536,7 @@
         },
         "common": {
             "cancel": "Annulla",
+            "close": "Chiudere",
             "loading": "Caricamento",
             "no": "No",
             "save": "Salva",
@@ -540,10 +544,24 @@
             "yes": "Sì"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Aggiungi",
+                    "failed_create_area": "Impossibile creare l'area.",
+                    "name": "Nome",
+                    "text": "Inserisci il nome della nuova area.",
+                    "title": "Aggiungi nuova area"
+                },
+                "add_new": "Aggiungi nuova area ...",
+                "area": "Area",
+                "clear": "Cancella",
+                "show_areas": "Mostra le aree"
+            },
             "device-picker": {
                 "clear": "Cancella",
                 "device": "Dispositivo",
-                "show_devices": "Mostra dispositivi"
+                "show_devices": "Mostra dispositivi",
+                "toggle": "Attivare/Disattivare"
             },
             "entity": {
                 "entity-picker": {
@@ -555,6 +573,16 @@
             "history_charts": {
                 "loading_history": "Caricamento storico",
                 "no_history_found": "Nessuno storico trovato"
+            },
+            "related-items": {
+                "area": "Area",
+                "automation": "Parte delle seguenti automazioni",
+                "device": "Dispositivo",
+                "entity": "Entità correlate",
+                "group": "Parte dei seguenti gruppi",
+                "integration": "Integrazione",
+                "scene": "Parte delle seguenti scene",
+                "script": "Parte dei seguenti scripts"
             },
             "relative_time": {
                 "duration": {
@@ -586,10 +614,42 @@
             "domain_toggler": {
                 "title": "Attiva/disattiva domini"
             },
+            "entity_registry": {
+                "control": "Controllo",
+                "dismiss": "Annullare",
+                "editor": {
+                    "confirm_delete": "Sei sicuro di voler eliminare questa voce?",
+                    "delete": "ELIMINA",
+                    "enabled_cause": "Disabilitato da {cause}.",
+                    "enabled_description": "Le entità disabilitate non saranno aggiunte a Home Assistant",
+                    "enabled_label": "Abilita entità",
+                    "entity_id": "ID Entità",
+                    "name": "Sostituzione nome",
+                    "note": "Nota: questo potrebbe non funzionare ancora con tutte le integrazioni.",
+                    "unavailable": "Questa entità non è attualmente disponibile.",
+                    "update": "AGGIORNA"
+                },
+                "related": "Relazionato",
+                "settings": "Impostazioni"
+            },
+            "generic": {
+                "cancel": "Annulla",
+                "default_confirmation_title": "Sei sicuro?",
+                "ok": "OK"
+            },
             "more_info_control": {
                 "dismiss": "Chiudi finestra di dialogo",
+                "edit": "Modifica entità",
+                "restored": {
+                    "confirm_remove_text": "Sei sicuro di voler rimuovere questa entità?",
+                    "confirm_remove_title": "Rimuovere l'entità?",
+                    "not_provided": "Questa entità non è al momento disponibile ed è orfana di un'integrazione o di un dispositivo rimosso, modificato o disfunzionale.",
+                    "remove_action": "Rimuovere l'entità",
+                    "remove_intro": "Se l'entità non è più in uso, è possibile ripulirla rimuovendola."
+                },
                 "script": {
-                    "last_action": "Ultima azione"
+                    "last_action": "Ultima azione",
+                    "last_triggered": "Ultima attivazione"
                 },
                 "settings": "Impostazioni dell'entità",
                 "sun": {
@@ -628,6 +688,9 @@
                     "add": "Aggiungi dispositivi",
                     "reconfigure": "Riconfigura dispositivo",
                     "remove": "Rimuovi dispositivo"
+                },
+                "confirmations": {
+                    "remove": "Sei sicuro di voler rimuovere il dispositivo?"
                 },
                 "last_seen": "Ultima visualizzazione",
                 "manuf": "da {manufacturer}",
@@ -675,13 +738,17 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "advanced_mode": {
+                    "hint_enable": "Opzioni di configurazione mancanti? Abilita la modalità avanzata",
+                    "link_profile_page": "la pagina del tuo profilo"
+                },
+                "areas": {
                     "caption": "Aree",
                     "create_area": "CREA AREA",
                     "description": "Panoramica di tutte le aree della tua casa.",
                     "editor": {
                         "create": "CREA",
-                        "default_name": "Nuova area",
+                        "default_name": "Nuova Area",
                         "delete": "ELIMINA",
                         "update": "AGGIORNA"
                     },
@@ -692,7 +759,7 @@
                         "integrations_page": "Integrazioni",
                         "introduction": "Le aree sono utilizzate per organizzare dove sono i dispositivi. Queste informazioni saranno utilizzate in Home Assistant per aiutarti ad organizzare la tua interfaccia, permessi e integrazioni con altri sistemi.",
                         "introduction2": "Per posizionare i dispositivi in un'area, utilizzare il seguente collegamento per accedere alla pagina delle integrazioni e quindi fare clic su un'integrazione configurata per accedere alle schede del dispositivo.",
-                        "no_areas": "Sembra che tu non abbia ancora delle aree!"
+                        "no_areas": "Sembra che non ci siano ancora Aree!"
                     }
                 },
                 "automation": {
@@ -750,7 +817,7 @@
                             "delete_confirm": "Sicuro di voler eliminare?",
                             "duplicate": "Duplica",
                             "header": "Condizioni",
-                            "introduction": "Le Condizioni sono una parte facoltativa di una regola di automazione e possono essere utilizzate per impedire che un'Azione si verifichi quando viene attivata. Le Condizioni sembrano molto simili alle Attivazioni (o Triggers), ma in realtà sono molto diverse. Una Attivazione (o Trigger) analizzerà gli eventi che stanno accadendo nel sistema, mentre una Condizione analizza solo l'aspetto istantaneo del sistema. Una Attivazione (o Trigger) può osservare che un interruttore è in fase di accensione. Una Condizione può solo vedere se un interruttore è acceso o meno.",
+                            "introduction": "Le Condizioni sono facoltative e impediranno un'ulteriore esecuzione se non saranno soddisfatte tutte.",
                             "learn_more": "Per saperne di più sulle Condizioni",
                             "name": "Condizione",
                             "type_select": "Tipo di Condizione",
@@ -955,6 +1022,7 @@
                             "manage_entities": "Gestire le entità",
                             "security_devices": "Dispositivi di sicurezza",
                             "sync_entities": "Sincronizzare le entità con Google",
+                            "sync_entities_404_message": "Impossibile sincronizzare le entità con Google, chiedere a Google \"Ehi Google, sincronizza i miei dispositivi\" per sincronizzare le entità.",
                             "title": "Google Assistant"
                         },
                         "integrations": "Integrazioni",
@@ -1091,6 +1159,7 @@
                             "core_config": {
                                 "edit_requires_storage": "Editor disabilitato perché la configurazione è memorizzata in configuration.yaml.",
                                 "elevation": "Altitudine",
+                                "elevation_feet": "piedi",
                                 "elevation_meters": "Metri",
                                 "imperial_example": "Fahrenheit, libbre",
                                 "latitude": "Latitudine",
@@ -1178,12 +1247,18 @@
                     "description": "Gestisci i dispositivi collegati",
                     "details": "Ecco tutti i dettagli del tuo dispositivo.",
                     "device_not_found": "Dispositivo non trovato.",
-                    "entities": "Entità",
+                    "entities": {
+                        "add_entities_lovelace": "Aggiungi a Lovelace",
+                        "entities": "Entità",
+                        "none": "Questo dispositivo non ha entità"
+                    },
                     "info": "Informazioni sul dispositivo",
+                    "name": "Nome",
                     "unknown_error": "Errore sconosciuto",
-                    "unnamed_device": "Dispositivo senza nome"
+                    "unnamed_device": "Dispositivo senza nome",
+                    "update": "Aggiorna"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Entità",
                     "description": "Panoramica di tutte le entità conosciute.",
                     "editor": {
@@ -1194,22 +1269,51 @@
                         "enabled_cause": "Disabilitato da {cause}.",
                         "enabled_description": "Le entità disabilitate non verranno aggiunte a Home Assistant.",
                         "enabled_label": "Abilita entità",
+                        "entity_id": "ID entità",
+                        "name": "Sovrascrittura del nome",
                         "note": "Nota: questo potrebbe non funzionare ancora con tutte le integrazioni.",
                         "unavailable": "Questa entità non è attualmente disponibile.",
                         "update": "AGGIORNA"
                     },
                     "picker": {
+                        "disable_selected": {
+                            "button": "Disabilita selezionato",
+                            "confirm_text": "Le entità disabilitate non verranno aggiunte a Home Assistant",
+                            "confirm_title": "Vuoi disabilitare {number} entità?"
+                        },
+                        "enable_selected": {
+                            "button": "Abilita selezionato",
+                            "confirm_text": "Questo li renderà nuovamente disponibili in Home Assistant se ora sono disabilitati.",
+                            "confirm_title": "Vuoi abilitare {number} entità?"
+                        },
+                        "filter": {
+                            "filter": "Filtro",
+                            "show_disabled": "Mostra entità disabilitate",
+                            "show_unavailable": "Mostra entità non disponibili"
+                        },
                         "header": "Entità",
                         "headers": {
                             "enabled": "Abilitato",
                             "entity_id": "ID entità",
                             "integration": "Integrazione",
-                            "name": "Nome"
+                            "name": "Nome",
+                            "status": "Stato"
                         },
                         "integrations_page": "Integrazioni",
                         "introduction": "Home Assistant mantiene un registro di tutte le entità che ha mai localizzato e possono essere identificate in modo univoco. A ciascuna di queste entità sarà assegnato un ID che sarà riservato solo a questa entità.",
-                        "introduction2": "Utilizzare il registro delle entità per sovrascrivere il nome, modificare l'entity ID o rimuovere la voce da Home Assistant. Nota, la rimozione della voce del registro entità non rimuoverà l'entità. Per farlo, segui il link sottostante e rimuovilo dalla pagina delle integrazioni.",
+                        "introduction2": "Utilizzare il Registro Entità per sovrascrivere il nome, modificare l'ID Entità o rimuovere la voce da Home Assistant.",
+                        "remove_selected": {
+                            "button": "Rimuovi selezionati",
+                            "confirm_text": "Le entità possono essere rimosse solo quando l'integrazione non fornisce più le entità.",
+                            "confirm_title": "Vuoi rimuovere {number} entità?"
+                        },
+                        "selected": "{number} selezionato",
                         "show_disabled": "Mostra entità disabilitate",
+                        "status": {
+                            "disabled": "Disabilitato",
+                            "ok": "Ok",
+                            "unavailable": "Non disponibile"
+                        },
                         "unavailable": "(non disponibile)"
                     }
                 },
@@ -1239,6 +1343,7 @@
                         "area_picker_label": "Area",
                         "close": "Chiudi",
                         "created_config": "Configurazione creata per {name}.",
+                        "dismiss": "Chiudi finestra di dialogo",
                         "error_saving_area": "Errore durante il salvataggio dell'area: {error}",
                         "external_step": {
                             "description": "Questo passaggio richiede di visitare un sito Web esterno per essere completato.",
@@ -1256,6 +1361,17 @@
                     "details": "Dettagli dell'integrazione",
                     "discovered": "Scoperto",
                     "home_assistant_website": "Sito Web di Home Assistant",
+                    "ignore": {
+                        "confirm_delete_ignore": "Questo farà apparire di nuovo l'integrazione nelle vostre integrazioni scoperte quando verrà scoperta. Questo potrebbe richiedere un riavvio o richiedere un po' di tempo.",
+                        "confirm_delete_ignore_title": "Smettere di ignorare {name}?",
+                        "confirm_ignore": "Sei sicuro di non voler configurare questa integrazione? È possibile annullare questa operazione facendo clic su 'Mostra integrazioni ignorate' nel menu di overflow in alto a destra.",
+                        "confirm_ignore_title": "Ignorare l'individuazione di {name}?",
+                        "hide_ignored": "Nascondi integrazioni ignorate",
+                        "ignore": "Ignora",
+                        "ignored": "Ignorato",
+                        "show_ignored": "Mostra integrazioni ignorate",
+                        "stop_ignore": "Smetti di ignorare"
+                    },
                     "integration_not_found": "Integrazione non trovata.",
                     "new": "Configura una nuova integrazione",
                     "none": "Non hai ancora configurato niente",
@@ -1334,6 +1450,7 @@
                     "caption": "Script",
                     "description": "Crea e modifica Script",
                     "editor": {
+                        "alias": "Nome",
                         "default_name": "Nuovo Script",
                         "delete_confirm": "Sei sicuro di voler eliminare questo script?",
                         "delete_script": "Elimina script",
@@ -1364,8 +1481,10 @@
                             "group": "Ricarica i Gruppi",
                             "heading": "Aggiornamento della Configurazione",
                             "introduction": "Alcune parti di Home Assistant possono essere aggiornate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro configurazione attuale e si caricherà la versione aggiornata.",
+                            "person": "Ricarica persone",
                             "scene": "Ricarica le Scene",
-                            "script": "Ricarica gli Script"
+                            "script": "Ricarica gli Script",
+                            "zone": "Ricarica zone"
                         },
                         "server_management": {
                             "confirm_restart": "Sei sicuro di voler riavviare Home Assistant?",
@@ -1425,6 +1544,10 @@
                         "search_again": "Cerca di nuovo",
                         "spinner": "Ricerca di dispositivi ZHA Zigbee ..."
                     },
+                    "add": {
+                        "caption": "Aggiungi dispositivi",
+                        "description": "Aggiungi dispositivi alla rete Zigbee"
+                    },
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributi del cluster selezionato",
@@ -1444,7 +1567,9 @@
                         "issue_zigbee_command": "Emettere il comando Zigbee"
                     },
                     "clusters": {
-                        "help_cluster_dropdown": "Selezionare un cluster per visualizzare attributi e comandi."
+                        "header": "Clusters",
+                        "help_cluster_dropdown": "Selezionare un cluster per visualizzare attributi e comandi.",
+                        "introduction": "I Clusters sono gli elementi costitutivi della funzionalità Zigbee. Essi separano la funzionalità in unità logiche. Esistono tipi di client e di server che sono costituiti da attributi e comandi."
                     },
                     "common": {
                         "add_devices": "Aggiungi dispositivi",
@@ -1459,6 +1584,49 @@
                         "device_name_placeholder": "Nome assegnato dall'utente",
                         "update_name_button": "Aggiorna nome"
                     },
+                    "devices": {
+                        "header": "Zigbee Home Automation - Dispositivo"
+                    },
+                    "group_binding": {
+                        "bind_button_help": "Collega il gruppo selezionato all'insieme dei dispositivi selezionati.",
+                        "bind_button_label": "Collega Gruppo",
+                        "cluster_selection_help": "Seleziona i cluster da associare al gruppo selezionato.",
+                        "group_picker_help": "Seleziona un gruppo per emettere un comando.",
+                        "group_picker_label": "Gruppi collegabili",
+                        "header": "Collegamento gruppo",
+                        "introduction": "Collega e scollega gruppi",
+                        "unbind_button_help": "Scollega il gruppo selezionato dall'insieme dei dispositivi selezionati.",
+                        "unbind_button_label": "Scollega Gruppo"
+                    },
+                    "groups": {
+                        "add_members": "Aggiungi membri",
+                        "adding_members": "Aggiunta di membri",
+                        "caption": "Gruppi",
+                        "create": "Crea gruppo",
+                        "create_group": "Zigbee Home Automation - Crea gruppo",
+                        "create_group_details": "Immettere i dettagli richiesti per creare un nuovo gruppo zigbee",
+                        "creating_group": "Creazione di un gruppo",
+                        "description": "Crea e modifica gruppi Zigbee",
+                        "group_details": "Qui ci sono tutti i dettagli per il gruppo Zigbee selezionato.",
+                        "group_id": "ID gruppo",
+                        "group_info": "Informazioni sul gruppo",
+                        "group_name_placeholder": "Nome del gruppo",
+                        "group_not_found": "Gruppo non trovato!",
+                        "group-header": "Zigbee Home Automation - Dettagli del gruppo",
+                        "groups": "Gruppi",
+                        "groups-header": "Zigbee Home Automation - Gestione del gruppo",
+                        "header": "Zigbee Home Automation - Gestione del gruppo",
+                        "introduction": "Crea e modifica gruppi Zigbee",
+                        "manage_groups": "Gestisci gruppi Zigbee",
+                        "members": "Membri",
+                        "remove_groups": "Rimuovi gruppi",
+                        "remove_members": "Rimuovi membri",
+                        "removing_groups": "Rimozione di gruppi",
+                        "removing_members": "Rimozione di membri",
+                        "zha_zigbee_groups": "Gruppi ZHA Zigbee"
+                    },
+                    "header": "Configura Zigbee Home Automation",
+                    "introduction": "Qui è possibile configurare il componente ZHA. Non tutto è ancora possibile configurare dall'IU, ma ci stiamo lavorando.",
                     "network_management": {
                         "header": "Gestione della rete",
                         "introduction": "Comandi che influiscono sull'intera rete"
@@ -1474,7 +1642,34 @@
                         "reconfigure": "Riconfigurare il dispositivo ZHA (dispositivo di guarigione). Utilizzare questa opzione se si verificano problemi con il dispositivo. Se il dispositivo in questione è un dispositivo alimentato a batteria, assicurarsi che sia sveglio e che accetti i comandi quando si utilizza questo servizio.",
                         "remove": "Rimuovi un dispositivo dalla rete Zigbee.",
                         "updateDeviceName": "Imposta un nome personalizzato per questo dispositivo nel registro dispositivi."
-                    }
+                    },
+                    "title": "Zigbee Home Automation"
+                },
+                "zone": {
+                    "add_zone": "Aggiungi zona",
+                    "caption": "Zone",
+                    "configured_in_yaml": "Le zone configurate tramite configuration.yaml non possono essere modificate tramite l'interfaccia utente.",
+                    "confirm_delete": "Sei sicuro di voler cancellare questa zona?",
+                    "create_zone": "Crea zona",
+                    "description": "Gestisci le zone in cui vuoi rintracciare le persone.",
+                    "detail": {
+                        "create": "Crea",
+                        "delete": "Elimina",
+                        "icon": "Icona",
+                        "icon_error_msg": "L'icona dovrebbe essere nel formato prefisso:nome_icona, ad esempio: mdi:home",
+                        "latitude": "Latitudine",
+                        "longitude": "Logitudine",
+                        "name": "Nome",
+                        "new_zone": "Nuova zona",
+                        "passive": "Passivo",
+                        "passive_note": "Le zone passive sono nascoste nel frontend e non vengono utilizzate come posizione per i tracker dei dispositivi. Ciò è utile se si desidera utilizzarlo solo per le automazioni.",
+                        "radius": "Raggio",
+                        "required_error_msg": "Questo campo è obbligatorio",
+                        "update": "Aggiorna"
+                    },
+                    "edit_home_zone": "La posizione della tua casa può essere cambiata nella configurazione generale.",
+                    "introduction": "Le zone ti consentono di specificare determinate regioni sulla terra. Quando una persona si trova all'interno di una zona, lo stato prenderà il nome dalla zona. Le zone possono anche essere utilizzate come trigger o condizioni all'interno delle impostazioni di automazione.",
+                    "no_zones_created_yet": "Sembra che tu non abbia ancora creato nessuna zona."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1542,7 +1737,7 @@
                     "events": {
                         "alert_event_type": "Il tipo di evento è un campo obbligatorio",
                         "available_events": "Eventi disponibili",
-                        "count_listeners": "({count} ascoltatori)",
+                        "count_listeners": " ({count} ascoltatori)",
                         "data": "Dati Evento (YAML, opzionale)",
                         "description": "Attiva un evento sul bus eventi.",
                         "documentation": "Documentazione degli Eventi.",
@@ -1656,12 +1851,20 @@
                 "showing_entries": "Mostra registrazioni per"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "Questa funzione può essere utilizzata solo dopo aver preso il controllo dell'Interfaccia Utente di Lovelace.",
+                    "saving_failed": "Salvataggio della configurazione dell'Interfaccia Utente di Lovelace non riuscito.",
+                    "yaml_unsupported": "Non è possibile utilizzare questa funzione quando si utilizza l'Interfaccia Utente di Lovelace in modalità YAML."
+                },
                 "cards": {
                     "confirm_delete": "Sei sicuro di voler cancellare questa scheda?",
                     "empty_state": {
                         "go_to_integrations_page": "Vai alla pagina delle integrazioni.",
                         "no_devices": "Questa pagina ti consente di controllare i tuoi dispositivi, tuttavia sembra che tu non abbia ancora configurato uno. Vai alla pagina delle integrazioni per iniziare.",
                         "title": "Benvenuto a casa"
+                    },
+                    "entities": {
+                        "never_triggered": "Mai attivato"
                     },
                     "picture-elements": {
                         "call_service": "Chiama il servizio {name}",
@@ -1679,7 +1882,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "La configurazione di Lovelace è stata aggiornata, desideri aggiornare?",
+                    "message": "La configurazione dell'Interfaccia Utente di Lovelace è stata aggiornata, ricaricare per visualizzare i cambiamenti?",
                     "refresh": "Aggiorna"
                 },
                 "editor": {
@@ -1767,7 +1970,7 @@
                         },
                         "markdown": {
                             "content": "Contenuto",
-                            "name": "Riduzione"
+                            "name": "Markdown"
                         },
                         "media-control": {
                             "name": "Controllo dei media"
@@ -1785,7 +1988,7 @@
                             "name": "Immagine"
                         },
                         "plant-status": {
-                            "name": "Stato dell'impianto"
+                            "name": "Stato pianta"
                         },
                         "sensor": {
                             "graph_detail": "Dettaglio grafico",
@@ -1793,6 +1996,7 @@
                             "name": "Sensore"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "Questa carta richiede l'integrazione \"shopping_list\" per essere configurata.",
                             "name": "Lista della spesa"
                         },
                         "thermostat": {
@@ -1821,7 +2025,7 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "Modifica titolo",
-                        "explanation": "Questo titolo è mostrato sopra tutte le tue viste in Lovelace.",
+                        "explanation": "Questo titolo è mostrato sopra tutte le tue viste nell'Interfaccia Utente di Lovelace.",
                         "header": "Titolo della tua interfaccia utente di Lovelace"
                     },
                     "edit_view": {
@@ -1835,7 +2039,7 @@
                     },
                     "header": "Modifica dell'interfaccia utente",
                     "menu": {
-                        "open": "Apri il menu Lovelace",
+                        "open": "Apri il menu dell'Interfaccia Utente di Lovelace",
                         "raw_editor": "Editor di Configurazione testuale"
                     },
                     "migrate": {
@@ -1845,10 +2049,13 @@
                         "para_no_id": "Questo elemento non ha un ID. Aggiungi un ID a questo elemento in 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Genereremo automaticamente le tue viste dell'Interfaccia Utente di Lovelace con le tue Aree e Dispositivi se rimuovi la tua configurazione dell'Interfaccia Utente di Lovelace.",
+                        "confirm_remove_config_title": "Sei sicuro di voler rimuovere la tua configurazione dell'Interfaccia Utente di Lovelace? Genereremo automaticamente le tue viste Lovelace con le tue Aree e Dispositivi.",
                         "confirm_unsaved_changes": "Hai delle modifiche non salvate, sei sicuro di voler uscire?",
                         "confirm_unsaved_comments": "La tua configurazione contiene commenti, questi non verranno salvati. Vuoi continuare?",
                         "error_invalid_config": "La tua configurazione non è valida: {error}",
                         "error_parse_yaml": "Impossibile analizzare YAML: {error}",
+                        "error_remove": "Impossibile rimuovere config: {error}",
                         "error_save_yaml": "Impossibile salvare YAML: {error}",
                         "header": "Modifica le impostazioni",
                         "save": "Salva",
@@ -1858,9 +2065,14 @@
                     "save_config": {
                         "cancel": "Rinuncia",
                         "header": "Prendi il controllo della tua interfaccia utente di Lovelace",
-                        "para": "Per impostazione predefinita, Home Assistant manterrà l'interfaccia utente, aggiornandola quando nuove entità o componenti Lovelace diventano disponibili. Se prendi il controllo non effettueremo più automaticamente le modifiche per te.",
+                        "para": "Per impostazione predefinita, Home Assistant gestirà l'Interfaccia Utente, aggiornandola quando nuove entità o componenti dell'IU Lovelace diventano disponibili. Se prendi il controllo non effettueremo più automaticamente le modifiche per te.",
                         "para_sure": "Sei sicuro di voler prendere il controllo della tua interfaccia utente?",
                         "save": "Prendere il controllo"
+                    },
+                    "suggest_card": {
+                        "add": "Aggiungi all'Interfaccia Utente di Lovelace",
+                        "create_own": "Scegliere una scheda diversa",
+                        "header": "Abbiamo creato un suggerimento per te"
                     },
                     "view": {
                         "panel_mode": {
@@ -1877,7 +2089,7 @@
                     "refresh": "Aggiorna",
                     "unused_entities": "Entità non utilizzate"
                 },
-                "reload_lovelace": "Ricarica Lovelace",
+                "reload_lovelace": "Ricaricare l'Interfaccia Utente",
                 "unused_entities": {
                     "available_entities": "Queste sono le entità che hai a disposizione, ma non sono ancora nella tua interfaccia utente di Lovelace.",
                     "domain": "Dominio",
@@ -2075,9 +2287,8 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "description": "Home Assistant nasconde le funzioni e le opzioni avanzate per impostazione predefinita. È possibile rendere accessibili queste funzionalità selezionando questo interruttore. Si tratta di un'impostazione specifica dell'utente e non influisce sugli altri utenti che utilizzano Home Assistant.",
-                    "hint_enable": "Opzioni di configurazione mancanti? Abilita la modalità avanzata",
-                    "link_profile_page": "la pagina del tuo profilo",
+                    "description": "Sblocca funzionalità avanzate.",
+                    "link_promo": "Per saperne di più",
                     "title": "Modalità avanzata"
                 },
                 "change_password": {
@@ -2100,6 +2311,8 @@
                     "link_promo": "Aiuta a tradurre"
                 },
                 "logout": "Disconnetti",
+                "logout_text": "Sei sicuro di voler effettuare il logout?",
+                "logout_title": "Disconnettersi?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Sei sicuro di voler eliminare il token di accesso per {name} ?",
                     "create": "Crea token",

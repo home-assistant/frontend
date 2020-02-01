@@ -12,11 +12,11 @@ import "@material/mwc-button";
 import "../../../components/ha-icon";
 
 import { callService } from "../common/call-service";
-import { EntityRow, CallServiceConfig } from "../entity-rows/types";
+import { LovelaceRow, CallServiceConfig } from "../entity-rows/types";
 import { HomeAssistant } from "../../../types";
 
 @customElement("hui-call-service-row")
-class HuiCallServiceRow extends LitElement implements EntityRow {
+class HuiCallServiceRow extends LitElement implements LovelaceRow {
   public hass?: HomeAssistant;
 
   @property() private _config?: CallServiceConfig;
@@ -26,10 +26,10 @@ class HuiCallServiceRow extends LitElement implements EntityRow {
       throw new Error("Error in card configuration.");
     }
 
-    this._config = { icon: "hass:remote", action_name: "Run", ...config };
+    this._config = { icon: "hass:remote", ...config };
   }
 
-  protected render(): TemplateResult | void {
+  protected render(): TemplateResult {
     if (!this._config) {
       return html``;
     }
@@ -39,7 +39,9 @@ class HuiCallServiceRow extends LitElement implements EntityRow {
       <div class="flex">
         <div>${this._config.name}</div>
         <mwc-button @click="${this._callService}"
-          >${this._config.action_name}</mwc-button
+          >${this._config.action_name
+            ? this._config.action_name
+            : this.hass!.localize("ui.card.service.run")}</mwc-button
         >
       </div>
     `;

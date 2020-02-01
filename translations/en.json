@@ -411,7 +411,7 @@
             },
             "automation": {
                 "last_triggered": "Last triggered",
-                "trigger": "Trigger"
+                "trigger": "Execute"
             },
             "camera": {
                 "not_available": "Image not available"
@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Execute"
             },
+            "service": {
+                "run": "Run"
+            },
             "timer": {
                 "actions": {
                     "cancel": "cancel",
@@ -533,6 +536,7 @@
         },
         "common": {
             "cancel": "Cancel",
+            "close": "Close",
             "loading": "Loading",
             "no": "No",
             "save": "Save",
@@ -540,10 +544,24 @@
             "yes": "Yes"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Add",
+                    "failed_create_area": "Failed to create area.",
+                    "name": "Name",
+                    "text": "Enter the name of the new area.",
+                    "title": "Add new area"
+                },
+                "add_new": "Add new area…",
+                "area": "Area",
+                "clear": "Clear",
+                "show_areas": "Show areas"
+            },
             "device-picker": {
                 "clear": "Clear",
                 "device": "Device",
-                "show_devices": "Show devices"
+                "show_devices": "Show devices",
+                "toggle": "Toggle"
             },
             "entity": {
                 "entity-picker": {
@@ -555,6 +573,16 @@
             "history_charts": {
                 "loading_history": "Loading state history...",
                 "no_history_found": "No state history found."
+            },
+            "related-items": {
+                "area": "Area",
+                "automation": "Part of the following automations",
+                "device": "Device",
+                "entity": "Related entities",
+                "group": "Part of the following groups",
+                "integration": "Integration",
+                "scene": "Part of the following scenes",
+                "script": "Part of the following scripts"
             },
             "relative_time": {
                 "duration": {
@@ -586,10 +614,42 @@
             "domain_toggler": {
                 "title": "Toggle Domains"
             },
+            "entity_registry": {
+                "control": "Control",
+                "dismiss": "Dismiss",
+                "editor": {
+                    "confirm_delete": "Are you sure you want to delete this entry?",
+                    "delete": "DELETE",
+                    "enabled_cause": "Disabled by {cause}.",
+                    "enabled_description": "Disabled entities will not be added to Home Assistant.",
+                    "enabled_label": "Enable entity",
+                    "entity_id": "Entity ID",
+                    "name": "Name Override",
+                    "note": "Note: this might not work yet with all integrations.",
+                    "unavailable": "This entity is not currently available.",
+                    "update": "UPDATE"
+                },
+                "related": "Related",
+                "settings": "Settings"
+            },
+            "generic": {
+                "cancel": "Cancel",
+                "default_confirmation_title": "Are you sure?",
+                "ok": "OK"
+            },
             "more_info_control": {
                 "dismiss": "Dismiss dialog",
+                "edit": "Edit entity",
+                "restored": {
+                    "confirm_remove_text": "Are you sure you want to remove this entity?",
+                    "confirm_remove_title": "Remove entity?",
+                    "not_provided": "This entity is currently unavailable and is an orphan to a removed, changed or dysfunctional integration or device.",
+                    "remove_action": "Remove entity",
+                    "remove_intro": "If the entity is no longer in use, you can clean it up by removing it."
+                },
                 "script": {
-                    "last_action": "Last Action"
+                    "last_action": "Last Action",
+                    "last_triggered": "Last Triggered"
                 },
                 "settings": "Entity settings",
                 "sun": {
@@ -628,6 +688,9 @@
                     "add": "Add Devices",
                     "reconfigure": "Reconfigure Device",
                     "remove": "Remove Device"
+                },
+                "confirmations": {
+                    "remove": "Are you sure that you want to remove the device?"
                 },
                 "last_seen": "Last Seen",
                 "manuf": "by {manufacturer}",
@@ -675,7 +738,11 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "advanced_mode": {
+                    "hint_enable": "Missing config options? Enable advanced mode on",
+                    "link_profile_page": "your profile page"
+                },
+                "areas": {
                     "caption": "Areas",
                     "create_area": "CREATE AREA",
                     "description": "Overview of all areas in your home.",
@@ -750,7 +817,7 @@
                             "delete_confirm": "Sure you want to delete?",
                             "duplicate": "Duplicate",
                             "header": "Conditions",
-                            "introduction": "Conditions are an optional part of an automation rule and can be used to prevent an action from happening when triggered. Conditions look very similar to triggers but are very different. A trigger will look at events happening in the system while a condition only looks at how the system looks right now. A trigger can observe that a switch is being turned on. A condition can only see if a switch is currently on or off.",
+                            "introduction": "Conditions are optional and will prevent further execution unless all conditions are satisfied.",
                             "learn_more": "Learn more about conditions",
                             "name": "Condition",
                             "type_select": "Condition type",
@@ -955,6 +1022,7 @@
                             "manage_entities": "Manage Entities",
                             "security_devices": "Security Devices",
                             "sync_entities": "Sync Entities to Google",
+                            "sync_entities_404_message": "Failed to sync your entities to Google, ask Google 'Hey Google, sync my devices' to sync your entities.",
                             "title": "Google Assistant"
                         },
                         "integrations": "Integrations",
@@ -1091,6 +1159,7 @@
                             "core_config": {
                                 "edit_requires_storage": "Editor disabled because config stored in configuration.yaml.",
                                 "elevation": "Elevation",
+                                "elevation_feet": "feet",
                                 "elevation_meters": "meters",
                                 "imperial_example": "Fahrenheit, pounds",
                                 "latitude": "Latitude",
@@ -1157,14 +1226,19 @@
                         "actions": {
                             "caption": "When something is triggered..."
                         },
+                        "automations": "Automations",
                         "conditions": {
                             "caption": "Only do something if..."
                         },
+                        "create": "Create automation with device",
+                        "no_automations": "No automations",
+                        "no_device_automations": "There are no automations available for this device.",
                         "triggers": {
                             "caption": "Do something when..."
                         }
                     },
                     "automations": "Automations",
+                    "cant_edit": "You can only edit items that are created in the UI.",
                     "caption": "Devices",
                     "confirm_rename_entity_ids": "Do you also want to rename the entity id's of your entities?",
                     "data_table": {
@@ -1178,12 +1252,30 @@
                     "description": "Manage connected devices",
                     "details": "Here are all the details of your device.",
                     "device_not_found": "Device not found.",
-                    "entities": "Entities",
+                    "entities": {
+                        "add_entities_lovelace": "Add to Lovelace",
+                        "entities": "Entities",
+                        "none": "This device has no entities"
+                    },
                     "info": "Device info",
+                    "name": "Name",
+                    "scene": {
+                        "create": "Create scene with device",
+                        "no_scenes": "No scenes",
+                        "scenes": "Scenes"
+                    },
+                    "scenes": "Scenes",
+                    "script": {
+                        "create": "Create script with device",
+                        "no_scripts": "No scripts",
+                        "scripts": "Scripts"
+                    },
+                    "scripts": "Scripts",
                     "unknown_error": "Unknown error",
-                    "unnamed_device": "Unnamed device"
+                    "unnamed_device": "Unnamed device",
+                    "update": "Update"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Entities",
                     "description": "Overview of all known entities.",
                     "editor": {
@@ -1194,22 +1286,51 @@
                         "enabled_cause": "Disabled by {cause}.",
                         "enabled_description": "Disabled entities will not be added to Home Assistant.",
                         "enabled_label": "Enable entity",
+                        "entity_id": "Entity ID",
+                        "name": "Name Override",
                         "note": "Note: this might not work yet with all integrations.",
                         "unavailable": "This entity is not currently available.",
                         "update": "UPDATE"
                     },
                     "picker": {
+                        "disable_selected": {
+                            "button": "Disable selected",
+                            "confirm_text": "Disabled entities will not be added to Home Assistant.",
+                            "confirm_title": "Do you want to disable {number} entities?"
+                        },
+                        "enable_selected": {
+                            "button": "Enable selected",
+                            "confirm_text": "This will make them available in Home Assistant again if they are now disabled.",
+                            "confirm_title": "Do you want to enable {number} entities?"
+                        },
+                        "filter": {
+                            "filter": "Filter",
+                            "show_disabled": "Show disabled entities",
+                            "show_unavailable": "Show unavailable entities"
+                        },
                         "header": "Entities",
                         "headers": {
                             "enabled": "Enabled",
                             "entity_id": "Entity ID",
                             "integration": "Integration",
-                            "name": "Name"
+                            "name": "Name",
+                            "status": "Status"
                         },
                         "integrations_page": "Integrations page",
                         "introduction": "Home Assistant keeps a registry of every entity it has ever seen that can be uniquely identified. Each of these entities will have an entity ID assigned which will be reserved for just this entity.",
-                        "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant. Note, removing the entity registry entry won't remove the entity. To do that, follow the link below and remove it from the integrations page.",
+                        "introduction2": "Use the entity registry to override the name, change the entity ID or remove the entry from Home Assistant.",
+                        "remove_selected": {
+                            "button": "Remove selected",
+                            "confirm_text": "Entities can only be removed when the integration is no longer providing the entities.",
+                            "confirm_title": "Do you want to remove {number} entities?"
+                        },
+                        "selected": "{number} selected",
                         "show_disabled": "Show disabled entities",
+                        "status": {
+                            "disabled": "Disabled",
+                            "ok": "Ok",
+                            "unavailable": "Unavailable"
+                        },
                         "unavailable": "(unavailable)"
                     }
                 },
@@ -1239,6 +1360,7 @@
                         "area_picker_label": "Area",
                         "close": "Close",
                         "created_config": "Created config for {name}.",
+                        "dismiss": "Dismiss dialog",
                         "error_saving_area": "Error saving area: {error}",
                         "external_step": {
                             "description": "This step requires you to visit an external website to be completed.",
@@ -1317,7 +1439,7 @@
                             "delete": "Delete entity",
                             "device_entities": "If you add an entity that belongs to a device, the device will be added.",
                             "header": "Entities",
-                            "introduction": "Entities that do not belong to a devices can be set here.",
+                            "introduction": "Entities that do not belong to a device can be set here.",
                             "without_device": "Entities without device"
                         },
                         "introduction": "Use scenes to bring your home alive.",
@@ -1376,8 +1498,10 @@
                             "group": "Reload groups",
                             "heading": "Configuration reloading",
                             "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.",
+                            "person": "Reload persons",
                             "scene": "Reload scenes",
-                            "script": "Reload scripts"
+                            "script": "Reload scripts",
+                            "zone": "Reload zones"
                         },
                         "server_management": {
                             "confirm_restart": "Are you sure you want to restart Home Assistant?",
@@ -1437,6 +1561,10 @@
                         "search_again": "Search Again",
                         "spinner": "Searching for ZHA Zigbee devices..."
                     },
+                    "add": {
+                        "caption": "Add Devices",
+                        "description": "Add devices to the Zigbee network"
+                    },
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Attributes of the selected cluster",
@@ -1456,7 +1584,9 @@
                         "issue_zigbee_command": "Issue Zigbee Command"
                     },
                     "clusters": {
-                        "help_cluster_dropdown": "Select a cluster to view attributes and commands."
+                        "header": "Clusters",
+                        "help_cluster_dropdown": "Select a cluster to view attributes and commands.",
+                        "introduction": "Clusters are the building blocks for Zigbee functionality. They seperate functionality into logical units. There are client and server types and that are comprised of attributes and commands."
                     },
                     "common": {
                         "add_devices": "Add Devices",
@@ -1471,6 +1601,49 @@
                         "device_name_placeholder": "User given name",
                         "update_name_button": "Update Name"
                     },
+                    "devices": {
+                        "header": "Zigbee Home Automation - Device"
+                    },
+                    "group_binding": {
+                        "bind_button_help": "Bind the selected group to the selected device clusters.",
+                        "bind_button_label": "Bind Group",
+                        "cluster_selection_help": "Select clusters to bind to the selected group.",
+                        "group_picker_help": "Select a group to issue a bind command.",
+                        "group_picker_label": "Bindable Groups",
+                        "header": "Group Binding",
+                        "introduction": "Bind and unbind groups.",
+                        "unbind_button_help": "Unbind the selected group from the selected device clusters.",
+                        "unbind_button_label": "Unbind Group"
+                    },
+                    "groups": {
+                        "add_members": "Add Members",
+                        "adding_members": "Adding Members",
+                        "caption": "Groups",
+                        "create": "Create Group",
+                        "create_group": "Zigbee Home Automation - Create Group",
+                        "create_group_details": "Enter the required details to create a new zigbee group",
+                        "creating_group": "Creating Group",
+                        "description": "Create and modify Zigbee groups",
+                        "group_details": "Here are all the details for the selected Zigbee group.",
+                        "group_id": "Group ID",
+                        "group_info": "Group Information",
+                        "group_name_placeholder": "Group Name",
+                        "group_not_found": "Group not found!",
+                        "group-header": "Zigbee Home Automation - Group Details",
+                        "groups": "Groups",
+                        "groups-header": "Zigbee Home Automation - Group Management",
+                        "header": "Zigbee Home Automation - Group Management",
+                        "introduction": "Create and modify zigbee groups",
+                        "manage_groups": "Manage Zigbee Groups",
+                        "members": "Members",
+                        "remove_groups": "Remove Groups",
+                        "remove_members": "Remove Members",
+                        "removing_groups": "Removing Groups",
+                        "removing_members": "Removing Members",
+                        "zha_zigbee_groups": "ZHA Zigbee Groups"
+                    },
+                    "header": "Configure Zigbee Home Automation",
+                    "introduction": "Here it is possible to configure the ZHA component. Not everything is possible to configure from the UI yet, but we're working on it.",
                     "network_management": {
                         "header": "Network Management",
                         "introduction": "Commands that affect the entire network"
@@ -1486,7 +1659,34 @@
                         "reconfigure": "Reconfigure ZHA device (heal device). Use this if you are having issues with the device. If the device in question is a battery powered device please ensure it is awake and accepting commands when you use this service.",
                         "remove": "Remove a device from the ZigBee network.",
                         "updateDeviceName": "Set a custom name for this device in the device registry."
-                    }
+                    },
+                    "title": "Zigbee Home Automation"
+                },
+                "zone": {
+                    "add_zone": "Add Zone",
+                    "caption": "Zones",
+                    "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
+                    "confirm_delete": "Are you sure you want to delete this zone?",
+                    "create_zone": "Create Zone",
+                    "description": "Manage the zones you want to track persons in.",
+                    "detail": {
+                        "create": "Create",
+                        "delete": "Delete",
+                        "icon": "Icon",
+                        "icon_error_msg": "Icon should be in the format prefix:iconname, for example: mdi:home",
+                        "latitude": "Latitude",
+                        "longitude": "Longitude",
+                        "name": "Name",
+                        "new_zone": "New Zone",
+                        "passive": "Passive",
+                        "passive_note": "Passive zones are hidden in the frontend and are not used as location for device trackers. This is usefull if you just want to use it for automations.",
+                        "radius": "Radius",
+                        "required_error_msg": "This field is required",
+                        "update": "Update"
+                    },
+                    "edit_home_zone": "The location of your home can be changed in the gerenal config.",
+                    "introduction": "Zones allow you to specify certain regions on earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
+                    "no_zones_created_yet": "Looks like you have not created any zones yet."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1668,12 +1868,20 @@
                 "showing_entries": "Showing entries for"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "You can only use this function when you have taken control of the Lovelace UI.",
+                    "saving_failed": "Saving Lovelace UI config failed.",
+                    "yaml_unsupported": "You can not use this function when using Lovelace UI in YAML mode."
+                },
                 "cards": {
                     "confirm_delete": "Are you sure you want to delete this card?",
                     "empty_state": {
                         "go_to_integrations_page": "Go to the integrations page.",
                         "no_devices": "This page allows you to control your devices, however it looks like you have no devices set up yet. Head to the integrations page to get started.",
                         "title": "Welcome Home"
+                    },
+                    "entities": {
+                        "never_triggered": "Never triggered"
                     },
                     "picture-elements": {
                         "call_service": "Call service {name}",
@@ -1691,7 +1899,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "The Lovelace config was updated, would you like to refresh?",
+                    "message": "The Lovelace UI configuration was updated, refresh to see changes?",
                     "refresh": "Refresh"
                 },
                 "editor": {
@@ -1805,6 +2013,7 @@
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "This card requires the `shopping_list` integration to be set up.",
                             "name": "Shopping List"
                         },
                         "thermostat": {
@@ -1833,7 +2042,7 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "Edit title",
-                        "explanation": "This title is shown above all your views in Lovelace.",
+                        "explanation": "This title is shown above all your views in the Lovelace UI.",
                         "header": "Title of your Lovelace UI"
                     },
                     "edit_view": {
@@ -1847,7 +2056,7 @@
                     },
                     "header": "Edit UI",
                     "menu": {
-                        "open": "Open Lovelace menu",
+                        "open": "Open Lovelace UI menu",
                         "raw_editor": "Raw config editor"
                     },
                     "migrate": {
@@ -1857,10 +2066,13 @@
                         "para_no_id": "This element doesn't have an ID. Please add an ID to this element in 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "We will automatically generate your Lovelace UI views with your areas and devices if you remove your Lovelace UI configuration.",
+                        "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration? We will automatically generate your Lovelace UI views with your areas and devices.",
                         "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
                         "confirm_unsaved_comments": "Your config contains comment(s), these will not be saved. Do you want to continue?",
                         "error_invalid_config": "Your config is not valid: {error}",
                         "error_parse_yaml": "Unable to parse YAML: {error}",
+                        "error_remove": "Unable to remove config: {error}",
                         "error_save_yaml": "Unable to save YAML: {error}",
                         "header": "Edit Config",
                         "save": "Save",
@@ -1870,9 +2082,14 @@
                     "save_config": {
                         "cancel": "Never mind",
                         "header": "Take control of your Lovelace UI",
-                        "para": "By default Home Assistant will maintain your user interface, updating it when new entities or Lovelace components become available. If you take control we will no longer make changes automatically for you.",
+                        "para": "By default Home Assistant will maintain your user interface, updating it when new entities or Lovelace UI components become available. If you take control we will no longer make changes automatically for you.",
                         "para_sure": "Are you sure you want to take control of your user interface?",
                         "save": "Take control"
+                    },
+                    "suggest_card": {
+                        "add": "Add to Lovelace UI",
+                        "create_own": "Pick different card",
+                        "header": "We created a suggestion for you"
                     },
                     "view": {
                         "panel_mode": {
@@ -1889,7 +2106,7 @@
                     "refresh": "Refresh",
                     "unused_entities": "Unused entities"
                 },
-                "reload_lovelace": "Reload Lovelace",
+                "reload_lovelace": "Reload UI",
                 "unused_entities": {
                     "available_entities": "These are the entities that you have available, but are not in your Lovelace UI yet.",
                     "domain": "Domain",
@@ -2087,9 +2304,8 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "description": "Home Assistant hides advanced features and options by default. You can make these features accessible by checking this toggle. This is a user-specific setting and does not impact other users using Home Assistant.",
-                    "hint_enable": "Missing config options? Enable advanced mode on",
-                    "link_profile_page": "your profile page",
+                    "description": "Unlocks advanced features.",
+                    "link_promo": "Learn more",
                     "title": "Advanced Mode"
                 },
                 "change_password": {
@@ -2112,6 +2328,8 @@
                     "link_promo": "Help translating"
                 },
                 "logout": "Log out",
+                "logout_text": "Are you sure you want to log out?",
+                "logout_title": "Log out?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Are you sure you want to delete the access token for {name}?",
                     "create": "Create Token",

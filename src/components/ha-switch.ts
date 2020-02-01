@@ -1,14 +1,19 @@
-import { customElement, CSSResult, css, query } from "lit-element";
+import { customElement, CSSResult, css, query, property } from "lit-element";
 import "@material/mwc-switch";
 import { style } from "@material/mwc-switch/mwc-switch-css";
 // tslint:disable-next-line
 import { Switch } from "@material/mwc-switch";
 import { Constructor } from "../types";
+import { forwardHaptic } from "../data/haptics";
 // tslint:disable-next-line
 const MwcSwitch = customElements.get("mwc-switch") as Constructor<Switch>;
 
 @customElement("ha-switch")
 export class HaSwitch extends MwcSwitch {
+  // Generate a haptic vibration.
+  // Only set to true if the new value of the switch is applied right away when toggling.
+  // Do not add haptic when a user is required to press save.
+  @property({ type: Boolean }) public haptic = false;
   @query("slot") private _slot!: HTMLSlotElement;
 
   protected firstUpdated() {
@@ -21,6 +26,12 @@ export class HaSwitch extends MwcSwitch {
       "slotted",
       Boolean(this._slot.assignedNodes().length)
     );
+    this._slot.addEventListener("click", () => (this.checked = !this.checked));
+    this.addEventListener("change", () => {
+      if (this.haptic) {
+        forwardHaptic("light");
+      }
+    });
   }
 
   protected static get styles(): CSSResult[] {

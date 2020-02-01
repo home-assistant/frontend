@@ -12,21 +12,28 @@ import {
 import { HomeAssistant } from "../../src/types";
 import {
   fetchHassioSupervisorInfo,
-  fetchHassioHostInfo,
-  fetchHassioHassOsInfo,
   fetchHassioHomeAssistantInfo,
   HassioSupervisorInfo,
-  HassioHostInfo,
-  HassioHassOSInfo,
   HassioHomeAssistantInfo,
-  fetchHassioAddonInfo,
   createHassioSession,
   HassioPanelInfo,
-} from "../../src/data/hassio";
+} from "../../src/data/hassio/supervisor";
+import {
+  fetchHassioHostInfo,
+  fetchHassioHassOsInfo,
+  HassioHostInfo,
+  HassioHassOSInfo,
+} from "../../src/data/hassio/host";
+import { fetchHassioAddonInfo } from "../../src/data/hassio/addon";
 import { makeDialogManager } from "../../src/dialogs/make-dialog-manager";
 import { ProvideHassLitMixin } from "../../src/mixins/provide-hass-lit-mixin";
 // Don't codesplit it, that way the dashboard always loads fast.
 import "./hassio-pages-with-tabs";
+import { navigate } from "../../src/common/navigate";
+import {
+  showAlertDialog,
+  AlertDialogParams,
+} from "../../src/dialogs/generic/show-dialog-box";
 
 // The register callback of the IronA11yKeysBehavior inside paper-icon-button
 // is not called, causing _keyBindings to be uninitiliazed for paper-icon-button,
@@ -69,7 +76,6 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
       },
     },
   };
-
   @property() private _supervisorInfo: HassioSupervisorInfo;
   @property() private _hostInfo: HassioHostInfo;
   @property() private _hassOsInfo?: HassioHassOSInfo;
@@ -103,6 +109,14 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
         bubbles: false,
       })
     );
+
+    // Forward haptic events to parent window.
+    window.addEventListener("haptic", (ev) => {
+      // @ts-ignore
+      fireEvent(window.parent, ev.type, ev.detail, {
+        bubbles: false,
+      });
+    });
 
     makeDialogManager(this, document.body);
   }
@@ -155,25 +169,81 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
   }
 
   private async _redirectIngress(addonSlug: string) {
+    // When we trigger a navigation, we sleep to make sure we don't
+    // show the hassio dashboard before navigating away.
+    const awaitAlert = async (
+      alertParams: AlertDialogParams,
+      action: () => void
+    ) => {
+      await new Promise((resolve) => {
+        alertParams.confirm = resolve;
+        showAlertDialog(this, alertParams);
+      });
+      action();
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+    };
+
+    const createSessionPromise = createHassioSession(this.hass).then(
+      () => true,
+      () => false
+    );
+
+    let addon;
+
     try {
-      const [addon] = await Promise.all([
-        fetchHassioAddonInfo(this.hass, addonSlug).catch(() => {
-          throw new Error("Failed to fetch add-on info");
-        }),
-        createHassioSession(this.hass).catch(() => {
-          throw new Error("Failed to create an ingress session");
-        }),
-      ]);
-      if (!addon.ingress_url) {
-        throw new Error("Add-on does not support Ingress");
-      }
-      location.assign(addon.ingress_url);
-      // await a promise that doesn't resolve, so we show the loading screen
-      // while we load the next page.
-      await new Promise(() => undefined);
+      addon = await fetchHassioAddonInfo(this.hass, addonSlug);
     } catch (err) {
-      alert(`Unable to open ingress connection `);
+      await awaitAlert(
+        {
+          text: "Unable to fetch add-on info to start Ingress",
+          title: "Hass.io",
+        },
+        () => history.back()
+      );
+
+      return;
     }
+
+    if (!addon.ingress_url) {
+      await awaitAlert(
+        {
+          text: "Add-on does not support Ingress",
+          title: addon.name,
+        },
+        () => history.back()
+      );
+
+      return;
+    }
+
+    if (addon.state !== "started") {
+      await awaitAlert(
+        {
+          text: "Add-on is not running. Please start it first",
+          title: addon.name,
+        },
+        () => navigate(this, `/hassio/addon/${addon.slug}`, true)
+      );
+
+      return;
+    }
+
+    if (!(await createSessionPromise)) {
+      await awaitAlert(
+        {
+          text: "Unable to create an Ingress session",
+          title: addon.name,
+        },
+        () => history.back()
+      );
+
+      return;
+    }
+
+    location.assign(addon.ingress_url);
+    // await a promise that doesn't resolve, so we show the loading screen
+    // while we load the next page.
+    await new Promise(() => undefined);
   }
 
   private _apiCalled(ev) {

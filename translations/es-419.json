@@ -647,7 +647,11 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "advanced_mode": {
+                    "hint_enable": "¿Faltan opciones de configuración? Habilitar el modo avanzado en",
+                    "link_profile_page": "tu página de perfil"
+                },
+                "areas": {
                     "caption": "Registro de áreas",
                     "create_area": "CREAR AREA",
                     "description": "Visión general de todas las áreas de su casa.",
@@ -1042,12 +1046,11 @@
                     "description": "Administrar dispositivos conectados",
                     "details": "Aquí están todos los detalles de su dispositivo.",
                     "device_not_found": "Dispositivo no encontrado.",
-                    "entities": "Entidades",
                     "info": "Información del dispositivo",
                     "unknown_error": "Error desconocido",
                     "unnamed_device": "Dispositivo sin nombre"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Registro de entidades",
                     "description": "Visión general de todas las entidades conocidas.",
                     "editor": {
@@ -1746,8 +1749,6 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "hint_enable": "¿Faltan opciones de configuración? Habilitar el modo avanzado en",
-                    "link_profile_page": "tu página de perfil",
                     "title": "Modo avanzado"
                 },
                 "change_password": {

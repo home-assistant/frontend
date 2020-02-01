@@ -187,11 +187,10 @@ class HaSidebar extends LitElement {
                 href="#external-app-configuration"
                 tabindex="-1"
                 @click=${this._handleExternalAppConfiguration}
+                @mouseenter=${this._itemMouseEnter}
+                @mouseleave=${this._itemMouseLeave}
               >
-                <paper-icon-item
-                  @mouseenter=${this._itemMouseEnter}
-                  @mouseleave=${this._itemMouseLeave}
-                >
+                <paper-icon-item>
                   <ha-icon
                     slot="item-icon"
                     icon="hass:cellphone-settings-variant"
@@ -207,30 +206,34 @@ class HaSidebar extends LitElement {
 
       <div class="divider"></div>
 
-      <paper-icon-item
-        class="notifications"
-        aria-role="option"
-        @click=${this._handleShowNotificationDrawer}
+      <div
+        class="notifications-container"
         @mouseenter=${this._itemMouseEnter}
         @mouseleave=${this._itemMouseLeave}
       >
-        <ha-icon slot="item-icon" icon="hass:bell"></ha-icon>
-        ${!this.expanded && notificationCount > 0
-          ? html`
-              <span class="notification-badge" slot="item-icon">
-                ${notificationCount}
-              </span>
-            `
-          : ""}
-        <span class="item-text">
-          ${hass.localize("ui.notification_drawer.title")}
-        </span>
-        ${this.expanded && notificationCount > 0
-          ? html`
-              <span class="notification-badge">${notificationCount}</span>
-            `
-          : ""}
-      </paper-icon-item>
+        <paper-icon-item
+          class="notifications"
+          aria-role="option"
+          @click=${this._handleShowNotificationDrawer}
+        >
+          <ha-icon slot="item-icon" icon="hass:bell"></ha-icon>
+          ${!this.expanded && notificationCount > 0
+            ? html`
+                <span class="notification-badge" slot="item-icon">
+                  ${notificationCount}
+                </span>
+              `
+            : ""}
+          <span class="item-text">
+            ${hass.localize("ui.notification_drawer.title")}
+          </span>
+          ${this.expanded && notificationCount > 0
+            ? html`
+                <span class="notification-badge">${notificationCount}</span>
+              `
+            : ""}
+        </paper-icon-item>
+      </div>
 
       <a
         class=${classMap({
@@ -243,11 +246,10 @@ class HaSidebar extends LitElement {
         tabindex="-1"
         aria-role="option"
         aria-label=${hass.localize("panel.profile")}
+        @mouseenter=${this._itemMouseEnter}
+        @mouseleave=${this._itemMouseLeave}
       >
-        <paper-icon-item
-          @mouseenter=${this._itemMouseEnter}
-          @mouseleave=${this._itemMouseLeave}
-        >
+        <paper-icon-item>
           <ha-user-badge slot="item-icon" .user=${hass.user}></ha-user-badge>
 
           <span class="item-text">
@@ -389,14 +391,14 @@ class HaSidebar extends LitElement {
     }
     const tooltip = this._tooltip;
     const listbox = this.shadowRoot!.querySelector("paper-listbox")!;
-    let top = item.offsetTop + 7;
+    let top = item.offsetTop + 11;
     if (listbox.contains(item)) {
       top -= listbox.scrollTop;
     }
     tooltip.innerHTML = item.querySelector(".item-text")!.innerHTML;
     tooltip.style.display = "block";
     tooltip.style.top = `${top}px`;
-    tooltip.style.left = `${item.offsetLeft + item.clientWidth + 12}px`;
+    tooltip.style.left = `${item.offsetLeft + item.clientWidth + 4}px`;
   }
 
   private _hideTooltip() {
@@ -431,11 +433,10 @@ class HaSidebar extends LitElement {
         href="${`/${urlPath}`}"
         data-panel="${urlPath}"
         tabindex="-1"
+        @mouseenter=${this._itemMouseEnter}
+        @mouseleave=${this._itemMouseLeave}
       >
-        <paper-icon-item
-          @mouseenter=${this._itemMouseEnter}
-          @mouseleave=${this._itemMouseLeave}
-        >
+        <paper-icon-item>
           <ha-icon slot="item-icon" .icon="${icon}"></ha-icon>
           <span class="item-text">${title}</span>
         </paper-icon-item>
@@ -520,10 +521,13 @@ class HaSidebar extends LitElement {
       }
 
       a {
+        text-decoration: none;
         color: var(--sidebar-text-color);
         font-weight: 500;
         font-size: 14px;
-        text-decoration: none;
+        position: relative;
+        display: block;
+        outline: 0;
       }
 
       paper-icon-item {
@@ -546,7 +550,8 @@ class HaSidebar extends LitElement {
         color: var(--sidebar-icon-color);
       }
 
-      .iron-selected paper-icon-item:before {
+      .iron-selected paper-icon-item::before,
+      a:not(.iron-selected):focus::before {
         border-radius: 4px;
         position: absolute;
         top: 0;
@@ -555,10 +560,21 @@ class HaSidebar extends LitElement {
         left: 0;
         pointer-events: none;
         content: "";
-        background-color: var(--sidebar-selected-icon-color);
-        opacity: 0.12;
         transition: opacity 15ms linear;
         will-change: opacity;
+      }
+      .iron-selected paper-icon-item::before {
+        background-color: var(--sidebar-selected-icon-color);
+        opacity: 0.12;
+      }
+      a:not(.iron-selected):focus::before {
+        background-color: currentColor;
+        opacity: var(--dark-divider-opacity);
+        margin: 4px 8px;
+      }
+      .iron-selected paper-icon-item:focus::before,
+      .iron-selected:focus paper-icon-item::before {
+        opacity: 0.2;
       }
 
       .iron-selected paper-icon-item[pressed]:before {
@@ -596,7 +612,9 @@ class HaSidebar extends LitElement {
         height: 1px;
         background-color: var(--divider-color);
       }
-
+      .notifications-container {
+        display: flex;
+      }
       .notifications {
         cursor: pointer;
       }

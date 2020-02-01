@@ -540,10 +540,21 @@
             "yes": "Sí"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Afegeix",
+                    "name": "Nom"
+                },
+                "add_new": "Afegir àrea nova...",
+                "area": "Àrea",
+                "clear": "Esborra",
+                "show_areas": "Mostra àrees"
+            },
             "device-picker": {
                 "clear": "Esborra",
                 "device": "Dispositiu",
-                "show_devices": "Mostra dispositius"
+                "show_devices": "Mostra dispositius",
+                "toggle": "Commuta"
             },
             "entity": {
                 "entity-picker": {
@@ -585,6 +596,10 @@
             },
             "domain_toggler": {
                 "title": "Commutació de dominis"
+            },
+            "generic": {
+                "cancel": "Cancel·la",
+                "default_confirmation_title": "Estàs segur?"
             },
             "more_info_control": {
                 "dismiss": "Desestimar el diàleg",
@@ -628,6 +643,9 @@
                     "add": "Afegir dispositius",
                     "reconfigure": "Reconfigurar dispositiu",
                     "remove": "Eliminar dispositiu"
+                },
+                "confirmations": {
+                    "remove": "Estàs segur que vols eliminar el dispositiu?"
                 },
                 "last_seen": "Vist per últim cop",
                 "manuf": "per {manufacturer}",
@@ -675,7 +693,11 @@
         },
         "panel": {
             "config": {
-                "area_registry": {
+                "advanced_mode": {
+                    "hint_enable": "Falten opcions de configuració? Activa el mode avançat",
+                    "link_profile_page": "la teva pàgina de perfil"
+                },
+                "areas": {
                     "caption": "Registre d'àrees",
                     "create_area": "CREA ÀREA",
                     "description": "Visió general de totes les àrees de la casa.",
@@ -687,12 +709,12 @@
                     },
                     "no_areas": "Sembla que encara no tens cap àrea!.",
                     "picker": {
-                        "create_area": "CREAR ÀREA",
+                        "create_area": "CREA ÀREA",
                         "header": "Registre d'àrees",
                         "integrations_page": "Pàgina d'integracions",
                         "introduction": "Les àrees s'utilitzen per organitzar la situació dels dispositius. Aquesta informació serà utilitzada per Home Assistant per ajudar-te a organitzar millor la teva interfície, els permisos i les integracions amb d'altres sistemes.",
                         "introduction2": "Per col·locar dispositius en una àrea, utilitza l'enllaç de sota per anar a la pàgina d'integracions i, a continuació, fes clic a una integració configurada per accedir a les targetes del dispositiu.",
-                        "no_areas": "Sembla que encara no tens cap àrea!"
+                        "no_areas": "Sembla que encara no tens cap àrea!."
                     }
                 },
                 "automation": {
@@ -981,10 +1003,10 @@
                             "link_learn_more": "Més informació sobre la creació d'automatizacions basats en webhook.",
                             "loading": "Carregant ...",
                             "manage": "Gestiona",
-                            "no_hooks_yet": "Sembla que encara no tens cap webhook. Comença configurant una ",
+                            "no_hooks_yet": "Sembla que encara no tens cap webhook. Comença configurant una",
                             "no_hooks_yet_link_automation": "automatització de webhook",
                             "no_hooks_yet_link_integration": "integració basada en webhook",
-                            "no_hooks_yet2": " o bé creant una ",
+                            "no_hooks_yet2": "o bé creant una",
                             "title": "Webhooks"
                         }
                     },
@@ -1091,6 +1113,7 @@
                             "core_config": {
                                 "edit_requires_storage": "L'editor està desactivat ja que la configuració es troba a configuration.yaml.",
                                 "elevation": "Altitud",
+                                "elevation_feet": "peus",
                                 "elevation_meters": "metres",
                                 "imperial_example": "Fahrenheit, lliures",
                                 "latitude": "Latitud",
@@ -1157,9 +1180,11 @@
                         "actions": {
                             "caption": "Quan es dispara alguna cosa..."
                         },
+                        "automations": "Automatitzacions",
                         "conditions": {
                             "caption": "Només fer alguna cosa si..."
                         },
+                        "no_automations": "No hi ha automatitzacions",
                         "triggers": {
                             "caption": "Feu alguna cosa quan..."
                         }
@@ -1178,12 +1203,23 @@
                     "description": "Gestiona els dispositius connectats",
                     "details": "Aquí tens tots els detalls del dispositiu.",
                     "device_not_found": "Dispositiu no trobat.",
-                    "entities": "Entitats",
                     "info": "Informació del dispositiu",
+                    "name": "Nom",
+                    "scene": {
+                        "no_scenes": "No hi ha escenes",
+                        "scenes": "Escenes"
+                    },
+                    "scenes": "Escenes",
+                    "script": {
+                        "no_scripts": "No hi ha scripts",
+                        "scripts": "Scripts"
+                    },
+                    "scripts": "Scripts",
                     "unknown_error": "Error desconegut",
-                    "unnamed_device": "Dispositiu sense nom"
+                    "unnamed_device": "Dispositiu sense nom",
+                    "update": "Actualitza"
                 },
-                "entity_registry": {
+                "entities": {
                     "caption": "Registre d'entitats",
                     "description": "Visió general de totes les entitats conegudes.",
                     "editor": {
@@ -1239,6 +1275,7 @@
                         "area_picker_label": "Àrea",
                         "close": "Tanca",
                         "created_config": "S'ha creat configuració per a {name}.",
+                        "dismiss": "Desestima el diàleg",
                         "error_saving_area": "Error desant àrea: {error}",
                         "external_step": {
                             "description": "Aquest pas requereix que visitis un lloc web extern per completar-lo.",
@@ -1256,6 +1293,17 @@
                     "details": "Detalls de la integració",
                     "discovered": "Descobertes",
                     "home_assistant_website": "lloc web de Home Assistant",
+                    "ignore": {
+                        "confirm_delete_ignore": "Això farà que quan la integració es descobreixi torni a aparèixer a les integracions descobertes. Pot ser que tardi una estona o es necessiti reiniciar.",
+                        "confirm_delete_ignore_title": "Vols deixar d’ignorar {name}?",
+                        "confirm_ignore": "Estàs segur que no vols per a configurar aquesta integració? Pots desfer-ho fent clic a 'Mostra les integracions ignorades' al menú de la part superior dreta.",
+                        "confirm_ignore_title": "Ignorar descobriment de {name}?",
+                        "hide_ignored": "Amaga les integracions ignorades",
+                        "ignore": "Ignora",
+                        "ignored": "Ignorada",
+                        "show_ignored": "Mostra les integracions ignorades",
+                        "stop_ignore": "Deixa d'ignorar"
+                    },
                     "integration_not_found": "No s'ha trobat la integració.",
                     "new": "Configura una nova integració",
                     "none": "Encara no hi ha res configurat",
@@ -1334,6 +1382,7 @@
                     "caption": "Programació (scripts)",
                     "description": "Crea i edita programes (scripts)",
                     "editor": {
+                        "alias": "Nom",
                         "default_name": "Nou script",
                         "delete_confirm": "Estàs segur que vols eliminar aquest script?",
                         "delete_script": "Suprimeix l'script",
@@ -1355,7 +1404,7 @@
                     }
                 },
                 "server_control": {
-                    "caption": "Control del servidor",
+                    "caption": "Controls del servidor",
                     "description": "Reinicia o atura el servidor de Home Assistant",
                     "section": {
                         "reloading": {
@@ -1425,6 +1474,9 @@
                         "search_again": "Torna a cercar",
                         "spinner": "S'estan cercant dispositius ZHA Zigbee..."
                     },
+                    "add": {
+                        "caption": "Afegeix dispositius"
+                    },
                     "caption": "ZHA",
                     "cluster_attributes": {
                         "attributes_of_cluster": "Atributs del clúster seleccionat",
@@ -1444,6 +1496,7 @@
                         "issue_zigbee_command": "Emet la comanda Zigbee"
                     },
                     "clusters": {
+                        "header": "Clústers",
                         "help_cluster_dropdown": "Selecciona un clúster per visualitzar-ne els atributs i comandes."
                     },
                     "common": {
@@ -1453,11 +1506,45 @@
                         "manufacturer_code_override": "Substitució del codi de fabricant",
                         "value": "Valor"
                     },
-                    "description": "Gestiona la xarxa domòtica Zigbee",
+                    "description": "Gestiona la xarxa domòtica Zigbee (ZHA)",
                     "device_card": {
                         "area_picker_label": "Àrea",
                         "device_name_placeholder": "Nom donat per l'usuari",
                         "update_name_button": "Actualitzar Nom"
+                    },
+                    "group_binding": {
+                        "bind_button_label": "Vincula grup",
+                        "group_picker_label": "Grups vinculables",
+                        "header": "Vinculació de grups",
+                        "introduction": "Vincula i desvincula grups.",
+                        "unbind_button_label": "Desvincula grup"
+                    },
+                    "groups": {
+                        "add_members": "Afegeix membres",
+                        "adding_members": "Afegint membres",
+                        "caption": "Grups",
+                        "create": "Crea grup",
+                        "create_group": "Domòtica Zigbee (ZHA) - Creació de grups",
+                        "create_group_details": "Introdueix els detalls necessaris per crear un nou grup Zigbee",
+                        "creating_group": "Creant grup",
+                        "description": "Crea i modifica grups Zigbee",
+                        "group_details": "Detalls del grup Zigbee seleccionat.",
+                        "group_id": "ID del grup",
+                        "group_info": "Informació del grup",
+                        "group_name_placeholder": "Nom del grup",
+                        "group_not_found": "No s'ha trobat el grup.",
+                        "group-header": "Domòtica Zigbee (ZHA) - Detalls dels grups",
+                        "groups": "Grups",
+                        "groups-header": "Domòtica Zigbee (ZHA) - Gestió de grups",
+                        "header": "Domòtica Zigbee (ZHA) - Gestió de grups",
+                        "introduction": "Crea i modifica grups Zigbee",
+                        "manage_groups": "Gestiona els grups Zigbee",
+                        "members": "Membres",
+                        "remove_groups": "Elimina grups",
+                        "remove_members": "Elimina membres",
+                        "removing_groups": "Eliminant grups",
+                        "removing_members": "Eliminant membres",
+                        "zha_zigbee_groups": "Grups ZHA Zigbee"
                     },
                     "network_management": {
                         "header": "Gestió de la xarxa",
@@ -1474,7 +1561,8 @@
                         "reconfigure": "Reconfigura el dispositiu ZHA (dispositiu curatiu). Utilitza-ho si tens problemes amb el dispositiu. Si el dispositiu en qüestió està alimentat per bateria, assegura't que estigui despert i accepti ordres quan utilitzis aquest servei.",
                         "remove": "Treu un dispositiu de la xarxa Zigbee.",
                         "updateDeviceName": "Estableix un nom personalitzat pel dispositiu al registre de dispositius."
-                    }
+                    },
+                    "title": "Domòtica Zigbee (ZHA)"
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1793,6 +1881,7 @@
                             "name": "Sensor"
                         },
                         "shopping-list": {
+                            "integration_not_loaded": "Aquesta targeta necessita que la integració `shopping_list` estigui configurada.",
                             "name": "Llista de la compra"
                         },
                         "thermostat": {
@@ -1861,6 +1950,9 @@
                         "para": "De manera predeterminada, Home Assistant mantindrà al dia la teva interfície d'usuari, actualitzant-la quan hi hagi noves entitats o nous components de Lovelace disponibles. Si prens el control, ja no es faran aquests canvis automàticament.",
                         "para_sure": "Estàs segur que vols prendre el control de la interfície d'usuari?",
                         "save": "Prendre el control"
+                    },
+                    "suggest_card": {
+                        "create_own": "Crea la teva"
                     },
                     "view": {
                         "panel_mode": {
@@ -2076,8 +2168,7 @@
             "profile": {
                 "advanced_mode": {
                     "description": "Home Assistant oculta de manera predeterminada les funcions i opcions avançades. Pots accedir a aquestes funcions commutant aquest interruptor. Aquesta és una configuració específica per a usuari i no afecta altres usuaris que utilitzin Home Assistant.",
-                    "hint_enable": "Falten opcions de configuració? Activa el mode avançat",
-                    "link_profile_page": "la teva pàgina de perfil",
+                    "link_promo": "Més informació",
                     "title": "Mode avançat"
                 },
                 "change_password": {
@@ -2100,6 +2191,8 @@
                     "link_promo": "Ajuda a traduir"
                 },
                 "logout": "Tanca sessió",
+                "logout_text": "Estàs segur que vols tancar la sessió?",
+                "logout_title": "Tancar sessió?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Estàs segur que vols eliminar el testimoni d'autenticació d'accés per {name}?",
                     "create": "Crea un testimoni d'autenticació",
