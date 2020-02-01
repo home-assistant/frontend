@@ -60,9 +60,17 @@ export const handleAction = (
 
   switch (actionConfig.action) {
     case "more-info":
-      if (config.entity || config.camera_image || actionConfig.service_data.entity_id) {
+      if (
+        config.entity || 
+        config.camera_image || 
+        actionConfig.service_data.entity_id
+      ) {
         fireEvent(node, "hass-more-info", {
-          entityId: actionConfig.service_data.entity_id ? actionConfig.service_data.entity_id : (config.entity ? config.entity : config.camera_image)!,
+          entityId: actionConfig.service_data.entity_id ? 
+            actionConfig.service_data.entity_id : 
+            (config.entity ? 
+              config.entity : 
+              config.camera_image)!,
         });
       }
       break;
