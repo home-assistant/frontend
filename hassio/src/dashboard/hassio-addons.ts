@@ -47,9 +47,11 @@ class HassioAddons extends LitElement {
                           title=${addon.name}
                           description=${addon.description}
                           ?available=${addon.available}
+                          ?UpdateAvailable=${addon.installed !== addon.version}
                           icon=${this._computeIcon(addon)}
                           .iconTitle=${this._computeIconTitle(addon)}
                           .iconClass=${this._computeIconClass(addon)}
+                          .iconImage=${this._computeIconImageURL(addon)}
                         ></hassio-card-content>
                       </div>
                     </paper-card>
@@ -79,19 +81,23 @@ class HassioAddons extends LitElement {
   }
 
   private _computeIconTitle(addon: HassioAddonInfo): string {
+    if (addon.state !== "started") {
+      return "Add-on is stopped";
+    }
     if (addon.installed !== addon.version) {
       return "New version available";
     }
-    return addon.state === "started"
-      ? "Add-on is running"
-      : "Add-on is stopped";
+    return "Add-on is running";
   }
 
   private _computeIconClass(addon: HassioAddonInfo): string {
+    if (addon.installed) {
+      return addon.state === "started" ? "running" : "stopped";
+    }
     if (addon.installed !== addon.version) {
       return "update";
     }
-    return addon.state === "started" ? "running" : "";
+    return "";
   }
 
   private _addonTapped(ev: any): void {
@@ -100,6 +106,18 @@ class HassioAddons extends LitElement {
 
   private _openStore(): void {
     navigate(this, "/hassio/store");
+  }
+
+  private get _computeHA105plus(): boolean {
+    const [major, minor] = this.hass.config.version.split(".", 2);
+    return Number(major) > 0 || (major === "0" && Number(minor) >= 105);
+  }
+
+  private _computeIconImageURL(addon: HassioAddonInfo): string | undefined {
+    if (this._computeHA105plus && addon.icon) {
+      return `/api/hassio/addons/${addon.slug}/icon`;
+    }
+    return undefined;
   }
 }
 

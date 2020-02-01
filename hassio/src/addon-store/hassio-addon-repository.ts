@@ -75,6 +75,7 @@ class HassioAddonRepositoryEl extends LitElement {
                     .icon=${this.computeIcon(addon)}
                     .iconTitle=${this.computeIconTitle(addon)}
                     .iconClass=${this.computeIconClass(addon)}
+                    .iconImage=${this._computeIconImageURL(addon)}
                   ></hassio-card-content>
                 </div>
               </paper-card>
@@ -111,6 +112,18 @@ class HassioAddonRepositoryEl extends LitElement {
 
   private addonTapped(ev) {
     navigate(this, `/hassio/addon/${ev.currentTarget.addon.slug}`);
+  }
+
+  private get _computeHA105plus(): boolean {
+    const [major, minor] = this.hass.config.version.split(".", 2);
+    return Number(major) > 0 || (major === "0" && Number(minor) >= 105);
+  }
+
+  private _computeIconImageURL(addon: HassioAddonInfo): string | undefined {
+    if (this._computeHA105plus && addon.icon) {
+      return `/api/hassio/addons/${addon.slug}/icon`;
+    }
+    return undefined;
   }
 
   static get styles(): CSSResultArray {
