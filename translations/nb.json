@@ -1232,6 +1232,7 @@
                         },
                         "create": "Lag automatisering med enheten",
                         "no_automations": "Ingen automatiseringer",
+                        "no_device_automations": "Det er ingen automatiseringer tilgjengelig for denne enheten.",
                         "triggers": {
                             "caption": "Gjør noe når ..."
                         }
