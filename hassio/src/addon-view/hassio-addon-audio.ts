@@ -123,14 +123,14 @@ class HassioAddonAudio extends LitElement {
   }
 
   private _setInputDevice(ev): void {
-    const device = ev.detail.item.device;
+    const device = ev.detail.item.getAttribute("device");
     if (device) {
       this._selectedInput = device;
     }
   }
 
   private _setOutputDevice(ev): void {
-    const device = ev.detail.item.device;
+    const device = ev.detail.item.getAttribute("device");
     if (device) {
       this._selectedOutput = device;
     }
