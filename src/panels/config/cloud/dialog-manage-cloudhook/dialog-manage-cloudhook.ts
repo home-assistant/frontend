@@ -13,6 +13,7 @@ import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { HomeAssistant } from "../../../../types";
 import { haStyle } from "../../../../resources/styles";
 import { WebhookDialogParams } from "./show-dialog-manage-cloudhook";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 
 const inputLabel = "Public URL – Click to copy to clipboard";
 
@@ -108,18 +109,17 @@ export class DialogManageCloudhook extends LitElement {
   }
 
   private async _disableWebhook() {
-    if (
-      !confirm(
-        this.hass!.localize(
-          "ui.panel.config.cloud.dialog_cloudhook.confirm_disable"
-        )
-      )
-    ) {
-      return;
-    }
-
-    this._params!.disableHook();
-    this._closeDialog();
+    showConfirmationDialog(this, {
+      text: this.hass!.localize(
+        "ui.panel.config.cloud.dialog_cloudhook.confirm_disable"
+      ),
+      dismissText: this.hass!.localize("ui.common.no"),
+      confirmText: this.hass!.localize("ui.common.yes"),
+      confirm: () => {
+        this._params!.disableHook();
+        this._closeDialog();
+      },
+    });
   }
 
   private _copyClipboard(ev: FocusEvent) {
