@@ -43,6 +43,7 @@ import memoizeOne from "memoize-one";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import { configSections } from "../ha-panel-config";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
@@ -367,24 +368,20 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   }
 
   private async _removeEntry(entry: Zone) {
-    if (
-      !confirm(`${this.hass!.localize("ui.panel.config.zone.confirm_delete")}
-
-${this.hass!.localize("ui.panel.config.zone.confirm_delete2")}`)
-    ) {
-      return false;
-    }
-
-    try {
-      await deleteZone(this.hass!, entry!.id);
-      this._storageItems = this._storageItems!.filter((ent) => ent !== entry);
-      if (!this.narrow) {
-        this._map?.fitMap();
-      }
-      return true;
-    } catch (err) {
-      return false;
-    }
+    showConfirmationDialog(this, {
+      title: this.hass!.localize("ui.panel.config.zone.confirm_delete"),
+      text: this.hass!.localize("ui.panel.config.zone.confirm_delete2"),
+      dismissText: this.hass!.localize("ui.common.no"),
+      confirmText: this.hass!.localize("ui.common.yes"),
+      confirm: async () => {
+        await deleteZone(this.hass!, entry!.id);
+        this._storageItems = this._storageItems!.filter((ent) => ent !== entry);
+        if (!this.narrow) {
+          this._map?.fitMap();
+        }
+      },
+    });
+    return true;
   }
 
   private async _openDialog(entry?: Zone) {
