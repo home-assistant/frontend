@@ -859,7 +859,7 @@
               "add": "Add trigger",
               "duplicate": "Duplicate",
               "delete": "[%key:ui::panel::mailbox::delete_button%]",
-              "delete_confirm": "Sure you want to delete?",
+              "delete_confirm": "Are you sure you want to delete this?",
               "unsupported_platform": "Unsupported platform: {platform}",
               "type_select": "Trigger type",
               "type": {
