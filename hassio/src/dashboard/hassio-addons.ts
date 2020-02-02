@@ -47,7 +47,7 @@ class HassioAddons extends LitElement {
                           title=${addon.name}
                           description=${addon.description}
                           ?available=${addon.available}
-                          ?UpdateAvailable=${addon.installed !== addon.version}
+                          ?updateAvailable=${addon.installed !== addon.version}
                           icon=${this._computeIcon(addon)}
                           .iconTitle=${this._computeIconTitle(addon)}
                           .iconClass=${this._computeIconClass(addon)}
