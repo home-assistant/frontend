@@ -31,6 +31,7 @@ import { classMap } from "lit-html/directives/class-map";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import { configSections } from "../ha-panel-config";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 
 @customElement("ha-config-areas")
 export class HaConfigAreas extends LitElement {
@@ -149,20 +150,20 @@ export class HaConfigAreas extends LitElement {
       updateEntry: async (values) =>
         updateAreaRegistryEntry(this.hass!, entry!.area_id, values),
       removeEntry: async () => {
-        if (
-          !confirm(`Are you sure you want to delete this area?
-
-All devices in this area will become unassigned.`)
-        ) {
-          return false;
-        }
-
-        try {
-          await deleteAreaRegistryEntry(this.hass!, entry!.area_id);
-          return true;
-        } catch (err) {
-          return false;
-        }
+        showConfirmationDialog(this, {
+          title: this.hass.localize(
+            "ui.panel.config.areas.delete.confirmation_title"
+          ),
+          text: this.hass.localize(
+            "ui.panel.config.areas.delete.confirmation_text"
+          ),
+          confirm: () => {
+            deleteAreaRegistryEntry(this.hass!, entry!.area_id);
+          },
+          dismissText: this.hass.localize("ui.common.no"),
+          confirmText: this.hass.localize("ui.common.yes"),
+        });
+        return true;
       },
     });
   }

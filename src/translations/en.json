@@ -737,6 +737,10 @@
             "delete": "DELETE",
             "update": "UPDATE",
             "create": "CREATE"
+          },
+          "delete": {
+            "confirmation_title": "Are you sure you want to delete this area?",
+            "confirmation_text": "All devices in this area will become unassigned."
           }
         },
         "core": {
