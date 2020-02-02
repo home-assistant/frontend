@@ -22,6 +22,7 @@ class HassioAddons extends LitElement {
   @property() public addons?: HassioAddonInfo[];
 
   protected render(): TemplateResult {
+    const HA105plus = this._computeHA105plus;
     return html`
       <div class="content">
         <h1>Add-ons</h1>
@@ -62,7 +63,7 @@ class HassioAddons extends LitElement {
                             : addon.installed && addon.state === "started"
                             ? "running"
                             : "stopped"}
-                          .iconImage=${this._computeHA105plus && addon.icon
+                          .iconImage=${HA105plus && addon.icon
                             ? `/api/hassio/addons/${addon.slug}/icon`
                             : undefined}
                         ></hassio-card-content>
