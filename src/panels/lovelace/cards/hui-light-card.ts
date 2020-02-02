@@ -29,6 +29,7 @@ import { toggleEntity } from "../common/entity/toggle-entity";
 import { LightCardConfig } from "./types";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { SUPPORT_BRIGHTNESS } from "../../../data/light";
+import { evaluateStateConfig } from "../common/evaluate-state-config";
 
 @customElement("hui-light-card")
 export class HuiLightCard extends LitElement implements LovelaceCard {
@@ -43,9 +44,8 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   }
 
   @property() public hass?: HomeAssistant;
-
   @property() private _config?: LightCardConfig;
-
+  private _originalConfig?: LightCardConfig;
   private _brightnessTimout?: number;
 
   public getCardSize(): number {
@@ -57,7 +57,8 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
       throw new Error("Specify an entity from within the light domain.");
     }
 
-    this._config = { theme: "default", ...config };
+    this._originalConfig = { theme: "default", ...config };
+    this._config = this._originalConfig;
   }
 
   protected render(): TemplateResult {
@@ -138,6 +139,16 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
+    const cardConfig = evaluateStateConfig(
+      this.hass!,
+      this._originalConfig
+    ) as LightCardConfig;
+
+    if (cardConfig !== this._config) {
+      this._config = cardConfig;
+      return true;
+    }
+
     return hasConfigOrEntityChanged(this, changedProps);
   }
 
