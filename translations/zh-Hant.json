@@ -1232,6 +1232,7 @@
                         },
                         "create": "以設備新增自動化",
                         "no_automations": "沒有自動化",
+                        "no_device_automations": "該設備沒有任何自動化可使用。",
                         "triggers": {
                             "caption": "執行動作、當..."
                         }
