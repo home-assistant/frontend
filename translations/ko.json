@@ -1226,14 +1226,19 @@
                         "actions": {
                             "caption": "뭔가 트리거 되었을 때...."
                         },
+                        "automations": "자동화",
                         "conditions": {
                             "caption": "... 이면 자동화를 실행 (조건)"
                         },
+                        "create": "기기로 자동화 구성하기",
+                        "no_automations": "자동화 없음",
+                        "no_device_automations": "이 기기에서 사용할 수 있는 자동화가 없습니다",
                         "triggers": {
                             "caption": "... 일 때 자동화를 실행 (트리거)"
                         }
                     },
                     "automations": "자동화",
+                    "cant_edit": "UI 에서 작성된 항목만 편집할 수 있습니다.",
                     "caption": "기기",
                     "confirm_rename_entity_ids": "구성요소의 ID 이름 또한 바꾸시겠습니까?",
                     "data_table": {
@@ -1248,12 +1253,24 @@
                     "details": "기기의 모든 세부 정보는 다음과 같습니다.",
                     "device_not_found": "기기를 찾을 수 없습니다.",
                     "entities": {
-                        "add_entities_lovelace": "Lovelace UI 에 모든 기기 구성요소 추가",
+                        "add_entities_lovelace": "Lovelace 에 추가",
                         "entities": "구성요소",
                         "none": "이 기기는 구성요소가 없습니다"
                     },
                     "info": "기기 정보",
                     "name": "이름",
+                    "scene": {
+                        "create": "기기로 씬 구성하기",
+                        "no_scenes": "씬 없음",
+                        "scenes": "씬"
+                    },
+                    "scenes": "씬",
+                    "script": {
+                        "create": "기기로 스크립트 작성하기",
+                        "no_scripts": "스크립트 없음",
+                        "scripts": "스크립트"
+                    },
+                    "scripts": "스크립트",
                     "unknown_error": "알 수 없는 오류",
                     "unnamed_device": "이름이 없는 기기",
                     "update": "업데이트"
