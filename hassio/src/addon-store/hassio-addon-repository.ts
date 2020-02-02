@@ -76,6 +76,7 @@ class HassioAddonRepositoryEl extends LitElement {
                     .iconTitle=${this.computeIconTitle(addon)}
                     .iconClass=${this.computeIconClass(addon)}
                     .iconImage=${this._computeIconImageURL(addon)}
+                    ?showBlueTopbar=${addon.installed}
                   ></hassio-card-content>
                 </div>
               </paper-card>

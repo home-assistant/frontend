@@ -19,7 +19,8 @@ class HassioCardContent extends LitElement {
   @property() public title!: string;
   @property() public description?: string;
   @property({ type: Boolean }) public available: boolean = true;
-  @property({ type: Boolean }) public updateAvailable: boolean = false;
+  @property({ type: Boolean }) public showDot: boolean = false;
+  @property({ type: Boolean }) public showBlueTopbar: boolean = false;
   @property() public datetime?: string;
   @property() public iconTitle?: string;
   @property() public iconClass?: string;
@@ -28,6 +29,11 @@ class HassioCardContent extends LitElement {
 
   protected render(): TemplateResult {
     return html`
+      ${this.showBlueTopbar
+        ? html`
+            <div class="blue-topbar"></div>
+          `
+        : ""}
       ${this.iconImage
         ? html`
             <div
@@ -50,9 +56,9 @@ class HassioCardContent extends LitElement {
       <div>
         <div class="title">
           ${this.title}
-          ${this.updateAvailable
+          ${this.showDot
             ? html`
-                <div class="update-available" title="Update available"></div>
+                <div class="dot" title="Update available"></div>
               `
             : ""}
         </div>
@@ -123,7 +129,7 @@ class HassioCardContent extends LitElement {
       .grayscale {
         filter: grayscale(1);
       }
-      .update-available {
+      .dot {
         position: absolute;
         background-color: var(--paper-orange-400);
         width: 12px;
@@ -131,6 +137,15 @@ class HassioCardContent extends LitElement {
         top: 8px;
         right: 8px;
         border-radius: 50%;
+      }
+      .blue-topbar {
+        position: absolute;
+        width: 100%;
+        border: 0px;
+        height: 2px;
+        top: 0;
+        left: 0;
+        background-color: var(--google-blue-500);
       }
     `;
   }

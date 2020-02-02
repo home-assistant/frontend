@@ -47,11 +47,19 @@ class HassioAddons extends LitElement {
                           title=${addon.name}
                           description=${addon.description}
                           ?available=${addon.available}
-                          ?updateAvailable=${addon.installed !== addon.version}
-                          icon=${this._computeIcon(addon)}
-                          .iconTitle=${this._computeIconTitle(addon)}
+                          ?showDot=${addon.installed !== addon.version}
+                          icon=${addon.installed !== addon.version
+                            ? "hassio:arrow-up-bold-circle"
+                            : "hassio:puzzle"}
+                          .iconTitle=${addon.state !== "started"
+                            ? "Add-on is stopped"
+                            : addon.installed !== addon.version
+                            ? "New version available"
+                            : "Add-on is running"}
                           .iconClass=${this._computeIconClass(addon)}
-                          .iconImage=${this._computeIconImageURL(addon)}
+                          .iconImage=${this._computeHA105plus && addon.icon
+                            ? `/api/hassio/addons/${addon.slug}/icon`
+                            : undefined}
                         ></hassio-card-content>
                       </div>
                     </paper-card>
@@ -72,22 +80,6 @@ class HassioAddons extends LitElement {
         }
       `,
     ];
-  }
-
-  private _computeIcon(addon: HassioAddonInfo): string {
-    return addon.installed !== addon.version
-      ? "hassio:arrow-up-bold-circle"
-      : "hassio:puzzle";
-  }
-
-  private _computeIconTitle(addon: HassioAddonInfo): string {
-    if (addon.state !== "started") {
-      return "Add-on is stopped";
-    }
-    if (addon.installed !== addon.version) {
-      return "New version available";
-    }
-    return "Add-on is running";
   }
 
   private _computeIconClass(addon: HassioAddonInfo): string {
@@ -111,13 +103,6 @@ class HassioAddons extends LitElement {
   private get _computeHA105plus(): boolean {
     const [major, minor] = this.hass.config.version.split(".", 2);
     return Number(major) > 0 || (major === "0" && Number(minor) >= 105);
-  }
-
-  private _computeIconImageURL(addon: HassioAddonInfo): string | undefined {
-    if (this._computeHA105plus && addon.icon) {
-      return `/api/hassio/addons/${addon.slug}/icon`;
-    }
-    return undefined;
   }
 }
 
