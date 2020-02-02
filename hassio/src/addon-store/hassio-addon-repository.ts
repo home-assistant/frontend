@@ -39,7 +39,7 @@ class HassioAddonRepositoryEl extends LitElement {
   protected render(): TemplateResult {
     const repo = this.repo;
     const addons = this._getAddons(this.addons, this.filter);
-    const HA105plus = this._computeHA105plus;
+    const Ha105Pluss = this._computeHA105plus;
 
     if (this.filter && addons.length < 1) {
       return html`
@@ -90,7 +90,7 @@ class HassioAddonRepositoryEl extends LitElement {
                       : !addon.available
                       ? "not_available"
                       : ""}
-                    .iconImage=${HA105plus && addon.icon
+                    .iconImage=${Ha105Pluss && addon.icon
                       ? `/api/hassio/addons/${addon.slug}/icon`
                       : undefined}
                     ?showBlueTopbar=${addon.installed}
