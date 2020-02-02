@@ -56,7 +56,12 @@ class HassioAddons extends LitElement {
                             : addon.installed !== addon.version
                             ? "New version available"
                             : "Add-on is running"}
-                          .iconClass=${this._computeIconClass(addon)}
+                          .iconClass=${addon.installed &&
+                          addon.installed !== addon.version
+                            ? "update"
+                            : addon.installed && addon.state === "started"
+                            ? "running"
+                            : "stopped"}
                           .iconImage=${this._computeHA105plus && addon.icon
                             ? `/api/hassio/addons/${addon.slug}/icon`
                             : undefined}
@@ -80,16 +85,6 @@ class HassioAddons extends LitElement {
         }
       `,
     ];
-  }
-
-  private _computeIconClass(addon: HassioAddonInfo): string {
-    if (addon.installed) {
-      return addon.state === "started" ? "running" : "stopped";
-    }
-    if (addon.installed !== addon.version) {
-      return "update";
-    }
-    return "";
   }
 
   private _addonTapped(ev: any): void {
