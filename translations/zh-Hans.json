@@ -1566,6 +1566,17 @@
                         "device_name_placeholder": "用户指定的名称",
                         "update_name_button": "更新名称"
                     },
+                    "group_binding": {
+                        "bind_button_help": "将选定的组绑定到所选的设备集群。",
+                        "bind_button_label": "绑定组",
+                        "cluster_selection_help": "选择要绑定到所选组的集群。",
+                        "group_picker_help": "选择一个组来进行绑定。",
+                        "group_picker_label": "可绑定的组",
+                        "header": "组绑定",
+                        "introduction": "绑定和取消绑定组。",
+                        "unbind_button_help": "从选定的设备集群中取消绑定选定的组。",
+                        "unbind_button_label": "取消绑定组"
+                    },
                     "network_management": {
                         "header": "网络管理",
                         "introduction": "影响整个网络的命令"
