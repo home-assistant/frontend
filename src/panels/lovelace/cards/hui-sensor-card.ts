@@ -285,7 +285,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
 
   protected updated(changedProps: PropertyValues) {
     super.updated(changedProps);
-    if (!this._config || this._config.graph !== "line" || !this.hass) {
+    if (!this._config || !this.hass) {
       return;
     }
 
@@ -303,11 +303,13 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
       applyThemesOnElement(this, this.hass.themes, this._config!.theme);
     }
 
-    const minute = 60000;
-    if (changedProps.has("_config")) {
-      this._getHistory();
-    } else if (Date.now() - this._date!.getTime() >= minute) {
-      this._getHistory();
+    if (this._config.graph === "line") {
+      const minute = 60000;
+      if (changedProps.has("_config")) {
+        this._getHistory();
+      } else if (Date.now() - this._date!.getTime() >= minute) {
+        this._getHistory();
+      }
     }
   }
 
