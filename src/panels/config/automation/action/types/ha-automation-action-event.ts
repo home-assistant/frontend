@@ -57,13 +57,17 @@ export class HaEventAction extends LitElement implements ActionElement {
           "ui.panel.config.automation.editor.actions.type.event.service_data"
         )}
         .name=${"event_data"}
-        .value=${event_data}
+        .defaultValue=${event_data}
         @value-changed=${this._dataChanged}
       ></ha-yaml-editor>
     `;
   }
 
   private _dataChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    if (!ev.detail.isValid) {
+      return;
+    }
     this._actionData = ev.detail.value;
     handleChangeEvent(this, ev);
   }
