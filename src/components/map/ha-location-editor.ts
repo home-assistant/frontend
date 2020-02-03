@@ -23,6 +23,7 @@ import {
 } from "../../common/dom/setup-leaflet-map";
 import { fireEvent } from "../../common/dom/fire_event";
 import { nextRender } from "../../common/util/render-status";
+import { defaultRadiusColor } from "../../data/zone";
 
 @customElement("ha-location-editor")
 class LocationEditor extends LitElement {
@@ -217,7 +218,7 @@ class LocationEditor extends LitElement {
       this._leafletMap!.addLayer(this._locationMarker);
     } else {
       this._locationMarker = this.Leaflet!.circle(this.location, {
-        color: this.radiusColor || "#FF9800",
+        color: this.radiusColor || defaultRadiusColor,
         radius: this.radius,
       });
       this._leafletMap!.addLayer(this._locationMarker);
