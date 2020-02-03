@@ -54,7 +54,6 @@ export class HaServiceAction extends LitElement implements ActionElement {
   });
 
   protected updated(changedProperties: PropertyValues) {
-    console.log(changedProperties);
     if (!changedProperties.has("action")) {
       return;
     }
