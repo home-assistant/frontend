@@ -615,6 +615,7 @@
                 "title": "Domeinen in- en uitschakelen"
             },
             "entity_registry": {
+                "control": "Bediening",
                 "dismiss": "Sluiten",
                 "editor": {
                     "confirm_delete": "Weet je zeker dat je dit item wilt verwijderen?",
@@ -816,7 +817,7 @@
                             "delete_confirm": "Zeker weten dat je wilt verwijderen?",
                             "duplicate": "Dupliceren",
                             "header": "Voorwaarden",
-                            "introduction": "Voorwaarden zijn een optioneel onderdeel van een automatiseringsregel en kunnen worden gebruikt om te voorkomen dat een actie plaatsvindt wanneer deze wordt geactiveerd. Voorwaarden lijken erg op triggers, maar zijn verschillend. Een trigger zal kijken naar gebeurtenissen die in het systeem plaatsvinden, terwijl een voorwaarde alleen kijkt naar hoe het systeem er op dit moment uitziet. Een trigger kan waarnemen dat een schakelaar wordt ingeschakeld. Een voorwaarde kan alleen zien of een schakelaar aan of uit staat.",
+                            "introduction": "Voorwaarden zijn optioneel en verhinderen verdere uitvoering tenzij aan alle voorwaarden is voldaan.",
                             "learn_more": "Meer informatie over condities",
                             "name": "Voorwaarde",
                             "type_select": "Type voorwaarde",
@@ -1317,7 +1318,7 @@
                         },
                         "integrations_page": "Integratiespagina",
                         "introduction": "Home Assistant houdt een register bij van elke entiteit die het ooit heeft gezien en die uniek kan worden geïdentificeerd. Elk van deze entiteiten krijgt een entiteit-ID toegewezen die alleen voor deze entiteit wordt gereserveerd.",
-                        "introduction2": "Gebruik het entiteitenregister om de naam te overschrijven, de entiteits-ID te wijzigen of het item te verwijderen uit Home Assistant. Opmerking: als u de entiteitsregistervermelding verwijdert, wordt de entiteit niet verwijderd. Hiertoe volgt u de onderstaande koppeling en verwijdert u deze van de integratiespagina.",
+                        "introduction2": "Gebruik het entiteitenregister om de naam te overschrijven, de entiteits-ID te wijzigen of het item te verwijderen uit Home Assistant.",
                         "remove_selected": {
                             "button": "Verwijder geselecteerde",
                             "confirm_text": "Entiteiten kunnen alleen worden verwijderd wanneer de integratie de entiteiten niet langer levert.",
@@ -2081,7 +2082,7 @@
                     "save_config": {
                         "cancel": "Laat maar",
                         "header": "Neem de controle over je Lovelace UI",
-                        "para": "Normaal gesproken onderhoudt Home Assistant je gebruikersinterface en update die met nieuwe entiteiten of Lovelace-onderdelen wanneer deze beschikbaar zijn. Als je het beheer overneemt, zullen we niet langer automatisch wijzigingen aanbrengen.",
+                        "para": "Home Assistant onderhoudt je gebruikersinterface en update die met nieuwe entiteiten of Lovelace-onderdelen wanneer deze beschikbaar zijn. Als je het beheer overneemt, zullen we niet langer automatisch wijzigingen aanbrengen.",
                         "para_sure": "Weet je zeker dat je de controle wilt over je gebruikersinterface?",
                         "save": "Neem over"
                     },
@@ -2303,7 +2304,7 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "description": "Home Assistant verbergt standaard geavanceerde functies en opties. U kunt deze functies toegankelijk maken door deze schakelaar aan te zetten. Dit is een gebruikersspecifieke instelling en heeft geen invloed op andere gebruikers die Home Assistant gebruiken.",
+                    "description": "Ontgrendelt geavanceerde functies.",
                     "link_promo": "Meer informatie",
                     "title": "Geavanceerde modus"
                 },
