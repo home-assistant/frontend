@@ -44,23 +44,6 @@ export class ZHADevicePage extends LitElement {
   @property() private _bindableDevices: ZHADevice[] = [];
   @property() private _groups: ZHAGroup[] = [];
 
-  private _firstUpdatedCalled: boolean = false;
-
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (this.hass && this._firstUpdatedCalled) {
-      this._fetchGroups();
-    }
-  }
-
-  protected firstUpdated(changedProperties: PropertyValues): void {
-    super.firstUpdated(changedProperties);
-    if (this.hass) {
-      this._fetchGroups();
-    }
-    this._firstUpdatedCalled = true;
-  }
-
   protected updated(changedProperties: PropertyValues): void {
     if (changedProperties.has("ieee")) {
       this._fetchData();
@@ -148,14 +131,8 @@ export class ZHADevicePage extends LitElement {
               sortZHADevices
             )
           : [];
+      this._groups = (await fetchGroups(this.hass!)).sort(sortZHAGroups);
     }
-  }
-
-  private async _fetchGroups() {
-    this._groups =
-      this.device && this.device.device_type !== "Coordinator"
-        ? (await fetchGroups(this.hass!)).sort(sortZHAGroups)
-        : [];
   }
 
   static get styles(): CSSResult[] {
