@@ -21,6 +21,7 @@ const isEmpty = (obj: object) => {
 @customElement("ha-yaml-editor")
 export class HaYamlEditor extends LitElement {
   @property() public value?: any;
+  @property() public defaultValue?: any;
   @property() public isValid = true;
   @property() public label?: string;
   @property() private _yaml: string = "";
@@ -40,8 +41,8 @@ export class HaYamlEditor extends LitElement {
   }
 
   protected firstUpdated() {
-    if (this.value) {
-      this.setValue(this.value);
+    if (this.defaultValue) {
+      this.setValue(this.defaultValue);
     }
   }
 
@@ -73,7 +74,6 @@ export class HaYamlEditor extends LitElement {
     if (value) {
       try {
         parsed = safeLoad(value);
-        isValid = true;
       } catch (err) {
         // Invalid YAML
         isValid = false;

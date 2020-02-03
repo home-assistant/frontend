@@ -54,6 +54,7 @@ export class HaServiceAction extends LitElement implements ActionElement {
   });
 
   protected updated(changedProperties: PropertyValues) {
+    console.log(changedProperties);
     if (!changedProperties.has("action")) {
       return;
     }
@@ -94,13 +95,17 @@ export class HaServiceAction extends LitElement implements ActionElement {
           "ui.panel.config.automation.editor.actions.type.service.service_data"
         )}
         .name=${"data"}
-        .value=${data}
+        .defaultValue=${data}
         @value-changed=${this._dataChanged}
       ></ha-yaml-editor>
     `;
   }
 
   private _dataChanged(ev: CustomEvent): void {
+    ev.stopPropagation();
+    if (!ev.detail.isValid) {
+      return;
+    }
     this._actionData = ev.detail.value;
     handleChangeEvent(this, ev);
   }
