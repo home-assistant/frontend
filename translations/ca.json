@@ -1185,6 +1185,7 @@
                             "caption": "Només fer alguna cosa si..."
                         },
                         "no_automations": "No hi ha automatitzacions",
+                        "no_device_automations": "No hi ha automatitzacions disponibles per a aquest dispositiu.",
                         "triggers": {
                             "caption": "Feu alguna cosa quan..."
                         }
