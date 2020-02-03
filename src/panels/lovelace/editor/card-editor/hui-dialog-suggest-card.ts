@@ -84,7 +84,9 @@ export class HuiDialogSuggestCard extends LitElement {
           ${this._yamlMode && this._cardConfig
             ? html`
                 <div class="editor">
-                  <ha-yaml-editor .value=${this._cardConfig}></ha-yaml-editor>
+                  <ha-yaml-editor
+                    .defaultValue=${this._cardConfig}
+                  ></ha-yaml-editor>
                 </div>
               `
             : ""}
