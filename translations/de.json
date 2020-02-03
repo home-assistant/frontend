@@ -400,9 +400,9 @@
         },
         "card": {
             "alarm_control_panel": {
-                "arm_away": "Aktivieren, unterwegs",
+                "arm_away": "Aktivieren - Unterwegs",
                 "arm_custom_bypass": "Benutzerdefinierter Bypass",
-                "arm_home": "Aktivieren, Zuhause",
+                "arm_home": "Aktivieren - Zuhause",
                 "arm_night": "Nacht aktiviert",
                 "armed_custom_bypass": "Benutzerdefinierter Bypass",
                 "clear_code": "Löschen",
@@ -817,7 +817,7 @@
                             "delete_confirm": "Möchten Sie das wirklich löschen?",
                             "duplicate": "Duplizieren",
                             "header": "Bedingungen",
-                            "introduction": "Bedingungen sind ein optionaler Bestandteil bei automatisierten Abläufen und können das Ausführen einer Aktion verhindern. Bedingungen sind Auslösern ähnlich, aber dennoch verschieden. Ein Auslöser beobachtet im System ablaufende Ereignisse, wohingegen Bedingungen nur den aktuellen Systemzustand betrachten. Ein Auslöser kann beobachten, ob ein Schalter aktiviert wird. Eine Bedingung kann lediglich sehen, ob ein Schalter aktuell an oder aus ist.",
+                            "introduction": "Die Bedingungen sind optional und verhindern die weitere Ausführung, sofern nicht alle Bedingungen erfüllt sind.",
                             "learn_more": "Erfahre mehr über Bedingungen",
                             "name": "Zustand",
                             "type_select": "Bedingungstyp",
@@ -1253,7 +1253,7 @@
                     "details": "Hier sind alle Details deines Geräts.",
                     "device_not_found": "Gerät nicht gefunden.",
                     "entities": {
-                        "add_entities_lovelace": "Alle Geräte-Entitäten zu Lovelace hinzufügen",
+                        "add_entities_lovelace": "Zu Lovelace hinzufügen",
                         "entities": "Entitäten",
                         "none": "Dieses Gerät hat keine Entitäten"
                     },
@@ -2106,7 +2106,7 @@
                     "refresh": "Aktualisieren",
                     "unused_entities": "Ungenutzte Elemente"
                 },
-                "reload_lovelace": "Lovelace neu laden",
+                "reload_lovelace": "Benutzeroberfläche neu laden",
                 "unused_entities": {
                     "available_entities": "Dies sind die Entitäten, die Sie zur Verfügung haben, die aber noch nicht in Ihrer Lovelace-Benutzeroberfläche enthalten sind.",
                     "domain": "Domain",
