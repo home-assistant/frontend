@@ -31,6 +31,9 @@ import {
   updateZone,
   deleteZone,
   ZoneMutableParams,
+  homeRadiusColor,
+  passiveRadiusColor,
+  defaultRadiusColor,
 } from "../../../data/zone";
 // tslint:disable-next-line
 import {
@@ -68,17 +71,17 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
           radius: state.attributes.radius,
           radius_color:
             state.entity_id === "zone.home"
-              ? "#03a9f4"
+              ? homeRadiusColor
               : state.attributes.passive
-              ? "#9b9b9b"
-              : "#FF9800",
+              ? passiveRadiusColor
+              : defaultRadiusColor,
           editable: false,
         };
       });
       const storageLocations: MarkerLocation[] = storageItems.map((zone) => {
         return {
           ...zone,
-          radius_color: zone.passive ? "#9b9b9b" : "#FF9800",
+          radius_color: zone.passive ? passiveRadiusColor : defaultRadiusColor,
           editable: true,
         };
       });
