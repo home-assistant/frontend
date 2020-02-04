@@ -1,4 +1,5 @@
 export const UNAVAILABLE = "unavailable";
+export const UNKNOWN = "unknown";
 
 export const ENTITY_COMPONENT_DOMAINS = [
   "air_quality",
