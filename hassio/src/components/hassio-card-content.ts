@@ -7,7 +7,6 @@ import {
   property,
   customElement,
 } from "lit-element";
-import { classMap } from "lit-html/directives/class-map";
 import "@polymer/iron-icon/iron-icon";
 
 import "../../../src/components/ha-relative-time";
