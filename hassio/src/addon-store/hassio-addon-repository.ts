@@ -73,7 +73,7 @@ class HassioAddonRepositoryEl extends LitElement {
                     .title=${addon.name}
                     .description=${addon.description}
                     .available=${addon.available}
-                    icon=${addon.installed !== addon.version
+                    .icon=${addon.installed && addon.installed !== addon.version
                       ? "hassio:arrow-up-bold-circle"
                       : "hassio:puzzle"}
                     .iconTitle=${addon.installed
@@ -93,7 +93,14 @@ class HassioAddonRepositoryEl extends LitElement {
                     .iconImage=${ha105pluss && addon.icon
                       ? `/api/hassio/addons/${addon.slug}/icon`
                       : undefined}
-                    ?showBlueTopbar=${addon.installed}
+                    .showTopbar=${addon.installed || !addon.available}
+                    .topbarClass=${addon.installed
+                      ? addon.installed !== addon.version
+                        ? "update"
+                        : "installed"
+                      : !addon.available
+                      ? "unavailable"
+                      : ""}
                   ></hassio-card-content>
                 </div>
               </paper-card>

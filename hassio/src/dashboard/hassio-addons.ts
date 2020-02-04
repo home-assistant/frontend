@@ -22,7 +22,9 @@ class HassioAddons extends LitElement {
   @property() public addons?: HassioAddonInfo[];
 
   protected render(): TemplateResult {
-    const ha105pluss = this._computeHA105plus;
+    const [major, minor] = this.hass.config.version.split(".", 2);
+    const ha105pluss =
+      Number(major) > 0 || (major === "0" && Number(minor) >= 105);
     return html`
       <div class="content">
         <h1>Add-ons</h1>
@@ -45,11 +47,12 @@ class HassioAddons extends LitElement {
                       <div class="card-content">
                         <hassio-card-content
                           .hass=${this.hass}
-                          title=${addon.name}
-                          description=${addon.description}
-                          ?available=${addon.available}
-                          ?showDot=${addon.installed !== addon.version}
-                          icon=${addon.installed !== addon.version
+                          .title=${addon.name}
+                          .description=${addon.description}
+                          available
+                          .showTopbar=${addon.installed !== addon.version}
+                          topbarClass="update"
+                          .icon=${addon.installed !== addon.version
                             ? "hassio:arrow-up-bold-circle"
                             : "hassio:puzzle"}
                           .iconTitle=${addon.state !== "started"
@@ -94,11 +97,6 @@ class HassioAddons extends LitElement {
 
   private _openStore(): void {
     navigate(this, "/hassio/store");
-  }
-
-  private get _computeHA105plus(): boolean {
-    const [major, minor] = this.hass.config.version.split(".", 2);
-    return Number(major) > 0 || (major === "0" && Number(minor) >= 105);
   }
 }
 
