@@ -39,6 +39,7 @@ class HassioAddonRepositoryEl extends LitElement {
   protected render(): TemplateResult {
     const repo = this.repo;
     const addons = this._getAddons(this.addons, this.filter);
+    const ha105pluss = this._computeHA105plus;
 
     if (this.filter && addons.length < 1) {
       return html`
@@ -64,7 +65,7 @@ class HassioAddonRepositoryEl extends LitElement {
               <paper-card
                 .addon=${addon}
                 class=${addon.available ? "" : "not_available"}
-                @click=${this.addonTapped}
+                @click=${this._addonTapped}
               >
                 <div class="card-content">
                   <hassio-card-content
@@ -72,9 +73,34 @@ class HassioAddonRepositoryEl extends LitElement {
                     .title=${addon.name}
                     .description=${addon.description}
                     .available=${addon.available}
-                    .icon=${this.computeIcon(addon)}
-                    .iconTitle=${this.computeIconTitle(addon)}
-                    .iconClass=${this.computeIconClass(addon)}
+                    .icon=${addon.installed && addon.installed !== addon.version
+                      ? "hassio:arrow-up-bold-circle"
+                      : "hassio:puzzle"}
+                    .iconTitle=${addon.installed
+                      ? addon.installed !== addon.version
+                        ? "New version available"
+                        : "Add-on is installed"
+                      : addon.available
+                      ? "Add-on is not installed"
+                      : "Add-on is not available on your system"}
+                    .iconClass=${addon.installed
+                      ? addon.installed !== addon.version
+                        ? "update"
+                        : "installed"
+                      : !addon.available
+                      ? "not_available"
+                      : ""}
+                    .iconImage=${ha105pluss && addon.icon
+                      ? `/api/hassio/addons/${addon.slug}/icon`
+                      : undefined}
+                    .showTopbar=${addon.installed || !addon.available}
+                    .topbarClass=${addon.installed
+                      ? addon.installed !== addon.version
+                        ? "update"
+                        : "installed"
+                      : !addon.available
+                      ? "unavailable"
+                      : ""}
                   ></hassio-card-content>
                 </div>
               </paper-card>
@@ -85,32 +111,13 @@ class HassioAddonRepositoryEl extends LitElement {
     `;
   }
 
-  private computeIcon(addon) {
-    return addon.installed && addon.installed !== addon.version
-      ? "hassio:arrow-up-bold-circle"
-      : "hassio:puzzle";
-  }
-
-  private computeIconTitle(addon) {
-    if (addon.installed) {
-      return addon.installed !== addon.version
-        ? "New version available"
-        : "Add-on is installed";
-    }
-    return addon.available
-      ? "Add-on is not installed"
-      : "Add-on is not available on your system";
-  }
-
-  private computeIconClass(addon) {
-    if (addon.installed) {
-      return addon.installed !== addon.version ? "update" : "installed";
-    }
-    return !addon.available ? "not_available" : "";
-  }
-
-  private addonTapped(ev) {
+  private _addonTapped(ev) {
     navigate(this, `/hassio/addon/${ev.currentTarget.addon.slug}`);
+  }
+
+  private get _computeHA105plus(): boolean {
+    const [major, minor] = this.hass.config.version.split(".", 2);
+    return Number(major) > 0 || (major === "0" && Number(minor) >= 105);
   }
 
   static get styles(): CSSResultArray {
