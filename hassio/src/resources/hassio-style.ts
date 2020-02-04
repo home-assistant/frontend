@@ -17,11 +17,11 @@ export const hassioStyle = css`
     font-weight: var(--paper-font-headline_-_font-weight);
     letter-spacing: var(--paper-font-headline_-_letter-spacing);
     line-height: var(--paper-font-headline_-_line-height);
-    padding-left: 16px;
+    padding-left: 8px;
   }
   .description {
     margin-top: 4px;
-    padding-left: 16px;
+    padding-left: 8px;
   }
   .card-group {
     display: grid;
