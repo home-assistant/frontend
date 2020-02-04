@@ -33,7 +33,7 @@ class HassioSystem extends LitElement {
     return html`
       <div class="content">
         <h1>Information</h1>
-        <div class="side-by-side">
+        <div class="card-group">
           <hassio-supervisor-info
             .hass=${this.hass}
             .supervisorInfo=${this.supervisorInfo}
@@ -65,11 +65,6 @@ class HassioSystem extends LitElement {
           font-size: 2em;
           padding-left: 8px;
           margin-bottom: 8px;
-        }
-        .side-by-side {
-          display: grid;
-          grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-          grid-gap: 8px;
         }
         hassio-supervisor-log {
           width: 100%;
