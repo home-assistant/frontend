@@ -29,6 +29,8 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
+import { computeDomain } from "../../../common/entity/compute_domain";
+import { UNAVAILABLE, UNKNOWN } from "../../../data/entity";
 
 @customElement("hui-glance-card")
 export class HuiGlanceCard extends LitElement implements LovelaceCard {
@@ -242,7 +244,18 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
         ${this._config!.show_state !== false && entityConf.show_state !== false
           ? html`
               <div>
-                ${entityConf.show_last_changed
+                ${computeDomain(entityConf.entity) === "sensor" &&
+                stateObj.attributes.device_class === "timestamp" &&
+                stateObj.state !== UNAVAILABLE &&
+                stateObj.state !== UNKNOWN
+                  ? html`
+                      <hui-timestamp-display
+                        .hass=${this.hass}
+                        .ts=${new Date(stateObj.state)}
+                        .format=${entityConf.format}
+                      ></hui-timestamp-display>
+                    `
+                  : entityConf.show_last_changed
                   ? relativeTime(
                       new Date(stateObj.last_changed),
                       this.hass!.localize
