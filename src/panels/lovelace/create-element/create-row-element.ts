@@ -7,6 +7,7 @@ import "../entity-rows/hui-input-select-entity-row";
 import "../entity-rows/hui-input-text-entity-row";
 import "../entity-rows/hui-lock-entity-row";
 import "../entity-rows/hui-media-player-entity-row";
+import "../entity-rows/hui-person-entity-row";
 import "../entity-rows/hui-scene-entity-row";
 import "../entity-rows/hui-script-entity-row";
 import "../entity-rows/hui-sensor-entity-row";
@@ -46,6 +47,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   light: "toggle",
   lock: "lock",
   media_player: "media-player",
+  person: "person",
   remote: "toggle",
   scene: "scene",
   script: "script",
