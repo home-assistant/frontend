@@ -23,6 +23,7 @@ import {
   SUPPORT_PAUSE,
 } from "../../../data/media-player";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
+import { computeRTLDirection } from "../../../common/util/compute_rtl";
 
 @customElement("hui-media-player-entity-row")
 class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
@@ -82,21 +83,41 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                   ? ""
                   : html`
                       <paper-icon-button
-                        icon="${this._computeControlIcon(stateObj)}"
-                        @click="${this._playPause}"
+                        icon=${this._computeControlIcon(stateObj)}
+                        @click=${this._playPause}
                       ></paper-icon-button>
                     `}
                 ${supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
                   ? html`
                       <paper-icon-button
                         icon="hass:skip-next"
-                        @click="${this._nextTrack}"
+                        @click=${this._nextTrack}
                       ></paper-icon-button>
                     `
                   : ""}
               </div>
             `}
       </hui-generic-entity-row>
+      ${stateObj.attributes.volume_level
+        ? html`
+            <div class="flex">
+              <paper-icon-button
+                .icon=${stateObj.attributes.is_volume_muted
+                  ? "hass:volume-off"
+                  : "hass:volume-high"}
+                @click=${this._toggleMute}
+              ></paper-icon-button>
+              <ha-slider
+                .dir=${computeRTLDirection(this.hass!)}
+                .value=${Number(stateObj.attributes.volume_level) * 100}
+                pin
+                @change=${this._selectedValueChanged}
+                ignore-bar-touch
+                id="input"
+              ></ha-slider>
+            </div>
+          `
+        : ""}
     `;
   }
 
@@ -104,6 +125,11 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     return css`
       .controls {
         white-space: nowrap;
+      }
+      .flex {
+        display: flex;
+        align-items: center;
+        padding-left: 48px;
       }
     `;
   }
@@ -143,17 +169,38 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     return prefix && suffix ? `${prefix}: ${suffix}` : prefix || suffix || "";
   }
 
-  private _playPause(ev: MouseEvent): void {
-    ev.stopPropagation();
+  private _playPause(): void {
     this.hass!.callService("media_player", "media_play_pause", {
       entity_id: this._config!.entity,
     });
   }
 
-  private _nextTrack(ev: MouseEvent): void {
-    ev.stopPropagation();
+  private _nextTrack(): void {
     this.hass!.callService("media_player", "media_next_track", {
       entity_id: this._config!.entity,
+    });
+  }
+
+  private _toggleMute() {
+    this.hass!.callService("media_player", "volume_mute", {
+      entity_id: this._config!.entity,
+      is_volume_muted: !this.hass!.states[this._config!.entity].attributes
+        .is_volume_muted,
+    });
+  }
+
+  private get _inputElement(): { value: number } {
+    return (this.shadowRoot!.getElementById("input") as unknown) as {
+      value: number;
+    };
+  }
+
+  private _selectedValueChanged(): void {
+    const element = this._inputElement;
+
+    this.hass!.callService("media_player", "volume_set", {
+      entity_id: this._config!.entity,
+      volume_level: element.value / 100,
     });
   }
 }
