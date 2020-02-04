@@ -1,8 +1,8 @@
 import { HomeAssistant } from "../../../types";
-import { CallServiceConfig } from "../entity-rows/types";
+import { ButtonRowConfig } from "../entity-rows/types";
 
 export const callService = (
-  config: CallServiceConfig,
+  config: ButtonRowConfig,
   hass: HomeAssistant
 ): void => {
   const entityId = config.entity;

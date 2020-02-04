@@ -28,8 +28,8 @@ export interface WeblinkConfig {
   icon?: string;
   url: string;
 }
-export interface CallServiceConfig extends EntityConfig {
-  type: "call-service";
+export interface ButtonRowConfig extends EntityConfig {
+  type: "button" | "call-service";
   action_name?: string;
   service: string;
   service_data?: { [key: string]: any };
@@ -52,10 +52,10 @@ export type LovelaceRowConfig =
   | DividerConfig
   | SectionConfig
   | WeblinkConfig
-  | CallServiceConfig
-  | CastConfig
   | ButtonsRowConfig
-  | ConditionalRowConfig;
+  | ConditionalRowConfig
+  | ButtonRowConfig
+  | CastConfig;
 
 export interface LovelaceRow extends HTMLElement {
   hass?: HomeAssistant;
