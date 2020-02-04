@@ -83,8 +83,8 @@ class HassioSnapshots extends LitElement {
           Create snapshot
         </h1>
         <p class="description">
-          Snapshots allow you to easily backup and restore all data of your
-          Hass.io instance.
+          Snapshots allow you to easily backup and restore all data of your Home
+          Assistant instance.
         </p>
         <div class="card-group">
           <paper-card>

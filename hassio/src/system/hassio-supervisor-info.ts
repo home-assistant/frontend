@@ -32,7 +32,7 @@ class HassioSupervisorInfo extends LitElement {
     return html`
       <paper-card>
         <div class="card-content">
-          <h2>Hass.io supervisor</h2>
+          <h2>Supervisor</h2>
           <table class="info">
             <tbody>
               <tr>
