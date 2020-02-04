@@ -1253,7 +1253,7 @@
                     "details": "Voici tous les détails de votre appareil.",
                     "device_not_found": "Appareil non trouvé.",
                     "entities": {
-                        "add_entities_lovelace": "Ajouter toutes les entités de l'appareil à l'interface utilisateur de Lovelace",
+                        "add_entities_lovelace": "Ajouter à Lovelace",
                         "entities": "Entités",
                         "none": "Cet appareil n'a pas d'entités"
                     },

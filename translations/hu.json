@@ -1112,7 +1112,7 @@
                         "forgot_password": "elfelejtett jelszó?",
                         "introduction": "A Home Assistant Felhő biztonságos távoli kapcsolatot nyújt a példányodhoz, miközben távol vagy. Azt is lehetővé teszi, hogy csak felhőn alapuló szolgáltatásokhoz csatlakozz: Amazon Alexa, Google Asszisztens.",
                         "introduction2": "Ezt a szolgáltatást partnerünk üzemelteti, a ",
-                        "introduction2a": " vállalat üzemelteti, amelyet a Home Assistant és a Hass.io alapítói alapítottak.",
+                        "introduction2a": "vállalat, amelyet a Home Assistant és a Hass.io alapítói alapítottak.",
                         "introduction3": "A Home Assistant Felhő egy előfizetéses szolgáltatás egy hónapos ingyenes próbaverzióval. Nincs szükség fizetési információk megadására.",
                         "learn_more_link": "Tudj meg többet a Home Assistant Felhőről",
                         "password": "Jelszó",
@@ -1135,7 +1135,7 @@
                         "information": "Hozz létre egy fiókot ahhoz, hogy elindíthasd az egy hónapos ingyenes Home Assistant Felhő próbaidőszakodat. Nincs szükség fizetési információk megadására.",
                         "information2": "A próbaidőszak hozzáférést biztosít a Home Assistant Felhő minden előnyéhez, beleértve a következőket:",
                         "information3": "Ezt a szolgáltatást partnerünk üzemelteti, a ",
-                        "information3a": ", vállalat üzemelteti, amelyet a Home Assistant és a Hass.io alapítói alapítottak.",
+                        "information3a": "vállalat, amelyet a Home Assistant és a Hass.io alapítói alapítottak.",
                         "information4": "Fiók regisztrálásával elfogadod az alábbi feltételeket.",
                         "link_privacy_policy": "Adatvédelmi irányelvek",
                         "link_terms_conditions": "Felhasználási feltételek",
@@ -1230,7 +1230,7 @@
                         "conditions": {
                             "caption": "Csak akkor csinálj valamit, ha a(z)..."
                         },
-                        "create": "Automatizálás létrehozása eszközzel",
+                        "create": " Eszköz automatizálás létrehozása",
                         "no_automations": "Nincs automatizálás",
                         "no_device_automations": "Ehhez az eszközhöz nem állnak rendelkezésre automatizálások.",
                         "triggers": {
@@ -1253,7 +1253,7 @@
                     "details": "Itt található minden részlet az eszközről.",
                     "device_not_found": "Eszköz nem található.",
                     "entities": {
-                        "add_entities_lovelace": "Az összes eszköz entitás hozzáadása a Lovelace felhasználói felülethez",
+                        "add_entities_lovelace": "Mindet a Lovelace felületre",
                         "entities": "Entitások",
                         "none": "Ennek az eszköznek nincsenek entitásai"
                     },
@@ -1373,7 +1373,7 @@
                         "submit": "Küldés"
                     },
                     "configure": "Beállítás",
-                    "configured": "Konfigurált",
+                    "configured": "Konfigurálva",
                     "description": "Integrációk kezelése és beállítása",
                     "details": "Integráció részletei",
                     "discovered": "Felfedezett",
