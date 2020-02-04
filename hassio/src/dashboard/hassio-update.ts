@@ -38,7 +38,12 @@ export class HassioUpdate extends LitElement {
       this.supervisorInfo,
       this.hassOsInfo,
     ].filter((value) => {
-      return !!value && value.version !== value.last_version;
+      return (
+        !!value &&
+        (value.last_version
+          ? value.version !== value.last_version
+          : value.version !== value.version_latest)
+      );
     }).length;
 
     if (!updatesAvailable) {
@@ -52,12 +57,12 @@ export class HassioUpdate extends LitElement {
               <div class="error">Error: ${this._error}</div>
             `
           : ""}
+        <h1>
+          ${updatesAvailable > 1
+            ? "Updates Available 🎉"
+            : "Update Available 🎉"}
+        </h1>
         <div class="card-group">
-          <div class="title">
-            ${updatesAvailable > 1
-              ? "Updates Available 🎉"
-              : "Update Available 🎉"}
-          </div>
           ${this._renderUpdateCard(
             "Home Assistant",
             this.hassInfo.version,
@@ -149,13 +154,6 @@ export class HassioUpdate extends LitElement {
       haStyle,
       hassioStyle,
       css`
-        :host {
-          width: 33%;
-        }
-        paper-card {
-          display: inline-block;
-          margin-bottom: 32px;
-        }
         .icon {
           --iron-icon-height: 48px;
           --iron-icon-width: 48px;
@@ -169,6 +167,10 @@ export class HassioUpdate extends LitElement {
         }
         .warning {
           color: var(--secondary-text-color);
+        }
+        .card-content {
+          height: calc(100% - 47px);
+          box-sizing: border-box;
         }
         .card-actions {
           text-align: right;

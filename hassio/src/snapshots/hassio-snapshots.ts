@@ -79,14 +79,14 @@ class HassioSnapshots extends LitElement {
   protected render(): TemplateResult {
     return html`
       <div class="content">
+        <h1>
+          Create snapshot
+        </h1>
+        <p class="description">
+          Snapshots allow you to easily backup and restore all data of your
+          Hass.io instance.
+        </p>
         <div class="card-group">
-          <div class="title">
-            Create snapshot
-            <div class="description">
-              Snapshots allow you to easily backup and restore all data of your
-              Hass.io instance.
-            </div>
-          </div>
           <paper-card>
             <div class="card-content">
               <paper-input
@@ -173,8 +173,8 @@ class HassioSnapshots extends LitElement {
           </paper-card>
         </div>
 
+        <h1>Available snapshots</h1>
         <div class="card-group">
-          <div class="title">Available snapshots</div>
           ${this._snapshots === undefined
             ? undefined
             : this._snapshots.length === 0

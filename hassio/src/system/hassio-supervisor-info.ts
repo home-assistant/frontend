@@ -103,20 +103,13 @@ class HassioSupervisorInfo extends LitElement {
       hassioStyle,
       css`
         paper-card {
-          display: inline-block;
-          width: 400px;
+          height: 100%;
+          width: 100%;
         }
         .card-content {
-          height: 200px;
           color: var(--primary-text-color);
-        }
-        @media screen and (max-width: 830px) {
-          paper-card {
-            width: 100%;
-          }
-          .card-content {
-            height: auto;
-          }
+          box-sizing: border-box;
+          height: calc(100% - 47px);
         }
         .info {
           width: 100%;
