@@ -64,7 +64,7 @@ export class HassioUpdate extends LitElement {
         </h1>
         <div class="card-group">
           ${this._renderUpdateCard(
-            "Home Assistant",
+            "Home Assistant Core",
             this.hassInfo.version,
             this.hassInfo.last_version,
             "hassio/homeassistant/update",
@@ -74,7 +74,7 @@ export class HassioUpdate extends LitElement {
             "hassio:home-assistant"
           )}
           ${this._renderUpdateCard(
-            "Hass.io Supervisor",
+            "Supervisor",
             this.supervisorInfo.version,
             this.supervisorInfo.last_version,
             "hassio/supervisor/update",
@@ -82,7 +82,7 @@ export class HassioUpdate extends LitElement {
           )}
           ${this.hassOsInfo
             ? this._renderUpdateCard(
-                "HassOS",
+                "Operating System",
                 this.hassOsInfo.version,
                 this.hassOsInfo.version_latest,
                 "hassio/hassos/update",
