@@ -1,3 +1,5 @@
+import { derivedStyles } from "../../resources/ha-style";
+
 const hexToRgb = (hex: string): string | null => {
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
   const checkHex = hex.replace(shorthandRegex, (_m, r, g, b) => {
@@ -36,7 +38,7 @@ export const applyThemesOnElement = (
   }
   const styles = { ...element._themes };
   if (themeName !== "default") {
-    const theme = themes.themes[themeName];
+    const theme = { ...derivedStyles, ...themes.themes[themeName] };
     Object.keys(theme).forEach((key) => {
       const prefixedKey = `--${key}`;
       element._themes[prefixedKey] = "";
