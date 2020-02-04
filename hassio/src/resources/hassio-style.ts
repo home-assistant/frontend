@@ -28,12 +28,19 @@ export const hassioStyle = css`
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
     grid-gap: 8px;
   }
-  .card-group > * {
-    max-width: 450px;
+  @media screen and (min-width: 640px) {
+    .card-group {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 0.5fr));
+    }
   }
-  @media screen and (max-width: 800px) {
-    .card-group > * {
-      max-width: 100%;
+  @media screen and (min-width: 1020px) {
+    .card-group {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 0.333fr));
+    }
+  }
+  @media screen and (min-width: 1300px) {
+    .card-group {
+      grid-template-columns: repeat(auto-fit, minmax(300px, 0.25fr));
     }
   }
   ha-call-api-button {
