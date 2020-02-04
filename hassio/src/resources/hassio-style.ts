@@ -1,8 +1,5 @@
 import { css } from "lit-element";
 
-const documentContainer = document.createElement("template");
-documentContainer.setAttribute("style", "display: none;");
-
 export const hassioStyle = css`
   .content {
     margin: 8px;
@@ -48,17 +45,7 @@ export const hassioStyle = css`
     color: var(--primary-color);
   }
   .error {
-    color: var(--google-red-500);
+    color: var(--error-color);
     margin-top: 16px;
   }
 `;
-
-documentContainer.innerHTML = `<dom-module id="hassio-style">
-  <template>
-    <style>
-      ${hassioStyle.toString()}
-    </style>
-  </template>
-</dom-module>`;
-
-document.head.appendChild(documentContainer.content);
