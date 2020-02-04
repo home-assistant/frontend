@@ -36,12 +36,7 @@ class HassioCardContent extends LitElement {
         : ""}
       ${this.iconImage
         ? html`
-            <div
-              class=${classMap({
-                icon_image: true,
-                grayscale: this.iconClass === "stopped" || !this.available,
-              })}
-            >
+            <div class="icon_image ${this.iconClass}">
               <img src="${this.iconImage}" title="${this.iconTitle}" />
               <div></div>
             </div>
@@ -121,7 +116,8 @@ class HassioCardContent extends LitElement {
         margin-right: 16px;
         float: left;
       }
-      .grayscale {
+      .icon_image.stopped,
+      .icon_image.not_available {
         filter: grayscale(1);
       }
       .dot {

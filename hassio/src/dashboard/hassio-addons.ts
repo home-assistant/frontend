@@ -62,7 +62,9 @@ class HassioAddons extends LitElement {
                             : "Add-on is running"}
                           .iconClass=${addon.installed &&
                           addon.installed !== addon.version
-                            ? "update"
+                            ? addon.state === "started"
+                              ? "update"
+                              : "update stopped"
                             : addon.installed && addon.state === "started"
                             ? "running"
                             : "stopped"}
