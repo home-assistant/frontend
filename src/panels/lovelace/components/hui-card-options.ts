@@ -100,9 +100,9 @@ export class HuiCardOptions extends LitElement {
           rgba(0, 0, 0, 0.2) 0px 3px 1px -2px;
         display: flex;
         position: relative;
-        border-radius: var(--ha-card-border-radius, 2px);
         margin-top: -1px;
-        border-radius: 0px 0px 2px 2px;
+        border-radius: 0px 0px var(--ha-card-border-radius, 2px)
+          var(--ha-card-border-radius, 2px);
       }
 
       div.options .primary-actions {
