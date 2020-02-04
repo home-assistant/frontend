@@ -1652,6 +1652,20 @@
           }
         }
       },
+      "hassio": {
+        "common": {
+          "error": "Error",
+          "update": "Update"
+        },
+        "dashboard": {
+          "update_available": "Update available",
+          "updates_available": "Updates available",
+          "release_notes": "Release notes",
+          "operating_system": "Operating System",
+          "current_version_running": "You are currently running version {version}"
+        }
+      },
+
       "history": {
         "showing_entries": "Showing entries for",
         "period": "Period"

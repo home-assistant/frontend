@@ -54,13 +54,20 @@ export class HassioUpdate extends LitElement {
       <div class="content">
         ${this._error
           ? html`
-              <div class="error">Error: ${this._error}</div>
+              <div class="error">
+                ${this.hass.localize("ui.panel.hassio.common.error")}:
+                ${this._error}
+              </div>
             `
           : ""}
         <h1>
           ${updatesAvailable > 1
-            ? "Updates Available 🎉"
-            : "Update Available 🎉"}
+            ? `${this.hass.localize(
+                "ui.panel.hassio.dashboard.updates_available"
+              )} 🎉`
+            : `${this.hass.localize(
+                "ui.panel.hassio.dashboard.update_available"
+              )} 🎉`}
         </h1>
         <div class="card-group">
           ${this._renderUpdateCard(
@@ -82,7 +89,9 @@ export class HassioUpdate extends LitElement {
           )}
           ${this.hassOsInfo
             ? this._renderUpdateCard(
-                "Operating System",
+                this.hass.localize(
+                  "ui.panel.hassio.dashboard.operating_system"
+                ),
                 this.hassOsInfo.version,
                 this.hassOsInfo.version_latest,
                 "hassio/hassos/update",
@@ -117,19 +126,27 @@ export class HassioUpdate extends LitElement {
             : ""}
           <div class="update-heading">${name} ${lastVersion}</div>
           <div class="warning">
-            You are currently running version ${curVersion}
+            ${this.hass.localize(
+              "ui.panel.hassio.dashboard.current_version_running",
+              "version",
+              curVersion
+            )}
           </div>
         </div>
         <div class="card-actions">
           <a href="${releaseNotesUrl}" target="_blank">
-            <mwc-button>Release notes</mwc-button>
+            <mwc-button
+              >${this.hass.localize(
+                "ui.panel.hassio.dashboard.release_notes"
+              )}</mwc-button
+            >
           </a>
           <ha-call-api-button
             .hass=${this.hass}
             .path=${apiPath}
             @hass-api-called=${this._apiCalled}
           >
-            Update
+            ${this.hass.localize("ui.panel.hassio.common.update")}
           </ha-call-api-button>
         </div>
       </paper-card>
