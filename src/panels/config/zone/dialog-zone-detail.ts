@@ -16,7 +16,11 @@ import "../../../components/ha-dialog";
 
 import { ZoneDetailDialogParams } from "./show-dialog-zone-detail";
 import { HomeAssistant } from "../../../types";
-import { ZoneMutableParams } from "../../../data/zone";
+import {
+  ZoneMutableParams,
+  passiveRadiusColor,
+  defaultRadiusColor,
+} from "../../../data/zone";
 import { addDistanceToCoord } from "../../../common/location/add_distance_to_coord";
 
 class DialogZoneDetail extends LitElement {
@@ -127,6 +131,9 @@ class DialogZoneDetail extends LitElement {
               class="flex"
               .location=${this._locationValue}
               .radius=${this._radius}
+              .radiusColor=${this._passive
+                ? passiveRadiusColor
+                : defaultRadiusColor}
               .icon=${this._icon}
               @change=${this._locationChanged}
             ></ha-location-editor>
