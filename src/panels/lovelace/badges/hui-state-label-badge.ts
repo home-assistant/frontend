@@ -70,8 +70,8 @@ export class HuiStateLabelBadge extends LitElement implements LovelaceBadge {
       }
       ha-state-label-badge {
         display: inline-block;
-        padding: 4px;
-        margin: -4px 0 -4px 0;
+        padding: 4px 2px 4px 2px;
+        margin: -4px -2px -4px -2px;
       }
     `;
   }
