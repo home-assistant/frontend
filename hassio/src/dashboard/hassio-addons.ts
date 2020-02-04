@@ -22,6 +22,9 @@ class HassioAddons extends LitElement {
   @property() public addons?: HassioAddonInfo[];
 
   protected render(): TemplateResult {
+    const [major, minor] = this.hass.config.version.split(".", 2);
+    const ha105pluss =
+      Number(major) > 0 || (major === "0" && Number(minor) >= 105);
     return html`
       <div class="content">
         <h1>Add-ons</h1>
@@ -44,12 +47,30 @@ class HassioAddons extends LitElement {
                       <div class="card-content">
                         <hassio-card-content
                           .hass=${this.hass}
-                          title=${addon.name}
-                          description=${addon.description}
-                          ?available=${addon.available}
-                          icon=${this._computeIcon(addon)}
-                          .iconTitle=${this._computeIconTitle(addon)}
-                          .iconClass=${this._computeIconClass(addon)}
+                          .title=${addon.name}
+                          .description=${addon.description}
+                          available
+                          .showTopbar=${addon.installed !== addon.version}
+                          topbarClass="update"
+                          .icon=${addon.installed !== addon.version
+                            ? "hassio:arrow-up-bold-circle"
+                            : "hassio:puzzle"}
+                          .iconTitle=${addon.state !== "started"
+                            ? "Add-on is stopped"
+                            : addon.installed !== addon.version
+                            ? "New version available"
+                            : "Add-on is running"}
+                          .iconClass=${addon.installed &&
+                          addon.installed !== addon.version
+                            ? addon.state === "started"
+                              ? "update"
+                              : "update stopped"
+                            : addon.installed && addon.state === "started"
+                            ? "running"
+                            : "stopped"}
+                          .iconImage=${ha105pluss && addon.icon
+                            ? `/api/hassio/addons/${addon.slug}/icon`
+                            : undefined}
                         ></hassio-card-content>
                       </div>
                     </paper-card>
@@ -70,28 +91,6 @@ class HassioAddons extends LitElement {
         }
       `,
     ];
-  }
-
-  private _computeIcon(addon: HassioAddonInfo): string {
-    return addon.installed !== addon.version
-      ? "hassio:arrow-up-bold-circle"
-      : "hassio:puzzle";
-  }
-
-  private _computeIconTitle(addon: HassioAddonInfo): string {
-    if (addon.installed !== addon.version) {
-      return "New version available";
-    }
-    return addon.state === "started"
-      ? "Add-on is running"
-      : "Add-on is stopped";
-  }
-
-  private _computeIconClass(addon: HassioAddonInfo): string {
-    if (addon.installed !== addon.version) {
-      return "update";
-    }
-    return addon.state === "started" ? "running" : "";
   }
 
   private _addonTapped(ev: any): void {
