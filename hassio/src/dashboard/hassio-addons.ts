@@ -23,37 +23,39 @@ class HassioAddons extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <div class="content card-group">
-        <div class="title">Add-ons</div>
-        ${!this.addons
-          ? html`
-              <paper-card>
-                <div class="card-content">
-                  You don't have any add-ons installed yet. Head over to
-                  <a href="#" @click=${this._openStore}>the add-on store</a> to
-                  get started!
-                </div>
-              </paper-card>
-            `
-          : this.addons
-              .sort((a, b) => (a.name > b.name ? 1 : -1))
-              .map(
-                (addon) => html`
-                  <paper-card .addon=${addon} @click=${this._addonTapped}>
-                    <div class="card-content">
-                      <hassio-card-content
-                        .hass=${this.hass}
-                        title=${addon.name}
-                        description=${addon.description}
-                        ?available=${addon.available}
-                        icon=${this._computeIcon(addon)}
-                        .iconTitle=${this._computeIconTitle(addon)}
-                        .iconClass=${this._computeIconClass(addon)}
-                      ></hassio-card-content>
-                    </div>
-                  </paper-card>
-                `
-              )}
+      <div class="content">
+        <h1>Add-ons</h1>
+        <div class="card-group">
+          ${!this.addons
+            ? html`
+                <paper-card>
+                  <div class="card-content">
+                    You don't have any add-ons installed yet. Head over to
+                    <a href="#" @click=${this._openStore}>the add-on store</a>
+                    to get started!
+                  </div>
+                </paper-card>
+              `
+            : this.addons
+                .sort((a, b) => (a.name > b.name ? 1 : -1))
+                .map(
+                  (addon) => html`
+                    <paper-card .addon=${addon} @click=${this._addonTapped}>
+                      <div class="card-content">
+                        <hassio-card-content
+                          .hass=${this.hass}
+                          title=${addon.name}
+                          description=${addon.description}
+                          ?available=${addon.available}
+                          icon=${this._computeIcon(addon)}
+                          .iconTitle=${this._computeIconTitle(addon)}
+                          .iconClass=${this._computeIconClass(addon)}
+                        ></hassio-card-content>
+                      </div>
+                    </paper-card>
+                  `
+                )}
+        </div>
       </div>
     `;
   }

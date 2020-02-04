@@ -50,6 +50,9 @@ class HassioSupervisorLog extends LitElement {
       hassioStyle,
       ANSI_HTML_STYLE,
       css`
+        paper-card {
+          width: 100%;
+        }
         pre {
           white-space: pre-wrap;
         }
