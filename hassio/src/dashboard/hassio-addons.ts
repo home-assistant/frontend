@@ -1,3 +1,4 @@
+import "@material/mwc-button";
 import "@polymer/paper-card/paper-card";
 import {
   css,
@@ -33,9 +34,16 @@ class HassioAddons extends LitElement {
             ? html`
                 <paper-card>
                   <div class="card-content">
-                    You don't have any add-ons installed yet. Head over to
-                    <a href="#" @click=${this._openStore}>the add-on store</a>
-                    to get started!
+                    ${this.hass.localize(
+                      "ui.panel.hassio.dashboard.no_installed_addons"
+                    )}
+                  </div>
+                  <div class="card-actions">
+                    <mwc-button @click=${this._openStore}>
+                      ${this.hass.localize(
+                        "ui.panel.hassio.dashboard.open_addon_store"
+                      )}
+                    </mwc-button>
                   </div>
                 </paper-card>
               `
@@ -56,10 +64,16 @@ class HassioAddons extends LitElement {
                             ? "hassio:arrow-up-bold-circle"
                             : "hassio:puzzle"}
                           .iconTitle=${addon.state !== "started"
-                            ? "Add-on is stopped"
+                            ? this.hass.localize(
+                                "ui.panel.hassio.addon.is_stopped"
+                              )
                             : addon.installed !== addon.version
-                            ? "New version available"
-                            : "Add-on is running"}
+                            ? this.hass.localize(
+                                "ui.panel.hassio.addon.has_new_version"
+                              )
+                            : this.hass.localize(
+                                "ui.panel.hassio.addon.is_runing"
+                              )}
                           .iconClass=${addon.installed &&
                           addon.installed !== addon.version
                             ? addon.state === "started"

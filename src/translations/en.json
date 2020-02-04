@@ -1653,6 +1653,11 @@
         }
       },
       "hassio": {
+        "addon": {
+          "is_stopped": "Add-on is stopped",
+          "is_runing": "Add-on is running",
+          "has_new_version": "New version available"
+        },
         "common": {
           "error": "Error",
           "update": "Update"
@@ -1662,10 +1667,11 @@
           "updates_available": "Updates available",
           "release_notes": "Release notes",
           "operating_system": "Operating System",
-          "current_version_running": "You are currently running version {version}"
+          "current_version_running": "You are currently running version {version}",
+          "no_installed_addons": "You don't have any add-ons installed yet. Head over to the add-on store to get started!",
+          "open_addon_store": "Open the add-on store"
         }
       },
-
       "history": {
         "showing_entries": "Showing entries for",
         "period": "Period"
