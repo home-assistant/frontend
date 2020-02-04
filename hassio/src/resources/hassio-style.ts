@@ -4,45 +4,34 @@ const documentContainer = document.createElement("template");
 documentContainer.setAttribute("style", "display: none;");
 
 export const hassioStyle = css`
-  .card-group {
-    margin-top: 24px;
+  .content {
+    margin: 8px;
   }
-  .card-group .title {
+  h1 {
     color: var(--primary-text-color);
     font-size: 2em;
-    padding-left: 8px;
     margin-bottom: 8px;
+    font-family: var(--paper-font-headline_-_font-family);
+    -webkit-font-smoothing: var(--paper-font-headline_-_-webkit-font-smoothing);
+    font-size: var(--paper-font-headline_-_font-size);
+    font-weight: var(--paper-font-headline_-_font-weight);
+    letter-spacing: var(--paper-font-headline_-_letter-spacing);
+    line-height: var(--paper-font-headline_-_line-height);
   }
-  .card-group .description {
-    font-size: 0.5em;
-    font-weight: 500;
+  .description {
     margin-top: 4px;
   }
-  .card-group paper-card {
-    --card-group-columns: 4;
-    width: calc(
-      (100% - 12px * var(--card-group-columns)) / var(--card-group-columns)
-    );
-    margin: 4px;
-    vertical-align: top;
+  .card-group {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    grid-gap: 8px;
   }
-  @media screen and (max-width: 1200px) and (min-width: 901px) {
-    .card-group paper-card {
-      --card-group-columns: 3;
-    }
+  .card-group > * {
+    max-width: 450px;
   }
-  @media screen and (max-width: 900px) and (min-width: 601px) {
-    .card-group paper-card {
-      --card-group-columns: 2;
-    }
-  }
-  @media screen and (max-width: 600px) and (min-width: 0) {
-    .card-group paper-card {
-      width: 100%;
-      margin: 4px 0;
-    }
-    .content {
-      padding: 0;
+  @media screen and (max-width: 800px) {
+    .card-group > * {
+      max-width: 100%;
     }
   }
   ha-call-api-button {

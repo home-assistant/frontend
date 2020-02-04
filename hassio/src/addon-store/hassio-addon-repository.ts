@@ -42,46 +42,45 @@ class HassioAddonRepositoryEl extends LitElement {
 
     if (this.filter && addons.length < 1) {
       return html`
-        <div class="card-group">
-          <div class="title">
-            <div class="description">
-              No results found in "${repo.name}"
-            </div>
-          </div>
+        <div class="content">
+          <p class="description">
+            No results found in "${repo.name}"
+          </p>
         </div>
       `;
     }
     return html`
-      <div class="card-group">
-        <div class="title">
+      <div class="content">
+        <h1>
           ${repo.name}
-          <div class="description">
-            Maintained by ${repo.maintainer}<br />
-            <a class="repo" href=${repo.url} target="_blank">${repo.url}</a>
-          </div>
+        </h1>
+        <p class="description">
+          Maintained by ${repo.maintainer}<br />
+          <a class="repo" href=${repo.url} target="_blank">${repo.url}</a>
+        </p>
+        <div class="card-group">
+          ${addons.map(
+            (addon) => html`
+              <paper-card
+                .addon=${addon}
+                class=${addon.available ? "" : "not_available"}
+                @click=${this.addonTapped}
+              >
+                <div class="card-content">
+                  <hassio-card-content
+                    .hass=${this.hass}
+                    .title=${addon.name}
+                    .description=${addon.description}
+                    .available=${addon.available}
+                    .icon=${this.computeIcon(addon)}
+                    .iconTitle=${this.computeIconTitle(addon)}
+                    .iconClass=${this.computeIconClass(addon)}
+                  ></hassio-card-content>
+                </div>
+              </paper-card>
+            `
+          )}
         </div>
-
-        ${addons.map(
-          (addon) => html`
-            <paper-card
-              .addon=${addon}
-              class=${addon.available ? "" : "not_available"}
-              @click=${this.addonTapped}
-            >
-              <div class="card-content">
-                <hassio-card-content
-                  .hass=${this.hass}
-                  .title=${addon.name}
-                  .description=${addon.description}
-                  .available=${addon.available}
-                  .icon=${this.computeIcon(addon)}
-                  .iconTitle=${this.computeIconTitle(addon)}
-                  .iconClass=${this.computeIconClass(addon)}
-                ></hassio-card-content>
-              </div>
-            </paper-card>
-          `
-        )}
       </div>
     `;
   }
