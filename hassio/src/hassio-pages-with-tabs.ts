@@ -126,10 +126,6 @@ class HassioPagesWithTabs extends LitElement {
           --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
         }
-        app-header,
-        app-toolbar {
-          background-color: var(--primary-color);
-        }
       `,
     ];
   }

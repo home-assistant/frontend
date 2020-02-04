@@ -84,7 +84,12 @@ class HassioMain extends ProvideHassLitMixin(HassRouterPage) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
 
-    applyThemesOnElement(this, this.hass.themes, this.hass.selectedTheme, true);
+    applyThemesOnElement(
+      this.parentElement,
+      this.hass.themes,
+      this.hass.selectedTheme,
+      true
+    );
     this.addEventListener("hass-api-called", (ev) => this._apiCalled(ev));
     // Paulus - March 17, 2019
     // We went to a single hass-toggle-menu event in HA 0.90. However, the
