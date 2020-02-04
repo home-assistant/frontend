@@ -52,6 +52,7 @@ const DOMAINS_BADGES = [
   "timer",
 ];
 const HIDE_DOMAIN = new Set([
+  "automation",
   "configurator",
   "device_tracker",
   "geo_location",
