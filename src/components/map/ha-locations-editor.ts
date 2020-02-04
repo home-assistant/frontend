@@ -22,6 +22,7 @@ import {
   LeafletModuleType,
 } from "../../common/dom/setup-leaflet-map";
 import { fireEvent } from "../../common/dom/fire_event";
+import { defaultRadiusColor } from "../../data/zone";
 
 declare global {
   // for fire event
@@ -202,7 +203,7 @@ export class HaLocationsEditor extends LitElement {
         const circle = this.Leaflet!.circle(
           [location.latitude, location.longitude],
           {
-            color: location.radius_color ? location.radius_color : "#FF9800",
+            color: location.radius_color || defaultRadiusColor,
             radius: location.radius,
           }
         );
