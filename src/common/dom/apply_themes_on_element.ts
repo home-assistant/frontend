@@ -1,4 +1,4 @@
-import { derivedStyles } from "../../resources/ha-style";
+import { derivedStyles } from "../../resources/styles";
 
 const hexToRgb = (hex: string): string | null => {
   const shorthandRegex = /^#?([a-f\d])([a-f\d])([a-f\d])$/i;
