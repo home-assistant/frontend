@@ -664,6 +664,7 @@
                             "header": "Toiminnot",
                             "introduction": "Home Assistant suorittaa toiminnot, kun automaatio laukaistaan.",
                             "learn_more": "Lisätietoja toiminnoista",
+                            "name": "Toiminta",
                             "type_select": "Toiminnon tyyppi",
                             "type": {
                                 "condition": {
@@ -775,7 +776,7 @@
                             "header": "Laukaisuehdot",
                             "introduction": "Laukaisuehdot määrittelevät, milloin automaatiota aletaan suorittaa. Samassa säännössä voi olla useita laukaisuehtoja. Kun laukaisuehto täyttyy, Home Assistant varmistaa ehdot. Jos ehdot täyttyvät, toiminto suoritetaan.",
                             "learn_more": "Lisätietoja triggereistä",
-                            "name": "Laukaisuehto",
+                            "name": "Käynnistysehto",
                             "type_select": "Laukaisimen tyyppi",
                             "type": {
                                 "device": {
@@ -817,7 +818,7 @@
                                     "value_template": "Arvomalli (template)"
                                 },
                                 "state": {
-                                    "for": "Ajaksi",
+                                    "for": "Viive",
                                     "from": "Lähtötila",
                                     "label": "Tila",
                                     "to": "Kohdetila"
@@ -1057,6 +1058,9 @@
                     "description": "Hallitse yhdistettyjä laitteita",
                     "details": "Tässä ovat kaikki laitteesi tiedot.",
                     "device_not_found": "Laitetta ei löydy.",
+                    "entities": {
+                        "add_entities_lovelace": "Lisää Lovelace näkymään"
+                    },
                     "info": "Laitteen tiedot",
                     "scene": {
                         "create": "Luo tilanne laitteella",
@@ -1109,7 +1113,7 @@
                         "hub": "Yhdistetty kautta",
                         "manuf": "{manufacturer}",
                         "no_area": "Ei aluetta",
-                        "no_device": "Kokonaisuudet ilman laitteita",
+                        "no_device": "Kohteet ilman laitteita",
                         "no_devices": "Tällä integraatiolla ei ole laitteita.",
                         "restart_confirm": "Käynnistä Home Assistant uudellen viimeistelläksesi tämän integraation poistamisen",
                         "settings_button": "Muokkaa {Integration}-asetuksia",
@@ -1352,7 +1356,7 @@
                     "node_config": {
                         "config_parameter": "Asetusparametri",
                         "config_value": "Asetusarvo",
-                        "false": "Eätosi",
+                        "false": "Epätosi",
                         "header": "Solmun määritysasetukset",
                         "seconds": "sekuntia",
                         "set_config_parameter": "Aseta asetusparametri",
@@ -1391,11 +1395,16 @@
                     "info": {
                         "developed_by": "Kehittänyt joukko mahtavia ihmisiä.",
                         "home_assistant_logo": "Home Assistant-logo",
+                        "icons_by": "Kuvakkeet luonut",
                         "license": "Julkaistu Apache 2.0-lisenssillä",
                         "remove": "Poista",
                         "server": "palvelin",
                         "set": "Aseta",
                         "title": "Tiedot"
+                    },
+                    "logs": {
+                        "refresh": "Päivitä",
+                        "title": "Lokit"
                     },
                     "mqtt": {
                         "description_listen": "Kuuntele aihetta",
@@ -1424,6 +1433,7 @@
                         "title": "Tilat"
                     },
                     "templates": {
+                        "editor": "Mallieditori",
                         "title": "Malli"
                     }
                 }
@@ -1450,12 +1460,13 @@
                         "more_info": "Näytä lisätietoa: {name}",
                         "navigate_to": "Siirry kohtaan {location}",
                         "tap": "Napauta:",
-                        "toggle": "Kytke {name}"
+                        "toggle": "Kytke {name}",
+                        "url": "Avaa ikkuna {url_path}"
                     },
                     "shopping-list": {
                         "add_item": "Lisää",
-                        "checked_items": "Valitut",
-                        "clear_items": "Tyhjää valitut"
+                        "checked_items": "Valitut kohteet",
+                        "clear_items": "Tyhjää valitut kohteet"
                     }
                 },
                 "changed_toast": {
@@ -1572,7 +1583,7 @@
                     },
                     "edit_card": {
                         "add": "Lisää kortti",
-                        "delete": "Poista",
+                        "delete": "Poista kortti",
                         "edit": "Muokkaa",
                         "header": "Kortti-asetukset",
                         "move": "Siirrä",
@@ -1606,6 +1617,8 @@
                         "para_no_id": "Elementillä ei ole ID. Lisää ID elementille 'ui-lovelace.yaml'-tiedostossa."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Lovelace käyttöliittymän näkymät luodaan automaattisesti alueistasi ja laitteistasi, jos poistat nykyisen määrityksen.",
+                        "confirm_remove_config_title": "Haluatko varmasti poistaa Lovelace-käyttöliittymän asetukset? Lovelace käyttöliittymän asetukset luodaan automaattisesti alueistasi ja laitteistasi.",
                         "confirm_unsaved_changes": "Sinulla on tallentamattomia muutoksia. Haluatko varmasti poistua?",
                         "header": "Muokkaa asetuksia",
                         "save": "Tallenna",
@@ -1618,6 +1631,9 @@
                         "para": "Oletuksena Home Assistant ylläpitää käyttöliittymääsi, päivittäen sitä uusien yksiköiden tai Lovelace komponenttien tullessa saataville. Jos muokkaat käyttöliittymääsi, emme enää tee muutoksia automaattisesti.",
                         "para_sure": "Oletko varma, että haluat ottaa haltuun käyttöliittymän?",
                         "save": "Ota hallintaan"
+                    },
+                    "suggest_card": {
+                        "create_own": "Valitse toinen kortti"
                     }
                 },
                 "menu": {
@@ -1796,7 +1812,7 @@
                 },
                 "integration": {
                     "finish": "Valmis",
-                    "intro": "Laitteet ja palvelut ovat edustettuna Home Assistantissa integraatioina. Voit määrittää ne nyt tai tehdä sitä myöhemmin kokoonpanonäytöstä.",
+                    "intro": "Laitteet ja palvelut on esitetty Home Assistantissa integraatioina. Voit määrittää ne nyt tai tehdä sen myöhemmin asetus valikosta.",
                     "more_integrations": "Lisää"
                 },
                 "intro": "Oletko valmis herättämään kotisi eloon, palauttamaan yksityisyytesi ja liittymään maailmanlaajuiseen nikkarien joukkoon?",
@@ -1824,7 +1840,7 @@
                 "change_password": {
                     "confirm_new_password": "Vahvista uusi salasana",
                     "current_password": "Nykyinen salasana",
-                    "error_required": "Edellytetään",
+                    "error_required": "Pakollinen",
                     "header": "Vaihda salasana",
                     "new_password": "Uusi salasana",
                     "submit": "Lähetä"
