@@ -102,7 +102,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
           <div class="left flex">
             <paper-icon-button
               icon="hass:power"
-              .action="${stateObj.state === "off" ? "turn_on" : "turn_off"}"
+              .action=${stateObj.state === "off" ? "turn_on" : "turn_off"}
               @click=${this._handleClick}
             ></paper-icon-button>
           </div>
