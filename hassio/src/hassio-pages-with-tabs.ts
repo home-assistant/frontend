@@ -52,7 +52,7 @@ class HassioPagesWithTabs extends LitElement {
               .narrow=${this.narrow}
               hassio
             ></ha-menu-button>
-            <div main-title>Hass.io</div>
+            <div main-title>Supervisor</div>
             ${HAS_REFRESH_BUTTON.includes(page)
               ? html`
                   <paper-icon-button
