@@ -128,16 +128,12 @@ class HassioAddonAudio extends LitElement {
 
   private _setInputDevice(ev): void {
     const device = ev.detail.item.getAttribute("device");
-    if (device) {
-      this._selectedInput = device;
-    }
+    this._selectedInput = device || null;
   }
 
   private _setOutputDevice(ev): void {
     const device = ev.detail.item.getAttribute("device");
-    if (device) {
-      this._selectedOutput = device;
-    }
+    this._selectedOutput = device || null;
   }
 
   private async _addonChanged(): Promise<void> {
@@ -147,13 +143,11 @@ class HassioAddonAudio extends LitElement {
       return;
     }
 
-    const noDevice: HassioHardwareAudioDevice[] = [
-      { device: undefined, name: "-" },
-    ];
+    const noDevice: HassioHardwareAudioDevice = { device: null, name: "-" };
 
     try {
       const { audio } = await fetchHassioHardwareAudio(this.hass);
-      const inupt = Object.keys(audio.input).map((key) => ({
+      const input = Object.keys(audio.input).map((key) => ({
         device: key,
         name: audio.input[key],
       }));
@@ -162,12 +156,12 @@ class HassioAddonAudio extends LitElement {
         name: audio.output[key],
       }));
 
-      this._inputDevices = noDevice.concat(inupt);
-      this._outputDevices = noDevice.concat(output);
+      this._inputDevices = [noDevice, ...input];
+      this._outputDevices = [noDevice, ...output];
     } catch {
       this._error = "Failed to fetch audio hardware";
-      this._inputDevices = noDevice;
-      this._outputDevices = noDevice;
+      this._inputDevices = [noDevice];
+      this._outputDevices = [noDevice];
     }
   }
 
