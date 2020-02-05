@@ -45,11 +45,11 @@ documentContainer.innerHTML = `<custom-style>
       --secondary-background-color: #e5e5e5; /* behind the cards on state */
 
       /* sidebar menu */
-      --sidebar-icon-color: rgba(0, 0, 0, 0.5);
+      --sidebar-icon-color: rgba(var(--rgb-primary-text-color), 0.6);
 
       /* for label-badge */
       --label-badge-background-color: white;
-      --label-badge-text-color: rgb(76, 76, 76);
+      --label-badge-text-color: rgba(var(--rgb-primary-text-color), 0.6);
       --label-badge-red: #DF4C1E;
       --label-badge-blue: #039be5;
       --label-badge-green: #0DA035;

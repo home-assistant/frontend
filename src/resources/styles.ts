@@ -10,15 +10,16 @@ export const derivedStyles = {
   "sidebar-selected-icon-color": "var(--primary-color)",
   "switch-checked-color": "var(--primary-color)",
   "switch-checked-button-color":
-    "var(--switch-checked-color, var(--paper-grey-50))",
+    "var(--switch-checked-color, var(--primary-background-color))",
   "switch-checked-track-color": "var(--switch-checked-color, #000000)",
   "switch-unchecked-button-color":
-    "var(--switch-unchecked-color, var(--paper-grey-50))",
+    "var(--switch-unchecked-color, var(--primary-background-color))",
   "switch-unchecked-track-color": "var(--switch-unchecked-color, #000000)",
   "slider-color": "var(--primary-color)",
   "slider-secondary-color": "var(--light-primary-color)",
   "slider-bar-color": "var(--disabled-text-color)",
   "label-badge-grey": "var(--paper-grey-500)",
+  "label-badge-background-color": "var(--card-background-color)",
   "paper-card-background-color": "var(--card-background-color)",
   "paper-listbox-background-color": "var(--card-background-color)",
   "paper-item-icon-color": "var(--state-icon-color)",
@@ -35,13 +36,15 @@ export const derivedStyles = {
   "mdc-theme-primary": "var(--primary-color)",
   "mdc-theme-secondary": "var(--accent-color)",
   "mdc-theme-background": "var(--primary-background-color)",
-  "mdc-theme-surface":
-    "var(--paper-card-background-color, var(--card-background-color))",
+  "mdc-theme-surface": "var(--card-background-color)",
   "mdc-theme-on-primary": "var(--text-primary-color)",
   "mdc-theme-on-secondary": "var(--text-primary-color)",
   "mdc-theme-on-surface": "var(--primary-text-color)",
   "app-header-text-color": "var(--text-primary-color)",
   "app-header-background-color": "var(--primary-color)",
+  "material-body-text-color": "var(--primary-text-color)",
+  "material-background-color": "var(--card-background-color)",
+  "material-secondary-background-color": "var(--secondary-background-color)",
 };
 
 export const haStyle = css`
