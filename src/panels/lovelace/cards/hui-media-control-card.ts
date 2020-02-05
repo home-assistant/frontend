@@ -192,6 +192,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         prefix =
           stateObj.attributes.media_title ||
           stateObj.attributes.app_name ||
+          this.hass!.localize(`state.media_player.${stateObj.state}`) ||
+          this.hass!.localize(`state.default.${stateObj.state}`) ||
           stateObj.state;
         suffix = "";
     }
