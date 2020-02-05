@@ -49,7 +49,7 @@ documentContainer.innerHTML = `<custom-style>
 
       /* for label-badge */
       --label-badge-background-color: white;
-      --label-badge-text-color: rgba(var(--rgb-primary-text-color), 0.6);
+      --label-badge-text-color: rgba(var(--rgb-primary-text-color), 0.8);
       --label-badge-red: #DF4C1E;
       --label-badge-blue: #039be5;
       --label-badge-green: #0DA035;
