@@ -2,12 +2,15 @@ import { HomeAssistant } from "../../types";
 import { HassioResponse, hassioApiResultExtractor } from "./common";
 
 export interface HassioHardwareAudioDevice {
-  device?: string;
+  device?: string | null;
   name: string;
 }
 
 interface HassioHardwareAudioList {
-  audio: { input: any; output: any };
+  audio: {
+    input: { [key: string]: string };
+    output: { [key: string]: string };
+  };
 }
 
 export interface HassioHardwareInfo {
