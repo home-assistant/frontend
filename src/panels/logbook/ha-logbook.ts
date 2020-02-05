@@ -1,6 +1,6 @@
 import "../../components/ha-icon";
-import formatTime from "../../common/datetime/format_time";
-import formatDate from "../../common/datetime/format_date";
+import { formatTimeWithSeconds } from "../../common/datetime/format_time";
+import { formatDate } from "../../common/datetime/format_date";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { stateIcon } from "../../common/entity/state_icon";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -80,7 +80,7 @@ class HaLogbook extends LitElement {
 
         <div class="entry">
           <div class="time">
-            ${formatTime(new Date(item.when), this.hass.language)}
+            ${formatTimeWithSeconds(new Date(item.when), this.hass.language)}
           </div>
           <ha-icon
             .icon=${state ? stateIcon(state) : domainIcon(item.domain)}
@@ -131,7 +131,7 @@ class HaLogbook extends LitElement {
       }
 
       .time {
-        width: 55px;
+        width: 65px;
         font-size: 0.8em;
         color: var(--secondary-text-color);
       }

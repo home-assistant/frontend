@@ -16,7 +16,7 @@ import "./cloud-remote-pref";
 import { EventsMixin } from "../../../../mixins/events-mixin";
 import { fetchCloudSubscriptionInfo } from "../../../../data/cloud";
 
-import formatDateTime from "../../../../common/datetime/format_date_time";
+import { formatDateTime } from "../../../../common/datetime/format_date_time";
 import LocalizeMixin from "../../../../mixins/localize-mixin";
 
 /*
