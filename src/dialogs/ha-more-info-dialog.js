@@ -76,14 +76,16 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
         }
       </style>
 
-      <more-info-controls
-        class="no-padding"
-        hass="[[hass]]"
-        state-obj="[[stateObj]]"
-        dialog-element="[[_dialogElement]]"
-        registry-entry="[[_registryInfo]]"
-        large="{{large}}"
-      ></more-info-controls>
+      <template is="dom-if" if="[[_dialogElement]]">
+        <more-info-controls
+          class="no-padding"
+          hass="[[hass]]"
+          state-obj="[[stateObj]]"
+          dialog-element="[[_dialogElement]]"
+          registry-entry="[[_registryInfo]]"
+          large="{{large}}"
+        ></more-info-controls>
+      </template>
     `;
   }
 
