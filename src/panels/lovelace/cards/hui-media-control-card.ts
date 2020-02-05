@@ -11,18 +11,12 @@ import {
 import { classMap } from "lit-html/directives/class-map";
 import { HassEntity } from "home-assistant-js-websocket";
 import "@polymer/paper-icon-button/paper-icon-button";
-import "@thomasloven/round-slider";
 
 import "../../../components/ha-card";
-import "../components/hui-warning";
-import "../components/hui-unavailable";
-import "../components/hui-image";
-
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { OFF_STATES, SUPPORT_PAUSE } from "../../../data/media-player";
-
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { HomeAssistant, MediaEntity } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -80,21 +74,18 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card>
-        <div class="ratio">
-          <div
-            class="${classMap({
-              "no-image": !stateObj.attributes.entity_picture,
-              image: true,
-            })}"
-            style="background-image: url(${image})"
-          ></div>
+        <div
+          class="${classMap({
+            "no-image": !stateObj.attributes.entity_picture,
+            ratio: true,
+          })}"
+        >
+          <div class="image" style="background-image: url(${image})"></div>
           <div class="caption">
             ${this._config!.name ||
               computeStateName(this.hass!.states[this._config!.entity])}
             <div class="title">
-              ${!stateObj.attributes.entity_picture
-                ? ""
-                : this._computeMediaTitle(stateObj)}
+              ${this._computeMediaTitle(stateObj)}
             </div>
           </div>
         </div>
@@ -102,8 +93,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
           ? ""
           : html`
               <paper-progress
-                max="${stateObj.attributes.media_duration}"
-                value="${stateObj.attributes.media_position}"
+                .max="${stateObj.attributes.media_duration}"
+                .value="${stateObj.attributes.media_position}"
                 class="progress"
               ></paper-progress>
             `}
@@ -123,7 +114,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             ></paper-icon-button>
             <paper-icon-button
               class="playPauseButton"
-              icon=${this._computeControlIcon(stateObj)}
+              icon=${stateObj.state !== "playing"
+                ? "hass:play"
+                : supportsFeature(stateObj, SUPPORT_PAUSE)
+                ? "hass:pause"
+                : "hass:stop"}
               .action=${"media_play_pause"}
               @click=${this._handleClick}
             ></paper-icon-button>
@@ -238,10 +233,18 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       }
 
       .no-image {
+        padding-bottom: 20%;
+      }
+
+      .no-image > .image {
         background-position: center center;
         background-repeat: no-repeat;
         background-color: var(--primary-color);
         background-size: initial;
+      }
+
+      .no-image > .caption {
+        background-color: initial;
       }
 
       .controls {
