@@ -164,17 +164,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _computeControlIcon(stateObj: HassEntity): string {
-    if (stateObj.state !== "playing") {
-      return "hass:play";
-    }
-
-    // tslint:disable-next-line:no-bitwise
-    return supportsFeature(stateObj, SUPPORT_PAUSE)
-      ? "hass:pause"
-      : "hass:stop";
-  }
-
   private _computeMediaTitle(stateObj: HassEntity): string {
     let prefix;
     let suffix;
