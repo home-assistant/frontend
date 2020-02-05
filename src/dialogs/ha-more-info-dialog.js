@@ -76,16 +76,14 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
         }
       </style>
 
-      <template is="dom-if" if="[[_dialogElement]]">
-        <more-info-controls
-          class="no-padding"
-          hass="[[hass]]"
-          state-obj="[[stateObj]]"
-          dialog-element="[[_dialogElement]]"
-          registry-entry="[[_registryInfo]]"
-          large="{{large}}"
-        ></more-info-controls>
-      </template>
+      <more-info-controls
+        class="no-padding"
+        hass="[[hass]]"
+        state-obj="[[stateObj]]"
+        dialog-element="[[_dialogElement()]]"
+        registry-entry="[[_registryInfo]]"
+        large="{{large}}"
+      ></more-info-controls>
     `;
   }
 
@@ -104,7 +102,6 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
         observer: "_largeChanged",
       },
 
-      _dialogElement: Object,
       _registryInfo: Object,
 
       dataDomain: {
@@ -118,9 +115,8 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
     return ["_dialogOpenChanged(opened)"];
   }
 
-  ready() {
-    super.ready();
-    this._dialogElement = this;
+  _dialogElement() {
+    return this;
   }
 
   _computeDomain(stateObj) {
