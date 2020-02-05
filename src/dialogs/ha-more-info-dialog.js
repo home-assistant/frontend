@@ -80,7 +80,7 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
         class="no-padding"
         hass="[[hass]]"
         state-obj="[[stateObj]]"
-        dialog-element="[[_dialogElement]]"
+        dialog-element="[[_dialogElement()]]"
         registry-entry="[[_registryInfo]]"
         large="{{large}}"
       ></more-info-controls>
@@ -102,7 +102,6 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
         observer: "_largeChanged",
       },
 
-      _dialogElement: Object,
       _registryInfo: Object,
 
       dataDomain: {
@@ -116,9 +115,8 @@ class HaMoreInfoDialog extends DialogMixin(PolymerElement) {
     return ["_dialogOpenChanged(opened)"];
   }
 
-  ready() {
-    super.ready();
-    this._dialogElement = this;
+  _dialogElement() {
+    return this;
   }
 
   _computeDomain(stateObj) {
