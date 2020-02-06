@@ -41,6 +41,7 @@ import {
   EntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { processEditorEntities } from "../editor/process-editor-entities";
+import { SENSOR_DEVICE_CLASS_BATTERY } from "../../../data/sensor";
 
 const DEFAULT_VIEW_ENTITY_ID = "group.default_view";
 const DOMAINS_BADGES = [
@@ -181,6 +182,12 @@ export const computeCards = (
         conf.icon = stateObj.attributes.icon;
       }
       entities.push(conf);
+    } else if (
+      domain === "sensor" &&
+      stateObj &&
+      stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_BATTERY
+    ) {
+      // Do nothing.
     } else {
       let name: string;
       const entityConf =
