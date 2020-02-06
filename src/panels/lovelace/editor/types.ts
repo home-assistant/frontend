@@ -55,13 +55,23 @@ export const actionConfigStruct = struct({
   url_path: "string?",
   service: "string?",
   service_data: "object?",
+  confirmation: "object?",
 });
 
 export const entitiesConfigStruct = struct.union([
   {
-    entity: "entity-id",
+    entity: "entity-id?",
     name: "string?",
     icon: "icon?",
+    secondary_info: "string?",
+    action_name: "string?",
+    service: "string?",
+    service_data: "object?",
+    url: "string?",
+    tap_action: "object?",
+    hold_action: "object?",
+    double_tap_action: "object?",
+    state_color: "boolean?",
   },
   "entity-id",
 ]);
