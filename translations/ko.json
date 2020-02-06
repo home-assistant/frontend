@@ -2231,7 +2231,7 @@
                 "cards": {
                     "demo": {
                         "demo_by": "{name} 님이 만듦",
-                        "introduction": "집에 오신 것을 환영합니다! 커뮤니티에서 만든 최고의 UI 가 적용된 Home Assistant 를 소개합니다.",
+                        "introduction": "집에 오신 것을 환영합니다! 커뮤니티에서 만든 멋진 UI 가 적용된 Home Assistant 를 소개합니다.",
                         "learn_more": "Home Assistant 에 대해 더 알아보기",
                         "next_demo": "다음 데모"
                     }
