@@ -16,7 +16,7 @@ import "../../resources/ha-style";
 import "./ha-logbook-data";
 import "./ha-logbook";
 
-import formatDate from "../../common/datetime/format_date";
+import { formatDate } from "../../common/datetime/format_date";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import { computeRTL } from "../../common/util/compute_rtl";
 

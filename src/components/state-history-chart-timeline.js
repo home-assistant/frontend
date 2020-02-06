@@ -6,7 +6,7 @@ import LocalizeMixin from "../mixins/localize-mixin";
 
 import "./entity/ha-chart-base";
 
-import formatDateTime from "../common/datetime/format_date_time";
+import { formatDateTimeWithSeconds } from "../common/datetime/format_date_time";
 import { computeRTL } from "../common/util/compute_rtl";
 
 class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
@@ -165,8 +165,8 @@ class StateHistoryChartTimeline extends LocalizeMixin(PolymerElement) {
     const formatTooltipLabel = (item, data) => {
       const values = data.datasets[item.datasetIndex].data[item.index];
 
-      const start = formatDateTime(values[0], this.hass.language);
-      const end = formatDateTime(values[1], this.hass.language);
+      const start = formatDateTimeWithSeconds(values[0], this.hass.language);
+      const end = formatDateTimeWithSeconds(values[1], this.hass.language);
       const state = values[2];
 
       return [state, start, end];

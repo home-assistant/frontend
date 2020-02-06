@@ -16,7 +16,7 @@ import { HaPaperDialog } from "../../../../components/dialog/ha-paper-dialog";
 import { HomeAssistant } from "../../../../types";
 import { haStyle } from "../../../../resources/styles";
 import { CloudCertificateParams as CloudCertificateDialogParams } from "./show-dialog-cloud-certificate";
-import format_date_time from "../../../../common/datetime/format_date_time";
+import { formatDateTime } from "../../../../common/datetime/format_date_time";
 
 @customElement("dialog-cloud-certificate")
 class DialogCloudCertificate extends LitElement {
@@ -50,7 +50,7 @@ class DialogCloudCertificate extends LitElement {
             ${this.hass!.localize(
               "ui.panel.config.cloud.dialog_certificate.certificate_expiration_date"
             )}
-            ${format_date_time(
+            ${formatDateTime(
               new Date(certificateInfo.expire_date),
               this.hass!.language
             )}<br />

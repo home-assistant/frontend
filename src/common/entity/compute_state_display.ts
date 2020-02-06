@@ -1,8 +1,8 @@
 import { HassEntity } from "home-assistant-js-websocket";
 import { computeStateDomain } from "./compute_state_domain";
-import formatDateTime from "../datetime/format_date_time";
-import formatDate from "../datetime/format_date";
-import formatTime from "../datetime/format_time";
+import { formatDateTime } from "../datetime/format_date_time";
+import { formatDate } from "../datetime/format_date";
+import { formatTime } from "../datetime/format_time";
 import { LocalizeFunc } from "../translations/localize";
 
 export const computeStateDisplay = (
