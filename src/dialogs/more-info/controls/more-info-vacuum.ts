@@ -32,18 +32,18 @@ import {
 } from "../../../data/vacuum";
 
 class VacuumCommand {
-  public title: string;
+  public translationKey: string;
   public icon: string;
   public serviceName: string;
   private funcIsVisible: (stateObj: VacuumEntity) => boolean;
 
   constructor(
-    title: string,
+    translationKey: string,
     icon: string,
     serviceName: string,
     funcIsVisible: (stateObj: VacuumEntity) => boolean
   ) {
-    this.title = title;
+    this.translationKey = translationKey;
     this.icon = icon;
     this.serviceName = serviceName;
     this.funcIsVisible = funcIsVisible;
@@ -55,11 +55,11 @@ class VacuumCommand {
 }
 
 const VACUUM_COMMANDS: VacuumCommand[] = [
-  new VacuumCommand("Start", "hass:play", "start", (stateObj) =>
+  new VacuumCommand("start", "hass:play", "start", (stateObj) =>
     supportsFeature(stateObj, VACUUM_SUPPORT_START)
   ),
   new VacuumCommand(
-    "Pause",
+    "pause",
     "hass:pause",
     "pause",
     (stateObj) =>
@@ -68,7 +68,7 @@ const VACUUM_COMMANDS: VacuumCommand[] = [
       supportsFeature(stateObj, VACUUM_SUPPORT_PAUSE)
   ),
   new VacuumCommand(
-    "Pause",
+    "pause",
     "hass:play-pause",
     "start_pause",
     (stateObj) =>
@@ -76,17 +76,17 @@ const VACUUM_COMMANDS: VacuumCommand[] = [
       !supportsFeature(stateObj, VACUUM_SUPPORT_START) &&
       supportsFeature(stateObj, VACUUM_SUPPORT_PAUSE)
   ),
-  new VacuumCommand("Stop", "hass:stop", "stop", (stateObj) =>
+  new VacuumCommand("stop", "hass:stop", "stop", (stateObj) =>
     supportsFeature(stateObj, VACUUM_SUPPORT_STOP)
   ),
-  new VacuumCommand("Clean spot", "hass:broom", "clean_spot", (stateObj) =>
+  new VacuumCommand("clean_spot", "hass:broom", "clean_spot", (stateObj) =>
     supportsFeature(stateObj, VACUUM_SUPPORT_CLEAN_SPOT)
   ),
-  new VacuumCommand("Locate", "hass:map-marker", "locate", (stateObj) =>
+  new VacuumCommand("locate", "hass:map-marker", "locate", (stateObj) =>
     supportsFeature(stateObj, VACUUM_SUPPORT_LOCATE)
   ),
   new VacuumCommand(
-    "Return home",
+    "return_home",
     "hass:home-map-marker",
     "return_to_base",
     (stateObj) => supportsFeature(stateObj, VACUUM_SUPPORT_RETURN_HOME)
@@ -142,7 +142,11 @@ class MoreInfoVacuum extends LitElement {
         ${supportsStatus
           ? html`
               <div>
-                <span class="status-subtitle">Status: </span>
+                <span class="status-subtitle"
+                  >${this.hass!.localize(
+                    "ui.dialogs.more_info_control.vacuum.status"
+                  )}:
+                </span>
                 <span><strong>${stateObj.attributes.status}</strong></span>
               </div>
             `
@@ -151,7 +155,7 @@ class MoreInfoVacuum extends LitElement {
           ? html`
               <div">
                 <span>
-                  <iron-icon icon="${stateObj.attributes.battery_icon}"></iron-icon>
+                  <iron-icon icon=${stateObj.attributes.battery_icon}></iron-icon>
                   ${stateObj.attributes.battery_level} %
                   </span>
               </div>`
@@ -162,7 +166,11 @@ class MoreInfoVacuum extends LitElement {
         ? html`
             <div>
               <p></p>
-              <div class="status-subtitle">Vacuum cleaner commands:</div>
+              <div class="status-subtitle">
+                ${this.hass!.localize(
+                  "ui.dialogs.more_info_control.vacuum.commands"
+                )}
+              </div>
               <div class="flex-horizontal">
                 ${VACUUM_COMMANDS.filter((item) =>
                   item.shouldVisible(stateObj)
@@ -170,10 +178,12 @@ class MoreInfoVacuum extends LitElement {
                   (item) => html`
                     <div>
                       <paper-icon-button
-                        icon="${item.icon}"
-                        .entry="${item}"
-                        @click="${this.callService}"
-                        title="${item.title}"
+                        icon=${item.icon}
+                        .entry=${item}"
+                        @click=${this.callService}
+                        title=${this.hass!.localize(
+                          `ui.dialogs.more_info_control.vacuum.${item.translationKey}`
+                        )}
                       ></paper-icon-button>
                     </div>
                   `
@@ -187,13 +197,13 @@ class MoreInfoVacuum extends LitElement {
             <div>
               <div class="flex-horizontal">
                 <ha-paper-dropdown-menu
-                  label-float=""
-                  dynamic-align=""
-                  label="Fan speed"
+                  label=${this.hass!.localize(
+                    "ui.dialogs.more_info_control.vacuum.fan_speed"
+                  )}
                 >
                   <paper-listbox
                     slot="dropdown-content"
-                    .selected="${stateObj.attributes.fan_speed}"
+                    .selected=${stateObj.attributes.fan_speed}
                     @iron-select=${this.handleFanSpeedChanged}
                     attr-for-selected="item-name"
                   >
@@ -221,8 +231,8 @@ class MoreInfoVacuum extends LitElement {
         : ""}
 
       <ha-attributes
-        .stateObj="${this.stateObj}"
-        .extraFilters="${filterExtraAtrributes}"
+        .stateObj=${this.stateObj}
+        .extraFilters=${filterExtraAtrributes}
       ></ha-attributes>
     `;
   }

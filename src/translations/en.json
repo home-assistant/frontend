@@ -618,6 +618,17 @@
           "remove_action": "Remove entity",
           "confirm_remove_title": "Remove entity?",
           "confirm_remove_text": "Are you sure you want to remove this entity?"
+        },
+        "vacuum": {
+          "status": "Status",
+          "commands": "Vacuum cleaner commands:",
+          "fan_speed": "Fan speed",
+          "start": "Start",
+          "pause": "Pause",
+          "stop": "Stop",
+          "clean_spot": "Clean spot",
+          "locate": "Locate",
+          "return_home": "Return home"
         }
       },
       "entity_registry": {
