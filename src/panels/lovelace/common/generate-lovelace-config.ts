@@ -184,8 +184,7 @@ export const computeCards = (
       entities.push(conf);
     } else if (
       domain === "sensor" &&
-      stateObj &&
-      stateObj.attributes.device_class === SENSOR_DEVICE_CLASS_BATTERY
+      stateObj?.attributes.device_class === SENSOR_DEVICE_CLASS_BATTERY
     ) {
       // Do nothing.
     } else {
