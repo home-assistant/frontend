@@ -1,19 +1,19 @@
 import fecha from "fecha";
+import { toLocaleTimeStringSupportsOptions } from "./check_options_support";
 
-// Check for support of native locale string options
-function toLocaleTimeStringSupportsOptions() {
-  try {
-    new Date().toLocaleTimeString("i");
-  } catch (e) {
-    return e.name === "RangeError";
-  }
-  return false;
-}
-
-export default toLocaleTimeStringSupportsOptions()
+export const formatTime = toLocaleTimeStringSupportsOptions
   ? (dateObj: Date, locales: string) =>
       dateObj.toLocaleTimeString(locales, {
         hour: "numeric",
         minute: "2-digit",
       })
   : (dateObj: Date) => fecha.format(dateObj, "shortTime");
+
+export const formatTimeWithSeconds = toLocaleTimeStringSupportsOptions
+  ? (dateObj: Date, locales: string) =>
+      dateObj.toLocaleTimeString(locales, {
+        hour: "numeric",
+        minute: "2-digit",
+        second: "2-digit",
+      })
+  : (dateObj: Date) => fecha.format(dateObj, "mediumTime");
