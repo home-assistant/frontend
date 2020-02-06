@@ -5,7 +5,7 @@ import { PolymerElement } from "@polymer/polymer/polymer-element";
 import "./entity/ha-chart-base";
 
 import LocalizeMixin from "../mixins/localize-mixin";
-import formatDateTime from "../common/datetime/format_date_time";
+import { formatDateTimeWithSeconds } from "../common/datetime/format_date_time";
 
 class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
   static get template() {
@@ -317,7 +317,7 @@ class StateHistoryChartLine extends LocalizeMixin(PolymerElement) {
       const item = items[0];
       const date = data.datasets[item.datasetIndex].data[item.index].x;
 
-      return formatDateTime(date, this.hass.language);
+      return formatDateTimeWithSeconds(date, this.hass.language);
     };
 
     const chartOptions = {

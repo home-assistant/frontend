@@ -14,7 +14,7 @@ import "../../components/ha-menu-button";
 import "../../components/ha-card";
 import "../../resources/ha-style";
 
-import formatDateTime from "../../common/datetime/format_date_time";
+import { formatDateTime } from "../../common/datetime/format_date_time";
 import LocalizeMixin from "../../mixins/localize-mixin";
 import { EventsMixin } from "../../mixins/events-mixin";
 
