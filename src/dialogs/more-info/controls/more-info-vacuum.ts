@@ -13,19 +13,92 @@ import {
   TemplateResult,
 } from "lit-element";
 
-import "../../../components/ha-paper-dropdown-menu";
-import "../../../components/ha-attributes";
-
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { HomeAssistant } from "../../../types";
 
-import { HassEntity } from "home-assistant-js-websocket";
+import "../../../components/ha-paper-dropdown-menu";
+import "../../../components/ha-attributes";
+import {
+  VACUUM_SUPPORT_BATTERY,
+  VACUUM_SUPPORT_CLEAN_SPOT,
+  VACUUM_SUPPORT_FAN_SPEED,
+  VACUUM_SUPPORT_LOCATE,
+  VACUUM_SUPPORT_PAUSE,
+  VACUUM_SUPPORT_RETURN_HOME,
+  VACUUM_SUPPORT_START,
+  VACUUM_SUPPORT_STATUS,
+  VACUUM_SUPPORT_STOP,
+  VacuumEntity,
+} from "../../../data/vacuum";
 
+class VacuumCommand {
+  public title: string;
+  public icon: string;
+  public serviceName: string;
+  private funcIsVisible: (stateObj: VacuumEntity) => boolean;
+
+  constructor(
+    title: string,
+    icon: string,
+    serviceName: string,
+    funcIsVisible: (stateObj: VacuumEntity) => boolean
+  ) {
+    this.title = title;
+    this.icon = icon;
+    this.serviceName = serviceName;
+    this.funcIsVisible = funcIsVisible;
+  }
+
+  public shouldVisible(stateObj: VacuumEntity): boolean {
+    return this.funcIsVisible(stateObj);
+  }
+}
+
+const VACUUM_COMMANDS: VacuumCommand[] = [
+  new VacuumCommand("Start", "hass:play", "start", (stateObj) =>
+    supportsFeature(stateObj, VACUUM_SUPPORT_START)
+  ),
+  new VacuumCommand(
+    "Pause",
+    "hass:pause",
+    "pause",
+    (stateObj) =>
+      // We need also to check if Start is supported because if not we show play-pause
+      supportsFeature(stateObj, VACUUM_SUPPORT_START) &&
+      supportsFeature(stateObj, VACUUM_SUPPORT_PAUSE)
+  ),
+  new VacuumCommand(
+    "Pause",
+    "hass:play-pause",
+    "start_pause",
+    (stateObj) =>
+      // If start is supoorted, we don't show this button
+      !supportsFeature(stateObj, VACUUM_SUPPORT_START) &&
+      supportsFeature(stateObj, VACUUM_SUPPORT_PAUSE)
+  ),
+  new VacuumCommand("Stop", "hass:stop", "stop", (stateObj) =>
+    supportsFeature(stateObj, VACUUM_SUPPORT_STOP)
+  ),
+  new VacuumCommand("Clean spot", "hass:broom", "clean_spot", (stateObj) =>
+    supportsFeature(stateObj, VACUUM_SUPPORT_CLEAN_SPOT)
+  ),
+  new VacuumCommand("Locate", "hass:map-marker", "locate", (stateObj) =>
+    supportsFeature(stateObj, VACUUM_SUPPORT_LOCATE)
+  ),
+  new VacuumCommand(
+    "Return home",
+    "hass:home-map-marker",
+    "return_to_base",
+    (stateObj) => supportsFeature(stateObj, VACUUM_SUPPORT_RETURN_HOME)
+  ),
+];
+
+// tslint:disable-next-line:max-classes-per-file
 @customElement("more-info-vacuum")
 class MoreInfoVacuum extends LitElement {
   @property() public hass!: HomeAssistant;
 
-  @property() public stateObj?: HassEntity;
+  @property() public stateObj?: VacuumEntity;
 
   protected render(): TemplateResult {
     if (!this.hass || !this.stateObj) {
@@ -34,15 +107,24 @@ class MoreInfoVacuum extends LitElement {
 
     const stateObj = this.stateObj;
 
-    const supportsPause = supportsFeature(stateObj, 4);
-    const supportsStop = supportsFeature(stateObj, 8);
-    const supportsReturnHome = supportsFeature(stateObj, 16);
-    const supportsFanSpeed = supportsFeature(stateObj, 32);
-    const supportsBattery = supportsFeature(stateObj, 64);
-    const supportsStatus = supportsFeature(stateObj, 128);
-    const supportsLocate = supportsFeature(stateObj, 512);
-    const supportsCleanSpot = supportsFeature(stateObj, 1024);
-    const supportsStart = supportsFeature(stateObj, 8192);
+    const supportsPause = supportsFeature(stateObj, VACUUM_SUPPORT_PAUSE);
+    const supportsStop = supportsFeature(stateObj, VACUUM_SUPPORT_STOP);
+    const supportsReturnHome = supportsFeature(
+      stateObj,
+      VACUUM_SUPPORT_RETURN_HOME
+    );
+    const supportsFanSpeed = supportsFeature(
+      stateObj,
+      VACUUM_SUPPORT_FAN_SPEED
+    );
+    const supportsBattery = supportsFeature(stateObj, VACUUM_SUPPORT_BATTERY);
+    const supportsStatus = supportsFeature(stateObj, VACUUM_SUPPORT_STATUS);
+    const supportsLocate = supportsFeature(stateObj, VACUUM_SUPPORT_LOCATE);
+    const supportsCleanSpot = supportsFeature(
+      stateObj,
+      VACUUM_SUPPORT_CLEAN_SPOT
+    );
+    const supportsStart = supportsFeature(stateObj, VACUUM_SUPPORT_START);
 
     const filterExtraAtrributes =
       "fan_speed,fan_speed_list,status,battery_level,battery_icon";
@@ -82,82 +164,20 @@ class MoreInfoVacuum extends LitElement {
               <p></p>
               <div class="status-subtitle">Vacuum cleaner commands:</div>
               <div class="flex-horizontal">
-                ${supportsStart
-                  ? html`
-                      <div>
-                        <paper-icon-button
-                          icon="hass:play"
-                          @click="${this.handleStart}"
-                          title="Start"
-                        ></paper-icon-button>
-                      </div>
-                      ${supportsPause
-                        ? html`
-                            <div>
-                              <paper-icon-button
-                                icon="hass:pause"
-                                @click="${this.handlePause}"
-                                title="Pause"
-                              ></paper-icon-button>
-                            </div>
-                          `
-                        : ""}
-                    `
-                  : supportsPause
-                  ? html`
-                      <div>
-                        <paper-icon-button
-                          icon="hass:play-pause"
-                          @click="${this.handlePlayPause}"
-                          title="Pause"
-                        ></paper-icon-button>
-                      </div>
-                    `
-                  : ""}
-                ${supportsStop
-                  ? html`
-                      <div>
-                        <paper-icon-button
-                          icon="hass:stop"
-                          @click="${this.handleStop}"
-                          title="Stop"
-                        ></paper-icon-button>
-                      </div>
-                    `
-                  : ""}
-                ${supportsCleanSpot
-                  ? html`
-                      <div>
-                        <paper-icon-button
-                          icon="hass:broom"
-                          @click="${this.handleCleanSpot}"
-                          title="Clean spot"
-                        ></paper-icon-button>
-                      </div>
-                    `
-                  : ""}
-                ${supportsLocate
-                  ? html`
-                      <div>
-                        <paper-icon-button
-                          icon="hass:map-marker"
-                          @click="${this.handleLocate}"
-                          title="Locate"
-                        ></paper-icon-button>
-                      </div>
-                    `
-                  : ""}
-                ${supportsReturnHome
-                  ? html`
-                      <div>
-                        <paper-icon-button
-                          icon="hass:home-map-marker"
-                          @click="${this.handleReturnHome}"
-                          title="Return home"
-                        ></paper-icon-button>
-                      </div>
-                    `
-                  : ""}
+                ${VACUUM_COMMANDS.filter((item) =>
+                  item.shouldVisible(stateObj)
+                ).map(
+                  (item) => html`
+                    <div>
+                      <paper-icon-button
+                        icon="${item.icon}"
+                        .entry="${item}"
+                        @click="${this.callService}"
+                        title="${item.title}"
+                      ></paper-icon-button>
+                    </div>
+                  `
+                )}
               </div>
             </div>
           `
@@ -207,44 +227,9 @@ class MoreInfoVacuum extends LitElement {
     `;
   }
 
-  private handleStop() {
-    this.hass.callService("vacuum", "stop", {
-      entity_id: this.stateObj!.entity_id,
-    });
-  }
-
-  private handlePlayPause() {
-    this.hass.callService("vacuum", "start_pause", {
-      entity_id: this.stateObj!.entity_id,
-    });
-  }
-
-  private handlePause() {
-    this.hass.callService("vacuum", "pause", {
-      entity_id: this.stateObj!.entity_id,
-    });
-  }
-
-  private handleStart() {
-    this.hass.callService("vacuum", "start", {
-      entity_id: this.stateObj!.entity_id,
-    });
-  }
-
-  private handleLocate() {
-    this.hass.callService("vacuum", "locate", {
-      entity_id: this.stateObj!.entity_id,
-    });
-  }
-
-  private handleCleanSpot() {
-    this.hass.callService("vacuum", "clean_spot", {
-      entity_id: this.stateObj!.entity_id,
-    });
-  }
-
-  private handleReturnHome() {
-    this.hass.callService("vacuum", "return_to_base", {
+  private callService(ev: CustomEvent) {
+    const entry = (ev.target! as any).entry as VacuumCommand;
+    this.hass.callService("vacuum", entry.serviceName, {
       entity_id: this.stateObj!.entity_id,
     });
   }
