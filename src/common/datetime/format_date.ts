@@ -1,20 +1,11 @@
 import fecha from "fecha";
+import { toLocaleDateStringSupportsOptions } from "./check_options_support";
 
-// Check for support of native locale string options
-function toLocaleDateStringSupportsOptions() {
-  try {
-    new Date().toLocaleDateString("i");
-  } catch (e) {
-    return e.name === "RangeError";
-  }
-  return false;
-}
-
-export default toLocaleDateStringSupportsOptions()
+export const formatDate = toLocaleDateStringSupportsOptions
   ? (dateObj: Date, locales: string) =>
       dateObj.toLocaleDateString(locales, {
         year: "numeric",
         month: "long",
         day: "numeric",
       })
-  : (dateObj: Date) => fecha.format(dateObj, "mediumDate");
+  : (dateObj: Date) => fecha.format(dateObj, "longDate");
