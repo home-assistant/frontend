@@ -31,15 +31,17 @@ class IntegrationsCard extends LitElement {
                     <a
                       href=${`https://www.home-assistant.io/integrations/${domain}`}
                       target="_blank"
-                      >Documentation</a
                     >
+                      Documentation
+                    </a>
                   </td>
                   <td>
                     <a
                       href=${`https://github.com/home-assistant/home-assistant/issues?q=is%3Aissue+is%3Aopen+label%3A%22integration%3A+${domain}%22`}
                       target="_blank"
-                      >Issues</a
                     >
+                      Issues
+                    </a>
                   </td>
                 </tr>
               `
