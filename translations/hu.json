@@ -638,7 +638,7 @@
                 "ok": "OK"
             },
             "more_info_control": {
-                "dismiss": "Elvetés párbeszédpanel",
+                "dismiss": "Párbeszédpanel elvetése",
                 "edit": "Entitás szerkesztése",
                 "restored": {
                     "confirm_remove_text": "Biztosan el szeretnéd távolítani ezt az entitást?",
@@ -1212,7 +1212,7 @@
                     "pick_attribute": "Válassz egy attribútumot a felülbíráláshoz",
                     "picker": {
                         "header": "Testreszabások",
-                        "introduction": "Szabd testre az entitások attribútumait. A hozzáadott/szerkesztett testreszabások azonnal érvényesülnek. A testreszabások eltávolítása akkor lép életbe, amikor az entitás frissül."
+                        "introduction": "Szabd testre az entitások attribútumait. A hozzáadott, szerkesztett testreszabások azonnal érvényesülnek. A testreszabások eltávolítása akkor lép életbe, amikor az entitás frissül."
                     },
                     "warning": {
                         "include_link": "customize.yaml fájlra",
@@ -1230,7 +1230,7 @@
                         "conditions": {
                             "caption": "Csak akkor csinálj valamit, ha a(z)..."
                         },
-                        "create": " Eszköz automatizálás létrehozása",
+                        "create": "Eszköz automatizálás létrehozása",
                         "no_automations": "Nincs automatizálás",
                         "no_device_automations": "Ehhez az eszközhöz nem állnak rendelkezésre automatizálások.",
                         "triggers": {
@@ -1360,7 +1360,7 @@
                         "area_picker_label": "Terület",
                         "close": "Bezárás",
                         "created_config": "Konfiguráció létrehozva a következőhöz: {name}.",
-                        "dismiss": "Elvetés párbeszédpanel",
+                        "dismiss": "Párbeszédpanel elvetése",
                         "error_saving_area": "Hiba a terület mentésekor: {error}",
                         "external_step": {
                             "description": "Ehhez a lépéshez egy külső weboldal meglátogatása szükséges.",

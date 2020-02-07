@@ -669,7 +669,7 @@
             },
             "options_flow": {
                 "form": {
-                    "header": "Параметры"
+                    "header": "Настройки"
                 },
                 "success": {
                     "description": "Параметры успешно сохранены."

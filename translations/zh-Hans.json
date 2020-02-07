@@ -545,6 +545,15 @@
         },
         "components": {
             "area-picker": {
+                "add_dialog": {
+                    "add": "添加",
+                    "failed_create_area": "创建区域失败。",
+                    "name": "名称",
+                    "text": "输入新区域的名称。",
+                    "title": "添加新区域"
+                },
+                "add_new": "添加新区域…",
+                "area": "区域",
                 "clear": "清除",
                 "show_areas": "显示区域"
             },
@@ -1040,10 +1049,10 @@
                             "link_learn_more": "了解有关创建基于Webhook的自动化的更多信息。",
                             "loading": "载入中...",
                             "manage": "管理",
-                            "no_hooks_yet": "看来你还没有webhooks。一起开始配置一个吧",
-                            "no_hooks_yet_link_automation": "Webhook自动化",
-                            "no_hooks_yet_link_integration": "webhook-based集成",
-                            "no_hooks_yet2": "或通过创建一个",
+                            "no_hooks_yet": "看来你还没有 webhooks。您可以配置一个",
+                            "no_hooks_yet_link_automation": "Webhook 自动化",
+                            "no_hooks_yet_link_integration": "基于 Webhook 的集成",
+                            "no_hooks_yet2": "或创建一个",
                             "title": "Webhooks"
                         }
                     },
@@ -1217,14 +1226,19 @@
                         "actions": {
                             "caption": "满足条件时执行："
                         },
+                        "automations": "自动化",
                         "conditions": {
                             "caption": "并且满足以下条件时："
                         },
+                        "create": "通过设备创建自动化",
+                        "no_automations": "没有自动化",
+                        "no_device_automations": "该设备没有可用的自动化。",
                         "triggers": {
                             "caption": "当以下事件发生时："
                         }
                     },
                     "automations": "自动化",
+                    "cant_edit": "您只能编辑在 UI 中创建的项目。",
                     "caption": "设备",
                     "confirm_rename_entity_ids": "是否要重命名实体的实体 ID？",
                     "data_table": {
@@ -1244,8 +1258,22 @@
                         "none": "这个设备没有实体"
                     },
                     "info": "设备信息",
+                    "name": "名称",
+                    "scene": {
+                        "create": "通过设备创建场景",
+                        "no_scenes": "没有场景",
+                        "scenes": "场景"
+                    },
+                    "scenes": "场景",
+                    "script": {
+                        "create": "通过设备创建脚本",
+                        "no_scripts": "没有脚本",
+                        "scripts": "脚本"
+                    },
+                    "scripts": "脚本",
                     "unknown_error": "未知错误",
-                    "unnamed_device": "未命名设备"
+                    "unnamed_device": "未命名设备",
+                    "update": "更新"
                 },
                 "entities": {
                     "caption": "实体注册",
