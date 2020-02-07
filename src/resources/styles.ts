@@ -8,6 +8,7 @@ export const derivedStyles = {
   "sidebar-background-color": "var(--paper-listbox-background-color);",
   "sidebar-selected-text-color": "var(--primary-color)",
   "sidebar-selected-icon-color": "var(--primary-color)",
+  "sidebar-icon-color": "rgba(var(--rgb-primary-text-color), 0.6)",
   "switch-checked-color": "var(--primary-color)",
   "switch-checked-button-color":
     "var(--switch-checked-color, var(--primary-background-color))",
@@ -20,6 +21,7 @@ export const derivedStyles = {
   "slider-bar-color": "var(--disabled-text-color)",
   "label-badge-grey": "var(--paper-grey-500)",
   "label-badge-background-color": "var(--card-background-color)",
+  "label-badge-text-color": "rgba(var(--rgb-primary-text-color), 0.8)",
   "paper-card-background-color": "var(--card-background-color)",
   "paper-listbox-background-color": "var(--card-background-color)",
   "paper-item-icon-color": "var(--state-icon-color)",
