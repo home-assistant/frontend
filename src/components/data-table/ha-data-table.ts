@@ -101,6 +101,8 @@ export class HaDataTable extends BaseElement {
   @property({ type: String }) private _sortColumn?: string;
   @property({ type: String }) private _sortDirection: SortingDirection = null;
   @property({ type: Array }) private _filteredData: DataTableRowData[] = [];
+  @query("slot[name='header']") private _header!: HTMLSlotElement;
+  @query(".scroller") private _scroller!: HTMLDivElement;
   private _sortColumns: {
     [key: string]: DataTableSortColumnData;
   } = {};
@@ -119,6 +121,10 @@ export class HaDataTable extends BaseElement {
     this._headerChecked = false;
     this._headerIndeterminate = false;
     this.mdcFoundation.handleHeaderRowCheckboxChange();
+  }
+
+  public connectedCallback() {
+    super.connectedCallback();
   }
 
   protected firstUpdated() {
@@ -170,7 +176,7 @@ export class HaDataTable extends BaseElement {
   protected render() {
     return html`
       <div class="mdc-data-table">
-        <slot name="header">
+        <slot name="header" @slotchange=${this._calcScrollHeight}>
           ${this._filterable
             ? html`
                 <div class="table-header">
@@ -181,112 +187,114 @@ export class HaDataTable extends BaseElement {
               `
             : ""}
         </slot>
-        <table class="mdc-data-table__table">
-          <thead>
-            <tr class="mdc-data-table__header-row">
-              ${this.selectable
-                ? html`
+        <div class="scroller">
+          <table class="mdc-data-table__table">
+            <thead>
+              <tr class="mdc-data-table__header-row">
+                ${this.selectable
+                  ? html`
+                      <th
+                        class="mdc-data-table__header-cell mdc-data-table__header-cell--checkbox"
+                        role="columnheader"
+                        scope="col"
+                      >
+                        <ha-checkbox
+                          class="mdc-data-table__row-checkbox"
+                          @change=${this._handleHeaderRowCheckboxChange}
+                          .indeterminate=${this._headerIndeterminate}
+                          .checked=${this._headerChecked}
+                        >
+                        </ha-checkbox>
+                      </th>
+                    `
+                  : ""}
+                ${Object.entries(this.columns).map((columnEntry) => {
+                  const [key, column] = columnEntry;
+                  const sorted = key === this._sortColumn;
+                  const classes = {
+                    "mdc-data-table__header-cell--numeric": Boolean(
+                      column.type && column.type === "numeric"
+                    ),
+                    "mdc-data-table__header-cell--icon": Boolean(
+                      column.type && column.type === "icon"
+                    ),
+                    sortable: Boolean(column.sortable),
+                    "not-sorted": Boolean(column.sortable && !sorted),
+                  };
+                  return html`
                     <th
-                      class="mdc-data-table__header-cell mdc-data-table__header-cell--checkbox"
+                      class="mdc-data-table__header-cell ${classMap(classes)}"
                       role="columnheader"
                       scope="col"
+                      @click=${this._handleHeaderClick}
+                      data-column-id="${key}"
                     >
-                      <ha-checkbox
-                        class="mdc-data-table__row-checkbox"
-                        @change=${this._handleHeaderRowCheckboxChange}
-                        .indeterminate=${this._headerIndeterminate}
-                        .checked=${this._headerChecked}
-                      >
-                      </ha-checkbox>
+                      ${column.sortable
+                        ? html`
+                            <ha-icon
+                              .icon=${sorted && this._sortDirection === "desc"
+                                ? "hass:arrow-down"
+                                : "hass:arrow-up"}
+                            ></ha-icon>
+                          `
+                        : ""}
+                      <span>${column.title}</span>
                     </th>
-                  `
-                : ""}
-              ${Object.entries(this.columns).map((columnEntry) => {
-                const [key, column] = columnEntry;
-                const sorted = key === this._sortColumn;
-                const classes = {
-                  "mdc-data-table__header-cell--numeric": Boolean(
-                    column.type && column.type === "numeric"
-                  ),
-                  "mdc-data-table__header-cell--icon": Boolean(
-                    column.type && column.type === "icon"
-                  ),
-                  sortable: Boolean(column.sortable),
-                  "not-sorted": Boolean(column.sortable && !sorted),
-                };
-                return html`
-                  <th
-                    class="mdc-data-table__header-cell ${classMap(classes)}"
-                    role="columnheader"
-                    scope="col"
-                    @click=${this._handleHeaderClick}
-                    data-column-id="${key}"
+                  `;
+                })}
+              </tr>
+            </thead>
+            <tbody class="mdc-data-table__content">
+              ${repeat(
+                this._filteredData!,
+                (row: DataTableRowData) => row[this.id],
+                (row: DataTableRowData) => html`
+                  <tr
+                    data-row-id="${row[this.id]}"
+                    @click=${this._handleRowClick}
+                    class="mdc-data-table__row"
                   >
-                    ${column.sortable
+                    ${this.selectable
                       ? html`
-                          <ha-icon
-                            .icon=${sorted && this._sortDirection === "desc"
-                              ? "hass:arrow-down"
-                              : "hass:arrow-up"}
-                          ></ha-icon>
+                          <td
+                            class="mdc-data-table__cell mdc-data-table__cell--checkbox"
+                          >
+                            <ha-checkbox
+                              class="mdc-data-table__row-checkbox"
+                              @change=${this._handleRowCheckboxChange}
+                              .checked=${this._checkedRows.includes(
+                                String(row[this.id])
+                              )}
+                            >
+                            </ha-checkbox>
+                          </td>
                         `
                       : ""}
-                    <span>${column.title}</span>
-                  </th>
-                `;
-              })}
-            </tr>
-          </thead>
-          <tbody class="mdc-data-table__content">
-            ${repeat(
-              this._filteredData!,
-              (row: DataTableRowData) => row[this.id],
-              (row: DataTableRowData) => html`
-                <tr
-                  data-row-id="${row[this.id]}"
-                  @click=${this._handleRowClick}
-                  class="mdc-data-table__row"
-                >
-                  ${this.selectable
-                    ? html`
+                    ${Object.entries(this.columns).map((columnEntry) => {
+                      const [key, column] = columnEntry;
+                      return html`
                         <td
-                          class="mdc-data-table__cell mdc-data-table__cell--checkbox"
+                          class="mdc-data-table__cell ${classMap({
+                            "mdc-data-table__cell--numeric": Boolean(
+                              column.type && column.type === "numeric"
+                            ),
+                            "mdc-data-table__cell--icon": Boolean(
+                              column.type && column.type === "icon"
+                            ),
+                          })}"
                         >
-                          <ha-checkbox
-                            class="mdc-data-table__row-checkbox"
-                            @change=${this._handleRowCheckboxChange}
-                            .checked=${this._checkedRows.includes(
-                              String(row[this.id])
-                            )}
-                          >
-                          </ha-checkbox>
+                          ${column.template
+                            ? column.template(row[key], row)
+                            : row[key]}
                         </td>
-                      `
-                    : ""}
-                  ${Object.entries(this.columns).map((columnEntry) => {
-                    const [key, column] = columnEntry;
-                    return html`
-                      <td
-                        class="mdc-data-table__cell ${classMap({
-                          "mdc-data-table__cell--numeric": Boolean(
-                            column.type && column.type === "numeric"
-                          ),
-                          "mdc-data-table__cell--icon": Boolean(
-                            column.type && column.type === "icon"
-                          ),
-                        })}"
-                      >
-                        ${column.template
-                          ? column.template(row[key], row)
-                          : row[key]}
-                      </td>
-                    `;
-                  })}
-                </tr>
-              `
-            )}
-          </tbody>
-        </table>
+                      `;
+                    })}
+                  </tr>
+                `
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
     `;
   }
@@ -432,6 +440,11 @@ export class HaDataTable extends BaseElement {
 
   private _handleSearchChange(ev: CustomEvent): void {
     this._debounceSearch(ev.detail.value);
+  }
+
+  private async _calcScrollHeight() {
+    await this.updateComplete;
+    this._scroller.style.maxHeight = `calc(100% - ${this._header.clientHeight}px)`;
   }
 
   static get styles(): CSSResult {
@@ -584,8 +597,14 @@ export class HaDataTable extends BaseElement {
 
       /* custom from here */
 
+      :host {
+        display: block;
+      }
+
       .mdc-data-table {
         display: block;
+        border-width: var(--data-table-border-width, 1px);
+        height: 100%;
       }
       .mdc-data-table__header-cell {
         overflow: hidden;
@@ -613,6 +632,16 @@ export class HaDataTable extends BaseElement {
       }
       .table-header {
         border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);
+      }
+      search-input {
+        position: relative;
+        top: 2px;
+      }
+      .scroller {
+        overflow: auto;
+      }
+      slot[name="header"] {
+        display: block;
       }
     `;
   }
