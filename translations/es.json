@@ -764,7 +764,7 @@
                 },
                 "automation": {
                     "caption": "Automatizaciones",
-                    "description": "Crear y editar automatizaciones",
+                    "description": "Crea y edita automatizaciones",
                     "editor": {
                         "actions": {
                             "add": "Añadir acción",
@@ -1153,7 +1153,7 @@
                 },
                 "core": {
                     "caption": "Configuración general",
-                    "description": "Cambiar la configuración general de Home Assistant",
+                    "description": "Cambia la configuración general de Home Assistant",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1374,7 +1374,7 @@
                     },
                     "configure": "Configurar",
                     "configured": "Configurado",
-                    "description": "Administrar y configurar integraciones",
+                    "description": "Administra y configura integraciones",
                     "details": "Detalles de la integración",
                     "discovered": "Descubierto",
                     "home_assistant_website": "Sitio web de Home Assistant",
@@ -1425,7 +1425,7 @@
                 "scene": {
                     "activated": "Activada escena {name}.",
                     "caption": "Escenas",
-                    "description": "Crear y editar escenas",
+                    "description": "Crea y edita escenas",
                     "editor": {
                         "default_name": "Nueva Escena",
                         "devices": {
@@ -1465,7 +1465,7 @@
                 },
                 "script": {
                     "caption": "Scripts",
-                    "description": "Crear y editar scripts",
+                    "description": "Crea y edita scripts",
                     "editor": {
                         "alias": "Nombre",
                         "default_name": "Nuevo script",
@@ -1529,7 +1529,7 @@
                         "username": "Nombre de usuario"
                     },
                     "caption": "Usuarios",
-                    "description": "Administrar usuarios",
+                    "description": "Administra usuarios",
                     "editor": {
                         "activate_user": "Activar usuario",
                         "active": "Activo",
