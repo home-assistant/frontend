@@ -1455,7 +1455,7 @@
                         "delete_scene": "Scène verwijderen",
                         "edit_scene": "Scène bewerken",
                         "header": "Scene Editor",
-                        "introduction": "Met de scene editor kunt je scenes maken en bewerken. Volg de onderstaande link om de instructies te lezen om ervoor te zorgen dat u Home Assistant correct hebt geconfigureerd.",
+                        "introduction": "Met de scene editor kun je scenes maken en bewerken. Volg de onderstaande link om de instructies te lezen om ervoor te zorgen dat u Home Assistant correct hebt geconfigureerd.",
                         "learn_more": "Meer informatie over scènes",
                         "no_scenes": "We konden geen bewerkbare scènes vinden.",
                         "only_editable": "Alleen scènes die zijn gedefinieerd in scenes.yaml kunnen worden bewerkt.",
@@ -1610,7 +1610,7 @@
                         "cluster_selection_help": "Selecteer clusters om aan de geselecteerde groep te koppelen.",
                         "group_picker_help": "Selecteer een groep om een koppel opdracht uit te voeren.",
                         "group_picker_label": "Te koppelen groepen",
-                        "header": "Group koppelingen",
+                        "header": "Groep koppelingen",
                         "introduction": "Groepen koppelen en ontkoppelen",
                         "unbind_button_help": "Ontkoppel de geselecteerde groep van de geselecteerde apparaatclusters.",
                         "unbind_button_label": "Ontkoppel groep"
@@ -1665,7 +1665,7 @@
                 "zone": {
                     "add_zone": "Zone toevoegen",
                     "caption": "Zones",
-                    "configured_in_yaml": "Zones die via configuration.yaml zijn geconfigureerd kunnen niet worden bewerkt in de gebruikrs",
+                    "configured_in_yaml": "Zones die via configuration.yaml zijn geconfigureerd kunnen niet worden bewerkt in de gebruikers",
                     "confirm_delete": "Weet je zeker dat je deze zone wilt verwijderen?",
                     "create_zone": "Creëer Zone",
                     "description": "Beheer de zones waarin u personen wilt volgen.",

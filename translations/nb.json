@@ -566,7 +566,7 @@
             "entity": {
                 "entity-picker": {
                     "clear": "Tøm",
-                    "entity": "Oppføring",
+                    "entity": "Entitet",
                     "show_entities": "Vis entiteter"
                 }
             },
@@ -578,7 +578,7 @@
                 "area": "Område",
                 "automation": "Del av følgende automatiseringer",
                 "device": "Enhet",
-                "entity": "Beslektede enheter",
+                "entity": "Beslektede entiteter",
                 "group": "Del av følgende grupper",
                 "integration": "Integrering",
                 "scene": "Del av følgende scener",
@@ -627,7 +627,7 @@
                     "name": "Overstyr Navn",
                     "note": "Merk: dette fungerer kanskje ikke ennå med alle integrasjoner.",
                     "unavailable": "Denne entiteten er ikke tilgjengelig for øyeblikket.",
-                    "update": "OPPDATER"
+                    "update": "OPPDATÉR"
                 },
                 "related": "Relaterte",
                 "settings": "Innstillinger"
@@ -639,13 +639,13 @@
             },
             "more_info_control": {
                 "dismiss": "Avvis dialogboksen",
-                "edit": "Rediger enhet",
+                "edit": "Redigér entitet",
                 "restored": {
-                    "confirm_remove_text": "Er du sikker på at du vil fjerne denne enheten?",
-                    "confirm_remove_title": "Vil du fjerne enheten?",
-                    "not_provided": "Denne enheten er ikke tilgjengelig for øyeblikket, og er en foreldreløs til en fjernet, endret eller dysfunksjonelle integrering eller enhet.",
-                    "remove_action": "Fjern enhet",
-                    "remove_intro": "Hvis enheten ikke lenger er i bruk, kan du rense den opp ved å fjerne den."
+                    "confirm_remove_text": "Er du sikker på at du vil fjerne denne entiteten?",
+                    "confirm_remove_title": "Vil du fjerne entiteten?",
+                    "not_provided": "Denne entiteten er ikke tilgjengelig for øyeblikket og er foreldreløs til en fjernet, endret eller ikke-fungerende integrering eller enhet.",
+                    "remove_action": "Fjern entitet",
+                    "remove_intro": "Hvis entiteten ikke lenger er i bruk, kan du rense den opp ved å fjerne den."
                 },
                 "script": {
                     "last_action": "Siste handling",
@@ -663,7 +663,7 @@
             },
             "more_info_settings": {
                 "back": "Gå tilbake",
-                "entity_id": "Oppføring ID",
+                "entity_id": "Entitets-ID",
                 "name": "Navn",
                 "save": "Lagre"
             },
@@ -965,7 +965,7 @@
                                 },
                                 "zone": {
                                     "enter": "Ankommer",
-                                    "entity": "Oppføring med posisjon",
+                                    "entity": "Entitet med posisjon",
                                     "event": "Hendelse:",
                                     "label": "Sone",
                                     "leave": "Forlater",
@@ -1212,7 +1212,7 @@
                     "pick_attribute": "Velg et attributt som skal overstyres",
                     "picker": {
                         "header": "Tilpasninger",
-                        "introduction": "Juster attributter per entitet. Lagt til/redigert tilpasninger trer i kraft umiddelbart. Fjernede tilpasninger trer i kraft når entiteten er oppdatert."
+                        "introduction": "Justér attributter per entitet. Lagt til eller redigerte tilpasninger trer i kraft umiddelbart. Fjernede tilpasninger trer i kraft når entiteten blir oppdatert."
                     },
                     "warning": {
                         "include_link": "inkludér customize.yaml",
@@ -1285,7 +1285,7 @@
                         "delete": "SLETT",
                         "enabled_cause": "Deaktivert av {cause}.",
                         "enabled_description": "Deaktiverte entiteter vil ikke bli lagt til i Home Assistant.",
-                        "enabled_label": "Aktiver entitet",
+                        "enabled_label": "Aktivér entitet",
                         "entity_id": "Entitets-ID",
                         "name": "Overstyr Navn",
                         "note": "Merk: dette fungerer kanskje ikke ennå med alle integrasjoner.",
@@ -1317,8 +1317,8 @@
                             "status": "Status"
                         },
                         "integrations_page": "Integrasjonsside",
-                        "introduction": "Home Assistant bygger opp et register over hver entitet den har sett som kan identifiseres unikt. Hver av disse entitetene vil ha en entitets-ID som er reservert kun til denne entiteten.",
-                        "introduction2": "Bruk enhets registret til å overstyre navnet, endre enhets-ID eller fjerne oppføringen fra Home Assistant.",
+                        "introduction": "Home Assistant bygger opp et register over hver entitet den har sett som kan identifiseres unikt. Hver av disse entitetene vil ha en ID som er reservert kun til denne.",
+                        "introduction2": "Bruk entitetsregistret til å overstyre navnet, endre id-en eller fjerne den fra Home Assistant.",
                         "remove_selected": {
                             "button": "Fjern valgte",
                             "confirm_text": "Enheter kan bare fjernes når integrasjonen ikke lenger gir enhetene.",
@@ -1342,7 +1342,7 @@
                         "delete_button": "Slett {integration}",
                         "delete_confirm": "Er du sikker på at du vil slette denne integrasjonen?",
                         "device_unavailable": "enheten er utilgjengelig",
-                        "entity_unavailable": "oppføringen er utilgjengelig",
+                        "entity_unavailable": "entiteten er ikke tilgjengelig",
                         "firmware": "Fastvare: {version}",
                         "hub": "Tilkoblet via",
                         "manuf": "av {manufacturer}",
@@ -1572,7 +1572,7 @@
                         "header": "Klyngeattributter",
                         "help_attribute_dropdown": "Velg en attributt for å se eller angi verdien.",
                         "help_get_zigbee_attribute": "Hent verdien for det valgte attributtet.",
-                        "help_set_zigbee_attribute": "Angi attributtverdi for den spesifiserte klyngen på den angitte entiteten.",
+                        "help_set_zigbee_attribute": "Angi attributtverdi for klusteret på den angitte entiteten.",
                         "introduction": "Se og rediger klyngeattributter.",
                         "set_zigbee_attribute": "Angi Zigbee-attributt"
                     },
