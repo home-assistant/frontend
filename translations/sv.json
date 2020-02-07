@@ -45,7 +45,7 @@
         "plant": "Växt",
         "proximity": "Närhet",
         "remote": "Fjärrkontroll",
-        "scene": "Scen",
+        "scene": "Scenario",
         "script": "Skript",
         "sensor": "Sensor",
         "sun": "Sol",
@@ -329,7 +329,7 @@
             "on": "På"
         },
         "scene": {
-            "scening": "Aktiverar scen"
+            "scening": "Scenario"
         },
         "script": {
             "off": "Av",
@@ -411,7 +411,7 @@
             },
             "automation": {
                 "last_triggered": "Utlöstes senast",
-                "trigger": "Aktivera"
+                "trigger": "Kör"
             },
             "camera": {
                 "not_available": "Bilden är inte tillgänglig"
@@ -536,6 +536,7 @@
         },
         "common": {
             "cancel": "Avbryt",
+            "close": "Stäng",
             "loading": "Läser in",
             "no": "Nej",
             "save": "Spara",
@@ -580,7 +581,7 @@
                 "entity": "Relaterade entiteter",
                 "group": "Del av följande grupper",
                 "integration": "Integration",
-                "scene": "Del av följande scener",
+                "scene": "Del av följande scenarier",
                 "script": "Del av följande skript"
             },
             "relative_time": {
@@ -640,7 +641,11 @@
                 "dismiss": "Avfärda",
                 "edit": "Redigera entitet",
                 "restored": {
-                    "confirm_remove_text": "Är du säker på att du vill ta bort den här entiteten?"
+                    "confirm_remove_text": "Är du säker på att du vill ta bort den här entiteten?",
+                    "confirm_remove_title": "Ta bort entitet?",
+                    "not_provided": "Den här enheten är för närvarande inte tillgänglig och är en föräldralös till en borttagen, ändrad eller dysfunktionell integration eller enhet.",
+                    "remove_action": "Ta bort entitet",
+                    "remove_intro": "Om entiteten inte längre används kan du rensa upp den genom att ta bort den."
                 },
                 "script": {
                     "last_action": "Senaste åtgärd",
@@ -690,6 +695,8 @@
                 "last_seen": "Senast sedd",
                 "manuf": "av {manufacturer}",
                 "no_area": "Inget område",
+                "power_source": "Strömkälla",
+                "quirk": "Quirk",
                 "services": {
                     "reconfigure": "Konfigurera om ZHA-enheten (läk enheten). Använd det här om du har problem med enheten. Om den aktuella enheten är en batteridriven enhet, se till att den är påslagen och accepterar kommandon när du använder den här tjänsten.",
                     "remove": "Ta bort en enhet från Zigbee-nätverket.",
@@ -752,11 +759,11 @@
                         "integrations_page": "Integrationssidan",
                         "introduction": "Områden används för att organisera var enheter befinner sig. Denna information kommer att användas i hela Home Assistant för att hjälpa dig att organisera ditt gränssnitt, behörigheter och integreringar med andra system.",
                         "introduction2": "Om du vill placera enheter i ett område använder du länken nedan för att navigera till integrationssidan och klickar sedan på en konfigurerad integration för att komma till enhetskort.",
-                        "no_areas": "Det verkar som om du inte har några områden än!"
+                        "no_areas": "Ser ut som du inte har några områden ännu!"
                     }
                 },
                 "automation": {
-                    "caption": "Automationer",
+                    "caption": "Automatiseringar",
                     "description": "Skapa och redigera automationer",
                     "editor": {
                         "actions": {
@@ -789,7 +796,7 @@
                                     "service_data": "Tjänstedata"
                                 },
                                 "scene": {
-                                    "label": "Aktivera scen"
+                                    "label": "Aktivera scenario"
                                 },
                                 "service": {
                                     "label": "Kör tjänst",
@@ -810,7 +817,7 @@
                             "delete_confirm": "Säker på att du vill radera?",
                             "duplicate": "Duplicera",
                             "header": "Villkor",
-                            "introduction": "Villkor är en valfri del av en automatiseringsregel och kan användas för att förhindra att en åtgärd inträffar när den triggas. Villkoren liknar triggers men är väldigt olika. En trigger reagerar på händelser som händer i systemet medan ett villkor bara utvärderar hur systemet ser ut just nu. En trigger kan reagera på att en strömbrytare slås på. Ett villkor kan bara se om en strömbrytare är på eller av.",
+                            "introduction": "Villkoren är valfria och kommer att förhindra ytterligare utförande såvida inte alla villkor är uppfyllda.",
                             "learn_more": "Lär dig mer om villkor",
                             "name": "Villkor",
                             "type_select": "Villkorstyp",
@@ -884,6 +891,7 @@
                             "header": "Triggers",
                             "introduction": "Triggers är det som startar en automation. Det är möjligt att ange flera triggers för samma regel. När en trigger inträffar kommer Home Assistant att validera eventuella villkor och sedan köra åtgärden.",
                             "learn_more": "Lär dig mer om utlösare",
+                            "name": "Trigger",
                             "type_select": "Aktiveringstyp",
                             "type": {
                                 "device": {
@@ -985,7 +993,17 @@
                 "cloud": {
                     "account": {
                         "alexa": {
+                            "config_documentation": "Dokumentation av config",
+                            "disable": "inaktivera",
+                            "enable": "aktivera",
+                            "enable_ha_skill": "Aktivera Home Assistant skill för Alexa",
+                            "enable_state_reporting": "Aktivera tillståndsrapportering",
                             "info": "Med Alexa-integrationen för Home Assistant Cloud kan du styra alla dina Home Assistant-enheter via alla Alexa-aktiverade enheter.",
+                            "info_state_reporting": "Om du aktiverar tillståndsrapportering skickar Home Assistant tillståndsändringar av exponerade entiteter till Amazon. På så sätt kan du alltid se de senaste tillstånden i Alexa-appen och använda tillståndsändringarna för att skapa rutiner.",
+                            "manage_entities": "Hantera Entiteter",
+                            "state_reporting_error": "Det går inte att {enable_disable} rapportera tillståndet.",
+                            "sync_entities": "Synkronisera Entiteter",
+                            "sync_entities_error": "Det gick inte att synkronisera entiteter:",
                             "title": ""
                         },
                         "connected": "Ansluten",
@@ -993,8 +1011,19 @@
                         "fetching_subscription": "Hämtar prenumeration...",
                         "google": {
                             "config_documentation": "Konfigureringsdokumentation",
+                            "devices_pin": "Säkerhetsenheter Pin",
+                            "enable_ha_skill": "Aktivera Home Assistant-färdigheten för Google Assistant",
+                            "enable_state_reporting": "Aktivera tillståndsrapportering",
                             "enter_pin_error": "Det går inte att spara PIN-koden:",
-                            "sync_entities_404_message": "Misslyckades med att synkronisera dina entiteter till Google, fråga Google \"Hej Google, synkronisera mina enheter\" för att synkronisera dina entiteter."
+                            "enter_pin_hint": "Ange en PIN-kod för att använda säkerhetsenheter",
+                            "enter_pin_info": "Ange en pin för att interagera med säkerhetsenheter. Säkerhetsanordningar är dörrar, garagedörrar och lås. Du kommer att bli ombedd att säga/ange denna pin när du interagerar med sådana enheter via Google Assistent.",
+                            "info": "Med Google Assistant-integreringen för Home Assistant Cloud kan du styra alla dina Home Assistant-enheter via alla Google Assistent-aktiverade enheter.",
+                            "info_state_reporting": "Om du aktiverar tillståndsrapportering skickar Home Assistant alla tillståndsändringar av exponerade entiteter till Google. På så sätt kan du alltid se de senaste lägena i Google-appen.",
+                            "manage_entities": "Hantera Entiteter",
+                            "security_devices": "Säkerhetsenheter",
+                            "sync_entities": "Synkronisera Entiteter till Google",
+                            "sync_entities_404_message": "Misslyckades med att synkronisera dina entiteter till Google, fråga Google \"Hej Google, synkronisera mina enheter\" för att synkronisera dina entiteter.",
+                            "title": "Google Assistant"
                         },
                         "integrations": "Integrationer",
                         "integrations_introduction": "Integration med Home Assistant Cloud gör det möjligt för dig att koppla upp mot molntjänster utan att behöva exponera din egen installation av Home Assistant publikt på internet.",
@@ -1015,11 +1044,23 @@
                         "sign_out": "Logga ut",
                         "thank_you_note": "Tack för att du är en del av Home Assistant Cloud. Det är tack vare personer som dig som vi kan göra en fantastisk hemautomationsupplevelse för alla. Tack!",
                         "webhooks": {
+                            "disable_hook_error_msg": "Det gick inte att inaktivera webhook:",
+                            "info": "Allt som är konfigurerat för att utlösas av en webhook kan ges en offentligt tillgänglig URL för att låta dig skicka tillbaka data till Home Assistant var som helst, utan att exponera din instans för internet.",
+                            "link_learn_more": "Läs mer om hur du skapar webhook-drivna automatiseringar.",
                             "loading": "Laddar...",
+                            "manage": "Hantera",
+                            "no_hooks_yet": "Ser ut som du inte har några webhooks ännu. Kom igång genom att konfigurera en ",
+                            "no_hooks_yet_link_automation": "webhook automation",
+                            "no_hooks_yet_link_integration": "webhook-baserad integration",
+                            "no_hooks_yet2": " eller genom att skapa en ",
                             "title": ""
                         }
                     },
                     "alexa": {
+                        "banner": "Redigering av vilka entiteter som visas via det här användargränssnittet är inaktiverat eftersom du har konfigurerat entitetsfilter i configuration.yaml.",
+                        "expose": "Exponera för Alexa",
+                        "exposed_entities": "Exponerade entiteter",
+                        "not_exposed_entities": "Ej exponerade entiteter",
                         "title": ""
                     },
                     "caption": "Home Assistant Cloud",
@@ -1027,13 +1068,22 @@
                     "description_login": "Inloggad som {email}",
                     "description_not_login": "Inte inloggad",
                     "dialog_certificate": {
-                        "close": "Stäng"
+                        "certificate_expiration_date": "Certifikatets utgångsdatum",
+                        "certificate_information": "Certifikatinformation",
+                        "close": "Stäng",
+                        "fingerprint": "Certifikats-fingeravtryck:",
+                        "will_be_auto_renewed": "Kommer automatiskt att förnyas"
                     },
                     "dialog_cloudhook": {
+                        "available_at": "Webbhooken är tillgänglig på följande url:",
+                        "close": "Stäng",
                         "confirm_disable": "Är du säker på att du vill avaktivera denna webhook?",
                         "copied_to_clipboard": "Kopierat till urklipp",
                         "info_disable_webhook": "Om du inte längre vill använda denna webhook kan du",
-                        "link_disable_webhook": "Inaktivera"
+                        "link_disable_webhook": "Inaktivera",
+                        "managed_by_integration": "Denna webhook hanteras av en integration och kan inte inaktiveras.",
+                        "view_documentation": "Visa dokumentation",
+                        "webhook_for": "Webhook för {name}"
                     },
                     "forgot_password": {
                         "check_your_email": "Kontrollera din e-post för instruktioner om hur du återställer ditt lösenord.",
@@ -1045,14 +1095,20 @@
                         "title": "Glömt lösenord"
                     },
                     "google": {
+                        "banner": "Redigera vilka entiteter som visas via det här användargränssnittet är inaktiverat eftersom du har konfigurerat entitetsfilter i configuration.yaml.",
                         "disable_2FA": "Inaktivera tvåfaktorautentisering",
-                        "sync_to_google": "Synkroniserar ändringar till Google."
+                        "expose": "Exponera för Google Assistant",
+                        "exposed_entities": "Exponerade entiteter",
+                        "not_exposed_entities": "Ej exponerade entiteter",
+                        "sync_to_google": "Synkroniserar ändringar till Google.",
+                        "title": "Google Assistant"
                     },
                     "login": {
                         "alert_email_confirm_necessary": "Du måste bekräfta din e-postadress innan du loggar in.",
                         "alert_password_change_required": "Du måste ändra ditt lösenord innan du loggar in.",
                         "dismiss": "Avfärda",
                         "email": "E-postadress",
+                        "email_error_msg": "Ogiltig e-post",
                         "forgot_password": "glömt lösenordet?",
                         "introduction": "Home Assistant Cloud ger dig en säker koppling till din installation när du befinner dig hemifrån. Det låter dig också ansluta till tjänster med enbart molnstöd: Amazon Alexa och Google Assistant.",
                         "introduction2": "Denna tjänst drivs av vår partner ",
@@ -1063,6 +1119,7 @@
                         "password_error_msg": "Lösenord måste vara minst 8 tecken",
                         "sign_in": "Logga in",
                         "start_trial": "Starta din kostnadsfria 1-månads testperiod",
+                        "title": "Molninloggning",
                         "trial_info": "Ingen betalningsinformation behövs"
                     },
                     "register": {
@@ -1149,16 +1206,18 @@
                     "attributes_outside": "Följande attribut är anpassade från utanför customize.yaml",
                     "attributes_override": "Du kan åsidosätta dem om du vill.",
                     "attributes_set": "Följande attribut för enheten ställs in programmatiskt.",
-                    "caption": "Anpassning",
+                    "caption": "Anpassningar",
                     "description": "Anpassa dina entiteter",
+                    "different_include": "Möjligen via en domain, en glob eller en annan include.",
                     "pick_attribute": "Välj ett attribut att anpassa",
                     "picker": {
-                        "header": "Anpassning",
+                        "header": "Anpassningar",
                         "introduction": "Justera attribut per enhet. Tillagda och redigerade anpassningar kommer att tillträda omedelbart. Borttagna anpassningar kommer att träda i kraft när enheten är uppdaterad."
                     },
                     "warning": {
                         "include_link": "inkludera customize.yaml",
-                        "include_sentence": "Det verkar som att din configuration.yaml inte korrekt"
+                        "include_sentence": "Det verkar som att din configuration.yaml inte korrekt",
+                        "not_applied": "Ändringar som görs här skrivs i den, men kommer inte att tillämpas efter en konfiguration omlastning om inte inkludera är på plats."
                     }
                 },
                 "devices": {
@@ -1194,18 +1253,18 @@
                     "details": "Här är alla detaljer om din enhet.",
                     "device_not_found": "Enheten hittades inte.",
                     "entities": {
-                        "add_entities_lovelace": "Lägg till alla enhetsentiteter i Lovelace-gränsnittet",
+                        "add_entities_lovelace": "Lägg till i Lovelace",
                         "entities": "Entiteter",
                         "none": "Den här enheten har inga entiteter"
                     },
                     "info": "Enhetsinformation",
                     "name": "Namn",
                     "scene": {
-                        "create": "Skapa scen med enhet",
-                        "no_scenes": "Inga scener",
-                        "scenes": "Scener"
+                        "create": "Skapa scenario med enhet",
+                        "no_scenes": "Inga scenarier",
+                        "scenes": "Scenarier"
                     },
-                    "scenes": "Scener",
+                    "scenes": "Scenarier",
                     "script": {
                         "create": "Skapa skript med enhet",
                         "no_scripts": "Inga skript",
@@ -1259,7 +1318,7 @@
                         },
                         "integrations_page": "Integrationssida",
                         "introduction": "Home Assistant har ett entitetsregister som innehåller samtliga identifierade entiteter som någonsin har setts. Var och en av dessa entiteter kommer att ha ett ID-nummer som är reserverat för bara den entiteten.",
-                        "introduction2": "Använd entitetsregistret för att skriva över namnet, ändra ID eller ta bort posten ifrån Home Assistant. Obs! Att ta bort posten ifrån entity registry (entitetsregistret) kommer inte att ta bort enheten. För att göra det, följ länken nedan och ta bort det från integrationssidan.",
+                        "introduction2": "Använd entitetsregistret för att överskida namnet, ändra entitets-ID eller ta bort posten från Home Assistant.",
                         "remove_selected": {
                             "button": "Ta bort valda",
                             "confirm_text": "Entiteter kan endast tas bort när integrationen inte längre tillhandahåller entiteterna.",
@@ -1332,7 +1391,9 @@
                     },
                     "integration_not_found": "Integration hittades inte.",
                     "new": "Skapa en ny integration",
-                    "none": "Ingenting konfigurerat än"
+                    "none": "Ingenting konfigurerat än",
+                    "note_about_integrations": "Inte alla integrationer kan konfigureras via användargränssnittet ännu.",
+                    "note_about_website_reference": "Fler finns på "
                 },
                 "introduction": "Här går det att konfigurera dina komponenter och Home Assistant. Det är inte möjligt att ställa in allt från användargränssnittet ännu, men vi jobbar på det.",
                 "person": {
@@ -1362,44 +1423,44 @@
                     "note_about_persons_configured_in_yaml": "Observera: personer som konfigureras via configuration.yaml kan inte redigeras via det grafiska gränssnittet."
                 },
                 "scene": {
-                    "activated": "Aktiverad scen {name} .",
-                    "caption": "Scener",
-                    "description": "Skapa och redigera scener",
+                    "activated": "Aktiverat scenario {name} .",
+                    "caption": "Scenarier",
+                    "description": "Skapa och redigera scenarier",
                     "editor": {
-                        "default_name": "Ny scen",
+                        "default_name": "Nytt scenario",
                         "devices": {
                             "add": "Lägg till en enhet",
                             "delete": "Ta bort enhet",
                             "header": "Enheter",
-                            "introduction": "Lägg till enheterna som du vill inkludera i din scen. Sätt alla enheter till det tillstånd du vill ha för den här scenen."
+                            "introduction": "Lägg till enheterna som du vill inkludera i ditt scenario. Sätt alla enheter till det tillstånd du vill ha för detta scenario."
                         },
                         "entities": {
                             "add": "Lägg till en entitet",
                             "delete": "Ta bort entitet",
                             "device_entities": "Om du lägger till en entitet som tillhör en enhet kommer enheten att läggas till.",
                             "header": "Entiteter",
-                            "introduction": "Entiteter som inte tillhör en enhet kan anges här.",
+                            "introduction": "Entiteter som inte tillhör en enhet kan ställas in här.",
                             "without_device": "Entiteter utan enhet"
                         },
-                        "introduction": "Använd scener för väcka liv i ditt hem.",
-                        "load_error_not_editable": "Endast scener i scenes.yaml kan redigeras.",
-                        "load_error_unknown": "Fel vid inläsning av scen ({err_no}).",
+                        "introduction": "Använd scenarier för väcka liv i ditt hem.",
+                        "load_error_not_editable": "Endast scenarier i scenes.yaml kan redigeras.",
+                        "load_error_unknown": "Fel vid inläsning av scenario ({err_no}).",
                         "name": "Namn",
                         "save": "Spara",
                         "unsaved_confirm": "Du har osparade ändringar. Är du säker på att du vill lämna?"
                     },
                     "picker": {
-                        "add_scene": "Lägg till scen",
-                        "delete_confirm": "Är du säker på att du vill radera denna scen?",
-                        "delete_scene": "Ta bort scen",
-                        "edit_scene": "Redigera scen",
-                        "header": "Scen-redigerare",
-                        "introduction": "Scenredigeraren låter dig skapa och redigera scener. Följ länken nedan för att läsa instruktionerna för att se till att du har konfigurerat Home Assistant korrekt.",
-                        "learn_more": "Läs dig mer om scener",
-                        "no_scenes": "Vi kunde inte hitta några redigerbara scener",
-                        "only_editable": "Endast scener definierade i scenes.yaml kan redigeras.",
-                        "pick_scene": "Välj scen att redigera",
-                        "show_info_scene": "Visa info om scen"
+                        "add_scene": "Lägg till scenario",
+                        "delete_confirm": "Är du säker på att du vill radera detta scenario?",
+                        "delete_scene": "Ta bort scenario",
+                        "edit_scene": "Redigera scenario",
+                        "header": "Scenario-redigerare",
+                        "introduction": "Scenarioredigeraren låter dig skapa och redigera scenario. Följ länken nedan för att läsa instruktionerna för att se till att du har konfigurerat Home Assistant korrekt.",
+                        "learn_more": "Läs dig mer om scenarier",
+                        "no_scenes": "Vi kunde inte hitta några redigerbara scenarier",
+                        "only_editable": "Endast scenarier definierade i scenes.yaml kan redigeras.",
+                        "pick_scene": "Välj scenario att redigera",
+                        "show_info_scene": "Visa info om scenario"
                     }
                 },
                 "script": {
@@ -1438,7 +1499,7 @@
                             "heading": "Konfigurationen laddas om",
                             "introduction": "Vissa delar av Home Assistant kan laddas om utan att en omstart krävs. Att trycka på \"ladda om\" innebär att den nuvarande konfiguration inaktiveras och den nya laddas.",
                             "person": "Ladda om personer",
-                            "scene": "Ladda om scener",
+                            "scene": "Ladda om scenarier",
                             "script": "Ladda om skript",
                             "zone": "Ladda om zoner"
                         },
@@ -1471,6 +1532,7 @@
                     "description": "Hantera användare",
                     "editor": {
                         "activate_user": "Aktivera användare",
+                        "active": "Aktiva",
                         "caption": "Visa användare",
                         "change_password": "Ändra lösenord",
                         "confirm_user_deletion": "Är du säker på att du vill ta bort {name} ?",
@@ -1496,6 +1558,7 @@
                     "add_device_page": {
                         "discovery_text": "Upptäckta enheter kommer dyka upp här. Följ instruktionerna för dina enheter och sätt dem i parningsläge.",
                         "header": "Zigbee Home Automation - Lägg till enheter",
+                        "search_again": "Sök Igen",
                         "spinner": "Söker efter ZHA Zigbee-enheter ..."
                     },
                     "add": {
@@ -1503,9 +1566,34 @@
                         "description": "Lägg till enheter till Zigbee-nätverket"
                     },
                     "caption": "ZHA",
+                    "cluster_attributes": {
+                        "attributes_of_cluster": "Attribut för det valda klustret",
+                        "get_zigbee_attribute": "Hämta Zigbee-attribut",
+                        "header": "Klusterattribut",
+                        "help_attribute_dropdown": "Välj ett attribut för att visa eller ange dess värde.",
+                        "help_get_zigbee_attribute": "Få värdet för det valda attributet.",
+                        "help_set_zigbee_attribute": "Ange attributvärde för det angivna klustret på den angivna entiteten.",
+                        "introduction": "Visa och redigera klusterattribut.",
+                        "set_zigbee_attribute": "Ange zigbee-attribut"
+                    },
+                    "cluster_commands": {
+                        "commands_of_cluster": "Kommandon för det valda klustret",
+                        "header": "Klusterkommandon",
+                        "help_command_dropdown": "Välj ett kommando att interagera med.",
+                        "introduction": "Visa och utfärda klusterkommandon.",
+                        "issue_zigbee_command": "Utfärda Zigbee-kommando"
+                    },
                     "clusters": {
                         "header": "Kluster",
+                        "help_cluster_dropdown": "Välj ett kluster om du vill visa attribut och kommandon.",
                         "introduction": "Kluster är byggstenarna för Zigbee-funktionalitet. De separerar funktionalitet i logiska enheter. Det finns klient- och servertyper som består av attribut och kommandon."
+                    },
+                    "common": {
+                        "add_devices": "Lägg till enheter",
+                        "clusters": "Kluster",
+                        "devices": "Enheter",
+                        "manufacturer_code_override": "Överskrid kod av tillverkare",
+                        "value": "Värde"
                     },
                     "description": "Zigbee Home Automation (ZHA) nätverkshantering",
                     "device_card": {
@@ -1544,6 +1632,7 @@
                         "group-header": "Zigbee Home Automation - Gruppdetaljer",
                         "groups": "Grupper",
                         "groups-header": "Zigbee Home Automation - Grupphantering",
+                        "header": "Zigbee Home Automation - Grupphantering",
                         "introduction": "Skapa och ändra zigbeegrupper",
                         "manage_groups": "Hantera Zigbee-grupper",
                         "members": "Medlemmar",
@@ -1555,8 +1644,16 @@
                     },
                     "header": "Konfigurera ZigBee-hemautomation",
                     "introduction": "Här går det att konfigurera ZHA-komponenten. Det är inte möjligt att ställa in allt från användargränssnittet ännu, men vi jobbar på det.",
+                    "network_management": {
+                        "header": "Nätverkshantering",
+                        "introduction": "Kommandon som påverkar hela nätverket"
+                    },
                     "node_management": {
-                        "hint_wakeup": "Vissa enheter, som Xiaomi-sensorer, har en väckningsknapp som du kan trycka på med ca 5 sekunders intervall för att hålla enheterna vakna medan du interagerar med dem."
+                        "header": "Enhetshantering",
+                        "help_node_dropdown": "Välj en enhet för att visa alternativ per enhet.",
+                        "hint_battery_devices": "Obs: Sömniga (batteridrivna) enheter måste vara vakna när du kör kommandon mot dem. Du kan i allmänhet väcka en sömnig enhet genom att utlösa den.",
+                        "hint_wakeup": "Vissa enheter, som Xiaomi-sensorer, har en väckningsknapp som du kan trycka på med ca 5 sekunders intervall för att hålla enheterna vakna medan du interagerar med dem.",
+                        "introduction": "Kör ZHA-kommandon som påverkar en enda enhet. Välj en enhet för att se en lista över tillgängliga kommandon."
                     },
                     "services": {
                         "reconfigure": "Omkonfigurera ZHA-enheten (läk enheten). Använd det här om du har problem med enheten. Om den aktuella enheten är en batteridriven enhet, se till att den är påslagen och accepterar kommandon när du använder den här tjänstens funktion.",
@@ -1582,10 +1679,13 @@
                         "name": "Namn",
                         "new_zone": "Ny Zon",
                         "passive": "Passiv",
+                        "passive_note": "Passiva zoner är dolda i frontend och används inte som plats för enhetsspårare. Detta är användbart om du bara vill använda den för automatiseringar.",
                         "radius": "Radie",
                         "required_error_msg": "Det här fältet krävs",
                         "update": "Uppdatera"
                     },
+                    "edit_home_zone": "Platsen för ditt hem kan ändras i gerenal config.",
+                    "introduction": "Med zoner kan du ange vissa regioner på jorden. När en person befinner sig i en zon tar tillståndet namnet från zonen. Zoner kan också användas som utlösare eller villkor i automatiseringsinställningar.",
                     "no_zones_created_yet": "Det verkar som om du inte har skapat några zoner ännu."
                 },
                 "zwave": {
@@ -1598,6 +1698,7 @@
                         "wakeup_interval": "Uppvakningsintervall"
                     },
                     "description": "Hantera ditt Z-Wave nätverk",
+                    "learn_more": "Läs mer om Z-Wave",
                     "network_management": {
                         "header": "Hantering av Z-Wave-nätverk",
                         "introduction": "Kör kommandon som påverkar Z-Wave-nätverket. De flesta kommandon ger ingen bekräftelse om de lyckas men du kan kontrollera OZW-loggen för att försöka ta reda på det."
@@ -1620,6 +1721,10 @@
                         "set_wakeup": "Ställ in uppvakningsintervall",
                         "true": "Sant"
                     },
+                    "ozw_log": {
+                        "header": "OZW-logg",
+                        "introduction": "Visa loggen. 0 är det minsta (laddar hela loggen) och 1000 är det maximala. Ladda visar en statisk logg och svansen uppdateras automatiskt med det sist angivna antalet rader i loggen."
+                    },
                     "services": {
                         "add_node": "Lägg till nod",
                         "add_node_secure": "Lägg till nod med säkerhet",
@@ -1640,6 +1745,7 @@
             "custom": {
                 "external_panel": {
                     "complete_access": "Den kommer att ha tillgång till alla data i home assistant.",
+                    "hide_message": "Kontrollera dokument om panel_custom-komponenten för att dölja det här meddelandet",
                     "question_trust": "Litar du på den externa panelen {name} till {link}?"
                 }
             },
@@ -1665,9 +1771,12 @@
                     },
                     "info": {
                         "built_using": "Byggt med",
+                        "custom_uis": "Anpassade användargränssnitt:",
+                        "default_ui": "{action} {name} som standardsida på den här enheten",
                         "developed_by": "Utvecklad av ett gäng grymma människor.",
                         "frontend": "frontend-UI",
                         "frontend_version": "Frontend-version: {version} - {type}",
+                        "home_assistant_logo": "Home Assistant logotyp",
                         "icons_by": "Ikoner av",
                         "license": "Publicerad under Apache 2.0-licensen",
                         "lovelace_ui": "Gå till Lovelace-utseendet",
@@ -1676,6 +1785,7 @@
                         "server": "server",
                         "set": "Ange",
                         "source": "Källkod:",
+                        "states_ui": "Gå till tillstånds-användargränssnittet",
                         "system_health_error": "System Health-komponenten har inte lästs in. Lägg till 'system_health:' i configuration.yaml",
                         "title": "Info"
                     },
@@ -1695,6 +1805,7 @@
                         "description_publish": "Publicera ett paket",
                         "listening_to": "Lyssnar på",
                         "message_received": "Meddelande {id} mottaget på {topic} vid {time} :",
+                        "payload": "Payload (mall tillåten)",
                         "publish": "Publicera",
                         "start_listening": "Börja lyssna",
                         "stop_listening": "Sluta lyssna",
@@ -1738,6 +1849,7 @@
                         "title": "Tillstånd"
                     },
                     "templates": {
+                        "description": "Mallar tolkas med hjälp av Jinja2 template engine med vissa Home Assistant-specifika tillägg.",
                         "editor": "Mallredigerare",
                         "jinja_documentation": "Malldokumentation för Jinja2",
                         "template_extensions": "Mallutökningar för Home Assistant",
@@ -1808,6 +1920,7 @@
                         },
                         "entities": {
                             "name": "Enheter",
+                            "show_header_toggle": "Visa rubrikväljare?",
                             "toggle": "Växla entiteter."
                         },
                         "entity-button": {
@@ -1850,10 +1963,14 @@
                             "url": "URL"
                         },
                         "glance": {
-                            "columns": "Kolumner"
+                            "columns": "Kolumner",
+                            "name": "Blick"
                         },
                         "history-graph": {
                             "name": "Historikdiagram"
+                        },
+                        "horizontal-stack": {
+                            "name": "Horisontelltrave"
                         },
                         "iframe": {
                             "name": "iFrame"
@@ -1878,6 +1995,12 @@
                         "picture-elements": {
                             "name": "Bildelement"
                         },
+                        "picture-entity": {
+                            "name": "Bildentitet"
+                        },
+                        "picture-glance": {
+                            "name": "Bildblick"
+                        },
                         "picture": {
                             "name": "Bild"
                         },
@@ -1896,6 +2019,9 @@
                         "thermostat": {
                             "name": "Termostat"
                         },
+                        "vertical-stack": {
+                            "name": "Vertikaltrave"
+                        },
                         "weather-forecast": {
                             "name": "Väderprognos"
                         }
@@ -1905,9 +2031,9 @@
                         "delete": "Ta bort kort",
                         "edit": "Redigera",
                         "header": "Kortkonfiguration",
-                        "move": "Flytta",
+                        "move": "Flytta till vy",
                         "options": "Fler alternativ",
-                        "pick_card": "Välj det kort du vill lägga till.",
+                        "pick_card": "Vilket kort vill du lägga till?",
                         "pick_card_view_title": "Vilket kort vill du lägga till i {name} -vyn?",
                         "save": "Spara",
                         "show_code_editor": "Visa kodredigerare",
@@ -1916,7 +2042,7 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "Redigera titel",
-                        "explanation": "Den här titeln visas ovanför alla dina vyer i Lovelace.",
+                        "explanation": "Den här titeln visas ovanför alla dina vyer i Lovelace UI.",
                         "header": "Titel på ditt Lovelace-gränssnitt"
                     },
                     "edit_view": {
@@ -1940,7 +2066,7 @@
                         "para_no_id": "Det här elementet har inget ID. Lägg till ett ID till det här elementet i \"ui-lovelace.yaml\"."
                     },
                     "raw_editor": {
-                        "confirm_remove_config_text": "Vi kommer automatiskt att generera dina Lovelace-vyer med dina områden och enheter om du tar bort din Lovelace-konfiguration.",
+                        "confirm_remove_config_text": "Vi kommer automatiskt att generera dina Lovelace UI-vyer med dina områden och enheter om du tar bort din Lovelace UI-konfiguration.",
                         "confirm_remove_config_title": "Är du säker på att du vill ta bort din Lovelace UI konfiguration? Vi kommer automatiskt att generera dina Lovelace UI-vyer med dina områden och enheter.",
                         "confirm_unsaved_changes": "Du har osparade ändringar. Är du säker på att du vill avsluta?",
                         "confirm_unsaved_comments": "Din konfiguration innehåller kommentarer, dessa sparas inte. Vill du fortsätta?",
@@ -1962,12 +2088,13 @@
                     },
                     "suggest_card": {
                         "add": "Lägg till i Lovelace-gränsnitt",
-                        "create_own": "Skapa ditt eget",
+                        "create_own": "Välj annat kort",
                         "header": "Vi har skapat ett förslag för dig"
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "Detta gör att det första kortet utnyttjar hela bredden i denna vyn."
+                            "description": "Detta gör att det första kortet utnyttjar hela bredden i denna vyn.",
+                            "title": "Panelläge?"
                         }
                     }
                 },
@@ -1979,7 +2106,7 @@
                     "refresh": "Uppdatera",
                     "unused_entities": "Oanvända enheter"
                 },
-                "reload_lovelace": "Ladda om Lovelace",
+                "reload_lovelace": "Ladda om användargränssnittet",
                 "unused_entities": {
                     "available_entities": "Det här är de enheter som du har tillgängliga, men som inte finns i ditt Lovelace-gränssnitt än.",
                     "domain": "Domän",
@@ -2134,6 +2261,7 @@
                             "mirror": "Spegla",
                             "patio": "Uteplats",
                             "right": "Höger",
+                            "temperature_study": "Temperaturstudie",
                             "upstairs": "Övervåningen"
                         },
                         "unit": {
@@ -2176,7 +2304,7 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "description": "Home Assistant döljer avancerade funktioner och alternativ som standard. Du kan göra dessa funktioner tillgängliga genom att växla här. Det är en användarspecifik inställning och påverkar inte andra användare i Home Assistant.",
+                    "description": "Låser upp avancerade funktioner.",
                     "link_promo": "Läs mer",
                     "title": "Avancerat läge"
                 },

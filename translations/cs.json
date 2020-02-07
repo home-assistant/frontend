@@ -1177,7 +1177,7 @@
                         },
                         "server_control": {
                             "reloading": {
-                                "automation": "Znovu načíst automatizace",
+                                "automation": "Znovu načíst automatizaci",
                                 "core": "Znovu načíst jádro",
                                 "group": "Znovu načíst skupiny",
                                 "heading": "Konfigurace se načítá",
@@ -1226,14 +1226,19 @@
                         "actions": {
                             "caption": "Když je něco spuštěno ..."
                         },
+                        "automations": "Automatizace",
                         "conditions": {
                             "caption": "Udělej něco, jen když ..."
                         },
+                        "create": "Vytvořit automatizaci se zařízením",
+                        "no_automations": "Žádné automatizace",
+                        "no_device_automations": "Pro toto zařízení nejsou k dispozici žádné automatizace.",
                         "triggers": {
                             "caption": "Udělej něco, když ..."
                         }
                     },
                     "automations": "Automatizace",
+                    "cant_edit": "Můžete upravovat pouze položky, které jsou vytvořeny v uživatelském rozhraní.",
                     "caption": "Zařízení",
                     "confirm_rename_entity_ids": "Chcete také přejmenovat ID entit vašich entit?",
                     "data_table": {
@@ -1254,6 +1259,18 @@
                     },
                     "info": "Informace o zařízení",
                     "name": "Jméno",
+                    "scene": {
+                        "create": "Vytvořit scénu se zařízením",
+                        "no_scenes": "Žádné scény",
+                        "scenes": "Scény"
+                    },
+                    "scenes": "Scény",
+                    "script": {
+                        "create": "Vytvořit skript se zařízením",
+                        "no_scripts": "Žádné skripty",
+                        "scripts": "Skripty"
+                    },
+                    "scripts": "Skripty",
                     "unknown_error": "Neznámá chyba",
                     "unnamed_device": "Nepojmenované zařízení",
                     "update": "Aktualizovat"
@@ -1476,8 +1493,8 @@
                     "description": "Restart a zastavení serveru Home Asistent",
                     "section": {
                         "reloading": {
-                            "automation": "Znovu načíst automatizace",
-                            "core": "Znovu načíst umístění a přispůsobení",
+                            "automation": "Znovu načíst automatizaci",
+                            "core": "Znovu načíst umístění a přizpůsobení",
                             "group": "Znovu načíst skupiny",
                             "heading": "Konfigurace se načítá",
                             "introduction": "Některé části Home Assistant lze načíst bez nutnosti restartování. Volba načtení zahodí jejich aktuální konfiguraci a načte novou.",

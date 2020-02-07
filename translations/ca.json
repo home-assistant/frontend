@@ -478,6 +478,9 @@
             "script": {
                 "execute": "Executar"
             },
+            "service": {
+                "run": "Executa"
+            },
             "timer": {
                 "actions": {
                     "cancel": "cancel·la",
@@ -543,7 +546,10 @@
             "area-picker": {
                 "add_dialog": {
                     "add": "Afegeix",
-                    "name": "Nom"
+                    "failed_create_area": "No s'ha pogut crear l'àrea.",
+                    "name": "Nom",
+                    "text": "Introdueix el nom de la nova àrea.",
+                    "title": "Afegeix àrea nova"
                 },
                 "add_new": "Afegir àrea nova...",
                 "area": "Àrea",
@@ -566,6 +572,16 @@
             "history_charts": {
                 "loading_history": "Carregant historial d'estats...",
                 "no_history_found": "No s'ha trobat cap historial d'estats."
+            },
+            "related-items": {
+                "area": "Àrea",
+                "automation": "Part de les següents automatitzacions",
+                "device": "Dispositiu",
+                "entity": "Entitats relacionades",
+                "group": "Part dels següents grups",
+                "integration": "Integració",
+                "scene": "Part de les següents escenes",
+                "script": "Part dels següents programes (scripts)"
             },
             "relative_time": {
                 "duration": {
@@ -597,14 +613,34 @@
             "domain_toggler": {
                 "title": "Commutació de dominis"
             },
+            "entity_registry": {
+                "control": "Control",
+                "dismiss": "Desestimar",
+                "editor": {
+                    "confirm_delete": "Estàs segur que vols eliminar aquesta entrada?",
+                    "delete": "ELIMINA",
+                    "enabled_cause": "Desactivada per {cause}.",
+                    "enabled_description": "Les entitats desactivades no s’afegiran a Home Assistant.",
+                    "enabled_label": "Activa l’entitat",
+                    "entity_id": "ID de l'entitat",
+                    "name": "Substitució de Nom",
+                    "note": "Nota: podria no funcionar amb alguna de les integracions.",
+                    "unavailable": "Aquesta entitat no està disponible actualment.",
+                    "update": "ACTUALITZA"
+                },
+                "related": "Relacionades",
+                "settings": "Configuració"
+            },
             "generic": {
                 "cancel": "Cancel·la",
-                "default_confirmation_title": "Estàs segur?"
+                "default_confirmation_title": "Estàs segur?",
+                "ok": "OK"
             },
             "more_info_control": {
                 "dismiss": "Desestimar el diàleg",
                 "script": {
-                    "last_action": "Última acció"
+                    "last_action": "Última acció",
+                    "last_triggered": "Disparada per última vegada"
                 },
                 "settings": "Configuració de l'entitat",
                 "sun": {
@@ -1184,6 +1220,7 @@
                         "conditions": {
                             "caption": "Només fer alguna cosa si..."
                         },
+                        "create": "Crea una automatització amb el dispositiu",
                         "no_automations": "No hi ha automatitzacions",
                         "no_device_automations": "No hi ha automatitzacions disponibles per a aquest dispositiu.",
                         "triggers": {
@@ -1191,6 +1228,7 @@
                         }
                     },
                     "automations": "Automatitzacions",
+                    "cant_edit": "Només pots editar els elements creats a la interfície d'usuari (UI).",
                     "caption": "Dispositius",
                     "confirm_rename_entity_ids": "Vols, també, canviar el nom dels ID's d’entitat de les entitats?",
                     "data_table": {
@@ -1207,15 +1245,17 @@
                     "info": "Informació del dispositiu",
                     "name": "Nom",
                     "scene": {
+                        "create": "Crea una escena amb el dispositiu",
                         "no_scenes": "No hi ha escenes",
                         "scenes": "Escenes"
                     },
                     "scenes": "Escenes",
                     "script": {
+                        "create": "Crea un programa (script) amb el dispositiu",
                         "no_scripts": "No hi ha scripts",
                         "scripts": "Scripts"
                     },
-                    "scripts": "Scripts",
+                    "scripts": "Programes (scripts)",
                     "unknown_error": "Error desconegut",
                     "unnamed_device": "Dispositiu sense nom",
                     "update": "Actualitza"
@@ -1224,13 +1264,15 @@
                     "caption": "Registre d'entitats",
                     "description": "Visió general de totes les entitats conegudes.",
                     "editor": {
-                        "confirm_delete": "Estàs segur que vols eliminar aquesta entitat?",
+                        "confirm_delete": "Estàs segur que vols eliminar aquesta entrada?",
                         "confirm_delete2": "Si suprimeixes una entrada, no suprimiras l'entitat de Home Assistant. Per fer-ho, has de suprimir la integració '{plataform}' de Home Assistant.",
                         "default_name": "Àrea nova",
                         "delete": "ELIMINA",
-                        "enabled_cause": "Desactivat per {cause}.",
+                        "enabled_cause": "Desactivada per {cause}.",
                         "enabled_description": "Les entitats desactivades no s’afegiran a Home Assistant.",
                         "enabled_label": "Activa l’entitat",
+                        "entity_id": "ID de l'entitat",
+                        "name": "Substitució de Nom",
                         "note": "Nota: podria no funcionar amb alguna de les integracions.",
                         "unavailable": "Aquesta entitat no està disponible actualment.",
                         "update": "ACTUALITZAR"
@@ -1245,7 +1287,7 @@
                         },
                         "integrations_page": "Pàgina d'integracions",
                         "introduction": "Home Assistant manté un registre de totes les entitats que ha detectat alguna vegada les quals tenen una identificació única. Cadascuna d'aquestes entitats té un identificador (ID) assignat que està reservat només per a ella.",
-                        "introduction2": "Utilitza el registre d'entitats per canviar el nom, canviar l'ID o eliminar l'entrada de Home Assistant de les entitats. Tingues en compte que eliminar-les del registre d'entitats no eliminarà l'entitat. Per fer-ho, segueix l'enllaç següent i elimineu-la dins la pàgina d'integracions.",
+                        "introduction2": "Utilitza el registre d'entitats per canviar el nom, canviar l'ID o eliminar l'entrada de Home Assistant.",
                         "show_disabled": "Mostra entitats desactivades",
                         "unavailable": "(no disponible)"
                     }
@@ -1336,7 +1378,7 @@
                     },
                     "introduction": "Aquí pots definir cada persona d'interès en Home Assistant.",
                     "no_persons_created_yet": "Sembla que encara no has creat cap persona.",
-                    "note_about_persons_configured_in_yaml": "Nota: les persones configurades mitjançant configuration.yaml no es poden editar a la UI."
+                    "note_about_persons_configured_in_yaml": "Nota: les persones configurades mitjançant configuration.yaml no es poden editar des de la UI."
                 },
                 "scene": {
                     "activated": "Escena {name} activada.",
@@ -1414,8 +1456,10 @@
                             "group": "Actualitza grups",
                             "heading": "Torna a carregar la configuració",
                             "introduction": "Algunes parts de la configuració de Home Assistant es poden recarregar sense necessitat de reiniciar. Els botons de sota esborraran la configuració antiga i en carregaran la nova.",
+                            "person": "Actualitza persones",
                             "scene": "Actualitza escenes",
-                            "script": "Actualitza programes"
+                            "script": "Actualitza programes",
+                            "zone": "Actualitza zones"
                         },
                         "server_management": {
                             "confirm_restart": "Segur que vols reiniciar Home Assistant?",
@@ -1564,6 +1608,30 @@
                         "updateDeviceName": "Estableix un nom personalitzat pel dispositiu al registre de dispositius."
                     },
                     "title": "Domòtica Zigbee (ZHA)"
+                },
+                "zone": {
+                    "add_zone": "Afegeix zona",
+                    "caption": "Zones",
+                    "configured_in_yaml": "Les zones configurades mitjançant configuration.yaml no es poden editar des de la UI.",
+                    "confirm_delete": "Estàs segur que vols eliminar aquesta zona?",
+                    "create_zone": "Crea zona",
+                    "description": "Gestiona les zones en les quals es fa seguiment de persones.",
+                    "detail": {
+                        "create": "Crea",
+                        "delete": "Suprimeix",
+                        "icon": "Icona",
+                        "icon_error_msg": "El nom de la icona ha de tenir el format prefix:nom_icona, per exemple: mdi: home",
+                        "latitude": "Latitud",
+                        "longitude": "Longitud",
+                        "name": "Nom",
+                        "new_zone": "Zona nova",
+                        "passive": "Passiva",
+                        "radius": "Radi",
+                        "required_error_msg": "Aquest camp és obligatori",
+                        "update": "Actualitza"
+                    },
+                    "edit_home_zone": "La ubicació de casa es pot canviar des de la configuració general.",
+                    "no_zones_created_yet": "Sembla que encara no has creat cap zona."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1751,6 +1819,9 @@
                         "go_to_integrations_page": "Vés a la pàgina d'integracions.",
                         "no_devices": "Aquesta pàgina et permet controlar els teus dispositius, però sembla que encara no en tens cap configurat. Vés a la pàgina d'integracions per a començar.",
                         "title": "Benvingut/da a casa"
+                    },
+                    "entities": {
+                        "never_triggered": "Mai disparada"
                     },
                     "picture-elements": {
                         "call_service": "Crida servei {name}",
