@@ -48,8 +48,7 @@ class IntegrationsCard extends LitElement {
             )}
           </tbody>
         </table>
-        <ha-card> </ha-card
-      ></ha-card>
+      </ha-card>
     `;
   }
 
