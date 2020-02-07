@@ -78,7 +78,7 @@ class SystemHealthCard extends LitElement {
     }
 
     return html`
-      <ha-card header="${this.hass.localize("domain.system_health")}">
+      <ha-card .header=${this.hass.localize("domain.system_health")}>
         <div class="card-content">${sections}</div>
       </ha-card>
     `;
