@@ -181,10 +181,13 @@ export class HUIView extends LitElement {
 
         .item {
           display: block;
-          position: absolute;
           width: 100%;
           margin: 5px;
           z-index: 1;
+        }
+
+        .item.edit {
+          position: absolute;
         }
 
         .item.muuri-item-dragging {
@@ -318,53 +321,14 @@ export class HUIView extends LitElement {
     }
 
     const elements: LovelaceCard[] = [];
-    this._grids = []; // Reset the grids - Maybe should use the method grid.destoy()?
-    const options = {
-      dragEnabled: true, // Enable Drag
-      dragContainer: this.shadowRoot!.getElementById("columns"), // Gives ability to drag outside of one grid
-      dragSort: () => {
-        // Determines which Grids to drag to
-        return this._grids;
-      },
-      dragStartPredicate: {
-        // Doesn't start drag until these thresholds are met - Up for discussion if needed
-        distance: 10,
-        delay: 100,
-      },
-      dragReleaseDuration: 400,
-      dragReleaseEasing: "ease",
-      dragSortInterval: 0,
-      layoutDuration: 400,
-      layoutEasing: "ease",
-    };
+    const columns: HTMLElement[] = [];
 
     // Use the current method of determining how many columns
     for (let idx = 0; idx < this.columns!; idx++) {
       const columnEl = document.createElement("div");
       columnEl.classList.add("column", "grid");
       root.appendChild(columnEl);
-
-      // Push each grid per column
-      this._grids.push(
-        new Muuri(columnEl, options) // The events here make sure the card doesnt grow to the size of the window
-          .on("dragStart", (item) => {
-            item.getElement().style.width = item.getWidth() + "px";
-            item.getElement().style.height = item.getHeight() + "px";
-          })
-          .on("dragReleaseEnd", (item) => {
-            item.getElement().style.width = "";
-            item.getElement().style.height = "";
-            this._storeLayout();
-          })
-          .on("beforeSend", (data) => {
-            data.item.getElement().style.width = data.item.getWidth() + "px";
-            data.item.getElement().style.height = data.item.getHeight() + "px";
-          })
-          .on("beforeReceive", (data) => {
-            data.item.getElement().style.width = data.item.getWidth() + "px";
-            data.item.getElement().style.height = data.item.getHeight() + "px";
-          })
-      );
+      columns.push(columnEl);
     }
 
     // Add cards to grids one by one so the priority of cards stays the same regardless of how many columns
@@ -386,13 +350,68 @@ export class HUIView extends LitElement {
         wrapper.lovelace = this.lovelace;
         wrapper.path = [this.index!, cardIndex];
         wrapper.appendChild(element);
+
+        item.classList.add("edit");
         itemContent.appendChild(wrapper);
+        item.cardConfig = cardConfig;
       }
 
-      item.cardConfig = cardConfig;
       item.appendChild(itemContent);
-      this._grids[cardIndex % this.columns!].add(item);
+      columns[cardIndex % this.columns!].appendChild(item);
     });
+
+    if (this.lovelace!.editMode) {
+      this._grids = []; // Reset the grids - Maybe should use the method grid.destoy()?
+      const options = {
+        dragEnabled: true, // Enable Drag
+        dragContainer: this.shadowRoot!.getElementById("columns"), // Gives ability to drag outside of one grid
+        dragSort: () => {
+          // Determines which Grids to drag to
+          return this._grids;
+        },
+        dragStartPredicate: {
+          // Doesn't start drag until these thresholds are met - Up for discussion if needed
+          distance: 10,
+          delay: 100,
+        },
+        dragReleaseDuration: 400,
+        dragReleaseEasing: "ease",
+        dragSortInterval: 0,
+        layoutDuration: 400,
+        layoutEasing: "ease",
+      };
+
+      columns.forEach((columnEl) => {
+        // Push each grid per column
+        this._grids.push(
+          new Muuri(columnEl, options) // The events here make sure the card doesnt grow to the size of the window
+            .on("dragStart", (item) => {
+              item.getElement().style.width = item.getWidth() + "px";
+              item.getElement().style.height = item.getHeight() + "px";
+            })
+            .on("dragReleaseEnd", (item) => {
+              item.getElement().style.width = "";
+              item.getElement().style.height = "";
+              this._storeLayout();
+            })
+            .on("beforeSend", (data) => {
+              data.item.getElement().style.width = data.item.getWidth() + "px";
+              data.item.getElement().style.height =
+                data.item.getHeight() + "px";
+            })
+            .on("beforeReceive", (data) => {
+              data.item.getElement().style.width = data.item.getWidth() + "px";
+              data.item.getElement().style.height =
+                data.item.getHeight() + "px";
+            })
+            .on("layoutStart", (data) => {
+              this._grids.forEach((grid) => {
+                grid.refreshItems();
+              });
+            })
+        );
+      });
+    }
 
     this._cards = elements;
   }
