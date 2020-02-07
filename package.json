@@ -101,6 +101,7 @@
     "memoize-one": "^5.0.2",
     "moment": "^2.24.0",
     "node-vibrant": "^3.1.5",
+    "muuri": "^0.8.0",
     "preact": "^8.4.2",
     "preact-compat": "^3.18.4",
     "react-big-calendar": "^0.20.4",

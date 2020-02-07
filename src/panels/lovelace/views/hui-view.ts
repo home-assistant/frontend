@@ -5,6 +5,9 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
+import Muuri from "muuri/dist/muuri";
+
+import "../../../components/entity/ha-state-label-badge";
 // This one is for types
 import { classMap } from "lit-html/directives/class-map";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
@@ -16,6 +19,10 @@ import {
   LovelaceViewConfig,
 } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
+import { classMap } from "lit-html/directives/class-map";
+import { Lovelace, LovelaceCard, LovelaceBadge } from "../types";
+import { createCardElement } from "../create-element/create-card-element";
+import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { HuiErrorCard } from "../cards/hui-error-card";
 import { computeCardSize } from "../common/compute-card-size";
 import { processConfigEntities } from "../common/process-config-entities";
@@ -25,24 +32,6 @@ import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog"
 import { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 
 let editCodeLoaded = false;
-
-// Find column with < 5 entities, else column with lowest count
-const getColumnIndex = (columnEntityCount: number[], size: number) => {
-  let minIndex = 0;
-  for (let i = 0; i < columnEntityCount.length; i++) {
-    if (columnEntityCount[i] < 5) {
-      minIndex = i;
-      break;
-    }
-    if (columnEntityCount[i] < columnEntityCount[minIndex]) {
-      minIndex = i;
-    }
-  }
-
-  columnEntityCount[minIndex] += size;
-
-  return minIndex;
-};
 
 export class HUIView extends LitElement {
   @property() public hass?: HomeAssistant;
@@ -56,6 +45,7 @@ export class HUIView extends LitElement {
   @property() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
 
   @property() private _badges: LovelaceBadge[] = [];
+  @property() private _grids: any[] = [];
 
   // Public to make demo happy
   public createCardElement(cardConfig: LovelaceCardConfig) {
@@ -136,6 +126,7 @@ export class HUIView extends LitElement {
           display: flex;
           flex-direction: row;
           justify-content: center;
+          position: relative;
         }
 
         .column {
@@ -143,7 +134,7 @@ export class HUIView extends LitElement {
           max-width: 500px;
           min-width: 0;
           /* on iOS devices the column can become wider when toggling a switch */
-          overflow-x: hidden;
+          overflow: hidden;
         }
 
         .column > * {
@@ -182,11 +173,42 @@ export class HUIView extends LitElement {
             max-width: 600px;
           }
         }
+
+        .grid {
+          position: relative;
+          width: 100%;
+        }
+
+        .item {
+          display: block;
+          position: absolute;
+          width: 100%;
+          margin: 5px;
+          z-index: 1;
+        }
+
+        .item.muuri-item-dragging {
+          z-index: 3;
+        }
+
+        .item.muuri-item-releasing {
+          z-index: 2;
+        }
+
+        .item.muuri-item-hidden {
+          z-index: 0;
+        }
+
+        .item-content {
+          position: relative;
+          width: 100%;
+          height: 100%;
+        }
       </style>
     `;
   }
 
-  protected updated(changedProperties: PropertyValues): void {
+  protected async updated(changedProperties: PropertyValues): Promise<void> {
     super.updated(changedProperties);
 
     const hass = this.hass!;
@@ -242,6 +264,12 @@ export class HUIView extends LitElement {
         lovelace.config.views[this.index!].theme
       );
     }
+
+    await this.updateComplete;
+    // This is a temporary solution for refreshing the items when all heights are determined
+    this._grids.forEach((grid) => {
+      grid.refreshItems().layout();
+    });
   }
 
   private _addCard(): void {
@@ -290,48 +318,80 @@ export class HUIView extends LitElement {
     }
 
     const elements: LovelaceCard[] = [];
-    const elementsToAppend: HTMLElement[] = [];
+    this._grids = []; // Reset the grids - Maybe should use the method grid.destoy()?
+    const options = {
+      dragEnabled: true, // Enable Drag
+      dragContainer: this.shadowRoot!.getElementById("columns"), // Gives ability to drag outside of one grid
+      dragSort: () => {
+        // Determines which Grids to drag to
+        return this._grids;
+      },
+      dragStartPredicate: {
+        // Doesn't start drag until these thresholds are met - Up for discussion if needed
+        distance: 10,
+        delay: 100,
+      },
+      dragReleaseDuration: 400,
+      dragReleaseEasing: "ease",
+      dragSortInterval: 0,
+      layoutDuration: 400,
+      layoutEasing: "ease",
+    };
+
+    // Use the current method of determining how many columns
+    for (let idx = 0; idx < this.columns!; idx++) {
+      const columnEl = document.createElement("div");
+      columnEl.classList.add("column", "grid");
+      root.appendChild(columnEl);
+
+      // Push each grid per column
+      this._grids.push(
+        new Muuri(columnEl, options) // The events here make sure the card doesnt grow to the size of the window
+          .on("dragStart", (item) => {
+            item.getElement().style.width = item.getWidth() + "px";
+            item.getElement().style.height = item.getHeight() + "px";
+          })
+          .on("dragReleaseEnd", (item) => {
+            item.getElement().style.width = "";
+            item.getElement().style.height = "";
+            this._storeLayout();
+          })
+          .on("beforeSend", (data) => {
+            data.item.getElement().style.width = data.item.getWidth() + "px";
+            data.item.getElement().style.height = data.item.getHeight() + "px";
+          })
+          .on("beforeReceive", (data) => {
+            data.item.getElement().style.width = data.item.getWidth() + "px";
+            data.item.getElement().style.height = data.item.getHeight() + "px";
+          })
+      );
+    }
+
+    // Add cards to grids one by one so the priority of cards stays the same regardless of how many columns
     config.cards.forEach((cardConfig, cardIndex) => {
       const element = this.createCardElement(cardConfig);
       elements.push(element);
 
+      const item = document.createElement("div");
+      item.classList.add("item");
+
+      const itemContent = document.createElement("div");
+      itemContent.classList.add("item-content");
+
       if (!this.lovelace!.editMode) {
-        elementsToAppend.push(element);
-        return;
+        itemContent.appendChild(element);
+      } else {
+        const wrapper = document.createElement("hui-card-options");
+        wrapper.hass = this.hass;
+        wrapper.lovelace = this.lovelace;
+        wrapper.path = [this.index!, cardIndex];
+        wrapper.appendChild(element);
+        itemContent.appendChild(wrapper);
       }
 
-      const wrapper = document.createElement("hui-card-options");
-      wrapper.hass = this.hass;
-      wrapper.lovelace = this.lovelace;
-      wrapper.path = [this.index!, cardIndex];
-      element.editMode = true;
-      wrapper.appendChild(element);
-      elementsToAppend.push(wrapper);
-    });
-
-    let columns: HTMLElement[][] = [];
-    const columnEntityCount: number[] = [];
-    for (let i = 0; i < this.columns!; i++) {
-      columns.push([]);
-      columnEntityCount.push(0);
-    }
-
-    elements.forEach((el, index) => {
-      const cardSize = computeCardSize(el);
-      // Element to append might be the wrapped card when we're editing.
-      columns[getColumnIndex(columnEntityCount, cardSize)].push(
-        elementsToAppend[index]
-      );
-    });
-
-    // Remove empty columns
-    columns = columns.filter((val) => val.length > 0);
-
-    columns.forEach((column) => {
-      const columnEl = document.createElement("div");
-      columnEl.classList.add("column");
-      column.forEach((el) => columnEl.appendChild(el));
-      root.appendChild(columnEl);
+      item.cardConfig = cardConfig;
+      item.appendChild(itemContent);
+      this._grids[cardIndex % this.columns!].add(item);
     });
 
     this._cards = elements;
@@ -357,6 +417,50 @@ export class HUIView extends LitElement {
     this._badges = this._cards!.map((curBadgeEl) =>
       curBadgeEl === badgeElToReplace ? newBadgeEl : curBadgeEl
     );
+  }
+
+  private _storeLayout(): void {
+    let maxItems = 0;
+    const layout: LovelaceCardConfig[] = [];
+    const views: LovelaceViewConfig[] = [];
+
+    // Find max items in a column
+    this._grids.forEach((grid) => {
+      maxItems =
+        grid.getItems().length > maxItems ? grid.getItems().length : maxItems;
+    });
+
+    // Go through each column getting the 1st element from each and then the second element from each and so on
+    for (let i = 0; i < maxItems; i++) {
+      this._grids.forEach((grid) => {
+        if (!grid.getItems(i)[0]) {
+          return;
+        }
+
+        layout.push(grid.getItems(i)[0].getElement().cardConfig);
+      });
+    }
+
+    // Save Lovelace config - Yes I know - This isnt great
+    this.lovelace!.config.views.forEach((viewConf, index) => {
+      // Needs improvements to determine the view
+      if (index !== 0) {
+        views.push(this.lovelace!.config.views[index]);
+        return;
+      }
+
+      views.push({
+        ...viewConf,
+        cards: layout,
+      });
+    });
+
+    this.lovelace!.config = {
+      ...this.lovelace!.config,
+      views,
+    };
+
+    this.lovelace!.saveConfig(this.lovelace!.config);
   }
 }
 
