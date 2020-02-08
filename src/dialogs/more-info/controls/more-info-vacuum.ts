@@ -104,7 +104,7 @@ class MoreInfoVacuum extends LitElement {
 
     const stateObj = this.stateObj;
 
-    const filterExtraAtrributes =
+    const filterExtraAttributes =
       "fan_speed,fan_speed_list,status,battery_level,battery_icon";
 
     const supportsCommandBar =
@@ -210,7 +210,7 @@ class MoreInfoVacuum extends LitElement {
 
       <ha-attributes
         .stateObj=${this.stateObj}
-        .extraFilters=${filterExtraAtrributes}
+        .extraFilters=${filterExtraAttributes}
       ></ha-attributes>
     `;
   }
