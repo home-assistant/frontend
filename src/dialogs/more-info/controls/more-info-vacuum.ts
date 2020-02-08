@@ -107,39 +107,20 @@ class MoreInfoVacuum extends LitElement {
 
     const stateObj = this.stateObj;
 
-    const supportsPause = supportsFeature(stateObj, VACUUM_SUPPORT_PAUSE);
-    const supportsStop = supportsFeature(stateObj, VACUUM_SUPPORT_STOP);
-    const supportsReturnHome = supportsFeature(
-      stateObj,
-      VACUUM_SUPPORT_RETURN_HOME
-    );
-    const supportsFanSpeed = supportsFeature(
-      stateObj,
-      VACUUM_SUPPORT_FAN_SPEED
-    );
-    const supportsBattery = supportsFeature(stateObj, VACUUM_SUPPORT_BATTERY);
-    const supportsStatus = supportsFeature(stateObj, VACUUM_SUPPORT_STATUS);
-    const supportsLocate = supportsFeature(stateObj, VACUUM_SUPPORT_LOCATE);
-    const supportsCleanSpot = supportsFeature(
-      stateObj,
-      VACUUM_SUPPORT_CLEAN_SPOT
-    );
-    const supportsStart = supportsFeature(stateObj, VACUUM_SUPPORT_START);
-
     const filterExtraAtrributes =
       "fan_speed,fan_speed_list,status,battery_level,battery_icon";
 
     const supportsCommandBar =
-      supportsPause ||
-      supportsStop ||
-      supportsReturnHome ||
-      supportsLocate ||
-      supportsCleanSpot ||
-      supportsStart;
+      supportsFeature(stateObj, VACUUM_SUPPORT_PAUSE) ||
+      supportsFeature(stateObj, VACUUM_SUPPORT_STOP) ||
+      supportsFeature(stateObj, VACUUM_SUPPORT_RETURN_HOME) ||
+      supportsFeature(stateObj, VACUUM_SUPPORT_LOCATE) ||
+      supportsFeature(stateObj, VACUUM_SUPPORT_CLEAN_SPOT) ||
+      supportsFeature(stateObj, VACUUM_SUPPORT_START);
 
     return html`
       <div class="flex-horizontal">
-        ${supportsStatus
+        ${supportsFeature(stateObj, VACUUM_SUPPORT_STATUS)
           ? html`
               <div>
                 <span class="status-subtitle"
@@ -151,7 +132,7 @@ class MoreInfoVacuum extends LitElement {
               </div>
             `
           : ""}
-        ${supportsBattery
+        ${supportsFeature(stateObj, VACUUM_SUPPORT_BATTERY)
           ? html`
               <div">
                 <span>
@@ -192,7 +173,7 @@ class MoreInfoVacuum extends LitElement {
             </div>
           `
         : ""}
-      ${supportsFanSpeed
+      ${supportsFeature(stateObj, VACUUM_SUPPORT_FAN_SPEED)
         ? html`
             <div>
               <div class="flex-horizontal">
