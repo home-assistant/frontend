@@ -411,7 +411,7 @@
             },
             "automation": {
                 "last_triggered": "Dernier déclenchement",
-                "trigger": "Exécutez"
+                "trigger": "Exécuter"
             },
             "camera": {
                 "not_available": "Image non disponible"
