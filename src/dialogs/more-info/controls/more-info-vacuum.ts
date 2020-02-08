@@ -31,69 +31,66 @@ import {
   VacuumEntity,
 } from "../../../data/vacuum";
 
-class VacuumCommand {
-  public translationKey: string;
-  public icon: string;
-  public serviceName: string;
-  private funcIsVisible: (stateObj: VacuumEntity) => boolean;
-
-  constructor(
-    translationKey: string,
-    icon: string,
-    serviceName: string,
-    funcIsVisible: (stateObj: VacuumEntity) => boolean
-  ) {
-    this.translationKey = translationKey;
-    this.icon = icon;
-    this.serviceName = serviceName;
-    this.funcIsVisible = funcIsVisible;
-  }
-
-  public shouldVisible(stateObj: VacuumEntity): boolean {
-    return this.funcIsVisible(stateObj);
-  }
+interface VacuumCommand {
+  translationKey: string;
+  icon: string;
+  serviceName: string;
+  isVisible: (stateObj: VacuumEntity) => boolean;
 }
 
 const VACUUM_COMMANDS: VacuumCommand[] = [
-  new VacuumCommand("start", "hass:play", "start", (stateObj) =>
-    supportsFeature(stateObj, VACUUM_SUPPORT_START)
-  ),
-  new VacuumCommand(
-    "pause",
-    "hass:pause",
-    "pause",
-    (stateObj) =>
+  {
+    translationKey: "start",
+    icon: "hass:play",
+    serviceName: "start",
+    isVisible: (stateObj) => supportsFeature(stateObj, VACUUM_SUPPORT_START),
+  },
+  {
+    translationKey: "pause",
+    icon: "hass:pause",
+    serviceName: "pause",
+    isVisible: (stateObj) =>
       // We need also to check if Start is supported because if not we show play-pause
       supportsFeature(stateObj, VACUUM_SUPPORT_START) &&
-      supportsFeature(stateObj, VACUUM_SUPPORT_PAUSE)
-  ),
-  new VacuumCommand(
-    "pause",
-    "hass:play-pause",
-    "start_pause",
-    (stateObj) =>
+      supportsFeature(stateObj, VACUUM_SUPPORT_PAUSE),
+  },
+  {
+    translationKey: "start_pause",
+    icon: "hass:play-pause",
+    serviceName: "start_pause",
+    isVisible: (stateObj) =>
       // If start is supoorted, we don't show this button
       !supportsFeature(stateObj, VACUUM_SUPPORT_START) &&
-      supportsFeature(stateObj, VACUUM_SUPPORT_PAUSE)
-  ),
-  new VacuumCommand("stop", "hass:stop", "stop", (stateObj) =>
-    supportsFeature(stateObj, VACUUM_SUPPORT_STOP)
-  ),
-  new VacuumCommand("clean_spot", "hass:broom", "clean_spot", (stateObj) =>
-    supportsFeature(stateObj, VACUUM_SUPPORT_CLEAN_SPOT)
-  ),
-  new VacuumCommand("locate", "hass:map-marker", "locate", (stateObj) =>
-    supportsFeature(stateObj, VACUUM_SUPPORT_LOCATE)
-  ),
-  new VacuumCommand(
-    "return_home",
-    "hass:home-map-marker",
-    "return_to_base",
-    (stateObj) => supportsFeature(stateObj, VACUUM_SUPPORT_RETURN_HOME)
-  ),
+      supportsFeature(stateObj, VACUUM_SUPPORT_PAUSE),
+  },
+  {
+    translationKey: "stop",
+    icon: "hass:stop",
+    serviceName: "stop",
+    isVisible: (stateObj) => supportsFeature(stateObj, VACUUM_SUPPORT_STOP),
+  },
+  {
+    translationKey: "clean_spot",
+    icon: "hass:broom",
+    serviceName: "clean_spot",
+    isVisible: (stateObj) =>
+      supportsFeature(stateObj, VACUUM_SUPPORT_CLEAN_SPOT),
+  },
+  {
+    translationKey: "locate",
+    icon: "hass:map-marker",
+    serviceName: "locate",
+    isVisible: (stateObj) => supportsFeature(stateObj, VACUUM_SUPPORT_LOCATE),
+  },
+  {
+    translationKey: "return_home",
+    icon: "hass:home-map-marker",
+    serviceName: "return_to_base",
+    isVisible: (stateObj) =>
+      supportsFeature(stateObj, VACUUM_SUPPORT_RETURN_HOME),
+  },
 ];
 
-// tslint:disable-next-line:max-classes-per-file
 @customElement("more-info-vacuum")
 class MoreInfoVacuum extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -154,13 +151,13 @@ class MoreInfoVacuum extends LitElement {
               </div>
               <div class="flex-horizontal">
                 ${VACUUM_COMMANDS.filter((item) =>
-                  item.shouldVisible(stateObj)
+                  item.isVisible(stateObj)
                 ).map(
                   (item) => html`
                     <div>
                       <paper-icon-button
                         icon=${item.icon}
-                        .entry=${item}"
+                        .entry=${item}
                         @click=${this.callService}
                         title=${this.hass!.localize(
                           `ui.dialogs.more_info_control.vacuum.${item.translationKey}`

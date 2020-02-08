@@ -628,7 +628,8 @@
           "stop": "Stop",
           "clean_spot": "Clean spot",
           "locate": "Locate",
-          "return_home": "Return home"
+          "return_home": "Return home",
+          "start_pause": "Start/Pause"
         }
       },
       "entity_registry": {
