@@ -1673,7 +1673,7 @@
                         "create": "만들기",
                         "delete": "삭제",
                         "icon": "아이콘",
-                        "icon_error_msg": "아이콘은 접두사:아이콘이름 형식이어야합니다, 예: mdi:home",
+                        "icon_error_msg": "아이콘은 접두사:아이콘이름 형식이어야 합니다, 예: mdi:home",
                         "latitude": "위도",
                         "longitude": "경도",
                         "name": "이름",
