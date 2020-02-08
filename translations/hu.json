@@ -118,7 +118,7 @@
         "default": {
             "entity_not_found": "Entitás nem található",
             "error": "Hiba",
-            "unavailable": "N.elér",
+            "unavailable": "N/A",
             "unknown": "Ism"
         },
         "device_tracker": {
@@ -546,10 +546,10 @@
         "components": {
             "area-picker": {
                 "add_dialog": {
-                    "add": "hozzáadás",
+                    "add": "Hozzáadás",
                     "failed_create_area": "Nem sikerült létrehozni a területet.",
                     "name": "Név",
-                    "text": "Adja meg az új terület nevét.",
+                    "text": "Add meg az új terület nevét.",
                     "title": "Új terület hozzáadása"
                 },
                 "add_new": "Új terület hozzáadása...",
@@ -690,7 +690,7 @@
                     "remove": "Eszköz eltávolítása"
                 },
                 "confirmations": {
-                    "remove": "Biztos benne, hogy el akarja távolítani az eszközt?"
+                    "remove": "Biztosan el akarod távolítani az eszközt?"
                 },
                 "last_seen": "Utolsó jelentés",
                 "manuf": "{manufacturer} által",
@@ -817,7 +817,7 @@
                             "delete_confirm": "Biztos, hogy törölni szeretnéd?",
                             "duplicate": "Megkettőzés",
                             "header": "Feltételek",
-                            "introduction": "A feltételek opcionális részei az automatizálási szabályoknak és arra lehet őket használni, hogy meggátoljuk egy művelet végrehajtását, ha triggerelődik. A feltételek hasonlítanak a triggerekre, mégis teljesen máshogy működnek. A triggerek a rendszerben történő események bekövetkezését figyelik, míg a feltételek csak azt látják, hogy milyen a rendszer pillanatnyi állapota. Egy trigger például észre tudja venni, ha egy kapcsoló fel lett kapcsolva. Egy feltétel csak azt látja, hogy a kapcsoló éppen fel vagy le van kapcsolva. Kattints az alábbi linkre, ha többet szeretnél megtudni a feltételekről.",
+                            "introduction": "A feltételek opcionálisak és meggátolják a további végrehajtást, kivéve, ha minden feltétel teljesül.",
                             "learn_more": "Tudj meg többet a feltételekről",
                             "name": "Feltétel",
                             "type_select": "Feltétel típusa",
@@ -1193,7 +1193,7 @@
                             "validation": {
                                 "check_config": "Ellenőrzés",
                                 "heading": "Konfiguráció érvényesítés",
-                                "introduction": "Érvényesítsd a konfigurációt, ha nemrégiben módosítottad azt, és meg szeretnél bizonyosodni róla, hogy minden érvényes",
+                                "introduction": "Konfiguráció helyességének ellenőrzése. Visszajelzést kérhetsz az elírásokról, ha nemrég módosított konfigurációd kapcsán meg szeretnél bizonyosodni róla, hogy minden érvényes",
                                 "invalid": "Érvénytelen konfiguráció",
                                 "valid": "Érvényes konfiguráció!"
                             }
@@ -1231,14 +1231,14 @@
                             "caption": "Csak akkor csinálj valamit, ha a(z)..."
                         },
                         "create": "Eszköz automatizálás létrehozása",
-                        "no_automations": "Nincs automatizálás",
+                        "no_automations": "Nincsenek automatizálások",
                         "no_device_automations": "Ehhez az eszközhöz nem állnak rendelkezésre automatizálások.",
                         "triggers": {
                             "caption": "Kezdj el csinálni valamit, amikor a(z)..."
                         }
                     },
                     "automations": "Automatizálások",
-                    "cant_edit": "Kizárólag az UI-ben létrehozott elemeket szerkesztheti.",
+                    "cant_edit": "Kizárólag a felhasználói felületen létrehozott elemeket szerkesztheted.",
                     "caption": "Eszközök",
                     "confirm_rename_entity_ids": "Szeretnéd átnevezni az entitások ID-ját is?",
                     "data_table": {
@@ -1267,7 +1267,7 @@
                     "scenes": "Jelenetek",
                     "script": {
                         "create": "Szkript létrehozása eszköz alapján",
-                        "no_scripts": "Nincs szkript",
+                        "no_scripts": "Nincsenek szkriptek",
                         "scripts": "Szkriptek"
                     },
                     "scripts": "Szkriptek",
@@ -1318,7 +1318,7 @@
                         },
                         "integrations_page": "Integrációk oldal",
                         "introduction": "A Home Assistant nyilvántartást vezet minden olyan entitásról, melyet valaha látott, és egyedileg azonosítható. Ezen entitások mindegyikéhez létrejön egy entitás ID, amely csak az adott entitáshoz van rendelve.",
-                        "introduction2": "Az entitás nyilvántartás használatával felülbírálhatod a nevet, módosíthatod az entitás ID-t vagy eltávolíthatod a bejegyzést a Home Assistant-ból. Megjegyzendő, hogy az entitás nyilvántartásból történő bejegyzés eltávolítás nem fogja eltávolítani magát az entitást. Ehhez kövesd az alábbi linket, és távolítsd el azt az integrációk oldalról.",
+                        "introduction2": "Az entitás nyilvántartás használatával felülbírálhatod a nevet, módosíthatod az entitás ID-t vagy eltávolíthatod a bejegyzést a Home Assistant-ból.",
                         "remove_selected": {
                             "button": "Kiválasztottak eltávolítása",
                             "confirm_text": "Az entitások csak akkor távolíthatók el, ha az integráció már nem használja őket.",
@@ -1514,7 +1514,7 @@
                         "validation": {
                             "check_config": "Konfiguráció ellenőrzése",
                             "heading": "Konfiguráció érvényesítés",
-                            "introduction": "Érvényesítsd a konfigurációt, ha nemrégiben módosítottad azt, és meg szeretnél bizonyosodni róla, hogy minden érvényes",
+                            "introduction": "Konfiguráció helyességének ellenőrzése. Visszajelzést kérhetsz az elírásokról, ha nemrég módosított konfigurációd kapcsán meg szeretnél bizonyosodni róla, hogy minden érvényes",
                             "invalid": "Érvénytelen konfiguráció",
                             "valid": "Érvényes konfiguráció!"
                         }
@@ -1608,7 +1608,7 @@
                         "bind_button_help": "Csatlakoztassa a kiválasztott csoportot a kiválasztott eszközfürtökhöz.",
                         "bind_button_label": "Csoporthoz fűzés",
                         "cluster_selection_help": "Jelölje ki a kijelölt csoporthoz kötni kívánt fürtöket.",
-                        "group_picker_help": "Jelöljön ki egy csoportot a kötési parancs kiadásához.",
+                        "group_picker_help": "Jelölj ki egy csoportot a kötési parancs kiadásához.",
                         "group_picker_label": "Köthető csoportok",
                         "header": "Csoportkötés",
                         "introduction": "Csoportok kötése és lebontása",
@@ -1666,7 +1666,7 @@
                     "add_zone": "Zóna hozzáadása",
                     "caption": "Zónák",
                     "configured_in_yaml": "A configuration.yaml fájlban konfigurált zónák nem szerkeszthetők a felhasználói felületen.",
-                    "confirm_delete": "Biztosan törli ezt a zónát?",
+                    "confirm_delete": "Biztosan törölni szeretnéd ezt a zónát?",
                     "create_zone": "Zóna létrehozása",
                     "description": "Kezelje azokat a zónákat, ahol nyomon szeretné követni a személyeket.",
                     "detail": {
@@ -1685,7 +1685,7 @@
                         "update": "Frissítés"
                     },
                     "edit_home_zone": "Az otthona címét az általános konfigurációnál változtathatja meg.",
-                    "introduction": "A zónák lehetővé teszik a Föld bizonyos területeinek megadását. Ha egy személy egy zónán belül van, az állapota felveszi a zóna nevét veszi fel. A zónák eseményindítóként vagy feltételként is használhatók az automatizálási beállításokon belül.",
+                    "introduction": "A zónák lehetővé teszik a Föld bizonyos területeinek megadását. Ha egy személy egy zónán belül van, az állapota felveszi a zóna nevét. A zónák eseményindítóként vagy feltételként is használhatók az automatizálási beállításokon belül.",
                     "no_zones_created_yet": "Úgy tűnik, még nem hoztál létre zónákat."
                 },
                 "zwave": {
@@ -1869,7 +1869,7 @@
             },
             "lovelace": {
                 "add_entities": {
-                    "generated_unsupported": "Ezt a funkciót csak akkor használhatja, ha átvette a Lovelace felhasználói felületének irányítását.",
+                    "generated_unsupported": "Ezt a funkciót csak akkor használhatod, ha átvetted a Lovelace felhasználói felület irányítását.",
                     "saving_failed": "A Lovelace felhasználói felület beállításának mentése sikertelen.",
                     "yaml_unsupported": "Ezt a funkciót nem használhatja, ha YAML módban működteti a Lovelace felhasználói felületet."
                 },
@@ -1899,7 +1899,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "A Lovelace config módosult, szeretnéd frissíteni?",
+                    "message": "A Lovelace konfiguráció módosítva lett, szeretnéd frissíteni az aktualizáláshoz?",
                     "refresh": "Frissítés"
                 },
                 "editor": {
@@ -2042,7 +2042,7 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "Cím szerkesztése",
-                        "explanation": "Ez a cím jelenik meg minden nézet felett a Lovelace-ben.",
+                        "explanation": "Ez a cím jelenik meg minden nézet felett a Lovelace felhasználói felületen.",
                         "header": "Lovelace UI címe"
                     },
                     "edit_view": {
@@ -2066,8 +2066,8 @@
                         "para_no_id": "Ez az elem nem rendelkezik ID-val. Kérlek, adj hozzá egyet az 'ui-lovelace.yaml' fájlban!"
                     },
                     "raw_editor": {
-                        "confirm_remove_config_text": "Automatikusan létrehozzuk a lovelace felhasználói felületi nézeteit területekkel és eszközökkel, ha eltávolítja a Lovelace felhasználói felületkonfigurációját.",
-                        "confirm_remove_config_title": "Biztosan eltávolítja a Lovelace felhasználói felületkonfigurációját? A Lovelace felhasználói felületi nézeteit automatikusan létrehozzuk a területeivel és eszközeivel.",
+                        "confirm_remove_config_text": "Automatikusan létrehozzuk a Lovelace felhasználói felületed nézeteit a területeiddel és eszközeiddel, ha eltávolítod a Lovelace konfigurációját.",
+                        "confirm_remove_config_title": "Biztosan el szeretnéd távolítani a Lovelace felhasználói felület konfigurációját? Automatikusan létrehozzuk a Lovelace felhasználói felületed nézeteit a területeiddel és az eszközeiddel.",
                         "confirm_unsaved_changes": "Vannak nem mentett módosítások, biztosan ki akarsz lépni?",
                         "confirm_unsaved_comments": "A konfiguráció megjegyzéseket tartalmaz, amik nem kerülnek elmentésre. Biztosan folytatod?",
                         "error_invalid_config": "A konfiguráció érvénytelen: {error}",
@@ -2089,7 +2089,7 @@
                     "suggest_card": {
                         "add": "Hozzáadás a Lovelace-hez",
                         "create_own": "Készítsd el a sajátod",
-                        "header": "Létrehoztunk önnek egy javaslatot"
+                        "header": "Létrehoztunk neked egy javaslatot"
                     },
                     "view": {
                         "panel_mode": {
@@ -2106,7 +2106,7 @@
                     "refresh": "Frissítés",
                     "unused_entities": "Nem használt entitások"
                 },
-                "reload_lovelace": "Lovelace Újratöltése",
+                "reload_lovelace": "Felhasználói felület újratöltése",
                 "unused_entities": {
                     "available_entities": "Ezek azok az entitások, amelyek elérhetők, de még nincsenek elhelyezve a Lovelace felületen.",
                     "domain": "Domain",
@@ -2304,7 +2304,7 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "description": "A Home Assistant alapértelmezés szerint elrejti a haladó funkciókat és beállításokat, de ezzel a kapcsolóval elérhetővé teheted őket. Ez egy felhasználó-specifikus beállítás, ami nem befolyásolja a többi felhasználó felületét.",
+                    "description": "Haladó funkciók feloldása.",
                     "link_promo": "Tudj meg többet",
                     "title": "Haladó üzemmód"
                 },
