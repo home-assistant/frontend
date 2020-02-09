@@ -1684,7 +1684,7 @@
                         "required_error_msg": "Det här fältet krävs",
                         "update": "Uppdatera"
                     },
-                    "edit_home_zone": "Platsen för ditt hem kan ändras i gerenal config.",
+                    "edit_home_zone": "Platsen för ditt hem kan ändras i general config.",
                     "introduction": "Med zoner kan du ange vissa regioner på jorden. När en person befinner sig i en zon tar tillståndet namnet från zonen. Zoner kan också användas som utlösare eller villkor i automatiseringsinställningar.",
                     "no_zones_created_yet": "Det verkar som om du inte har skapat några zoner ännu."
                 },
