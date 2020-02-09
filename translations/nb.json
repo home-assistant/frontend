@@ -1684,7 +1684,7 @@
                         "required_error_msg": "Dette feltet er påkrevd",
                         "update": "Oppdater"
                     },
-                    "edit_home_zone": "Plasseringen av hjemmet ditt kan endres i gerenal-konfigurasjonen.",
+                    "edit_home_zone": "Plasseringen av hjemmet ditt kan endres i general-konfigurasjonen.",
                     "introduction": "Med soner kan du angi bestemte områder på jorden. Når en person er innenfor en sone, vil staten ta navnet fra sonen. Soner kan også brukes som en utløser eller tilstand i automatiserings oppsett.",
                     "no_zones_created_yet": "Det ser ut til at du ikke har opprettet noen soner enda."
                 },
