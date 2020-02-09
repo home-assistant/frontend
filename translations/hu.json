@@ -1192,7 +1192,7 @@
                             },
                             "validation": {
                                 "check_config": "Ellenőrzés",
-                                "heading": "Konfiguráció érvényesítés",
+                                "heading": "Konfiguráció ellenőrzése",
                                 "introduction": "Konfiguráció helyességének ellenőrzése. Visszajelzést kérhetsz az elírásokról, ha nemrég módosított konfigurációd kapcsán meg szeretnél bizonyosodni róla, hogy minden érvényes",
                                 "invalid": "Érvénytelen konfiguráció",
                                 "valid": "Érvényes konfiguráció!"
@@ -1513,7 +1513,7 @@
                         },
                         "validation": {
                             "check_config": "Konfiguráció ellenőrzése",
-                            "heading": "Konfiguráció érvényesítés",
+                            "heading": "Konfiguráció ellenőrzése",
                             "introduction": "Konfiguráció helyességének ellenőrzése. Visszajelzést kérhetsz az elírásokról, ha nemrég módosított konfigurációd kapcsán meg szeretnél bizonyosodni róla, hogy minden érvényes",
                             "invalid": "Érvénytelen konfiguráció",
                             "valid": "Érvényes konfiguráció!"
