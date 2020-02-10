@@ -59,7 +59,7 @@ const VACUUM_COMMANDS: VacuumCommand[] = [
     icon: "hass:play-pause",
     serviceName: "start_pause",
     isVisible: (stateObj) =>
-      // If start is supoorted, we don't show this button
+      // If start is supported, we don't show this button
       !supportsFeature(stateObj, VACUUM_SUPPORT_START) &&
       supportsFeature(stateObj, VACUUM_SUPPORT_PAUSE),
   },
@@ -125,7 +125,7 @@ class MoreInfoVacuum extends LitElement {
           ? html`
               <div">
                 <span>
-                  <iron-icon icon=${stateObj.attributes.battery_icon}></iron-icon>
+                  <iron-icon .icon=${stateObj.attributes.battery_icon}></iron-icon>
                   ${stateObj.attributes.battery_level} %
                   </span>
               </div>`
@@ -148,10 +148,10 @@ class MoreInfoVacuum extends LitElement {
                   (item) => html`
                     <div>
                       <paper-icon-button
-                        icon=${item.icon}
+                        .icon=${item.icon}
                         .entry=${item}
                         @click=${this.callService}
-                        title=${this.hass!.localize(
+                        .title=${this.hass!.localize(
                           `ui.dialogs.more_info_control.vacuum.${item.translationKey}`
                         )}
                       ></paper-icon-button>
@@ -167,7 +167,7 @@ class MoreInfoVacuum extends LitElement {
             <div>
               <div class="flex-horizontal">
                 <ha-paper-dropdown-menu
-                  label=${this.hass!.localize(
+                  .label=${this.hass!.localize(
                     "ui.dialogs.more_info_control.vacuum.fan_speed"
                   )}
                 >
@@ -179,7 +179,7 @@ class MoreInfoVacuum extends LitElement {
                   >
                     ${stateObj.attributes.fan_speed_list!.map(
                       (mode) => html`
-                        <paper-item item-name=${mode}>
+                        <paper-item .itemName=${mode}>
                           ${mode}
                         </paper-item>
                       `
@@ -216,7 +216,7 @@ class MoreInfoVacuum extends LitElement {
 
   private handleFanSpeedChanged(ev: CustomEvent) {
     const oldVal = this.stateObj!.attributes.fan_speed;
-    const newVal = ev.detail.item.getAttribute("item-name");
+    const newVal = ev.detail.item.itemName;
 
     if (!newVal || oldVal === newVal) {
       return;
