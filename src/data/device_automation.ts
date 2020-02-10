@@ -130,7 +130,7 @@ export const localizeDeviceAutomationCondition = (
       hass.localize(
         `component.${condition.domain}.device_automation.condition_subtype.${condition.subtype}`
       ) || condition.subtype
-    ) || '"' + condition.subtype + '" ' + condition.type
+    ) || `"${condition.subtype}" ${condition.type}`
   );
 };
 
