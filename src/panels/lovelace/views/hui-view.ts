@@ -6,6 +6,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import Muuri from "muuri/dist/muuri";
+import { ResizeObserver } from "resize-observer";
 
 import "../../../components/entity/ha-state-label-badge";
 // This one is for types
@@ -33,6 +34,20 @@ import { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 
 let editCodeLoaded = false;
 
+let options = {
+  dragEnabled: true,
+  dragStartPredicate: {
+    // Doesn't start drag until these thresholds are met - Up for discussion if needed
+    distance: 10,
+    delay: 100,
+  },
+  dragReleaseDuration: 400,
+  dragReleaseEasing: "ease",
+  dragSortInterval: 0,
+  layoutDuration: 400,
+  layoutEasing: "ease",
+};
+
 export class HUIView extends LitElement {
   @property() public hass?: HomeAssistant;
 
@@ -45,7 +60,8 @@ export class HUIView extends LitElement {
   @property() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
 
   @property() private _badges: LovelaceBadge[] = [];
-  @property() private _grids: any[] = [];
+  private _grids: any[] = [];
+  private _observer: any;
 
   // Public to make demo happy
   public createCardElement(cardConfig: LovelaceCardConfig) {
@@ -127,6 +143,7 @@ export class HUIView extends LitElement {
           flex-direction: row;
           justify-content: center;
           position: relative;
+          overflow-x: hidden;
         }
 
         .column {
@@ -179,15 +196,13 @@ export class HUIView extends LitElement {
           width: 100%;
         }
 
-        .item {
-          display: block;
-          width: 100%;
-          margin: 5px;
-          z-index: 1;
-        }
-
         .item.edit {
           position: absolute;
+          display: block;
+          width: 100%;
+          z-index: 1;
+          box-sizing: border-box;
+          padding: 4px;
         }
 
         .item.muuri-item-dragging {
@@ -211,7 +226,7 @@ export class HUIView extends LitElement {
     `;
   }
 
-  protected async updated(changedProperties: PropertyValues): Promise<void> {
+  protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
 
     const hass = this.hass!;
@@ -253,6 +268,19 @@ export class HUIView extends LitElement {
 
     const oldHass = changedProperties.get("hass") as this["hass"] | undefined;
 
+    if (editModeChanged && this.lovelace!.editMode) {
+      this._observer = new ResizeObserver(() => {
+        this._grids.forEach((grid) => {
+          grid.refreshItems().layout();
+        });
+      });
+    }
+
+    if (editModeChanged && !this.lovelace!.editMode) {
+      this._observer.destoy();
+      this._grids = [];
+    }
+
     if (
       configChanged ||
       editModeChanged ||
@@ -267,12 +295,6 @@ export class HUIView extends LitElement {
         lovelace.config.views[this.index!].theme
       );
     }
-
-    await this.updateComplete;
-    // This is a temporary solution for refreshing the items when all heights are determined
-    this._grids.forEach((grid) => {
-      grid.refreshItems().layout();
-    });
   }
 
   private _addCard(): void {
@@ -354,6 +376,8 @@ export class HUIView extends LitElement {
         item.classList.add("edit");
         itemContent.appendChild(wrapper);
         item.cardConfig = cardConfig;
+
+        this._observer.observe(item);
       }
 
       item.appendChild(itemContent);
@@ -361,24 +385,13 @@ export class HUIView extends LitElement {
     });
 
     if (this.lovelace!.editMode) {
-      this._grids = []; // Reset the grids - Maybe should use the method grid.destoy()?
-      const options = {
-        dragEnabled: true, // Enable Drag
-        dragContainer: this.shadowRoot!.getElementById("columns"), // Gives ability to drag outside of one grid
+      options = {
+        ...options,
+        dragContainer: this.shadowRoot!.getElementById("columns")!, // Gives ability to drag outside of one grid
         dragSort: () => {
           // Determines which Grids to drag to
           return this._grids;
         },
-        dragStartPredicate: {
-          // Doesn't start drag until these thresholds are met - Up for discussion if needed
-          distance: 10,
-          delay: 100,
-        },
-        dragReleaseDuration: 400,
-        dragReleaseEasing: "ease",
-        dragSortInterval: 0,
-        layoutDuration: 400,
-        layoutEasing: "ease",
       };
 
       columns.forEach((columnEl) => {
@@ -403,11 +416,6 @@ export class HUIView extends LitElement {
               data.item.getElement().style.width = data.item.getWidth() + "px";
               data.item.getElement().style.height =
                 data.item.getHeight() + "px";
-            })
-            .on("layoutStart", (data) => {
-              this._grids.forEach((grid) => {
-                grid.refreshItems();
-              });
             })
         );
       });
