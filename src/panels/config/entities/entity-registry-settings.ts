@@ -177,24 +177,25 @@ export class EntityRegistrySettings extends LitElement {
     }
   }
 
-  private async _deleteEntry(): Promise<void> {
+  private async _confirmDeleteEntry(): Promise<void> {
+    if (
+      !(await showConfirmationDialog(this, {
+        text: this.hass.localize(
+          "ui.dialogs.entity_registry.editor.confirm_delete"
+        ),
+      }))
+    ) {
+      return;
+    }
+
     this._submitting = true;
 
     try {
-      await removeEntityRegistryEntry(this.hass!, this._entityId);
+      await removeEntityRegistryEntry(this.hass!, this._origEntityId);
       fireEvent(this as HTMLElement, "close-dialog");
     } finally {
       this._submitting = false;
     }
-  }
-
-  private _confirmDeleteEntry(): void {
-    showConfirmationDialog(this, {
-      text: this.hass.localize(
-        "ui.dialogs.entity_registry.editor.confirm_delete"
-      ),
-      confirm: () => this._deleteEntry(),
-    });
   }
 
   private _disabledByChanged(ev: Event): void {
