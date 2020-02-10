@@ -110,7 +110,7 @@ export const localizeDeviceAutomationAction = (
       hass.localize(
         `component.${action.domain}.device_automation.action_subtype.${action.subtype}`
       ) || action.subtype
-    ) || '"' + action.subtype + '" ' + action.type
+    ) || `"${action.subtype}" ${action.type}`
   );
 };
 
