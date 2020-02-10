@@ -8,7 +8,7 @@ const fetchThemes = (conn) =>
 
 const subscribeUpdates = (conn, store) =>
   conn.subscribeEvents(
-    (event) => store.setState(event.data, true),
+    () => fetchThemes(conn).then((data) => store.setState(data, true)),
     "themes_updated"
   );
 
