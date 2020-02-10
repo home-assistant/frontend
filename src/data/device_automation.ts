@@ -148,6 +148,6 @@ export const localizeDeviceAutomationTrigger = (
       hass.localize(
         `component.${trigger.domain}.device_automation.trigger_subtype.${trigger.subtype}`
       ) || trigger.subtype
-    ) || '"' + trigger.subtype + '" ' + trigger.type
+    ) || `"${trigger.subtype}" ${trigger.type}`
   );
 };
