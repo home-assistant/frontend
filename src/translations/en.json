@@ -1394,7 +1394,7 @@
           "add_zone": "Add Zone",
           "confirm_delete": "Are you sure you want to delete this zone?",
           "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
-          "edit_home_zone": "The location of your home can be changed in the gerenal config.",
+          "edit_home_zone": "The location of your home can be changed in the general config.",
           "detail": {
             "new_zone": "New Zone",
             "name": "Name",
