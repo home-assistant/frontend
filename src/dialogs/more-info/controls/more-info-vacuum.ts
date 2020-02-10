@@ -107,14 +107,6 @@ class MoreInfoVacuum extends LitElement {
     const filterExtraAttributes =
       "fan_speed,fan_speed_list,status,battery_level,battery_icon";
 
-    const supportsCommandBar =
-      supportsFeature(stateObj, VACUUM_SUPPORT_PAUSE) ||
-      supportsFeature(stateObj, VACUUM_SUPPORT_STOP) ||
-      supportsFeature(stateObj, VACUUM_SUPPORT_RETURN_HOME) ||
-      supportsFeature(stateObj, VACUUM_SUPPORT_LOCATE) ||
-      supportsFeature(stateObj, VACUUM_SUPPORT_CLEAN_SPOT) ||
-      supportsFeature(stateObj, VACUUM_SUPPORT_START);
-
     return html`
       <div class="flex-horizontal">
         ${supportsFeature(stateObj, VACUUM_SUPPORT_STATUS)
@@ -140,7 +132,7 @@ class MoreInfoVacuum extends LitElement {
           : ""}
       </div>
 
-      ${supportsCommandBar
+      ${VACUUM_COMMANDS.some((item) => item.isVisible(stateObj))
         ? html`
             <div>
               <p></p>
