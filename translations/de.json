@@ -1621,7 +1621,7 @@
                         "caption": "Gruppen",
                         "create": "Gruppe erstellen",
                         "create_group": "Zigbee Home Automation - Gruppe erstellen",
-                        "create_group_details": "Gebe die erforderlichen Details ein, um eine neue Zigbee-Gruppe zu erstellen",
+                        "create_group_details": "Gib die erforderlichen Details ein, um eine neue Zigbee-Gruppe zu erstellen",
                         "creating_group": "Erstelle Gruppe",
                         "description": "Erstellen und Ändern von Zigbee-Gruppen",
                         "group_details": "Hier sind alle Details der ausgewählten Zigbee Gruppe.",
@@ -2276,7 +2276,7 @@
                     "button_detect": "Erkennen",
                     "finish": "Weiter",
                     "intro": "Hallo {name}, willkommen bei Home Assistant. Wie möchten Sie Ihre Haus benennen?",
-                    "intro_location": "Wir würden gerne wissen, wo Sie wohen. Diese Daten helfen bei der Anzeige von Informationen und der Einrichtung von Sonnenstands-basierten Automatisierungen. Diese Daten werden niemals außerhalb Ihres Netzwerks weitergegeben.",
+                    "intro_location": "Wir würden gerne wissen, wo Sie wohnen. Diese Daten helfen bei der Anzeige von Informationen und der Einrichtung von Sonnenstands-basierten Automatisierungen. Diese Daten werden niemals außerhalb Ihres Netzwerks weitergegeben.",
                     "intro_location_detect": "Wir können helfen, diese Informationen auszufüllen, indem wir eine einmalige Anfrage an einen externen Dienstleister richten.",
                     "location_name_default": "Home"
                 },
