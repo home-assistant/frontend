@@ -419,11 +419,11 @@
             "climate": {
                 "aux_heat": "Aux тепла",
                 "away_mode": "Режиму очікування",
-                "cooling": "{name} охолоджується",
+                "cooling": "Охолодження",
                 "current_temperature": "{name} поточна температура",
                 "currently": "В даний час",
                 "fan_mode": "Режим вентилятора",
-                "heating": "{name} нагрівається",
+                "heating": "{name}\nОбігрів",
                 "high": "високий",
                 "low": "низький",
                 "on_off": "Вкл / викл",
