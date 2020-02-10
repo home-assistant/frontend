@@ -132,6 +132,7 @@ class HaLogbook extends LitElement {
 
       .time {
         width: 65px;
+        flex-shrink: 0;
         font-size: 0.8em;
         color: var(--secondary-text-color);
       }
@@ -142,6 +143,7 @@ class HaLogbook extends LitElement {
 
       ha-icon {
         margin: 0 8px 0 16px;
+        flex-shrink: 0;
         color: var(--primary-text-color);
       }
 
