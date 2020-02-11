@@ -16,7 +16,15 @@ import "../../../components/ha-card";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { OFF_STATES, SUPPORT_PAUSE } from "../../../data/media-player";
+import {
+  OFF_STATES,
+  SUPPORT_PAUSE,
+  SUPPORT_TURN_ON,
+  SUPPORT_TURN_OFF,
+  SUPPORT_PREVIOUS_TRACK,
+  SUPPORT_NEXT_TRACK,
+  SUPPORTS_PLAY,
+} from "../../../data/media-player";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { HomeAssistant, MediaEntity } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -89,7 +97,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             </div>
           </div>
         </div>
-        ${OFF_STATES.includes(stateObj.state)
+        ${OFF_STATES.includes(stateObj.state) ||
+        !stateObj.attributes.media_duration ||
+        !stateObj.attributes.media_position
           ? ""
           : html`
               <paper-progress
@@ -99,32 +109,52 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               ></paper-progress>
             `}
         <div class="controls">
-          <paper-icon-button
-            icon="hass:power"
-            .action=${stateObj.state === "off" ? "turn_on" : "turn_off"}
-            @click=${this._handleClick}
-          ></paper-icon-button>
+          ${(stateObj.state === "off" &&
+            !supportsFeature(stateObj, SUPPORT_TURN_ON)) ||
+          (stateObj.state === "on" &&
+            !supportsFeature(stateObj, SUPPORT_TURN_OFF))
+            ? ""
+            : html`
+                <paper-icon-button
+                  icon="hass:power"
+                  .action=${stateObj.state === "off" ? "turn_on" : "turn_off"}
+                  @click=${this._handleClick}
+                ></paper-icon-button>
+              `}
           <div class="playback-controls">
-            <paper-icon-button
-              icon="hass:skip-previous"
-              .action=${"media_previous_track"}
-              @click=${this._handleClick}
-            ></paper-icon-button>
-            <paper-icon-button
-              class="playPauseButton"
-              icon=${stateObj.state !== "playing"
-                ? "hass:play"
-                : supportsFeature(stateObj, SUPPORT_PAUSE)
-                ? "hass:pause"
-                : "hass:stop"}
-              .action=${"media_play_pause"}
-              @click=${this._handleClick}
-            ></paper-icon-button>
-            <paper-icon-button
-              icon="hass:skip-next"
-              .action=${"media_next_track"}
-              @click=${this._handleClick}
-            ></paper-icon-button>
+            ${!supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
+              ? ""
+              : html`
+                  <paper-icon-button
+                    icon="hass:skip-previous"
+                    .action=${"media_previous_track"}
+                    @click=${this._handleClick}
+                  ></paper-icon-button>
+                `}
+            ${stateObj.state !== "playing" &&
+            !supportsFeature(stateObj, SUPPORTS_PLAY)
+              ? ""
+              : html`
+                  <paper-icon-button
+                    class="playPauseButton"
+                    icon=${stateObj.state !== "playing"
+                      ? "hass:play"
+                      : supportsFeature(stateObj, SUPPORT_PAUSE)
+                      ? "hass:pause"
+                      : "hass:stop"}
+                    .action=${"media_play_pause"}
+                    @click=${this._handleClick}
+                  ></paper-icon-button>
+                `}
+            ${!supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
+              ? ""
+              : html`
+                  <paper-icon-button
+                    icon="hass:skip-next"
+                    .action=${"media_next_track"}
+                    @click=${this._handleClick}
+                  ></paper-icon-button>
+                `}
           </div>
           <paper-icon-button
             icon="hass:dots-vertical"
