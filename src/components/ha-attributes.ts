@@ -10,6 +10,7 @@ import {
 import { HassEntity } from "home-assistant-js-websocket";
 
 import hassAttributeUtil from "../util/hass-attributes-util";
+import { safeDump } from "js-yaml";
 
 @customElement("ha-attributes")
 class HaAttributes extends LitElement {
@@ -32,7 +33,7 @@ class HaAttributes extends LitElement {
             <div class="data-entry">
               <div class="key">${attribute.replace(/_/g, " ")}</div>
               <div class="value">
-                ${this.formatAttributeValue(attribute)}
+                ${this.formatAttribute(attribute)}
               </div>
             </div>
           `
@@ -63,6 +64,10 @@ class HaAttributes extends LitElement {
         color: var(--secondary-text-color);
         text-align: right;
       }
+      pre {
+        font-family: inherit;
+        font-size: inherit;
+      }
     `;
   }
 
@@ -75,18 +80,27 @@ class HaAttributes extends LitElement {
     });
   }
 
-  private formatAttributeValue(attribute: string): string {
+  private formatAttribute(attribute: string): string | TemplateResult {
     if (!this.stateObj) {
       return "-";
     }
     const value = this.stateObj.attributes[attribute];
+    return this.formatAttributeValue(value);
+  }
+
+  private formatAttributeValue(value: any): string | TemplateResult {
     if (value === null) {
       return "-";
     }
-    if (Array.isArray(value)) {
-      return value.join(", ");
+    if (
+      (Array.isArray(value) && value.some((val) => val instanceof Object)) ||
+      (!Array.isArray(value) && value instanceof Object)
+    ) {
+      return html`
+        <pre>${safeDump(value)}</pre>
+      `;
     }
-    return value instanceof Object ? JSON.stringify(value, null, 2) : value;
+    return Array.isArray(value) ? value.join(", ") : value;
   }
 }
 
