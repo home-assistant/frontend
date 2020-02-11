@@ -1504,8 +1504,8 @@
                             "zone": "Zónák újratöltése"
                         },
                         "server_management": {
-                            "confirm_restart": "Biztosan újra akarod indítani a Home Assistantet?",
-                            "confirm_stop": "Biztosan le akarod állítani a Home Assistantet?",
+                            "confirm_restart": "Biztosan újra szeretnéd indítani a Home Assistant-ot?",
+                            "confirm_stop": "Biztosan le szeretnéd állítani a Home Assistant-ot?",
                             "heading": "Szerver menedzsment",
                             "introduction": "Home Assistant szerver vezérlése... a Home Assistant-ból.",
                             "restart": "Újraindítás",
