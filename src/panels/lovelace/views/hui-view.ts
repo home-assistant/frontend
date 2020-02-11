@@ -258,7 +258,16 @@ export class HUIView extends LitElement {
       });
     }
 
-    if (configChanged || editModeChanged || changedProperties.has("columns")) {
+    if (editModeChanged && !lovelace!.editMode) {
+      this._observer.destoy();
+      this._grids = [];
+    }
+
+    if (
+      (configChanged && !lovelace.editMode) ||
+      editModeChanged ||
+      changedProperties.has("columns")
+    ) {
       this._createCards(lovelace.config.views[this.index!]);
     } else if (hassChanged) {
       this._cards.forEach((element) => {
@@ -267,19 +276,6 @@ export class HUIView extends LitElement {
     }
 
     const oldHass = changedProperties.get("hass") as this["hass"] | undefined;
-
-    if (editModeChanged && this.lovelace!.editMode) {
-      this._observer = new ResizeObserver(() => {
-        this._grids.forEach((grid) => {
-          grid.refreshItems().layout();
-        });
-      });
-    }
-
-    if (editModeChanged && !this.lovelace!.editMode) {
-      this._observer.destoy();
-      this._grids = [];
-    }
 
     if (
       configChanged ||
@@ -345,7 +341,6 @@ export class HUIView extends LitElement {
     const elements: LovelaceCard[] = [];
     const columns: HTMLElement[] = [];
 
-    // Use the current method of determining how many columns
     for (let idx = 0; idx < this.columns!; idx++) {
       const columnEl = document.createElement("div");
       columnEl.classList.add("column", "grid");
@@ -353,38 +348,13 @@ export class HUIView extends LitElement {
       columns.push(columnEl);
     }
 
-    // Add cards to grids one by one so the priority of cards stays the same regardless of how many columns
-    config.cards.forEach((cardConfig, cardIndex) => {
-      const element = this.createCardElement(cardConfig);
-      elements.push(element);
-
-      const item = document.createElement("div");
-      item.classList.add("item");
-
-      const itemContent = document.createElement("div");
-      itemContent.classList.add("item-content");
-
-      if (!this.lovelace!.editMode) {
-        itemContent.appendChild(element);
-      } else {
-        const wrapper = document.createElement("hui-card-options");
-        wrapper.hass = this.hass;
-        wrapper.lovelace = this.lovelace;
-        wrapper.path = [this.index!, cardIndex];
-        wrapper.appendChild(element);
-
-        item.classList.add("edit");
-        itemContent.appendChild(wrapper);
-        item.cardConfig = cardConfig;
-
-        this._observer.observe(item);
-      }
-
-      item.appendChild(itemContent);
-      columns[cardIndex % this.columns!].appendChild(item);
-    });
-
     if (this.lovelace!.editMode) {
+      this._observer = new ResizeObserver(() => {
+        this._grids.forEach((grid) => {
+          grid.refreshItems().layout();
+        });
+      });
+
       options = {
         ...options,
         dragContainer: this.shadowRoot!.getElementById("columns")!, // Gives ability to drag outside of one grid
@@ -395,7 +365,6 @@ export class HUIView extends LitElement {
       };
 
       columns.forEach((columnEl) => {
-        // Push each grid per column
         this._grids.push(
           new Muuri(columnEl, options) // The events here make sure the card doesnt grow to the size of the window
             .on("dragStart", (item) => {
@@ -420,6 +389,37 @@ export class HUIView extends LitElement {
         );
       });
     }
+
+    config.cards.forEach((cardConfig, cardIndex) => {
+      const element = this.createCardElement(cardConfig);
+      elements.push(element);
+
+      const item = document.createElement("div");
+      item.classList.add("item");
+
+      const itemContent = document.createElement("div");
+      itemContent.classList.add("item-content");
+
+      if (!this.lovelace!.editMode) {
+        itemContent.appendChild(element);
+        item.appendChild(itemContent);
+        columns[cardIndex % this.columns!].appendChild(item);
+      } else {
+        const wrapper = document.createElement("hui-card-options");
+        wrapper.hass = this.hass;
+        wrapper.lovelace = this.lovelace;
+        wrapper.path = [this.index!, cardIndex];
+        wrapper.appendChild(element);
+
+        item.classList.add("edit");
+        itemContent.appendChild(wrapper);
+        item.cardConfig = cardConfig;
+
+        this._observer.observe(item);
+        item.appendChild(itemContent);
+        this._grids[cardIndex % this.columns!].add(item);
+      }
+    });
 
     this._cards = elements;
   }
