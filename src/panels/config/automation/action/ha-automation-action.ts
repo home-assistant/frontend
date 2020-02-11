@@ -13,6 +13,8 @@ import { Action } from "../../../../data/script";
 import { HomeAssistant } from "../../../../types";
 import "./ha-automation-action-row";
 
+import { HaDeviceAction } from "./types/ha-automation-action-device_id";
+
 @customElement("ha-automation-action")
 export default class HaAutomationAction extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -46,7 +48,7 @@ export default class HaAutomationAction extends LitElement {
 
   private _addAction() {
     const actions = this.actions.concat({
-      service: "",
+      ...HaDeviceAction.defaultConfig,
     });
 
     fireEvent(this, "value-changed", { value: actions });
