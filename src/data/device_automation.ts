@@ -107,10 +107,12 @@ export const localizeDeviceAutomationAction = (
       "entity_name",
       state ? computeStateName(state) : action.entity_id || "<unknown>",
       "subtype",
-      hass.localize(
-        `component.${action.domain}.device_automation.action_subtype.${action.subtype}`
-      ) || action.subtype
-    ) || `"${action.subtype}" ${action.type}`
+      action.subtype
+        ? hass.localize(
+            `component.${action.domain}.device_automation.action_subtype.${action.subtype}`
+          ) || action.subtype
+        : ""
+    ) || (action.subtype ? `"${action.subtype}" ${action.type}` : action.type)
   );
 };
 
@@ -127,10 +129,15 @@ export const localizeDeviceAutomationCondition = (
       "entity_name",
       state ? computeStateName(state) : condition.entity_id || "<unknown>",
       "subtype",
-      hass.localize(
-        `component.${condition.domain}.device_automation.condition_subtype.${condition.subtype}`
-      ) || condition.subtype
-    ) || `"${condition.subtype}" ${condition.type}`
+      condition.subtype
+        ? hass.localize(
+            `component.${condition.domain}.device_automation.condition_subtype.${condition.subtype}`
+          ) || condition.subtype
+        : ""
+    ) ||
+    (condition.subtype
+      ? `"${condition.subtype}" ${condition.type}`
+      : condition.type)
   );
 };
 
@@ -145,9 +152,12 @@ export const localizeDeviceAutomationTrigger = (
       "entity_name",
       state ? computeStateName(state) : trigger.entity_id || "<unknown>",
       "subtype",
-      hass.localize(
-        `component.${trigger.domain}.device_automation.trigger_subtype.${trigger.subtype}`
-      ) || trigger.subtype
-    ) || `"${trigger.subtype}" ${trigger.type}`
+      trigger.subtype
+        ? hass.localize(
+            `component.${trigger.domain}.device_automation.trigger_subtype.${trigger.subtype}`
+          ) || trigger.subtype
+        : ""
+    ) ||
+    (trigger.subtype ? `"${trigger.subtype}" ${trigger.type}` : trigger.type)
   );
 };
