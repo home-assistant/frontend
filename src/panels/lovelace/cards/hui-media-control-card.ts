@@ -98,15 +98,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                 class="progress"
               ></paper-progress>
             `}
-        <div class="controls flex">
-          <div class="left flex">
-            <paper-icon-button
-              icon="hass:power"
-              .action=${stateObj.state === "off" ? "turn_on" : "turn_off"}
-              @click=${this._handleClick}
-            ></paper-icon-button>
-          </div>
-          <div class="center flex">
+        <div class="controls">
+          <paper-icon-button
+            icon="hass:power"
+            .action=${stateObj.state === "off" ? "turn_on" : "turn_off"}
+            @click=${this._handleClick}
+          ></paper-icon-button>
+          <div class="playback-controls">
             <paper-icon-button
               icon="hass:skip-previous"
               .action=${"media_previous_track"}
@@ -128,12 +126,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               @click=${this._handleClick}
             ></paper-icon-button>
           </div>
-          <div class="right flex">
-            <paper-icon-button
-              icon="hass:dots-vertical"
-              @click="${this._handleMoreInfo}"
-            ></paper-icon-button>
-          </div>
+          <paper-icon-button
+            icon="hass:dots-vertical"
+            @click="${this._handleMoreInfo}"
+          ></paper-icon-button>
         </div>
       </ha-card>
     `;
@@ -224,7 +220,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       }
 
       .no-image {
-        padding-bottom: 20%;
+        padding-bottom: 88px;
       }
 
       .no-image > .image {
@@ -236,37 +232,27 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       .no-image > .caption {
         background-color: initial;
+        box-sizing: border-box;
+        height: 88px;
       }
 
       .controls {
-        align-content: space-evenly;
         padding: 8px;
-      }
-
-      .controls > div {
-        width: 33%;
+        display: flex;
+        justify-content: space-between;
         align-items: center;
       }
 
-      .flex {
+      .controls > div {
         display: flex;
+        align-items: center;
       }
 
-      .left {
-        justify-content: flex-start;
-      }
-
-      .center {
-        justify-content: center;
-      }
-
-      .right {
-        justify-content: flex-end;
-      }
-
-      paper-icon-button {
+      .controls paper-icon-button {
         width: 44px;
         height: 44px;
+      }
+      paper-icon-button {
         opacity: var(--dark-primary-opacity);
       }
 
