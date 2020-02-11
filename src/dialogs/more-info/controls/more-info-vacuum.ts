@@ -123,12 +123,15 @@ class MoreInfoVacuum extends LitElement {
           : ""}
         ${supportsFeature(stateObj, VACUUM_SUPPORT_BATTERY)
           ? html`
-              <div">
+              <div>
                 <span>
-                  <iron-icon .icon=${stateObj.attributes.battery_icon}></iron-icon>
+                  <iron-icon
+                    .icon=${stateObj.attributes.battery_icon}
+                  ></iron-icon>
                   ${stateObj.attributes.battery_level} %
-                  </span>
-              </div>`
+                </span>
+              </div>
+            `
           : ""}
       </div>
 
