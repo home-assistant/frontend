@@ -78,6 +78,7 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
 
         paper-item {
           cursor: pointer;
+          white-space: nowrap;
         }
 
         ha-entity-picker {
