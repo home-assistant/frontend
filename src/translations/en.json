@@ -777,8 +777,8 @@
               "invalid": "Configuration invalid"
             },
             "reloading": {
-              "heading": "Configuration reloading",
-              "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.",
+              "heading": "YAML configuration reloading",
+              "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current YAML configuration and load the new one.",
               "core": "Reload location & customizations",
               "group": "Reload groups",
               "automation": "Reload automations",
