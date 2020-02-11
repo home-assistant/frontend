@@ -90,6 +90,27 @@ export class HaAutomationEditor extends LitElement {
                   </span>
                   <ha-card>
                     <div class="card-content">
+                      ${this.creatingNew
+                        ? ""
+                        : html`
+                            <div class="layout horizontal justified center">
+                              <div class="layout horizontal center">
+                                <ha-entity-toggle
+                                  .hass=${this.hass}
+                                  .stateObj=${this.automation}
+                                ></ha-entity-toggle>
+                                Enabled/Disable automation
+                                ${this.hass.localize(
+                                  "ui.panel.config.automation.editor.disable"
+                                )}
+                              </div>
+                              <mwc-button @click=${this._excuteAutomation}>
+                                ${this.hass.localize(
+                                  "ui.card.automation.trigger"
+                                )}
+                              </mwc-button>
+                            </div>
+                          `}
                       <paper-input
                         .label=${this.hass.localize(
                           "ui.panel.config.automation.editor.alias"
@@ -317,6 +338,12 @@ export class HaAutomationEditor extends LitElement {
     this._dirty = true;
   }
 
+  private _excuteAutomation() {
+    this.hass.callService("automation", "trigger", {
+      entity_id: this.automation.entity_id,
+    });
+  }
+
   private _backTapped(): void {
     if (this._dirty) {
       showConfirmationDialog(this, {
@@ -388,6 +415,9 @@ export class HaAutomationEditor extends LitElement {
         }
         span[slot="introduction"] a {
           color: var(--primary-color);
+        }
+        ha-entity-toggle {
+          margin-right: 8px;
         }
         ha-fab {
           position: fixed;

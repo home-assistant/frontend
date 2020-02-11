@@ -846,6 +846,7 @@
             "delete_confirm": "Are you sure you want to delete this automation?"
           },
           "editor": {
+            "disable": "Enabled/Disable automation",
             "introduction": "Use automations to bring your home alive.",
             "default_name": "New Automation",
             "load_error_not_editable": "Only automations in automations.yaml are editable.",
