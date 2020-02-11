@@ -1679,12 +1679,12 @@
                         "name": "Name",
                         "new_zone": "New Zone",
                         "passive": "Passive",
-                        "passive_note": "Passive zones are hidden in the frontend and are not used as location for device trackers. This is usefull if you just want to use it for automations.",
+                        "passive_note": "Passive zones are hidden in the frontend and are not used as location for device trackers. This is useful if you just want to use it for automations.",
                         "radius": "Radius",
                         "required_error_msg": "This field is required",
                         "update": "Update"
                     },
-                    "edit_home_zone": "The location of your home can be changed in the gerenal config.",
+                    "edit_home_zone": "The location of your home can be changed in the general config.",
                     "introduction": "Zones allow you to specify certain regions on earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
                     "no_zones_created_yet": "Looks like you have not created any zones yet."
                 },
