@@ -1,3 +1,5 @@
+import deepClone from "deep-clone-simple";
+
 import {
   LovelaceCardConfig,
   LovelaceBadgeConfig,
@@ -36,11 +38,11 @@ const _createElement = <T extends keyof CreateElementConfigTypes>(
   ) as CreateElementConfigTypes[T]["element"];
   try {
     // @ts-ignore
-    element.setConfig(config);
+    element.setConfig(deepClone(config));
   } catch (err) {
     // tslint:disable-next-line
     console.error(tag, err);
-    return _createErrorElement(err.message, config);
+    return _createErrorElement(err.message, deepClone(config));
   }
   return element;
 };
