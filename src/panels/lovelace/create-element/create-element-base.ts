@@ -102,19 +102,17 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
     return _maybeCreate(config.type.substr(CUSTOM_TYPE_PREFIX.length), config);
   }
 
+  let type: string | undefined;
+
   // config.type has priority over config.entity, but defaultType has not.
   // @ts-ignore
   if (domainTypes && !config.type && config.entity) {
     // @ts-ignore
     const domain = config.entity.split(".", 1)[0];
-    return _createElement(
-      `hui-${domainTypes![domain] ||
-        domainTypes!._domain_not_found}-entity-${tagSuffix}`,
-      config
-    );
+    type = `${domainTypes![domain] || domainTypes!._domain_not_found}-entity`;
+  } else {
+    type = config.type || defaultType;
   }
-
-  const type = config.type || defaultType;
 
   if (type === undefined) {
     return _createErrorElement(`No type specified`, config);
