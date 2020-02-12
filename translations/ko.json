@@ -625,11 +625,11 @@
                     "enabled_label": "구성요소 활성화",
                     "entity_id": "구성요소 ID",
                     "name": "대체 이름",
-                    "note": "참고 : 아직 모든 통합 구성요소에 적용되지 않을 수 있습니다.",
+                    "note": "참고: 아직 모든 통합 구성요소에 적용되지 않을 수 있습니다.",
                     "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
                     "update": "업데이트"
                 },
-                "related": "관련된",
+                "related": "관련 내용",
                 "settings": "설정"
             },
             "generic": {
@@ -866,8 +866,8 @@
                                 },
                                 "zone": {
                                     "entity": "위치기반 구성요소",
-                                    "label": "구역",
-                                    "zone": "구역"
+                                    "label": "지역",
+                                    "zone": "지역"
                                 }
                             },
                             "unsupported_condition": "미지원 조건: {condition}"
@@ -913,7 +913,7 @@
                                     "label": "위치정보",
                                     "leave": "퇴장",
                                     "source": "소스",
-                                    "zone": "구역"
+                                    "zone": "지역"
                                 },
                                 "homeassistant": {
                                     "event": "이벤트:",
@@ -967,9 +967,9 @@
                                     "enter": "입장",
                                     "entity": "위치기반 구성요소",
                                     "event": "이벤트:",
-                                    "label": "구역",
+                                    "label": "지역",
                                     "leave": "퇴장",
-                                    "zone": "구역"
+                                    "zone": "지역"
                                 }
                             },
                             "unsupported_platform": "미지원 플랫폼: {platform}"
@@ -1208,7 +1208,7 @@
                     "attributes_set": "구성요소의 다음 속성은 프로그래밍 방식으로 설정됩니다.",
                     "caption": "사용자화",
                     "description": "구성요소를 사용자화 합니다",
-                    "different_include": "도메인, 글로브 혹은 다른 포함 기능을 통해 가능할 수 있습니다.",
+                    "different_include": "도메인, 글로브 혹은 다른 포함 구성을 통해 가능할 수 있습니다.",
                     "pick_attribute": "재정의 할 속성 선택",
                     "picker": {
                         "header": "사용자화",
@@ -1226,14 +1226,19 @@
                         "actions": {
                             "caption": "뭔가 트리거 되었을 때...."
                         },
+                        "automations": "자동화",
                         "conditions": {
                             "caption": "... 이면 자동화를 실행 (조건)"
                         },
+                        "create": "기기로 자동화 구성하기",
+                        "no_automations": "자동화 없음",
+                        "no_device_automations": "이 기기에서 사용할 수 있는 자동화가 없습니다.",
                         "triggers": {
                             "caption": "... 일 때 자동화를 실행 (트리거)"
                         }
                     },
                     "automations": "자동화",
+                    "cant_edit": "UI 에서 작성된 항목만 편집할 수 있습니다.",
                     "caption": "기기",
                     "confirm_rename_entity_ids": "구성요소의 ID 이름 또한 바꾸시겠습니까?",
                     "data_table": {
@@ -1248,12 +1253,24 @@
                     "details": "기기의 모든 세부 정보는 다음과 같습니다.",
                     "device_not_found": "기기를 찾을 수 없습니다.",
                     "entities": {
-                        "add_entities_lovelace": "Lovelace UI 에 모든 기기 구성요소 추가",
+                        "add_entities_lovelace": "Lovelace 에 추가",
                         "entities": "구성요소",
                         "none": "이 기기는 구성요소가 없습니다"
                     },
                     "info": "기기 정보",
                     "name": "이름",
+                    "scene": {
+                        "create": "기기로 씬 구성하기",
+                        "no_scenes": "씬 없음",
+                        "scenes": "씬"
+                    },
+                    "scenes": "씬",
+                    "script": {
+                        "create": "기기로 스크립트 작성하기",
+                        "no_scripts": "스크립트 없음",
+                        "scripts": "스크립트"
+                    },
+                    "scripts": "스크립트",
                     "unknown_error": "알 수 없는 오류",
                     "unnamed_device": "이름이 없는 기기",
                     "update": "업데이트"
@@ -1484,7 +1501,7 @@
                             "person": "구성원 새로고침",
                             "scene": "씬 다시읽기",
                             "script": "스크립트 새로고침",
-                            "zone": "구역 새로고침"
+                            "zone": "지역 새로고침"
                         },
                         "server_management": {
                             "confirm_restart": "Home Assistant 를 재시작하시겠습니까?",
@@ -1509,7 +1526,7 @@
                         "create": "만들기",
                         "name": "이름",
                         "password": "비밀번호",
-                        "username": "사용자 이름 (계정명)"
+                        "username": "사용자 이름 (계정)"
                     },
                     "caption": "사용자",
                     "description": "사용자를 관리합니다",
@@ -1646,30 +1663,30 @@
                     "title": "Zigbee 홈 자동화"
                 },
                 "zone": {
-                    "add_zone": "구역 추가",
-                    "caption": "구역들",
-                    "configured_in_yaml": "configuration.yaml 에서 구성된 구역은 UI 에서 편집 할 수 없습니다.",
-                    "confirm_delete": "이 구역을 삭제하시겠습니까?",
-                    "create_zone": "구역 만들기",
-                    "description": "구성원을 추적하려는 구역을 관리하세요.",
+                    "add_zone": "지역 추가",
+                    "caption": "지역",
+                    "configured_in_yaml": "configuration.yaml 에서 구성된 지역은 UI 에서 편집할 수 없습니다.",
+                    "confirm_delete": "이 지역을 삭제하시겠습니까?",
+                    "create_zone": "지역 만들기",
+                    "description": "구성원을 추적할 지역을 관리합니다",
                     "detail": {
                         "create": "만들기",
                         "delete": "삭제",
                         "icon": "아이콘",
-                        "icon_error_msg": "아이콘은 접두사:아이콘이름 형식이어야합니다, 예: mdi:home",
+                        "icon_error_msg": "아이콘은 접두사:아이콘이름 형식이어야 합니다, 예: mdi:home",
                         "latitude": "위도",
                         "longitude": "경도",
                         "name": "이름",
-                        "new_zone": "새로운 구역",
+                        "new_zone": "새로운 지역",
                         "passive": "자동화 전용",
                         "passive_note": "자동화 전용은 프런트엔드에 숨겨져 있으며 추적 기기의 위치로 사용되지 않습니다. 자동화에 사용하려는 경우에 유용합니다.",
                         "radius": "반경",
-                        "required_error_msg": "이 필드는 필수 요소입니다",
+                        "required_error_msg": "이 입력란은 필수 요소입니다",
                         "update": "업데이트"
                     },
                     "edit_home_zone": "집의 위치는 일반 설정에서 변경할 수 있습니다.",
-                    "introduction": "영역을 사용하면 지구 상의 특정 지역을 지정할 수 있습니다. 구성원이 구역 내에 있으면 구성요소 상태에서 구역의 이름을 가져옵니다. 자동화 설정 내에서 영역을 트리거 또는 조건으로 사용할 수도 있습니다.",
-                    "no_zones_created_yet": "아직 생성된 구역이 없는 것 같습니다."
+                    "introduction": "지역을 사용하면 지구 상의 특정 지역을 지정할 수 있습니다. 구성원이 지역 내에 있으면 구성요소 상태에서 지역의 이름을 가져옵니다. 자동화 설정 내에서 지역을 트리거 또는 조건으로 사용할 수도 있습니다.",
+                    "no_zones_created_yet": "아직 설정한 지역이 없는 것 같습니다."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1695,18 +1712,18 @@
                         "network_stopped": "Z-Wave 네트워크 중지됨"
                     },
                     "node_config": {
-                        "config_parameter": "구성 파라메터",
+                        "config_parameter": "구성 매개변수",
                         "config_value": "구성 값",
                         "false": "거짓",
                         "header": "노드 구성 옵션",
                         "seconds": "초",
-                        "set_config_parameter": "구성 파라메터 설정",
+                        "set_config_parameter": "구성 매개변수 설정",
                         "set_wakeup": "절전모드 해제 간격 설정",
                         "true": "참"
                     },
                     "ozw_log": {
                         "header": "OZW 로그",
-                        "introduction": "로그를 봐주세요. 최소값은 0(전체 로그를 불러올 때)이고 최대값은 1000 입니다. 로드된 로그는 정적 로그를 보여주며 로그의 끝 부분은 최근 기록된 로그의 행으로 자동으로 업데이트됩니다."
+                        "introduction": "로그를 봐주세요. 최소값은 0(전체 로그를 불러올 때)이고 최대값은 1000 입니다. 로드된 로그는 정적 로그를 보여주며 로그의 끝 부분은 최근 기록된 로그로 자동으로 업데이트됩니다."
                     },
                     "services": {
                         "add_node": "노드 추가",
@@ -1735,7 +1752,7 @@
             "developer-tools": {
                 "tabs": {
                     "events": {
-                        "alert_event_type": "이벤트 유형은 필수 필드입니다",
+                        "alert_event_type": "이벤트 유형은 필수 입력 요소입니다",
                         "available_events": "사용 가능한 이벤트",
                         "count_listeners": " ({count} 청취객체)",
                         "data": "이벤트 데이터 (YAML, 선택 사항)",
@@ -1801,17 +1818,17 @@
                         "call_service": "서비스 호출",
                         "column_description": "상세정보",
                         "column_example": "예제",
-                        "column_parameter": "파라메터",
+                        "column_parameter": "매개변수",
                         "data": "서비스 데이터 (YAML, 선택 사항)",
                         "description": "서비스 개발 도구를 사용하면 Home Assistant 에서 사용 가능한 서비스를 호출할 수 있습니다.",
-                        "fill_example_data": "예제 데이터를 필드에 넣기",
+                        "fill_example_data": "예제 데이터를 입력란에 넣기",
                         "no_description": "상세정보가 없습니다",
-                        "no_parameters": "이 서비스에는 파라메터가 필요 없습니다.",
+                        "no_parameters": "이 서비스에는 매개변수가 필요 없습니다.",
                         "select_service": "상세정보를 보려면 서비스를 선택해주세요",
                         "title": "서비스"
                     },
                     "states": {
-                        "alert_entity_field": "구성요소는 필수 필드입니다",
+                        "alert_entity_field": "구성요소는 필수 입력 요소입니다",
                         "attributes": "속성",
                         "copied": "클립보드에 복사됨",
                         "copy_entity_attribute": "속성 복사",
@@ -1970,7 +1987,7 @@
                         },
                         "markdown": {
                             "content": "내용",
-                            "name": "마크다운"
+                            "name": "마크다운 텍스트"
                         },
                         "media-control": {
                             "name": "미디어 컨트롤"
@@ -2214,7 +2231,7 @@
                 "cards": {
                     "demo": {
                         "demo_by": "{name} 님이 만듦",
-                        "introduction": "집에 오신 것을 환영합니다! 커뮤니티에서 만든 최고의 UI 가 적용된 Home Assistant 를 소개합니다.",
+                        "introduction": "집에 오신 것을 환영합니다! 커뮤니티에서 만든 멋진 UI 가 적용된 Home Assistant 를 소개합니다.",
                         "learn_more": "Home Assistant 에 대해 더 알아보기",
                         "next_demo": "다음 데모"
                     }

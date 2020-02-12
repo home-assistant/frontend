@@ -1,26 +1,32 @@
 import { fireEvent } from "../../common/dom/fire_event";
 
-interface AlertDialogParams {
+interface BaseDialogParams {
   confirmText?: string;
   text?: string;
   title?: string;
-  confirm?: (out?: string) => void;
 }
 
-interface ConfirmationDialogParams extends AlertDialogParams {
+export interface AlertDialogParams extends BaseDialogParams {
+  confirm?: () => void;
+}
+
+export interface ConfirmationDialogParams extends BaseDialogParams {
   dismissText?: string;
+  confirm?: () => void;
   cancel?: () => void;
 }
 
-interface PromptDialogParams extends AlertDialogParams {
+export interface PromptDialogParams extends BaseDialogParams {
   inputLabel?: string;
   inputType?: string;
   defaultValue?: string;
+  confirm?: (out?: string) => void;
 }
 
 export interface DialogParams
   extends ConfirmationDialogParams,
     PromptDialogParams {
+  confirm?: (out?: string) => void;
   confirmation?: boolean;
   prompt?: boolean;
 }
@@ -28,35 +34,57 @@ export interface DialogParams
 export const loadGenericDialog = () =>
   import(/* webpackChunkName: "confirmation" */ "./dialog-box");
 
+const showDialogHelper = (
+  element: HTMLElement,
+  dialogParams: DialogParams,
+  extra?: {
+    confirmation?: DialogParams["confirmation"];
+    prompt?: DialogParams["prompt"];
+  }
+) =>
+  new Promise((resolve) => {
+    const origCancel = dialogParams.cancel;
+    const origConfirm = dialogParams.confirm;
+
+    fireEvent(element, "show-dialog", {
+      dialogTag: "dialog-box",
+      dialogImport: loadGenericDialog,
+      dialogParams: {
+        ...dialogParams,
+        ...extra,
+        cancel: () => {
+          resolve(extra?.prompt ? null : false);
+          if (origCancel) {
+            origCancel();
+          }
+        },
+        confirm: (out) => {
+          resolve(extra?.prompt ? out : true);
+          if (origConfirm) {
+            origConfirm(out);
+          }
+        },
+      },
+    });
+  });
+
 export const showAlertDialog = (
   element: HTMLElement,
   dialogParams: AlertDialogParams
-): void => {
-  fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-box",
-    dialogImport: loadGenericDialog,
-    dialogParams,
-  });
-};
+) => showDialogHelper(element, dialogParams);
 
 export const showConfirmationDialog = (
   element: HTMLElement,
   dialogParams: ConfirmationDialogParams
-): void => {
-  fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-box",
-    dialogImport: loadGenericDialog,
-    dialogParams: { ...dialogParams, confirmation: true },
-  });
-};
+) =>
+  showDialogHelper(element, dialogParams, { confirmation: true }) as Promise<
+    boolean
+  >;
 
 export const showPromptDialog = (
   element: HTMLElement,
   dialogParams: PromptDialogParams
-): void => {
-  fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-box",
-    dialogImport: loadGenericDialog,
-    dialogParams: { ...dialogParams, prompt: true },
-  });
-};
+) =>
+  showDialogHelper(element, dialogParams, { prompt: true }) as Promise<
+    null | string
+  >;

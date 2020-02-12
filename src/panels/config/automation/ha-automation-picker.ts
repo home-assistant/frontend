@@ -28,7 +28,7 @@ import {
   showAutomationEditor,
   AutomationConfig,
 } from "../../../data/automation";
-import format_date_time from "../../../common/datetime/format_date_time";
+import { formatDateTime } from "../../../common/datetime/format_date_time";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { showThingtalkDialog } from "./show-dialog-thingtalk";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
@@ -102,7 +102,7 @@ class HaAutomationPicker extends LitElement {
                               "ui.card.automation.last_triggered"
                             )}: ${
                     automation.attributes.last_triggered
-                      ? format_date_time(
+                      ? formatDateTime(
                           new Date(automation.attributes.last_triggered),
                           this.hass.language
                         )

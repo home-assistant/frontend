@@ -411,7 +411,7 @@
             },
             "automation": {
                 "last_triggered": "Dernier déclenchement",
-                "trigger": "Exécutez"
+                "trigger": "Exécuter"
             },
             "camera": {
                 "not_available": "Image non disponible"
@@ -772,7 +772,7 @@
                             "delete_confirm": "Voulez-vous vraiment effacer ?",
                             "duplicate": "Dupliquer",
                             "header": "Actions",
-                            "introduction": "Les actions sont ce que Home Assistant fera quand une automatisation est déclenchée.",
+                            "introduction": "Les actions sont ce que Home Assistant fera quand une automation est déclenchée.",
                             "learn_more": "En savoir plus sur les actions",
                             "name": "Action",
                             "type_select": "Type d'action",
@@ -981,9 +981,9 @@
                         "delete_automation": "Supprimer l'automation",
                         "delete_confirm": "Êtes-vous sûr de vouloir supprimer cette automation ?",
                         "edit_automation": "Modifier l'automation",
-                        "header": "Éditeur d'automatisation",
+                        "header": "Éditeur d'automation",
                         "introduction": "L'éditeur d'automations vous permet de créer et modifier des automations. Veuillez lire les instructions ci-dessous pour vous assurer d'avoir configuré Home Assistant correctement.",
-                        "learn_more": "En savoir plus sur les automatisations",
+                        "learn_more": "En savoir plus sur les automations",
                         "no_automations": "Il n'y a aucune automation modifiable.",
                         "only_editable": "Seules les automations définies dans automations.yaml sont modifiables.",
                         "pick_automation": "Choisissez l'automation à modifier",
@@ -1046,7 +1046,7 @@
                         "webhooks": {
                             "disable_hook_error_msg": "Impossible de désactiver le Webhook:",
                             "info": "Tout ce qui est configuré pour être déclenché par un Webhook peut recevoir une URL accessible publiquement pour vous permettre de renvoyer des données à Home Assistant de n’importe où, sans exposer votre instance à Internet.",
-                            "link_learn_more": "En savoir plus sur la création d'automatisations basées sur Webhook.",
+                            "link_learn_more": "En savoir plus sur la création d'automations basées sur Webhook.",
                             "loading": "Chargement ...",
                             "manage": "Gérer",
                             "no_hooks_yet": "Il semble que vous n'ayez pas encore de Webhooks. Commencez en configurer un ",
@@ -1226,12 +1226,13 @@
                         "actions": {
                             "caption": "Quand quelque chose est déclenché ..."
                         },
-                        "automations": "Automatisations",
+                        "automations": "Automations",
                         "conditions": {
                             "caption": "Ne faire quelque chose que si ..."
                         },
-                        "create": "Créer une automatisation avec l'appareil",
-                        "no_automations": "Aucune automatisation",
+                        "create": "Créer une automation avec l'appareil",
+                        "no_automations": "Aucune automation",
+                        "no_device_automations": "Aucune automatisation n'est disponible pour cet appareil.",
                         "triggers": {
                             "caption": "Faire quelque chose quand ..."
                         }
@@ -1252,7 +1253,7 @@
                     "details": "Voici tous les détails de votre appareil.",
                     "device_not_found": "Appareil non trouvé.",
                     "entities": {
-                        "add_entities_lovelace": "Ajouter toutes les entités de l'appareil à l'interface utilisateur de Lovelace",
+                        "add_entities_lovelace": "Ajouter à Lovelace",
                         "entities": "Entités",
                         "none": "Cet appareil n'a pas d'entités"
                     },
@@ -1678,13 +1679,13 @@
                         "name": "Nom",
                         "new_zone": "Nouvelle zone",
                         "passive": "Passif",
-                        "passive_note": "Les zones passives sont cachées dans le frontend et ne sont pas utilisées comme emplacement pour les traceurs de périphériques. C'est utile si vous voulez seulement les utiliser pour des automatisations.",
+                        "passive_note": "Les zones passives sont cachées dans le frontend et ne sont pas utilisées comme emplacement pour les traceurs de périphériques. C'est utile si vous voulez seulement les utiliser pour des automations.",
                         "radius": "Rayon",
                         "required_error_msg": "Ce champ est requis",
                         "update": "Mettre à jour"
                     },
                     "edit_home_zone": "L'emplacement de votre maison peut être modifié dans la configuration générale.",
-                    "introduction": "Les zones vous permettent de spécifier certaines régions sur la terre. Lorsqu'une personne se trouve dans une zone, l'état prend le nom de la zone. Les zones peuvent également être utilisées comme déclencheur ou condition dans les configurations d'automatisation.",
+                    "introduction": "Les zones vous permettent de spécifier certaines régions sur la terre. Lorsqu'une personne se trouve dans une zone, l'état prend le nom de la zone. Les zones peuvent également être utilisées comme déclencheur ou condition dans les configurations d'automation.",
                     "no_zones_created_yet": "Il semble que vous n'ayez pas encore créé de zones."
                 },
                 "zwave": {
@@ -2032,7 +2033,7 @@
                         "header": "Configuration de la carte",
                         "move": "Déplacer",
                         "options": "Plus d'options",
-                        "pick_card": "Choisissez l'automatisation à ajouter",
+                        "pick_card": "Choisissez l'automation à ajouter",
                         "pick_card_view_title": "Quelle carte souhaitez-vous ajouter à votre vue {name} ?",
                         "save": "Enregistrer",
                         "show_code_editor": "Afficher l'éditeur de code",

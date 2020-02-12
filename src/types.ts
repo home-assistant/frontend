@@ -200,6 +200,13 @@ export type CameraEntity = HassEntityBase & {
   };
 };
 
+export type MediaEntity = HassEntityBase & {
+  attributes: HassEntityAttributeBase & {
+    media_duration: number;
+    media_position: number;
+  };
+};
+
 export type InputSelectEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
     options: string[];

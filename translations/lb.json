@@ -1232,6 +1232,7 @@
                         },
                         "create": "Automatisme mat Apparat erstellen",
                         "no_automations": "Keng Automatismen",
+                        "no_device_automations": "Et gi keng Automatisme fir dësen Apparat.",
                         "triggers": {
                             "caption": "Maach eppes wann..."
                         }
