@@ -659,6 +659,18 @@
                 },
                 "updater": {
                     "title": "Update Instructions"
+                },
+                "vacuum": {
+                    "clean_spot": "Clean spot",
+                    "commands": "Vacuum cleaner commands:",
+                    "fan_speed": "Fan speed",
+                    "locate": "Locate",
+                    "pause": "Pause",
+                    "return_home": "Return home",
+                    "start": "Start",
+                    "start_pause": "Start/Pause",
+                    "status": "Status",
+                    "stop": "Stop"
                 }
             },
             "more_info_settings": {
@@ -1496,8 +1508,8 @@
                             "automation": "Reload automations",
                             "core": "Reload location & customizations",
                             "group": "Reload groups",
-                            "heading": "Configuration reloading",
-                            "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.",
+                            "heading": "YAML configuration reloading",
+                            "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current YAML configuration and load the new one.",
                             "person": "Reload persons",
                             "scene": "Reload scenes",
                             "script": "Reload scripts",

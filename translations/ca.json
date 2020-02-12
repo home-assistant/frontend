@@ -2081,6 +2081,7 @@
                         "save": "Prendre el control"
                     },
                     "suggest_card": {
+                        "add": "Afegeix a la UI Lovelace",
                         "create_own": "Crea la teva"
                     },
                     "view": {
