@@ -64,6 +64,11 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
           margin-right: 16px;
         }
 
+        :host([rtl]) vaadin-date-picker {
+          margin-right: 0;
+          margin-left: 16px;
+        }
+
         paper-dropdown-menu {
           max-width: 100px;
           margin-right: 16px;
@@ -74,6 +79,8 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
 
         :host([rtl]) paper-dropdown-menu {
           text-align: right;
+          margin-right: 0;
+          margin-left: 16px;
         }
 
         paper-item {
