@@ -177,7 +177,7 @@ class ActionHandler extends HTMLElement implements ActionHandler {
       } else {
         fireEvent(element, "action", { action: "tap" });
       }
-      window.setTimeout(() => (this.touch = undefined), 100);
+      window.setTimeout(() => (this.touch = undefined), this.holdTime);
     };
 
     element.addEventListener("touchstart", touchStart, { passive: true });
