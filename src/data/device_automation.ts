@@ -101,14 +101,16 @@ export const localizeDeviceAutomationAction = (
   action: DeviceAction
 ) => {
   const state = action.entity_id ? hass.states[action.entity_id] : undefined;
-  return hass.localize(
-    `component.${action.domain}.device_automation.action_type.${action.type}`,
-    "entity_name",
-    state ? computeStateName(state) : "<unknown>",
-    "subtype",
+  return (
     hass.localize(
-      `component.${action.domain}.device_automation.action_subtype.${action.subtype}`
-    )
+      `component.${action.domain}.device_automation.action_type.${action.type}`,
+      "entity_name",
+      state ? computeStateName(state) : action.entity_id || "<unknown>",
+      "subtype",
+      hass.localize(
+        `component.${action.domain}.device_automation.action_subtype.${action.subtype}`
+      ) || action.subtype
+    ) || `"${action.subtype}" ${action.type}`
   );
 };
 
@@ -119,14 +121,16 @@ export const localizeDeviceAutomationCondition = (
   const state = condition.entity_id
     ? hass.states[condition.entity_id]
     : undefined;
-  return hass.localize(
-    `component.${condition.domain}.device_automation.condition_type.${condition.type}`,
-    "entity_name",
-    state ? computeStateName(state) : "<unknown>",
-    "subtype",
+  return (
     hass.localize(
-      `component.${condition.domain}.device_automation.condition_subtype.${condition.subtype}`
-    )
+      `component.${condition.domain}.device_automation.condition_type.${condition.type}`,
+      "entity_name",
+      state ? computeStateName(state) : condition.entity_id || "<unknown>",
+      "subtype",
+      hass.localize(
+        `component.${condition.domain}.device_automation.condition_subtype.${condition.subtype}`
+      ) || condition.subtype
+    ) || `"${condition.subtype}" ${condition.type}`
   );
 };
 
@@ -135,13 +139,15 @@ export const localizeDeviceAutomationTrigger = (
   trigger: DeviceTrigger
 ) => {
   const state = trigger.entity_id ? hass.states[trigger.entity_id] : undefined;
-  return hass.localize(
-    `component.${trigger.domain}.device_automation.trigger_type.${trigger.type}`,
-    "entity_name",
-    state ? computeStateName(state) : "<unknown>",
-    "subtype",
+  return (
     hass.localize(
-      `component.${trigger.domain}.device_automation.trigger_subtype.${trigger.subtype}`
-    )
+      `component.${trigger.domain}.device_automation.trigger_type.${trigger.type}`,
+      "entity_name",
+      state ? computeStateName(state) : trigger.entity_id || "<unknown>",
+      "subtype",
+      hass.localize(
+        `component.${trigger.domain}.device_automation.trigger_subtype.${trigger.subtype}`
+      ) || trigger.subtype
+    ) || `"${trigger.subtype}" ${trigger.type}`
   );
 };

@@ -36,61 +36,63 @@ class HassioRepositoriesEditor extends LitElement {
   protected render(): TemplateResult {
     const repos = this._sortedRepos(this.repos);
     return html`
-      <div class="card-group">
-        <div class="title">
+      <div class="content">
+        <h1>
           Repositories
-          <div class="description">
-            Configure which add-on repositories to fetch data from:
-          </div>
-        </div>
-        ${// Use repeat so that the fade-out from call-service-api-button
-        // stays with the correct repo after we add/delete one.
-        repeat(
-          repos,
-          (repo) => repo.slug,
-          (repo) => html`
-            <paper-card>
-              <div class="card-content">
-                <hassio-card-content
-                  .hass=${this.hass}
-                  .title=${repo.name}
-                  .description=${repo.url}
-                  icon="hassio:github-circle"
-                ></hassio-card-content>
-              </div>
-              <div class="card-actions">
-                <ha-call-api-button
-                  path="hassio/supervisor/options"
-                  .hass=${this.hass}
-                  .data=${this.computeRemoveRepoData(repos, repo.url)}
-                  class="warning"
-                >
-                  Remove
-                </ha-call-api-button>
-              </div>
-            </paper-card>
-          `
-        )}
+        </h1>
+        <p class="description">
+          Configure which add-on repositories to fetch data from:
+        </p>
+        <div class="card-group">
+          ${// Use repeat so that the fade-out from call-service-api-button
+          // stays with the correct repo after we add/delete one.
+          repeat(
+            repos,
+            (repo) => repo.slug,
+            (repo) => html`
+              <paper-card>
+                <div class="card-content">
+                  <hassio-card-content
+                    .hass=${this.hass}
+                    .title=${repo.name}
+                    .description=${repo.url}
+                    icon="hassio:github-circle"
+                  ></hassio-card-content>
+                </div>
+                <div class="card-actions">
+                  <ha-call-api-button
+                    path="hassio/supervisor/options"
+                    .hass=${this.hass}
+                    .data=${this.computeRemoveRepoData(repos, repo.url)}
+                    class="warning"
+                  >
+                    Remove
+                  </ha-call-api-button>
+                </div>
+              </paper-card>
+            `
+          )}
 
-        <paper-card>
-          <div class="card-content add">
-            <iron-icon icon="hassio:github-circle"></iron-icon>
-            <paper-input
-              label="Add new repository by URL"
-              .value=${this._repoUrl}
-              @value-changed=${this._urlChanged}
-            ></paper-input>
-          </div>
-          <div class="card-actions">
-            <ha-call-api-button
-              path="hassio/supervisor/options"
-              .hass=${this.hass}
-              .data=${this.computeAddRepoData(repos, this._repoUrl)}
-            >
-              Add
-            </ha-call-api-button>
-          </div>
-        </paper-card>
+          <paper-card>
+            <div class="card-content add">
+              <iron-icon icon="hassio:github-circle"></iron-icon>
+              <paper-input
+                label="Add new repository by URL"
+                .value=${this._repoUrl}
+                @value-changed=${this._urlChanged}
+              ></paper-input>
+            </div>
+            <div class="card-actions">
+              <ha-call-api-button
+                path="hassio/supervisor/options"
+                .hass=${this.hass}
+                .data=${this.computeAddRepoData(repos, this._repoUrl)}
+              >
+                Add
+              </ha-call-api-button>
+            </div>
+          </paper-card>
+        </div>
       </div>
     `;
   }

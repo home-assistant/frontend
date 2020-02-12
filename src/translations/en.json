@@ -618,6 +618,18 @@
           "remove_action": "Remove entity",
           "confirm_remove_title": "Remove entity?",
           "confirm_remove_text": "Are you sure you want to remove this entity?"
+        },
+        "vacuum": {
+          "status": "Status",
+          "commands": "Vacuum cleaner commands:",
+          "fan_speed": "Fan speed",
+          "start": "Start",
+          "pause": "Pause",
+          "stop": "Stop",
+          "clean_spot": "Clean spot",
+          "locate": "Locate",
+          "return_home": "Return home",
+          "start_pause": "Start/Pause"
         }
       },
       "entity_registry": {
@@ -778,8 +790,8 @@
               "invalid": "Configuration invalid"
             },
             "reloading": {
-              "heading": "Configuration reloading",
-              "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.",
+              "heading": "YAML configuration reloading",
+              "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current YAML configuration and load the new one.",
               "core": "Reload location & customizations",
               "group": "Reload groups",
               "automation": "Reload automations",
@@ -1395,7 +1407,7 @@
           "add_zone": "Add Zone",
           "confirm_delete": "Are you sure you want to delete this zone?",
           "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
-          "edit_home_zone": "The location of your home can be changed in the gerenal config.",
+          "edit_home_zone": "The location of your home can be changed in the general config.",
           "detail": {
             "new_zone": "New Zone",
             "name": "Name",
@@ -1405,7 +1417,7 @@
             "latitude": "Latitude",
             "longitude": "Longitude",
             "passive": "Passive",
-            "passive_note": "Passive zones are hidden in the frontend and are not used as location for device trackers. This is usefull if you just want to use it for automations.",
+            "passive_note": "Passive zones are hidden in the frontend and are not used as location for device trackers. This is useful if you just want to use it for automations.",
             "required_error_msg": "This field is required",
             "delete": "Delete",
             "create": "Create",

@@ -52,7 +52,7 @@ class HassioPagesWithTabs extends LitElement {
               .narrow=${this.narrow}
               hassio
             ></ha-menu-button>
-            <div main-title>Hass.io</div>
+            <div main-title>Supervisor</div>
             ${HAS_REFRESH_BUTTON.includes(page)
               ? html`
                   <paper-icon-button
@@ -123,12 +123,8 @@ class HassioPagesWithTabs extends LitElement {
         }
         paper-tabs {
           margin-left: 12px;
-          --paper-tabs-selection-bar-color: #fff;
+          --paper-tabs-selection-bar-color: var(--text-primary-color, #fff);
           text-transform: uppercase;
-        }
-        app-header,
-        app-toolbar {
-          background-color: var(--primary-color);
         }
       `,
     ];

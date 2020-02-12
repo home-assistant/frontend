@@ -10,6 +10,7 @@ import {
   property,
   PropertyValues,
   TemplateResult,
+  query,
 } from "lit-element";
 
 import { HomeAssistant } from "../../../src/types";
@@ -20,30 +21,42 @@ import {
 } from "../../../src/data/hassio/addon";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
-import { PolymerChangedEvent } from "../../../src/polymer-types";
 import { fireEvent } from "../../../src/common/dom/fire_event";
+import "../../../src/components/ha-yaml-editor";
+// tslint:disable-next-line: no-duplicate-imports
+import { HaYamlEditor } from "../../../src/components/ha-yaml-editor";
+import { showConfirmationDialog } from "../../../src/dialogs/generic/show-dialog-box";
 
 @customElement("hassio-addon-config")
 class HassioAddonConfig extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public addon!: HassioAddonDetails;
   @property() private _error?: string;
-  @property() private _config!: string;
   @property({ type: Boolean }) private _configHasChanged = false;
 
+  @query("ha-yaml-editor") private _editor!: HaYamlEditor;
+
   protected render(): TemplateResult {
+    const editor = this._editor;
+    // If editor not rendered, don't show the error.
+    const valid = editor ? editor.isValid : true;
+
     return html`
       <paper-card heading="Config">
         <div class="card-content">
+          <ha-yaml-editor
+            @value-changed=${this._configChanged}
+          ></ha-yaml-editor>
           ${this._error
             ? html`
                 <div class="errors">${this._error}</div>
               `
             : ""}
-          <iron-autogrow-textarea
-            @value-changed=${this._configChanged}
-            .value=${this._config}
-          ></iron-autogrow-textarea>
+          ${valid
+            ? ""
+            : html`
+                <div class="errors">Invalid YAML</div>
+              `}
         </div>
         <div class="card-actions">
           <mwc-button class="warning" @click=${this._resetTapped}>
@@ -51,7 +64,7 @@ class HassioAddonConfig extends LitElement {
           </mwc-button>
           <mwc-button
             @click=${this._saveTapped}
-            .disabled=${!this._configHasChanged}
+            .disabled=${!this._configHasChanged || !valid}
           >
             Save
           </mwc-button>
@@ -77,7 +90,7 @@ class HassioAddonConfig extends LitElement {
         }
         .errors {
           color: var(--google-red-500);
-          margin-bottom: 16px;
+          margin-top: 16px;
         }
         iron-autogrow-textarea {
           width: 100%;
@@ -93,18 +106,26 @@ class HassioAddonConfig extends LitElement {
   protected updated(changedProperties: PropertyValues): void {
     super.updated(changedProperties);
     if (changedProperties.has("addon")) {
-      this._config = JSON.stringify(this.addon.options, null, 2);
+      this._editor.setValue(this.addon.options);
     }
   }
 
-  private _configChanged(ev: PolymerChangedEvent<string>): void {
-    this._config =
-      ev.detail.value || JSON.stringify(this.addon.options, null, 2);
-    this._configHasChanged =
-      this._config !== JSON.stringify(this.addon.options, null, 2);
+  private _configChanged(): void {
+    this._configHasChanged = true;
+    this.requestUpdate();
   }
 
   private async _resetTapped(): Promise<void> {
+    const confirmed = await showConfirmationDialog(this, {
+      title: this.addon.name,
+      text: "Are you sure you want to reset all your options?",
+      confirmText: "reset options",
+    });
+
+    if (!confirmed) {
+      return;
+    }
+
     this._error = undefined;
     const data: HassioAddonSetOptionParams = {
       options: null,
@@ -129,7 +150,7 @@ class HassioAddonConfig extends LitElement {
     this._error = undefined;
     try {
       data = {
-        options: JSON.parse(this._config),
+        options: this._editor.value,
       };
     } catch (err) {
       this._error = err;

@@ -120,10 +120,6 @@ class HaPanelDevMqtt extends LitElement {
           direction: ltr;
         }
 
-        mwc-button {
-          background-color: white;
-        }
-
         mqtt-subscribe-card {
           display: block;
           margin: 16px auto;
