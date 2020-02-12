@@ -11,7 +11,7 @@ export const createHeaderFooterElement = (config: LovelaceHeaderFooterConfig) =>
     "header-footer",
     config,
     undefined,
+    LAZY_LOAD_TYPES,
     undefined,
-    undefined,
-    LAZY_LOAD_TYPES
+    undefined
   );

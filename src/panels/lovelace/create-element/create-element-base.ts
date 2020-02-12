@@ -78,12 +78,12 @@ const _maybeCreate = <T extends keyof CreateElementConfigTypes>(
 export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   tagSuffix: T,
   config: CreateElementConfigTypes[T]["config"],
-  elementTypes?: Set<string>,
+  alwaysLoadTypes?: Set<string>,
+  lazyLoadTypes?: { [domain: string]: () => unknown },
   // Allow looking at "entity" in config and mapping that to a type
   domainTypes?: { _domain_not_found: string; [domain: string]: string },
   // Default type if no type given. If given, entity types will not work.
-  defaultType?: string,
-  lazyLoadTypes?: { [domain: string]: () => unknown }
+  defaultType?: string
 ): CreateElementConfigTypes[T]["element"] | HuiErrorCard => {
   if (!config || typeof config !== "object") {
     return _createErrorElement("Config is not an object", config);
@@ -125,7 +125,7 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
     return _maybeCreate(tag, config);
   }
 
-  if (elementTypes && elementTypes.has(type)) {
+  if (alwaysLoadTypes && alwaysLoadTypes.has(type)) {
     return _createElement(tag, config);
   }
 
