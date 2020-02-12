@@ -13,33 +13,7 @@ const ironIconClass = customElements.get("iron-icon") as Constructor<
 let loaded = false;
 
 export class HaIcon extends ironIconClass {
-  private _iconsetName?: string;
-
-  public listen(
-    node: EventTarget | null,
-    eventName: string,
-    methodName: string
-  ): void {
-    super.listen(node, eventName, methodName);
-
-    if (!loaded && this._iconsetName === "mdi") {
-      loaded = true;
-      import(/* webpackChunkName: "mdi-icons" */ "../resources/mdi-icons");
-    }
-  }
-
-  _iconChanged(icon) {
-    const parts = (icon || "").split(":");
-    if (parts.length === 3) {
-      this._iconEffect = parts.pop();
-    }
-    this._iconName = parts.pop();
-    this._iconsetName = parts.pop() || this._DEFAULT_ICONSET;
-    this.setAttribute("effect", this._iconEffect);
-    this._updateIcon();
-  }
-
-  _template = html`
+  public _template = html`
     ${super._template}
     <style>
       :host([effect="rotate-45"]) {
@@ -117,6 +91,38 @@ export class HaIcon extends ironIconClass {
       }
     </style>
   `;
+
+  public _iconName?: string;
+  public _iconsetName?: string;
+  private _iconEffect?: string;
+
+  public listen(
+    node: EventTarget | null,
+    eventName: string,
+    methodName: string
+  ): void {
+    super.listen(node, eventName, methodName);
+
+    if (!loaded && this._iconsetName === "mdi") {
+      loaded = true;
+      import(/* webpackChunkName: "mdi-icons" */ "../resources/mdi-icons");
+    }
+  }
+
+  public _iconChanged(icon) {
+    const parts = (icon || "").split(":");
+    if (parts.length === 3) {
+      this._iconEffect = parts.pop();
+    }
+    this._iconName = parts.pop();
+    this._iconsetName = parts.pop() || this._DEFAULT_ICONSET;
+    if (this._iconEffect) {
+      this.setAttribute("effect", this._iconEffect);
+    } else {
+      this.removeAttribute("effect");
+    }
+    this._updateIcon();
+  }
 }
 
 declare global {
