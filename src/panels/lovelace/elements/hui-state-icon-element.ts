@@ -32,7 +32,7 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
       throw Error("Invalid Configuration: 'entity' required");
     }
 
-    this._config = config;
+    this._config = { state_color: true, ...config };
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -71,7 +71,7 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
           hasAction(this._config.tap_action) ? "0" : undefined
         )}
         .overrideIcon=${this._config.icon}
-        stateColor
+        .stateColor=${this._config.state_color}
       ></state-badge>
     `;
   }
