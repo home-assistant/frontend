@@ -24,6 +24,8 @@ import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { generateLovelaceConfigFromHass } from "./common/generate-lovelace-config";
 import { showToast } from "../../util/toast";
 
+(window as any).loadCardHelpers = () => import("./custom-card-helpers");
+
 interface LovelacePanelConfig {
   mode: "yaml" | "storage";
 }
