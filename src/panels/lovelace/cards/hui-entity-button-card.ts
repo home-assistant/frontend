@@ -138,7 +138,10 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
           hasDoubleClick: hasAction(this._config!.double_tap_action),
         })}
         tabindex=${ifDefined(
-          hasAction(this._config.tap_action) ? "0" : undefined
+          hasAction(this._config.tap_action) ||
+            this._config.tap_action === undefined
+            ? "0"
+            : undefined
         )}
       >
         ${this._config.show_icon
@@ -203,7 +206,6 @@ class HuiEntityButtonCard extends LitElement implements LovelaceCard {
 
       ha-card:focus {
         outline: none;
-        background: var(--divider-color);
       }
 
       ha-icon {
