@@ -38,7 +38,12 @@ export class HassioUpdate extends LitElement {
       this.supervisorInfo,
       this.hassOsInfo,
     ].filter((value) => {
-      return !!value && value.version !== value.last_version;
+      return (
+        !!value &&
+        (value.last_version
+          ? value.version !== value.last_version
+          : value.version !== value.version_latest)
+      );
     }).length;
 
     if (!updatesAvailable) {
@@ -52,14 +57,14 @@ export class HassioUpdate extends LitElement {
               <div class="error">Error: ${this._error}</div>
             `
           : ""}
+        <h1>
+          ${updatesAvailable > 1
+            ? "Updates Available 🎉"
+            : "Update Available 🎉"}
+        </h1>
         <div class="card-group">
-          <div class="title">
-            ${updatesAvailable > 1
-              ? "Updates Available 🎉"
-              : "Update Available 🎉"}
-          </div>
           ${this._renderUpdateCard(
-            "Home Assistant",
+            "Home Assistant Core",
             this.hassInfo.version,
             this.hassInfo.last_version,
             "hassio/homeassistant/update",
@@ -69,7 +74,7 @@ export class HassioUpdate extends LitElement {
             "hassio:home-assistant"
           )}
           ${this._renderUpdateCard(
-            "Hass.io Supervisor",
+            "Supervisor",
             this.supervisorInfo.version,
             this.supervisorInfo.last_version,
             "hassio/supervisor/update",
@@ -77,7 +82,7 @@ export class HassioUpdate extends LitElement {
           )}
           ${this.hassOsInfo
             ? this._renderUpdateCard(
-                "HassOS",
+                "Operating System",
                 this.hassOsInfo.version,
                 this.hassOsInfo.version_latest,
                 "hassio/hassos/update",
@@ -149,13 +154,6 @@ export class HassioUpdate extends LitElement {
       haStyle,
       hassioStyle,
       css`
-        :host {
-          width: 33%;
-        }
-        paper-card {
-          display: inline-block;
-          margin-bottom: 32px;
-        }
         .icon {
           --iron-icon-height: 48px;
           --iron-icon-width: 48px;
@@ -169,6 +167,10 @@ export class HassioUpdate extends LitElement {
         }
         .warning {
           color: var(--secondary-text-color);
+        }
+        .card-content {
+          height: calc(100% - 47px);
+          box-sizing: border-box;
         }
         .card-actions {
           text-align: right;

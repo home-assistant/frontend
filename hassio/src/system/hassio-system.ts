@@ -32,17 +32,19 @@ class HassioSystem extends LitElement {
   public render(): TemplateResult | void {
     return html`
       <div class="content">
-        <div class="title">Information</div>
-        <hassio-supervisor-info
-          .hass=${this.hass}
-          .supervisorInfo=${this.supervisorInfo}
-        ></hassio-supervisor-info>
-        <hassio-host-info
-          .hass=${this.hass}
-          .hostInfo=${this.hostInfo}
-          .hassOsInfo=${this.hassOsInfo}
-        ></hassio-host-info>
-        <div class="title">System log</div>
+        <h1>Information</h1>
+        <div class="card-group">
+          <hassio-supervisor-info
+            .hass=${this.hass}
+            .supervisorInfo=${this.supervisorInfo}
+          ></hassio-supervisor-info>
+          <hassio-host-info
+            .hass=${this.hass}
+            .hostInfo=${this.hostInfo}
+            .hassOsInfo=${this.hassOsInfo}
+          ></hassio-host-info>
+        </div>
+        <h1>System log</h1>
         <hassio-supervisor-log .hass=${this.hass}></hassio-supervisor-log>
       </div>
     `;
@@ -54,7 +56,7 @@ class HassioSystem extends LitElement {
       hassioStyle,
       css`
         .content {
-          margin: 4px;
+          margin: 8px;
           color: var(--primary-text-color);
         }
         .title {
@@ -63,6 +65,9 @@ class HassioSystem extends LitElement {
           font-size: 2em;
           padding-left: 8px;
           margin-bottom: 8px;
+        }
+        hassio-supervisor-log {
+          width: 100%;
         }
       `,
     ];

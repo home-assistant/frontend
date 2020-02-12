@@ -109,17 +109,17 @@
             "armed_custom_bypass": "Attivo",
             "armed_home": "Attivo",
             "armed_night": "Attivo",
-            "arming": "Attiva",
-            "disarmed": "Disattiva",
-            "disarming": "Disattiva",
-            "pending": "In attesa",
+            "arming": "Attivando",
+            "disarmed": "Disattivo",
+            "disarming": "Disattivando",
+            "pending": "Attende",
             "triggered": "Attiv."
         },
         "default": {
             "entity_not_found": "Entità non trovata!",
             "error": "Errore",
-            "unavailable": "Non Disponibile",
-            "unknown": "Sconosciuto"
+            "unavailable": "Non Disp.",
+            "unknown": "Ignoto"
         },
         "device_tracker": {
             "home": "In Casa",
@@ -1226,14 +1226,19 @@
                         "actions": {
                             "caption": "Quando qualcosa si attiva..."
                         },
+                        "automations": "Automazioni",
                         "conditions": {
                             "caption": "Fai qualcosa solo se..."
                         },
+                        "create": "Crea l'Automazione con il dispositivo",
+                        "no_automations": "Nessuna Automazione",
+                        "no_device_automations": "Non ci sono Automazioni disponibili per questo dispositivo.",
                         "triggers": {
                             "caption": "Fai qualcosa quando..."
                         }
                     },
                     "automations": "Automazioni",
+                    "cant_edit": "È possibile modificare solo gli elementi creati nell'Interfaccia Utente.",
                     "caption": "Dispositivi",
                     "confirm_rename_entity_ids": "Vuoi anche rinominare gli ID entità delle tue entità?",
                     "data_table": {
@@ -1248,12 +1253,24 @@
                     "details": "Ecco tutti i dettagli del tuo dispositivo.",
                     "device_not_found": "Dispositivo non trovato.",
                     "entities": {
-                        "add_entities_lovelace": "Aggiungere tutte le entità dispositivo all'Interfaccia Utente di Lovelace",
+                        "add_entities_lovelace": "Aggiungi a Lovelace",
                         "entities": "Entità",
                         "none": "Questo dispositivo non ha entità"
                     },
                     "info": "Informazioni sul dispositivo",
                     "name": "Nome",
+                    "scene": {
+                        "create": "Crea una Scena con il dispositivo",
+                        "no_scenes": "Nessuna Scena",
+                        "scenes": "Scene"
+                    },
+                    "scenes": "Scene",
+                    "script": {
+                        "create": "Crea uno Script con il dispositivo",
+                        "no_scripts": "Nessuno Script",
+                        "scripts": "Script"
+                    },
+                    "scripts": "Script",
                     "unknown_error": "Errore sconosciuto",
                     "unnamed_device": "Dispositivo senza nome",
                     "update": "Aggiorna"
@@ -1668,7 +1685,7 @@
                         "update": "Aggiorna"
                     },
                     "edit_home_zone": "La posizione della tua casa può essere cambiata nella configurazione generale.",
-                    "introduction": "Le zone ti consentono di specificare determinate regioni sulla terra. Quando una persona si trova all'interno di una zona, lo stato prenderà il nome dalla zona. Le zone possono anche essere utilizzate come trigger o condizioni all'interno delle impostazioni di automazione.",
+                    "introduction": "Le Zone consentono di specificare determinate regioni sulla Terra. Quando una persona si trova all'interno di una Zona, nel suo Stato ci sarà il nome dalla Zona. Le Zone possono anche essere utilizzate come Attivazioni (o Triggers) o Condizioni all'interno delle impostazioni di Automazione.",
                     "no_zones_created_yet": "Sembra che tu non abbia ancora creato nessuna zona."
                 },
                 "zwave": {

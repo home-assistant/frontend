@@ -51,7 +51,7 @@ class HassioAddonAudio extends LitElement {
 
           <paper-dropdown-menu
             label="Input"
-            @selected-item-changed=${this._setInputDevice}
+            @iron-select=${this._setInputDevice}
           >
             <paper-listbox
               slot="dropdown-content"
@@ -61,14 +61,16 @@ class HassioAddonAudio extends LitElement {
               ${this._inputDevices &&
                 this._inputDevices.map((item) => {
                   return html`
-                    <paper-item device=${item.device}>${item.name}</paper-item>
+                    <paper-item device=${item.device || ""}
+                      >${item.name}</paper-item
+                    >
                   `;
                 })}
             </paper-listbox>
           </paper-dropdown-menu>
           <paper-dropdown-menu
             label="Output"
-            @selected-item-changed=${this._setOutputDevice}
+            @iron-select=${this._setOutputDevice}
           >
             <paper-listbox
               slot="dropdown-content"
@@ -78,7 +80,9 @@ class HassioAddonAudio extends LitElement {
               ${this._outputDevices &&
                 this._outputDevices.map((item) => {
                   return html`
-                    <paper-item device=${item.device}>${item.name}</paper-item>
+                    <paper-item device=${item.device || ""}
+                      >${item.name}</paper-item
+                    >
                   `;
                 })}
             </paper-listbox>
@@ -123,17 +127,13 @@ class HassioAddonAudio extends LitElement {
   }
 
   private _setInputDevice(ev): void {
-    const device = ev.detail.device;
-    if (device) {
-      this._selectedInput = device;
-    }
+    const device = ev.detail.item.getAttribute("device");
+    this._selectedInput = device || null;
   }
 
   private _setOutputDevice(ev): void {
-    const device = ev.detail.device;
-    if (device) {
-      this._selectedOutput = device;
-    }
+    const device = ev.detail.item.getAttribute("device");
+    this._selectedOutput = device || null;
   }
 
   private async _addonChanged(): Promise<void> {
@@ -143,13 +143,11 @@ class HassioAddonAudio extends LitElement {
       return;
     }
 
-    const noDevice: HassioHardwareAudioDevice[] = [
-      { device: undefined, name: "-" },
-    ];
+    const noDevice: HassioHardwareAudioDevice = { device: null, name: "-" };
 
     try {
       const { audio } = await fetchHassioHardwareAudio(this.hass);
-      const inupt = Object.keys(audio.input).map((key) => ({
+      const input = Object.keys(audio.input).map((key) => ({
         device: key,
         name: audio.input[key],
       }));
@@ -158,12 +156,12 @@ class HassioAddonAudio extends LitElement {
         name: audio.output[key],
       }));
 
-      this._inputDevices = noDevice.concat(inupt);
-      this._outputDevices = noDevice.concat(output);
+      this._inputDevices = [noDevice, ...input];
+      this._outputDevices = [noDevice, ...output];
     } catch {
       this._error = "Failed to fetch audio hardware";
-      this._inputDevices = noDevice;
-      this._outputDevices = noDevice;
+      this._inputDevices = [noDevice];
+      this._outputDevices = [noDevice];
     }
   }
 

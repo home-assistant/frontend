@@ -16,8 +16,8 @@ import "../../../components/buttons/ha-call-service-button";
 import "../../../components/buttons/ha-progress-button";
 import { HomeAssistant } from "../../../types";
 import { LoggedError, fetchSystemLog } from "../../../data/system_log";
-import formatDateTime from "../../../common/datetime/format_date_time";
-import formatTime from "../../../common/datetime/format_time";
+import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
+import { formatTimeWithSeconds } from "../../../common/datetime/format_time";
 import { showSystemLogDetailDialog } from "./show-dialog-system-log-detail";
 
 const formatLogTime = (date, language: string) => {
@@ -26,8 +26,8 @@ const formatLogTime = (date, language: string) => {
   const dateTimeDay = new Date(date * 1000).setHours(0, 0, 0, 0);
 
   return dateTimeDay < today
-    ? formatDateTime(dateTime, language)
-    : formatTime(dateTime, language);
+    ? formatDateTimeWithSeconds(dateTime, language)
+    : formatTimeWithSeconds(dateTime, language);
 };
 
 @customElement("system-log-card")

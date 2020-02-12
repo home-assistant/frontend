@@ -1,6 +1,6 @@
 import "../../components/ha-icon";
-import formatTime from "../../common/datetime/format_time";
-import formatDate from "../../common/datetime/format_date";
+import { formatTimeWithSeconds } from "../../common/datetime/format_time";
+import { formatDate } from "../../common/datetime/format_date";
 import { domainIcon } from "../../common/entity/domain_icon";
 import { stateIcon } from "../../common/entity/state_icon";
 import { computeRTL } from "../../common/util/compute_rtl";
@@ -25,19 +25,14 @@ class HaLogbook extends LitElement {
   // @ts-ignore
   private _rtl = false;
 
-  protected updated(changedProps: PropertyValues) {
-    super.updated(changedProps);
-    if (!changedProps.has("hass")) {
-      return;
-    }
+  protected shouldUpdate(changedProps: PropertyValues) {
     const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
-    if (oldHass && oldHass.language !== this.hass.language) {
-      this._rtl = computeRTL(this.hass);
-    }
+    const languageChanged =
+      oldHass === undefined || oldHass.language !== this.hass.language;
+    return changedProps.has("entries") || languageChanged;
   }
 
-  protected firstUpdated(changedProps: PropertyValues) {
-    super.firstUpdated(changedProps);
+  protected updated(_changedProps: PropertyValues) {
     this._rtl = computeRTL(this.hass);
   }
 
@@ -80,7 +75,7 @@ class HaLogbook extends LitElement {
 
         <div class="entry">
           <div class="time">
-            ${formatTime(new Date(item.when), this.hass.language)}
+            ${formatTimeWithSeconds(new Date(item.when), this.hass.language)}
           </div>
           <ha-icon
             .icon=${state ? stateIcon(state) : domainIcon(item.domain)}
@@ -131,7 +126,8 @@ class HaLogbook extends LitElement {
       }
 
       .time {
-        width: 55px;
+        width: 65px;
+        flex-shrink: 0;
         font-size: 0.8em;
         color: var(--secondary-text-color);
       }
@@ -142,6 +138,7 @@ class HaLogbook extends LitElement {
 
       ha-icon {
         margin: 0 8px 0 16px;
+        flex-shrink: 0;
         color: var(--primary-text-color);
       }
 

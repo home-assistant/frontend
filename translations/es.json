@@ -544,10 +544,24 @@
             "yes": "Sí"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Añadir",
+                    "failed_create_area": "No se pudo crear el área.",
+                    "name": "Nombre",
+                    "text": "Introduce el nombre del área nueva.",
+                    "title": "Añadir nueva área"
+                },
+                "add_new": "Añade una nueva área ...",
+                "area": "Área",
+                "clear": "Limpiar",
+                "show_areas": "Mostrar áreas"
+            },
             "device-picker": {
                 "clear": "Limpiar",
                 "device": "Dispositivo",
-                "show_devices": "Mostrar dispositivos"
+                "show_devices": "Mostrar dispositivos",
+                "toggle": "Alternar"
             },
             "entity": {
                 "entity-picker": {
@@ -604,13 +618,13 @@
                 "control": "Control",
                 "dismiss": "Descartar",
                 "editor": {
-                    "confirm_delete": "¿Estás seguro de que quieres borrar este elemento?",
-                    "delete": "BORRAR",
+                    "confirm_delete": "¿Estás seguro de que quieres eliminar este elemento?",
+                    "delete": "ELIMINAR",
                     "enabled_cause": "Desactivado por {cause}.",
                     "enabled_description": "Las entidades deshabilitadas no se agregarán a Home Assistant.",
                     "enabled_label": "Activar entidad",
                     "entity_id": "ID de la entidad",
-                    "name": "Forzar el nombre",
+                    "name": "Cambio de nombre",
                     "note": "Nota: puede que esto no funcione todavía con todas las integraciones",
                     "unavailable": "Esta entidad no está disponible actualmente.",
                     "update": "ACTUALIZAR"
@@ -735,7 +749,7 @@
                     "editor": {
                         "create": "CREAR",
                         "default_name": "Área Nueva",
-                        "delete": "BORRAR",
+                        "delete": "ELIMINAR",
                         "update": "ACTUALIZAR"
                     },
                     "no_areas": "¡Parece que aún no tienes áreas!",
@@ -750,7 +764,7 @@
                 },
                 "automation": {
                     "caption": "Automatizaciones",
-                    "description": "Crear y editar automatizaciones",
+                    "description": "Crea y edita automatizaciones",
                     "editor": {
                         "actions": {
                             "add": "Añadir acción",
@@ -982,10 +996,10 @@
                             "config_documentation": "Documentación de configuración",
                             "disable": "deshabilitar",
                             "enable": "activar",
-                            "enable_ha_skill": "Habilita la skill Home Assistant para Alexa",
-                            "enable_state_reporting": "Habilitar informes de estado",
+                            "enable_ha_skill": "Activa la skill Home Assistant para Alexa",
+                            "enable_state_reporting": "Activar informes de estado",
                             "info": "Con la integración de Alexa para Home Assistant Cloud podrás controlar todos tus dispositivos Home Assistant a través de cualquier dispositivo habilitado para Alexa.",
-                            "info_state_reporting": "Si habilitas los informes de estado, Home Assistant enviará todos los cambios de estado de las entidades expuestas a Amazon. Esto te permite ver siempre los estados más recientes en la aplicación Alexa y usar los cambios de estado para crear rutinas.",
+                            "info_state_reporting": "Si activas los informes de estado, Home Assistant enviará todos los cambios de estado de las entidades expuestas a Amazon. Esto te permite ver siempre los estados más recientes en la aplicación Alexa y usar los cambios de estado para crear rutinas.",
                             "manage_entities": "Administrar entidades",
                             "state_reporting_error": "No se puede {enable_disable} informar el estado.",
                             "sync_entities": "Sincronizar entidades",
@@ -999,12 +1013,12 @@
                             "config_documentation": "Documentación de configuración",
                             "devices_pin": "Pin de dispositivos de seguridad",
                             "enable_ha_skill": "Activa la skill de Home Assistant para el Asistente de Google",
-                            "enable_state_reporting": "Habilitar informes de estado",
+                            "enable_state_reporting": "Activar informes de estado",
                             "enter_pin_error": "No se puede almacenar el pin:",
                             "enter_pin_hint": "Introduce un PIN para utilizar dispositivos de seguridad",
                             "enter_pin_info": "Por favor, introduce un pin para interactuar con los dispositivos de seguridad. Los dispositivos de seguridad son puertas, puertas de garaje y cerraduras. Se te pedirá que digas/introduzcas este pin cuando interactúes con dichos dispositivos a través del Asistente de Google.",
                             "info": "Con la integración del Asistente de Google para Home Assistant Cloud, podrás controlar todos tus dispositivos Home Assistant a través de cualquier dispositivo habilitado para Asistente de Google.",
-                            "info_state_reporting": "Si habilitas los informes de estado, Home Assistant enviará todos los cambios de estado de las entidades expuestas a Google. Esto te permite ver siempre los últimos estados en la aplicación de Google.",
+                            "info_state_reporting": "Si activas los informes de estado, Home Assistant enviará todos los cambios de estado de las entidades expuestas a Google. Esto te permite ver siempre los últimos estados en la aplicación de Google.",
                             "manage_entities": "Administrar entidades",
                             "security_devices": "Dispositivos de seguridad",
                             "sync_entities": "Sincronizar entidades con Google",
@@ -1139,7 +1153,7 @@
                 },
                 "core": {
                     "caption": "Configuración general",
-                    "description": "Cambiar la configuración general de Home Assistant",
+                    "description": "Cambia la configuración general de Home Assistant",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1212,14 +1226,19 @@
                         "actions": {
                             "caption": "Cuando algo se activa...."
                         },
+                        "automations": "Automatizaciones",
                         "conditions": {
                             "caption": "Sólo hacer algo si..."
                         },
+                        "create": "Crear automatización con el dispositivo",
+                        "no_automations": "Sin automatizaciones",
+                        "no_device_automations": "No hay automatizaciones disponibles para este dispositivo.",
                         "triggers": {
                             "caption": "Hacer algo cuando..."
                         }
                     },
                     "automations": "Automatizaciones",
+                    "cant_edit": "Solo puedes editar los elementos que se crean en la interfaz de usuario.",
                     "caption": "Dispositivos",
                     "confirm_rename_entity_ids": "¿También quieres cambiar el nombre de los identificadores de entidad de tus entidades?",
                     "data_table": {
@@ -1234,13 +1253,27 @@
                     "details": "Aquí están todos los detalles de tu dispositivo.",
                     "device_not_found": "Dispositivo no encontrado.",
                     "entities": {
-                        "add_entities_lovelace": "Agregar todas las entidades del dispositivo a Lovelace",
+                        "add_entities_lovelace": "Añadir a Lovelace",
                         "entities": "Entidades",
                         "none": "Este dispositivo no tiene entidades"
                     },
                     "info": "Información del dispositivo",
+                    "name": "Nombre",
+                    "scene": {
+                        "create": "Crear escena con el dispositivo",
+                        "no_scenes": "Sin escenas",
+                        "scenes": "Escenas"
+                    },
+                    "scenes": "Escenas",
+                    "script": {
+                        "create": "Crear script con el dispositivo",
+                        "no_scripts": "Sin scripts",
+                        "scripts": "Scripts"
+                    },
+                    "scripts": "Scripts",
                     "unknown_error": "Error desconocido",
-                    "unnamed_device": "Dispositivo sin nombre"
+                    "unnamed_device": "Dispositivo sin nombre",
+                    "update": "Actualizar"
                 },
                 "entities": {
                     "caption": "Entidades",
@@ -1249,12 +1282,12 @@
                         "confirm_delete": "¿Estás seguro de que deseas eliminar esta entrada?",
                         "confirm_delete2": "Eliminar una entrada no eliminará la entidad de Home Assistant. Para hacer esto, deberás eliminar la integración \"{platform}\" de Home Assistant.",
                         "default_name": "Área Nueva",
-                        "delete": "BORRAR",
+                        "delete": "ELIMINAR",
                         "enabled_cause": "Desactivado por {cause}.",
                         "enabled_description": "Las entidades desactivadas no se añadirán a Home Assistant.",
                         "enabled_label": "Activar entidad",
                         "entity_id": "ID de entidad",
-                        "name": "Forzar el nombre",
+                        "name": "Cambio de nombre",
                         "note": "Nota: es posible que esto no funcione aún con todas las integraciones.",
                         "unavailable": "Esta entidad no está disponible actualmente.",
                         "update": "ACTUALIZAR"
@@ -1266,9 +1299,9 @@
                             "confirm_title": "¿Deseas deshabilitar {number} entidades?"
                         },
                         "enable_selected": {
-                            "button": "Habilitar seleccionadas",
+                            "button": "Activar seleccionadas",
                             "confirm_text": "Esto las hará disponibles en Home Assistant de nuevo si ahora están deshabilitadas.",
-                            "confirm_title": "¿Deseas habilitar {number} entidades?"
+                            "confirm_title": "¿Deseas activar {number} entidades?"
                         },
                         "filter": {
                             "filter": "Filtrar",
@@ -1277,7 +1310,7 @@
                         },
                         "header": "Entidades",
                         "headers": {
-                            "enabled": "Habilitado",
+                            "enabled": "Activado",
                             "entity_id": "ID de entidad",
                             "integration": "Integración",
                             "name": "Nombre",
@@ -1341,7 +1374,7 @@
                     },
                     "configure": "Configurar",
                     "configured": "Configurado",
-                    "description": "Administrar y configurar integraciones",
+                    "description": "Administra y configura integraciones",
                     "details": "Detalles de la integración",
                     "discovered": "Descubierto",
                     "home_assistant_website": "Sitio web de Home Assistant",
@@ -1392,7 +1425,7 @@
                 "scene": {
                     "activated": "Activada escena {name}.",
                     "caption": "Escenas",
-                    "description": "Crear y editar escenas",
+                    "description": "Crea y edita escenas",
                     "editor": {
                         "default_name": "Nueva Escena",
                         "devices": {
@@ -1432,7 +1465,7 @@
                 },
                 "script": {
                     "caption": "Scripts",
-                    "description": "Crear y editar scripts",
+                    "description": "Crea y edita scripts",
                     "editor": {
                         "alias": "Nombre",
                         "default_name": "Nuevo script",
@@ -1496,7 +1529,7 @@
                         "username": "Nombre de usuario"
                     },
                     "caption": "Usuarios",
-                    "description": "Administrar usuarios",
+                    "description": "Administra usuarios",
                     "editor": {
                         "activate_user": "Activar usuario",
                         "active": "Activo",
@@ -1504,7 +1537,7 @@
                         "change_password": "Cambiar la contraseña",
                         "confirm_user_deletion": "¿Seguro que quieres eliminar {name}?",
                         "deactivate_user": "Desactivar usuario",
-                        "delete_user": "Borrar usuario",
+                        "delete_user": "Eliminar usuario",
                         "enter_new_name": "Introduzca un nuevo nombre",
                         "group": "Grupo",
                         "group_update_failed": "La actualización del grupo falló:",
@@ -1638,7 +1671,7 @@
                     "description": "Gestiona las zonas en las que deseas realizar un seguimiento de las personas.",
                     "detail": {
                         "create": "Crear",
-                        "delete": "Borrar",
+                        "delete": "Eliminar",
                         "icon": "Icono",
                         "icon_error_msg": "El icono debe estar en el formato prefijo:nombre_del_icono, por ejemplo: mdi:home",
                         "latitude": "Latitud",
@@ -1651,7 +1684,7 @@
                         "required_error_msg": "Este campo es obligatorio",
                         "update": "Actualizar"
                     },
-                    "edit_home_zone": "Es posible modificar la ubicación de tu casa en la configuración general",
+                    "edit_home_zone": "La ubicación de tu casa se puede cambiar en la configuración general.",
                     "introduction": "Las zonas permiten especificar determinadas regiones de la tierra. Cuando una persona está dentro de una zona, su estado tomará el nombre de la zona. Las zonas también se pueden utilizar como desencadenante o condición dentro de las configuraciones de automatización.",
                     "no_zones_created_yet": "Parece que aún no has creado ninguna zona."
                 },
@@ -1836,9 +1869,9 @@
             },
             "lovelace": {
                 "add_entities": {
-                    "generated_unsupported": "Solo puedes usar esta función cuando hayas tomado el control de Lovelace.",
-                    "saving_failed": "Error al guardar la configuración de Lovelace.",
-                    "yaml_unsupported": "No puedes usar esta función cuando usas Lovelace en modo YAML."
+                    "generated_unsupported": "Solo puedes usar esta función cuando hayas tomado el control de la IU Lovelace.",
+                    "saving_failed": "Error al guardar la configuración de la IU Lovelace.",
+                    "yaml_unsupported": "No puedes usar esta función cuando usas la IU Lovelace en modo YAML."
                 },
                 "cards": {
                     "confirm_delete": "¿Seguro que quieres eliminar esta tarjeta?",
@@ -1866,7 +1899,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "La configuración de Lovelace se actualizó, ¿te gustaría volver a cargarla?",
+                    "message": "La configuración de la IU Lovelace se actualizó, ¿te gustaría volver a cargarla?",
                     "refresh": "Actualizar"
                 },
                 "editor": {
@@ -2009,12 +2042,12 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "Editar título",
-                        "explanation": "Este título se muestra sobre todas tus vistas en Lovelace.",
+                        "explanation": "Este título se muestra sobre todas tus vistas en la IU Lovelace.",
                         "header": "Título de tu interfaz de usuario de Lovelace"
                     },
                     "edit_view": {
                         "add": "Añadir vista",
-                        "delete": "Borrar vista",
+                        "delete": "Eliminar vista",
                         "edit": "Editar vista",
                         "header": "Ver configuración",
                         "header_name": "{name} Ver configuración",
@@ -2023,7 +2056,7 @@
                     },
                     "header": "Editar la interfaz de usuario",
                     "menu": {
-                        "open": "Abrir el menú de Lovelace",
+                        "open": "Abrir el menú de la IU Lovelace",
                         "raw_editor": "Editor de configuración en bruto"
                     },
                     "migrate": {
@@ -2033,8 +2066,8 @@
                         "para_no_id": "Este elemento no tiene un ID. Por favor añade uno a este elemento en 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
-                        "confirm_remove_config_text": "Generaremos automáticamente tus vistas de Lovelace con tus áreas y dispositivos si eliminas tu configuración de Lovelace.",
-                        "confirm_remove_config_title": "¿Estás seguro de que deseas eliminar tu configuración de Lovelace? Generaremos automáticamente tus vistas de Lovelace con tus áreas y dispositivos.",
+                        "confirm_remove_config_text": "Generaremos automáticamente tus vistas de la IU Lovelace con tus áreas y dispositivos si eliminas tu configuración de Lovelace.",
+                        "confirm_remove_config_title": "¿Estás seguro de que deseas eliminar tu configuración de la IU Lovelace? Generaremos automáticamente tus vistas de la IU Lovelace con tus áreas y dispositivos.",
                         "confirm_unsaved_changes": "Tienes cambios sin guardar, ¿estás seguro de que quieres salir?",
                         "confirm_unsaved_comments": "Tu configuración contiene comentarios, estos no serán guardados. ¿Quieres continuar?",
                         "error_invalid_config": "Tu configuración no es válida: {error}",
@@ -2054,7 +2087,7 @@
                         "save": "Tomar el control"
                     },
                     "suggest_card": {
-                        "add": "Añadir a Lovelace",
+                        "add": "Añadir a la IU Lovelace",
                         "create_own": "Elige una tarjeta diferente",
                         "header": "Hemos creado una sugerencia para ti"
                     },
@@ -2073,7 +2106,7 @@
                     "refresh": "Actualizar",
                     "unused_entities": "Entidades no utilizadas"
                 },
-                "reload_lovelace": "Recargar Lovelace",
+                "reload_lovelace": "Recargar la IU Lovelace",
                 "unused_entities": {
                     "available_entities": "Estas son las entidades que tienes disponibles, pero aún no están en la interfaz de usuario de Lovelace.",
                     "domain": "Dominio",
@@ -2271,7 +2304,7 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "description": "Home Assistant oculta las funciones y opciones avanzadas de forma predeterminada. Puedes hacer que estas funciones sean accesibles marcando esta opción. Esta es una configuración específica del usuario y no afecta a otros usuarios que usan Home Assistant.",
+                    "description": "Desbloquea las funciones avanzadas.",
                     "link_promo": "Saber más",
                     "title": "Modo avanzado"
                 },
@@ -2322,13 +2355,13 @@
                 "mfa": {
                     "confirm_disable": "¿Estás seguro de que deseas deshabilitar {name}?",
                     "disable": "Deshabilitar",
-                    "enable": "Habilitar",
+                    "enable": "Activar",
                     "header": "Módulos de autenticación multifactor"
                 },
                 "push_notifications": {
                     "description": "Enviar notificaciones a este dispositivo",
                     "error_load_platform": "Configurar notify.html5.",
-                    "error_use_https": "Requiere SSL habilitado para frontend.",
+                    "error_use_https": "Requiere SSL activado para frontend.",
                     "header": "Notificaciones push",
                     "link_promo": "Aprender más",
                     "push_notifications": "Notificaciones push"
@@ -2351,7 +2384,7 @@
                     "link_promo": "Aprende sobre los temas"
                 },
                 "vibrate": {
-                    "description": "Habilitar o deshabilitar la vibración en este dispositivo al controlar dispositivos.",
+                    "description": "Activar o deshabilitar la vibración en este dispositivo al controlar dispositivos.",
                     "header": "Vibrar"
                 }
             },
