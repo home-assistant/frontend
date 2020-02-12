@@ -661,7 +661,8 @@
       "config_entry_system_options": {
         "title": "System Options for {integration}",
         "enable_new_entities_label": "Enable newly added entities.",
-        "enable_new_entities_description": "If disabled, newly discovered entities for {integration} will not be automatically added to Home Assistant."
+        "enable_new_entities_description": "If disabled, newly discovered entities for {integration} will not be automatically added to Home Assistant.",
+        "update": "Update"
       },
       "zha_device_info": {
         "manuf": "by {manufacturer}",
