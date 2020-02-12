@@ -464,6 +464,9 @@
             "script": {
                 "execute": "Izvršiti"
             },
+            "service": {
+                "run": "Pokreni"
+            },
             "timer": {
                 "actions": {
                     "cancel": "otkaži",
@@ -526,10 +529,24 @@
             "yes": "Da"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Dodaj",
+                    "failed_create_area": "Nije uspjelo stvaranje područja.",
+                    "name": "Naziv",
+                    "text": "Unesite naziv novog područja.",
+                    "title": "Dodajte novo područje"
+                },
+                "add_new": "Dodajte novo područje…",
+                "area": "Područje",
+                "clear": "Obriši",
+                "show_areas": "Pokažite područja"
+            },
             "device-picker": {
                 "clear": "Obriši",
                 "device": "Uređaj",
-                "show_devices": "Prikaži uređaje"
+                "show_devices": "Prikaži uređaje",
+                "toggle": "Preklopi"
             },
             "entity": {
                 "entity-picker": {
@@ -563,7 +580,31 @@
                 "enable_new_entities_label": "Aktiviraj novododane entitete.",
                 "title": "Mogućnosti sustava"
             },
+            "entity_registry": {
+                "control": "Kontrola",
+                "dismiss": "Odbaci",
+                "editor": {
+                    "confirm_delete": "Jeste li sigurni da želite izbrisati ovaj unos?",
+                    "delete": "OBRIŠI",
+                    "enabled_cause": "Deaktivirano zbog {cause}.",
+                    "enabled_description": "Onemogućeni entiteti neće biti dodani u Home Assistant.",
+                    "enabled_label": "Aktiviraj entitet",
+                    "entity_id": "ID entiteta",
+                    "name": "Premosti naziv",
+                    "note": "Napomena: to možda neće raditi još sa svim integracijama.",
+                    "unavailable": "Ovaj entitet trenutno nije dostupan.",
+                    "update": "AŽURIRAJ"
+                },
+                "related": "Vezani",
+                "settings": "Postavke"
+            },
+            "generic": {
+                "cancel": "Otkaži",
+                "default_confirmation_title": "Jeste li sigurni?",
+                "ok": "U redu"
+            },
             "more_info_control": {
+                "edit": "Uredi entitet",
                 "script": {
                     "last_action": "Posljednja akcija"
                 },
@@ -601,6 +642,9 @@
                     "add": "Dodaj uređaje",
                     "reconfigure": "Ponovno konfiguriraj uređaj",
                     "remove": "Ukloni uređaj"
+                },
+                "confirmations": {
+                    "remove": "Jeste li sigurni da želite ukloniti uređaj?"
                 },
                 "last_seen": "Zadnje viđeno",
                 "manuf": "od {manufacturer}",
@@ -894,14 +938,19 @@
                     }
                 },
                 "cloud": {
+                    "alexa": {
+                        "title": "Alexa"
+                    },
                     "caption": "Home Assistant Cloud",
                     "description_features": "Upravljajte kad ste izvan kuće, integrirajte se s Alexa i Google Assistantom.",
                     "description_login": "Prijavljeni ste kao {email}",
                     "description_not_login": "Niste prijavljeni",
                     "forgot_password": {
+                        "check_your_email": "Provjerite e-poštu za upute o resetiranju zaporke.",
                         "email": "E-mail",
                         "email_error_msg": "Neispravan e-mail",
                         "instructions": "Unesite svoju e-mail adresu i poslat ćemo vam link za resetiranje lozinke.",
+                        "send_reset_email": "Pošalji e-poštu za resetiranje",
                         "subtitle": "Zaboravili ste lozinku",
                         "title": "Zaboravljena lozinka"
                     },
@@ -923,6 +972,20 @@
                         "start_trial": "Započnite besplatno probno razdoblje od 1 mjeseca",
                         "title": "Prijava putem clouda",
                         "trial_info": "Nisu potrebne informacije o plaćanju"
+                    },
+                    "register": {
+                        "account_created": "Račun kreiran! Provjerite svoju e-poštu za upute o aktiviranju računa.",
+                        "create_account": "Stvorite račun",
+                        "email_address": "Email adresa",
+                        "email_error_msg": "Neispravan e-mail",
+                        "headline": "Započnite besplatno probno razdoblje",
+                        "link_privacy_policy": "Pravila o privatnosti",
+                        "link_terms_conditions": "Uvjeti i odredbe",
+                        "password": "Lozinka",
+                        "password_error_msg": "Lozinke imaju najmanje 8 znakova",
+                        "resend_confirm_email": "Ponovno slanje potvrde e-pošte",
+                        "start_trial": "Započnite besplatno probno razdoblje",
+                        "title": "Registrirajte račun"
                     }
                 },
                 "common": {
@@ -998,14 +1061,19 @@
                         "actions": {
                             "caption": "Kada se nešto pokrene..."
                         },
+                        "automations": "Automatizacije",
                         "conditions": {
                             "caption": "Učini nešto samo ako..."
                         },
+                        "create": "Stvorite automatizaciju s uređajem",
+                        "no_automations": "Nema automatizacije",
+                        "no_device_automations": "Nema dostupnih automatizacija za ovaj uređaj.",
                         "triggers": {
                             "caption": "Učini nešto kad..."
                         }
                     },
                     "automations": "Automatizacije",
+                    "cant_edit": "Možete uređivati samo stavke stvorene u korisničkom sučelju (UI).",
                     "caption": "Uređaji",
                     "confirm_rename_entity_ids": "Želite li također preimenovati ID entiteta svojih entiteta?",
                     "data_table": {
@@ -1020,8 +1088,22 @@
                     "details": "Ovdje su sve pojedinosti vašeg uređaja.",
                     "device_not_found": "Uređaj nije pronađen.",
                     "info": "Informacije o uređaju",
+                    "name": "Naziv",
+                    "scene": {
+                        "create": "Stvorite scenu s uređajem",
+                        "no_scenes": "Nema scena",
+                        "scenes": "Scene"
+                    },
+                    "scenes": "Scene",
+                    "script": {
+                        "create": "Stvorite skriptu s uređajem",
+                        "no_scripts": "Nema skripte",
+                        "scripts": "Skripte"
+                    },
+                    "scripts": "Skripte",
                     "unknown_error": "Nepoznata pogreška",
-                    "unnamed_device": "Neimenovani uređaj"
+                    "unnamed_device": "Neimenovani uređaj",
+                    "update": "Ažuriraj"
                 },
                 "entities": {
                     "caption": "Registar entiteta",
@@ -1034,6 +1116,8 @@
                         "enabled_cause": "Deaktivirano zbog {cause}.",
                         "enabled_description": "Onemogućeni entiteti neće biti dodani u Home Assistant.",
                         "enabled_label": "Aktiviraj entitet",
+                        "entity_id": "ID entiteta",
+                        "name": "Premosti naziv",
                         "note": "Napomena: to možda neće raditi još sa svim integracijama.",
                         "unavailable": "Ovaj entitet trenutno nije dostupan.",
                         "update": "AŽURIRANJE"
@@ -1069,6 +1153,7 @@
                         "area_picker_label": "Područje",
                         "close": "Zatvoriti",
                         "created_config": "Stvorena konfiguracija za {name}.",
+                        "dismiss": "Odbacite dijaloški okvir",
                         "error_saving_area": "Pogreška pri spremanju područja: {error}",
                         "external_step": {
                             "description": "Ovaj korak zahtijeva da posjetite vanjsku web stranicu.",
@@ -1222,18 +1307,67 @@
                         "header": "Zigbee Home Automation-Dodaj uređaje",
                         "spinner": "Traženje ZHA ZigBee uređaja..."
                     },
+                    "add": {
+                        "caption": "Dodaj uređaje"
+                    },
                     "caption": "ZHA",
+                    "clusters": {
+                        "header": "klasteri"
+                    },
                     "description": "Upravljanje Zigbee Home Automation mrežom",
                     "device_card": {
                         "area_picker_label": "Područje",
                         "device_name_placeholder": "Korisničko ime",
                         "update_name_button": "Ažuriraj naziv"
                     },
+                    "devices": {
+                        "header": "Zigbee kućna automatizacija - uređaj"
+                    },
+                    "group_binding": {
+                        "bind_button_help": "Povežite odabranu skupinu s odabranim skupinama uređaja.",
+                        "bind_button_label": "Poveži grupu",
+                        "cluster_selection_help": "Odaberite klastere za povezivanje s odabranom skupinom.",
+                        "group_picker_help": "Odaberite grupu za izdavanje naredbe za vezanje.",
+                        "group_picker_label": "Grupe koje se mogu vezati",
+                        "header": "Povezivanje grupe",
+                        "unbind_button_help": "Prekini vezu s odabranom skupinom od odabranih skupina uređaja.",
+                        "unbind_button_label": "Poništi vezu"
+                    },
+                    "groups": {
+                        "caption": "Grupe",
+                        "description": "Stvarajte i modificirajte Zigbee grupe",
+                        "group-header": "Kućna automatizacija Zigbee - Pojedinosti o grupi",
+                        "groups-header": "Zigbee Home Automation - Upravljanje grupama"
+                    },
                     "services": {
                         "reconfigure": "Ponovno konfiguriaj ZHA uređaj (liječenje uređaja). Upotrijebite ovo ako imate problema s uređajem. Ako je uređaj u pitanju uređaj za bateriju, provjerite je li budan i prihvaća naredbe kada koristite ovu uslugu.",
                         "remove": "Uklonite uređaj iz ZigBee mreže.",
                         "updateDeviceName": "Postavite prilagođeni naziv za ovaj uređaj u registru uređaja."
                     }
+                },
+                "zone": {
+                    "add_zone": "Dodajte zonu",
+                    "caption": "Zone",
+                    "configured_in_yaml": "Zone konfigurirane putem configuration.yaml ne mogu se uređivati putem korisničkog sučelja.",
+                    "confirm_delete": "Jeste li sigurni da želite izbrisati ovu zonu?",
+                    "create_zone": "Stvori zonu",
+                    "description": "Upravljajte zonama u kojima želite pratiti osobe.",
+                    "detail": {
+                        "create": "Kreiraj",
+                        "delete": "Izbriši",
+                        "icon": "Ikona",
+                        "icon_error_msg": "Ikona treba biti u obliku prefiksa: ime ikone, na primjer: mdi: home",
+                        "latitude": "Zemljopisna širina",
+                        "longitude": "Zemljopisna dužina",
+                        "name": "Naziv",
+                        "new_zone": "Nova zona",
+                        "passive": "Pasivno",
+                        "radius": "Radijus",
+                        "required_error_msg": "Ovo polje je obavezno",
+                        "update": "Ažuriraj"
+                    },
+                    "edit_home_zone": "Položaj vašeg doma može se promijeniti u globalnoj konfiguraciji.",
+                    "no_zones_created_yet": "Izgleda da još niste stvorili nijednu zonu."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1297,10 +1431,13 @@
                         "title": "Događaji"
                     },
                     "info": {
+                        "frontend_version": "Verzija sučelja: {version} - {type}",
                         "home_assistant_logo": "Logotip Home Assistanta",
                         "license": "Objavljeno pod licencom Apache 2.0",
+                        "lovelace_ui": "Idi na Lovelace UI",
                         "path_configuration": "Put do configuration.yaml: {path}",
                         "source": "Izvorni kod:",
+                        "states_ui": "Idi na states UI",
                         "title": "Informacije"
                     },
                     "logs": {
@@ -1344,6 +1481,9 @@
                         "go_to_integrations_page": "Idite na stranicu integracija.",
                         "no_devices": "Ova stranica omogućuje upravljanje uređajima, ali izgleda da još niste postavili nikakve uređaje. Idite na stranicu integracije da biste započeli.",
                         "title": "Dobrodošli kući"
+                    },
+                    "entities": {
+                        "never_triggered": "Nikada pokrenuto"
                     },
                     "picture-elements": {
                         "call_service": "Pozovi servis {name}",
@@ -1423,6 +1563,9 @@
                         "sensor": {
                             "graph_detail": "Detalj grafikona",
                             "graph_type": "Vrsta grafikona"
+                        },
+                        "shopping-list": {
+                            "integration_not_loaded": "Ova kartica zahtijeva postavljanje integracije `shopping_list`."
                         }
                     },
                     "edit_card": {
@@ -1676,6 +1819,9 @@
                 }
             },
             "profile": {
+                "advanced_mode": {
+                    "link_promo": "Saznajte više"
+                },
                 "change_password": {
                     "confirm_new_password": "Potvrdite novu lozinku",
                     "current_password": "Trenutna lozinka",
@@ -1696,6 +1842,8 @@
                     "link_promo": "Pomognite prevođenju"
                 },
                 "logout": "Odjava",
+                "logout_text": "Jeste li sigurni da se želite odjaviti?",
+                "logout_title": "Odjavite se?",
                 "long_lived_access_tokens": {
                     "confirm_delete": "Jeste li sigurni da želite izbrisati pristupni token za {name} ?",
                     "create": "Izradite token",

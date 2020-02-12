@@ -11,6 +11,7 @@ import { HomeAssistant } from "../../../types";
 import { haStyle } from "../../../resources/styles";
 
 import "./system-health-card";
+import "./integrations-card";
 
 const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;
@@ -149,6 +150,7 @@ class HaPanelDevInfo extends LitElement {
       </div>
       <div class="content">
         <system-health-card .hass=${this.hass}></system-health-card>
+        <integrations-card .hass=${this.hass}></integrations-card>
       </div>
     `;
   }
@@ -205,7 +207,8 @@ class HaPanelDevInfo extends LitElement {
           color: var(--dark-primary-color);
         }
 
-        system-health-card {
+        system-health-card,
+        integrations-card {
           display: block;
           max-width: 600px;
           margin: 0 auto;

@@ -11,9 +11,9 @@ import { EntitiesEditorEvent, EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { MediaControlCardConfig } from "../../cards/hui-media-control-card";
 
 import "../../../../components/entity/ha-entity-picker";
+import { MediaControlCardConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",

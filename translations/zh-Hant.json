@@ -758,7 +758,7 @@
                         "header": "分區",
                         "integrations_page": "整合頁面",
                         "introduction": "分區主要用以管理設備所在位置。此資訊將會於 Home Assistant 中使用以協助您管理介面、權限，並與其他系統進行整合。",
-                        "introduction2": "欲於分區中放置設備，請使用下方連結至整合頁面，並點選設定整合以設定設備卡片。",
+                        "introduction2": "欲於分區中放置設備，請使用下方連結至整合頁面，並點選設定整合以設定設備面板。",
                         "no_areas": "看起來你還沒有建立分區！"
                     }
                 },
@@ -1232,6 +1232,7 @@
                         },
                         "create": "以設備新增自動化",
                         "no_automations": "沒有自動化",
+                        "no_device_automations": "該設備沒有任何自動化可使用。",
                         "triggers": {
                             "caption": "執行動作、當..."
                         }
@@ -1253,7 +1254,7 @@
                     "device_not_found": "未找到設備。",
                     "entities": {
                         "add_entities_lovelace": "新增至 Lovelace UI",
-                        "entities": "物件",
+                        "entities": "物件列表面板",
                         "none": "此設備沒有物件。"
                     },
                     "info": "設備資訊",
@@ -1873,7 +1874,7 @@
                     "yaml_unsupported": "當使用 Lovelace UI 的 YAML 模式時，無法使用此功能。"
                 },
                 "cards": {
-                    "confirm_delete": "確定要刪除此卡片？",
+                    "confirm_delete": "確定要刪除此面板？",
                     "empty_state": {
                         "go_to_integrations_page": "轉至整合頁面。",
                         "no_devices": "此頁面允許進行控制所擁有的設備。看起來您尚未設定任何設備，從設定中的整合頁面開始吧。",
@@ -1908,10 +1909,10 @@
                         },
                         "alarm-panel": {
                             "available_states": "可用狀態",
-                            "name": "警報面板"
+                            "name": "警報器面板"
                         },
                         "conditional": {
-                            "name": "條件式"
+                            "name": "條件式面板"
                         },
                         "config": {
                             "optional": "選項",
@@ -1923,13 +1924,13 @@
                             "toggle": "切換物件。"
                         },
                         "entity-button": {
-                            "name": "物件按鈕"
+                            "name": "物件按鈕式面板"
                         },
                         "entity-filter": {
-                            "name": "物件過濾器"
+                            "name": "物件過濾式面板"
                         },
                         "gauge": {
-                            "name": "尺規",
+                            "name": "量表式面板",
                             "severity": {
                                 "define": "定義嚴重度？",
                                 "green": "綠色",
@@ -1963,77 +1964,77 @@
                         },
                         "glance": {
                             "columns": "列",
-                            "name": "Glance"
+                            "name": "簡略式面板"
                         },
                         "history-graph": {
-                            "name": "歷史圖表"
+                            "name": "歷史圖表式面板"
                         },
                         "horizontal-stack": {
-                            "name": "水平堆疊"
+                            "name": "水平排列面板"
                         },
                         "iframe": {
-                            "name": "iFrame"
+                            "name": "iFrame 面板"
                         },
                         "light": {
-                            "name": "燈光"
+                            "name": "燈光面板"
                         },
                         "map": {
                             "dark_mode": "深色模式？",
                             "default_zoom": "預設大小",
                             "geo_location_sources": "地理位置來源",
-                            "name": "地圖",
+                            "name": "地圖面板",
                             "source": "來源"
                         },
                         "markdown": {
                             "content": "內容",
-                            "name": "Markdown"
+                            "name": "Markdown 面板"
                         },
                         "media-control": {
-                            "name": "媒體控制"
+                            "name": "媒體控制面板"
                         },
                         "picture-elements": {
-                            "name": "圖片元素"
+                            "name": "圖片要素面板"
                         },
                         "picture-entity": {
-                            "name": "圖片物件"
+                            "name": "圖片物件面板"
                         },
                         "picture-glance": {
-                            "name": "Picture Glance"
+                            "name": "圖片簡略式面板"
                         },
                         "picture": {
-                            "name": "圖片"
+                            "name": "圖片面板"
                         },
                         "plant-status": {
-                            "name": "植物狀態"
+                            "name": "植物狀態面板"
                         },
                         "sensor": {
                             "graph_detail": "圖像精細度",
                             "graph_type": "圖像類型",
-                            "name": "傳感器"
+                            "name": "傳感器面板"
                         },
                         "shopping-list": {
-                            "integration_not_loaded": "此卡片需要先設定「shopping_list」整合。",
-                            "name": "購物清單"
+                            "integration_not_loaded": "此面板需要先設定「shopping_list」整合。",
+                            "name": "購物清單面板"
                         },
                         "thermostat": {
-                            "name": "溫控器"
+                            "name": "溫控器面板"
                         },
                         "vertical-stack": {
-                            "name": "垂直堆疊"
+                            "name": "垂直排列面板"
                         },
                         "weather-forecast": {
-                            "name": "天氣預報"
+                            "name": "天氣預報面板"
                         }
                     },
                     "edit_card": {
-                        "add": "新增卡片",
-                        "delete": "刪除卡片",
+                        "add": "新增面板",
+                        "delete": "刪除面板",
                         "edit": "編輯",
-                        "header": "卡片設定",
+                        "header": "面板設定",
                         "move": "移動至視圖",
                         "options": "更多選項",
-                        "pick_card": "選擇所要新增的卡片？",
-                        "pick_card_view_title": "要加入 {name} 視圖的卡片？",
+                        "pick_card": "選擇所要新增的面板？",
+                        "pick_card_view_title": "要加入 {name} 視圖的面板？",
                         "save": "儲存",
                         "show_code_editor": "顯示編碼編輯器",
                         "show_visual_editor": "顯示視覺編輯器",
@@ -2061,12 +2062,12 @@
                     "migrate": {
                         "header": "設定不相容",
                         "migrate": "遷移設定",
-                        "para_migrate": "Home Assistant 能於您點選「遷移設定」按鈕後，自動新增 ID 與視圖至所有卡片。",
+                        "para_migrate": "Home Assistant 能於您點選「遷移設定」按鈕後，自動新增 ID 與視圖至所有面板。",
                         "para_no_id": "該元件未含 ID，請於「ui-lovelace.yaml」中為該元件新增 ID。"
                     },
                     "raw_editor": {
-                        "confirm_remove_config_text": "假如移除 Lovelace UI 設定的話，將自動以區域與設備產生 Lovelace UI 卡片。",
-                        "confirm_remove_config_title": "確定要移除 Lovelace UI 設定？將依據區域與設備自動產生 Lovelace UI 卡片。",
+                        "confirm_remove_config_text": "假如移除 Lovelace UI 設定的話，將自動以區域與設備產生 Lovelace UI 面板。",
+                        "confirm_remove_config_title": "確定要移除 Lovelace UI 設定？將依據區域與設備自動產生 Lovelace UI 面板。",
                         "confirm_unsaved_changes": "變更尚未儲存，確定要退出？",
                         "confirm_unsaved_comments": "設定包含命令、將不會被儲存。是否要繼續？",
                         "error_invalid_config": "設定無效：{error}",
@@ -2087,12 +2088,12 @@
                     },
                     "suggest_card": {
                         "add": "新增至 Lovelace UI",
-                        "create_own": "選擇其他卡片",
-                        "header": "已為您產生建議卡片"
+                        "create_own": "選擇其他面板",
+                        "header": "已為您產生建議面板"
                     },
                     "view": {
                         "panel_mode": {
-                            "description": "將會以全寬繪製第一張卡，視圖中其他卡片將不進行呈現。",
+                            "description": "將會以全寬繪製第一張卡，視圖中其他面板將不進行呈現。",
                             "title": "面板模式？"
                         }
                     }
@@ -2112,12 +2113,12 @@
                     "entity": "物件",
                     "entity_id": "物件 ID",
                     "last_changed": "上次變更",
-                    "select_to_add": "選擇所要新增至卡片的物件、並點選新增至卡片按鈕。",
+                    "select_to_add": "選擇所要新增至面板的物件、並點選新增至面板按鈕。",
                     "title": "未使用物件"
                 },
                 "views": {
                     "confirm_delete": "確定要刪除此視圖？",
-                    "existing_cards": "無法刪除內含卡片的視圖，請先移除卡片。"
+                    "existing_cards": "無法刪除內含面板的視圖，請先移除面板。"
                 },
                 "warning": {
                     "entity_non_numeric": "物件為非數字：{entity}",

@@ -659,6 +659,18 @@
                 },
                 "updater": {
                     "title": "Update Instructions"
+                },
+                "vacuum": {
+                    "clean_spot": "Clean spot",
+                    "commands": "Vacuum cleaner commands:",
+                    "fan_speed": "Fan speed",
+                    "locate": "Locate",
+                    "pause": "Pause",
+                    "return_home": "Return home",
+                    "start": "Start",
+                    "start_pause": "Start/Pause",
+                    "status": "Status",
+                    "stop": "Stop"
                 }
             },
             "more_info_settings": {
@@ -1232,6 +1244,7 @@
                         },
                         "create": "Create automation with device",
                         "no_automations": "No automations",
+                        "no_device_automations": "There are no automations available for this device.",
                         "triggers": {
                             "caption": "Do something when..."
                         }
@@ -1495,8 +1508,8 @@
                             "automation": "Reload automations",
                             "core": "Reload location & customizations",
                             "group": "Reload groups",
-                            "heading": "Configuration reloading",
-                            "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current configuration and load the new one.",
+                            "heading": "YAML configuration reloading",
+                            "introduction": "Some parts of Home Assistant can reload without requiring a restart. Hitting reload will unload their current YAML configuration and load the new one.",
                             "person": "Reload persons",
                             "scene": "Reload scenes",
                             "script": "Reload scripts",
@@ -1678,12 +1691,12 @@
                         "name": "Name",
                         "new_zone": "New Zone",
                         "passive": "Passive",
-                        "passive_note": "Passive zones are hidden in the frontend and are not used as location for device trackers. This is usefull if you just want to use it for automations.",
+                        "passive_note": "Passive zones are hidden in the frontend and are not used as location for device trackers. This is useful if you just want to use it for automations.",
                         "radius": "Radius",
                         "required_error_msg": "This field is required",
                         "update": "Update"
                     },
-                    "edit_home_zone": "The location of your home can be changed in the gerenal config.",
+                    "edit_home_zone": "The location of your home can be changed in the general config.",
                     "introduction": "Zones allow you to specify certain regions on earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
                     "no_zones_created_yet": "Looks like you have not created any zones yet."
                 },
