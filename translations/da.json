@@ -1679,7 +1679,7 @@
                         "name": "Navn",
                         "new_zone": "Ny zone",
                         "passive": "Passiv",
-                        "passive_note": "Passive zoner er skjult i brugerfladen og bruges ikke som lokalitet for enhedssporere. Dette er nyttigt, hvis du bare vil bruge det til automatiseringer.",
+                        "passive_note": "Passive zoner er skjult i brugerfladen og bruges ikke som lokalitet for enhedssporere. Dette er nyttigt, hvis du bare vil bruge dem til automatiseringer.",
                         "radius": "Radius",
                         "required_error_msg": "Dette felt er påkrævet",
                         "update": "Opdater"
