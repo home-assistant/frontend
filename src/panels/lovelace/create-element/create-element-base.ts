@@ -50,6 +50,31 @@ const _createErrorElement = <T extends keyof CreateElementConfigTypes>(
   config: CreateElementConfigTypes[T]["config"]
 ): HuiErrorCard => createErrorCardElement(createErrorCardConfig(error, config));
 
+const _maybeCreate = <T extends keyof CreateElementConfigTypes>(
+  tag: string,
+  config: CreateElementConfigTypes[T]["config"]
+) => {
+  if (customElements.get(tag)) {
+    return _createElement(tag, config);
+  }
+
+  const element = _createErrorElement(
+    `Custom element doesn't exist: ${tag}.`,
+    config
+  );
+  element.style.display = "None";
+  const timer = window.setTimeout(() => {
+    element.style.display = "";
+  }, TIMEOUT);
+
+  customElements.whenDefined(tag).then(() => {
+    clearTimeout(timer);
+    fireEvent(element, "ll-rebuild");
+  });
+
+  return element;
+};
+
 export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   tagSuffix: T,
   config: CreateElementConfigTypes[T]["config"],
@@ -57,7 +82,8 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   // Allow looking at "entity" in config and mapping that to a type
   domainTypes?: { _domain_not_found: string; [domain: string]: string },
   // Default type if no type given. If given, entity types will not work.
-  defaultType?: string
+  defaultType?: string,
+  lazyLoadTypes?: { [domain: string]: () => unknown }
 ): CreateElementConfigTypes[T]["element"] | HuiErrorCard => {
   if (!config || typeof config !== "object") {
     return _createErrorElement("Config is not an object", config);
@@ -73,26 +99,7 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   }
 
   if (config.type && config.type.startsWith(CUSTOM_TYPE_PREFIX)) {
-    const tag = config.type.substr(CUSTOM_TYPE_PREFIX.length);
-
-    if (customElements.get(tag)) {
-      return _createElement(tag, config);
-    }
-    const element = _createErrorElement(
-      `Custom element doesn't exist: ${tag}.`,
-      config
-    );
-    element.style.display = "None";
-    const timer = window.setTimeout(() => {
-      element.style.display = "";
-    }, TIMEOUT);
-
-    customElements.whenDefined(tag).then(() => {
-      clearTimeout(timer);
-      fireEvent(element, "ll-rebuild");
-    });
-
-    return element;
+    return _maybeCreate(config.type.substr(CUSTOM_TYPE_PREFIX.length), config);
   }
 
   // config.type has priority over config.entity, but defaultType has not.
@@ -109,7 +116,20 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
 
   const type = config.type || defaultType;
 
-  return type !== undefined && elementTypes.has(type)
-    ? _createElement(`hui-${type}-${tagSuffix}`, config)
-    : _createErrorElement(`Unknown type encountered: ${type}.`, config);
+  if (type === undefined) {
+    return _createErrorElement(`No type specified`, config);
+  }
+
+  const tag = `hui-${type}-${tagSuffix}`;
+
+  if (lazyLoadTypes && type in lazyLoadTypes) {
+    lazyLoadTypes[type]();
+    return _maybeCreate(tag, config);
+  }
+
+  if (elementTypes.has(type)) {
+    return _createElement(tag, config);
+  }
+
+  return _createErrorElement(`Unknown type encountered: ${type}.`, config);
 };
