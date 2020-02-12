@@ -12,7 +12,7 @@ import "../cards/hui-weather-forecast-card";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { createLovelaceElement } from "./create-element-base";
 
-const ALWAYS_LOAD_TYPES = new Set([
+const ALWAYS_LOADED_TYPES = new Set([
   "entities",
   "entity-button",
   "error",
@@ -47,7 +47,7 @@ export const createCardElement = (config: LovelaceCardConfig) =>
   createLovelaceElement(
     "card",
     config,
-    ALWAYS_LOAD_TYPES,
+    ALWAYS_LOADED_TYPES,
     LAZY_LOAD_TYPES,
     undefined,
     undefined
