@@ -1345,11 +1345,13 @@
             "filter": {
               "filter": "Filter",
               "show_disabled": "Show disabled entities",
-              "show_unavailable": "Show unavailable entities"
+              "show_unavailable": "Show unavailable entities",
+              "show_readonly": "Show read-only entities"
             },
             "status": {
               "unavailable": "Unavailable",
               "disabled": "Disabled",
+              "readonly": "Read-only",
               "ok": "Ok"
             },
             "headers": {

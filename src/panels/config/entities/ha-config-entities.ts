@@ -3,7 +3,7 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
-import { UnsubscribeFunc } from "home-assistant-js-websocket";
+import { UnsubscribeFunc, HassEntities } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -22,7 +22,6 @@ import { stateIcon } from "../../../common/entity/state_icon";
 import {
   DataTableColumnContainer,
   DataTableColumnData,
-  HaDataTable,
   RowClickedEvent,
   SelectionChangedEvent,
 } from "../../../components/data-table/ha-data-table";
@@ -47,6 +46,10 @@ import {
 } from "./show-dialog-entity-registry-detail";
 import { configSections } from "../ha-panel-config";
 import { classMap } from "lit-html/directives/class-map";
+import { computeStateName } from "../../../common/entity/compute_state_name";
+import { fireEvent } from "../../../common/dom/fire_event";
+// tslint:disable-next-line: no-duplicate-imports
+import { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
 
 @customElement("ha-config-entities")
 export class HaConfigEntities extends SubscribeMixin(LitElement) {
@@ -57,9 +60,11 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @property() private _entities?: EntityRegistryEntry[];
   @property() private _showDisabled = false;
   @property() private _showUnavailable = true;
+  @property() private _showReadOnly = true;
   @property() private _filter = "";
   @property() private _selectedEntities: string[] = [];
-  @query("ha-data-table") private _dataTable!: HaDataTable;
+  @query("hass-tabs-subpage-data-table")
+  private _dataTable!: HaTabsSubpageDataTable;
   private getDialog?: () => DialogEntityRegistryDetail | undefined;
 
   private _columns = memoize(
@@ -90,7 +95,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         sortable: true,
         filterable: true,
         template: (_status, entity: any) =>
-          entity.unavailable || entity.disabled_by
+          entity.unavailable || entity.disabled_by || entity.readonly
             ? html`
                 <div
                   tabindex="0"
@@ -102,15 +107,21 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                     })}
                     .icon=${entity.unavailable
                       ? "hass:alert-circle"
-                      : "hass:cancel"}
+                      : entity.disabled_by
+                      ? "hass:cancel"
+                      : "hass:pencil-off"}
                   ></ha-icon>
                   <paper-tooltip position="left">
                     ${entity.unavailable
                       ? this.hass.localize(
                           "ui.panel.config.entities.picker.status.unavailable"
                         )
-                      : this.hass.localize(
+                      : entity.disabled_by
+                      ? this.hass.localize(
                           "ui.panel.config.entities.picker.status.disabled"
+                        )
+                      : this.hass.localize(
+                          "ui.panel.config.entities.picker.status.readonly"
                         )}
                   </paper-tooltip>
                 </div>
@@ -156,18 +167,38 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   private _filteredEntities = memoize(
     (
       entities: EntityRegistryEntry[],
+      states: HassEntities,
       showDisabled: boolean,
-      showUnavailable: boolean
+      showUnavailable: boolean,
+      showReadOnly: boolean
     ) => {
+      let stateEntities: EntityRegistryEntry[] = [];
+      if (showReadOnly) {
+        const regEntityIds = entities.map((entity) => entity.entity_id);
+        const stateEntityIds = Object.keys(states).filter(
+          (entityId) => !regEntityIds.includes(entityId)
+        );
+        stateEntities = stateEntityIds.map((entityId) => {
+          return {
+            name: computeStateName(states[entityId]),
+            entity_id: entityId,
+            platform: computeDomain(entityId),
+            disabled_by: null,
+            readonly: true,
+            selectable: false,
+          };
+        });
+      }
+
       if (!showDisabled) {
         entities = entities.filter((entity) => !Boolean(entity.disabled_by));
       }
 
-      return entities.reduce((result, entry) => {
-        const state = this.hass!.states[entry.entity_id];
+      return entities.concat(stateEntities).reduce((result, entry) => {
+        const state = states[entry.entity_id];
 
         const unavailable =
-          state && (state.state === "unavailable" || state.attributes.restored); // if there is not state it is disabled
+          state && (state.state === "unavailable" || state.attributes.restored);
 
         if (!showUnavailable && unavailable) {
           return result;
@@ -322,6 +353,15 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                   "ui.panel.config.entities.picker.filter.show_unavailable"
                 )}
               </paper-icon-item>
+              <paper-icon-item @tap="${this._showReadOnlyChanged}">
+                <paper-checkbox
+                  .checked=${this._showReadOnly}
+                  slot="item-icon"
+                ></paper-checkbox>
+                ${this.hass!.localize(
+                  "ui.panel.config.entities.picker.filter.show_readonly"
+                )}
+              </paper-icon-item>
             </paper-listbox>
           </paper-menu-button>
         `;
@@ -336,8 +376,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .columns=${this._columns(this.narrow, this.hass.language)}
           .data=${this._filteredEntities(
             this._entities,
+            this.hass.states,
             this._showDisabled,
-            this._showUnavailable
+            this._showUnavailable,
+            this._showReadOnly
           )}
           .filter=${this._filter}
           selectable
@@ -367,6 +409,10 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
   private _showRestoredChanged() {
     this._showUnavailable = !this._showUnavailable;
+  }
+
+  private _showReadOnlyChanged() {
+    this._showReadOnly = !this._showReadOnly;
   }
 
   private _handleSearchChange(ev: CustomEvent) {
@@ -466,6 +512,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       (entity) => entity.entity_id === entryId
     );
     if (!entry) {
+      fireEvent(this, "hass-more-info", { entityId: entryId });
       return;
     }
     this.getDialog = showEntityRegistryDetailDialog(this, {

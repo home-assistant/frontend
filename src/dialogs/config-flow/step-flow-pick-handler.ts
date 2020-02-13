@@ -141,7 +141,7 @@ class StepFlowPickHandler extends LitElement {
       css`
         div {
           overflow: auto;
-          max-height: 600px;
+          max-height: calc(100vh - 300px);
         }
         paper-item {
           cursor: pointer;

@@ -80,6 +80,7 @@ export interface DataTableColumnData extends DataTableSortColumnData {
 
 export interface DataTableRowData {
   [key: string]: any;
+  selectable?: boolean;
 }
 
 @customElement("ha-data-table")
@@ -249,6 +250,7 @@ export class HaDataTable extends BaseElement {
                     data-row-id="${row[this.id]}"
                     @click=${this._handleRowClick}
                     class="mdc-data-table__row"
+                    .selectable=${row.selectable !== false}
                   >
                     ${this.selectable
                       ? html`
@@ -258,6 +260,7 @@ export class HaDataTable extends BaseElement {
                             <ha-checkbox
                               class="mdc-data-table__row-checkbox"
                               @change=${this._handleRowCheckboxChange}
+                              .disabled=${row.selectable === false}
                               .checked=${this._checkedRows.includes(
                                 String(row[this.id])
                               )}
@@ -298,9 +301,12 @@ export class HaDataTable extends BaseElement {
   protected createAdapter(): MDCDataTableAdapter {
     return {
       addClassAtRowIndex: (rowIndex: number, cssClasses: string) => {
+        if (!(this.rowElements[rowIndex] as any).selectable) {
+          return;
+        }
         this.rowElements[rowIndex].classList.add(cssClasses);
       },
-      getRowCount: () => this.data.length,
+      getRowCount: () => this.rowElements.length,
       getRowElements: () => this.rowElements,
       getRowIdAtIndex: (rowIndex: number) => this._getRowIdAtIndex(rowIndex),
       getRowIndexByChildElement: (el: Element) =>
@@ -309,7 +315,7 @@ export class HaDataTable extends BaseElement {
       isCheckboxAtRowIndexChecked: (rowIndex: number) =>
         this._checkedRows.includes(this._getRowIdAtIndex(rowIndex)),
       isHeaderRowCheckboxChecked: () => this._headerChecked,
-      isRowsSelectable: () => true,
+      isRowsSelectable: () => this.selectable,
       notifyRowSelectionChanged: () => undefined,
       notifySelectedAll: () => undefined,
       notifyUnselectedAll: () => undefined,
@@ -332,6 +338,9 @@ export class HaDataTable extends BaseElement {
         this._headerIndeterminate = indeterminate;
       },
       setRowCheckboxCheckedAtIndex: (rowIndex: number, checked: boolean) => {
+        if (!(this.rowElements[rowIndex] as any).selectable) {
+          return;
+        }
         this._setRowChecked(this._getRowIdAtIndex(rowIndex), checked);
       },
     };
@@ -400,7 +409,8 @@ export class HaDataTable extends BaseElement {
 
   private _handleRowCheckboxChange(ev: Event) {
     const checkbox = ev.target as HaCheckbox;
-    const rowId = checkbox.closest("tr")!.getAttribute("data-row-id");
+    const row = checkbox.closest("tr")!;
+    const rowId = row.getAttribute("data-row-id");
 
     this._setRowChecked(rowId!, checkbox.checked);
     this.mdcFoundation.handleRowCheckboxChange(ev);
@@ -471,7 +481,7 @@ export class HaDataTable extends BaseElement {
         overflow-x: auto;
       }
 
-      .mdc-data-table__row--selected {
+      .mdc-data-table__row.mdc-data-table__row--selected {
         background-color: rgba(var(--rgb-primary-color), 0.04);
       }
 
@@ -516,6 +526,7 @@ export class HaDataTable extends BaseElement {
         padding-left: 16px;
         /* @noflip */
         padding-right: 0;
+        width: 40px;
       }
       [dir="rtl"] .mdc-data-table__header-cell--checkbox,
       .mdc-data-table__header-cell--checkbox[dir="rtl"],
@@ -558,6 +569,7 @@ export class HaDataTable extends BaseElement {
       .mdc-data-table__cell--icon {
         color: var(--secondary-text-color);
         text-align: center;
+        width: 24px;
       }
 
       .mdc-data-table__header-cell {
