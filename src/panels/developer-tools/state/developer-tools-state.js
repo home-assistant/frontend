@@ -357,14 +357,20 @@ class HaPanelDevState extends EventsMixin(LocalizeMixin(PolymerElement)) {
 
     for (i = 0, keys = Object.keys(entity.attributes); i < keys.length; i++) {
       key = keys[i];
-      value = entity.attributes[key];
-      if (!Array.isArray(value) && value instanceof Object) {
-        value = JSON.stringify(value, null, "  ");
-      }
-      output += key + ": " + value + "\n";
+      value = this.formatAttributeValue(entity.attributes[key]);
+      output += `${key}: ${value}\n`;
     }
-
     return output;
+  }
+
+  formatAttributeValue(value) {
+    if (
+      (Array.isArray(value) && value.some((val) => val instanceof Object)) ||
+      (!Array.isArray(value) && value instanceof Object)
+    ) {
+      return `\n${safeDump(value)}`;
+    }
+    return Array.isArray(value) ? value.join(", ") : value;
   }
 
   _computeParsedStateAttributes(stateAttributes) {
