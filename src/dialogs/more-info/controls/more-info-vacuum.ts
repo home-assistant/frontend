@@ -128,7 +128,7 @@ class MoreInfoVacuum extends LitElement {
                   <iron-icon
                     .icon=${stateObj.attributes.battery_icon}
                   ></iron-icon>
-                  ${stateObj.attributes.battery_level} %
+                  ${stateObj.attributes.battery_level}%
                 </span>
               </div>
             `
