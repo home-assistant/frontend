@@ -25,14 +25,47 @@ export class HaTabsSubpageDataTable extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public isWide!: boolean;
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
+  /**
+   * Object with the columns.
+   * @type {Object}
+   */
   @property({ type: Object }) public columns: DataTableColumnContainer = {};
+  /**
+   * Data to show in the table.
+   * @type {Array}
+   */
   @property({ type: Array }) public data: DataTableRowData[] = [];
+  /**
+   * Should rows be selectable.
+   * @type {Boolean}
+   */
   @property({ type: Boolean }) public selectable = false;
+  /**
+   * Field with a unique id per entry in data.
+   * @type {String}
+   */
   @property({ type: String }) public id = "id";
+  /**
+   * String to filter the data in the data table on.
+   * @type {String}
+   */
   @property({ type: String }) public filter = "";
+  /**
+   * What path to use when the back button is pressed.
+   * @type {String}
+   * @attr back-path
+   */
   @property({ type: String, attribute: "back-path" }) public backPath?: string;
+  /**
+   * Function to call when the back button is pressed.
+   * @type {() => void}
+   */
   @property() public backCallback?: () => void;
   @property() public route!: Route;
+  /**
+   * Array of tabs to show on the page.
+   * @type {Array}
+   */
   @property() public tabs!: PageNavigation[];
   @query("ha-data-table") private _dataTable!: HaDataTable;
 

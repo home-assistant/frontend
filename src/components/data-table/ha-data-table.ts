@@ -123,10 +123,6 @@ export class HaDataTable extends BaseElement {
     this.mdcFoundation.handleHeaderRowCheckboxChange();
   }
 
-  public connectedCallback() {
-    super.connectedCallback();
-  }
-
   protected firstUpdated() {
     super.firstUpdated();
     this._worker = sortFilterWorker();
