@@ -10,7 +10,9 @@ import {
 import { HassEntity } from "home-assistant-js-websocket";
 
 import hassAttributeUtil from "../util/hass-attributes-util";
-import { safeDump } from "js-yaml";
+import { until } from "lit-html/directives/until";
+
+let jsYamlPromise: Promise<typeof import("js-yaml")>;
 
 @customElement("ha-attributes")
 class HaAttributes extends LitElement {
@@ -96,8 +98,12 @@ class HaAttributes extends LitElement {
       (Array.isArray(value) && value.some((val) => val instanceof Object)) ||
       (!Array.isArray(value) && value instanceof Object)
     ) {
+      if (!jsYamlPromise) {
+        jsYamlPromise = import(/* webpackChunkName: "js-yaml" */ "js-yaml");
+      }
+      const yaml = jsYamlPromise.then((jsYaml) => jsYaml.safeDump(value));
       return html`
-        <pre>${safeDump(value)}</pre>
+        <pre>${until(yaml, "")}</pre>
       `;
     }
     return Array.isArray(value) ? value.join(", ") : value;
