@@ -9,7 +9,7 @@ import {
 import "@material/mwc-button";
 import "../../../../components/ha-card";
 
-import { HaStateCondition } from "./types/ha-automation-condition-state";
+import { HaDeviceCondition } from "./types/ha-automation-condition-device";
 
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
@@ -48,8 +48,8 @@ export default class HaAutomationCondition extends LitElement {
 
   private _addCondition() {
     const conditions = this.conditions.concat({
-      condition: "state",
-      ...HaStateCondition.defaultConfig,
+      condition: "device",
+      ...HaDeviceCondition.defaultConfig,
     });
 
     fireEvent(this, "value-changed", { value: conditions });
