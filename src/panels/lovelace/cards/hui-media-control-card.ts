@@ -136,6 +136,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               : html`
                   <paper-icon-button
                     .icon=${"hass:skip-previous"}
+                    .disabled="${OFF_STATES.includes(stateObj.state)}"
                     .action=${"media_previous_track"}
                     @click=${this._handleClick}
                   ></paper-icon-button>
@@ -162,6 +163,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               : html`
                   <paper-icon-button
                     .icon=${"hass:skip-next"}
+                    .disabled="${OFF_STATES.includes(stateObj.state)}"
                     .action=${"media_next_track"}
                     @click=${this._handleClick}
                   ></paper-icon-button>
@@ -301,7 +303,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       paper-icon-button[disabled] {
         opacity: var(--dark-disabled-opacity);
-        background-color: rgba(0, 0, 0, var(--dark-disabled-opacity));
       }
 
       .playPauseButton {
@@ -312,6 +313,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         border-radius: 50%;
         padding: 8px;
         transition: background-color 0.5s;
+      }
+
+      .playPauseButton[disabled] {
+        background-color: rgba(0, 0, 0, var(--dark-disabled-opacity));
       }
 
       .caption {
