@@ -275,12 +275,11 @@ class LovelacePanel extends LitElement {
         checkedConfig.views[index].badges = view.badges.filter(Boolean);
       }
     });
-    return checkedConfig || config;
+    return deepFreeze(checkedConfig || config);
   }
 
   private _setLovelaceConfig(config: LovelaceConfig, mode: Lovelace["mode"]) {
     config = this._checkLovelaceConfig(config);
-    deepFreeze(config);
     this.lovelace = {
       config,
       mode,
