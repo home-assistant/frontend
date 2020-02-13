@@ -51,6 +51,7 @@ class HaPanelHistory extends LocalizeMixin(PolymerElement) {
 
         paper-item {
           cursor: pointer;
+          white-space: nowrap;
         }
       </style>
 
