@@ -89,12 +89,21 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
           })}"
         >
           <div class="image" style="background-image: url(${image})"></div>
-          <div class="caption">
+          <div
+            class="${classMap({
+              caption: true,
+              unavailable: stateObj.state === "unavailable",
+            })}"
+          >
             ${this._config!.name ||
               computeStateName(this.hass!.states[this._config!.entity])}
             <div class="title">
-              ${this._computeMediaTitle(stateObj)}
+              ${stateObj.attributes.media_title ||
+                this.hass.localize(`state.media_player.${stateObj.state}`) ||
+                this.hass.localize(`state.default.${stateObj.state}`) ||
+                stateObj.state}
             </div>
+            ${this._computeSecondaryTitle(stateObj)}
           </div>
         </div>
         ${OFF_STATES.includes(stateObj.state) ||
@@ -116,7 +125,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             ? ""
             : html`
                 <paper-icon-button
-                  icon="hass:power"
+                  .icon=${"hass:power"}
                   .action=${stateObj.state === "off" ? "turn_on" : "turn_off"}
                   @click=${this._handleClick}
                 ></paper-icon-button>
@@ -126,18 +135,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               ? ""
               : html`
                   <paper-icon-button
-                    icon="hass:skip-previous"
+                    .icon=${"hass:skip-previous"}
                     .action=${"media_previous_track"}
                     @click=${this._handleClick}
                   ></paper-icon-button>
                 `}
-            ${stateObj.state !== "playing" &&
-            !supportsFeature(stateObj, SUPPORTS_PLAY)
+            ${(stateObj.state !== "playing" &&
+              !supportsFeature(stateObj, SUPPORTS_PLAY)) ||
+            stateObj.state === "unavailable"
               ? ""
               : html`
                   <paper-icon-button
                     class="playPauseButton"
-                    icon=${stateObj.state !== "playing"
+                    .disabled="${OFF_STATES.includes(stateObj.state)}"
+                    .icon=${stateObj.state !== "playing"
                       ? "hass:play"
                       : supportsFeature(stateObj, SUPPORT_PAUSE)
                       ? "hass:pause"
@@ -150,14 +161,14 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               ? ""
               : html`
                   <paper-icon-button
-                    icon="hass:skip-next"
+                    .icon=${"hass:skip-next"}
                     .action=${"media_next_track"}
                     @click=${this._handleClick}
                   ></paper-icon-button>
                 `}
           </div>
           <paper-icon-button
-            icon="hass:dots-vertical"
+            .icon=${"hass:dots-vertical"}
             @click="${this._handleMoreInfo}"
           ></paper-icon-button>
         </div>
@@ -190,30 +201,30 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
   }
 
-  private _computeMediaTitle(stateObj: HassEntity): string {
-    let prefix;
-    let suffix;
+  private _computeSecondaryTitle(stateObj: HassEntity): string {
+    let secondaryTitle: string;
 
     switch (stateObj.attributes.media_content_type) {
       case "music":
-        prefix = stateObj.attributes.media_artist;
-        suffix = stateObj.attributes.media_title;
+        secondaryTitle = stateObj.attributes.media_artist;
         break;
       case "tvshow":
-        prefix = stateObj.attributes.media_series_title;
-        suffix = stateObj.attributes.media_title;
+        secondaryTitle = stateObj.attributes.media_series_title;
+        if (stateObj.attributes.media_season) {
+          secondaryTitle += " S" + stateObj.attributes.media_season;
+
+          if (stateObj.attributes.media_episode) {
+            secondaryTitle += "E" + stateObj.attributes.media_episode;
+          }
+        }
         break;
       default:
-        prefix =
-          stateObj.attributes.media_title ||
-          stateObj.attributes.app_name ||
-          this.hass!.localize(`state.media_player.${stateObj.state}`) ||
-          this.hass!.localize(`state.default.${stateObj.state}`) ||
-          stateObj.state;
-        suffix = "";
+        secondaryTitle = stateObj.attributes.app_name
+          ? stateObj.attributes.app_name
+          : "";
     }
 
-    return prefix && suffix ? `${prefix}: ${suffix}` : prefix || suffix || "";
+    return secondaryTitle;
   }
 
   private _handleMoreInfo() {
@@ -235,6 +246,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         width: 100%;
         height: 0;
         padding-bottom: 56.25%;
+        transition: padding-bottom 0.8s;
       }
 
       .image {
@@ -282,12 +294,14 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         width: 44px;
         height: 44px;
       }
+
       paper-icon-button {
         opacity: var(--dark-primary-opacity);
       }
 
       paper-icon-button[disabled] {
         opacity: var(--dark-disabled-opacity);
+        background-color: rgba(0, 0, 0, var(--dark-disabled-opacity));
       }
 
       .playPauseButton {
@@ -313,9 +327,16 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         transition: background-color 0.5s;
       }
 
+      .caption.unavailable {
+        background-color: rgba(0, 0, 0, var(--dark-secondary-opacity));
+      }
+
       .title {
         font-size: 1.2em;
         margin: 8px 0 4px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
       }
 
       .progress {
