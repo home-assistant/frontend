@@ -1,4 +1,6 @@
 import "@material/mwc-button";
+import * as deepFreeze from "deep-freeze";
+import deepClone from "deep-clone-simple";
 
 import {
   fetchConfig,
@@ -272,6 +274,7 @@ class LovelacePanel extends LitElement {
 
   private _setLovelaceConfig(config: LovelaceConfig, mode: Lovelace["mode"]) {
     this._checkLovelaceConfig(config);
+    deepFreeze(config);
     this.lovelace = {
       config,
       mode,
@@ -294,6 +297,10 @@ class LovelacePanel extends LitElement {
         });
       },
       saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
+        // deepClone is required here because of the filtering in _checkLovelaceConfig
+        // Once the problem behind that is resolved, it can be removed
+        newConfig = deepClone(newConfig);
+
         const { config: previousConfig, mode: previousMode } = this.lovelace!;
         this._checkLovelaceConfig(newConfig);
         try {
