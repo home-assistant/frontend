@@ -1,6 +1,5 @@
 import "@material/mwc-button";
 import * as deepFreeze from "deep-freeze";
-import deepClone from "deep-clone-simple";
 
 import {
   fetchConfig,
@@ -265,15 +264,19 @@ class LovelacePanel extends LitElement {
 
   private _checkLovelaceConfig(config: LovelaceConfig) {
     // Somehow there can be badges with value null, we remove those
-    config.views.forEach((view) => {
-      if (view.badges) {
-        view.badges = view.badges.filter(Boolean);
+    let checkedConfig;
+    config.views.forEach((view, index) => {
+      if (view.badges && !view.badges.every(Boolean)) {
+        checkedConfig = checkedConfig || { ...config };
+        checkedConfig.views[index] = { ...view };
+        checkedConfig.views[index].badges = view.badges.filter(Boolean);
       }
     });
+    return checkedConfig || config;
   }
 
   private _setLovelaceConfig(config: LovelaceConfig, mode: Lovelace["mode"]) {
-    this._checkLovelaceConfig(config);
+    config = this._checkLovelaceConfig(config);
     deepFreeze(config);
     this.lovelace = {
       config,
@@ -297,12 +300,8 @@ class LovelacePanel extends LitElement {
         });
       },
       saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
-        // deepClone is required here because of the filtering in _checkLovelaceConfig
-        // Once the problem behind that is resolved, it can be removed
-        newConfig = deepClone(newConfig);
-
         const { config: previousConfig, mode: previousMode } = this.lovelace!;
-        this._checkLovelaceConfig(newConfig);
+        newConfig = this._checkLovelaceConfig(newConfig);
         try {
           // Optimistic update
           this._updateLovelace({
