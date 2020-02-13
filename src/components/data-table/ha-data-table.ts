@@ -409,8 +409,7 @@ export class HaDataTable extends BaseElement {
 
   private _handleRowCheckboxChange(ev: Event) {
     const checkbox = ev.target as HaCheckbox;
-    const row = checkbox.closest("tr")!;
-    const rowId = row.getAttribute("data-row-id");
+    const rowId = checkbox.closest("tr")!.getAttribute("data-row-id");
 
     this._setRowChecked(rowId!, checkbox.checked);
     this.mdcFoundation.handleRowCheckboxChange(ev);
@@ -481,7 +480,7 @@ export class HaDataTable extends BaseElement {
         overflow-x: auto;
       }
 
-      .mdc-data-table__row.mdc-data-table__row--selected {
+      .mdc-data-table__row--selected {
         background-color: rgba(var(--rgb-primary-color), 0.04);
       }
 
