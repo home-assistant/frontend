@@ -63,7 +63,11 @@ export class HaScriptEditor extends LitElement {
                 @click=${this._deleteConfirm}
               ></paper-icon-button>
             `}
-
+        ${this.narrow
+          ? html`
+              <span slot="header">${this._config?.alias}</span>
+            `
+          : ""}
         <div class="content">
           ${this._errors
             ? html`
@@ -78,7 +82,11 @@ export class HaScriptEditor extends LitElement {
             ${this._config
               ? html`
                   <ha-config-section .isWide=${this.isWide}>
-                    <span slot="header">${this._config.alias}</span>
+                    ${!this.narrow
+                      ? html`
+                          <span slot="header">${this._config.alias}</span>
+                        `
+                      : ""}
                     <span slot="introduction">
                       ${this.hass.localize(
                         "ui.panel.config.script.editor.introduction"
