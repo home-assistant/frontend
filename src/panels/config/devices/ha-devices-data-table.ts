@@ -21,6 +21,7 @@ import {
 import {
   DeviceRegistryEntry,
   computeDeviceName,
+  DeviceEntityLookup,
 } from "../../../data/device_registry";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { ConfigEntry } from "../../../data/config_entries";
@@ -33,10 +34,6 @@ export interface DeviceRowData extends DeviceRegistryEntry {
   area?: string;
   integration?: string;
   battery_entity?: string;
-}
-
-export interface DeviceEntityLookup {
-  [deviceId: string]: EntityRegistryEntry[];
 }
 
 @customElement("ha-devices-data-table")
