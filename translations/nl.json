@@ -602,9 +602,9 @@
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Indien uitgeschakeld dan worden nieuwe entiteiten van {integration} niet automatisch aan Home Assistant toegevoegd.",
+                "enable_new_entities_description": "Indien uitgeschakeld, worden nieuwe entiteiten van {integration} niet automatisch aan Home Assistant toegevoegd.",
                 "enable_new_entities_label": "Voeg nieuwe entiteiten automatisch toe",
-                "title": "Systeeminstellingen voor {integratie}"
+                "title": "Systeeminstellingen voor {integration}"
             },
             "confirmation": {
                 "cancel": "Annuleren",
@@ -659,6 +659,18 @@
                 },
                 "updater": {
                     "title": "Update-instructies"
+                },
+                "vacuum": {
+                    "clean_spot": "Plek schoonmaken",
+                    "commands": "Stofzuigeropdrachten:",
+                    "fan_speed": "Ventilatiesnelheid",
+                    "locate": "Zoek",
+                    "pause": "Pauze",
+                    "return_home": "Terugkeren",
+                    "start": "Start",
+                    "start_pause": "Start/Pauze",
+                    "status": "Status",
+                    "stop": "Stop"
                 }
             },
             "more_info_settings": {
@@ -1306,7 +1318,7 @@
                         "filter": {
                             "filter": "filter",
                             "show_disabled": "Uitgeschakelde entiteiten weergeven",
-                            "show_unavailable": "Uitgeschakelde entiteiten weergeven"
+                            "show_unavailable": "Onbeschikbare entiteiten weergeven"
                         },
                         "header": "Entiteiten",
                         "headers": {
@@ -1339,7 +1351,7 @@
                     "caption": "Integraties",
                     "config_entry": {
                         "area": "In {area}",
-                        "delete_button": "Verwijder {integratie}.",
+                        "delete_button": "Verwijder {integration}.",
                         "delete_confirm": "Weet je zeker dat je deze integratie wilt verwijderen?",
                         "device_unavailable": "apparaat niet beschikbaar",
                         "entity_unavailable": "entiteit niet beschikbaar",
@@ -1351,7 +1363,7 @@
                         "no_devices": "Deze integratie heeft geen apparaten.",
                         "restart_confirm": "Herstart Home Assistant om het verwijderen van deze integratie te voltooien",
                         "settings_button": "Instellingen bewerken voor {integration}",
-                        "system_options_button": "Systeeminstellingen voor {integratie}",
+                        "system_options_button": "Systeeminstellingen voor {integration}",
                         "via": "Verbonden via"
                     },
                     "config_flow": {
@@ -1679,7 +1691,7 @@
                         "name": "Naam",
                         "new_zone": "Nieuwe zone",
                         "passive": "Passief",
-                        "passive_note": "Passieve zones zijn verborgen in het frontend en worden niet gebruikt als locaties voor apparaat trackers. Dit is handig als je de zone wilt gebruiken voor automatiseringen.",
+                        "passive_note": "Passieve zones zijn verborgen in het frontend en worden niet gebruikt als locaties voor apparaattrackers. Dit is handig als je de zone wilt gebruiken voor automatiseringen.",
                         "radius": "Straal",
                         "required_error_msg": "Dit veld is verplicht",
                         "update": "Bijwerken"

@@ -625,6 +625,13 @@
                 },
                 "updater": {
                     "title": "Actualizați instrucțiunile"
+                },
+                "vacuum": {
+                    "pause": "Pauza",
+                    "return_home": "Návrat domov",
+                    "start": "Štart",
+                    "start_pause": "Štart/Pouza",
+                    "stop": "Stop"
                 }
             },
             "more_info_settings": {

@@ -659,6 +659,18 @@
                 },
                 "updater": {
                     "title": "Pokyny pro aktualizaci"
+                },
+                "vacuum": {
+                    "clean_spot": "Čisté místo",
+                    "commands": "Příkazy vysavače:",
+                    "fan_speed": "Rychlost ventilátoru",
+                    "locate": "Lokalizovat",
+                    "pause": "Pauza",
+                    "return_home": "Návrat domů",
+                    "start": "Start",
+                    "start_pause": "Start / Pauza",
+                    "status": "Stav",
+                    "stop": "Stop"
                 }
             },
             "more_info_settings": {
