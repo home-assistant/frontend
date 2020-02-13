@@ -431,7 +431,9 @@
                 "preset_mode": "Preestablecido",
                 "swing_mode": "Modo de oscilación",
                 "target_humidity": "Humedad deseada",
-                "target_temperature": "Temperatura deseada"
+                "target_temperature": "Temperatura deseada",
+                "target_temperature_entity": "{name} temperatura objetivo",
+                "target_temperature_mode": "{name} temperatura objetivo {mode}"
             },
             "counter": {
                 "actions": {
@@ -657,6 +659,18 @@
                 },
                 "updater": {
                     "title": "Instrucciones de actualización"
+                },
+                "vacuum": {
+                    "clean_spot": "Lugar limpio",
+                    "commands": "Comandos de la aspiradora:",
+                    "fan_speed": "Velocidad del ventilador",
+                    "locate": "Localizar",
+                    "pause": "Pausar",
+                    "return_home": "Volver al inicio",
+                    "start": "Iniciar",
+                    "start_pause": "Iniciar/Pausar",
+                    "status": "Estado",
+                    "stop": "Detener"
                 }
             },
             "more_info_settings": {
@@ -694,7 +708,9 @@
                 "manuf": "por {manufacturer}",
                 "no_area": "Sin área",
                 "power_source": "Fuente de alimentación",
+                "quirk": "Quirk",
                 "services": {
+                    "reconfigure": "Reconfigure el dispositivo ZHA (dispositivo de curación). Use esto si tiene problemas con el dispositivo. Si el dispositivo en cuestión es un dispositivo alimentado por batería, asegúrese de que esté activado y acepte los comandos cuando utilice este servicio.",
                     "remove": "Eliminar un dispositivo de la red ZigBee.",
                     "updateDeviceName": "Establecer un nombre personalizado para este dispositivo en el registro de dispositivos."
                 },
@@ -1204,6 +1220,7 @@
                     "attributes_set": "Los siguientes atributos de la entidad se establecen mediante programación.",
                     "caption": "Personalización",
                     "description": "Personaliza tus entidades",
+                    "different_include": "Posiblemente a través de un dominio, un globo o una inclusión diferente.",
                     "pick_attribute": "Elija un atributo para sobrescribir",
                     "picker": {
                         "header": "Personalización",
@@ -1211,12 +1228,16 @@
                     },
                     "warning": {
                         "include_link": "incluir customize.yaml",
-                        "include_sentence": "Parece que tu configuration.yaml no funciona correctamente"
+                        "include_sentence": "Parece que tu configuration.yaml no funciona correctamente",
+                        "not_applied": "Los cambios realizados aquí están escritos, pero no se aplicarán después de una recarga de configuración a menos que la inclusión esté en su lugar."
                     }
                 },
                 "devices": {
                     "area_picker_label": "Área",
                     "automation": {
+                        "actions": {
+                            "caption": "Cuando algo se desencadena..."
+                        },
                         "automations": "Automatizaciones",
                         "conditions": {
                             "caption": "Sólo hacer algo si..."
@@ -1583,6 +1604,7 @@
                         "add_devices": "Agregar dispositivos",
                         "clusters": "Clústeres",
                         "devices": "Dispositivos",
+                        "manufacturer_code_override": "Sobrescritura del código del fabricante",
                         "value": "Valor"
                     },
                     "description": "Gestión de red de Zigbee Home Automation",
@@ -1593,6 +1615,17 @@
                     },
                     "devices": {
                         "header": "Zigbee Home Automation - Dispositivo"
+                    },
+                    "group_binding": {
+                        "bind_button_help": "Vincular el grupo seleccionado a los grupos de dispositivos seleccionados.",
+                        "bind_button_label": "Vincular grupo",
+                        "cluster_selection_help": "Seleccione los clústeres que desea enlazar al grupo seleccionado.",
+                        "group_picker_help": "Seleccione un grupo para emitir un comando de enlace.",
+                        "group_picker_label": "Grupos vinculables",
+                        "header": "Vinculación de grupo",
+                        "introduction": "Vincular y desvincular grupos.",
+                        "unbind_button_help": "Desvincular el grupo seleccionado de los grupos de dispositivos seleccionados.",
+                        "unbind_button_label": "Desvincular grupo"
                     },
                     "groups": {
                         "add_members": "Agregar miembros",
@@ -1630,6 +1663,7 @@
                     "node_management": {
                         "header": "Administración de dispositivos",
                         "help_node_dropdown": "Seleccione un dispositivo para ver las opciones por dispositivo.",
+                        "hint_battery_devices": "Nota: Los dispositivos en reposo (alimentados por batería) deben estar despiertos al ejecutar comandos contra ellos. En general, puede activar un dispositivo en reposo activándolo.",
                         "hint_wakeup": "Algunos dispositivos, como los sensores Xiaomi, tienen un botón de activación que puede presionar a intervalos de ~5 segundos para mantener los dispositivos activos mientras interactúa con ellos.",
                         "introduction": "Ejecute comandos ZHA que afectan a un solo dispositivo. Elija un dispositivo para ver una lista de comandos disponibles."
                     },
@@ -1643,6 +1677,7 @@
                 "zone": {
                     "add_zone": "Agregar zona",
                     "caption": "Zonas",
+                    "configured_in_yaml": "Las zonas configuradas a través de configuration.yaml no se pueden editar a través de la interfaz de usuario.",
                     "confirm_delete": "¿Está seguro de que desea eliminar esta zona?",
                     "create_zone": "Crear zona",
                     "description": "Administre las zonas en las que desea rastrear personas.",
@@ -1706,6 +1741,7 @@
                         "add_node": "Agregar nodo",
                         "add_node_secure": "Agregar nodo seguro",
                         "cancel_command": "Cancelar comando",
+                        "heal_network": "Red de sanación",
                         "remove_node": "Eliminar nodo",
                         "save_config": "Guardar configuración",
                         "soft_reset": "Reinicio suave",
@@ -1732,6 +1768,7 @@
                         "available_events": "Eventos disponibles",
                         "count_listeners": "({count} oyentes)",
                         "data": "Datos del evento (YAML, opcional)",
+                        "description": "Desencadenar un evento en el bus de eventos.",
                         "documentation": "Documentación de eventos.",
                         "event_fired": "Evento {name} desencadenado",
                         "fire_event": "Desencadenar evento",
@@ -1776,9 +1813,11 @@
                         "title": "Registros"
                     },
                     "mqtt": {
+                        "description_listen": "Escuchar un tema",
                         "description_publish": "Publicar un paquete",
                         "listening_to": "Escuchando a",
                         "message_received": "Mensaje {id} recibido el {topic} a las {time} :",
+                        "payload": "Carga útil (plantilla permitida)",
                         "publish": "Publicar",
                         "start_listening": "Comenzar a escuchar",
                         "stop_listening": "Deja de escuchar",
@@ -1893,6 +1932,7 @@
                         },
                         "entities": {
                             "name": "Entidades",
+                            "show_header_toggle": "¿Mostrar alternancia de encabezado?",
                             "toggle": "Alternar entidades."
                         },
                         "entity-button": {
@@ -1902,6 +1942,7 @@
                             "name": "Filtro de entidad"
                         },
                         "gauge": {
+                            "name": "Gauge",
                             "severity": {
                                 "define": "¿Definir gravedad?",
                                 "green": "Verde",
@@ -1915,6 +1956,8 @@
                             "camera_view": "Vista de la cámara",
                             "entities": "Entidades",
                             "entity": "Entidad",
+                            "hold_action": "Mantener la acción",
+                            "hours_to_show": "Horas para mostrar",
                             "icon": "Icono",
                             "icon_height": "Altura del icono",
                             "image": "Ruta de la imagen",
@@ -1925,13 +1968,15 @@
                             "show_icon": "¿Mostrar icono?",
                             "show_name": "¿Mostrar nombre?",
                             "show_state": "¿Mostrar estado?",
+                            "tap_action": "Acción de toque",
                             "theme": "Tema",
                             "title": "Título",
                             "unit": "Unidad",
                             "url": "Url"
                         },
                         "glance": {
-                            "columns": "Columnas"
+                            "columns": "Columnas",
+                            "name": "Glance"
                         },
                         "history-graph": {
                             "name": "Gráfico histórico"
@@ -1953,7 +1998,8 @@
                             "source": "Fuente"
                         },
                         "markdown": {
-                            "content": "Contenido"
+                            "content": "Contenido",
+                            "name": "Markdown"
                         },
                         "media-control": {
                             "name": "Control multimedia"
@@ -1963,6 +2009,9 @@
                         },
                         "picture-entity": {
                             "name": "Entidad de imagen"
+                        },
+                        "picture-glance": {
+                            "name": "Picture Glance"
                         },
                         "picture": {
                             "name": "Imagen"

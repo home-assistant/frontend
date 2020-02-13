@@ -641,6 +641,7 @@
                 "dismiss": "Desestimar el diàleg",
                 "edit": "Edita entitat",
                 "restored": {
+                    "confirm_remove_text": "Estàs segur que vols eliminar aquesta entitat?",
                     "confirm_remove_title": "Eliminar l'entitat?",
                     "remove_action": "Elimina entitat",
                     "remove_intro": "Si l'entitat ja no s'utilitza, pots borrar-la eliminant-la."
@@ -657,6 +658,16 @@
                 },
                 "updater": {
                     "title": "Instruccions d'actualització"
+                },
+                "vacuum": {
+                    "commands": "Comandes de l’aspirador:",
+                    "fan_speed": "Velocitat del ventilador",
+                    "locate": "Localitza",
+                    "pause": "Pausa",
+                    "start": "Inici",
+                    "start_pause": "Inicia/Pausa",
+                    "status": "Estat",
+                    "stop": "Atura"
                 }
             },
             "more_info_settings": {

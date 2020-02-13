@@ -659,6 +659,18 @@
                 },
                 "updater": {
                     "title": "Instrukcje aktualizacji"
+                },
+                "vacuum": {
+                    "clean_spot": "Wyczyść miejsce",
+                    "commands": "Polecenia odkurzacza:",
+                    "fan_speed": "Prędkość wentylatora",
+                    "locate": "Zlokalizuj",
+                    "pause": "Pauza",
+                    "return_home": "Powrót do domu",
+                    "start": "Start",
+                    "start_pause": "Start/Pauza",
+                    "status": "Status",
+                    "stop": "Zatrzymaj"
                 }
             },
             "more_info_settings": {

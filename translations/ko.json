@@ -31,7 +31,7 @@
         "homeassistant": "Home Assistant",
         "image_processing": "이미지처리",
         "input_boolean": "논리입력",
-        "input_datetime": "날짜/시간입력",
+        "input_datetime": "날짜 / 시간입력",
         "input_number": "숫자입력",
         "input_select": "선택입력",
         "input_text": "문자입력",
@@ -659,6 +659,18 @@
                 },
                 "updater": {
                     "title": "업데이트 방법"
+                },
+                "vacuum": {
+                    "clean_spot": "부분 청소",
+                    "commands": "청소기 조작 명령:",
+                    "fan_speed": "팬 속도",
+                    "locate": "위치 이동",
+                    "pause": "일시정지",
+                    "return_home": "충전 복귀",
+                    "start": "시작",
+                    "start_pause": "시작 / 일시정지",
+                    "status": "상태",
+                    "stop": "중지"
                 }
             },
             "more_info_settings": {

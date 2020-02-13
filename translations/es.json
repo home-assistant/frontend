@@ -659,6 +659,18 @@
                 },
                 "updater": {
                     "title": "Instrucciones de actualización"
+                },
+                "vacuum": {
+                    "clean_spot": "Limpiar punto",
+                    "commands": "Comandos de aspiradora:",
+                    "fan_speed": "Velocidad del ventilador",
+                    "locate": "Localizar",
+                    "pause": "Pausa",
+                    "return_home": "Volver a casa",
+                    "start": "Inicio",
+                    "start_pause": "Inicio/Pausa",
+                    "status": "Estado",
+                    "stop": "Detener"
                 }
             },
             "more_info_settings": {
@@ -1496,8 +1508,8 @@
                             "automation": "Recargar automatizaciones",
                             "core": "Recargar ubicación y personalizaciones",
                             "group": "Recargar grupos",
-                            "heading": "Recargando la configuración",
-                            "introduction": "Algunas partes de Home Assistant pueden recargarse sin necesidad de reiniciar. Al pulsar en recargar se descartará la configuración actual y se cargará la nueva.",
+                            "heading": "Recargando la configuración YAML",
+                            "introduction": "Algunas partes de Home Assistant pueden recargarse sin necesidad de reiniciar. Al pulsar en recargar se descartará la configuración YAML actual y se cargará la nueva.",
                             "person": "Recargar personas",
                             "scene": "Recargar escenas",
                             "script": "Recargar scripts",

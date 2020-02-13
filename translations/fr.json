@@ -659,6 +659,18 @@
                 },
                 "updater": {
                     "title": "Instructions de mise à jour"
+                },
+                "vacuum": {
+                    "clean_spot": "Nettoyer Endroit",
+                    "commands": "Commandes d'aspirateur :",
+                    "fan_speed": "Vitesse ventilateur",
+                    "locate": "Localiser",
+                    "pause": "Pause",
+                    "return_home": "Rentrer à la maison",
+                    "start": "Démarrer",
+                    "start_pause": "Démarrer/Pause",
+                    "status": "Statut",
+                    "stop": "Arrêter"
                 }
             },
             "more_info_settings": {
