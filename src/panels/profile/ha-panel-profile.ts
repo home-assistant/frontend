@@ -31,6 +31,7 @@ import {
   getOptimisticFrontendUserDataCollection,
   CoreFrontendUserData,
 } from "../../data/frontend";
+import { isExternal } from "../data/external";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -113,10 +114,12 @@ class HaPanelProfile extends LitElement {
                   ></ha-set-vibrate-row>
                 `
               : ""}
-            <ha-push-notifications-row
-              .narrow=${this.narrow}
-              .hass=${this.hass}
-            ></ha-push-notifications-row>
+            ${!isExternal
+              ? html`
+                  <ha-push-notifications-row
+                    .narrow=${this.narrow}
+                    .hass=${this.hass}
+                  ></ha-push-notifications-row>` : ""}
             ${this.hass.user!.is_admin
               ? html`
                   <ha-advanced-mode-row
