@@ -267,7 +267,10 @@ class LovelacePanel extends LitElement {
     let checkedConfig;
     config.views.forEach((view, index) => {
       if (view.badges && !view.badges.every(Boolean)) {
-        checkedConfig = checkedConfig || { ...config };
+        checkedConfig = checkedConfig || {
+          ...config,
+          views: [...config.views],
+        };
         checkedConfig.views[index] = { ...view };
         checkedConfig.views[index].badges = view.badges.filter(Boolean);
       }
