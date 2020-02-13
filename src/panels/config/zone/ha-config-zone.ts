@@ -48,6 +48,9 @@ import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import { configSections } from "../ha-panel-config";
 import { navigate } from "../../../common/navigate";
 import { saveCoreConfig } from "../../../data/core";
+import { ifDefined } from "lit-html/directives/if-defined";
+import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
+import { navigate } from "../../../common/navigate";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
@@ -58,9 +61,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   @property() private _storageItems?: Zone[];
   @property() private _stateItems?: HassEntity[];
   @property() private _activeEntry: string = "";
+  @property() private _canEditCore = false;
   @query("ha-locations-editor") private _map?: HaLocationsEditor;
   private _regEntities: string[] = [];
-  private _canEditCore = false;
 
   private _getZones = memoizeOne(
     (storageItems: Zone[], stateItems: HassEntity[]): MarkerLocation[] => {
@@ -171,12 +174,23 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
                       <paper-icon-button
                         .entityId=${state.entity_id}
                         icon="hass:pencil"
-                        disabled
+                        @click=${this._openCoreConfig}
+                        disabled=${ifDefined(
+                          state.entity_id === "zone.home" &&
+                            this.narrow &&
+                            this._canEditCore
+                            ? undefined
+                            : true
+                        )}
                       ></paper-icon-button>
                       <paper-tooltip position="left">
                         ${state.entity_id === "zone.home"
                           ? this.hass.localize(
-                              "ui.panel.config.zone.edit_home_zone"
+                              `ui.panel.config.zone.${
+                                this.narrow
+                                  ? "edit_home_zone_narrow"
+                                  : "edit_home_zone"
+                              }`
                             )
                           : this.hass.localize(
                               "ui.panel.config.zone.configured_in_yaml"
@@ -239,9 +253,9 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
 
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
-    this._canEditCore = ["storage", "default"].includes(
-      this.hass.config.config_source
-    );
+    this._canEditCore =
+      Boolean(this.hass.user?.is_admin) &&
+      ["storage", "default"].includes(this.hass.config.config_source);
     this._fetchData();
     if (this.route.path === "/new") {
       navigate(this, "/config/zone", true);
@@ -334,7 +348,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     this._openDialog();
   }
 
-  private _itemClicked(ev: MouseEvent) {
+  private _itemClicked(ev: Event) {
     if (this.narrow) {
       this._openEditEntry(ev);
       return;
@@ -343,7 +357,7 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     this._zoomZone(entry.id);
   }
 
-  private _stateItemClicked(ev: MouseEvent) {
+  private _stateItemClicked(ev: Event) {
     const entityId = (ev.currentTarget! as HTMLElement).getAttribute(
       "data-id"
     )!;
@@ -354,9 +368,27 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
     this._map?.fitMarker(id);
   }
 
-  private _openEditEntry(ev: MouseEvent) {
+  private _openEditEntry(ev: Event) {
     const entry: Zone = (ev.currentTarget! as any).entry;
     this._openDialog(entry);
+  }
+
+  private async _openCoreConfig(ev: Event) {
+    const entityId: string = (ev.currentTarget! as any).entityId;
+    if (entityId !== "zone.home" || !this.narrow || !this._canEditCore) {
+      return;
+    }
+    if (
+      !(await showConfirmationDialog(this, {
+        title: this.hass.localize("ui.panel.config.zone.go_to_core_config"),
+        text: this.hass.localize("ui.panel.config.zone.home_zone_core_config"),
+        confirmText: this.hass!.localize("ui.common.yes"),
+        dismissText: this.hass!.localize("ui.common.no"),
+      }))
+    ) {
+      return;
+    }
+    navigate(this, "/config/core");
   }
 
   private async _createEntry(values: ZoneMutableParams) {
