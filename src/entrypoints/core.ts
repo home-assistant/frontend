@@ -10,6 +10,7 @@ import {
 } from "home-assistant-js-websocket";
 
 import { loadTokens, saveTokens } from "../common/auth/token_storage";
+import { isExternal } from "../data/external";
 import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
 import { subscribeUser } from "../data/ws-user";
@@ -22,11 +23,6 @@ declare global {
     hassConnection: Promise<{ auth: Auth; conn: Connection }>;
   }
 }
-
-const isExternal =
-  window.externalApp ||
-  window.webkit?.messageHandlers?.getExternalAuth ||
-  location.search.includes("external_auth=1");
 
 const authProm = isExternal
   ? () =>

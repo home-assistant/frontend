@@ -2,6 +2,7 @@ import { html } from "@polymer/polymer/lib/utils/html-tag";
 import { PolymerElement } from "@polymer/polymer/polymer-element";
 
 import { getAppKey } from "../data/notify_html5";
+import { isExternal } from "../data/external";
 import { EventsMixin } from "../mixins/events-mixin";
 
 import "./ha-switch";
@@ -9,7 +10,7 @@ import "./ha-switch";
 export const pushSupported =
   "serviceWorker" in navigator &&
   "PushManager" in window &&
-  !("externalApp" in window) &&
+  !isExternal &&
   (document.location.protocol === "https:" ||
     document.location.hostname === "localhost" ||
     document.location.hostname === "127.0.0.1");
