@@ -9,6 +9,7 @@ import "./ha-switch";
 export const pushSupported =
   "serviceWorker" in navigator &&
   "PushManager" in window &&
+  !("externalApp" in window) &&
   (document.location.protocol === "https:" ||
     document.location.hostname === "localhost" ||
     document.location.hostname === "127.0.0.1");
