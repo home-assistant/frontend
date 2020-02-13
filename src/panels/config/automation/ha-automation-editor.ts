@@ -36,6 +36,8 @@ import "./condition/ha-automation-condition";
 import "./trigger/ha-automation-trigger";
 import "../../../layouts/hass-tabs-subpage";
 import { configSections } from "../ha-panel-config";
+import { HaDeviceAction } from "./action/types/ha-automation-action-device_id";
+import { HaDeviceTrigger } from "./trigger/types/ha-automation-trigger-device";
 
 export class HaAutomationEditor extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -75,7 +77,7 @@ export class HaAutomationEditor extends LitElement {
             `
           : ""}
         <div
-          class="${classMap({
+          class="content ${classMap({
             rtl: computeRTL(this.hass),
           })}"
         >
@@ -273,9 +275,9 @@ export class HaAutomationEditor extends LitElement {
           "ui.panel.config.automation.editor.default_name"
         ),
         description: "",
-        trigger: [{ platform: "state" }],
+        trigger: [{ platform: "device", ...HaDeviceTrigger.defaultConfig }],
         condition: [],
-        action: [{ service: "" }],
+        action: [{ ...HaDeviceAction.defaultConfig }],
         ...initData,
       };
     }
