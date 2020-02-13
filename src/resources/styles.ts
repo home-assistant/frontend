@@ -94,6 +94,47 @@ export const haStyle = css`
   .card-actions .warning {
     --mdc-theme-primary: var(--google-red-500);
   }
+
+  .layout.horizontal,
+  .layout.vertical {
+    display: flex;
+  }
+  .layout.inline {
+    display: inline-flex;
+  }
+  .layout.horizontal {
+    flex-direction: row;
+  }
+  .layout.vertical {
+    flex-direction: column;
+  }
+  .layout.wrap {
+    flex-wrap: wrap;
+  }
+  .layout.no-wrap {
+    flex-wrap: nowrap;
+  }
+  .layout.center,
+  .layout.center-center {
+    align-items: center;
+  }
+  .layout.center-justified,
+  .layout.center-center {
+    justify-content: center;
+  }
+  .flex {
+    flex: 1;
+    flex-basis: 0.000000001px;
+  }
+  .flex-auto {
+    flex: 1 1 auto;
+  }
+  .flex-none {
+    flex: none;
+  }
+  .layout.justified {
+    justify-content: space-between;
+  }
 `;
 
 export const haStyleDialog = css`

@@ -22,6 +22,7 @@ import {
   deleteAutomation,
   getAutomationEditorInitData,
   Trigger,
+  triggerAutomation,
 } from "../../../data/automation";
 import { Action } from "../../../data/script";
 import {
@@ -113,6 +114,28 @@ export class HaAutomationEditor extends LitElement {
                         @value-changed=${this._valueChanged}
                       ></ha-textarea>
                     </div>
+                    ${this.creatingNew
+                      ? ""
+                      : html`
+                          <div
+                            class="card-actions layout horizontal justified center"
+                          >
+                            <div class="layout horizontal center">
+                              <ha-entity-toggle
+                                .hass=${this.hass}
+                                .stateObj=${this.automation}
+                              ></ha-entity-toggle>
+                              ${this.hass.localize(
+                                "ui.panel.config.automation.editor.enable_disable"
+                              )}
+                            </div>
+                            <mwc-button @click=${this._excuteAutomation}>
+                              ${this.hass.localize(
+                                "ui.card.automation.trigger"
+                              )}
+                            </mwc-button>
+                          </div>
+                        `}
                   </ha-card>
                 </ha-config-section>
 
@@ -319,6 +342,10 @@ export class HaAutomationEditor extends LitElement {
     this._dirty = true;
   }
 
+  private _excuteAutomation() {
+    triggerAutomation(this.hass, this.automation.entity_id);
+  }
+
   private _backTapped(): void {
     if (this._dirty) {
       showConfirmationDialog(this, {
@@ -390,6 +417,9 @@ export class HaAutomationEditor extends LitElement {
         }
         span[slot="introduction"] a {
           color: var(--primary-color);
+        }
+        ha-entity-toggle {
+          margin-right: 8px;
         }
         ha-fab {
           position: fixed;

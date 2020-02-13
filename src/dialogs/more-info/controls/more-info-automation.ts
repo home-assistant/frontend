@@ -13,6 +13,7 @@ import "@material/mwc-button";
 import "../../../components/ha-relative-time";
 
 import { HomeAssistant } from "../../../types";
+import { triggerAutomation } from "../../../data/automation";
 
 @customElement("more-info-automation")
 class MoreInfoAutomation extends LitElement {
@@ -42,9 +43,7 @@ class MoreInfoAutomation extends LitElement {
   }
 
   private handleAction() {
-    this.hass.callService("automation", "trigger", {
-      entity_id: this.stateObj!.entity_id,
-    });
+    triggerAutomation(this.hass, this.stateObj!.entity_id);
   }
 
   static get styles(): CSSResult {
