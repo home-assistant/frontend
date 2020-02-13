@@ -630,6 +630,9 @@
           "locate": "Locate",
           "return_home": "Return home",
           "start_pause": "Start/Pause"
+        },
+        "person": {
+          "create_zone": "Create zone from current location"
         }
       },
       "entity_registry": {

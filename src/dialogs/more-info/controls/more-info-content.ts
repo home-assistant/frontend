@@ -16,6 +16,7 @@ import "./more-info-input_datetime";
 import "./more-info-light";
 import "./more-info-lock";
 import "./more-info-media_player";
+import "./more-info-person";
 import "./more-info-script";
 import "./more-info-sun";
 import "./more-info-timer";
