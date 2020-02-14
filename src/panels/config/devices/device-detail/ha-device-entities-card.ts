@@ -152,6 +152,7 @@ export class HaDeviceEntitiesCard extends LitElement {
     const entry = (ev.currentTarget! as any).entry;
     showEntityRegistryDetailDialog(this, {
       entry,
+      entity_id: entry.entity_id,
     });
   }
 
