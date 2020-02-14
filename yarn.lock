@@ -2675,10 +2675,10 @@
     "@vaadin/vaadin-material-styles" "^1.2.0"
     "@vaadin/vaadin-themable-mixin" "^1.2.1"
 
-"@vaadin/vaadin-combo-box@^5.0.6":
-  version "5.0.6"
-  resolved "https://registry.yarnpkg.com/@vaadin/vaadin-combo-box/-/vaadin-combo-box-5.0.6.tgz#cb9973f941546b2069243c3be87d5375d74c0f85"
-  integrity sha512-05LjG2Uiv65t4pLTQL6V6tiWLR4JMcxI+yfMdH24Q2145Tpz18+8mFtFP6PeOE0S7h9QoFptbJCu+7/iy5xOcQ==
+"@vaadin/vaadin-combo-box@^5.0.10":
+  version "5.0.10"
+  resolved "https://registry.yarnpkg.com/@vaadin/vaadin-combo-box/-/vaadin-combo-box-5.0.10.tgz#ed7876b26db83070c3b5e3a08e2624ebc5efcfea"
+  integrity sha512-+9RI1Rj1G8VOk8+CoGJunc0NKVgZij4FXkBtmCh2NFHpzk31eNUUp9/0KZZa9SPIJmYVGi0qpcIuABTCAHdiJQ==
   dependencies:
     "@polymer/iron-a11y-announcer" "^3.0.0"
     "@polymer/iron-a11y-keys-behavior" "^3.0.0"
@@ -2701,10 +2701,10 @@
   dependencies:
     "@polymer/polymer" "^3.0.0"
 
-"@vaadin/vaadin-date-picker@^4.0.3":
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/@vaadin/vaadin-date-picker/-/vaadin-date-picker-4.0.3.tgz#aa66f427e5ebed597745e03a3d41d602de26dcff"
-  integrity sha512-UGStIQ/4SQkyXPBdVKdgE0vtCUOCKXbXbxiOikZyQrOfAY9y+dHZhJh2KTdtZSVGIYHBKE/CbufjU0F3uUN37Q==
+"@vaadin/vaadin-date-picker@^4.0.7":
+  version "4.0.7"
+  resolved "https://registry.yarnpkg.com/@vaadin/vaadin-date-picker/-/vaadin-date-picker-4.0.7.tgz#487b1ef56ba1dba5012d67969ba84d2d98e1b515"
+  integrity sha512-7FHB9/yAwJe9Im9JQOl2TNbkmEkQlM0ziMnZF6OiVKwd6SjNlmzZ+PaPQaiR7Q1OvJ7tOE5K2rtUDZNg18EzYg==
   dependencies:
     "@polymer/iron-a11y-announcer" "^3.0.0"
     "@polymer/iron-a11y-keys-behavior" "^3.0.0"
