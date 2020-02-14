@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Si está deshabilitada, las nuevas entidades que se descubran para {integration} no se añadirán automáticamente a Home Assistant.",
                 "enable_new_entities_label": "Activar entidades recién añadidas.",
-                "title": "Opciones del sistema para {integration}"
+                "title": "Opciones del sistema para {integration}",
+                "update": "Actualizar"
             },
             "confirmation": {
                 "cancel": "Cancelar",
