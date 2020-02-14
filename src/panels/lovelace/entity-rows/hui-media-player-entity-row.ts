@@ -162,6 +162,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       ha-slider {
         flex-grow: 2;
         flex-shrink: 2;
+        width: 100%;
       }
     `;
   }
