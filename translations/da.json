@@ -659,6 +659,18 @@
                 },
                 "updater": {
                     "title": "Opdateringsvejledning"
+                },
+                "vacuum": {
+                    "clean_spot": "Rengør sted",
+                    "commands": "Støvsuger kommandoer",
+                    "fan_speed": "Blæserhastighed",
+                    "locate": "Lokaliser",
+                    "pause": "Pause",
+                    "return_home": "Retur til ladestation",
+                    "start": "Start",
+                    "start_pause": "Start/Pause",
+                    "status": "Status",
+                    "stop": "Stop"
                 }
             },
             "more_info_settings": {
@@ -1679,7 +1691,7 @@
                         "name": "Navn",
                         "new_zone": "Ny zone",
                         "passive": "Passiv",
-                        "passive_note": "Passive zoner er skjult i brugerfladen og bruges ikke som lokalitet for enhedssporere. Dette er nyttigt, hvis du bare vil bruge det til automatiseringer.",
+                        "passive_note": "Passive zoner er skjult i brugerfladen og bruges ikke som lokalitet for enhedssporere. Dette er nyttigt, hvis du bare vil bruge dem til automatiseringer.",
                         "radius": "Radius",
                         "required_error_msg": "Dette felt er påkrævet",
                         "update": "Opdater"

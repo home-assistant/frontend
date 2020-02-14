@@ -359,7 +359,7 @@
             "idle": "Tétlen",
             "off": "Ki",
             "on": "Be",
-            "paused": "Felfüggesztve",
+            "paused": "Szüneteltetve",
             "returning": "Dokkolás folyamatban"
         },
         "weather": {
@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Ha le van tiltva, akkor az újonnan felfedezett {integration} entitások nem lesznek automatikusan hozzáadva a Home Assistant-hoz.",
                 "enable_new_entities_label": "Újonnan hozzáadott entitások engedélyezése.",
-                "title": "{integration} rendszerbeállításai"
+                "title": "{integration} rendszerbeállításai",
+                "update": "Frissítés"
             },
             "confirmation": {
                 "cancel": "Mégse",
@@ -629,7 +630,7 @@
                     "unavailable": "Ez az entitás jelenleg nem elérhető.",
                     "update": "FRISSÍTÉS"
                 },
-                "related": "Kapcsolódás",
+                "related": "Kapcsolatok",
                 "settings": "Beállítások"
             },
             "generic": {
@@ -659,6 +660,18 @@
                 },
                 "updater": {
                     "title": "Frissítési Instrukciók"
+                },
+                "vacuum": {
+                    "clean_spot": "Helyi takarítás",
+                    "commands": "Porszívó parancsok:",
+                    "fan_speed": "Szívóerő",
+                    "locate": "Keresés",
+                    "pause": "Szünet",
+                    "return_home": "Hazatérés",
+                    "start": "Indítás",
+                    "start_pause": "Indítás/szünet",
+                    "status": "Állapot",
+                    "stop": "Leállítás"
                 }
             },
             "more_info_settings": {
@@ -1112,7 +1125,7 @@
                         "forgot_password": "elfelejtett jelszó?",
                         "introduction": "A Home Assistant Felhő biztonságos távoli kapcsolatot nyújt a példányodhoz, miközben távol vagy. Azt is lehetővé teszi, hogy csak felhőn alapuló szolgáltatásokhoz csatlakozz: Amazon Alexa, Google Asszisztens.",
                         "introduction2": "Ezt a szolgáltatást partnerünk üzemelteti, a ",
-                        "introduction2a": "vállalat, amelyet a Home Assistant és a Hass.io alapítói alapítottak.",
+                        "introduction2a": "vállalat, amelyet a Home Assistant és a Hass.io alapítói hoztak létre.",
                         "introduction3": "A Home Assistant Felhő egy előfizetéses szolgáltatás egy hónapos ingyenes próbaverzióval. Nincs szükség fizetési információk megadására.",
                         "learn_more_link": "Tudj meg többet a Home Assistant Felhőről",
                         "password": "Jelszó",
@@ -1135,7 +1148,7 @@
                         "information": "Hozz létre egy fiókot ahhoz, hogy elindíthasd az egy hónapos ingyenes Home Assistant Felhő próbaidőszakodat. Nincs szükség fizetési információk megadására.",
                         "information2": "A próbaidőszak hozzáférést biztosít a Home Assistant Felhő minden előnyéhez, beleértve a következőket:",
                         "information3": "Ezt a szolgáltatást partnerünk üzemelteti, a ",
-                        "information3a": "vállalat, amelyet a Home Assistant és a Hass.io alapítói alapítottak.",
+                        "information3a": "vállalat, amelyet a Home Assistant és a Hass.io alapítói hoztak létre.",
                         "information4": "Fiók regisztrálásával elfogadod az alábbi feltételeket.",
                         "link_privacy_policy": "Adatvédelmi irányelvek",
                         "link_terms_conditions": "Felhasználási feltételek",
@@ -1253,7 +1266,7 @@
                     "details": "Itt található minden részlet az eszközről.",
                     "device_not_found": "Eszköz nem található.",
                     "entities": {
-                        "add_entities_lovelace": "Mindet a Lovelace felületre",
+                        "add_entities_lovelace": "Hozzáadás a Lovelace-hez",
                         "entities": "Entitások",
                         "none": "Ennek az eszköznek nincsenek entitásai"
                     },
@@ -1496,8 +1509,8 @@
                             "automation": "Automatizálások újratöltése",
                             "core": "Lokáció és testreszabások újratöltése",
                             "group": "Csoportok újratöltése",
-                            "heading": "Konfiguráció újratöltés",
-                            "introduction": "A Home Assistant bizonyos részei újraindítás nélkül újratölthetőek. Az újratöltés az aktuális konfiguráció helyére betölti az újat.",
+                            "heading": "YAML konfiguráció újratöltése",
+                            "introduction": "A Home Assistant bizonyos részei újraindítás nélkül újratölthetőek. Újratöltéskor az aktuálisan betöltött YAML konfiguráció helyére betöltődik az új.",
                             "person": "Személyek újratöltése",
                             "scene": "Jelenetek újratöltése",
                             "script": "Szkriptek újratöltése",

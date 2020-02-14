@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Falls desaktivéiert, ginn nei entdeckten Entitéiten net automatesch zu Home Assistant dobäigesat.",
                 "enable_new_entities_label": "Aktivéiert nei dobäigesate Entitéiten.",
-                "title": "System Optiounen"
+                "title": "System Optiounen",
+                "update": "Aktualiséieren"
             },
             "confirmation": {
                 "cancel": "Ofbriechen",
@@ -659,6 +660,18 @@
                 },
                 "updater": {
                     "title": "Instruktioune fir d'Mise à jour"
+                },
+                "vacuum": {
+                    "clean_spot": "Plaz botzen",
+                    "commands": "Staubsauger Kommandoen:",
+                    "fan_speed": "Vitesse vum Ventilator",
+                    "locate": "Lokaliséieren",
+                    "pause": "Pause",
+                    "return_home": "Zeréck zur Statioun",
+                    "start": "Start",
+                    "start_pause": "Start/Pause",
+                    "status": "Status",
+                    "stop": "Stop"
                 }
             },
             "more_info_settings": {

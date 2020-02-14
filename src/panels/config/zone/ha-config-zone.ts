@@ -46,6 +46,7 @@ import memoizeOne from "memoize-one";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { subscribeEntityRegistry } from "../../../data/entity_registry";
 import { configSections } from "../ha-panel-config";
+import { navigate } from "../../../common/navigate";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
@@ -234,6 +235,10 @@ export class HaConfigZone extends SubscribeMixin(LitElement) {
   protected firstUpdated(changedProps: PropertyValues) {
     super.firstUpdated(changedProps);
     this._fetchData();
+    if (this.route.path === "/new") {
+      navigate(this, "/config/zone", true);
+      this._createZone();
+    }
   }
 
   protected updated(changedProps: PropertyValues) {

@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Si désactivé, les nouvelles entités découvertes pour {integration} ne seront pas ajoutées automatiquement à Home Assistant.",
                 "enable_new_entities_label": "Activer les entités nouvellement ajoutées.",
-                "title": "Options système pour {integration}"
+                "title": "Options système pour {integration}",
+                "update": "Mise à jour"
             },
             "confirmation": {
                 "cancel": "Annuler",
@@ -659,6 +660,18 @@
                 },
                 "updater": {
                     "title": "Instructions de mise à jour"
+                },
+                "vacuum": {
+                    "clean_spot": "Nettoyer Endroit",
+                    "commands": "Commandes d'aspirateur :",
+                    "fan_speed": "Vitesse ventilateur",
+                    "locate": "Localiser",
+                    "pause": "Pause",
+                    "return_home": "Rentrer à la maison",
+                    "start": "Démarrer",
+                    "start_pause": "Démarrer/Pause",
+                    "status": "Statut",
+                    "stop": "Arrêter"
                 }
             },
             "more_info_settings": {

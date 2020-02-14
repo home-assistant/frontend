@@ -160,6 +160,10 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
       this._deviceEntityLookup,
       this._deviceRegistryEntries
     );
+    const name = this.scene
+      ? computeStateName(this.scene)
+      : this.hass.localize("ui.panel.config.scene.editor.default_name");
+
     return html`
         <hass-tabs-subpage
         .hass=${this.hass}
@@ -191,6 +195,13 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
                 `
               : ""
           }
+          ${
+            this.narrow
+              ? html`
+                  <span slot="header">${name}</span>
+                `
+              : ""
+          }
           <div
             id="root"
             class="${classMap({
@@ -198,15 +209,13 @@ export class HaSceneEditor extends SubscribeMixin(LitElement) {
             })}"
           >
             <ha-config-section .isWide=${this.isWide}>
-              <div slot="header">
-                ${
-                  this.scene
-                    ? computeStateName(this.scene)
-                    : this.hass.localize(
-                        "ui.panel.config.scene.editor.default_name"
-                      )
-                }
-              </div>
+              ${
+                !this.narrow
+                  ? html`
+                      <span slot="header">${name}</span>
+                    `
+                  : ""
+              }
               <div slot="introduction">
                 ${this.hass.localize(
                   "ui.panel.config.scene.editor.introduction"

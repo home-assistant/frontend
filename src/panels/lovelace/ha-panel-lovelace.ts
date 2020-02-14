@@ -1,4 +1,5 @@
 import "@material/mwc-button";
+import * as deepFreeze from "deep-freeze";
 
 import {
   fetchConfig,
@@ -263,15 +264,22 @@ class LovelacePanel extends LitElement {
 
   private _checkLovelaceConfig(config: LovelaceConfig) {
     // Somehow there can be badges with value null, we remove those
-    config.views.forEach((view) => {
-      if (view.badges) {
-        view.badges = view.badges.filter(Boolean);
+    let checkedConfig;
+    config.views.forEach((view, index) => {
+      if (view.badges && !view.badges.every(Boolean)) {
+        checkedConfig = checkedConfig || {
+          ...config,
+          views: [...config.views],
+        };
+        checkedConfig.views[index] = { ...view };
+        checkedConfig.views[index].badges = view.badges.filter(Boolean);
       }
     });
+    return checkedConfig ? deepFreeze(checkedConfig) : config;
   }
 
   private _setLovelaceConfig(config: LovelaceConfig, mode: Lovelace["mode"]) {
-    this._checkLovelaceConfig(config);
+    config = this._checkLovelaceConfig(config);
     this.lovelace = {
       config,
       mode,
@@ -295,7 +303,7 @@ class LovelacePanel extends LitElement {
       },
       saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {
         const { config: previousConfig, mode: previousMode } = this.lovelace!;
-        this._checkLovelaceConfig(newConfig);
+        newConfig = this._checkLovelaceConfig(newConfig);
         try {
           // Optimistic update
           this._updateLovelace({
