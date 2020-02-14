@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Wenn deaktiviert werden neu erkannte Entitäten für {integration} nicht automatisch zu Home Assistant hinzugefügt.",
                 "enable_new_entities_label": "Neu hinzugefügte Entitäten aktivieren.",
-                "title": "Einstellungen für {integration}"
+                "title": "Einstellungen für {integration}",
+                "update": "Aktualisieren"
             },
             "confirmation": {
                 "cancel": "Abbrechen",
@@ -659,6 +660,16 @@
                 },
                 "updater": {
                     "title": "Update-Anweisungen"
+                },
+                "vacuum": {
+                    "commands": "Staubsaugerbefehle:",
+                    "fan_speed": "Lüftergeschwindigkeit",
+                    "locate": "Lokalisieren",
+                    "pause": "Pause",
+                    "start": "Start",
+                    "start_pause": "Start/Pause",
+                    "status": "Status",
+                    "stop": "Stoppen"
                 }
             },
             "more_info_settings": {
