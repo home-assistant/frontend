@@ -1811,8 +1811,8 @@
               "show_header_toggle": "Show Header Toggle?",
               "toggle": "Toggle entities."
             },
-            "entity-button": {
-              "name": "Entity Button"
+            "button": {
+              "name": "Button"
             },
             "entity-filter": {
               "name": "Entity Filter"
