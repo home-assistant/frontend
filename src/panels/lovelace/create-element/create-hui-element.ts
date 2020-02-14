@@ -9,7 +9,7 @@ import "../elements/hui-state-label-element";
 import { LovelaceElementConfig } from "../elements/types";
 import { createLovelaceElement } from "./create-element-base";
 
-const ELEMENT_TYPES = new Set([
+const ALWAYS_LOADED_TYPES = new Set([
   "conditional",
   "icon",
   "image",
@@ -20,4 +20,4 @@ const ELEMENT_TYPES = new Set([
 ]);
 
 export const createHuiElement = (config: LovelaceElementConfig) =>
-  createLovelaceElement("element", config, ELEMENT_TYPES);
+  createLovelaceElement("element", config, ALWAYS_LOADED_TYPES);
