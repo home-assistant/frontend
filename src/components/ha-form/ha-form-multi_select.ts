@@ -33,6 +33,10 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
   }
 
   protected render(): TemplateResult {
+    const options = Array.isArray(this.schema.options)
+      ? this.schema.options
+      : Object.values(this.schema.options!);
+
     return html`
       <paper-listbox
         multi
@@ -40,7 +44,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
         .selectedValues=${this.data}
         @selected-items-changed=${this._valueChanged}
       >
-        ${this.schema.options!.map((item) => {
+        ${options.map((item: string | [string, string]) => {
           const value = this._optionValue(item);
           return html`
             <paper-icon-item .itemValue=${value}>

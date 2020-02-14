@@ -43,12 +43,12 @@ export interface HaFormIntegerSchema extends HaFormBaseSchema {
 
 export interface HaFormSelectSchema extends HaFormBaseSchema {
   type: "select";
-  options?: string[];
+  options?: string[] | Array<[string, string]>;
 }
 
 export interface HaFormMultiSelectSchema extends HaFormBaseSchema {
   type: "multi_select";
-  options?: string[];
+  options?: { [key: string]: string } | string[] | Array<[string, string]>;
 }
 
 export interface HaFormFloatSchema extends HaFormBaseSchema {

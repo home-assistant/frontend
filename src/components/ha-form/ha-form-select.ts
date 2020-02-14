@@ -37,7 +37,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
           @selected-item-changed=${this._valueChanged}
         >
           ${this.schema.options!.map(
-            (item) => html`
+            (item: string | [string, string]) => html`
               <paper-item .itemValue=${this._optionValue(item)}>
                 ${this._optionLabel(item)}
               </paper-item>
@@ -48,11 +48,11 @@ export class HaFormSelect extends LitElement implements HaFormElement {
     `;
   }
 
-  private _optionValue(item) {
+  private _optionValue(item: string | [string, string]) {
     return Array.isArray(item) ? item[0] : item;
   }
 
-  private _optionLabel(item) {
+  private _optionLabel(item: string | [string, string]) {
     return Array.isArray(item) ? item[1] : item;
   }
 
