@@ -119,7 +119,9 @@ class HaPanelProfile extends LitElement {
                   <ha-push-notifications-row
                     .narrow=${this.narrow}
                     .hass=${this.hass}
-                  ></ha-push-notifications-row>` : ""}
+                  ></ha-push-notifications-row>
+                `
+              : ""}
             ${this.hass.user!.is_admin
               ? html`
                   <ha-advanced-mode-row
