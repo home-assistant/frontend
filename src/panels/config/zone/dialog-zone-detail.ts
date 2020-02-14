@@ -100,7 +100,7 @@ class DialogZoneDetail extends LitElement {
         @closing="${this._close}"
         scrimClickAction=""
         escapeKeyAction=""
-        .title=${title}
+        .heading=${title}
       >
         <div>
           ${this._error
