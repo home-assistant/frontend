@@ -576,13 +576,13 @@
             },
             "related-items": {
                 "area": "영역",
-                "automation": "다음 자동화의 일부",
+                "automation": "관련된 자동화",
                 "device": "기기",
                 "entity": "관련된 구성요소",
-                "group": "다음 그룹의 일부",
+                "group": "관련된 그룹",
                 "integration": "통합 구성요소",
-                "scene": "다음 씬의 일부",
-                "script": "다음 스크립트의 일부"
+                "scene": "관련된 씬",
+                "script": "관련된 스크립트"
             },
             "relative_time": {
                 "duration": {
@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "비활성화한 경우 새로 발견된 {integration} 구성요소는 Home Assistant 에 자동으로 추가되지 않습니다.",
                 "enable_new_entities_label": "새로 추가된 구성요소를 활성화합니다.",
-                "title": "{integration} 시스템 옵션"
+                "title": "{integration} 시스템 옵션",
+                "update": "업데이트"
             },
             "confirmation": {
                 "cancel": "취소",
