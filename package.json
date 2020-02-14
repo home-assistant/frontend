@@ -106,7 +106,6 @@
     "preact-compat": "^3.18.4",
     "react-big-calendar": "^0.20.4",
     "regenerator-runtime": "^0.13.2",
-    "resize-observer": "^1.0.0",
     "roboto-fontface": "^0.10.0",
     "superstruct": "^0.6.1",
     "tslib": "^1.10.0",
