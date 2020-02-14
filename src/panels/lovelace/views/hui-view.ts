@@ -5,8 +5,6 @@ import {
   PropertyValues,
   TemplateResult,
 } from "lit-element";
-import Muuri from "muuri/dist/muuri";
-import { ResizeObserver } from "resize-observer";
 
 import "../../../components/entity/ha-state-label-badge";
 // This one is for types
@@ -26,13 +24,16 @@ import { createCardElement } from "../create-element/create-card-element";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { HuiErrorCard } from "../cards/hui-error-card";
 import { computeCardSize } from "../common/compute-card-size";
+import { computeRTL } from "../../../common/util/compute_rtl";
+import { debounce } from "../../../common/util/debounce";
+import { createBadgeElement } from "../create-element/create-badge-element";
 import { processConfigEntities } from "../common/process-config-entities";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { createCardElement } from "../create-element/create-card-element";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 
-let editCodeLoaded = false;
+let murriGrid: any;
 
 let options = {
   dragEnabled: true,
@@ -60,8 +61,22 @@ export class HUIView extends LitElement {
   @property() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
 
   @property() private _badges: LovelaceBadge[] = [];
+  @property() private editCodeLoaded: boolean = false;
   private _grids: any[] = [];
-  private _observer: any;
+  // @ts-ignore
+  private _resizeObserver?: ResizeObserver;
+  private _debouncedResizeListener = debounce(
+    () => {
+      if (!this._grids) {
+        return;
+      }
+      this._grids.forEach((grid) => {
+        grid.refreshItems().layout();
+      });
+    },
+    100,
+    false
+  );
 
   // Public to make demo happy
   public createCardElement(cardConfig: LovelaceCardConfig) {
@@ -232,9 +247,13 @@ export class HUIView extends LitElement {
     const hass = this.hass!;
     const lovelace = this.lovelace!;
 
-    if (lovelace.editMode && !editCodeLoaded) {
-      editCodeLoaded = true;
-      import(/* webpackChunkName: "hui-view-editable" */ "./hui-view-editable");
+    if (lovelace.editMode && !this.editCodeLoaded) {
+      import(
+        /* webpackChunkName: "hui-view-editable" */ "./hui-view-editable"
+      ).then((muuri) => {
+        murriGrid = muuri.default;
+        this.editCodeLoaded = true;
+      });
     }
 
     const hassChanged = changedProperties.has("hass");
@@ -259,14 +278,15 @@ export class HUIView extends LitElement {
     }
 
     if (editModeChanged && !lovelace!.editMode) {
-      this._observer.destoy();
+      this._resizeObserver.disconnect();
       this._grids = [];
     }
 
     if (
       (configChanged && !lovelace.editMode) ||
       editModeChanged ||
-      changedProperties.has("columns")
+      changedProperties.has("columns") ||
+      changedProperties.has("editCodeLoaded")
     ) {
       this._createCards(lovelace.config.views[this.index!]);
     } else if (hassChanged) {
@@ -349,11 +369,7 @@ export class HUIView extends LitElement {
     }
 
     if (this.lovelace!.editMode) {
-      this._observer = new ResizeObserver(() => {
-        this._grids.forEach((grid) => {
-          grid.refreshItems().layout();
-        });
-      });
+      this._attachObserver();
 
       options = {
         ...options,
@@ -366,7 +382,7 @@ export class HUIView extends LitElement {
 
       columns.forEach((columnEl) => {
         this._grids.push(
-          new Muuri(columnEl, options) // The events here make sure the card doesnt grow to the size of the window
+          new murriGrid(columnEl, options) // The events here make sure the card doesnt grow to the size of the window
             .on("dragStart", (item) => {
               item.getElement().style.width = item.getWidth() + "px";
               item.getElement().style.height = item.getHeight() + "px";
@@ -415,7 +431,12 @@ export class HUIView extends LitElement {
         itemContent.appendChild(wrapper);
         item.cardConfig = cardConfig;
 
-        this._observer.observe(item);
+        if (this._resizeObserver) {
+          this._resizeObserver.observe(item);
+        } else {
+          item.addEventListener("resize", this._debouncedResizeListener);
+        }
+
         item.appendChild(itemContent);
         this._grids[cardIndex % this.columns!].add(item);
       }
@@ -488,6 +509,19 @@ export class HUIView extends LitElement {
     };
 
     this.lovelace!.saveConfig(this.lovelace!.config);
+  }
+
+  private _attachObserver(): void {
+    // Observe changes to card size and refreshes grids
+    // Uses ResizeObserver in Chrome, otherwise window resize event
+
+    // @ts-ignore
+    if (typeof ResizeObserver === "function") {
+      // @ts-ignore
+      this._resizeObserver = new ResizeObserver(() =>
+        this._debouncedResizeListener()
+      );
+    }
   }
 }
 
