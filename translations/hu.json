@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Ha le van tiltva, akkor az újonnan felfedezett {integration} entitások nem lesznek automatikusan hozzáadva a Home Assistant-hoz.",
                 "enable_new_entities_label": "Újonnan hozzáadott entitások engedélyezése.",
-                "title": "{integration} rendszerbeállításai"
+                "title": "{integration} rendszerbeállításai",
+                "update": "Frissítés"
             },
             "confirmation": {
                 "cancel": "Mégse",

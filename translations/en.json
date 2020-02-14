@@ -641,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "Dismiss dialog",
                 "edit": "Edit entity",
+                "person": {
+                    "create_zone": "Create zone from current location"
+                },
                 "restored": {
                     "confirm_remove_text": "Are you sure you want to remove this entity?",
                     "confirm_remove_title": "Remove entity?",
@@ -892,6 +895,7 @@
                         },
                         "edit_ui": "Edit with UI",
                         "edit_yaml": "Edit as YAML",
+                        "enable_disable": "Enable/Disable automation",
                         "introduction": "Use automations to bring your home alive.",
                         "load_error_not_editable": "Only automations in automations.yaml are editable.",
                         "load_error_unknown": "Error loading automation ({err_no}).",
@@ -1006,7 +1010,7 @@
                 "cloud": {
                     "account": {
                         "alexa": {
-                            "config_documentation": "Config documentation",
+                            "config_documentation": "Configuration documentation",
                             "disable": "disable",
                             "enable": "enable",
                             "enable_ha_skill": "Enable the Home Assistant skill for Alexa",
@@ -1023,7 +1027,7 @@
                         "connection_status": "Cloud connection status",
                         "fetching_subscription": "Fetching subscription…",
                         "google": {
-                            "config_documentation": "Config documentation",
+                            "config_documentation": "Configuration documentation",
                             "devices_pin": "Security Devices Pin",
                             "enable_ha_skill": "Activate the Home Assistant skill for Google Assistant",
                             "enable_state_reporting": "Enable State Reporting",
@@ -1372,7 +1376,7 @@
                         "add_area": "Add Area",
                         "area_picker_label": "Area",
                         "close": "Close",
-                        "created_config": "Created config for {name}.",
+                        "created_config": "Created configuration for {name}.",
                         "dismiss": "Dismiss dialog",
                         "error_saving_area": "Error saving area: {error}",
                         "external_step": {
@@ -1525,7 +1529,7 @@
                             "stop": "Stop"
                         },
                         "validation": {
-                            "check_config": "Check config",
+                            "check_config": "Check configuration",
                             "heading": "Configuration validation",
                             "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid",
                             "invalid": "Configuration invalid",
@@ -1697,7 +1701,7 @@
                         "required_error_msg": "This field is required",
                         "update": "Update"
                     },
-                    "edit_home_zone": "The location of your home can be changed in the general config.",
+                    "edit_home_zone": "The location of your home can be changed in the general configuration.",
                     "introduction": "Zones allow you to specify certain regions on earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
                     "no_zones_created_yet": "Looks like you have not created any zones yet."
                 },
@@ -1725,12 +1729,12 @@
                         "network_stopped": "Z-Wave Network Stopped"
                     },
                     "node_config": {
-                        "config_parameter": "Config Parameter",
-                        "config_value": "Config Value",
+                        "config_parameter": "Configuration Parameter",
+                        "config_value": "Configuration Value",
                         "false": "False",
-                        "header": "Node Config Options",
+                        "header": "Node Configuration Options",
                         "seconds": "seconds",
-                        "set_config_parameter": "Set Config Parameter",
+                        "set_config_parameter": "Set Configuration Parameter",
                         "set_wakeup": "Set Wakeup Interval",
                         "true": "True"
                     },
@@ -1744,7 +1748,7 @@
                         "cancel_command": "Cancel Command",
                         "heal_network": "Heal Network",
                         "remove_node": "Remove Node",
-                        "save_config": "Save Config",
+                        "save_config": "Save Configuration",
                         "soft_reset": "Soft Reset",
                         "start_network": "Start Network",
                         "stop_network": "Stop Network",
@@ -1883,7 +1887,7 @@
             "lovelace": {
                 "add_entities": {
                     "generated_unsupported": "You can only use this function when you have taken control of the Lovelace UI.",
-                    "saving_failed": "Saving Lovelace UI config failed.",
+                    "saving_failed": "Saving Lovelace UI configuration failed.",
                     "yaml_unsupported": "You can not use this function when using Lovelace UI in YAML mode."
                 },
                 "cards": {
@@ -2070,24 +2074,24 @@
                     "header": "Edit UI",
                     "menu": {
                         "open": "Open Lovelace UI menu",
-                        "raw_editor": "Raw config editor"
+                        "raw_editor": "Raw configuration editor"
                     },
                     "migrate": {
                         "header": "Configuration Incompatible",
-                        "migrate": "Migrate config",
-                        "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate config' button.",
+                        "migrate": "Migrate configuration",
+                        "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate configuration' button.",
                         "para_no_id": "This element doesn't have an ID. Please add an ID to this element in 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "We will automatically generate your Lovelace UI views with your areas and devices if you remove your Lovelace UI configuration.",
                         "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration? We will automatically generate your Lovelace UI views with your areas and devices.",
                         "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
-                        "confirm_unsaved_comments": "Your config contains comment(s), these will not be saved. Do you want to continue?",
-                        "error_invalid_config": "Your config is not valid: {error}",
+                        "confirm_unsaved_comments": "Your configuration contains comment(s), these will not be saved. Do you want to continue?",
+                        "error_invalid_config": "Your configuration is not valid: {error}",
                         "error_parse_yaml": "Unable to parse YAML: {error}",
-                        "error_remove": "Unable to remove config: {error}",
+                        "error_remove": "Unable to remove configuration: {error}",
                         "error_save_yaml": "Unable to save YAML: {error}",
-                        "header": "Edit Config",
+                        "header": "Edit Configuration",
                         "save": "Save",
                         "saved": "Saved",
                         "unsaved_changes": "Unsaved changes"
@@ -2209,7 +2213,7 @@
                                     "data": {
                                         "password": "API Password"
                                     },
-                                    "description": "Please input the API password in your http config:"
+                                    "description": "Please input the API password in your HTTP configuration:"
                                 },
                                 "mfa": {
                                     "data": {
