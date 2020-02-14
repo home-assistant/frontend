@@ -1,4 +1,5 @@
 import "../cards/hui-entities-card";
+import "../cards/hui-button-card";
 import "../cards/hui-entity-button-card";
 import "../cards/hui-glance-card";
 import "../cards/hui-history-graph-card";
@@ -14,6 +15,7 @@ import { createLovelaceElement } from "./create-element-base";
 
 const ALWAYS_LOADED_TYPES = new Set([
   "entities",
+  "button",
   "entity-button",
   "error",
   "glance",
