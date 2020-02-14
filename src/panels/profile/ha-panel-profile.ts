@@ -31,7 +31,7 @@ import {
   getOptimisticFrontendUserDataCollection,
   CoreFrontendUserData,
 } from "../../data/frontend";
-import { isExternal } from "../data/external";
+import { isExternal } from "../../data/external";
 import { haStyle } from "../../resources/styles";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
