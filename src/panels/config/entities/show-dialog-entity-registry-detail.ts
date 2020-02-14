@@ -3,7 +3,8 @@ import { EntityRegistryEntry } from "../../../data/entity_registry";
 import { DialogEntityRegistryDetail } from "./dialog-entity-registry-detail";
 
 export interface EntityRegistryDetailDialogParams {
-  entry: EntityRegistryEntry;
+  entry?: EntityRegistryEntry;
+  entity_id: string;
 }
 
 export const loadEntityRegistryDetailDialog = () =>
@@ -21,12 +22,12 @@ const getDialog = () => {
 
 export const showEntityRegistryDetailDialog = (
   element: HTMLElement,
-  systemLogDetailParams: EntityRegistryDetailDialogParams
+  entityDetailParams: EntityRegistryDetailDialogParams
 ): (() => DialogEntityRegistryDetail | undefined) => {
   fireEvent(element, "show-dialog", {
     dialogTag: "dialog-entity-registry-detail",
     dialogImport: loadEntityRegistryDetailDialog,
-    dialogParams: systemLogDetailParams,
+    dialogParams: entityDetailParams,
   });
   return getDialog;
 };

@@ -507,16 +507,13 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   }
 
   private _openEditEntry(ev: CustomEvent): void {
-    const entryId = (ev.detail as RowClickedEvent).id;
+    const entityId = (ev.detail as RowClickedEvent).id;
     const entry = this._entities!.find(
-      (entity) => entity.entity_id === entryId
+      (entity) => entity.entity_id === entityId
     );
-    if (!entry) {
-      fireEvent(this, "hass-more-info", { entityId: entryId });
-      return;
-    }
     this.getDialog = showEntityRegistryDetailDialog(this, {
       entry,
+      entity_id: entityId,
     });
   }
 
