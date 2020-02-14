@@ -79,6 +79,7 @@
     "codemirror": "^5.49.0",
     "cpx": "^1.5.0",
     "deep-clone-simple": "^1.1.1",
+    "deep-freeze": "^0.0.1",
     "es6-object-assign": "^1.1.0",
     "fecha": "^3.0.2",
     "fuse.js": "^3.4.4",
