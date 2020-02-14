@@ -21,6 +21,11 @@ import {
   SUPPORTS_PLAY,
   SUPPORT_NEXT_TRACK,
   SUPPORT_PAUSE,
+  SUPPORT_TURN_ON,
+  SUPPORT_TURN_OFF,
+  SUPPORT_PREV_TRACK,
+  SUPPORT_VOLUME_SET,
+  SUPPORT_VOLUME_MUTE,
 } from "../../../data/media-player";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
@@ -68,68 +73,89 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
         .config=${this._config}
         .secondaryText=${this._computeMediaTitle(stateObj)}
       >
-        ${stateObj.state === "off" || stateObj.state === "idle"
+        ${Boolean(
+          OFF_STATES.includes(stateObj.state)
+            ? supportsFeature(stateObj, SUPPORT_TURN_ON)
+            : supportsFeature(stateObj, SUPPORT_TURN_OFF)
+        )
           ? html`
-              <div class="text-content">
-                ${this.hass!.localize(`state.media_player.${stateObj.state}`) ||
-                  this.hass!.localize(`state.default.${stateObj.state}`) ||
-                  stateObj.state}
-              </div>
-            `
-          : html`
-              <div class="controls">
-                ${stateObj.state !== "playing" &&
-                !supportsFeature(stateObj, SUPPORTS_PLAY)
-                  ? ""
-                  : html`
-                      <paper-icon-button
-                        icon=${this._computeControlIcon(stateObj)}
-                        @click=${this._playPause}
-                      ></paper-icon-button>
-                    `}
-                ${supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
-                  ? html`
-                      <paper-icon-button
-                        icon="hass:skip-next"
-                        @click=${this._nextTrack}
-                      ></paper-icon-button>
-                    `
-                  : ""}
-              </div>
-            `}
-      </hui-generic-entity-row>
-      ${stateObj.attributes.volume_level
-        ? html`
-            <div class="flex">
               <paper-icon-button
-                .icon=${stateObj.attributes.is_volume_muted
-                  ? "hass:volume-off"
-                  : "hass:volume-high"}
-                @click=${this._toggleMute}
+                icon="hass:power"
+                @click=${this._togglePower}
               ></paper-icon-button>
-              <ha-slider
-                .dir=${computeRTLDirection(this.hass!)}
-                .value=${Number(stateObj.attributes.volume_level) * 100}
-                pin
-                @change=${this._selectedValueChanged}
-                ignore-bar-touch
-                id="input"
-              ></ha-slider>
-            </div>
-          `
-        : ""}
+            `
+          : ""}
+        <div slot="secondary">${this._computeMediaTitle(stateObj)}</div>
+      </hui-generic-entity-row>
+      <div class="flex">
+        <div class="volume">
+          ${supportsFeature(stateObj, SUPPORT_VOLUME_MUTE)
+            ? html`
+                <paper-icon-button
+                  .icon=${stateObj.attributes.is_volume_muted
+                    ? "hass:volume-off"
+                    : "hass:volume-high"}
+                  @click=${this._toggleMute}
+                ></paper-icon-button>
+              `
+            : ""}
+          ${supportsFeature(stateObj, SUPPORT_VOLUME_SET)
+            ? html`
+                <ha-slider
+                  .dir=${computeRTLDirection(this.hass!)}
+                  .value=${Number(stateObj.attributes.volume_level) * 100}
+                  pin
+                  @change=${this._selectedValueChanged}
+                  ignore-bar-touch
+                  id="input"
+                ></ha-slider>
+              `
+            : ""}
+        </div>
+        <div class="controls">
+          ${supportsFeature(stateObj, SUPPORT_PREV_TRACK)
+            ? html`
+                <paper-icon-button
+                  icon="hass:skip-previous"
+                  @click=${this._previousTrack}
+                ></paper-icon-button>
+              `
+            : ""}
+          ${stateObj.state !== "playing" &&
+          !supportsFeature(stateObj, SUPPORTS_PLAY)
+            ? ""
+            : html`
+                <paper-icon-button
+                  icon=${this._computeControlIcon(stateObj)}
+                  @click=${this._playPause}
+                ></paper-icon-button>
+              `}
+          ${supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
+            ? html`
+                <paper-icon-button
+                  icon="hass:skip-next"
+                  @click=${this._nextTrack}
+                ></paper-icon-button>
+              `
+            : ""}
+        </div>
+      </div>
     `;
   }
 
   static get styles(): CSSResult {
     return css`
-      .controls {
-        white-space: nowrap;
-      }
       .flex {
         display: flex;
         align-items: center;
         padding-left: 48px;
+        justify-content: space-between;
+      }
+      .volume {
+        display: flex;
+      }
+      .controls {
+        white-space: nowrap;
       }
     `;
   }
@@ -169,8 +195,26 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     return prefix && suffix ? `${prefix}: ${suffix}` : prefix || suffix || "";
   }
 
+  private _togglePower(): void {
+    const stateObj = this.hass!.states[this._config!.entity];
+
+    this.hass!.callService(
+      "media_player",
+      OFF_STATES.includes(stateObj.state) ? "turn_on" : "turn_off",
+      {
+        entity_id: this._config!.entity,
+      }
+    );
+  }
+
   private _playPause(): void {
     this.hass!.callService("media_player", "media_play_pause", {
+      entity_id: this._config!.entity,
+    });
+  }
+
+  private _previousTrack(): void {
+    this.hass!.callService("media_player", "media_previous_track", {
       entity_id: this._config!.entity,
     });
   }
