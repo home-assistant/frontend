@@ -35,7 +35,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   }
 
   @property() public hass?: HomeAssistant;
-  @property() public _stateHistory?: any;
+  @property() private _stateHistory?: any;
   @property() private _config?: HistoryGraphCardConfig;
   private _configEntities?: EntityConfig[];
   private _names: { [key: string]: string } = {};
