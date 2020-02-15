@@ -26,6 +26,7 @@ import {
   SUPPORT_PREV_TRACK,
   SUPPORT_VOLUME_SET,
   SUPPORT_VOLUME_MUTE,
+  SUPPORT_VOLUME_BUTTONS,
 } from "../../../data/media-player";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { computeRTLDirection } from "../../../common/util/compute_rtl";
@@ -33,8 +34,10 @@ import { computeRTLDirection } from "../../../common/util/compute_rtl";
 @customElement("hui-media-player-entity-row")
 class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
-
   @property() private _config?: EntityConfig;
+  private _loaded?: boolean;
+  private _updated?: boolean;
+  private _narrow?: boolean;
 
   public setConfig(config: EntityConfig): void {
     if (!config || !config.entity) {
@@ -42,6 +45,20 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
     }
 
     this._config = config;
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (this._updated && !this._loaded) {
+      this._initialLoad();
+    }
+  }
+
+  protected firstUpdated(): void {
+    this._updated = true;
+    if (this.isConnected && !this._loaded) {
+      this._initialLoad();
+    }
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -99,7 +116,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                 ></paper-icon-button>
               `
             : ""}
-          ${supportsFeature(stateObj, SUPPORT_VOLUME_SET)
+          ${supportsFeature(stateObj, SUPPORT_VOLUME_SET) && !this._narrow
             ? html`
                 <ha-slider
                   .dir=${computeRTLDirection(this.hass!)}
@@ -109,6 +126,17 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                   ignore-bar-touch
                   id="input"
                 ></ha-slider>
+              `
+            : supportsFeature(stateObj, SUPPORT_VOLUME_BUTTONS)
+            ? html`
+                <paper-icon-button
+                  icon="hass:volume-minus"
+                  @click=${this._volumeDown}
+                ></paper-icon-button>
+                <paper-icon-button
+                  icon="hass:volume-plus"
+                  @click=${this._volumeUp}
+                ></paper-icon-button>
               `
             : ""}
         </div>
@@ -165,6 +193,19 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
         width: 100%;
       }
     `;
+  }
+
+  private async _initialLoad(): Promise<void> {
+    this._narrow = false;
+    this._loaded = true;
+
+    if (!this.parentElement) {
+      return;
+    }
+
+    if (this.parentElement.clientWidth < 350) {
+      this._narrow = true;
+    }
   }
 
   private _computeControlIcon(stateObj: HassEntity): string {
@@ -237,6 +278,18 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
       entity_id: this._config!.entity,
       is_volume_muted: !this.hass!.states[this._config!.entity].attributes
         .is_volume_muted,
+    });
+  }
+
+  private _volumeDown() {
+    this.hass!.callService("media_player", "volume_down", {
+      entity_id: this._config!.entity,
+    });
+  }
+
+  private _volumeUp() {
+    this.hass!.callService("media_player", "volume_up", {
+      entity_id: this._config!.entity,
     });
   }
 
