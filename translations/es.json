@@ -641,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "Descartar diálogo",
                 "edit": "Editar entidad",
+                "person": {
+                    "create_zone": "Crear zona a partir de la ubicación actual"
+                },
                 "restored": {
                     "confirm_remove_text": "¿Estás seguro de que deseas eliminar esta entidad?",
                     "confirm_remove_title": "¿Eliminar entidad?",
@@ -892,6 +895,7 @@
                         },
                         "edit_ui": "Editar con la interfaz de usuario",
                         "edit_yaml": "Editar como YAML",
+                        "enable_disable": "Activar/Desactivar automatización",
                         "introduction": "Utiliza automatizaciones para darle vida a tu hogar.",
                         "load_error_not_editable": "Solo las automatizaciones en automations.yaml son editables.",
                         "load_error_unknown": "Error al cargar la automatización ({err_no}).",
@@ -1525,7 +1529,7 @@
                             "stop": "Detener"
                         },
                         "validation": {
-                            "check_config": "Verificar la configuración",
+                            "check_config": "Verificar configuración",
                             "heading": "Validación de la configuración",
                             "introduction": "Valida tu configuración si has realizado cambios recientemente y quieres asegurarte de que son correctos",
                             "invalid": "Configuración no válida",
@@ -2075,7 +2079,7 @@
                     "migrate": {
                         "header": "Configuración incompatible",
                         "migrate": "Migrar configuración",
-                        "para_migrate": "Home Assistant puede añadir ID's a todas tus tarjetas y vistas automáticamente pulsando el botón 'Migrar configuración'.",
+                        "para_migrate": "Home Assistant puede añadir IDs a todas tus tarjetas y vistas automáticamente pulsando el botón 'Migrar configuración'.",
                         "para_no_id": "Este elemento no tiene un ID. Por favor añade uno a este elemento en 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
@@ -2209,7 +2213,7 @@
                                     "data": {
                                         "password": "Contraseña de API"
                                     },
-                                    "description": "Introduce la contraseña de la API en tu configuración http:"
+                                    "description": "Introduce la contraseña de la API en tu configuración HTTP:"
                                 },
                                 "mfa": {
                                     "data": {

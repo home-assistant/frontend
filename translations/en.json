@@ -1928,6 +1928,9 @@
                             "available_states": "Available States",
                             "name": "Alarm Panel"
                         },
+                        "button": {
+                            "name": "Button"
+                        },
                         "conditional": {
                             "name": "Conditional"
                         },
