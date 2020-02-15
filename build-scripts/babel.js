@@ -34,6 +34,7 @@ module.exports.babelLoaderConfig = ({ latestBuild }) => {
             },
           ],
           "@babel/plugin-proposal-optional-chaining",
+          "@babel/plugin-proposal-nullish-coalescing-operator",
           [
             require("@babel/plugin-proposal-decorators").default,
             { decoratorsBeforeExport: true },
