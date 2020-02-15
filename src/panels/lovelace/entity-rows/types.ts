@@ -1,5 +1,6 @@
 import { HomeAssistant } from "../../../types";
 import { Condition } from "../common/validate-condition";
+import { EntitiesCardEntityConfig } from "../cards/types";
 
 export interface EntityConfig {
   entity: string;
@@ -28,7 +29,7 @@ export interface WeblinkConfig {
   icon?: string;
   url: string;
 }
-export interface ButtonRowConfig extends EntityConfig {
+export interface ButtonRowConfig extends EntitiesCardEntityConfig {
   type: "button" | "call-service";
   action_name?: string;
   service: string;
