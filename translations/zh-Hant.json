@@ -641,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "忽略對話",
                 "edit": "編輯物件",
+                "person": {
+                    "create_zone": "使用目前位置新增區域"
+                },
                 "restored": {
                     "confirm_remove_text": "確定要移除此物件？",
                     "confirm_remove_title": "移除物件？",
@@ -892,6 +895,7 @@
                         },
                         "edit_ui": "以 UI 編輯",
                         "edit_yaml": "以 YAML 編輯",
+                        "enable_disable": "開啟/關閉自動化",
                         "introduction": "使用自動化來讓你的智能家居更有魅力吧。",
                         "load_error_not_editable": "僅有 automations.yaml 內的自動化方能編輯。",
                         "load_error_unknown": "載入自動化錯誤（{err_no}）。",

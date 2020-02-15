@@ -641,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "대화창 닫기",
                 "edit": "구성요소 편집",
+                "person": {
+                    "create_zone": "현재 위치로 지역 만들기"
+                },
                 "restored": {
                     "confirm_remove_text": "이 구성요소를 제거하시겠습니까?",
                     "confirm_remove_title": "구성요소를 제거하시겠습니까?",
@@ -892,6 +895,7 @@
                         },
                         "edit_ui": "UI 로 편집",
                         "edit_yaml": "YAML 로 편집",
+                        "enable_disable": "자동화 활성화 / 비활성화",
                         "introduction": "자동화를 사용하여 집에 생기를 불어넣으세요",
                         "load_error_not_editable": "automations.yaml 의 자동화만 편집할 수 있습니다.",
                         "load_error_unknown": "자동화를 읽어오는 도중 오류가 발생했습니다 ({err_no}).",
