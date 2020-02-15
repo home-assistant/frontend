@@ -49,6 +49,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       hold_action: { action: "more-info" },
       show_icon: true,
       show_name: true,
+      state_color: true,
     };
   }
 
@@ -148,7 +149,9 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
           ? html`
               <ha-icon
                 data-domain=${ifDefined(
-                  stateObj ? computeStateDomain(stateObj) : undefined
+                  this._config.state_color && stateObj
+                    ? computeStateDomain(stateObj)
+                    : undefined
                 )}
                 data-state=${ifDefined(
                   stateObj ? computeActiveState(stateObj) : undefined
@@ -226,7 +229,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   private _computeBrightness(stateObj: HassEntity | LightEntity): string {
-    if (!stateObj.attributes.brightness) {
+    if (!stateObj.attributes.brightness || !this._config?.state_color) {
       return "";
     }
     const brightness = stateObj.attributes.brightness;
@@ -234,7 +237,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
   }
 
   private _computeColor(stateObj: HassEntity | LightEntity): string {
-    if (!stateObj.attributes.hs_color) {
+    if (!stateObj.attributes.hs_color || !this._config?.state_color) {
       return "";
     }
     const [hue, sat] = stateObj.attributes.hs_color;
