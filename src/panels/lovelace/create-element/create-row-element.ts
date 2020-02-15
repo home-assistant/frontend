@@ -16,7 +16,7 @@ const ALWAYS_LOADED_TYPES = new Set([
   "sensor-entity",
   "text-entity",
   "toggle-entity",
-  "button-row",
+  "button",
   "call-service",
 ]);
 const LAZY_LOAD_TYPES = {
