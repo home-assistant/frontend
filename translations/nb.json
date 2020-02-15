@@ -641,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "Avvis dialogboksen",
                 "edit": "Redigér entitet",
+                "person": {
+                    "create_zone": "Opprett sone fra gjeldende plassering"
+                },
                 "restored": {
                     "confirm_remove_text": "Er du sikker på at du vil fjerne denne entiteten?",
                     "confirm_remove_title": "Vil du fjerne entiteten?",
@@ -892,6 +895,7 @@
                         },
                         "edit_ui": "Rediger med UI",
                         "edit_yaml": "Rediger som YAML",
+                        "enable_disable": "Aktivere/deaktivere automatisering",
                         "introduction": "Bruk automasjon for å få liv i hjemmet ditt",
                         "load_error_not_editable": "Kun automasjoner i automations.yaml kan redigeres.",
                         "load_error_unknown": "Feil ved lasting av automasjon ({err_no}).",
