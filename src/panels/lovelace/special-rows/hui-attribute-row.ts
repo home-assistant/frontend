@@ -26,10 +26,10 @@ class HuiAttributeRow extends LitElement implements LovelaceRow {
       throw new Error("Configuration error");
     }
     if (!config.entity) {
-      throw new Error("entity not defined");
+      throw new Error("Entity not defined");
     }
     if (!config.attribute) {
-      throw new Error("attribute not defined");
+      throw new Error("Attribute not defined");
     }
     this._config = config;
   }
