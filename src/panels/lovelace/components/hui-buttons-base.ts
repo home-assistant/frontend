@@ -14,15 +14,18 @@ import "../../../components/entity/state-badge";
 import "../../../components/ha-icon";
 
 import { HomeAssistant } from "../../../types";
-import { EntityConfig } from "../entity-rows/types";
-import { toggleEntity } from "../common/entity/toggle-entity";
 import { computeTooltip } from "../common/compute-tooltip";
 // tslint:disable-next-line: no-duplicate-imports
 import { StateBadge } from "../../../components/entity/state-badge";
+import { actionHandler } from "../common/directives/action-handler-directive";
+import { hasAction } from "../common/has-action";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { handleAction } from "../common/handle-action";
+import { EntitiesCardEntityConfig } from "../cards/types";
 
 @customElement("hui-buttons-base")
 export class HuiButtonsBase extends LitElement {
-  @property() public configEntities?: EntityConfig[];
+  @property() public configEntities?: EntitiesCardEntityConfig[];
   @queryAll("state-badge") protected _badges!: StateBadge[];
   private _hass?: HomeAssistant;
 
@@ -46,7 +49,12 @@ export class HuiButtonsBase extends LitElement {
           <div>
             <state-badge
               title=${computeTooltip(this._hass!, entityConf)}
-              @click=${this._toggle}
+              @action=${this._handleAction}
+              .actionHandler=${actionHandler({
+                hasHold: hasAction(entityConf.hold_action),
+                hasDoubleClick: hasAction(entityConf.double_tap_action),
+              })}
+              .config=${entityConf}
               .hass=${this._hass}
               .stateObj=${stateObj}
               .overrideIcon=${entityConf.icon}
@@ -61,8 +69,14 @@ export class HuiButtonsBase extends LitElement {
     `;
   }
 
-  private async _toggle(ev) {
-    await toggleEntity(this._hass!, ev.target.stateObj.entity_id);
+  private _handleAction(ev: ActionHandlerEvent) {
+    const config = (ev.currentTarget as any).config as EntitiesCardEntityConfig;
+    handleAction(
+      this,
+      this.hass!,
+      { tap_action: { action: "toggle" }, ...config },
+      ev.detail.action!
+    );
   }
 
   static get styles(): CSSResult {
