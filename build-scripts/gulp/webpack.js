@@ -57,7 +57,7 @@ const handler = (done) => (err, stats) => {
 
 gulp.task("webpack-watch-app", () => {
   // we are not calling done, so this command will run forever
-  webpack(bothBuilds(createAppConfig, { isProdBuild: false })).watch(
+  webpack(createAppConfig({ isProdBuild: false, latestBuild: true })).watch(
     {},
     handler()
   );
