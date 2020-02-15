@@ -266,7 +266,7 @@ class LovelacePanel extends LitElement {
 
   private _checkLovelaceConfig(config: LovelaceConfig) {
     // Somehow there can be badges with value null, we remove those
-    let checkedConfig;
+    let checkedConfig = !Object.isFrozen(config) ? config : undefined;
     config.views.forEach((view, index) => {
       if (view.badges && !view.badges.every(Boolean)) {
         checkedConfig = checkedConfig || {
