@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Si està desactivat, les entitats recentment descobertes per a {integration} no s’afegiran automàticament a Home Assistant.",
                 "enable_new_entities_label": "Activa entitats afegides recentment.",
-                "title": "Opcions del sistema per a {integration}"
+                "title": "Opcions del sistema per a {integration}",
+                "update": "Actualitza"
             },
             "confirmation": {
                 "cancel": "Cancel·la",
@@ -888,6 +889,7 @@
                         },
                         "edit_ui": "Edita a través d'interfície",
                         "edit_yaml": "Edita com a YAML",
+                        "enable_disable": "Activa/desactiva automatització",
                         "introduction": "Utilitza les automatitzacions per donar més vida a la teva casa",
                         "load_error_not_editable": "Només es poden editar les automatitzacions de l'arxiu automations.yaml.",
                         "load_error_unknown": "Error en carregar l’automatització ({err_no}).",
@@ -1917,6 +1919,9 @@
                         "alarm-panel": {
                             "available_states": "Estats disponibles",
                             "name": "Panell d'alarma"
+                        },
+                        "button": {
+                            "name": "Botó"
                         },
                         "conditional": {
                             "name": "Condicional"

@@ -641,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "Párbeszédpanel elvetése",
                 "edit": "Entitás szerkesztése",
+                "person": {
+                    "create_zone": "Zóna létrehozása az aktuális helyről"
+                },
                 "restored": {
                     "confirm_remove_text": "Biztosan el szeretnéd távolítani ezt az entitást?",
                     "confirm_remove_title": "Eltávolítod az entitást?",
@@ -892,6 +895,7 @@
                         },
                         "edit_ui": "Szerkesztés a felhasználói felületen",
                         "edit_yaml": "Szerkesztés YAML-ként",
+                        "enable_disable": "Automatizálás engedélyezése/letiltása",
                         "introduction": "Használj automatizálásokat otthonod életre keltéséhez",
                         "load_error_not_editable": "Csak az automations.yaml fájlban megadott automatizálások szerkeszthetők.",
                         "load_error_unknown": "Hiba az automatizálás betöltésekor ({err_no}).",
@@ -1923,6 +1927,9 @@
                         "alarm-panel": {
                             "available_states": "Rendelkezésre álló állapotok",
                             "name": "Riasztópanel"
+                        },
+                        "button": {
+                            "name": "Gomb"
                         },
                         "conditional": {
                             "name": "Feltételes"

@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Indien uitgeschakeld, worden nieuwe entiteiten van {integration} niet automatisch aan Home Assistant toegevoegd.",
                 "enable_new_entities_label": "Voeg nieuwe entiteiten automatisch toe",
-                "title": "Systeeminstellingen voor {integration}"
+                "title": "Systeeminstellingen voor {integration}",
+                "update": "Bijwerken"
             },
             "confirmation": {
                 "cancel": "Annuleren",
@@ -640,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "Dialoogvenster sluiten",
                 "edit": "Entiteit bewerken",
+                "person": {
+                    "create_zone": "Creëer zone van huidige locatie"
+                },
                 "restored": {
                     "confirm_remove_text": "Weet u zeker dat u dit item wilt verwijderen?",
                     "confirm_remove_title": "Entiteit verwijderen?",
@@ -891,6 +895,7 @@
                         },
                         "edit_ui": "Bewerken met UI",
                         "edit_yaml": "Bewerken als YAML",
+                        "enable_disable": "Schakel automatisering in/uit",
                         "introduction": "Gebruik automatiseringen om je huis tot leven te brengen.",
                         "load_error_not_editable": "Alleen automatiseringen in automations.yaml kunnen worden bewerkt.",
                         "load_error_unknown": "Fout bij laden van automatisering ({err_no}).",
@@ -1696,7 +1701,7 @@
                         "required_error_msg": "Dit veld is verplicht",
                         "update": "Bijwerken"
                     },
-                    "edit_home_zone": "De locatie van je huis kan worden gewijzigd bij de algemene configuratie",
+                    "edit_home_zone": "De locatie van je huis kan worden gewijzigd bij de algemene instellingen.",
                     "introduction": "Met zones kunt u bepaalde regio's op aarde opgeven. Wanneer een persoon zich in een zone bevindt, dan wordt de staat de naam uit de zone. Zones kunnen ook worden gebruikt als trigger of voorwaarde in automatiseringen.",
                     "no_zones_created_yet": "Het lijkt erop dat je nog geen zones hebt aangemaakt."
                 },
@@ -1923,6 +1928,9 @@
                             "available_states": "Beschikbare statussen",
                             "name": "Alarm paneel"
                         },
+                        "button": {
+                            "name": "Knop"
+                        },
                         "conditional": {
                             "name": "Conditioneel"
                         },
@@ -2069,7 +2077,7 @@
                     "header": "Bewerk UI",
                     "menu": {
                         "open": "Open het Lovelace-menu",
-                        "raw_editor": "Platte configuratie-editor"
+                        "raw_editor": "Ruwe configuratie-editor"
                     },
                     "migrate": {
                         "header": "Configuratie incompatibel",
@@ -2081,7 +2089,7 @@
                         "confirm_remove_config_text": "We zullen je Lovelace gebruikersinterface automatisch genereren met je gebieden en apparaten als je de huidige Lovelace gebruikersinterface verwijdert.",
                         "confirm_remove_config_title": "Weet je zeker dat je de huidige Lovelace gebruikersinterface wilt verwijderen? We zullen automatisch een nieuwe Lovelace gebruikersinterface genereren op basis van je gebieden en apparaten.",
                         "confirm_unsaved_changes": "Er zijn nog niet-opgeslagen wijzigingen, weet u zeker dat u wilt afsluiten?",
-                        "confirm_unsaved_comments": "Uw configuratie bevat commentaren, deze worden niet opgeslagen. Wil je doorgaan?",
+                        "confirm_unsaved_comments": "Uw configuratie bevat opmerkingen, deze worden niet opgeslagen. Wil je doorgaan?",
                         "error_invalid_config": "Uw configuratie is niet geldig: {error}",
                         "error_parse_yaml": "Kan YAML niet parseren: {error}",
                         "error_remove": "Kan configuratie niet verwijderen: {error}",
