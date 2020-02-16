@@ -24,6 +24,7 @@ import {
   SUPPORT_PREVIOUS_TRACK,
   SUPPORT_NEXT_TRACK,
   SUPPORTS_PLAY,
+  fetchMediaPlayerThumbnailWithCache,
 } from "../../../data/media-player";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { HomeAssistant, MediaEntity } from "../../../types";
@@ -46,6 +47,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   @property() public hass?: HomeAssistant;
   @property() private _config?: MediaControlCardConfig;
+  @property() private _image?: string;
 
   public getCardSize(): number {
     return 3;
@@ -76,19 +78,19 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         >
       `;
     }
-    const image =
-      stateObj.attributes.entity_picture ||
-      "../static/images/card_media_player_bg.png";
 
     return html`
       <ha-card>
         <div
           class="${classMap({
-            "no-image": !stateObj.attributes.entity_picture,
+            "no-image": !this._image,
             ratio: true,
           })}"
         >
-          <div class="image" style="background-image: url(${image})"></div>
+          <div
+            class="image"
+            style="background-image: url(${this.hass.hassUrl(this._image)})"
+          ></div>
           <div
             class="${classMap({
               caption: true,
@@ -201,6 +203,27 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
+
+    const oldImage = oldHass
+      ? oldHass.states[this._config.entity].attributes.entity_picture
+      : undefined;
+    const newImage = this.hass.states[this._config.entity].attributes
+      .entity_picture;
+
+    if (!newImage || newImage === oldImage) {
+      return;
+    }
+
+    if (newImage.substr(0, 1) !== "/") {
+      this._image = newImage;
+      return;
+    }
+
+    fetchMediaPlayerThumbnailWithCache(this.hass, this._config.entity).then(
+      ({ content_type, content }) => {
+        this._image = `data:${content_type};base64,${content}`;
+      }
+    );
   }
 
   private _computeSecondaryTitle(stateObj: HassEntity): string {
@@ -272,6 +295,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         background-repeat: no-repeat;
         background-color: var(--primary-color);
         background-size: initial;
+        background-image: "url(../static/images/card_media_player_bg.png)";
       }
 
       .no-image > .caption {
