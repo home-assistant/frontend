@@ -79,6 +79,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       `;
     }
 
+    const picture = this._image || "../static/images/card_media_player_bg.png";
+
     return html`
       <ha-card>
         <div
@@ -89,7 +91,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         >
           <div
             class="image"
-            style="background-image: url(${this.hass.hassUrl(this._image)})"
+            style="background-image: url(${this.hass.hassUrl(picture)})"
           ></div>
           <div
             class="${classMap({
@@ -295,7 +297,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         background-repeat: no-repeat;
         background-color: var(--primary-color);
         background-size: initial;
-        background-image: "url(../static/images/card_media_player_bg.png)";
       }
 
       .no-image > .caption {
