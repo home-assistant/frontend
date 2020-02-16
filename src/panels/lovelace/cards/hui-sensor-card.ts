@@ -90,7 +90,7 @@ const calcPoints = (
   let last = [average(first), lastValue(first)];
 
   const getCoords = (item, i, offset = 0, depth = 1) => {
-    if (depth > 1) {
+    if (depth > 1 && item) {
       return item.forEach((subItem, index) =>
         getCoords(subItem, i, index, depth - 1)
       );
