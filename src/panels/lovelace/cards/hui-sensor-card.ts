@@ -428,12 +428,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
 
       .icon {
         color: var(--paper-item-icon-color, #44739e);
-        display: inline-block;
-        flex: 0 0 40px;
         line-height: 40px;
-        position: relative;
-        text-align: center;
-        width: 40px;
       }
 
       .info {
