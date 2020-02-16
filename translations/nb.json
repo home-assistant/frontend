@@ -1928,6 +1928,9 @@
                             "available_states": "Tilgjengelige tilstander",
                             "name": "Alarmpanel"
                         },
+                        "button": {
+                            "name": "Knapp"
+                        },
                         "conditional": {
                             "name": "Betinget"
                         },

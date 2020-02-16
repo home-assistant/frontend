@@ -641,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "Fermer la fenêtre de dialogue",
                 "edit": "Modifier l'entité",
+                "person": {
+                    "create_zone": "Créer une zone à partir de l'emplacement actuel"
+                },
                 "restored": {
                     "confirm_remove_text": "Voulez-vous vraiment supprimer cette entité ?",
                     "confirm_remove_title": "Supprimer l'entité ?",
@@ -892,6 +895,7 @@
                         },
                         "edit_ui": "Modifier avec l'interface utilisateur",
                         "edit_yaml": "Modifier en tant que YAML",
+                        "enable_disable": "Activer/Désactiver l'automatisation",
                         "introduction": "Utilisez les automatisations pour donner vie à votre maison",
                         "load_error_not_editable": "Seules les automations dans automations.yaml sont modifiables.",
                         "load_error_unknown": "Erreur lors du chargement de l'automation ( {err_no} ).",
@@ -1923,6 +1927,9 @@
                         "alarm-panel": {
                             "available_states": "États disponibles",
                             "name": "Panneau d'alarme"
+                        },
+                        "button": {
+                            "name": "Bouton"
                         },
                         "conditional": {
                             "name": "Conditionnel"

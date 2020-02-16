@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "如果禁用，从 {integration} 新发现的实体将不会自动添加到 Home Assistant。",
                 "enable_new_entities_label": "启用新添加的实体。",
-                "title": "{integration}的系统选项"
+                "title": "{integration}的系统选项",
+                "update": "更新"
             },
             "confirmation": {
                 "cancel": "取消",
@@ -640,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "关闭对话",
                 "edit": "编辑实体",
+                "person": {
+                    "create_zone": "从当前位置创建地点"
+                },
                 "restored": {
                     "confirm_remove_text": "您确定要删除此实体吗？",
                     "confirm_remove_title": "是否删除实体？",
@@ -659,6 +663,18 @@
                 },
                 "updater": {
                     "title": "更新说明"
+                },
+                "vacuum": {
+                    "clean_spot": "清理污渍",
+                    "commands": "扫地机指令：",
+                    "fan_speed": "风扇转速",
+                    "locate": "定位",
+                    "pause": "暂停",
+                    "return_home": "返回底座",
+                    "start": "启动",
+                    "start_pause": "启动/暂停",
+                    "status": "状态",
+                    "stop": "停止"
                 }
             },
             "more_info_settings": {
@@ -879,6 +895,7 @@
                         },
                         "edit_ui": "以图形界面编辑",
                         "edit_yaml": "以 YAML 编辑",
+                        "enable_disable": "启用/禁用自动化",
                         "introduction": "使用自动化让你的家聪明起来",
                         "load_error_not_editable": "只能编辑 automations.yaml 中的自动化。",
                         "load_error_unknown": "加载自动化错误 ({err_no})。",
@@ -1870,6 +1887,9 @@
                         "alarm-panel": {
                             "available_states": "可用状态",
                             "name": "报警面板"
+                        },
+                        "button": {
+                            "name": "按钮"
                         },
                         "conditional": {
                             "name": "有条件的"
