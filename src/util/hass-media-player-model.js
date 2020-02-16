@@ -106,6 +106,10 @@ export default class MediaPlayerEntity {
     return supportsFeature(this.stateObj, 2048);
   }
 
+  get supportsStop() {
+    return supportsFeature(this.stateObj, 4096);
+  }
+
   get supportsSelectSoundMode() {
     return supportsFeature(this.stateObj, 65536);
   }
@@ -159,6 +163,10 @@ export default class MediaPlayerEntity {
 
   mediaPlayPause() {
     this.callService("media_play_pause");
+  }
+
+  mediaStop() {
+    this.callService("media_stop");
   }
 
   nextTrack() {

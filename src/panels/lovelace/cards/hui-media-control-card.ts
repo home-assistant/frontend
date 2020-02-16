@@ -16,7 +16,11 @@ import "../../../components/ha-card";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { OFF_STATES, SUPPORT_PAUSE } from "../../../data/media-player";
+import {
+  OFF_STATES,
+  SUPPORT_PAUSE,
+  SUPPORT_STOP,
+} from "../../../data/media-player";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { HomeAssistant, MediaEntity } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -119,6 +123,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                 : "hass:stop"}
               .action=${"media_play_pause"}
               @click=${this._handleClick}
+            ></paper-icon-button>
+            <paper-icon-button
+              icon="hass:stop"
+              .action=${"media_stop"}
+              @click=${this._handleClick}
+              ?hidden=${!supportsFeature(stateObj, SUPPORT_STOP) ||
+                (stateObj.state !== "playing" && stateObj.state !== "paused")}
             ></paper-icon-button>
             <paper-icon-button
               icon="hass:skip-next"
@@ -258,6 +269,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       paper-icon-button[disabled] {
         opacity: var(--dark-disabled-opacity);
+      }
+
+      paper-icon-button[hidden] {
+        display: none;
       }
 
       .playPauseButton {

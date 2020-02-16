@@ -162,6 +162,9 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
           background-color: rgba(0, 0, 0, var(--dark-disabled-opacity));
         }
 
+        [hidden] {
+          display: none;
+        }
         [invisible] {
           visibility: hidden !important;
         }
@@ -210,6 +213,13 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
             invisible$="[[!computePlaybackControlIcon(playerObj)]]"
             disabled="[[playerObj.isOff]]"
             on-click="handlePlaybackControl"
+          ></paper-icon-button>
+          <paper-icon-button
+            aria-label="Stop"
+            icon="hass:stop"
+            hidden$="[[computeHideStopButton(playerObj)]]"
+            disabled="[[playerObj.isOff]]"
+            on-click="handleStopControl"
           ></paper-icon-button>
           <paper-icon-button
             aria-label="Next track"
@@ -377,6 +387,13 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
     return "";
   }
 
+  computeHideStopButton(playerObj) {
+    return !playerObj.supportsStop ||
+      (!playerObj.isPlaying && !playerObj.isPaused)
+      ? "true"
+      : null;
+  }
+
   _computeStateName(stateObj) {
     return computeStateName(stateObj);
   }
@@ -394,6 +411,11 @@ class HaMediaPlayerCard extends LocalizeMixin(EventsMixin(PolymerElement)) {
   handlePlaybackControl(ev) {
     ev.stopPropagation();
     this.playerObj.mediaPlayPause();
+  }
+
+  handleStopControl(ev) {
+    ev.stopPropagation();
+    this.playerObj.mediaStop();
   }
 
   handlePrevious(ev) {
