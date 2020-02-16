@@ -1928,6 +1928,9 @@
                             "available_states": "사용 가능한 상태요소",
                             "name": "알람 패널"
                         },
+                        "button": {
+                            "name": "버튼"
+                        },
                         "conditional": {
                             "name": "조건부"
                         },
