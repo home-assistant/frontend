@@ -1928,6 +1928,9 @@
                             "available_states": "可用狀態",
                             "name": "警報器面板"
                         },
+                        "button": {
+                            "name": "按鈕"
+                        },
                         "conditional": {
                             "name": "條件式面板"
                         },
