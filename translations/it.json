@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Se disabilitato, le entità appena individuate per {integration} non verranno automaticamente aggiunte a Home Assistant.",
                 "enable_new_entities_label": "Abilita nuove entità aggiunte.",
-                "title": "Opzioni di sistema per {integration}"
+                "title": "Opzioni di sistema per {integration}",
+                "update": "Aggiornamento"
             },
             "confirmation": {
                 "cancel": "Annulla",
@@ -640,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "Chiudi finestra di dialogo",
                 "edit": "Modifica entità",
+                "person": {
+                    "create_zone": "Crea zona dalla posizione corrente"
+                },
                 "restored": {
                     "confirm_remove_text": "Sei sicuro di voler rimuovere questa entità?",
                     "confirm_remove_title": "Rimuovere l'entità?",
@@ -659,6 +663,18 @@
                 },
                 "updater": {
                     "title": "Istruzioni per l'aggiornamento"
+                },
+                "vacuum": {
+                    "clean_spot": "Posto pulito",
+                    "commands": "Comandi dell'aspirapolvere:",
+                    "fan_speed": "Velocità della ventola",
+                    "locate": "Individuare",
+                    "pause": "Pausa",
+                    "return_home": "Ritorna alla base",
+                    "start": "Avvio",
+                    "start_pause": "Avvio/Pausa",
+                    "status": "Stato",
+                    "stop": "Stop"
                 }
             },
             "more_info_settings": {
@@ -879,6 +895,7 @@
                         },
                         "edit_ui": "Modifica con l'Interfaccia Utente",
                         "edit_yaml": "Modifica come YAML",
+                        "enable_disable": "Abilitare/Disabilitare l'automazione",
                         "introduction": "Usa le automazioni per dare vita alla tua casa.",
                         "load_error_not_editable": "Solo le Automazioni in automations.yaml sono modificabili.",
                         "load_error_unknown": "Errore durante il caricamento dell'Automazione ({err_no}).",
@@ -1496,8 +1513,8 @@
                             "automation": "Ricarica le Automazioni",
                             "core": "Ricarica la Posizione e le Personalizzazioni",
                             "group": "Ricarica i Gruppi",
-                            "heading": "Aggiornamento della Configurazione",
-                            "introduction": "Alcune parti di Home Assistant possono essere aggiornate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro configurazione attuale e si caricherà la versione aggiornata.",
+                            "heading": "Ricarica Configurazione YAML",
+                            "introduction": "Alcune parti di Home Assistant possono essere ricaricate senza richiedere un riavvio. Premendo su Ricarica si rimuoverà la loro Configurazione YAML  attuale e si caricherà la versione aggiornata.",
                             "person": "Ricarica persone",
                             "scene": "Ricarica le Scene",
                             "script": "Ricarica gli Script",
@@ -1512,7 +1529,7 @@
                             "stop": "Arrestare"
                         },
                         "validation": {
-                            "check_config": "Controlla la configurazione",
+                            "check_config": "Verifica Configurazione",
                             "heading": "Convalida della configurazione",
                             "introduction": "Convalidare la configurazione se di recente sono state apportate alcune modifiche alla configurazione e si desidera assicurarsi che sia tutto valido",
                             "invalid": "Configurazione non valida",
@@ -1679,7 +1696,7 @@
                         "name": "Nome",
                         "new_zone": "Nuova zona",
                         "passive": "Passivo",
-                        "passive_note": "Le zone passive sono nascoste nel frontend e non vengono utilizzate come posizione per i tracker dei dispositivi. Ciò è utile se si desidera utilizzarlo solo per le automazioni.",
+                        "passive_note": "Le zone passive sono nascoste nel frontend e non vengono utilizzate come posizione per i tracker dei dispositivi. Ciò è utile solamente se si desidera utilizzarle per le automazioni.",
                         "radius": "Raggio",
                         "required_error_msg": "Questo campo è obbligatorio",
                         "update": "Aggiorna"
@@ -1715,7 +1732,7 @@
                         "config_parameter": "Parametro di configurazione",
                         "config_value": "Valore di configurazione",
                         "false": "Falso",
-                        "header": "Opzioni di configurazione del nodo",
+                        "header": "Opzioni Configurazione Nodo",
                         "seconds": "secondi",
                         "set_config_parameter": "Imposta parametro di configurazione",
                         "set_wakeup": "Imposta intervallo di riattivazione",
@@ -1731,7 +1748,7 @@
                         "cancel_command": "Annulla Comando",
                         "heal_network": "Testa la rete",
                         "remove_node": "Rimuovi nodo",
-                        "save_config": "Salva configurazione",
+                        "save_config": "Salva Configurazione",
                         "soft_reset": "Soft Reset",
                         "start_network": "Avvia la rete",
                         "stop_network": "Ferma la rete",
@@ -1911,6 +1928,9 @@
                             "available_states": "Stati disponibili",
                             "name": "Pannello di allarme"
                         },
+                        "button": {
+                            "name": "Pulsante"
+                        },
                         "conditional": {
                             "name": "Condizionale"
                         },
@@ -2061,8 +2081,8 @@
                     },
                     "migrate": {
                         "header": "Configurazione incompatibile",
-                        "migrate": "Esporta configurazione",
-                        "para_migrate": "Home Assistant può aggiungere automaticamente gli ID a tutte le tue schede e visualizzazioni automaticamente premendo il pulsante \"Eporta configurazione\".",
+                        "migrate": "Esporta Configurazione",
+                        "para_migrate": "Home Assistant può aggiungere automaticamente gli ID a tutte le tue schede e viste in maniera automatica premendo il pulsante \"Esporta Configurazione\".",
                         "para_no_id": "Questo elemento non ha un ID. Aggiungi un ID a questo elemento in 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
@@ -2072,9 +2092,9 @@
                         "confirm_unsaved_comments": "La tua configurazione contiene commenti, questi non verranno salvati. Vuoi continuare?",
                         "error_invalid_config": "La tua configurazione non è valida: {error}",
                         "error_parse_yaml": "Impossibile analizzare YAML: {error}",
-                        "error_remove": "Impossibile rimuovere config: {error}",
+                        "error_remove": "Impossibile rimuovere la configurazione: {error}",
                         "error_save_yaml": "Impossibile salvare YAML: {error}",
-                        "header": "Modifica le impostazioni",
+                        "header": "Modifica Configurazione",
                         "save": "Salva",
                         "saved": "Salvato",
                         "unsaved_changes": "Modifiche non salvate"
@@ -2196,7 +2216,7 @@
                                     "data": {
                                         "password": "Password API"
                                     },
-                                    "description": "Inserisci l'API password nella configurazione http:"
+                                    "description": "Inserire la password API nella configurazione HTTP:"
                                 },
                                 "mfa": {
                                     "data": {

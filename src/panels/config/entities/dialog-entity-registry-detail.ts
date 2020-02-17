@@ -51,7 +51,8 @@ export class DialogEntityRegistryDetail extends LitElement {
       return html``;
     }
     const entry = this._params.entry;
-    const stateObj: HassEntity | undefined = this.hass.states[entry.entity_id];
+    const entityId = this._params.entity_id;
+    const stateObj: HassEntity | undefined = this.hass.states[entityId];
 
     return html`
       <ha-paper-dialog
@@ -68,9 +69,7 @@ export class DialogEntityRegistryDetail extends LitElement {
             dialog-dismiss
           ></paper-icon-button>
           <div class="main-title" main-title>
-            ${stateObj
-              ? computeStateName(stateObj)
-              : entry.name || entry.entity_id}
+            ${stateObj ? computeStateName(stateObj) : entry?.name || entityId}
           </div>
           ${stateObj
             ? html`
@@ -99,20 +98,28 @@ export class DialogEntityRegistryDetail extends LitElement {
         </paper-tabs>
         ${cache(
           this._curTab === "tab-settings"
-            ? html`
-                <entity-registry-settings
-                  .hass=${this.hass}
-                  .entry=${entry}
-                  .dialogElement=${this._dialog}
-                  @close-dialog=${this._closeDialog}
-                ></entity-registry-settings>
-              `
+            ? entry
+              ? html`
+                  <entity-registry-settings
+                    .hass=${this.hass}
+                    .entry=${entry}
+                    .dialogElement=${this._dialog}
+                    @close-dialog=${this._closeDialog}
+                  ></entity-registry-settings>
+                `
+              : html`
+                  <paper-dialog-scrollable>
+                    ${this.hass.localize(
+                      "ui.dialogs.entity_registry.no_unique_id"
+                    )}
+                  </paper-dialog-scrollable>
+                `
             : this._curTab === "tab-related"
             ? html`
                 <paper-dialog-scrollable>
                   <ha-related-items
                     .hass=${this.hass}
-                    .itemId=${entry.entity_id}
+                    .itemId=${entityId}
                     itemType="entity"
                     @close-dialog=${this._closeDialog}
                   ></ha-related-items>
@@ -139,7 +146,7 @@ export class DialogEntityRegistryDetail extends LitElement {
 
   private _openMoreInfo(): void {
     fireEvent(this, "hass-more-info", {
-      entityId: this._params!.entry.entity_id,
+      entityId: this._params!.entity_id,
     });
     this._params = undefined;
   }

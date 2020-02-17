@@ -22,7 +22,7 @@ import { LovelaceCardEditor } from "../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { configElementStyle } from "./config-elements-style";
 import { ActionConfig } from "../../../../data/lovelace";
-import { EntityButtonCardConfig } from "../../cards/types";
+import { ButtonCardConfig } from "../../cards/types";
 
 const cardConfigStruct = struct({
   type: "string",
@@ -37,14 +37,14 @@ const cardConfigStruct = struct({
   theme: "string?",
 });
 
-@customElement("hui-entity-button-card-editor")
-export class HuiEntityButtonCardEditor extends LitElement
+@customElement("hui-button-card-editor")
+export class HuiButtonCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: EntityButtonCardConfig;
+  @property() private _config?: ButtonCardConfig;
 
-  public setConfig(config: EntityButtonCardConfig): void {
+  public setConfig(config: ButtonCardConfig): void {
     config = cardConfigStruct(config);
     this._config = config;
   }
@@ -108,7 +108,7 @@ export class HuiEntityButtonCardEditor extends LitElement
         .label="${this.hass.localize(
           "ui.panel.lovelace.editor.card.generic.entity"
         )} (${this.hass.localize(
-      "ui.panel.lovelace.editor.card.config.required"
+      "ui.panel.lovelace.editor.card.config.optional"
     )})"
           .hass="${this.hass}"
           .value="${this._entity}"
@@ -250,6 +250,6 @@ export class HuiEntityButtonCardEditor extends LitElement
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-entity-button-card-editor": HuiEntityButtonCardEditor;
+    "hui-button-card-editor": HuiButtonCardEditor;
   }
 }

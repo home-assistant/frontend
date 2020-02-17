@@ -20,6 +20,7 @@ import {
   ZoneMutableParams,
   passiveRadiusColor,
   defaultRadiusColor,
+  getZoneEditorInitData,
 } from "../../../data/zone";
 import { addDistanceToCoord } from "../../../common/location/add_distance_to_coord";
 
@@ -47,15 +48,20 @@ class DialogZoneDetail extends LitElement {
       this._passive = this._params.entry.passive || false;
       this._radius = this._params.entry.radius || 100;
     } else {
-      const movedHomeLocation = addDistanceToCoord(
-        [this.hass.config.latitude, this.hass.config.longitude],
-        500,
-        500
-      );
-      this._name = "";
-      this._icon = "mdi:map-marker";
-      this._latitude = movedHomeLocation[0];
-      this._longitude = movedHomeLocation[1];
+      const initConfig = getZoneEditorInitData();
+      let movedHomeLocation;
+      if (!initConfig?.latitude || !initConfig?.longitude) {
+        movedHomeLocation = addDistanceToCoord(
+          [this.hass.config.latitude, this.hass.config.longitude],
+          Math.random() * 500 * (Math.random() < 0.5 ? -1 : 1),
+          Math.random() * 500 * (Math.random() < 0.5 ? -1 : 1)
+        );
+      }
+      this._latitude = initConfig?.latitude || movedHomeLocation[0];
+      this._longitude = initConfig?.longitude || movedHomeLocation[1];
+      this._name = initConfig?.name || "";
+      this._icon = initConfig?.icon || "mdi:map-marker";
+
       this._passive = false;
       this._radius = 100;
     }
@@ -94,7 +100,7 @@ class DialogZoneDetail extends LitElement {
         @closing="${this._close}"
         scrimClickAction=""
         escapeKeyAction=""
-        .title=${title}
+        .heading=${title}
       >
         <div>
           ${this._error

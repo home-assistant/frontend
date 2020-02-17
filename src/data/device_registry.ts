@@ -17,6 +17,10 @@ export interface DeviceRegistryEntry {
   name_by_user?: string;
 }
 
+export interface DeviceEntityLookup {
+  [deviceId: string]: EntityRegistryEntry[];
+}
+
 export interface DeviceRegistryEntryMutableParams {
   area_id?: string | null;
   name_by_user?: string | null;

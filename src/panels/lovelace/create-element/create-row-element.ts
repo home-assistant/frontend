@@ -1,36 +1,41 @@
-import "../entity-rows/hui-climate-entity-row";
-import "../entity-rows/hui-cover-entity-row";
-import "../entity-rows/hui-group-entity-row";
-import "../entity-rows/hui-input-datetime-entity-row";
-import "../entity-rows/hui-input-number-entity-row";
-import "../entity-rows/hui-input-select-entity-row";
-import "../entity-rows/hui-input-text-entity-row";
-import "../entity-rows/hui-lock-entity-row";
 import "../entity-rows/hui-media-player-entity-row";
 import "../entity-rows/hui-scene-entity-row";
 import "../entity-rows/hui-script-entity-row";
 import "../entity-rows/hui-sensor-entity-row";
 import "../entity-rows/hui-text-entity-row";
-import "../entity-rows/hui-timer-entity-row";
 import "../entity-rows/hui-toggle-entity-row";
 import "../special-rows/hui-call-service-row";
-import "../special-rows/hui-conditional-row";
-import "../special-rows/hui-divider-row";
-import "../special-rows/hui-section-row";
-import "../special-rows/hui-weblink-row";
-import "../special-rows/hui-cast-row";
 import { EntityConfig } from "../entity-rows/types";
 import { createLovelaceElement } from "./create-element-base";
 
-const SPECIAL_TYPES = new Set([
+const ALWAYS_LOADED_TYPES = new Set([
+  "media-player-entity",
+  "scene-entity",
+  "script-entity",
+  "sensor-entity",
+  "text-entity",
+  "toggle-entity",
   "call-service",
-  "cast",
-  "conditional",
-  "divider",
-  "section",
-  "select",
-  "weblink",
 ]);
+const LAZY_LOAD_TYPES = {
+  "climate-entity": () => import("../entity-rows/hui-climate-entity-row"),
+  "cover-entity": () => import("../entity-rows/hui-cover-entity-row"),
+  "group-entity": () => import("../entity-rows/hui-group-entity-row"),
+  "input-datetime-entity": () =>
+    import("../entity-rows/hui-input-datetime-entity-row"),
+  "input-number-entity": () =>
+    import("../entity-rows/hui-input-number-entity-row"),
+  "input-select-entity": () =>
+    import("../entity-rows/hui-input-select-entity-row"),
+  "input-text-entity": () => import("../entity-rows/hui-input-text-entity-row"),
+  "lock-entity": () => import("../entity-rows/hui-lock-entity-row"),
+  "timer-entity": () => import("../entity-rows/hui-timer-entity-row"),
+  conditional: () => import("../special-rows/hui-conditional-row"),
+  divider: () => import("../special-rows/hui-divider-row"),
+  section: () => import("../special-rows/hui-section-row"),
+  weblink: () => import("../special-rows/hui-weblink-row"),
+  cast: () => import("../special-rows/hui-cast-row"),
+};
 const DOMAIN_TO_ELEMENT_TYPE = {
   _domain_not_found: "text",
   alert: "toggle",
@@ -60,4 +65,11 @@ const DOMAIN_TO_ELEMENT_TYPE = {
 };
 
 export const createRowElement = (config: EntityConfig) =>
-  createLovelaceElement("row", config, SPECIAL_TYPES, DOMAIN_TO_ELEMENT_TYPE);
+  createLovelaceElement(
+    "row",
+    config,
+    ALWAYS_LOADED_TYPES,
+    LAZY_LOAD_TYPES,
+    DOMAIN_TO_ELEMENT_TYPE,
+    undefined
+  );

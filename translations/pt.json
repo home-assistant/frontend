@@ -576,12 +576,18 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Se desativado, novas entidades descobertas por {integration} não serão automaticamente adicionadas ao Home Assistant.",
                 "enable_new_entities_label": "Ativar novas entidades adicionadas.",
-                "title": "Opções de sistema para {integration}"
+                "title": "Opções de sistema para {integration}",
+                "update": "Actualizar"
             },
             "confirmation": {
                 "cancel": "Cancelar",
                 "ok": "",
                 "title": "Tem a certeza?"
+            },
+            "generic": {
+                "cancel": "Cancelar",
+                "default_confirmation_title": "Tem a certeza?",
+                "ok": "OK"
             },
             "more_info_control": {
                 "script": {
@@ -594,6 +600,12 @@
                 },
                 "updater": {
                     "title": "Instruções para atualização"
+                },
+                "vacuum": {
+                    "pause": "Pausa",
+                    "start": "Iniciar",
+                    "start_pause": "Iniciar / Pausar",
+                    "stop": "Parar"
                 }
             },
             "more_info_settings": {
@@ -1547,6 +1559,9 @@
                         "alarm-panel": {
                             "available_states": "Estados Disponíveis",
                             "name": "Painel de alarme"
+                        },
+                        "button": {
+                            "name": "Botão"
                         },
                         "conditional": {
                             "name": "Condicional"
