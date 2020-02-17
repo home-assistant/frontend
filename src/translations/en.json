@@ -1415,7 +1415,10 @@
           "add_zone": "Add Zone",
           "confirm_delete": "Are you sure you want to delete this zone?",
           "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
-          "edit_home_zone": "The location of your home can be changed in the general configuration.",
+          "edit_home_zone": "The radius of the Home zone can't be edited from the frontend yet. Drag the marker on the map to move the home zone.",
+          "edit_home_zone_narrow": "The radius of the Home zone can't be edited from the frontend yet. The location can be changed from the general configuration.",
+          "go_to_core_config": "Go to general configuration?",
+          "home_zone_core_config": "The location of your home zone is editable from the general configuration page. The radius of the Home zone can't be edited from the frontend yet. Do you want to go to the general configuration?",
           "detail": {
             "new_zone": "New Zone",
             "name": "Name",
