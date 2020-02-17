@@ -57,6 +57,7 @@ export interface ButtonCardConfig extends LovelaceCardConfig {
   tap_action?: ActionConfig;
   hold_action?: ActionConfig;
   double_tap_action?: ActionConfig;
+  state_color?: boolean;
 }
 
 export interface EntityFilterCardConfig extends LovelaceCardConfig {
@@ -102,6 +103,7 @@ export interface GlanceConfigEntity extends ConfigEntity {
   show_last_changed?: boolean;
   image?: string;
   show_state?: boolean;
+  state_color?: boolean;
 }
 
 export interface GlanceCardConfig extends LovelaceCardConfig {
@@ -112,6 +114,7 @@ export interface GlanceCardConfig extends LovelaceCardConfig {
   theme?: string;
   entities: ConfigEntity[];
   columns?: number;
+  state_color?: boolean;
 }
 
 export interface IframeCardConfig extends LovelaceCardConfig {
