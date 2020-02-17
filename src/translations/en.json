@@ -572,6 +572,7 @@
         "service": "Service"
       },
       "related-items": {
+        "no_related_found": "No related items found.",
         "integration": "Integration",
         "device": "Device",
         "area": "Area",
@@ -640,6 +641,7 @@
         "control": "Control",
         "related": "Related",
         "dismiss": "Dismiss",
+        "no_unique_id": "This entity does not have a unique ID, therefore it's settings can not be managed from the UI.",
         "editor": {
           "name": "Name Override",
           "entity_id": "Entity ID",
@@ -1345,11 +1347,13 @@
             "filter": {
               "filter": "Filter",
               "show_disabled": "Show disabled entities",
-              "show_unavailable": "Show unavailable entities"
+              "show_unavailable": "Show unavailable entities",
+              "show_readonly": "Show read-only entities"
             },
             "status": {
               "unavailable": "Unavailable",
               "disabled": "Disabled",
+              "readonly": "Read-only",
               "ok": "Ok"
             },
             "headers": {
