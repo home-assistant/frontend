@@ -23,6 +23,7 @@ import { fireEvent } from "../../common/dom/fire_event";
 import {
   DeviceRegistryEntry,
   subscribeDeviceRegistry,
+  DeviceEntityLookup,
 } from "../../data/device_registry";
 import { compare } from "../../common/string/compare";
 import { PolymerChangedEvent } from "../../polymer-types";
@@ -30,7 +31,6 @@ import {
   AreaRegistryEntry,
   subscribeAreaRegistry,
 } from "../../data/area_registry";
-import { DeviceEntityLookup } from "../../panels/config/devices/ha-devices-data-table";
 import {
   EntityRegistryEntry,
   subscribeEntityRegistry,

@@ -13,7 +13,7 @@ import { fireEvent } from "../../../../common/dom/fire_event";
 import { HomeAssistant } from "../../../../types";
 
 import "./ha-automation-trigger-row";
-import { HaStateTrigger } from "./types/ha-automation-trigger-state";
+import { HaDeviceTrigger } from "./types/ha-automation-trigger-device";
 import { Trigger } from "../../../../data/automation";
 
 @customElement("ha-automation-trigger")
@@ -47,8 +47,8 @@ export default class HaAutomationTrigger extends LitElement {
 
   private _addTrigger() {
     const triggers = this.triggers.concat({
-      platform: "state",
-      ...HaStateTrigger.defaultConfig,
+      platform: "device",
+      ...HaDeviceTrigger.defaultConfig,
     });
 
     fireEvent(this, "value-changed", { value: triggers });

@@ -572,6 +572,7 @@
         "service": "Service"
       },
       "related-items": {
+        "no_related_found": "No related items found.",
         "integration": "Integration",
         "device": "Device",
         "area": "Area",
@@ -630,6 +631,9 @@
           "locate": "Locate",
           "return_home": "Return home",
           "start_pause": "Start/Pause"
+        },
+        "person": {
+          "create_zone": "Create zone from current location"
         }
       },
       "entity_registry": {
@@ -637,6 +641,7 @@
         "control": "Control",
         "related": "Related",
         "dismiss": "Dismiss",
+        "no_unique_id": "This entity does not have a unique ID, therefore it's settings can not be managed from the UI.",
         "editor": {
           "name": "Name Override",
           "entity_id": "Entity ID",
@@ -785,7 +790,7 @@
             "validation": {
               "heading": "Configuration validation",
               "introduction": "Validate your configuration if you recently made some changes to your configuration and want to make sure that it is all valid",
-              "check_config": "Check config",
+              "check_config": "Check configuration",
               "valid": "Configuration valid!",
               "invalid": "Configuration invalid"
             },
@@ -847,6 +852,7 @@
             "delete_confirm": "Are you sure you want to delete this automation?"
           },
           "editor": {
+            "enable_disable": "Enable/Disable automation",
             "introduction": "Use automations to bring your home alive.",
             "default_name": "New Automation",
             "load_error_not_editable": "Only automations in automations.yaml are editable.",
@@ -1206,7 +1212,7 @@
               "title": "Alexa",
               "info": "With the Alexa integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Alexa-enabled device.",
               "enable_ha_skill": "Enable the Home Assistant skill for Alexa",
-              "config_documentation": "Config documentation",
+              "config_documentation": "Configuration documentation",
               "enable_state_reporting": "Enable State Reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Amazon. This allows you to always see the latest states in the Alexa app and use the state changes to create routines.",
               "sync_entities": "Sync Entities",
@@ -1220,7 +1226,7 @@
               "title": "Google Assistant",
               "info": "With the Google Assistant integration for Home Assistant Cloud you'll be able to control all your Home Assistant devices via any Google Assistant-enabled device.",
               "enable_ha_skill": "Activate the Home Assistant skill for Google Assistant",
-              "config_documentation": "Config documentation",
+              "config_documentation": "Configuration documentation",
               "enable_state_reporting": "Enable State Reporting",
               "info_state_reporting": "If you enable state reporting, Home Assistant will send all state changes of exposed entities to Google. This allows you to always see the latest states in the Google app.",
               "security_devices": "Security Devices",
@@ -1341,11 +1347,13 @@
             "filter": {
               "filter": "Filter",
               "show_disabled": "Show disabled entities",
-              "show_unavailable": "Show unavailable entities"
+              "show_unavailable": "Show unavailable entities",
+              "show_readonly": "Show read-only entities"
             },
             "status": {
               "unavailable": "Unavailable",
               "disabled": "Disabled",
+              "readonly": "Read-only",
               "ok": "Ok"
             },
             "headers": {
@@ -1407,7 +1415,10 @@
           "add_zone": "Add Zone",
           "confirm_delete": "Are you sure you want to delete this zone?",
           "configured_in_yaml": "Zones configured via configuration.yaml cannot be edited via the UI.",
-          "edit_home_zone": "The location of your home can be changed in the general config.",
+          "edit_home_zone": "The radius of the Home zone can't be edited from the frontend yet. Drag the marker on the map to move the home zone.",
+          "edit_home_zone_narrow": "The radius of the Home zone can't be edited from the frontend yet. The location can be changed from the general configuration.",
+          "go_to_core_config": "Go to general configuration?",
+          "home_zone_core_config": "The location of your home zone is editable from the general configuration page. The radius of the Home zone can't be edited from the frontend yet. Do you want to go to the general configuration?",
           "detail": {
             "new_zone": "New Zone",
             "name": "Name",
@@ -1472,7 +1483,7 @@
             "submit": "Submit",
             "not_all_required_fields": "Not all required fields are filled in.",
             "error_saving_area": "Error saving area: {error}",
-            "created_config": "Created config for {name}.",
+            "created_config": "Created configuration for {name}.",
             "external_step": {
               "description": "This step requires you to visit an external website to be completed.",
               "open_site": "Open website"
@@ -1639,14 +1650,14 @@
             "network_started_note_all_queried": "All nodes have been queried."
           },
           "node_config": {
-            "header": "Node Config Options",
+            "header": "Node Configuration Options",
             "seconds": "seconds",
             "set_wakeup": "Set Wakeup Interval",
-            "config_parameter": "Config Parameter",
-            "config_value": "Config Value",
+            "config_parameter": "Configuration Parameter",
+            "config_value": "Configuration Value",
             "true": "True",
             "false": "False",
-            "set_config_parameter": "Set Config Parameter"
+            "set_config_parameter": "Set Configuration Parameter"
           },
           "values": {
             "header": "Node Values"
@@ -1657,7 +1668,7 @@
             "heal_network": "Heal Network",
             "test_network": "Test Network",
             "soft_reset": "Soft Reset",
-            "save_config": "Save Config",
+            "save_config": "Save Configuration",
             "add_node_secure": "Add Node Secure",
             "add_node": "Add Node",
             "remove_node": "Remove Node",
@@ -1712,7 +1723,7 @@
         "add_entities": {
           "yaml_unsupported": "You can not use this function when using Lovelace UI in YAML mode.",
           "generated_unsupported": "You can only use this function when you have taken control of the Lovelace UI.",
-          "saving_failed": "Saving Lovelace UI config failed."
+          "saving_failed": "Saving Lovelace UI configuration failed."
         },
         "views": {
           "confirm_delete": "Are you sure you want to delete this view?",
@@ -1729,21 +1740,21 @@
           "header": "Edit UI",
           "menu": {
             "open": "Open Lovelace UI menu",
-            "raw_editor": "Raw config editor"
+            "raw_editor": "Raw configuration editor"
           },
           "raw_editor": {
-            "header": "Edit Config",
+            "header": "Edit Configuration",
             "save": "Save",
             "unsaved_changes": "Unsaved changes",
             "saved": "Saved",
             "confirm_remove_config_title": "Are you sure you want to remove your Lovelace UI configuration? We will automatically generate your Lovelace UI views with your areas and devices.",
             "confirm_remove_config_text": "We will automatically generate your Lovelace UI views with your areas and devices if you remove your Lovelace UI configuration.",
             "confirm_unsaved_changes": "You have unsaved changes, are you sure you want to exit?",
-            "confirm_unsaved_comments": "Your config contains comment(s), these will not be saved. Do you want to continue?",
+            "confirm_unsaved_comments": "Your configuration contains comment(s), these will not be saved. Do you want to continue?",
             "error_parse_yaml": "Unable to parse YAML: {error}",
-            "error_invalid_config": "Your config is not valid: {error}",
+            "error_invalid_config": "Your configuration is not valid: {error}",
             "error_save_yaml": "Unable to save YAML: {error}",
-            "error_remove": "Unable to remove config: {error}"
+            "error_remove": "Unable to remove configuration: {error}"
           },
           "edit_lovelace": {
             "header": "Title of your Lovelace UI",
@@ -1787,8 +1798,8 @@
           "migrate": {
             "header": "Configuration Incompatible",
             "para_no_id": "This element doesn't have an ID. Please add an ID to this element in 'ui-lovelace.yaml'.",
-            "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate config' button.",
-            "migrate": "Migrate config"
+            "para_migrate": "Home Assistant can add ID's to all your cards and views automatically for you by pressing the 'Migrate configuration' button.",
+            "migrate": "Migrate configuration"
           },
           "card": {
             "alarm-panel": {
@@ -1807,8 +1818,8 @@
               "show_header_toggle": "Show Header Toggle?",
               "toggle": "Toggle entities."
             },
-            "entity-button": {
-              "name": "Entity Button"
+            "button": {
+              "name": "Button"
             },
             "entity-filter": {
               "name": "Entity Filter"
@@ -2086,7 +2097,7 @@
                   "data": {
                     "password": "API Password"
                   },
-                  "description": "Please input the API password in your http config:"
+                  "description": "Please input the API password in your HTTP configuration:"
                 },
                 "mfa": {
                   "data": {

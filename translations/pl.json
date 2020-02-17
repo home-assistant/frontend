@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Jeśli wyłączone, nowo wykryte encje nie będą automatycznie dodawane do Home Assistant'a.",
                 "enable_new_entities_label": "Włącz dodawanie nowych encji.",
-                "title": "Opcje systemowe dla {integration}"
+                "title": "Opcje systemowe dla {integration}",
+                "update": "Aktualizuj"
             },
             "confirmation": {
                 "cancel": "Anuluj",
@@ -640,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "Zamknij okno dialogowe",
                 "edit": "Edytuj encję",
+                "person": {
+                    "create_zone": "Utwórz strefę z bieżącej lokalizacji"
+                },
                 "restored": {
                     "confirm_remove_text": "Czy na pewno chcesz usunąć tę encję?",
                     "confirm_remove_title": "Usunąć encję?",
@@ -659,6 +663,18 @@
                 },
                 "updater": {
                     "title": "Instrukcje aktualizacji"
+                },
+                "vacuum": {
+                    "clean_spot": "Wyczyść miejsce",
+                    "commands": "Polecenia odkurzacza:",
+                    "fan_speed": "Prędkość wentylatora",
+                    "locate": "Zlokalizuj",
+                    "pause": "Pauza",
+                    "return_home": "Powrót do domu",
+                    "start": "Start",
+                    "start_pause": "Start/Pauza",
+                    "status": "Status",
+                    "stop": "Zatrzymaj"
                 }
             },
             "more_info_settings": {
@@ -879,6 +895,7 @@
                         },
                         "edit_ui": "Edytuj za pomocą interfejsu użytkownika",
                         "edit_yaml": "Edycja jako YAML",
+                        "enable_disable": "Włącz/wyłącz automatyzację",
                         "introduction": "Użyj automatyzacji, aby ożywić swój dom",
                         "load_error_not_editable": "Tylko automatyzacje zdefiniowane w pliku automations.yaml są edytowalne.",
                         "load_error_unknown": "Wystąpił błąd podczas ładowania automatyzacji ({err_no}).",
@@ -1910,6 +1927,9 @@
                         "alarm-panel": {
                             "available_states": "Dostępne stany",
                             "name": "Panel alarmu"
+                        },
+                        "button": {
+                            "name": "Przycisk"
                         },
                         "conditional": {
                             "name": "Warunkowa"

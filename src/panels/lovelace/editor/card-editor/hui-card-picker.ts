@@ -18,7 +18,7 @@ const cards: string[] = [
   "alarm-panel",
   "conditional",
   "entities",
-  "entity-button",
+  "button",
   "entity-filter",
   "gauge",
   "glance",
