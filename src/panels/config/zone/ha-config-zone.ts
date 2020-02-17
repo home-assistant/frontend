@@ -50,7 +50,6 @@ import { navigate } from "../../../common/navigate";
 import { saveCoreConfig } from "../../../data/core";
 import { ifDefined } from "lit-html/directives/if-defined";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import { navigate } from "../../../common/navigate";
 
 @customElement("ha-config-zone")
 export class HaConfigZone extends SubscribeMixin(LitElement) {
