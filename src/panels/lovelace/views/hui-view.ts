@@ -49,6 +49,8 @@ let options = {
   layoutEasing: "ease",
 };
 
+let editCodeLoaded = false;
+
 export class HUIView extends LitElement {
   @property() public hass?: HomeAssistant;
 
@@ -61,7 +63,6 @@ export class HUIView extends LitElement {
   @property() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
 
   @property() private _badges: LovelaceBadge[] = [];
-  @property() private editCodeLoaded: boolean = false;
   private _grids: any[] = [];
   // @ts-ignore
   private _resizeObserver?: ResizeObserver;
@@ -247,12 +248,12 @@ export class HUIView extends LitElement {
     const hass = this.hass!;
     const lovelace = this.lovelace!;
 
-    if (lovelace.editMode && !this.editCodeLoaded) {
+    if (lovelace.editMode && !editCodeLoaded) {
       import(
         /* webpackChunkName: "hui-view-editable" */ "./hui-view-editable"
-      ).then((muuri) => {
-        murriGrid = muuri.default;
-        this.editCodeLoaded = true;
+      ).then((editCode) => {
+        murriGrid = editCode.Muuri;
+        editCodeLoaded = true;
       });
     }
 
