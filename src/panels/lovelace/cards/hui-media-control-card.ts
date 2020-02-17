@@ -86,9 +86,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card>
         <div
-          class="${classMap({
+          class="ratio ${classMap({
             "no-image": !this._image,
-            ratio: true,
           })}"
         >
           <div
@@ -130,7 +129,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             ? ""
             : html`
                 <paper-icon-button
-                  icon=${"hass:power"}
+                  icon="hass:power"
                   .action=${stateObj.state === "off" ? "turn_on" : "turn_off"}
                   @click=${this._handleClick}
                 ></paper-icon-button>
@@ -140,7 +139,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               ? ""
               : html`
                   <paper-icon-button
-                    icon=${"hass:skip-previous"}
+                    icon="hass:skip-previous"
                     .disabled="${OFF_STATES.includes(stateObj.state)}"
                     .action=${"media_previous_track"}
                     @click=${this._handleClick}
@@ -170,7 +169,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               ? ""
               : html`
                   <paper-icon-button
-                    icon=${"hass:skip-next"}
+                    icon="hass:skip-next"
                     .disabled="${OFF_STATES.includes(stateObj.state)}"
                     .action=${"media_next_track"}
                     @click=${this._handleClick}
@@ -178,8 +177,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                 `}
           </div>
           <paper-icon-button
-            icon=${"hass:dots-vertical"}
-            @click="${this._handleMoreInfo}"
+            icon="hass:dots-vertical"
+            @click=${this._handleMoreInfo}
           ></paper-icon-button>
         </div>
       </ha-card>
