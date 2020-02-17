@@ -12,6 +12,7 @@ export const SUPPORT_TURN_OFF = 256;
 export const SUPPORT_PLAY_MEDIA = 512;
 export const SUPPORT_VOLUME_BUTTONS = 1024;
 export const SUPPORT_SELECT_SOURCE = 2048;
+export const SUPPORT_STOP = 4096;
 export const SUPPORTS_PLAY = 16384;
 export const SUPPORT_SELECT_SOUND_MODE = 65536;
 export const OFF_STATES = ["off", "idle"];
