@@ -261,13 +261,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     return secondaryTitle;
   }
 
-  private _handleMoreInfo() {
+  private _handleMoreInfo(): void {
     fireEvent(this, "hass-more-info", {
       entityId: this._config!.entity,
     });
   }
 
-  private _handleClick(e: MouseEvent) {
+  private _handleClick(e: MouseEvent): void {
     this.hass!.callService("media_player", (e.currentTarget! as any).action, {
       entity_id: this._config!.entity,
     });
