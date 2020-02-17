@@ -22,7 +22,9 @@ export class HuiSafeModeCard extends LitElement implements LovelaceCard {
     return 3;
   }
 
-  public setConfig(_config: any): void {}
+  public setConfig(_config: any): void {
+    // No config necessary.
+  }
 
   protected render(): TemplateResult {
     return html`
