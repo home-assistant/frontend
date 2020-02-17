@@ -52,7 +52,7 @@
         "switch": "Interruptors",
         "system_health": "Estat del Sistema",
         "updater": "Actualitzador",
-        "vacuum": "Aspiradora",
+        "vacuum": "Aspirador",
         "weblink": "Enllaços web",
         "zha": "ZHA",
         "zwave": "Z-Wave"
@@ -354,12 +354,12 @@
         },
         "vacuum": {
             "cleaning": "Netejant",
-            "docked": "Aparcada",
+            "docked": "Aparcat",
             "error": "Error",
             "idle": "Inactiu",
-            "off": "Apagada",
-            "on": "Encesa",
-            "paused": "Pausada",
+            "off": "Apagat",
+            "on": "Encès",
+            "paused": "Pausat",
             "returning": "Retornant a la base"
         },
         "weather": {
@@ -492,10 +492,10 @@
             "vacuum": {
                 "actions": {
                     "resume_cleaning": "Reprendre neteja",
-                    "return_to_base": "Retornar a la base",
-                    "start_cleaning": "Començar neteja",
-                    "turn_off": "Apagar",
-                    "turn_on": "Encendre"
+                    "return_to_base": "Retorna a la base",
+                    "start_cleaning": "Comença neteja",
+                    "turn_off": "Apaga",
+                    "turn_on": "Encén"
                 }
             },
             "water_heater": {
@@ -641,9 +641,13 @@
             "more_info_control": {
                 "dismiss": "Desestimar el diàleg",
                 "edit": "Edita entitat",
+                "person": {
+                    "create_zone": "Crea una zona a partir de la ubicació actual"
+                },
                 "restored": {
                     "confirm_remove_text": "Estàs segur que vols eliminar aquesta entitat?",
                     "confirm_remove_title": "Eliminar l'entitat?",
+                    "not_provided": "Actualment aquesta entitat no està disponible, prové d'una integració o dispositiu eliminat, modificat o que no funciona.",
                     "remove_action": "Elimina entitat",
                     "remove_intro": "Si l'entitat ja no s'utilitza, pots borrar-la eliminant-la."
                 },
@@ -661,10 +665,12 @@
                     "title": "Instruccions d'actualització"
                 },
                 "vacuum": {
+                    "clean_spot": "Zona neta",
                     "commands": "Comandes de l’aspirador:",
                     "fan_speed": "Velocitat del ventilador",
                     "locate": "Localitza",
                     "pause": "Pausa",
+                    "return_home": "Torna a casa",
                     "start": "Inici",
                     "start_pause": "Inicia/Pausa",
                     "status": "Estat",
@@ -1033,6 +1039,7 @@
                             "manage_entities": "Gestió d'entitats",
                             "security_devices": "Dispositius de seguretat",
                             "sync_entities": "Sincronitza les entitats amb Google",
+                            "sync_entities_404_message": "No s'han pogut sincronitzar les entitats amb Google, digues \"Hey Google, sincronitza els meus dispositius\" per sincronitzar-les.",
                             "title": "Google Assistant"
                         },
                         "integrations": "Integracions",
@@ -1653,6 +1660,7 @@
                         "zha_zigbee_groups": "Grups ZHA Zigbee"
                     },
                     "header": "Configuració domòtica Zigbee (ZHA)",
+                    "introduction": "Des d'aquí pots configurar el component ZHA. Encara no és possible configurar-ho tot des de la interfície d'usuari, però hi estem treballant.",
                     "network_management": {
                         "header": "Gestió de la xarxa",
                         "introduction": "Comandes que afecten tota la xarxa"
@@ -2078,6 +2086,8 @@
                         "para_no_id": "Aquest element no té ID. Afegeix un ID per aquest element a 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Si elimines la configuració de la interfície d'usuari Lovelace es generaran automàticament les visualitzacions de Lovelace amb les teves àrees i dispositius.",
+                        "confirm_remove_config_title": "Estàs segur que vols eliminar la configuració de la interfície d'usuari Lovelace? Es generaran automàticament les visualitzacions de Lovelace amb les teves àrees i dispositius.",
                         "confirm_unsaved_changes": "Hi han canvis no desats. Segur que vols sortir?",
                         "confirm_unsaved_comments": "La configuració conté comentaris que es descartaran. Vols continuar?",
                         "error_invalid_config": "La configuració no és vàlida: {error}",
@@ -2098,7 +2108,8 @@
                     },
                     "suggest_card": {
                         "add": "Afegeix a la UI Lovelace",
-                        "create_own": "Crea la teva"
+                        "create_own": "Crea la teva",
+                        "header": "T'hem creat un suggeriment"
                     },
                     "view": {
                         "panel_mode": {
