@@ -31,7 +31,7 @@
         "homeassistant": "Home Assistant",
         "image_processing": "이미지처리",
         "input_boolean": "논리입력",
-        "input_datetime": "날짜/시간입력",
+        "input_datetime": "날짜 / 시간입력",
         "input_number": "숫자입력",
         "input_select": "선택입력",
         "input_text": "문자입력",
@@ -576,13 +576,13 @@
             },
             "related-items": {
                 "area": "영역",
-                "automation": "다음 자동화의 일부",
+                "automation": "관련된 자동화",
                 "device": "기기",
                 "entity": "관련된 구성요소",
-                "group": "다음 그룹의 일부",
+                "group": "관련된 그룹",
                 "integration": "통합 구성요소",
-                "scene": "다음 씬의 일부",
-                "script": "다음 스크립트의 일부"
+                "scene": "관련된 씬",
+                "script": "관련된 스크립트"
             },
             "relative_time": {
                 "duration": {
@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "비활성화한 경우 새로 발견된 {integration} 구성요소는 Home Assistant 에 자동으로 추가되지 않습니다.",
                 "enable_new_entities_label": "새로 추가된 구성요소를 활성화합니다.",
-                "title": "{integration} 시스템 옵션"
+                "title": "{integration} 시스템 옵션",
+                "update": "업데이트"
             },
             "confirmation": {
                 "cancel": "취소",
@@ -640,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "대화창 닫기",
                 "edit": "구성요소 편집",
+                "person": {
+                    "create_zone": "현재 위치로 지역 만들기"
+                },
                 "restored": {
                     "confirm_remove_text": "이 구성요소를 제거하시겠습니까?",
                     "confirm_remove_title": "구성요소를 제거하시겠습니까?",
@@ -659,6 +663,18 @@
                 },
                 "updater": {
                     "title": "업데이트 방법"
+                },
+                "vacuum": {
+                    "clean_spot": "부분 청소",
+                    "commands": "청소기 조작 명령:",
+                    "fan_speed": "팬 속도",
+                    "locate": "위치 이동",
+                    "pause": "일시정지",
+                    "return_home": "충전 복귀",
+                    "start": "시작",
+                    "start_pause": "시작 / 일시정지",
+                    "status": "상태",
+                    "stop": "중지"
                 }
             },
             "more_info_settings": {
@@ -879,6 +895,7 @@
                         },
                         "edit_ui": "UI 로 편집",
                         "edit_yaml": "YAML 로 편집",
+                        "enable_disable": "자동화 활성화 / 비활성화",
                         "introduction": "자동화를 사용하여 집에 생기를 불어넣으세요",
                         "load_error_not_editable": "automations.yaml 의 자동화만 편집할 수 있습니다.",
                         "load_error_unknown": "자동화를 읽어오는 도중 오류가 발생했습니다 ({err_no}).",
@@ -889,7 +906,7 @@
                             "delete_confirm": "정말 삭제하시겠습니까?",
                             "duplicate": "복제",
                             "header": "트리거",
-                            "introduction": "트리거는 자동화 규칙을 처리하는 시작점 입니다. 같은 자동화 규칙에 여러 개의 트리거를 지정할 수 있습니다. 트리거가 발동되면 Home Assistant 는 조건을 확인하고 동작을 호출합니다.",
+                            "introduction": "트리거는 자동화 규칙을 처리하는 시작점입니다. 같은 자동화 규칙에 여러 개의 트리거를 지정할 수 있습니다. 트리거가 발동되면 Home Assistant 는 조건을 확인하고 동작을 호출합니다.",
                             "learn_more": "트리거에 대해 더 알아보기",
                             "name": "트리거",
                             "type_select": "트리거 유형",
@@ -993,7 +1010,7 @@
                 "cloud": {
                     "account": {
                         "alexa": {
-                            "config_documentation": "설정 문서 보기",
+                            "config_documentation": "구성 문서",
                             "disable": "비활성화",
                             "enable": "활성화",
                             "enable_ha_skill": "Alexa 에 Home Assistant 스킬 사용하기",
@@ -1010,7 +1027,7 @@
                         "connection_status": "클라우드 연결 상태",
                         "fetching_subscription": "구독 정보를 가져오는 중…",
                         "google": {
-                            "config_documentation": "설정 문서 보기",
+                            "config_documentation": "구성 문서",
                             "devices_pin": "보안 기기 PIN",
                             "enable_ha_skill": "Google 어시스턴트에 Home Assistant 스킬 사용하기",
                             "enable_state_reporting": "상태 보고 활성화",
@@ -1407,7 +1424,7 @@
                         "create": "만들기",
                         "delete": "삭제",
                         "device_tracker_intro": "이 구성원에게 속한 기기를 선택해주세요.",
-                        "device_tracker_pick": "추적 할 기기 선택",
+                        "device_tracker_pick": "추적 대상 기기 선택",
                         "device_tracker_picked": "추적 대상 기기",
                         "link_integrations_page": "통합 구성요소 페이지",
                         "link_presence_detection_integrations": "재실 감지 통합 구성요소",
@@ -1418,7 +1435,7 @@
                         "no_device_tracker_available_intro": "구성원의 재실 여부를 알려주는 기기가 있다면 구성원을 해당 기기에 할당할 수 있습니다. 통합 구성요소 페이지에서 재실 감지 통합 구성요소를 추가해서 기기를 구성해보세요.",
                         "update": "업데이트"
                     },
-                    "introduction": "Home Assistant 에서 추적 할 구성원을 정의 할 수 있습니다.",
+                    "introduction": "Home Assistant 에서 추적할 구성원을 정의할 수 있습니다.",
                     "no_persons_created_yet": "아직 생성된 구성원이 없는 것 같습니다.",
                     "note_about_persons_configured_in_yaml": "참고: configuration.yaml 에서 구성된 구성원은 UI 에서 편집 할 수 없습니다."
                 },
@@ -1496,8 +1513,8 @@
                             "automation": "자동화 새로고침",
                             "core": "위치 및 사용자화 새로고침",
                             "group": "그룹 새로고침",
-                            "heading": "구성 내용 새로고침",
-                            "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어들일 수 있습니다. 새로고침을 누르면 현재 구성 내용을 내리고 새로운 구성 내용을 읽어들입니다.",
+                            "heading": "YAML 구성 다시 읽어오기",
+                            "introduction": "Home Assistant 의 일부 구성 내용은 재시작 없이 다시 읽어 들일 수 있습니다. 새로고침을 누르면 현재 사용 중인 YAML 구성 내용을 내리고 새로운 구성 내용을 읽어 들입니다.",
                             "person": "구성원 새로고침",
                             "scene": "씬 다시읽기",
                             "script": "스크립트 새로고침",
@@ -1731,7 +1748,7 @@
                         "cancel_command": "명령 취소",
                         "heal_network": "네트워크 새로고침",
                         "remove_node": "노드 제거",
-                        "save_config": "설정 저장",
+                        "save_config": "구성 저장",
                         "soft_reset": "소프트 리셋",
                         "start_network": "네트워크 시작",
                         "stop_network": "네트워크 중지",
@@ -1877,7 +1894,7 @@
                     "confirm_delete": "이 카드를 삭제하시겠습니까?",
                     "empty_state": {
                         "go_to_integrations_page": "통합 페이지로 이동하기.",
-                        "no_devices": "이 페이지에서 기기를 제어 할 수 있지만, 기기가 아직 설정되지 않은 것 같습니다. 시작하려면 통합 페이지로 이동해주세요.",
+                        "no_devices": "이 페이지에서 기기를 제어할 수 있지만, 기기가 아직 설정되지 않은 것 같습니다. 시작하려면 통합 페이지로 이동해주세요.",
                         "title": "집에 오신 것을 환영합니다"
                     },
                     "entities": {
@@ -1910,6 +1927,9 @@
                         "alarm-panel": {
                             "available_states": "사용 가능한 상태요소",
                             "name": "알람 패널"
+                        },
+                        "button": {
+                            "name": "버튼"
                         },
                         "conditional": {
                             "name": "조건부"
@@ -2061,8 +2081,8 @@
                     },
                     "migrate": {
                         "header": "구성 내용이 호환되지 않습니다",
-                        "migrate": "설정 마이그레이션",
-                        "para_migrate": "Home Assistant 는 '설정 마이그레이션' 버튼을 눌러 자동으로 모든 카드와 보기에 ID를 추가 할 수 있습니다.",
+                        "migrate": "구성 마이그레이션",
+                        "para_migrate": "Home Assistant 는 '구성 마이그레이션' 버튼을 눌러 자동으로 모든 카드와 뷰에 ID를 추가할 수 있습니다.",
                         "para_no_id": "이 구성요소에는 ID가 없습니다. 'ui-lovelace.yaml' 에 구성요소의 ID를 추가해주세요."
                     },
                     "raw_editor": {
@@ -2196,7 +2216,7 @@
                                     "data": {
                                         "password": "API 비밀번호"
                                     },
-                                    "description": "configuration.yaml 에 설정한 api_password 를 입력해주세요:"
+                                    "description": "HTTP 구성에 API 비밀번호를 입력해주세요:"
                                 },
                                 "mfa": {
                                     "data": {
@@ -2304,7 +2324,7 @@
             },
             "profile": {
                 "advanced_mode": {
-                    "description": "Home Assistant 의 고급 기능과 옵션은 기본적으로 숨겨져 있으며 토글을 활성화하여 이러한 기능을 사용하실 수 있습니다. 이 설정은 사용자별 설정이며 Home Assistant 를 사용하는 다른 사용자에게 영향을 미치지 않습니다.",
+                    "description": "고급 기능을 활성화합니다.",
                     "link_promo": "더 알아보기",
                     "title": "고급 모드"
                 },
@@ -2321,7 +2341,7 @@
                     "description": "모바일 환경과 마찬가지로 기본적으로 사이드 바가 숨겨집니다.",
                     "header": "항상 사이드바 숨기기"
                 },
-                "is_owner": "관리자 계정 입니다.",
+                "is_owner": "관리자 계정입니다.",
                 "language": {
                     "dropdown_label": "언어",
                     "header": "언어",
@@ -2384,7 +2404,7 @@
                     "link_promo": "테마에 대해 더 알아보기"
                 },
                 "vibrate": {
-                    "description": "기기를 제어 할 때 이 기기에서 진동을 활성화 또는 비활성화합니다.",
+                    "description": "기기를 제어할 때 이 기기에서 진동을 활성화 또는 비활성화합니다.",
                     "header": "진동효과"
                 }
             },

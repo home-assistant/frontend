@@ -597,6 +597,7 @@ class HaSidebar extends LitElement {
 
       paper-icon-item .item-text {
         display: none;
+        max-width: calc(100% - 56px);
       }
       :host([expanded]) paper-icon-item .item-text {
         display: block;

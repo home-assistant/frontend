@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Si désactivé, les nouvelles entités découvertes pour {integration} ne seront pas ajoutées automatiquement à Home Assistant.",
                 "enable_new_entities_label": "Activer les entités nouvellement ajoutées.",
-                "title": "Options système pour {integration}"
+                "title": "Options système pour {integration}",
+                "update": "Mise à jour"
             },
             "confirmation": {
                 "cancel": "Annuler",
@@ -640,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "Fermer la fenêtre de dialogue",
                 "edit": "Modifier l'entité",
+                "person": {
+                    "create_zone": "Créer une zone à partir de l'emplacement actuel"
+                },
                 "restored": {
                     "confirm_remove_text": "Voulez-vous vraiment supprimer cette entité ?",
                     "confirm_remove_title": "Supprimer l'entité ?",
@@ -659,6 +663,18 @@
                 },
                 "updater": {
                     "title": "Instructions de mise à jour"
+                },
+                "vacuum": {
+                    "clean_spot": "Nettoyer Endroit",
+                    "commands": "Commandes d'aspirateur :",
+                    "fan_speed": "Vitesse ventilateur",
+                    "locate": "Localiser",
+                    "pause": "Pause",
+                    "return_home": "Rentrer à la maison",
+                    "start": "Démarrer",
+                    "start_pause": "Démarrer/Pause",
+                    "status": "Statut",
+                    "stop": "Arrêter"
                 }
             },
             "more_info_settings": {
@@ -879,6 +895,7 @@
                         },
                         "edit_ui": "Modifier avec l'interface utilisateur",
                         "edit_yaml": "Modifier en tant que YAML",
+                        "enable_disable": "Activer/Désactiver l'automatisation",
                         "introduction": "Utilisez les automatisations pour donner vie à votre maison",
                         "load_error_not_editable": "Seules les automations dans automations.yaml sont modifiables.",
                         "load_error_unknown": "Erreur lors du chargement de l'automation ( {err_no} ).",
@@ -1870,7 +1887,7 @@
             "lovelace": {
                 "add_entities": {
                     "generated_unsupported": "Vous ne pouvez utiliser cette fonction que lorsque vous avez pris le contrôle de Lovelace UI.",
-                    "saving_failed": "La sauvegarde de la configuration de Lovelace UI a échouée.",
+                    "saving_failed": "La sauvegarde de la configuration de Lovelace UI a échoué.",
                     "yaml_unsupported": "Vous ne pouvez pas utiliser cette fonction lorsque vous utilisé Lovelace UI en mode YAML."
                 },
                 "cards": {
@@ -1910,6 +1927,9 @@
                         "alarm-panel": {
                             "available_states": "États disponibles",
                             "name": "Panneau d'alarme"
+                        },
+                        "button": {
+                            "name": "Bouton"
                         },
                         "conditional": {
                             "name": "Conditionnel"

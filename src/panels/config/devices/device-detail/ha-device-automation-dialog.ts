@@ -76,7 +76,7 @@ export class DialogDeviceAutomation extends LitElement {
       <ha-dialog
         open
         @closing="${this._close}"
-        .title=${this.hass.localize(
+        .heading=${this.hass.localize(
           `ui.panel.config.devices.${
             this._params.script ? "script" : "automation"
           }.create`

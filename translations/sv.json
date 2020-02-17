@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Nyupptäckta entiteter kommer ej läggas till automatiskt i Home Assistant om de är inaktiverade.",
                 "enable_new_entities_label": "Aktivera nyligen tillagda enheter.",
-                "title": "Systeminställningar för {integration}"
+                "title": "Systeminställningar för {integration}",
+                "update": "Uppdatera"
             },
             "confirmation": {
                 "cancel": "Avbryt",
@@ -659,6 +660,18 @@
                 },
                 "updater": {
                     "title": "Uppdateringsanvisningar"
+                },
+                "vacuum": {
+                    "clean_spot": "Rengör plats",
+                    "commands": "Dammsugarkommandon:",
+                    "fan_speed": "Fläkthastighet",
+                    "locate": "Lokalisera",
+                    "pause": "Pausa",
+                    "return_home": "Återvänd hem",
+                    "start": "Starta",
+                    "start_pause": "Starta/Pausa",
+                    "status": "Status",
+                    "stop": "Stoppa"
                 }
             },
             "more_info_settings": {
@@ -1496,7 +1509,7 @@
                             "automation": "Ladda om automationer",
                             "core": "Ladda om plats & anpassningar",
                             "group": "Ladda om grupper",
-                            "heading": "Konfigurationen laddas om",
+                            "heading": "YAML-konfiguration laddas om",
                             "introduction": "Vissa delar av Home Assistant kan laddas om utan att en omstart krävs. Att trycka på \"ladda om\" innebär att den nuvarande konfiguration inaktiveras och den nya laddas.",
                             "person": "Ladda om personer",
                             "scene": "Ladda om scenarier",
@@ -1679,12 +1692,12 @@
                         "name": "Namn",
                         "new_zone": "Ny Zon",
                         "passive": "Passiv",
-                        "passive_note": "Passiva zoner är dolda i frontend och används inte som plats för enhetsspårare. Detta är användbart om du bara vill använda den för automatiseringar.",
+                        "passive_note": "Passiva zoner är dolda i frontend och används inte som plats för enhetsspårare. Detta är användbart om du bara vill använda det för automatiseringar.",
                         "radius": "Radie",
                         "required_error_msg": "Det här fältet krävs",
                         "update": "Uppdatera"
                     },
-                    "edit_home_zone": "Platsen för ditt hem kan ändras i general config.",
+                    "edit_home_zone": "Platsen för ditt hem kan ändras i den allmänna konfigurationen.",
                     "introduction": "Med zoner kan du ange vissa regioner på jorden. När en person befinner sig i en zon tar tillståndet namnet från zonen. Zoner kan också användas som utlösare eller villkor i automatiseringsinställningar.",
                     "no_zones_created_yet": "Det verkar som om du inte har skapat några zoner ännu."
                 },

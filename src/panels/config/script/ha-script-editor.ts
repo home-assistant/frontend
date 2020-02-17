@@ -29,6 +29,7 @@ import { HomeAssistant, Route } from "../../../types";
 import "../automation/action/ha-automation-action";
 import { computeObjectId } from "../../../common/entity/compute_object_id";
 import { configSections } from "../ha-panel-config";
+import { HaDeviceAction } from "../automation/action/types/ha-automation-action-device_id";
 
 export class HaScriptEditor extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -62,7 +63,11 @@ export class HaScriptEditor extends LitElement {
                 @click=${this._deleteConfirm}
               ></paper-icon-button>
             `}
-
+        ${this.narrow
+          ? html`
+              <span slot="header">${this._config?.alias}</span>
+            `
+          : ""}
         <div class="content">
           ${this._errors
             ? html`
@@ -77,7 +82,11 @@ export class HaScriptEditor extends LitElement {
             ${this._config
               ? html`
                   <ha-config-section .isWide=${this.isWide}>
-                    <span slot="header">${this._config.alias}</span>
+                    ${!this.narrow
+                      ? html`
+                          <span slot="header">${this._config.alias}</span>
+                        `
+                      : ""}
                     <span slot="introduction">
                       ${this.hass.localize(
                         "ui.panel.config.script.editor.introduction"
@@ -193,7 +202,7 @@ export class HaScriptEditor extends LitElement {
       this._dirty = initData ? true : false;
       this._config = {
         alias: this.hass.localize("ui.panel.config.script.editor.default_name"),
-        sequence: [{ service: "" }],
+        sequence: [{ ...HaDeviceAction.defaultConfig }],
         ...initData,
       };
     }

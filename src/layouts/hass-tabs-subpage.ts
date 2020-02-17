@@ -56,6 +56,11 @@ class HassTabsSubpage extends LitElement {
           .hassio=${this.hassio}
           @click=${this._backTapped}
         ></ha-paper-icon-button-arrow-prev>
+        ${this.narrow
+          ? html`
+              <div main-title><slot name="header"></slot></div>
+            `
+          : ""}
         <div id="tabbar" class=${classMap({ "bottom-bar": this.narrow })}>
           ${this.tabs.map((page, index) =>
             (!page.component ||
@@ -136,11 +141,6 @@ class HassTabsSubpage extends LitElement {
         border-bottom: 1px solid var(--divider-color);
         padding: 0 16px;
         box-sizing: border-box;
-      }
-
-      :host([narrow]) .toolbar {
-        background-color: var(--primary-background-color);
-        border-bottom: none;
       }
 
       #tabbar {

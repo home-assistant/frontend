@@ -536,6 +536,7 @@
         },
         "common": {
             "cancel": "Cancelar",
+            "close": "Fechar",
             "loading": "Carregando",
             "no": "Não",
             "save": "Salvar",
@@ -543,10 +544,24 @@
             "yes": "Sim"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Adicionar",
+                    "failed_create_area": "Falha ao criar a área.",
+                    "name": "Nome",
+                    "text": "Digite o nome da nova área.",
+                    "title": "Adicionar nova área"
+                },
+                "add_new": "Adicionar nova área…",
+                "area": "Área",
+                "clear": "Limpar",
+                "show_areas": "Mostrar áreas"
+            },
             "device-picker": {
                 "clear": "Limpar",
                 "device": "Dispositivo",
-                "show_devices": "Mostrar dispositivos"
+                "show_devices": "Mostrar dispositivos",
+                "toggle": "Alternar"
             },
             "entity": {
                 "entity-picker": {
@@ -625,6 +640,11 @@
             "more_info_control": {
                 "dismiss": "Dispensar diálogo",
                 "edit": "Editar entidade",
+                "restored": {
+                    "confirm_remove_text": "Tem certeza de que deseja remover esta entidade?",
+                    "confirm_remove_title": "Remover entidade?",
+                    "remove_action": "Remover entidade"
+                },
                 "script": {
                     "last_action": "Última Ação",
                     "last_triggered": "Último disparo"
@@ -637,6 +657,18 @@
                 },
                 "updater": {
                     "title": "Atualizar Instruções"
+                },
+                "vacuum": {
+                    "clean_spot": "Limpar local",
+                    "commands": "Comandos do aspirador de pó:",
+                    "fan_speed": "Velocidade do ventilador",
+                    "locate": "Localizar",
+                    "pause": "Pausar",
+                    "return_home": "Voltar para casa",
+                    "start": "Iniciar",
+                    "start_pause": "Iniciar / Pausar",
+                    "status": "Estado",
+                    "stop": "Parar"
                 }
             },
             "more_info_settings": {
@@ -1203,14 +1235,19 @@
                         "actions": {
                             "caption": "Quando algo é acionado ..."
                         },
+                        "automations": "Automações",
                         "conditions": {
                             "caption": "Só faça alguma coisa se ..."
                         },
+                        "create": "Crie automação com o dispositivo",
+                        "no_automations": "Sem automações",
+                        "no_device_automations": "Não há automações disponíveis para este dispositivo.",
                         "triggers": {
                             "caption": "Faça alguma coisa quando ..."
                         }
                     },
                     "automations": "Automações",
+                    "cant_edit": "Você só pode editar itens que são criados na IU.",
                     "caption": "Dispositivos",
                     "confirm_rename_entity_ids": "Você também deseja renomear os IDs das entidades?",
                     "data_table": {
@@ -1224,9 +1261,28 @@
                     "description": "Gerenciar dispositivos conectados",
                     "details": "Aqui estão todos os detalhes do seu dispositivo.",
                     "device_not_found": "Dispositivo não encontrado.",
+                    "entities": {
+                        "add_entities_lovelace": "Adicionar ao Lovelace",
+                        "entities": "Entidades",
+                        "none": "Este dispositivo não possui entidades"
+                    },
                     "info": "Informação do dispositivo",
+                    "name": "Nome",
+                    "scene": {
+                        "create": "Criar cenário com o dispositivo",
+                        "no_scenes": "Sem cenários",
+                        "scenes": "Cenários"
+                    },
+                    "scenes": "Cenários",
+                    "script": {
+                        "create": "Criar roteiro com o dispositivo",
+                        "no_scripts": "Sem roteiros",
+                        "scripts": "Roteiros"
+                    },
+                    "scripts": "Roteiros",
                     "unknown_error": "Erro desconhecido",
-                    "unnamed_device": "Dispositivo sem nome"
+                    "unnamed_device": "Dispositivo sem nome",
+                    "update": "Atualizar"
                 },
                 "entities": {
                     "caption": "Registro de Entidades",
@@ -1246,17 +1302,44 @@
                         "update": "ATUALIZAR"
                     },
                     "picker": {
+                        "disable_selected": {
+                            "button": "Desativar selecionado",
+                            "confirm_text": "As entidades desativadas não serão adicionadas ao Assistente Doméstico.",
+                            "confirm_title": "Deseja desativar {number} entidades?"
+                        },
+                        "enable_selected": {
+                            "button": "Habilitar selecionado",
+                            "confirm_text": "Isso os disponibilizará novamente no Home Assistant se eles estiverem desativados.",
+                            "confirm_title": "Deseja habilitar {number} entidades?"
+                        },
+                        "filter": {
+                            "filter": "Filtro",
+                            "show_disabled": "Mostrar entidades desativadas",
+                            "show_unavailable": "Mostrar entidades indisponíveis"
+                        },
                         "header": "Registro de Entidades",
                         "headers": {
                             "enabled": "Habilitado",
                             "entity_id": "ID da entidade",
                             "integration": "Integração",
-                            "name": "Nome"
+                            "name": "Nome",
+                            "status": "Estado"
                         },
                         "integrations_page": "Página de integrações",
                         "introduction": "O Home Assistant mantém um registro de todas as entidades que já viu e que podem ser identificadas exclusivamente. Cada uma dessas entidades terá um ID de entidade atribuído, que será reservado apenas para essa entidade.",
                         "introduction2": "Use o registro da entidade para sobrescrever o nome, alterar o ID da entidade ou remover a entrada do Home Assistant. Observe que a remoção do registro de entidade não removerá a entidade totalmente. Para fazer isso, siga o link abaixo e remova-o da página de integrações.",
+                        "remove_selected": {
+                            "button": "Remover selecionado",
+                            "confirm_text": "Entidades só podem ser removidas quando a integração não estiver mais fornecendo as entidades.",
+                            "confirm_title": "Deseja remover {number} entidades?"
+                        },
+                        "selected": "{number} selecionado",
                         "show_disabled": "Mostrar entidades desativadas",
+                        "status": {
+                            "disabled": "Desativado",
+                            "ok": "Ok",
+                            "unavailable": "Indisponível"
+                        },
                         "unavailable": "(indisponível)"
                     }
                 },
@@ -1544,7 +1627,8 @@
                         "caption": "Grupos",
                         "description": "Criar e modificar grupos Zigbee",
                         "group-header": "Zigbee Home Automation - Detalhes do Grupo",
-                        "groups-header": "Zigbee Home Automation - Gerenciamento de grupos"
+                        "groups-header": "Zigbee Home Automation - Gerenciamento de grupos",
+                        "zha_zigbee_groups": "Grupos ZHA Zigbee"
                     },
                     "network_management": {
                         "header": "Gerenciamento de Rede",
