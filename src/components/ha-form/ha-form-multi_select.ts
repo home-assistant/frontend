@@ -1,7 +1,9 @@
 import "@polymer/paper-checkbox/paper-checkbox";
-import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
+import "@polymer/paper-menu-button/paper-menu-button";
+import "@polymer/paper-input/paper-input";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
+import "@polymer/paper-ripple/paper-ripple";
 import {
   customElement,
   html,
@@ -9,6 +11,8 @@ import {
   property,
   query,
   TemplateResult,
+  CSSResult,
+  css,
 } from "lit-element";
 import { fireEvent } from "../../common/dom/fire_event";
 import {
@@ -24,7 +28,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
   @property() public label!: string;
   @property() public suffix!: string;
   @property() private _init = false;
-  @query("paper-dropdown-menu") private _input?: HTMLElement;
+  @query("paper-menu-button") private _input?: HTMLElement;
 
   public focus(): void {
     if (this._input) {
@@ -38,28 +42,63 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
       : Object.entries(this.schema.options!);
 
     return html`
-      <paper-listbox
-        multi
-        attr-for-selected="item-value"
-        .selectedValues=${this.data}
-        @selected-items-changed=${this._valueChanged}
-      >
-        ${// TS doesn't work with union array types https://github.com/microsoft/TypeScript/issues/36390
-        // @ts-ignore
-        options.map((item: string | [string, string]) => {
-          const value = this._optionValue(item);
-          return html`
-            <paper-icon-item .itemValue=${value}>
-              <paper-checkbox
-                .checked=${this.data.includes(value)}
-                slot="item-icon"
-              ></paper-checkbox>
-              ${this._optionLabel(item)}
-            </paper-icon-item>
-          `;
-        })}
-      </paper-listbox>
+      <paper-menu-button horizontal-align="right" vertical-offset="8">
+        <div class="dropdown-trigger" slot="dropdown-trigger">
+          <paper-ripple></paper-ripple>
+          <paper-input
+            id="input"
+            type="text"
+            readonly
+            value=${this.data
+              .map((value) => this.schema.options![value] || value)
+              .join(", ")}
+            label=${this.label}
+            input-role="button"
+            input-aria-haspopup="listbox"
+            autocomplete="off"
+          >
+            <iron-icon
+              icon="paper-dropdown-menu:arrow-drop-down"
+              suffix
+              slot="suffix"
+            ></iron-icon>
+          </paper-input>
+        </div>
+        <paper-listbox
+          multi
+          slot="dropdown-content"
+          attr-for-selected="item-value"
+          .selectedValues=${this.data}
+          @selected-items-changed=${this._valueChanged}
+          @iron-select=${this._onSelect}
+        >
+          ${// TS doesn't work with union array types https://github.com/microsoft/TypeScript/issues/36390
+          // @ts-ignore
+          options.map((item: string | [string, string]) => {
+            const value = this._optionValue(item);
+            return html`
+              <paper-icon-item .itemValue=${value}>
+                <paper-checkbox
+                  .checked=${this.data.includes(value)}
+                  slot="item-icon"
+                ></paper-checkbox>
+                ${this._optionLabel(item)}
+              </paper-icon-item>
+            `;
+          })}
+        </paper-listbox>
+      </paper-menu-button>
     `;
+  }
+
+  protected firstUpdated() {
+    this.updateComplete.then(() => {
+      const input = (this.shadowRoot?.querySelector("paper-input")
+        ?.inputElement as any)?.inputElement;
+      if (input) {
+        input.style.textOverflow = "ellipsis";
+      }
+    });
   }
 
   private _optionValue(item: string | string[]): string {
@@ -67,7 +106,11 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
   }
 
   private _optionLabel(item: string | string[]): string {
-    return Array.isArray(item) ? item[1] : item;
+    return Array.isArray(item) ? item[1] || item[0] : item;
+  }
+
+  private _onSelect(ev: Event) {
+    ev.stopPropagation();
   }
 
   private _valueChanged(ev: CustomEvent): void {
@@ -85,6 +128,25 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
       },
       { bubbles: false }
     );
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      paper-menu-button {
+        display: block;
+        padding: 0;
+        --paper-item-icon-width: 34px;
+      }
+      paper-ripple {
+        top: 12px;
+        left: 0px;
+        bottom: 8px;
+        right: 0px;
+      }
+      paper-input {
+        text-overflow: ellipsis;
+      }
+    `;
   }
 }
 

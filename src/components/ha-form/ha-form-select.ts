@@ -5,6 +5,8 @@ import {
   property,
   TemplateResult,
   query,
+  CSSResult,
+  css,
 } from "lit-element";
 import { HaFormElement, HaFormSelectData, HaFormSelectSchema } from "./ha-form";
 import { fireEvent } from "../../common/dom/fire_event";
@@ -55,7 +57,7 @@ export class HaFormSelect extends LitElement implements HaFormElement {
   }
 
   private _optionLabel(item: string | [string, string]) {
-    return Array.isArray(item) ? item[1] : item;
+    return Array.isArray(item) ? item[1] || item[0] : item;
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -65,6 +67,14 @@ export class HaFormSelect extends LitElement implements HaFormElement {
     fireEvent(this, "value-changed", {
       value: ev.detail.value.itemValue,
     });
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      paper-dropdown-menu {
+        display: block;
+      }
+    `;
   }
 }
 

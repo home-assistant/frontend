@@ -18,8 +18,10 @@ import "../../resources/ha-style";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
 import { configFlowContentStyles } from "./styles";
-import { DataEntryFlowStepForm, FieldSchema } from "../../data/data_entry_flow";
+import { DataEntryFlowStepForm } from "../../data/data_entry_flow";
 import { FlowConfig } from "./show-dialog-data-entry-flow";
+// tslint:disable-next-line
+import { HaFormSchema } from "../../components/ha-form/ha-form";
 
 @customElement("step-flow-form")
 class StepFlowForm extends LitElement {
@@ -176,7 +178,7 @@ class StepFlowForm extends LitElement {
     this._stepData = ev.detail.value;
   }
 
-  private _labelCallback = (field: FieldSchema): string =>
+  private _labelCallback = (field: HaFormSchema): string =>
     this.flowConfig.renderShowFormStepFieldLabel(this.hass, this.step, field);
 
   private _errorCallback = (error: string) =>
