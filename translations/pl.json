@@ -1928,6 +1928,9 @@
                             "available_states": "Dostępne stany",
                             "name": "Panel alarmu"
                         },
+                        "button": {
+                            "name": "Przycisk"
+                        },
                         "conditional": {
                             "name": "Warunkowa"
                         },

@@ -1887,7 +1887,7 @@
             "lovelace": {
                 "add_entities": {
                     "generated_unsupported": "Vous ne pouvez utiliser cette fonction que lorsque vous avez pris le contrôle de Lovelace UI.",
-                    "saving_failed": "La sauvegarde de la configuration de Lovelace UI a échouée.",
+                    "saving_failed": "La sauvegarde de la configuration de Lovelace UI a échoué.",
                     "yaml_unsupported": "Vous ne pouvez pas utiliser cette fonction lorsque vous utilisé Lovelace UI en mode YAML."
                 },
                 "cards": {

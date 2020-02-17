@@ -1928,6 +1928,9 @@
                             "available_states": "Estados disponibles",
                             "name": "Panel de alarma"
                         },
+                        "button": {
+                            "name": "Botón"
+                        },
                         "conditional": {
                             "name": "Condicional"
                         },

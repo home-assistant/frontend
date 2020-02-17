@@ -610,7 +610,7 @@
             "confirmation": {
                 "cancel": "Abbrechen",
                 "ok": "OK",
-                "title": "Bist Sie sicher?"
+                "title": "Sind Sie sicher?"
             },
             "domain_toggler": {
                 "title": "Domänen umschalten"
@@ -641,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "Dialog ausblenden",
                 "edit": "Entität bearbeiten",
+                "person": {
+                    "create_zone": "Zone vom aktuellen Standort erstellen"
+                },
                 "restored": {
                     "confirm_remove_text": "Sind Sie sicher, dass Sie diese Entität löschen möchten?",
                     "confirm_remove_title": "Entität entfernen?",
@@ -662,10 +665,12 @@
                     "title": "Update-Anweisungen"
                 },
                 "vacuum": {
+                    "clean_spot": "Stelle säubern",
                     "commands": "Staubsaugerbefehle:",
                     "fan_speed": "Lüftergeschwindigkeit",
                     "locate": "Lokalisieren",
                     "pause": "Pause",
+                    "return_home": "Zum Hub zurückkehren",
                     "start": "Start",
                     "start_pause": "Start/Pause",
                     "status": "Status",
@@ -890,6 +895,7 @@
                         },
                         "edit_ui": "Bearbeiten Sie mit der Benutzeroberfläche",
                         "edit_yaml": "Als YAML bearbeiten",
+                        "enable_disable": "Automatisierung aktivieren / deaktivieren",
                         "introduction": "Benutze Automatisierungen, um deinem Zuhause Leben einzuhauchen",
                         "load_error_not_editable": "Nur Automatisierungen in automations.yaml sind editierbar.",
                         "load_error_unknown": "Fehler beim Laden der Automatisierung ({err_no}).",
@@ -1090,7 +1096,7 @@
                         "close": "Schließen",
                         "confirm_disable": "Möchten Sie diesen Webhook wirklich deaktivieren?",
                         "copied_to_clipboard": "In die Zwischenablage kopiert",
-                        "info_disable_webhook": "Wenn Sie diesen Webhook nicht mehr nutzen wollen, können Sie ",
+                        "info_disable_webhook": "Wenn Sie diesen Webhook nicht mehr nutzen wollen, können Sie",
                         "link_disable_webhook": "deaktiviere es",
                         "managed_by_integration": "Dieser Webhook wird von einer Integration verwaltet und kann nicht deaktiviert werden.",
                         "view_documentation": "Dokumentation anzeigen",
@@ -1204,7 +1210,7 @@
                             "validation": {
                                 "check_config": "Konfiguration prüfen",
                                 "heading": "Konfiguration überprüfen",
-                                "introduction": "Überprüfen der Konfiguration, wenn Sie kürzlich Änderungen vorgenommen haben  und sicherstellen möchten, dass alles ordnungsgemäß ist",
+                                "introduction": "Überprüfen der Konfiguration, wenn Sie kürzlich Änderungen vorgenommen haben und sicherstellen möchten, dass alles ordnungsgemäß ist",
                                 "invalid": "Konfiguration fehlerhaft",
                                 "valid": "Konfiguration in Ordnung"
                             }
@@ -1426,7 +1432,7 @@
                         "name": "Name",
                         "name_error_msg": "Name erforderlich",
                         "new_person": "Neue Person",
-                        "no_device_tracker_available_intro": "Wenn Sie Geräte haben, die die Anwesenheit einer Person anzeigen, können Sie  diese hier einer Person zuordnen. Sie können Ihr erstes Gerät hinzufügen, indem Sie eine Integration zur Anwesenheitserkennung auf der Integrationsseite hinzufügen.",
+                        "no_device_tracker_available_intro": "Wenn Sie Geräte haben, die die Anwesenheit einer Person anzeigen, können Sie diese hier einer Person zuordnen. Sie können Ihr erstes Gerät hinzufügen, indem Sie eine Integration zur Anwesenheitserkennung auf der Integrationsseite hinzufügen.",
                         "update": "Aktualisieren"
                     },
                     "introduction": "Hier können Sie jede Person von Interesse in Home Assistant definieren.",
@@ -1667,7 +1673,7 @@
                         "introduction": "ZHA-Befehle ausführen, die sich auf ein einzelnes Gerät auswirken. Wählen Sie ein Gerät aus, um eine Liste der verfügbaren Befehle anzuzeigen."
                     },
                     "services": {
-                        "reconfigure": "Rekonfigurieren des ZHA-Geräts (Gerät heilen). Benutzen Sie dies, wenn Sie  Probleme mit dem Gerät haben. Wenn es sich bei dem betroffenden Gerät um ein batteriebetriebenes Gerät handelt, stellen Sie sicher, dass es wach ist und Kommandos akzeptiert, wenn Sie diesen Dienst benutzen.",
+                        "reconfigure": "Rekonfigurieren des ZHA-Geräts (Gerät heilen). Benutzen Sie dies, wenn Sie Probleme mit dem Gerät haben. Wenn es sich bei dem betroffenden Gerät um ein batteriebetriebenes Gerät handelt, stellen Sie sicher, dass es wach ist und Kommandos akzeptiert, wenn Sie diesen Dienst benutzen.",
                         "remove": "Entferne ein Gerät aus dem Zigbee-Netzwerk.",
                         "updateDeviceName": "Lege einen benutzerdefinierten Namen für dieses Gerät in der Geräteregistrierung fest."
                     },
@@ -1922,6 +1928,9 @@
                             "available_states": "Verfügbare Zustände",
                             "name": "Alarmpanel"
                         },
+                        "button": {
+                            "name": "Schaltfläche"
+                        },
                         "conditional": {
                             "name": "Bedingte Elemente"
                         },
@@ -2078,7 +2087,7 @@
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Wir generieren automatisch deine Lovelace-Ansichten mit deinen Bereichen und Geräten, wenn Sie Ihre Lovelace-Konfiguration entfernen.",
-                        "confirm_remove_config_title": "Bist Ssie sicher, dass Sie Ihre deine Lovelace-Konfiguration entfernen ollen? Wir generieren automatisch Ihre Lovelace-Ansichten mit Ihren Bereichen und Geräten.",
+                        "confirm_remove_config_title": "Sind Sie sicher, dass Sie Ihre Lovelace-Konfiguration entfernen wollen? Wir generieren automatisch Ihre Lovelace-Ansichten mit Ihren Bereichen und Geräten.",
                         "confirm_unsaved_changes": "Sie haben ungespeicherte Änderungen, sind Sie sicher, dass Sie beenden willen?",
                         "confirm_unsaved_comments": "Ihre Konfiguration enthält einen oder mehrere Kommentare, diese werden nicht gespeichert. Möchten Sie fortfahren?",
                         "error_invalid_config": "Deine Konfiguration ist ungültig: {error}",
