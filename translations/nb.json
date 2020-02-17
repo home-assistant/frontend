@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Hvis den er deaktivert, blir ikke nyoppdagede entiteter for {integration} automatisk lagt til i Home Assistant.",
                 "enable_new_entities_label": "Aktiver enheter som nylig er lagt til.",
-                "title": "Systemalternativer for {integration}"
+                "title": "Systemalternativer for {integration}",
+                "update": "Oppdater"
             },
             "confirmation": {
                 "cancel": "Avbryt",
@@ -640,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "Avvis dialogboksen",
                 "edit": "Redigér entitet",
+                "person": {
+                    "create_zone": "Opprett sone fra gjeldende plassering"
+                },
                 "restored": {
                     "confirm_remove_text": "Er du sikker på at du vil fjerne denne entiteten?",
                     "confirm_remove_title": "Vil du fjerne entiteten?",
@@ -659,6 +663,18 @@
                 },
                 "updater": {
                     "title": "Oppdateringsanvisning"
+                },
+                "vacuum": {
+                    "clean_spot": "Rent sted",
+                    "commands": "Støvsugerkommandoer:",
+                    "fan_speed": "Viftehastighet",
+                    "locate": "Lokaliser",
+                    "pause": "Pause",
+                    "return_home": "Vende hjem",
+                    "start": "Start",
+                    "start_pause": "Start / Pause",
+                    "status": "Status",
+                    "stop": "Stopp"
                 }
             },
             "more_info_settings": {
@@ -879,6 +895,7 @@
                         },
                         "edit_ui": "Rediger med UI",
                         "edit_yaml": "Rediger som YAML",
+                        "enable_disable": "Aktivere/deaktivere automatisering",
                         "introduction": "Bruk automasjon for å få liv i hjemmet ditt",
                         "load_error_not_editable": "Kun automasjoner i automations.yaml kan redigeres.",
                         "load_error_unknown": "Feil ved lasting av automasjon ({err_no}).",
@@ -1496,7 +1513,7 @@
                             "automation": "Last inn automasjoner på nytt",
                             "core": "Last inn lokasjon og spesialtilpassinger på nytt",
                             "group": "Last inn grupper på nytt",
-                            "heading": "Konfigurasjon lastes på nytt",
+                            "heading": "YAML -Konfigurasjon lastes på nytt",
                             "introduction": "Noen deler av Home Assistant kan laste inn uten å kreve omstart. Hvis du trykker last på nytt, vil du bytte den nåværende konfigurasjonen med den nye.",
                             "person": "Last inn personer på nytt",
                             "scene": "Last inn scener på nytt",
@@ -1910,6 +1927,9 @@
                         "alarm-panel": {
                             "available_states": "Tilgjengelige tilstander",
                             "name": "Alarmpanel"
+                        },
+                        "button": {
+                            "name": "Knapp"
                         },
                         "conditional": {
                             "name": "Betinget"

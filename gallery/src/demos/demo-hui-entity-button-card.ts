@@ -15,14 +15,14 @@ const CONFIGS = [
   {
     heading: "Basic example",
     config: `
-- type: entity-button
+- type: button
   entity: light.bed_light
     `,
   },
   {
     heading: "With Name",
     config: `
-- type: entity-button
+- type: button
   name: Bedroom
   entity: light.bed_light
     `,
@@ -30,7 +30,7 @@ const CONFIGS = [
   {
     heading: "With Icon",
     config: `
-- type: entity-button
+- type: button
   entity: light.bed_light
   icon: mdi:hotel
     `,
@@ -38,7 +38,7 @@ const CONFIGS = [
   {
     heading: "Without State",
     config: `
-- type: entity-button
+- type: button
   entity: light.bed_light
   show_state: false
     `,
@@ -46,7 +46,7 @@ const CONFIGS = [
   {
     heading: "Custom Tap Action (toggle)",
     config: `
-- type: entity-button
+- type: button
   entity: light.bed_light
   tap_action: 
     action: toggle
@@ -55,7 +55,7 @@ const CONFIGS = [
   {
     heading: "Running Service",
     config: `
-- type: entity-button
+- type: button
   entity: light.bed_light
   service: light.toggle
     `,
@@ -63,13 +63,13 @@ const CONFIGS = [
   {
     heading: "Invalid Entity",
     config: `
-- type: entity-button
+- type: button
   entity: sensor.invalid_entity
     `,
   },
 ];
 
-class DemoEntityButtonEntity extends PolymerElement {
+class DemoButtonEntity extends PolymerElement {
   static get template() {
     return html`
       <demo-cards
@@ -97,4 +97,4 @@ class DemoEntityButtonEntity extends PolymerElement {
   }
 }
 
-customElements.define("demo-hui-entity-button-card", DemoEntityButtonEntity);
+customElements.define("demo-hui-button-card", DemoButtonEntity);

@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "關閉後，{integration} 新發現的物件將不會自動新增至 Home Assistant。",
                 "enable_new_entities_label": "啟用新增物件",
-                "title": "{integration} 系統選項"
+                "title": "{integration} 系統選項",
+                "update": "更新"
             },
             "confirmation": {
                 "cancel": "取消",
@@ -640,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "忽略對話",
                 "edit": "編輯物件",
+                "person": {
+                    "create_zone": "使用目前位置新增區域"
+                },
                 "restored": {
                     "confirm_remove_text": "確定要移除此物件？",
                     "confirm_remove_title": "移除物件？",
@@ -659,6 +663,18 @@
                 },
                 "updater": {
                     "title": "更新說明"
+                },
+                "vacuum": {
+                    "clean_spot": "區部清掃",
+                    "commands": "吸塵器清掃指令：",
+                    "fan_speed": "風速",
+                    "locate": "尋找",
+                    "pause": "暫停",
+                    "return_home": "回充",
+                    "start": "開始清掃",
+                    "start_pause": "開始/暫停",
+                    "status": "狀態",
+                    "stop": "停止清掃"
                 }
             },
             "more_info_settings": {
@@ -879,6 +895,7 @@
                         },
                         "edit_ui": "以 UI 編輯",
                         "edit_yaml": "以 YAML 編輯",
+                        "enable_disable": "開啟/關閉自動化",
                         "introduction": "使用自動化來讓你的智能家居更有魅力吧。",
                         "load_error_not_editable": "僅有 automations.yaml 內的自動化方能編輯。",
                         "load_error_unknown": "載入自動化錯誤（{err_no}）。",
@@ -1496,8 +1513,8 @@
                             "automation": "重新載入自動化",
                             "core": "重新載入座標與自訂化",
                             "group": "重新載入群組",
-                            "heading": "正在重新載入設定",
-                            "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。點選重新載入按鈕，即可重新載入最新設定。",
+                            "heading": "YAML 設定新載入中",
+                            "introduction": "Home Assistant 中部分設定無須重啟即可重新載入生效。點選重新載入按鈕，即可解除目前 YAML 設定，並重新載入最新設定。",
                             "person": "重新載入人員",
                             "scene": "重新載入場景",
                             "script": "重新載入腳本",
@@ -1910,6 +1927,9 @@
                         "alarm-panel": {
                             "available_states": "可用狀態",
                             "name": "警報器面板"
+                        },
+                        "button": {
+                            "name": "按鈕"
                         },
                         "conditional": {
                             "name": "條件式面板"

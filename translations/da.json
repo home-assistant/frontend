@@ -604,7 +604,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Hvis deaktiveret, tilføjes nyligt opdagede entiteter fra {integration} ikke automatisk til Home Assistant.",
                 "enable_new_entities_label": "Aktivér nyligt tilføjede entiteter.",
-                "title": "Systemindstillinger for {integration}"
+                "title": "Systemindstillinger for {integration}",
+                "update": "Opdater"
             },
             "confirmation": {
                 "cancel": "Annuller",
@@ -640,6 +641,9 @@
             "more_info_control": {
                 "dismiss": "Afvis dialog",
                 "edit": "Rediger entitet",
+                "person": {
+                    "create_zone": "Opret zone fra den aktuelle lokalitet"
+                },
                 "restored": {
                     "confirm_remove_text": "Er du sikker på, at du vil fjerne denne entitet?",
                     "confirm_remove_title": "Fjern entitet?",
@@ -659,6 +663,18 @@
                 },
                 "updater": {
                     "title": "Opdateringsvejledning"
+                },
+                "vacuum": {
+                    "clean_spot": "Rengør sted",
+                    "commands": "Støvsuger kommandoer",
+                    "fan_speed": "Blæserhastighed",
+                    "locate": "Lokaliser",
+                    "pause": "Pause",
+                    "return_home": "Retur til ladestation",
+                    "start": "Start",
+                    "start_pause": "Start/Pause",
+                    "status": "Status",
+                    "stop": "Stop"
                 }
             },
             "more_info_settings": {
@@ -879,6 +895,7 @@
                         },
                         "edit_ui": "Rediger brugerflade",
                         "edit_yaml": "Rediger med YAML",
+                        "enable_disable": "Aktiver/deaktiver automatisering",
                         "introduction": "Brug automatiseringer til at vække dit hjem til live.",
                         "load_error_not_editable": "Kun automatiseringer i 'automations.yaml' kan redigeres.",
                         "load_error_unknown": "Fejl ved indlæsning af automatisering ({err_no}).",
@@ -1359,7 +1376,7 @@
                         "add_area": "Tilføj område",
                         "area_picker_label": "Område",
                         "close": "Luk",
-                        "created_config": "Oprettede konfiguration til {name}.",
+                        "created_config": "Oprettede konfiguration for {name}.",
                         "dismiss": "Afvis dialog",
                         "error_saving_area": "Fejl ved lagring af område: {error}",
                         "external_step": {
@@ -1496,8 +1513,8 @@
                             "automation": "Genindlæs automatiseringer",
                             "core": "Genindlæs lokalitet og tilpasninger",
                             "group": "Genindlæs grupper",
-                            "heading": "Genindlæser konfiguration",
-                            "introduction": "Nogle dele af Home Assistant kan genindlæses uden en genstart. Tryk på genindlæs for at aflæse den nuværende konfiguration og indlæse den nye.",
+                            "heading": "YAML-konfiguration genindlæses",
+                            "introduction": "Nogle dele af Home Assistant kan genindlæses uden en genstart. Tryk på genindlæs for at aflæse den nuværende YAML-konfiguration og indlæse den nye.",
                             "person": "Genindlæs personer",
                             "scene": "Genindlæs scener",
                             "script": "Genindlæs scripts",
@@ -1911,6 +1928,9 @@
                             "available_states": "Tilgængelige tilstande",
                             "name": "Alarmpanel"
                         },
+                        "button": {
+                            "name": "Knap"
+                        },
                         "conditional": {
                             "name": "Betinget"
                         },
@@ -2062,7 +2082,7 @@
                     "migrate": {
                         "header": "Konfigurationen er ikke kompatibel",
                         "migrate": "Migrer opsætning",
-                        "para_migrate": "Home Assistant kan tilføje id'er til alle dine kort og oversigter automatisk for dig ved at trykke på knappen 'Migrer opsætning'.",
+                        "para_migrate": "Home Assistant kan tilføje id'er til alle dine kort og visninger automatisk for dig ved at trykke på knappen 'Migrer opsætning'.",
                         "para_no_id": "Dette element har ikke et id. Tilføj venligst et id til dette element i 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {

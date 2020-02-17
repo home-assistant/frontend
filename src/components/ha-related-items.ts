@@ -68,6 +68,13 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
     if (!this._related) {
       return html``;
     }
+    if (Object.keys(this._related).length === 0) {
+      return html`
+        <p>
+          ${this.hass.localize("ui.components.related-items.no_related_found")}
+        </p>
+      `;
+    }
     return html`
       ${this._related.config_entry && this._entries
         ? this._related.config_entry.map((relatedConfigEntryId) => {

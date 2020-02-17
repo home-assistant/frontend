@@ -269,7 +269,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
 
-    this._setTemp = this._getSetTemp(this.hass!.states[this._config!.entity]);
+    const stateObj = this.hass!.states[this._config!.entity];
+    if (!stateObj) {
+      return;
+    }
+    this._setTemp = this._getSetTemp(stateObj);
     this.rescale_svg();
   }
 
