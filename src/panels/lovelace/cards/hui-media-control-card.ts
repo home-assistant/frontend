@@ -25,12 +25,14 @@ import {
   SUPPORT_NEXT_TRACK,
   SUPPORTS_PLAY,
   fetchMediaPlayerThumbnailWithCache,
+  SUPPORT_STOP,
 } from "../../../data/media-player";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { HomeAssistant, MediaEntity } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { MediaControlCardConfig } from "./types";
+import { UNAVAILABLE } from "../../../data/entity";
 
 @customElement("hui-media-control-card")
 export class HuiMediaControlCard extends LitElement implements LovelaceCard {
@@ -94,9 +96,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             style="background-image: url(${this.hass.hassUrl(picture)})"
           ></div>
           <div
-            class="${classMap({
-              caption: true,
-              unavailable: stateObj.state === "unavailable",
+            class="caption ${classMap({
+              unavailable: stateObj.state === UNAVAILABLE,
             })}"
           >
             ${this._config!.name ||
@@ -129,7 +130,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             ? ""
             : html`
                 <paper-icon-button
-                  .icon=${"hass:power"}
+                  icon=${"hass:power"}
                   .action=${stateObj.state === "off" ? "turn_on" : "turn_off"}
                   @click=${this._handleClick}
                 ></paper-icon-button>
@@ -139,7 +140,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               ? ""
               : html`
                   <paper-icon-button
-                    .icon=${"hass:skip-previous"}
+                    icon=${"hass:skip-previous"}
                     .disabled="${OFF_STATES.includes(stateObj.state)}"
                     .action=${"media_previous_track"}
                     @click=${this._handleClick}
@@ -147,7 +148,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                 `}
             ${(stateObj.state !== "playing" &&
               !supportsFeature(stateObj, SUPPORTS_PLAY)) ||
-            stateObj.state === "unavailable"
+            stateObj.state === UNAVAILABLE ||
+            (stateObj.state === "playing" &&
+              !supportsFeature(stateObj, SUPPORT_PAUSE) &&
+              !supportsFeature(stateObj, SUPPORT_STOP))
               ? ""
               : html`
                   <paper-icon-button
@@ -166,7 +170,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               ? ""
               : html`
                   <paper-icon-button
-                    .icon=${"hass:skip-next"}
+                    icon=${"hass:skip-next"}
                     .disabled="${OFF_STATES.includes(stateObj.state)}"
                     .action=${"media_next_track"}
                     @click=${this._handleClick}
@@ -174,7 +178,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                 `}
           </div>
           <paper-icon-button
-            .icon=${"hass:dots-vertical"}
+            icon=${"hass:dots-vertical"}
             @click="${this._handleMoreInfo}"
           ></paper-icon-button>
         </div>
