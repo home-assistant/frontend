@@ -238,6 +238,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       case "music":
         secondaryTitle = stateObj.attributes.media_artist;
         break;
+      case "playlist":
+        secondaryTitle = stateObj.attributes.media_playlist;
+        break;
       case "tvshow":
         secondaryTitle = stateObj.attributes.media_series_title;
         if (stateObj.attributes.media_season) {
