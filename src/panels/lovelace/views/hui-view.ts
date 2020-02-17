@@ -252,8 +252,10 @@ export class HUIView extends LitElement {
       import(
         /* webpackChunkName: "hui-view-editable" */ "./hui-view-editable"
       ).then((editCode) => {
+        // @ts-ignore
         murriGrid = editCode.Muuri;
         editCodeLoaded = true;
+        this.requestUpdate();
       });
     }
 
