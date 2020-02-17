@@ -69,8 +69,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
     const stateObj = this.hass.states[this._config.entity] as MediaEntity;
 
-    console.log(stateObj);
-
     if (!stateObj) {
       return html`
         <hui-warning
