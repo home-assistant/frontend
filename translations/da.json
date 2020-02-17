@@ -1928,6 +1928,9 @@
                             "available_states": "Tilgængelige tilstande",
                             "name": "Alarmpanel"
                         },
+                        "button": {
+                            "name": "Knap"
+                        },
                         "conditional": {
                             "name": "Betinget"
                         },

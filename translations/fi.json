@@ -873,6 +873,7 @@
                 "cloud": {
                     "account": {
                         "alexa": {
+                            "config_documentation": "Asetusten dokumentaatio.",
                             "disable": "Poista käytöstä",
                             "enable": "Ota käyttöön",
                             "info": "Alexa Integraatio Home Assistant Cloudille mahdollistaa Home Assistant laitteiden ohjaamisen miltä tahansa Alexa laitteelta.",
@@ -883,6 +884,7 @@
                         },
                         "connected": "Yhdistetty",
                         "google": {
+                            "config_documentation": "Asetusten dokumentaatio.",
                             "enter_pin_error": "PIN-koodin tallentaminen ei onnistu:",
                             "enter_pin_hint": "Anna PIN-koodi turvalaitteiden käyttämistä varten",
                             "info": "Google Assistant Integraatio Home Assistant Cloudille mahdollistaa Home Assistant laitteiden ohjaamisen miltä tahansa Google Assistant laitteelta.",
@@ -1125,6 +1127,7 @@
                         "add_area": "Lisää alue",
                         "area_picker_label": "Alue",
                         "close": "Sulje",
+                        "created_config": "Asetus luotu {name}",
                         "external_step": {
                             "description": "Tämä vaihe edellyttää, että vierailet ulkopuolisella verkkosivustolla.",
                             "open_site": "Avaa verkkosivusto"
@@ -1224,6 +1227,7 @@
                             "core": "Lataa ydin uudelleen",
                             "group": "Lataa ryhmät uudelleen",
                             "heading": "Asetusten uudelleenlataus",
+                            "introduction": "Jotkut kotiassistentin osat voidaan ladata uudelleen ilman, että tarvitaan uudelleenkäynnistystä. Painamalla uudelleenlatausta uudet asetukset luetaan yaml tiedostosta.",
                             "scene": "Lataa tilanteet uudelleen",
                             "script": "Lataa skriptit uudelleen"
                         },
@@ -1330,6 +1334,12 @@
                         "updateDeviceName": "Määritä laitteelle mukautettu nimeä laiterekisteriin."
                     }
                 },
+                "zone": {
+                    "detail": {
+                        "passive_note": "Passiiviset vyöhykkeet on piilotetaan käyttöliittymässä, eikä niitä käytetä laitteiden paikannuksen sijaintina. Tämä on hyödyllistä, jos haluat käyttää vain automaatioihin."
+                    },
+                    "edit_home_zone": "Voit asettaa kotisi sijainnin kohdasta Asetukset>Yleinen."
+                },
                 "zwave": {
                     "caption": "Z-Wave",
                     "common": {
@@ -1359,7 +1369,7 @@
                         "false": "Epätosi",
                         "header": "Solmun määritysasetukset",
                         "seconds": "sekuntia",
-                        "set_config_parameter": "Aseta asetusparametri",
+                        "set_config_parameter": "Aseta parametri",
                         "set_wakeup": "Aseta herätysväli",
                         "true": "Tosi"
                     },
@@ -1447,6 +1457,9 @@
                 "showing_entries": "Näytetään kirjaukset ajalta"
             },
             "lovelace": {
+                "add_entities": {
+                    "saving_failed": "Lovelacen käyttöliittymän asetusten tallennus epäonnistui."
+                },
                 "cards": {
                     "confirm_delete": "Oletko varma, että haluat poistaa tämän kortin?",
                     "empty_state": {
@@ -1620,6 +1633,9 @@
                         "confirm_remove_config_text": "Lovelace käyttöliittymän näkymät luodaan automaattisesti alueistasi ja laitteistasi, jos poistat nykyisen määrityksen.",
                         "confirm_remove_config_title": "Haluatko varmasti poistaa Lovelace-käyttöliittymän asetukset? Lovelace käyttöliittymän asetukset luodaan automaattisesti alueistasi ja laitteistasi.",
                         "confirm_unsaved_changes": "Sinulla on tallentamattomia muutoksia. Haluatko varmasti poistua?",
+                        "confirm_unsaved_comments": "Asetuksesi sisältää kommentoituja rivejä. Kommentoituja rivejä ei tallenneta. Haluatko  jatkaa?",
+                        "error_invalid_config": "Asetuksesi ovat virheelliset: {error}",
+                        "error_remove": "Asetusta ei voida poistaa: {error}",
                         "header": "Muokkaa asetuksia",
                         "save": "Tallenna",
                         "saved": "Tallennettu",
