@@ -47,9 +47,19 @@ import {
 import { configSections } from "../ha-panel-config";
 import { classMap } from "lit-html/directives/class-map";
 import { computeStateName } from "../../../common/entity/compute_state_name";
-import { fireEvent } from "../../../common/dom/fire_event";
 // tslint:disable-next-line: no-duplicate-imports
 import { HaTabsSubpageDataTable } from "../../../layouts/hass-tabs-subpage-data-table";
+
+export interface StateEntity extends EntityRegistryEntry {
+  readonly?: boolean;
+  selectable?: boolean;
+}
+
+export interface EntityRow extends StateEntity {
+  icon: string;
+  unavailable: boolean;
+  status: string;
+}
 
 @customElement("ha-config-entities")
 export class HaConfigEntities extends SubscribeMixin(LitElement) {
@@ -171,37 +181,39 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
       showDisabled: boolean,
       showUnavailable: boolean,
       showReadOnly: boolean
-    ) => {
-      let stateEntities: EntityRegistryEntry[] = [];
+    ): EntityRow[] => {
+      const stateEntities: StateEntity[] = [];
       if (showReadOnly) {
-        const regEntityIds = entities.map((entity) => entity.entity_id);
-        const stateEntityIds = Object.keys(states).filter(
-          (entityId) => !regEntityIds.includes(entityId)
+        const regEntityIds = new Set(
+          entities.map((entity) => entity.entity_id)
         );
-        stateEntities = stateEntityIds.map((entityId) => {
-          return {
+        for (const entityId of Object.keys(states)) {
+          if (regEntityIds.has(entityId)) {
+            continue;
+          }
+          stateEntities.push({
             name: computeStateName(states[entityId]),
             entity_id: entityId,
             platform: computeDomain(entityId),
             disabled_by: null,
             readonly: true,
             selectable: false,
-          };
-        });
+          });
+        }
       }
 
       if (!showDisabled) {
         entities = entities.filter((entity) => !Boolean(entity.disabled_by));
       }
 
-      return entities.concat(stateEntities).reduce((result, entry) => {
-        const state = states[entry.entity_id];
+      const result: EntityRow[] = [];
 
-        const unavailable =
-          state && (state.state === "unavailable" || state.attributes.restored);
+      for (const entry of entities.concat(stateEntities)) {
+        const state = states[entry.entity_id];
+        const unavailable = state?.state === "unavailable";
 
         if (!showUnavailable && unavailable) {
-          return result;
+          continue;
         }
 
         result.push({
@@ -223,8 +235,9 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
               )
             : this.hass.localize("ui.panel.config.entities.picker.status.ok"),
         });
-        return result;
-      }, [] as any);
+      }
+
+      return result;
     }
   );
 
