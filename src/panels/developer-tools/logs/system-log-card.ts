@@ -22,6 +22,7 @@ import {
 } from "../../../data/system_log";
 import { showSystemLogDetailDialog } from "./show-dialog-system-log-detail";
 import { formatSystemLogTime } from "./util";
+import { domainToName } from "../../../data/integration";
 
 @customElement("system-log-card")
 export class SystemLogCard extends LitElement {
@@ -68,12 +69,14 @@ export class SystemLogCard extends LitElement {
                                 item.timestamp,
                                 this.hass!.language
                               )}
+                              –
                               ${integrations[idx]
-                                ? html`
-                                    ${integrations[idx]}:
-                                  `
-                                : ""}
-                              ${item.source} (${item.level})
+                                ? domainToName(
+                                    this.hass!.localize,
+                                    integrations[idx]!
+                                  )
+                                : item.source}
+                              (${item.level})
                               ${item.count > 1
                                 ? html`
                                     -
