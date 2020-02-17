@@ -94,12 +94,12 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     if (oldConfig !== this._config) {
       this._getStateHistory();
       this._clearInterval();
-    }
 
-    if (!this._interval && this._cacheConfig.refresh) {
-      this._interval = window.setInterval(() => {
-        this._getStateHistory();
-      }, this._cacheConfig.refresh * 1000);
+      if (!this._interval && this._cacheConfig.refresh) {
+        this._interval = window.setInterval(() => {
+          this._getStateHistory();
+        }, this._cacheConfig.refresh * 1000);
+      }
     }
   }
 
@@ -111,8 +111,7 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
     return html`
       <ha-card .header="${this._config.title}">
         <div
-          class="${classMap({
-            content: true,
+          class="content ${classMap({
             "has-header": !!this._config.title,
           })}"
         >
