@@ -275,7 +275,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   }
 
   private _handleSeek(e: MouseEvent): void {
-    const percent = (e.offsetX * 1) / this.offsetWidth;
+    const percent = e.offsetX / this.offsetWidth;
     const position = (e.currentTarget! as any).max * percent;
 
     this.hass!.callService("media_player", "media_seek", {
