@@ -35,7 +35,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
   protected render(): TemplateResult {
     const options = Array.isArray(this.schema.options)
       ? this.schema.options
-      : Object.values(this.schema.options!);
+      : Object.entries(this.schema.options!);
 
     return html`
       <paper-listbox
@@ -44,7 +44,9 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
         .selectedValues=${this.data}
         @selected-items-changed=${this._valueChanged}
       >
-        ${options.map((item: string | [string, string]) => {
+        ${// TS doesn't work with union array types https://github.com/microsoft/TypeScript/issues/36390
+        // @ts-ignore
+        options.map((item: string | [string, string]) => {
           const value = this._optionValue(item);
           return html`
             <paper-icon-item .itemValue=${value}>
