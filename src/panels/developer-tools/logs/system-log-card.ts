@@ -15,20 +15,13 @@ import "../../../components/ha-card";
 import "../../../components/buttons/ha-call-service-button";
 import "../../../components/buttons/ha-progress-button";
 import { HomeAssistant } from "../../../types";
-import { LoggedError, fetchSystemLog } from "../../../data/system_log";
-import { formatDateTimeWithSeconds } from "../../../common/datetime/format_date_time";
-import { formatTimeWithSeconds } from "../../../common/datetime/format_time";
+import {
+  LoggedError,
+  fetchSystemLog,
+  getLoggedErrorIntegration,
+} from "../../../data/system_log";
 import { showSystemLogDetailDialog } from "./show-dialog-system-log-detail";
-
-const formatLogTime = (date, language: string) => {
-  const today = new Date().setHours(0, 0, 0, 0);
-  const dateTime = new Date(date * 1000);
-  const dateTimeDay = new Date(date * 1000).setHours(0, 0, 0, 0);
-
-  return dateTimeDay < today
-    ? formatDateTimeWithSeconds(dateTime, language)
-    : formatTimeWithSeconds(dateTime, language);
-};
+import { formatSystemLogTime } from "./util";
 
 @customElement("system-log-card")
 export class SystemLogCard extends LitElement {
@@ -42,6 +35,9 @@ export class SystemLogCard extends LitElement {
   }
 
   protected render(): TemplateResult {
+    const integrations = this._items
+      ? this._items.map((item) => getLoggedErrorIntegration(item))
+      : [];
     return html`
       <div class="system-log-intro">
         <ha-card>
@@ -61,17 +57,22 @@ export class SystemLogCard extends LitElement {
                       </div>
                     `
                   : this._items.map(
-                      (item) => html`
+                      (item, idx) => html`
                         <paper-item @click=${this._openLog} .logItem=${item}>
                           <paper-item-body two-line>
                             <div class="row">
                               ${item.message}
                             </div>
                             <div secondary>
-                              ${formatLogTime(
+                              ${formatSystemLogTime(
                                 item.timestamp,
                                 this.hass!.language
                               )}
+                              ${integrations[idx]
+                                ? html`
+                                    ${integrations[idx]}:
+                                  `
+                                : ""}
                               ${item.source} (${item.level})
                               ${item.count > 1
                                 ? html`
@@ -79,7 +80,7 @@ export class SystemLogCard extends LitElement {
                                     ${this.hass.localize(
                                       "ui.panel.developer-tools.tabs.logs.multiple_messages",
                                       "time",
-                                      formatLogTime(
+                                      formatSystemLogTime(
                                         item.first_occured,
                                         this.hass!.language
                                       ),

@@ -9,6 +9,10 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 import memoizeOne from "memoize-one";
+import {
+  integrationDocsUrl,
+  integrationIssuesUrl,
+} from "../../../data/integration";
 
 @customElement("integrations-card")
 class IntegrationsCard extends LitElement {
@@ -28,18 +32,12 @@ class IntegrationsCard extends LitElement {
                 <tr>
                   <td>${domain}</td>
                   <td>
-                    <a
-                      href=${`https://www.home-assistant.io/integrations/${domain}`}
-                      target="_blank"
-                    >
+                    <a href=${integrationDocsUrl(domain)} target="_blank">
                       Documentation
                     </a>
                   </td>
                   <td>
-                    <a
-                      href=${`https://github.com/home-assistant/home-assistant/issues?q=is%3Aissue+is%3Aopen+label%3A%22integration%3A+${domain}%22`}
-                      target="_blank"
-                    >
+                    <a href=${integrationIssuesUrl(domain)} target="_blank">
                       Issues
                     </a>
                   </td>
