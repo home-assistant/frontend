@@ -581,6 +581,7 @@
                 "entity": "Related entities",
                 "group": "Part of the following groups",
                 "integration": "Integration",
+                "no_related_found": "No related items found.",
                 "scene": "Part of the following scenes",
                 "script": "Part of the following scripts"
             },
@@ -630,6 +631,7 @@
                     "unavailable": "This entity is not currently available.",
                     "update": "UPDATE"
                 },
+                "no_unique_id": "This entity does not have a unique ID, therefore it's settings can not be managed from the UI.",
                 "related": "Related",
                 "settings": "Settings"
             },
@@ -1323,6 +1325,7 @@
                         "filter": {
                             "filter": "Filter",
                             "show_disabled": "Show disabled entities",
+                            "show_readonly": "Show read-only entities",
                             "show_unavailable": "Show unavailable entities"
                         },
                         "header": "Entities",
@@ -1346,6 +1349,7 @@
                         "status": {
                             "disabled": "Disabled",
                             "ok": "Ok",
+                            "readonly": "Read-only",
                             "unavailable": "Unavailable"
                         },
                         "unavailable": "(unavailable)"
@@ -1701,7 +1705,10 @@
                         "required_error_msg": "This field is required",
                         "update": "Update"
                     },
-                    "edit_home_zone": "The location of your home can be changed in the general configuration.",
+                    "edit_home_zone": "The radius of the Home zone can't be edited from the frontend yet. Drag the marker on the map to move the home zone.",
+                    "edit_home_zone_narrow": "The radius of the Home zone can't be edited from the frontend yet. The location can be changed from the general configuration.",
+                    "go_to_core_config": "Go to general configuration?",
+                    "home_zone_core_config": "The location of your home zone is editable from the general configuration page. The radius of the Home zone can't be edited from the frontend yet. Do you want to go to the general configuration?",
                     "introduction": "Zones allow you to specify certain regions on earth. When a person is within a zone, the state will take the name from the zone. Zones can also be used as a trigger or condition inside automation setups.",
                     "no_zones_created_yet": "Looks like you have not created any zones yet."
                 },

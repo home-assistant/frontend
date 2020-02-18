@@ -1010,7 +1010,7 @@
                 "cloud": {
                     "account": {
                         "alexa": {
-                            "config_documentation": "Konfigurer dokumentasjon",
+                            "config_documentation": "Konfigurasjonsdokumentasjon",
                             "disable": "deaktiver",
                             "enable": "aktiver",
                             "enable_ha_skill": "Aktivere Home Assistant-ferdigheten for Alexa",
@@ -1027,7 +1027,7 @@
                         "connection_status": "Status for skytilkobling",
                         "fetching_subscription": "Henter abonnement...",
                         "google": {
-                            "config_documentation": "Konfigurer dokumentasjon",
+                            "config_documentation": "Konfigurasjonsdokumentasjon",
                             "devices_pin": "PIN-kode for sikkerhetsenheter",
                             "enable_ha_skill": "Aktivere Home Assistant-ferdigheten for Google Assistant",
                             "enable_state_reporting": "Aktiver tilstandsrapportering",
@@ -1376,7 +1376,7 @@
                         "add_area": "Legg til område",
                         "area_picker_label": "Område",
                         "close": "Lukk",
-                        "created_config": "Opprettet konfigurasjon for {name}.",
+                        "created_config": "Opprettet konfigurasjon for {name} .",
                         "dismiss": "Avvis dialog",
                         "error_saving_area": "Feil ved lagring av område: {error}",
                         "external_step": {
@@ -1729,12 +1729,12 @@
                         "network_stopped": "Z-Wave nettverket stoppet"
                     },
                     "node_config": {
-                        "config_parameter": "Konfigurasjon parameter",
-                        "config_value": "Konfigurasjon verdi",
+                        "config_parameter": "Konfigurasjonsparameter",
+                        "config_value": "Konfigurasjonsverdi",
                         "false": "Usant",
                         "header": "Alternativer for nodekonfigurasjon",
                         "seconds": "sekunder",
-                        "set_config_parameter": "Angi konfigurasjons parameter",
+                        "set_config_parameter": "Angi konfigurasjonsparameter",
                         "set_wakeup": "Angi vekkeintervall",
                         "true": "Sant"
                     },
@@ -2077,20 +2077,20 @@
                     "header": "Rediger brukergrensesnitt",
                     "menu": {
                         "open": "Åpne Lovelace UI-menyen",
-                        "raw_editor": "Tekstbasert konfigurasjonsredigering"
+                        "raw_editor": "Redigeringsprogram for raw-konfigurasjon"
                     },
                     "migrate": {
                         "header": "Inkompatibel Konfigurasjon",
-                        "migrate": "Overfør konfigurasjon",
-                        "para_migrate": "Home Assistant kan legge til ID-er på alle dine kort og visninger automatisk for deg ved å trykke på 'Overfør konfigurasjon' knappen.",
+                        "migrate": "Migrer konfigurasjon",
+                        "para_migrate": "Hjemmeassistent kan legge til ID-er på alle kortene og visningene automatisk for deg ved å trykke på 'Migrer konfigurasjon' -knappen.",
                         "para_no_id": "Dette elementet har ingen ID. Vennligst legg til en ID på dette elementet i 'ui-lovelace.yaml'."
                     },
                     "raw_editor": {
                         "confirm_remove_config_text": "Vi vil automatisk generere Lovelace-visningene dine med områdene og enhetene dine hvis du fjerner Lovelace-konfigurasjonen.",
                         "confirm_remove_config_title": "Er du sikker på at du vil fjerne Lovelace-konfigurasjonen? Vi vil automatisk generere Lovelace-visningene dine med områdene og enhetene dine.",
                         "confirm_unsaved_changes": "Du har ulagrede endringer, er du sikker på at du vil avslutte?",
-                        "confirm_unsaved_comments": "Konfigurasjonen din inneholder kommentar(er), disse vil ikke bli lagret. Vil du fortsette?",
-                        "error_invalid_config": "Konfigurasjonen er ikke gyldig: {error}",
+                        "confirm_unsaved_comments": "Konfigurasjonen din inneholder kommentarer, disse vil ikke bli lagret. Vil du fortsette?",
+                        "error_invalid_config": "Konfigurasjonen din er ikke gyldig: {error}",
                         "error_parse_yaml": "Kan ikke analysere YAML: {error}",
                         "error_remove": "Kan ikke fjerne konfigurasjonen: {error}",
                         "error_save_yaml": "Kan ikke lagre YAML: {error}",
@@ -2216,7 +2216,7 @@
                                     "data": {
                                         "password": "API-passord"
                                     },
-                                    "description": "Vennligst skriv inn API-passordet i http-konfigurasjonen din:"
+                                    "description": "Skriv inn API-passordet i HTTP-konfigurasjonen:"
                                 },
                                 "mfa": {
                                     "data": {
