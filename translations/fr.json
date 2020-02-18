@@ -1696,7 +1696,7 @@
                         "name": "Nom",
                         "new_zone": "Nouvelle zone",
                         "passive": "Passif",
-                        "passive_note": "Les zones passives sont cachées dans le frontend et ne sont pas utilisées comme emplacement pour les traceurs de périphériques. C'est utile si vous voulez seulement les utiliser pour des automations.",
+                        "passive_note": "Les zones passives sont cachées dans l'interface utilisateur et ne sont pas utilisées comme emplacement pour les appareils suivis. Elles sont utiles si vous voulez les utiliser pour des automations.",
                         "radius": "Rayon",
                         "required_error_msg": "Ce champ est requis",
                         "update": "Mettre à jour"
@@ -2381,7 +2381,7 @@
                 "push_notifications": {
                     "description": "Envoyer des notifications à cet appareil.",
                     "error_load_platform": "Configurer notify.html5.",
-                    "error_use_https": "Nécessite l'activation SSL pour le frontend.",
+                    "error_use_https": "Nécessite l'activation SSL pour l'interface utilisateur.",
                     "header": "Notifications push",
                     "link_promo": "En savoir plus",
                     "push_notifications": "Notifications push"
