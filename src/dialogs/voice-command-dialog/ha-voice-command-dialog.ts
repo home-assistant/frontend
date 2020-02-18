@@ -230,7 +230,7 @@ export class HaVoiceCommandDialog extends LitElement {
   }
 
   private _initRecognition() {
-    this.recognition = new SpeechRecognition();
+    this.recognition = new window.SpeechRecognition();
     this.recognition.interimResults = true;
     this.recognition.lang = "en-US";
 
