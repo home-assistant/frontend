@@ -85,7 +85,7 @@
     "fuse.js": "^3.4.4",
     "google-timezones-json": "^1.0.2",
     "hls.js": "^0.12.4",
-    "home-assistant-js-websocket": "^4.4.0",
+    "home-assistant-js-websocket": "4.4.1",
     "intl-messageformat": "^2.2.0",
     "js-yaml": "^3.13.1",
     "leaflet": "^1.4.0",
