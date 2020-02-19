@@ -581,6 +581,7 @@
                 "entity": "Sorodne entitete",
                 "group": "Del naslednjih skupin",
                 "integration": "Integracija",
+                "no_related_found": "Najden ni bil noben povezan element.",
                 "scene": "Del naslednjih prizorov",
                 "script": "Del naslednjih skript"
             },
@@ -604,7 +605,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Če je onemogočeno, novo odkrite entitete za {integration} ne bodo samodejno dodane v Home Assistant.",
                 "enable_new_entities_label": "Omogočite novo dodane subjekte.",
-                "title": "Sistemske možnosti za {integration}"
+                "title": "Sistemske možnosti za {integration}",
+                "update": "Posodobite"
             },
             "confirmation": {
                 "cancel": "Prekliči",
@@ -629,6 +631,7 @@
                     "unavailable": "Ta entiteta trenutno ni na voljo.",
                     "update": "POSODOBITEV"
                 },
+                "no_unique_id": "Ta entiteta nima enoličnega ID-ja, zato nastavitev ni mogoče upravljati iz uporabniškega vmesnika.",
                 "related": "Povezano",
                 "settings": "Nastavitve"
             },
@@ -640,6 +643,9 @@
             "more_info_control": {
                 "dismiss": "Opusti pogovorno okno",
                 "edit": "Uredi entiteto",
+                "person": {
+                    "create_zone": "Ustvari območje iz trenutne lokacije"
+                },
                 "restored": {
                     "confirm_remove_text": "Ali ste prepričani, da želite odstraniti to entiteto?",
                     "confirm_remove_title": "Ali želite odstraniti entiteto?",
@@ -891,6 +897,7 @@
                         },
                         "edit_ui": "Uredi z uporabniškim vmesnikom",
                         "edit_yaml": "Uredi z YAML-om",
+                        "enable_disable": "Omogoči / onemogoči avtomatizacijo",
                         "introduction": "Uporabite avtomatizacije za oživitev vašega doma.",
                         "load_error_not_editable": "Urejati je mogoče le avtomatizacije v automations.yaml.",
                         "load_error_unknown": "Napaka pri nalaganju avtomatizacije ({err_no}).",
@@ -1318,6 +1325,7 @@
                         "filter": {
                             "filter": "Filter",
                             "show_disabled": "Pokaži onemogočene subjekte",
+                            "show_readonly": "Prikaži entitete \"samo za branje\"",
                             "show_unavailable": "Pokaži nerazpoložljive entitete"
                         },
                         "header": "Entitete",
@@ -1341,6 +1349,7 @@
                         "status": {
                             "disabled": "Onemogočeno",
                             "ok": "V redu",
+                            "readonly": "Samo za branje",
                             "unavailable": "Ni na voljo"
                         },
                         "unavailable": "(ni na voljo)"
@@ -1697,6 +1706,9 @@
                         "update": "Posodobite"
                     },
                     "edit_home_zone": "Lokacijo vašega doma lahko spremenite v splošni konfiguraciji.",
+                    "edit_home_zone_narrow": "Polmera domačega območja še ni mogoče urejati iz frontend-a. Lokacijo lahko spremenite iz splošne konfiguracije.",
+                    "go_to_core_config": "Pojdi na splošno konfiguracijo?",
+                    "home_zone_core_config": "Lokacijo domačega območja je mogoče urejati na strani splošne konfiguracije. Polmera domačega območja še ni mogoče urejati iz frontend-a. Ali želite iti na splošno konfiguracijo?",
                     "introduction": "Območja omogočajo določitev določenih regij. Ko je oseba znotraj tega območja, bo stanje prevzelo njegovo ime. Območja se lahko uporabljajo tudi kot sprožilec ali pogoj v avtomatizacijah.",
                     "no_zones_created_yet": "Izgleda, da še niste ustvarili nobenih con."
                 },
@@ -1922,6 +1934,9 @@
                         "alarm-panel": {
                             "available_states": "Stanja na voljo",
                             "name": "Alarmna plošča"
+                        },
+                        "button": {
+                            "name": "Gumb"
                         },
                         "conditional": {
                             "name": "Pogojno"

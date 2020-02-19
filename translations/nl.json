@@ -581,6 +581,7 @@
                 "entity": "Gerelateerde entiteiten",
                 "group": "Onderdeel van de volgende groepen",
                 "integration": "Integratie",
+                "no_related_found": "Geen gerelateerde items gevonden.",
                 "scene": "Onderdeel van de volgende scènes",
                 "script": "Onderdeel van de volgende scripts"
             },
@@ -630,6 +631,7 @@
                     "unavailable": "Deze entiteit is momenteel niet beschikbaar.",
                     "update": "BIJWERKEN"
                 },
+                "no_unique_id": "Deze entiteit heeft geen unieke ID, daarom kunnen de instellingen niet worden beheerd vanuit de gebruikersinterface.",
                 "related": "Gerelateerd",
                 "settings": "instellingen"
             },
@@ -1323,6 +1325,7 @@
                         "filter": {
                             "filter": "filter",
                             "show_disabled": "Uitgeschakelde entiteiten weergeven",
+                            "show_readonly": "Alleen-lezen entiteiten weergeven",
                             "show_unavailable": "Onbeschikbare entiteiten weergeven"
                         },
                         "header": "Entiteiten",
@@ -1346,6 +1349,7 @@
                         "status": {
                             "disabled": "Uitgeschakeld",
                             "ok": "OK",
+                            "readonly": "Alleen-lezen",
                             "unavailable": "Onbeschikbaar"
                         },
                         "unavailable": "(niet beschikbaar)"
@@ -1701,7 +1705,10 @@
                         "required_error_msg": "Dit veld is verplicht",
                         "update": "Bijwerken"
                     },
-                    "edit_home_zone": "De locatie van je huis kan worden gewijzigd bij de algemene instellingen.",
+                    "edit_home_zone": "De straal van de thuiszone kan nog niet vanaf de frontend worden bewerkt. Sleep de markering op de kaart om de thuiszone te verplaatsen.",
+                    "edit_home_zone_narrow": "De straal van de thuiszone kan nog niet vanaf de frontend worden bewerkt. De locatie kan worden gewijzigd vanuit de algemene instellingen.",
+                    "go_to_core_config": "Ga naar de algemene instellingen?",
+                    "home_zone_core_config": "De locatie van uw thuiszone kan worden bewerkt vanuit de algemene instellingen-pagina. De straal van de thuiszone kan nog niet vanaf de frontend worden bewerkt. Wilt u naar de algemene instellingen gaan?",
                     "introduction": "Met zones kunt u bepaalde regio's op aarde opgeven. Wanneer een persoon zich in een zone bevindt, dan wordt de staat de naam uit de zone. Zones kunnen ook worden gebruikt als trigger of voorwaarde in automatiseringen.",
                     "no_zones_created_yet": "Het lijkt erop dat je nog geen zones hebt aangemaakt."
                 },

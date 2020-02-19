@@ -581,6 +581,7 @@
                 "entity": "Entités liées",
                 "group": "Partie des groupes suivants",
                 "integration": "Intégration",
+                "no_related_found": "Aucun historique des valeurs trouvé.",
                 "scene": "Partie des scènes suivantes",
                 "script": "Partie des scripts suivants"
             },
@@ -630,6 +631,7 @@
                     "unavailable": "Cette entité n'est pas disponible actuellement.",
                     "update": "MISE À JOUR"
                 },
+                "no_unique_id": "Cette entité n'a pas d'identifiant unique, ses paramètres ne peuvent donc pas être gérés à partir de l'interface utilisateur.",
                 "related": "Liées",
                 "settings": "Réglages"
             },
@@ -1323,6 +1325,7 @@
                         "filter": {
                             "filter": "Filtre",
                             "show_disabled": "Afficher les entités désactivées",
+                            "show_readonly": "Afficher les entités désactivées",
                             "show_unavailable": "Afficher les entités non disponibles"
                         },
                         "header": "Entités",
@@ -1346,6 +1349,7 @@
                         "status": {
                             "disabled": "Désactivé",
                             "ok": "Ok",
+                            "readonly": "Lecture seule",
                             "unavailable": "Indisponible"
                         },
                         "unavailable": "(indisponible)"
@@ -1702,6 +1706,7 @@
                         "update": "Mettre à jour"
                     },
                     "edit_home_zone": "L'emplacement de votre maison peut être modifié dans la configuration générale.",
+                    "go_to_core_config": "Configuration générale",
                     "introduction": "Les zones vous permettent de spécifier certaines régions sur la terre. Lorsqu'une personne se trouve dans une zone, l'état prend le nom de la zone. Les zones peuvent également être utilisées comme déclencheur ou condition dans les configurations d'automation.",
                     "no_zones_created_yet": "Il semble que vous n'ayez pas encore créé de zones."
                 },
