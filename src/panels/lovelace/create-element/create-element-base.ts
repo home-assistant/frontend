@@ -97,6 +97,11 @@ const _maybeCreate = <T extends keyof CreateElementConfigTypes>(
   return element;
 };
 
+const _getCustomTag = (type: string) =>
+  type.startsWith(CUSTOM_TYPE_PREFIX)
+    ? type.substr(CUSTOM_TYPE_PREFIX.length)
+    : undefined;
+
 export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   tagSuffix: T,
   config: CreateElementConfigTypes[T]["config"],
@@ -120,8 +125,10 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
     return _createErrorElement("No card type configured.", config);
   }
 
-  if (config.type && config.type.startsWith(CUSTOM_TYPE_PREFIX)) {
-    return _maybeCreate(config.type.substr(CUSTOM_TYPE_PREFIX.length), config);
+  const customTag = config.type ? _getCustomTag(config.type) : undefined;
+
+  if (customTag) {
+    return _maybeCreate(customTag, config);
   }
 
   let type: string | undefined;
@@ -162,8 +169,9 @@ export const getLovelaceElementClass = async <
   alwaysLoadTypes?: Set<string>,
   lazyLoadTypes?: { [domain: string]: () => Promise<unknown> }
 ): Promise<CreateElementConfigTypes[T]["constructor"]> => {
-  if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
-    const customTag = type.substr(CUSTOM_TYPE_PREFIX.length);
+  const customTag = _getCustomTag(type);
+
+  if (customTag) {
     const customCls = customElements.get(customTag);
     return customCls
       ? customCls
