@@ -3,6 +3,7 @@ import { HomeAssistant } from "../types";
 import { timeCachePromiseFunc } from "../common/util/time-cache-function-promise";
 
 export const SUPPORT_PAUSE = 1;
+export const SUPPORT_SEEK = 2;
 export const SUPPORT_VOLUME_SET = 4;
 export const SUPPORT_VOLUME_MUTE = 8;
 export const SUPPORT_PREVIOUS_TRACK = 16;
