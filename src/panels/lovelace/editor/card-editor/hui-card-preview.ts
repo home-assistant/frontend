@@ -14,6 +14,17 @@ import { computeRTL } from "../../../../common/util/compute_rtl";
 export class HuiCardPreview extends HTMLElement {
   private _hass?: HomeAssistant;
   private _element?: LovelaceCard;
+  private _config?: LovelaceCardConfig;
+
+  constructor() {
+    super();
+    this.addEventListener("ll-rebuild", () => {
+      this._cleanup();
+      if (this._config) {
+        this.config = this._config;
+      }
+    });
+  }
 
   set hass(hass: HomeAssistant) {
     if (!this._hass || this._hass.language !== hass.language) {
@@ -36,6 +47,8 @@ export class HuiCardPreview extends HTMLElement {
   }
 
   set config(configValue: LovelaceCardConfig) {
+    this._config = configValue;
+
     if (!configValue) {
       this._cleanup();
       return;
