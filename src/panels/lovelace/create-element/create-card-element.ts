@@ -31,11 +31,13 @@ const ALWAYS_LOADED_TYPES = new Set([
 
 const LAZY_LOAD_TYPES = {
   "alarm-panel": () => import("../cards/hui-alarm-panel-card"),
+  "empty-state": () => import("../cards/hui-empty-state-card"),
   "entity-filter": () => import("../cards/hui-entity-filter-card"),
   "picture-elements": () => import("../cards/hui-picture-elements-card"),
   "picture-entity": () => import("../cards/hui-picture-entity-card"),
   "picture-glance": () => import("../cards/hui-picture-glance-card"),
   "plant-status": () => import("../cards/hui-plant-status-card"),
+  "safe-mode": () => import("../cards/hui-safe-mode-card"),
   "shopping-list": () => import("../cards/hui-shopping-list-card"),
   conditional: () => import("../cards/hui-conditional-card"),
   gauge: () => import("../cards/hui-gauge-card"),

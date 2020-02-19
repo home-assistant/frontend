@@ -17,4 +17,5 @@ export const demoConfig: HassConfig = {
   version: "DEMO",
   whitelist_external_dirs: [],
   config_source: "storage",
+  safe_mode: false,
 };

@@ -581,6 +581,7 @@
                 "entity": "Relaterade entiteter",
                 "group": "Del av följande grupper",
                 "integration": "Integration",
+                "no_related_found": "Inga relaterade objekt hittades.",
                 "scene": "Del av följande scenarier",
                 "script": "Del av följande skript"
             },
@@ -630,6 +631,7 @@
                     "unavailable": "Den här entiteten är för närvarande inte tillgänglig.",
                     "update": "UPPDATERA"
                 },
+                "no_unique_id": "Den här entiteten har inget unikt ID, därför kan det inte hanteras från användargränssnittet.",
                 "related": "Relaterade",
                 "settings": "Inställningar"
             },
@@ -641,6 +643,9 @@
             "more_info_control": {
                 "dismiss": "Avfärda",
                 "edit": "Redigera entitet",
+                "person": {
+                    "create_zone": "Skapa zon från aktuell plats"
+                },
                 "restored": {
                     "confirm_remove_text": "Är du säker på att du vill ta bort den här entiteten?",
                     "confirm_remove_title": "Ta bort entitet?",
@@ -892,6 +897,7 @@
                         },
                         "edit_ui": "Redigera med UI",
                         "edit_yaml": "Redigera som YAML",
+                        "enable_disable": "Aktivera/inaktivera automatisering",
                         "introduction": "Använd automatiseringar för väcka liv i ditt hem",
                         "load_error_not_editable": "Endast automatiseringar i automations.yaml kan redigeras.",
                         "load_error_unknown": "Fel vid inläsning av automatisering ({err_no}).",
@@ -1319,6 +1325,7 @@
                         "filter": {
                             "filter": "Filter",
                             "show_disabled": "Visa inaktiverade entiteter",
+                            "show_readonly": "Visa skrivskyddade entiteter",
                             "show_unavailable": "Visa otillgängliga entiteter"
                         },
                         "header": "Entiteter",
@@ -1342,6 +1349,7 @@
                         "status": {
                             "disabled": "Inaktiverad",
                             "ok": "Ok",
+                            "readonly": "Skrivskyddad",
                             "unavailable": "Inte tillgänglig"
                         },
                         "unavailable": "(ej tillgänglig)"
@@ -1698,6 +1706,9 @@
                         "update": "Uppdatera"
                     },
                     "edit_home_zone": "Platsen för ditt hem kan ändras i den allmänna konfigurationen.",
+                    "edit_home_zone_narrow": "Radien i hemzonen kan inte redigeras från frontend ännu. Platsen kan ändras från den allmänna konfigurationen.",
+                    "go_to_core_config": "Gå till allmän konfiguration?",
+                    "home_zone_core_config": "Platsen för din hemzon kan redigeras från den allmänna konfigurationssidan. Radien i hemzonen kan inte redigeras från frontend ännu. Vill du gå till den allmänna konfigurationen?",
                     "introduction": "Med zoner kan du ange vissa regioner på jorden. När en person befinner sig i en zon tar tillståndet namnet från zonen. Zoner kan också användas som utlösare eller villkor i automatiseringsinställningar.",
                     "no_zones_created_yet": "Det verkar som om du inte har skapat några zoner ännu."
                 },
@@ -1923,6 +1934,9 @@
                         "alarm-panel": {
                             "available_states": "Tillgängliga tillstånd",
                             "name": "Larmpanel"
+                        },
+                        "button": {
+                            "name": "Knapp"
                         },
                         "conditional": {
                             "name": "Villkorlig"
