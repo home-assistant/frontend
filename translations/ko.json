@@ -647,7 +647,7 @@
                 "restored": {
                     "confirm_remove_text": "이 구성요소를 제거하시겠습니까?",
                     "confirm_remove_title": "구성요소를 제거하시겠습니까?",
-                    "not_provided": "이 구성요소는 현재 사용할 수 없으며 제거, 변경 또는 기능 장애가 있는 통합 구성요소이거나 기기의 남겨진 잔여데이터 입니다.",
+                    "not_provided": "이 구성요소는 현재 사용할 수 없습니다. 기기의 남겨진 잔여 데이터 이거나 제거, 변경 또는 기능 장애가 있는 통합 구성요소일 수 있습니다.",
                     "remove_action": "구성요소 제거",
                     "remove_intro": "구성요소를 더 이상 사용하지 않는 경우, 이를 제거하여 정리할 수 있습니다."
                 },
@@ -1218,11 +1218,11 @@
                     }
                 },
                 "customize": {
-                    "attributes_customize": "다음 속성은 이미 customize.yaml 에 설정되어 있습니다",
+                    "attributes_customize": "customize.yaml 에 설정된 속성은 다음과 같습니다.",
                     "attributes_not_set": "다음의 속성이 설정되지 않았습니다. 원하는 경우 설정해주세요.",
                     "attributes_outside": "다음 속성은 customize.yaml 이 아닌 다른 곳에서 사용자화됩니다",
                     "attributes_override": "원하는 경우 재정의 할 수 있습니다.",
-                    "attributes_set": "구성요소의 다음 속성은 프로그래밍 방식으로 설정됩니다.",
+                    "attributes_set": "프로그래밍되어 자동으로 설정된 속성은 다음과 같습니다.",
                     "caption": "사용자화",
                     "description": "구성요소를 사용자화 합니다",
                     "different_include": "도메인, 글로브 혹은 다른 포함 구성을 통해 가능할 수 있습니다.",
@@ -2051,7 +2051,7 @@
                         "delete": "카드 삭제",
                         "edit": "편집",
                         "header": "카드 구성",
-                        "move": "보기로 이동",
+                        "move": "다른 뷰로 이동",
                         "options": "옵션 더보기",
                         "pick_card": "어떤 카드를 추가하시겠습니까?",
                         "pick_card_view_title": "{name} 뷰에 어떤 카드를 추가하시겠습니까?",
@@ -2108,7 +2108,7 @@
                     },
                     "suggest_card": {
                         "add": "Lovelace UI 에 추가",
-                        "create_own": "다른 카드를 선택해주세요",
+                        "create_own": "다른 카드 선택",
                         "header": "제안 드리는 카드"
                     },
                     "view": {

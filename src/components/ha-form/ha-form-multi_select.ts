@@ -41,6 +41,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
       ? this.schema.options
       : Object.entries(this.schema.options!);
 
+    const data = this.data || [];
     return html`
       <paper-menu-button horizontal-align="right" vertical-offset="8">
         <div class="dropdown-trigger" slot="dropdown-trigger">
@@ -49,7 +50,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
             id="input"
             type="text"
             readonly
-            value=${this.data
+            value=${data
               .map((value) => this.schema.options![value] || value)
               .join(", ")}
             label=${this.label}
@@ -68,7 +69,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
           multi
           slot="dropdown-content"
           attr-for-selected="item-value"
-          .selectedValues=${this.data}
+          .selectedValues=${data}
           @selected-items-changed=${this._valueChanged}
           @iron-select=${this._onSelect}
         >
@@ -79,7 +80,7 @@ export class HaFormMultiSelect extends LitElement implements HaFormElement {
             return html`
               <paper-icon-item .itemValue=${value}>
                 <paper-checkbox
-                  .checked=${this.data.includes(value)}
+                  .checked=${data.includes(value)}
                   slot="item-icon"
                 ></paper-checkbox>
                 ${this._optionLabel(item)}
