@@ -2051,7 +2051,7 @@
                         "delete": "카드 삭제",
                         "edit": "편집",
                         "header": "카드 구성",
-                        "move": "보기로 이동",
+                        "move": "다른 뷰로 이동",
                         "options": "옵션 더보기",
                         "pick_card": "어떤 카드를 추가하시겠습니까?",
                         "pick_card_view_title": "{name} 뷰에 어떤 카드를 추가하시겠습니까?",
@@ -2108,7 +2108,7 @@
                     },
                     "suggest_card": {
                         "add": "Lovelace UI 에 추가",
-                        "create_own": "다른 카드를 선택해주세요",
+                        "create_own": "다른 카드 선택",
                         "header": "제안 드리는 카드"
                     },
                     "view": {
