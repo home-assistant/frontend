@@ -26,6 +26,7 @@ import {
   SUPPORTS_PLAY,
   fetchMediaPlayerThumbnailWithCache,
   SUPPORT_STOP,
+  SUPPORT_SEEK,
 } from "../../../data/media-player";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { HomeAssistant, MediaEntity } from "../../../types";
@@ -118,7 +119,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               <paper-progress
                 .max="${stateObj.attributes.media_duration}"
                 .value="${stateObj.attributes.media_position}"
-                class="progress"
+                class="progress ${classMap({
+                  seek: supportsFeature(stateObj, SUPPORT_SEEK),
+                })}"
+                @click=${(e: MouseEvent) => this._handleSeek(e, stateObj)}
               ></paper-progress>
             `}
         <div class="controls">
@@ -273,6 +277,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     });
   }
 
+  private _handleSeek(e: MouseEvent, stateObj: MediaEntity): void {
+    if (!supportsFeature(stateObj, SUPPORT_SEEK)) {
+      return;
+    }
+
+    const percent = e.offsetX / this.offsetWidth;
+    const position = (e.currentTarget! as any).max * percent;
+
+    this.hass!.callService("media_player", "media_seek", {
+      entity_id: this._config!.entity,
+      seek_position: position,
+    });
+  }
+
   static get styles(): CSSResult {
     return css`
       .ratio {
@@ -382,6 +400,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         margin-top: calc(-1 * var(--paper-progress-height, 4px));
         --paper-progress-active-color: var(--accent-color);
         --paper-progress-container-color: rgba(200, 200, 200, 0.5);
+      }
+
+      .seek:hover {
+        --paper-progress-height: 8px;
       }
     `;
   }
