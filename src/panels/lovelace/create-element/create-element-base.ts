@@ -7,7 +7,12 @@ import {
   createErrorCardElement,
   createErrorCardConfig,
 } from "../cards/hui-error-card";
-import { LovelaceCard, LovelaceBadge, LovelaceHeaderFooter } from "../types";
+import {
+  LovelaceCard,
+  LovelaceBadge,
+  LovelaceHeaderFooter,
+  LovelaceCardConstructor,
+} from "../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { LovelaceElementConfig, LovelaceElement } from "../elements/types";
 import { LovelaceRow, LovelaceRowConfig } from "../entity-rows/types";
@@ -17,13 +22,30 @@ const CUSTOM_TYPE_PREFIX = "custom:";
 const TIMEOUT = 2000;
 
 interface CreateElementConfigTypes {
-  card: { config: LovelaceCardConfig; element: LovelaceCard };
-  badge: { config: LovelaceBadgeConfig; element: LovelaceBadge };
-  element: { config: LovelaceElementConfig; element: LovelaceElement };
-  row: { config: LovelaceRowConfig; element: LovelaceRow };
+  card: {
+    config: LovelaceCardConfig;
+    element: LovelaceCard;
+    constructor: LovelaceCardConstructor;
+  };
+  badge: {
+    config: LovelaceBadgeConfig;
+    element: LovelaceBadge;
+    constructor: unknown;
+  };
+  element: {
+    config: LovelaceElementConfig;
+    element: LovelaceElement;
+    constructor: unknown;
+  };
+  row: {
+    config: LovelaceRowConfig;
+    element: LovelaceRow;
+    constructor: unknown;
+  };
   "header-footer": {
     config: LovelaceHeaderFooterConfig;
     element: LovelaceHeaderFooter;
+    constructor: unknown;
   };
 }
 
@@ -79,7 +101,7 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   tagSuffix: T,
   config: CreateElementConfigTypes[T]["config"],
   alwaysLoadTypes?: Set<string>,
-  lazyLoadTypes?: { [domain: string]: () => unknown },
+  lazyLoadTypes?: { [domain: string]: () => Promise<unknown> },
   // Allow looking at "entity" in config and mapping that to a type
   domainTypes?: { _domain_not_found: string; [domain: string]: string },
   // Default type if no type given. If given, entity types will not work.
@@ -130,4 +152,45 @@ export const createLovelaceElement = <T extends keyof CreateElementConfigTypes>(
   }
 
   return _createErrorElement(`Unknown type encountered: ${type}.`, config);
+};
+
+export const getLovelaceElementClass = async <
+  T extends keyof CreateElementConfigTypes
+>(
+  type: string,
+  tagSuffix: T,
+  alwaysLoadTypes?: Set<string>,
+  lazyLoadTypes?: { [domain: string]: () => Promise<unknown> }
+): Promise<CreateElementConfigTypes[T]["constructor"]> => {
+  if (type.startsWith(CUSTOM_TYPE_PREFIX)) {
+    const customTag = type.substr(CUSTOM_TYPE_PREFIX.length);
+    const customCls = customElements.get(customTag);
+    return customCls
+      ? customCls
+      : new Promise((resolve, reject) => {
+          // We will give custom components up to TIMEOUT seconds to get defined
+          setTimeout(
+            () => reject(`Custom element not found: ${customTag}`),
+            TIMEOUT
+          );
+
+          customElements
+            .whenDefined(customTag)
+            .then(() => resolve(customElements.get(customTag)));
+        });
+  }
+
+  // custom should be treated differntly, never know they load.
+  const tag = `hui-${type}-${tagSuffix}`;
+  const cls = customElements.get(tag);
+
+  if (alwaysLoadTypes && type in alwaysLoadTypes) {
+    return cls;
+  }
+
+  if (lazyLoadTypes && type in lazyLoadTypes) {
+    return cls || lazyLoadTypes[type]().then(() => customElements.get(tag));
+  }
+
+  throw new Error(`Unknown type: ${type}`);
 };

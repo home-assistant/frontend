@@ -7,7 +7,6 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { LovelaceCard } from "../../types";
 import { ConfigError } from "../types";
-import { getCardElementTag } from "../../common/get-card-element-tag";
 import { createErrorCardConfig } from "../../cards/hui-error-card";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 
@@ -47,6 +46,7 @@ export class HuiCardPreview extends HTMLElement {
   }
 
   set config(configValue: LovelaceCardConfig) {
+    const curConfig = this._config;
     this._config = configValue;
 
     if (!configValue) {
@@ -66,9 +66,7 @@ export class HuiCardPreview extends HTMLElement {
       return;
     }
 
-    const tag = getCardElementTag(configValue.type);
-
-    if (tag.toUpperCase() === this._element.tagName) {
+    if (curConfig && configValue.type === curConfig.type) {
       try {
         this._element.setConfig(deepClone(configValue));
       } catch (err) {
