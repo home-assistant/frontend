@@ -401,7 +401,7 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
       }
 
       .header {
-        margin: 16px 16px 0;
+        margin: 8px 16px 0;
         justify-content: space-between;
       }
 
