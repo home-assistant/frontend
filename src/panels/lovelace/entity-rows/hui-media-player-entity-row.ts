@@ -23,7 +23,7 @@ import {
   SUPPORT_PAUSE,
   SUPPORT_TURN_ON,
   SUPPORT_TURN_OFF,
-  SUPPORT_PREV_TRACK,
+  SUPPORT_PREVIOUS_TRACK,
   SUPPORT_VOLUME_SET,
   SUPPORT_VOLUME_MUTE,
   SUPPORT_VOLUME_BUTTONS,
@@ -141,7 +141,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
             : ""}
         </div>
         <div class="controls">
-          ${supportsFeature(stateObj, SUPPORT_PREV_TRACK)
+          ${supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
             ? html`
                 <paper-icon-button
                   icon="hass:skip-previous"
