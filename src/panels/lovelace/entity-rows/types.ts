@@ -42,13 +42,19 @@ export interface CastConfig {
   // Hide the row if either unsupported browser or no API available.
   hide_if_unavailable: boolean;
 }
+export interface ButtonsRowConfig {
+  type: "buttons";
+  entities: Array<string | EntityConfig>;
+}
 export type LovelaceRowConfig =
   | EntityConfig
   | DividerConfig
   | SectionConfig
   | WeblinkConfig
   | CallServiceConfig
-  | CastConfig;
+  | CastConfig
+  | ButtonsRowConfig
+  | ConditionalRowConfig;
 
 export interface LovelaceRow extends HTMLElement {
   hass?: HomeAssistant;
