@@ -170,7 +170,7 @@ export const getLovelaceElementClass = async <
       : new Promise((resolve, reject) => {
           // We will give custom components up to TIMEOUT seconds to get defined
           setTimeout(
-            () => reject(`Custom element not found: ${customTag}`),
+            () => reject(new Error(`Custom element not found: ${customTag}`)),
             TIMEOUT
           );
 
