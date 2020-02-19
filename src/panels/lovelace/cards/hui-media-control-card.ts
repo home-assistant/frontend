@@ -26,6 +26,7 @@ import {
   SUPPORTS_PLAY,
   fetchMediaPlayerThumbnailWithCache,
   SUPPORT_STOP,
+  SUPPORT_SEEK,
 } from "../../../data/media-player";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { HomeAssistant, MediaEntity } from "../../../types";
@@ -118,8 +119,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               <paper-progress
                 .max="${stateObj.attributes.media_duration}"
                 .value="${stateObj.attributes.media_position}"
-                class="progress"
-                @click=${this._handleSeek}
+                class="progress ${classMap({
+                  seek: supportsFeature(stateObj, SUPPORT_SEEK),
+                })}"
+                @click=${(e: MouseEvent) => this._handleSeek(e, stateObj)}
               ></paper-progress>
             `}
         <div class="controls">
@@ -274,7 +277,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     });
   }
 
-  private _handleSeek(e: MouseEvent): void {
+  private _handleSeek(e: MouseEvent, stateObj: MediaEntity): void {
+    if (!supportsFeature(stateObj, SUPPORT_SEEK)) {
+      return;
+    }
+
     const percent = e.offsetX / this.offsetWidth;
     const position = (e.currentTarget! as any).max * percent;
 
@@ -395,7 +402,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         --paper-progress-container-color: rgba(200, 200, 200, 0.5);
       }
 
-      .progress:hover {
+      .seek:hover {
         --paper-progress-height: 8px;
       }
     `;
