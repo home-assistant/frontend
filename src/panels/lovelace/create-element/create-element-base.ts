@@ -188,7 +188,6 @@ export const getLovelaceElementClass = async <
         });
   }
 
-  // custom should be treated differntly, never know they load.
   const tag = `hui-${type}-${tagSuffix}`;
   const cls = customElements.get(tag);
 
