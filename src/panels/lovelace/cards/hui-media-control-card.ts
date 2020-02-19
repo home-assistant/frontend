@@ -209,10 +209,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
 
-    const oldImage = oldHass
-      ? oldHass.states[this._config.entity].attributes.entity_picture
-      : undefined;
-    const newImage = this.hass.states[this._config.entity].attributes
+    const oldImage =
+      oldHass?.states[this._config.entity]?.attributes.entity_picture;
+    const newImage = this.hass.states[this._config.entity]?.attributes
       .entity_picture;
 
     if (!newImage || newImage === oldImage) {
@@ -225,11 +224,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    fetchMediaPlayerThumbnailWithCache(this.hass, this._config.entity).then(
-      ({ content_type, content }) => {
+    fetchMediaPlayerThumbnailWithCache(this.hass, this._config.entity)
+      .then(({ content_type, content }) => {
         this._image = `data:${content_type};base64,${content}`;
-      }
-    );
+      })
+      .catch(() => {
+        this._image = undefined;
+      });
   }
 
   private _computeSecondaryTitle(stateObj: HassEntity): string {
