@@ -35,7 +35,7 @@ import { computeRTLDirection } from "../../../common/util/compute_rtl";
 class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
   @property() private _config?: EntityConfig;
-  private _loaded?: boolean;
+  @property() private _loaded?: boolean;
   private _updated?: boolean;
   private _narrow?: boolean;
 
@@ -196,6 +196,7 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
   }
 
   private async _initialLoad(): Promise<void> {
+    await this.updateComplete;
     this._narrow = false;
     this._loaded = true;
 
