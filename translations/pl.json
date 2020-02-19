@@ -581,6 +581,7 @@
                 "entity": "Powiązane encje",
                 "group": "Element następujących grup",
                 "integration": "Integracja",
+                "no_related_found": "Nie znaleziono powiązanych elementów.",
                 "scene": "Element następujących scen",
                 "script": "Element następujących skryptów"
             },
@@ -630,6 +631,7 @@
                     "unavailable": "Ta encja nie jest obecnie dostępna.",
                     "update": "AKTUALIZUJ"
                 },
+                "no_unique_id": "Ten encja nie ma unikalnego identyfikatora, dlatego jego ustawieniami nie można zarządzać z interfejsu użytkownika.",
                 "related": "Powiązane",
                 "settings": "Ustawienia"
             },
@@ -1323,6 +1325,7 @@
                         "filter": {
                             "filter": "Filtr",
                             "show_disabled": "Wyświetlaj wyłączone encje",
+                            "show_readonly": "Pokaż encje tylko do odczytu",
                             "show_unavailable": "Wyświetlaj niedostępne encje"
                         },
                         "header": "Rejestr encji",
@@ -1346,6 +1349,7 @@
                         "status": {
                             "disabled": "Wyłączone",
                             "ok": "Ok",
+                            "readonly": "Tylko do odczytu",
                             "unavailable": "Niedostępne"
                         },
                         "unavailable": "(niedostępne)"
@@ -1702,6 +1706,9 @@
                         "update": "Aktualizuj"
                     },
                     "edit_home_zone": "Lokalizację domu można zmienić w konfiguracji ogólnej.",
+                    "edit_home_zone_narrow": "Promienia strefy domowej nie można jeszcze edytować z poziomu interfejsu użytkownika. Lokalizację można zmienić z ogólnej konfiguracji.",
+                    "go_to_core_config": "Czy chcesz przejść do konfiguracji ogólnej?",
+                    "home_zone_core_config": "Lokalizację strefy domowej można edytować na stronie konfiguracji ogólnej. Promienia strefy domowej nie można jeszcze edytować z poziomu interfejsu użytkownika. Czy chcesz przejść do ogólnej konfiguracji?",
                     "introduction": "Strefy pozwalają określić regiony na ziemi. Gdy dana osoba znajduje się w strefie, jej encja pobierze stan z nazwy strefy. Strefy mogą być również używane jako wyzwalacz lub warunek w automatyzacjach.",
                     "no_zones_created_yet": "Wygląda na to, że nie utworzyłeś jeszcze żadnych stref."
                 },

@@ -226,7 +226,8 @@ class HUIRoot extends LitElement {
                             </paper-item>
                           `
                         : ""}
-                      ${this.hass!.user!.is_admin
+                      ${this.hass!.user!.is_admin &&
+                      !this.hass!.config.safe_mode
                         ? html`
                             <paper-item
                               aria-label=${this.hass!.localize(

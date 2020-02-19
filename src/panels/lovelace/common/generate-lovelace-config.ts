@@ -404,6 +404,17 @@ export const generateLovelaceConfigFromData = async (
   entities: HassEntities,
   localize: LocalizeFunc
 ): Promise<LovelaceConfig> => {
+  if (config.safe_mode) {
+    return {
+      title: config.location_name,
+      views: [
+        {
+          cards: [{ type: "safe-mode" }],
+        },
+      ],
+    };
+  }
+
   const viewEntities = extractViews(entities);
 
   const views = viewEntities.map((viewEntity: GroupEntity) => {
@@ -461,11 +472,8 @@ export const generateLovelaceConfigFromData = async (
 
   // User has no entities
   if (views.length === 1 && views[0].cards!.length === 0) {
-    import(
-      /* webpackChunkName: "hui-empty-state-card" */ "../cards/hui-empty-state-card"
-    );
     views[0].cards!.push({
-      type: "custom:hui-empty-state-card",
+      type: "empty-state",
     });
   }
 

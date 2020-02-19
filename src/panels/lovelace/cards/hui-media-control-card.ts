@@ -16,12 +16,24 @@ import "../../../components/ha-card";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import { supportsFeature } from "../../../common/entity/supports-feature";
-import { OFF_STATES, SUPPORT_PAUSE } from "../../../data/media-player";
+import {
+  OFF_STATES,
+  SUPPORT_PAUSE,
+  SUPPORT_TURN_ON,
+  SUPPORT_TURN_OFF,
+  SUPPORT_PREVIOUS_TRACK,
+  SUPPORT_NEXT_TRACK,
+  SUPPORTS_PLAY,
+  fetchMediaPlayerThumbnailWithCache,
+  SUPPORT_STOP,
+  SUPPORT_SEEK,
+} from "../../../data/media-player";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { HomeAssistant, MediaEntity } from "../../../types";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { MediaControlCardConfig } from "./types";
+import { UNAVAILABLE } from "../../../data/entity";
 
 @customElement("hui-media-control-card")
 export class HuiMediaControlCard extends LitElement implements LovelaceCard {
@@ -38,6 +50,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   @property() public hass?: HomeAssistant;
   @property() private _config?: MediaControlCardConfig;
+  @property() private _image?: string;
 
   public getCardSize(): number {
     return 3;
@@ -68,67 +81,108 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         >
       `;
     }
-    const image =
-      stateObj.attributes.entity_picture ||
-      "../static/images/card_media_player_bg.png";
+
+    const picture = this._image || "../static/images/card_media_player_bg.png";
 
     return html`
       <ha-card>
         <div
-          class="${classMap({
-            "no-image": !stateObj.attributes.entity_picture,
-            ratio: true,
+          class="ratio ${classMap({
+            "no-image": !this._image,
           })}"
         >
-          <div class="image" style="background-image: url(${image})"></div>
-          <div class="caption">
+          <div
+            class="image"
+            style="background-image: url(${this.hass.hassUrl(picture)})"
+          ></div>
+          <div
+            class="caption ${classMap({
+              unavailable: stateObj.state === UNAVAILABLE,
+            })}"
+          >
             ${this._config!.name ||
               computeStateName(this.hass!.states[this._config!.entity])}
             <div class="title">
-              ${this._computeMediaTitle(stateObj)}
+              ${stateObj.attributes.media_title ||
+                this.hass.localize(`state.media_player.${stateObj.state}`) ||
+                this.hass.localize(`state.default.${stateObj.state}`) ||
+                stateObj.state}
             </div>
+            ${this._computeSecondaryTitle(stateObj)}
           </div>
         </div>
-        ${OFF_STATES.includes(stateObj.state)
+        ${OFF_STATES.includes(stateObj.state) ||
+        !stateObj.attributes.media_duration ||
+        !stateObj.attributes.media_position
           ? ""
           : html`
               <paper-progress
                 .max="${stateObj.attributes.media_duration}"
                 .value="${stateObj.attributes.media_position}"
-                class="progress"
+                class="progress ${classMap({
+                  seek: supportsFeature(stateObj, SUPPORT_SEEK),
+                })}"
+                @click=${(e: MouseEvent) => this._handleSeek(e, stateObj)}
               ></paper-progress>
             `}
         <div class="controls">
-          <paper-icon-button
-            icon="hass:power"
-            .action=${stateObj.state === "off" ? "turn_on" : "turn_off"}
-            @click=${this._handleClick}
-          ></paper-icon-button>
+          ${(stateObj.state === "off" &&
+            !supportsFeature(stateObj, SUPPORT_TURN_ON)) ||
+          (stateObj.state === "on" &&
+            !supportsFeature(stateObj, SUPPORT_TURN_OFF))
+            ? ""
+            : html`
+                <paper-icon-button
+                  icon="hass:power"
+                  .action=${stateObj.state === "off" ? "turn_on" : "turn_off"}
+                  @click=${this._handleClick}
+                ></paper-icon-button>
+              `}
           <div class="playback-controls">
-            <paper-icon-button
-              icon="hass:skip-previous"
-              .action=${"media_previous_track"}
-              @click=${this._handleClick}
-            ></paper-icon-button>
-            <paper-icon-button
-              class="playPauseButton"
-              icon=${stateObj.state !== "playing"
-                ? "hass:play"
-                : supportsFeature(stateObj, SUPPORT_PAUSE)
-                ? "hass:pause"
-                : "hass:stop"}
-              .action=${"media_play_pause"}
-              @click=${this._handleClick}
-            ></paper-icon-button>
-            <paper-icon-button
-              icon="hass:skip-next"
-              .action=${"media_next_track"}
-              @click=${this._handleClick}
-            ></paper-icon-button>
+            ${!supportsFeature(stateObj, SUPPORT_PREVIOUS_TRACK)
+              ? ""
+              : html`
+                  <paper-icon-button
+                    icon="hass:skip-previous"
+                    .disabled="${OFF_STATES.includes(stateObj.state)}"
+                    .action=${"media_previous_track"}
+                    @click=${this._handleClick}
+                  ></paper-icon-button>
+                `}
+            ${(stateObj.state !== "playing" &&
+              !supportsFeature(stateObj, SUPPORTS_PLAY)) ||
+            stateObj.state === UNAVAILABLE ||
+            (stateObj.state === "playing" &&
+              !supportsFeature(stateObj, SUPPORT_PAUSE) &&
+              !supportsFeature(stateObj, SUPPORT_STOP))
+              ? ""
+              : html`
+                  <paper-icon-button
+                    class="playPauseButton"
+                    .disabled="${OFF_STATES.includes(stateObj.state)}"
+                    .icon=${stateObj.state !== "playing"
+                      ? "hass:play"
+                      : supportsFeature(stateObj, SUPPORT_PAUSE)
+                      ? "hass:pause"
+                      : "hass:stop"}
+                    .action=${"media_play_pause"}
+                    @click=${this._handleClick}
+                  ></paper-icon-button>
+                `}
+            ${!supportsFeature(stateObj, SUPPORT_NEXT_TRACK)
+              ? ""
+              : html`
+                  <paper-icon-button
+                    icon="hass:skip-next"
+                    .disabled="${OFF_STATES.includes(stateObj.state)}"
+                    .action=${"media_next_track"}
+                    @click=${this._handleClick}
+                  ></paper-icon-button>
+                `}
           </div>
           <paper-icon-button
             icon="hass:dots-vertical"
-            @click="${this._handleMoreInfo}"
+            @click=${this._handleMoreInfo}
           ></paper-icon-button>
         </div>
       </ha-card>
@@ -158,43 +212,83 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     ) {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
+
+    const oldImage =
+      oldHass?.states[this._config.entity]?.attributes.entity_picture;
+    const newImage = this.hass.states[this._config.entity]?.attributes
+      .entity_picture;
+
+    if (!newImage || newImage === oldImage) {
+      this._image = newImage;
+      return;
+    }
+
+    if (newImage.substr(0, 1) !== "/") {
+      this._image = newImage;
+      return;
+    }
+
+    fetchMediaPlayerThumbnailWithCache(this.hass, this._config.entity)
+      .then(({ content_type, content }) => {
+        this._image = `data:${content_type};base64,${content}`;
+      })
+      .catch(() => {
+        this._image = undefined;
+      });
   }
 
-  private _computeMediaTitle(stateObj: HassEntity): string {
-    let prefix;
-    let suffix;
+  private _computeSecondaryTitle(stateObj: HassEntity): string {
+    let secondaryTitle: string;
 
     switch (stateObj.attributes.media_content_type) {
       case "music":
-        prefix = stateObj.attributes.media_artist;
-        suffix = stateObj.attributes.media_title;
+        secondaryTitle = stateObj.attributes.media_artist;
+        break;
+      case "playlist":
+        secondaryTitle = stateObj.attributes.media_playlist;
         break;
       case "tvshow":
-        prefix = stateObj.attributes.media_series_title;
-        suffix = stateObj.attributes.media_title;
+        secondaryTitle = stateObj.attributes.media_series_title;
+        if (stateObj.attributes.media_season) {
+          secondaryTitle += " S" + stateObj.attributes.media_season;
+
+          if (stateObj.attributes.media_episode) {
+            secondaryTitle += "E" + stateObj.attributes.media_episode;
+          }
+        }
         break;
       default:
-        prefix =
-          stateObj.attributes.media_title ||
-          stateObj.attributes.app_name ||
-          this.hass!.localize(`state.media_player.${stateObj.state}`) ||
-          this.hass!.localize(`state.default.${stateObj.state}`) ||
-          stateObj.state;
-        suffix = "";
+        secondaryTitle = stateObj.attributes.app_name
+          ? stateObj.attributes.app_name
+          : "";
     }
 
-    return prefix && suffix ? `${prefix}: ${suffix}` : prefix || suffix || "";
+    return secondaryTitle;
   }
 
-  private _handleMoreInfo() {
+  private _handleMoreInfo(): void {
     fireEvent(this, "hass-more-info", {
       entityId: this._config!.entity,
     });
   }
 
-  private _handleClick(e: MouseEvent) {
+  private _handleClick(e: MouseEvent): void {
     this.hass!.callService("media_player", (e.currentTarget! as any).action, {
       entity_id: this._config!.entity,
+    });
+  }
+
+  private _handleSeek(e: MouseEvent, stateObj: MediaEntity): void {
+    if (!supportsFeature(stateObj, SUPPORT_SEEK)) {
+      return;
+    }
+
+    const percent = e.offsetX / this.offsetWidth;
+    const position = (e.currentTarget! as any).max * percent;
+
+    this.hass!.callService("media_player", "media_seek", {
+      entity_id: this._config!.entity,
+      seek_position: position,
     });
   }
 
@@ -205,6 +299,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         width: 100%;
         height: 0;
         padding-bottom: 56.25%;
+        transition: padding-bottom 0.8s;
       }
 
       .image {
@@ -252,6 +347,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         width: 44px;
         height: 44px;
       }
+
       paper-icon-button {
         opacity: var(--dark-primary-opacity);
       }
@@ -270,6 +366,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         transition: background-color 0.5s;
       }
 
+      .playPauseButton[disabled] {
+        background-color: rgba(0, 0, 0, var(--dark-disabled-opacity));
+      }
+
       .caption {
         position: absolute;
         left: 0;
@@ -283,9 +383,16 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         transition: background-color 0.5s;
       }
 
+      .caption.unavailable {
+        background-color: rgba(0, 0, 0, var(--dark-secondary-opacity));
+      }
+
       .title {
         font-size: 1.2em;
         margin: 8px 0 4px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
       }
 
       .progress {
@@ -294,6 +401,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         margin-top: calc(-1 * var(--paper-progress-height, 4px));
         --paper-progress-active-color: var(--accent-color);
         --paper-progress-container-color: rgba(200, 200, 200, 0.5);
+      }
+
+      .seek:hover {
+        --paper-progress-height: 8px;
       }
     `;
   }
