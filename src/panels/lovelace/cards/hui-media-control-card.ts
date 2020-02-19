@@ -119,6 +119,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                 .max="${stateObj.attributes.media_duration}"
                 .value="${stateObj.attributes.media_position}"
                 class="progress"
+                @click=${this._handleSeek}
               ></paper-progress>
             `}
         <div class="controls">
@@ -273,6 +274,16 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     });
   }
 
+  private _handleSeek(e: MouseEvent): void {
+    const percent = e.offsetX / this.offsetWidth;
+    const position = (e.currentTarget! as any).max * percent;
+
+    this.hass!.callService("media_player", "media_seek", {
+      entity_id: this._config!.entity,
+      seek_position: position,
+    });
+  }
+
   static get styles(): CSSResult {
     return css`
       .ratio {
@@ -382,6 +393,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         margin-top: calc(-1 * var(--paper-progress-height, 4px));
         --paper-progress-active-color: var(--accent-color);
         --paper-progress-container-color: rgba(200, 200, 200, 0.5);
+      }
+
+      .progress:hover {
+        --paper-progress-height: 8px;
       }
     `;
   }
