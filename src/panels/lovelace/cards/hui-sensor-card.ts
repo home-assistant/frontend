@@ -27,7 +27,7 @@ import { SensorCardConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { actionHandler } from "../common/directives/action-handler-directive";
 
-let strokeWidth = 5;
+const strokeWidth = 5;
 
 const average = (items): number => {
   return (
