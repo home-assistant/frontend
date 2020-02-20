@@ -11,7 +11,10 @@ import "../cards/hui-thermostat-card";
 import "../cards/hui-vertical-stack-card";
 import "../cards/hui-weather-forecast-card";
 import { LovelaceCardConfig } from "../../../data/lovelace";
-import { createLovelaceElement } from "./create-element-base";
+import {
+  createLovelaceElement,
+  getLovelaceElementClass,
+} from "./create-element-base";
 
 const ALWAYS_LOADED_TYPES = new Set([
   "entities",
@@ -56,3 +59,6 @@ export const createCardElement = (config: LovelaceCardConfig) =>
     undefined,
     undefined
   );
+
+export const getCardElementClass = (type: string) =>
+  getLovelaceElementClass(type, "card", ALWAYS_LOADED_TYPES, LAZY_LOAD_TYPES);

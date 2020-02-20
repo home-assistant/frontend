@@ -7,13 +7,23 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { LovelaceCard } from "../../types";
 import { ConfigError } from "../types";
-import { getCardElementTag } from "../../common/get-card-element-tag";
 import { createErrorCardConfig } from "../../cards/hui-error-card";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 
 export class HuiCardPreview extends HTMLElement {
   private _hass?: HomeAssistant;
   private _element?: LovelaceCard;
+  private _config?: LovelaceCardConfig;
+
+  constructor() {
+    super();
+    this.addEventListener("ll-rebuild", () => {
+      this._cleanup();
+      if (this._config) {
+        this.config = this._config;
+      }
+    });
+  }
 
   set hass(hass: HomeAssistant) {
     if (!this._hass || this._hass.language !== hass.language) {
@@ -36,6 +46,9 @@ export class HuiCardPreview extends HTMLElement {
   }
 
   set config(configValue: LovelaceCardConfig) {
+    const curConfig = this._config;
+    this._config = configValue;
+
     if (!configValue) {
       this._cleanup();
       return;
@@ -53,9 +66,7 @@ export class HuiCardPreview extends HTMLElement {
       return;
     }
 
-    const tag = getCardElementTag(configValue.type);
-
-    if (tag.toUpperCase() === this._element.tagName) {
+    if (curConfig && configValue.type === curConfig.type) {
       try {
         this._element.setConfig(deepClone(configValue));
       } catch (err) {

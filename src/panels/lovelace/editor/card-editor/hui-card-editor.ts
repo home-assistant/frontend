@@ -14,7 +14,6 @@ import "@material/mwc-button";
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
 import { LovelaceCardEditor } from "../../types";
-import { getCardElementTag } from "../../common/get-card-element-tag";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 
 import "../../../../components/ha-code-editor";
@@ -23,6 +22,7 @@ import "../../../../components/ha-code-editor";
 import { HaCodeEditor } from "../../../../components/ha-code-editor";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { EntityConfig } from "../../entity-rows/types";
+import { getCardElementClass } from "../../create-element/create-card-element";
 
 declare global {
   interface HASSDomEvents {
@@ -215,13 +215,7 @@ export class HuiCardEditor extends LitElement {
           throw new Error("No card type defined");
         }
 
-        const tag = getCardElementTag(cardType);
-
-        // Check if the card type exists
-        const elClass = customElements.get(tag);
-        if (!elClass) {
-          throw new Error(`Unknown card type encountered: ${cardType}.`);
-        }
+        const elClass = await getCardElementClass(cardType);
 
         this._loading = true;
         // Check if a GUI editor exists
