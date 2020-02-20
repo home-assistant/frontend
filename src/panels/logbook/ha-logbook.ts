@@ -15,7 +15,7 @@ import {
 } from "lit-element";
 import { HomeAssistant } from "../../types";
 import { fireEvent } from "../../common/dom/fire_event";
-import "lit-virtualizer";
+import { scroll } from "lit-virtualizer";
 import { LogbookEntry } from "../../data/logbook";
 
 class HaLogbook extends LitElement {
@@ -44,19 +44,23 @@ class HaLogbook extends LitElement {
     }
 
     return html`
-      <lit-virtualizer
-        .items=${this.entries}
-        .renderItem=${(item: LogbookEntry, index: number) =>
-          this._renderLogbookItem(item, index)}
-        style="height: 100%;"
-      ></lit-virtualizer>
+      <div>
+        ${scroll({
+          items: this.entries,
+          renderItem: (item: LogbookEntry, index?: number) =>
+            this._renderLogbookItem(item, index),
+        })}
+      </div>
     `;
   }
 
   private _renderLogbookItem(
     item: LogbookEntry,
-    index: number
+    index?: number
   ): TemplateResult {
+    if (!index) {
+      return html``;
+    }
     const previous = this.entries[index - 1];
     const state = item.entity_id ? this.hass.states[item.entity_id] : undefined;
     return html`
@@ -148,6 +152,18 @@ class HaLogbook extends LitElement {
 
       a {
         color: var(--primary-color);
+      }
+
+      .uni-virtualizer-host {
+        display: block;
+        position: relative;
+        contain: strict;
+        height: 100%;
+        overflow: auto;
+      }
+
+      .uni-virtualizer-host > * {
+        box-sizing: border-box;
       }
     `;
   }
