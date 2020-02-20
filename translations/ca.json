@@ -1916,6 +1916,11 @@
                         "toggle": "Commuta {name}",
                         "url": "Obre un finestra a {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant ha tingut algun problema en carregar la configuració i ara s'està executant en mode segur. Mira el registre d’errors per veure què ha anat malament.",
+                        "header": "Mode segur activat",
+                        "show_errors": "Mostra els errors"
+                    },
                     "shopping-list": {
                         "add_item": "Afegir element",
                         "checked_items": "Articles seleccionats",

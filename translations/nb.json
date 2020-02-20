@@ -581,6 +581,7 @@
                 "entity": "Beslektede entiteter",
                 "group": "Del av følgende grupper",
                 "integration": "Integrering",
+                "no_related_found": "Finner ingen relaterte elementer.",
                 "scene": "Del av følgende scener",
                 "script": "Del av følgende skript"
             },
@@ -630,6 +631,7 @@
                     "unavailable": "Denne entiteten er ikke tilgjengelig for øyeblikket.",
                     "update": "OPPDATÉR"
                 },
+                "no_unique_id": "Denne enheten har ikke en unik ID, derfor kan innstillingene ikke administreres fra brukergrensesnittet.",
                 "related": "Relaterte",
                 "settings": "Innstillinger"
             },
@@ -1323,6 +1325,7 @@
                         "filter": {
                             "filter": "Filter",
                             "show_disabled": "Vis deaktiverte entiteter",
+                            "show_readonly": "Vis skrivebeskyttede enheter",
                             "show_unavailable": "Vis utilgjengelige enheter"
                         },
                         "header": "Entiteter",
@@ -1346,6 +1349,7 @@
                         "status": {
                             "disabled": "Deaktivert",
                             "ok": "Ok",
+                            "readonly": "Skrivebeskyttet",
                             "unavailable": "Utilgjengelig"
                         },
                         "unavailable": "(utilgjengelig)"
@@ -1701,7 +1705,10 @@
                         "required_error_msg": "Dette feltet er påkrevd",
                         "update": "Oppdater"
                     },
-                    "edit_home_zone": "Plasseringen av hjemmet ditt kan endres i general-konfigurasjonen.",
+                    "edit_home_zone": "Radien til Hjemmesonen kan ikke redigeres fra frontend ennå. Dra markøren på kartet for å flytte hjemmesonen.",
+                    "edit_home_zone_narrow": "Radiusen til hjemsonen kan ikke redigeres fra frontend ennå. Plasseringen kan endres fra den generelle konfigurasjonen.",
+                    "go_to_core_config": "Gå til generell konfigurasjon?",
+                    "home_zone_core_config": "Plasseringen av hjemmesonen kan redigeres fra den generelle konfigurasjonssiden. Radiusen til hjemsonen kan ikke redigeres fra frontend ennå. Vil du gå til den generelle konfigurasjonen?",
                     "introduction": "Med soner kan du angi bestemte områder på jorden. Når en person er innenfor en sone, vil staten ta navnet fra sonen. Soner kan også brukes som en utløser eller tilstand i automatiserings oppsett.",
                     "no_zones_created_yet": "Det ser ut til at du ikke har opprettet noen soner enda."
                 },
@@ -1908,6 +1915,11 @@
                         "tap": "Trykk:",
                         "toggle": "Veksle {name}",
                         "url": "Åpne vindu til {url_path}"
+                    },
+                    "safe-mode": {
+                        "description": "Home Assistant fikk problemer under lasting av konfigurasjonen og kjører nå i sikkermodus. Ta en titt på feilloggen for å se hva som gikk galt.",
+                        "header": "Sikkermodus aktivert",
+                        "show_errors": "Vis feil"
                     },
                     "shopping-list": {
                         "add_item": "Legg til",

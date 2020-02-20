@@ -560,14 +560,14 @@
             "device-picker": {
                 "clear": "Wyczyść",
                 "device": "Urządzenie",
-                "show_devices": "Wyświetl urządzenia",
+                "show_devices": "Pokaż urządzenia",
                 "toggle": "Przełącz"
             },
             "entity": {
                 "entity-picker": {
                     "clear": "Wyczyść",
                     "entity": "Encja",
-                    "show_entities": "Wyświetl encje"
+                    "show_entities": "Pokaż encje"
                 }
             },
             "history_charts": {
@@ -631,7 +631,7 @@
                     "unavailable": "Ta encja nie jest obecnie dostępna.",
                     "update": "AKTUALIZUJ"
                 },
-                "no_unique_id": "Ten encja nie ma unikalnego identyfikatora, dlatego jego ustawieniami nie można zarządzać z interfejsu użytkownika.",
+                "no_unique_id": "Ten encja nie ma unikalnego identyfikatora, dlatego z poziomu interfejsu użytkownika nie można zarządzać jej ustawieniami.",
                 "related": "Powiązane",
                 "settings": "Ustawienia"
             },
@@ -1325,7 +1325,7 @@
                         "filter": {
                             "filter": "Filtr",
                             "show_disabled": "Wyświetlaj wyłączone encje",
-                            "show_readonly": "Pokaż encje tylko do odczytu",
+                            "show_readonly": "Wyświetlaj encje tylko do odczytu",
                             "show_unavailable": "Wyświetlaj niedostępne encje"
                         },
                         "header": "Rejestr encji",
@@ -1705,10 +1705,10 @@
                         "required_error_msg": "To pole jest wymagane",
                         "update": "Aktualizuj"
                     },
-                    "edit_home_zone": "Lokalizację domu można zmienić w konfiguracji ogólnej.",
-                    "edit_home_zone_narrow": "Promienia strefy domowej nie można jeszcze edytować z poziomu interfejsu użytkownika. Lokalizację można zmienić z ogólnej konfiguracji.",
+                    "edit_home_zone": "Lokalizację strefy domowej można zmienić w konfiguracji ogólnej.",
+                    "edit_home_zone_narrow": "Promienia strefy domowej nie można jeszcze edytować z poziomu interfejsu użytkownika. Lokalizację tej strefy można zmienić w konfiguracji ogólnej.",
                     "go_to_core_config": "Czy chcesz przejść do konfiguracji ogólnej?",
-                    "home_zone_core_config": "Lokalizację strefy domowej można edytować na stronie konfiguracji ogólnej. Promienia strefy domowej nie można jeszcze edytować z poziomu interfejsu użytkownika. Czy chcesz przejść do ogólnej konfiguracji?",
+                    "home_zone_core_config": "Lokalizację strefy domowej można edytować w konfiguracji ogólnej. Promienia strefy domowej nie można jeszcze edytować z poziomu interfejsu użytkownika. Czy chcesz przejść do konfiguracji ogólnej?",
                     "introduction": "Strefy pozwalają określić regiony na ziemi. Gdy dana osoba znajduje się w strefie, jej encja pobierze stan z nazwy strefy. Strefy mogą być również używane jako wyzwalacz lub warunek w automatyzacjach.",
                     "no_zones_created_yet": "Wygląda na to, że nie utworzyłeś jeszcze żadnych stref."
                 },
@@ -1915,6 +1915,11 @@
                         "tap": "Dotknięcie:",
                         "toggle": "Przełącz {name}",
                         "url": "Otwórz okno do {url_path}"
+                    },
+                    "safe-mode": {
+                        "description": "Podczas ładowania konfiguracji Home Assistant napotkał problemy i działa teraz w trybie awaryjnym. Zajrzyj do loga, aby sprawdzić, co poszło nie tak.",
+                        "header": "Tryb awaryjny aktywny",
+                        "show_errors": "Pokaż błędy"
                     },
                     "shopping-list": {
                         "add_item": "Dodaj pozycję",

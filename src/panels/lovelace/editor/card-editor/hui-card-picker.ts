@@ -10,9 +10,9 @@ import "@material/mwc-button";
 
 import { HomeAssistant } from "../../../../types";
 import { LovelaceCardConfig } from "../../../../data/lovelace";
-import { getCardElementTag } from "../../common/get-card-element-tag";
 import { CardPickTarget } from "../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { getCardElementClass } from "../../create-element/create-card-element";
 
 const cards: string[] = [
   "alarm-panel",
@@ -94,15 +94,14 @@ export class HuiCardPicker extends LitElement {
     });
   }
 
-  private _cardPicked(ev: Event): void {
+  private async _cardPicked(ev: Event): Promise<void> {
     const type = (ev.currentTarget! as CardPickTarget).type;
-    const tag = getCardElementTag(type);
 
-    const elClass = customElements.get(tag);
+    const elClass = await getCardElementClass(type);
     let config: LovelaceCardConfig = { type };
 
     if (elClass && elClass.getStubConfig) {
-      const cardConfig = elClass.getStubConfig(this.hass);
+      const cardConfig = elClass.getStubConfig(this.hass!);
       config = { ...config, ...cardConfig };
     }
 
