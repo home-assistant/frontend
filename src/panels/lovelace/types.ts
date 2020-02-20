@@ -1,4 +1,4 @@
-import { HomeAssistant } from "../../types";
+import { HomeAssistant, Constructor } from "../../types";
 import {
   LovelaceCardConfig,
   LovelaceConfig,
@@ -35,6 +35,11 @@ export interface LovelaceCard extends HTMLElement {
   isPanel?: boolean;
   getCardSize(): number;
   setConfig(config: LovelaceCardConfig): void;
+}
+
+export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
+  getStubConfig?: (hass: HomeAssistant) => LovelaceCardConfig;
+  getConfigElement?: () => LovelaceCardEditor;
 }
 
 export interface LovelaceHeaderFooter extends HTMLElement {
