@@ -1916,6 +1916,11 @@
                         "toggle": "Commuta {name}",
                         "url": "Aprire la finestra per {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant ha riscontrato problemi durante il caricamento della configurazione ed è ora in esecuzione in modalità provvisoria. Dai un'occhiata al log degli errori per vedere cosa è andato storto.",
+                        "header": "Modalità provvisoria attivata",
+                        "show_errors": "Mostra errori"
+                    },
                     "shopping-list": {
                         "add_item": "Aggiungi elemento",
                         "checked_items": "Elementi selezionati",
