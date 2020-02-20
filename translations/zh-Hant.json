@@ -1916,6 +1916,11 @@
                         "toggle": "切換 {name}",
                         "url": "開啟視窗至 {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant 於載入設定時發生問題、正以安全模式執行中。請參閱錯誤紀錄、以找出問題。",
+                        "header": "安全模式已開啟",
+                        "show_errors": "顯示錯誤"
+                    },
                     "shopping-list": {
                         "add_item": "新增項目",
                         "checked_items": "已選取項目",
