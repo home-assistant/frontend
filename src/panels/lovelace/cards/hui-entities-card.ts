@@ -36,7 +36,7 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
   }
 
   public static getStubConfig(): object {
-    return { entities: [] };
+    return { entities: [], state_color: false };
   }
 
   @property() private _config?: EntitiesCardConfig;

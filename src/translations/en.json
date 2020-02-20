@@ -1872,6 +1872,7 @@
               "show_icon": "Show Icon?",
               "show_name": "Show Name?",
               "show_state": "Show State?",
+              "state_color": "Show State Color?",
               "tap_action": "Tap Action",
               "title": "Title",
               "theme": "Theme",

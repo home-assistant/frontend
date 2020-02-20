@@ -41,6 +41,7 @@ const cardConfigStruct = struct({
   entities: [entitiesConfigStruct],
   header: struct.optional(headerFooterConfigStructs),
   footer: struct.optional(headerFooterConfigStructs),
+  state_color: "boolean?",
 });
 
 @customElement("hui-entities-card-editor")
@@ -66,6 +67,10 @@ export class HuiEntitiesCardEditor extends LitElement
     return this._config!.theme || "Backend-selected";
   }
 
+  get _state_color(): boolean {
+    return this._config!.state_color || false;
+  }
+
   protected render(): TemplateResult {
     if (!this.hass) {
       return html``;
@@ -80,29 +85,37 @@ export class HuiEntitiesCardEditor extends LitElement
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .value="${this._title}"
-          .configValue="${"title"}"
-          @value-changed="${this._valueChanged}"
+          .value=${this._title}
+          .configValue=${"title"}
+          @value-changed=${this._valueChanged}
         ></paper-input>
         <hui-theme-select-editor
-          .hass="${this.hass}"
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @theme-changed="${this._valueChanged}"
+          .hass=${this.hass}
+          .value=${this._theme}
+          .configValue=${"theme"}
+          @theme-changed=${this._valueChanged}
         ></hui-theme-select-editor>
         <ha-switch
-          .checked="${this._config!.show_header_toggle !== false}"
-          .configValue="${"show_header_toggle"}"
-          @change="${this._valueChanged}"
+          .checked=${this._config!.show_header_toggle !== false}
+          .configValue=${"show_header_toggle"}
+          @change=${this._valueChanged}
           >${this.hass.localize(
             "ui.panel.lovelace.editor.card.entities.show_header_toggle"
           )}</ha-switch
         >
+        <ha-switch
+          .checked=${this._config!.state_color !== false}
+          .configValue=${"state_color"}
+          @change=${this._valueChanged}
+          >${this.hass.localize(
+            "ui.panel.lovelace.editor.card.generic.state_color"
+          )}</ha-switch
+        >
       </div>
       <hui-entity-editor
-        .hass="${this.hass}"
-        .entities="${this._configEntities}"
-        @entities-changed="${this._valueChanged}"
+        .hass=${this.hass}
+        .entities=${this._configEntities}
+        @entities-changed=${this._valueChanged}
       ></hui-entity-editor>
     `;
   }
