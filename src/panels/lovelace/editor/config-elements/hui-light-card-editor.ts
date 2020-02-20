@@ -131,7 +131,6 @@ export class HuiLightCardEditor extends LitElement
         };
       }
     }
-    console.log(this._config);
     fireEvent(this, "config-changed", { config: this._config });
   }
 }
