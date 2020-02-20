@@ -191,7 +191,7 @@ export const getLovelaceElementClass = async <
   const tag = `hui-${type}-${tagSuffix}`;
   const cls = customElements.get(tag);
 
-  if (alwaysLoadTypes && type in alwaysLoadTypes) {
+  if (alwaysLoadTypes && alwaysLoadTypes.has(type)) {
     return cls;
   }
 
