@@ -104,11 +104,10 @@ class HaInputBooleanForm extends LitElement {
       haStyle,
       css`
         .form {
-          padding-bottom: 24px;
           color: var(--primary-text-color);
         }
         .row {
-          padding: 8px 0;
+          padding: 16px 0;
         }
       `,
     ];

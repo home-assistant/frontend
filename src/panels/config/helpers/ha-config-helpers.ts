@@ -84,7 +84,7 @@ export class HaConfigHelpers extends LitElement {
           filterable: true,
           template: (type) =>
             html`
-              ${this.hass.localize(`ui.panel.config.helpers.picker.${type}`) ||
+              ${this.hass.localize(`ui.panel.config.helpers.types.${type}`) ||
                 type}
             `,
         },
@@ -169,7 +169,6 @@ export class HaConfigHelpers extends LitElement {
     const entityId = (ev.detail as RowClickedEvent).id;
     showEntityEditorDialog(this, {
       entity_id: entityId,
-      tab: `tab-${computeDomain(entityId)}`,
     });
   }
 

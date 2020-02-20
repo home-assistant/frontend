@@ -7,12 +7,14 @@ import {
   property,
   PropertyValues,
   TemplateResult,
+  query,
 } from "lit-element";
 import { ExtEntityRegistryEntry } from "../../../data/entity_registry";
 import { HomeAssistant } from "../../../types";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
 import { fireEvent } from "../../../common/dom/fire_event";
+import "../entities/entity-registry-id-enable";
 import "./forms/ha-input_boolean-form";
 import { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
 import { Helper } from "./ha-config-helpers";
@@ -42,6 +44,8 @@ import {
   updateInputSelect,
   deleteInputSelect,
 } from "../../../data/input_select";
+// tslint:disable-next-line: no-duplicate-imports
+import { HaEntityRegIdEnable } from "../entities/entity-registry-id-enable";
 
 const HELPERS = {
   input_boolean: {
@@ -81,6 +85,7 @@ export class EntityRegistrySettingsHelper extends LitElement {
   @property() private _item?: Helper | null;
   @property() private _submitting?: boolean;
   @property() private _componentLoaded?: boolean;
+  @query("ha-registry-id-enable") private _registryEditor?: HaEntityRegIdEnable;
 
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
@@ -124,11 +129,18 @@ export class EntityRegistrySettingsHelper extends LitElement {
               <div class="error">${this._error}</div>
             `
           : ""}
-        <div class="form" @value-changed=${this._valueChanged}>
-          ${dynamicElement(`ha-${this.platform}-form`, {
-            hass: this.hass,
-            item: this._item,
-          })}
+        <div class="form">
+          <div @value-changed=${this._valueChanged}>
+            ${dynamicElement(`ha-${this.platform}-form`, {
+              hass: this.hass,
+              item: this._item,
+              entry: this.entry,
+            })}
+          </div>
+          <ha-registry-id-enable
+            .hass=${this.hass}
+            .entry=${this.entry}
+          ></ha-registry-id-enable>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
@@ -170,6 +182,7 @@ export class EntityRegistrySettingsHelper extends LitElement {
         this._item.id,
         this._item
       );
+      await this._registryEditor?.updateEntry();
     } catch (err) {
       this._error = err.message || "Unknown error";
     } finally {

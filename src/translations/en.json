@@ -642,7 +642,6 @@
         "related": "Related",
         "dismiss": "Dismiss",
         "no_unique_id": "This entity does not have a unique ID, therefore it's settings can not be managed from the UI.",
-        "tabs": { "platform": { "input_boolean": "Boolean" } },
         "editor": {
           "name": "Name Override",
           "icon": "Icon Override",
@@ -764,11 +763,11 @@
           "caption": "Helpers",
           "description": "Elements that can help build automations.",
           "types": {
-            "input_text": "Text input",
-            "input_number": "Numeric input",
-            "input_select": "Select input",
-            "input_boolean": "Boolean input",
-            "input_datetime": "Date and/or time input"
+            "input_text": "Text",
+            "input_number": "Number",
+            "input_select": "Dropdown",
+            "input_boolean": "Toggle",
+            "input_datetime": "Date and/or time"
           },
           "picker": {
             "headers": {

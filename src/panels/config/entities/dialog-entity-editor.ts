@@ -51,6 +51,7 @@ export class DialogEntityEditor extends LitElement {
     | null;
   @property() private _curTab?: string;
   @property() private _extraTabs: Tabs = {};
+  @property() private _settingsElementTag = "";
   @query("ha-paper-dialog") private _dialog!: HaPaperDialog;
   private _curTabIndex = 0;
 
@@ -58,7 +59,8 @@ export class DialogEntityEditor extends LitElement {
     params: EntityRegistryDetailDialogParams
   ): Promise<void> {
     this._params = params;
-    this._entry = this._params.entry;
+    this._entry = undefined;
+    this._settingsElementTag = "entity-registry-settings";
     this._extraTabs = {};
     this._getEntityReg();
     await this.updateComplete;
@@ -130,11 +132,12 @@ export class DialogEntityEditor extends LitElement {
           this._curTab === "tab-settings"
             ? entry
               ? html`
-                  <entity-registry-settings
-                    .hass=${this.hass}
-                    .entry=${entry}
-                    .dialogElement=${this._dialog}
-                  ></entity-registry-settings>
+                  ${dynamicElement(this._settingsElementTag, {
+                    hass: this.hass,
+                    entry,
+                    entityId,
+                    dialogElement: this._dialog,
+                  })}
                 `
               : html`
                   <paper-dialog-scrollable>
@@ -175,7 +178,7 @@ export class DialogEntityEditor extends LitElement {
         this.hass,
         this._params!.entity_id
       );
-      this._loadPlatformTabs();
+      this._loadPlatformSettingTabs();
     } catch {
       this._entry = null;
     }
@@ -194,16 +197,13 @@ export class DialogEntityEditor extends LitElement {
     fireEvent(this._dialog as HTMLElement, "iron-resize");
   }
 
-  private async _loadPlatformTabs(): Promise<void> {
+  private async _loadPlatformSettingTabs(): Promise<void> {
     if (!this._entry) {
       return;
     }
     if (PLATFORMS_WITH_SETTINGS_TAB.includes(this._entry.platform)) {
-      this._registerTab(
-        this._entry.platform,
-        `entity-platform-tab-${this._entry.platform}`,
-        `ui.dialogs.entity_registry.tabs.platform.${this._entry.platform}`
-      );
+      await import(`./editor-tabs/entity-platform-tab-${this._entry.platform}`);
+      this._settingsElementTag = `entity-platform-tab-${this._entry.platform}`;
     }
   }
 
