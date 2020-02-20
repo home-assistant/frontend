@@ -87,9 +87,11 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const oldConfig = changedProps.get("_config") as
-      | HistoryGraphCardConfig
-      | undefined;
+    if (!changedProps.has("_config")) {
+      return;
+    }
+
+    const oldConfig = changedProps.get("_config") as HistoryGraphCardConfig;
 
     if (oldConfig !== this._config) {
       this._getStateHistory();
