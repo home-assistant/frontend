@@ -71,6 +71,13 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       translationKey: "ui.panel.config.script.caption",
       icon: "hass:script-text",
     },
+    {
+      component: "helpers",
+      path: "/config/helpers",
+      translationKey: "ui.panel.config.helpers.caption",
+      icon: "hass:tools",
+      core: true,
+    },
   ],
   persons: [
     {
@@ -233,6 +240,13 @@ class HaPanelConfig extends HassRouterPage {
         load: () =>
           import(
             /* webpackChunkName: "panel-config-scene" */ "./scene/ha-config-scene"
+          ),
+      },
+      helpers: {
+        tag: "ha-config-helpers",
+        load: () =>
+          import(
+            /* webpackChunkName: "panel-config-helpers" */ "./helpers/ha-config-helpers"
           ),
       },
       users: {

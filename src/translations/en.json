@@ -642,8 +642,11 @@
         "related": "Related",
         "dismiss": "Dismiss",
         "no_unique_id": "This entity does not have a unique ID, therefore it's settings can not be managed from the UI.",
+        "tabs": { "platform": { "input_boolean": "Boolean" } },
         "editor": {
           "name": "Name Override",
+          "icon": "Icon Override",
+          "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
           "entity_id": "Entity ID",
           "unavailable": "This entity is not currently available.",
           "enabled_label": "Enable entity",
@@ -755,6 +758,32 @@
             "delete": "DELETE",
             "update": "UPDATE",
             "create": "CREATE"
+          }
+        },
+        "helpers": {
+          "caption": "Helpers",
+          "description": "Elements that can help build automations.",
+          "types": {
+            "input_text": "Text input",
+            "input_number": "Numeric input",
+            "input_select": "Select input",
+            "input_boolean": "Boolean input",
+            "input_datetime": "Date and/or time input"
+          },
+          "picker": {
+            "headers": {
+              "name": "Name",
+              "type": "Type",
+              "editable": "Editable"
+            },
+            "add_helper": "Add helper",
+            "not_editable": "Not editable",
+            "not_editable_text": "This entity can't be changed from the UI because it is defined in configuration.yaml."
+          },
+          "dialog": {
+            "create": "Create",
+            "add_helper": "Add helper",
+            "add_platform": "Add {platform}"
           }
         },
         "core": {

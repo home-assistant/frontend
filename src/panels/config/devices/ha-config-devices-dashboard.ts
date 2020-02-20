@@ -253,17 +253,6 @@ export class HaConfigDeviceDashboard extends LitElement {
     const deviceId = (ev.detail as RowClickedEvent).id;
     navigate(this, `/config/devices/device/${deviceId}`);
   }
-
-  static get styles(): CSSResult {
-    return css`
-      .content {
-        padding: 4px;
-      }
-      ha-devices-data-table {
-        width: 100%;
-      }
-    `;
-  }
 }
 
 declare global {

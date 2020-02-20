@@ -54,6 +54,15 @@ export const DOMAINS_WITH_MORE_INFO = [
   "weather",
 ];
 
+/** Platforms that have a settings tab. */
+export const PLATFORMS_WITH_SETTINGS_TAB = [
+  "input_number",
+  "input_select",
+  "input_text",
+  "input_boolean",
+  "input_datetime",
+];
+
 /** Domains that show no more info dialog. */
 export const DOMAINS_HIDE_MORE_INFO = [
   "input_number",
