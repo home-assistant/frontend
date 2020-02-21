@@ -45,6 +45,7 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
     }
 
     const stateObj = this.hass.states[this._config.entity!];
+    const attribute = this._config.attribute!;
 
     if (!stateObj) {
       return html`
@@ -58,6 +59,25 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
       `;
     }
 
+    if (attribute && !stateObj.attributes[attribute]) {
+      return html`
+        <hui-warning-element
+          label=${this.hass.localize(
+            "ui.panel.lovelace.warning.attribute_not_found",
+            "attribute",
+            this._config.attribute,
+            "entity",
+            this._config.entity
+          )}
+        ></hui-warning-element>
+      `;
+    }
+
+    const stateDisplay = stateObj
+      ? computeStateDisplay(this.hass.localize, stateObj, this.hass.language)
+      : "-";
+    const attributeDisplay = stateObj ? stateObj.attributes[attribute] : "-";
+
     return html`
       <div
         .title="${computeTooltip(this.hass, this._config)}"
@@ -70,13 +90,9 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
           hasAction(this._config.tap_action) ? "0" : undefined
         )}
       >
-        ${this._config.prefix}${stateObj
-          ? computeStateDisplay(
-              this.hass.localize,
-              stateObj,
-              this.hass.language
-            )
-          : "-"}${this._config.suffix}
+        ${this._config.prefix}${attribute
+          ? attributeDisplay
+          : stateDisplay}${this._config.suffix}
       </div>
     `;
   }
