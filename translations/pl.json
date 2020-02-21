@@ -2084,9 +2084,7 @@
                         "header": "Konfiguracja widoku",
                         "header_name": "Konfiguracja widoku {name}",
                         "move_left": "Przesuń widok w lewo",
-                        "move_right": "Przesuń widok w prawo",
-                        "tab_settings": "Ustawienia",
-                        "tab_badges": "Odznaki"
+                        "move_right": "Przesuń widok w prawo"
                     },
                     "header": "Edycja interfejsu użytkownika",
                     "menu": {
