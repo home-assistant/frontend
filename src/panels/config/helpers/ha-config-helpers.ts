@@ -27,28 +27,8 @@ import "../../../layouts/hass-tabs-subpage-data-table";
 import { HomeAssistant, Route } from "../../../types";
 import { configSections } from "../ha-panel-config";
 import { showEntityEditorDialog } from "../entities/show-dialog-entity-editor";
-import { computeDomain } from "../../../common/entity/compute_domain";
 import { showHelperDetailDialog } from "./show-dialog-helper-detail";
-import { InputBoolean } from "../../../data/input_boolean";
-import { InputText } from "../../../data/input_text";
-import { InputNumber } from "../../../data/input_number";
-import { InputSelect } from "../../../data/input_select";
-import { InputDateTime } from "../../../data/input_datetime";
-
-export const HELPER_DOMAINS = [
-  "input_boolean",
-  "input_text",
-  "input_number",
-  "input_datetime",
-  "input_select",
-];
-
-export type Helper =
-  | InputBoolean
-  | InputText
-  | InputNumber
-  | InputSelect
-  | InputDateTime;
+import { HELPER_DOMAINS } from "./const";
 
 @customElement("ha-config-helpers")
 export class HaConfigHelpers extends LitElement {

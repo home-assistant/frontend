@@ -42,7 +42,11 @@ import {
 import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
 import { HomeAssistant } from "../../../../../types";
 import "../../../helpers/forms/ha-input_boolean-form";
-import { Helper } from "../../../helpers/ha-config-helpers";
+import "../../../helpers/forms/ha-input_text-form";
+import "../../../helpers/forms/ha-input_datetime-form";
+import "../../../helpers/forms/ha-input_select-form";
+import "../../../helpers/forms/ha-input_number-form";
+import { Helper } from "../../../helpers/const";
 import "../../entity-registry-basic-editor";
 // tslint:disable-next-line: no-duplicate-imports
 import { HaEntityRegistryBasicEditor } from "../../entity-registry-basic-editor";

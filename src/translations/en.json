@@ -657,6 +657,24 @@
           "note": "Note: this might not work yet with all integrations."
         }
       },
+      "helper_settings": {
+        "not_editable": "Not editable",
+        "not_editable_text": "This entity can't be changed from the UI because it is defined in configuration.yaml.",
+        "required_error_msg": "This field is required",
+        "generic": {
+          "name": "Name",
+          "icon": "Icon",
+          "initial_value": "Initial value"
+        },
+        "input_datetime": {
+          "has_time": "Time",
+          "has_date": "Date"
+        },
+        "input_numeric": {
+          "min": "Min",
+          "max": "Max"
+        }
+      },
       "options_flow": {
         "form": {
           "header": "Options"
@@ -781,16 +799,6 @@
             "create": "Create",
             "add_helper": "Add helper",
             "add_platform": "Add {platform}"
-          },
-          "forms": {
-            "not_editable": "Not editable",
-            "not_editable_text": "This entity can't be changed from the UI because it is defined in configuration.yaml.",
-            "required_error_msg": "This field is required",
-            "input_boolean": {
-              "name": "Name",
-              "icon": "Icon",
-              "initial_value": "Initail value"
-            }
           }
         },
         "core": {

@@ -13,25 +13,29 @@ import "@polymer/paper-input/paper-input";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-icon-input";
 import { HomeAssistant } from "../../../../types";
-import { InputBoolean } from "../../../../data/input_boolean";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { haStyle } from "../../../../resources/styles";
+import { InputDateTime } from "../../../../data/input_datetime";
 
-@customElement("ha-input_boolean-form")
-class HaInputBooleanForm extends LitElement {
+@customElement("ha-input_datetime-form")
+class HaInputDateTimeForm extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public new?: boolean;
-  private _item?: InputBoolean;
+  private _item?: InputDateTime;
   @property() private _name!: string;
   @property() private _icon!: string;
-  @property() private _initial?: boolean;
+  @property() private _initial?: string;
+  @property() private _hasTime?: boolean;
+  @property() private _hasDate?: boolean;
 
-  set item(item: InputBoolean) {
+  set item(item: InputDateTime) {
     this._item = item;
     if (item) {
       this._name = item.name || "";
       this._icon = item.icon || "";
       this._initial = item.initial;
+      this._hasTime = item.has_time;
+      this._hasDate = item.has_date;
     } else {
       this._name = "";
       this._icon = "";
@@ -66,27 +70,47 @@ class HaInputBooleanForm extends LitElement {
             "ui.dialogs.helper_settings.generic.icon"
           )}
         ></ha-icon-input>
-        ${this.hass.userData?.showAdvanced
-          ? html`
-              <div class="row layout horizontal justified">
-                ${this.hass!.localize(
-                  "ui.dialogs.helper_settings.generic.initial_value"
-                )}:
-                <ha-switch
-                  .checked=${this._initial}
-                  @change=${this._initialChanged}
-                ></ha-switch>
-              </div>
-            `
-          : ""}
+        <paper-input
+          .value=${this._initial}
+          .configValue=${"initial"}
+          @value-changed=${this._valueChanged}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.generic.initial_value"
+          )}
+        ></paper-input>
+        <div class="row layout horizontal justified">
+          ${this.hass!.localize(
+            "ui.dialogs.helper_settings.input_datetime.has_time"
+          )}:
+          <ha-switch
+            .checked=${this._hasTime}
+            @change=${this._hasTimeChanged}
+          ></ha-switch>
+        </div>
+        <div class="row layout horizontal justified">
+          ${this.hass!.localize(
+            "ui.dialogs.helper_settings.input_datetime.has_date"
+          )}:
+          <ha-switch
+            .checked=${this._hasDate}
+            @change=${this._hasDateChanged}
+          ></ha-switch>
+        </div>
       </div>
     `;
   }
 
-  private _initialChanged(ev) {
+  private _hasTimeChanged(ev) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
-      value: { ...this._item, initial: ev.target.checked },
+      value: { ...this._item, has_time: ev.target.checked },
+    });
+  }
+
+  private _hasDateChanged(ev) {
+    ev.stopPropagation();
+    fireEvent(this, "value-changed", {
+      value: { ...this._item, has_date: ev.target.checked },
     });
   }
 
@@ -128,6 +152,6 @@ class HaInputBooleanForm extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-input_boolean-form": HaInputBooleanForm;
+    "ha-input_datetime-form": HaInputDateTimeForm;
   }
 }

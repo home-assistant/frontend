@@ -13,28 +13,34 @@ import "@polymer/paper-input/paper-input";
 import "../../../../components/ha-switch";
 import "../../../../components/ha-icon-input";
 import { HomeAssistant } from "../../../../types";
-import { InputBoolean } from "../../../../data/input_boolean";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { haStyle } from "../../../../resources/styles";
+import { InputNumber } from "../../../../data/input_number";
 
-@customElement("ha-input_boolean-form")
-class HaInputBooleanForm extends LitElement {
+@customElement("ha-input_number-form")
+class HaInputNumberForm extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public new?: boolean;
-  private _item?: InputBoolean;
+  private _item?: Partial<InputNumber>;
   @property() private _name!: string;
   @property() private _icon!: string;
-  @property() private _initial?: boolean;
+  @property() private _initial?: number;
+  @property() private _max?: number;
+  @property() private _min?: number;
 
-  set item(item: InputBoolean) {
+  set item(item: InputNumber) {
     this._item = item;
     if (item) {
-      this._name = item.name || "";
-      this._icon = item.icon || "";
+      this._name = item.name ?? "";
+      this._icon = item.icon ?? "";
+      this._max = item.max ?? 0;
+      this._min = item.min ?? 0;
       this._initial = item.initial;
     } else {
       this._name = "";
       this._icon = "";
+      this._max = 0;
+      this._min = 0;
     }
   }
 
@@ -66,28 +72,35 @@ class HaInputBooleanForm extends LitElement {
             "ui.dialogs.helper_settings.generic.icon"
           )}
         ></ha-icon-input>
-        ${this.hass.userData?.showAdvanced
-          ? html`
-              <div class="row layout horizontal justified">
-                ${this.hass!.localize(
-                  "ui.dialogs.helper_settings.generic.initial_value"
-                )}:
-                <ha-switch
-                  .checked=${this._initial}
-                  @change=${this._initialChanged}
-                ></ha-switch>
-              </div>
-            `
-          : ""}
+        <paper-input
+          .value=${this._min}
+          .configValue=${"min"}
+          type="number"
+          @value-changed=${this._valueChanged}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.input_number.min"
+          )}
+        ></paper-input>
+        <paper-input
+          .value=${this._max}
+          .configValue=${"max"}
+          type="number"
+          @value-changed=${this._valueChanged}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.input_number.max"
+          )}
+        ></paper-input>
+        <paper-input
+          .value=${this._initial}
+          .configValue=${"initial"}
+          type="number"
+          @value-changed=${this._valueChanged}
+          .label=${this.hass!.localize(
+            "ui.dialogs.helper_settings.generic.initial_value"
+          )}
+        ></paper-input>
       </div>
     `;
-  }
-
-  private _initialChanged(ev) {
-    ev.stopPropagation();
-    fireEvent(this, "value-changed", {
-      value: { ...this._item, initial: ev.target.checked },
-    });
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -101,11 +114,12 @@ class HaInputBooleanForm extends LitElement {
       return;
     }
     const newValue = { ...this._item };
-    if (!value) {
+    if (value === undefined || value === "") {
       delete newValue[configValue];
     } else {
       newValue[configValue] = ev.detail.value;
     }
+    this._item = newValue;
     fireEvent(this, "value-changed", {
       value: newValue,
     });
@@ -128,6 +142,6 @@ class HaInputBooleanForm extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "ha-input_boolean-form": HaInputBooleanForm;
+    "ha-input_number-form": HaInputNumberForm;
   }
 }
