@@ -27,20 +27,33 @@ class HaInputNumberForm extends LitElement {
   @property() private _initial?: number;
   @property() private _max?: number;
   @property() private _min?: number;
+  @property() private _mode?: string;
+  @property() private _step?: number;
+  // tslint:disable-next-line: variable-name
+  @property() private _unit_of_measurement?: string;
 
   set item(item: InputNumber) {
     this._item = item;
     if (item) {
-      this._name = item.name ?? "";
-      this._icon = item.icon ?? "";
-      this._max = item.max ?? 0;
+      this._name = item.name || "";
+      this._icon = item.icon || "";
+      this._max = item.max ?? 100;
       this._min = item.min ?? 0;
       this._initial = item.initial;
+      this._mode = item.mode || "slider";
+      this._step = item.step || 1;
+      this._unit_of_measurement = item.unit_of_measurement;
     } else {
+      this._item = {
+        min: 0,
+        max: 0,
+      };
       this._name = "";
       this._icon = "";
-      this._max = 0;
+      this._max = 100;
       this._min = 0;
+      this._mode = "slider";
+      this._step = 1;
     }
   }
 
@@ -90,17 +103,77 @@ class HaInputNumberForm extends LitElement {
             "ui.dialogs.helper_settings.input_number.max"
           )}
         ></paper-input>
-        <paper-input
-          .value=${this._initial}
-          .configValue=${"initial"}
-          type="number"
-          @value-changed=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.initial_value"
-          )}
-        ></paper-input>
+        ${this.hass.userData?.showAdvanced
+          ? html`
+              <ha-paper-dropdown-menu
+                label-float
+                dynamic-align
+                .label=${this.hass.localize(
+                  "ui.dialogs.helper_settings.input_number.mode"
+                )}
+              >
+                <paper-listbox
+                  slot="dropdown-content"
+                  attr-for-selected="item-mode"
+                  .selected=${this._mode}
+                  @selected-changed=${this._modeChanged}
+                >
+                  <paper-item item-mode="slider">
+                    ${this.hass.localize(
+                      "ui.dialogs.helper_settings.input_number.slider"
+                    )}
+                  </paper-item>
+                  <paper-item item-mode="box">
+                    ${this.hass.localize(
+                      "ui.dialogs.helper_settings.input_number.box"
+                    )}
+                  </paper-item>
+                </paper-listbox>
+              </ha-paper-dropdown-menu>
+              ${this._mode === "slider"
+                ? html`
+                    <paper-input
+                      .value=${this._step}
+                      .configValue=${"step"}
+                      type="number"
+                      @value-changed=${this._valueChanged}
+                      .label=${this.hass!.localize(
+                        "ui.dialogs.helper_settings.input_number.step"
+                      )}
+                    ></paper-input>
+                  `
+                : ""}
+              <paper-input
+                .value=${this._unit_of_measurement}
+                .configValue=${"unit_of_measurement"}
+                @value-changed=${this._valueChanged}
+                .label=${this.hass!.localize(
+                  "ui.dialogs.helper_settings.input_number.unit_of_measurement"
+                )}
+              ></paper-input>
+              <br />
+              ${this.hass!.localize(
+                "ui.dialogs.helper_settings.generic.initial_value_explain"
+              )}
+              <paper-input
+                .value=${this._initial}
+                .configValue=${"initial"}
+                type="number"
+                @value-changed=${this._valueChanged}
+                .label=${this.hass!.localize(
+                  "ui.dialogs.helper_settings.generic.initial_value"
+                )}
+              ></paper-input>
+            `
+          : ""}
       </div>
     `;
+  }
+
+  private _modeChanged(ev: CustomEvent) {
+    fireEvent(this, "value-changed", {
+      value: { ...this._item, mode: ev.detail.value },
+    });
   }
 
   private _valueChanged(ev: CustomEvent) {
@@ -119,7 +192,6 @@ class HaInputNumberForm extends LitElement {
     } else {
       newValue[configValue] = ev.detail.value;
     }
-    this._item = newValue;
     fireEvent(this, "value-changed", {
       value: newValue,
     });
@@ -134,6 +206,9 @@ class HaInputNumberForm extends LitElement {
         }
         .row {
           padding: 16px 0;
+        }
+        ha-paper-dropdown-menu {
+          display: block;
         }
       `,
     ];

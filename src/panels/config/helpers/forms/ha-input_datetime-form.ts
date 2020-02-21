@@ -70,14 +70,6 @@ class HaInputDateTimeForm extends LitElement {
             "ui.dialogs.helper_settings.generic.icon"
           )}
         ></ha-icon-input>
-        <paper-input
-          .value=${this._initial}
-          .configValue=${"initial"}
-          @value-changed=${this._valueChanged}
-          .label=${this.hass!.localize(
-            "ui.dialogs.helper_settings.generic.initial_value"
-          )}
-        ></paper-input>
         <div class="row layout horizontal justified">
           ${this.hass!.localize(
             "ui.dialogs.helper_settings.input_datetime.has_time"
@@ -96,6 +88,22 @@ class HaInputDateTimeForm extends LitElement {
             @change=${this._hasDateChanged}
           ></ha-switch>
         </div>
+        ${this.hass.userData?.showAdvanced
+          ? html`
+              <br />
+              ${this.hass!.localize(
+                "ui.dialogs.helper_settings.generic.initial_value_explain"
+              )}
+              <paper-input
+                .value=${this._initial}
+                .configValue=${"initial"}
+                @value-changed=${this._valueChanged}
+                .label=${this.hass!.localize(
+                  "ui.dialogs.helper_settings.generic.initial_value"
+                )}
+              ></paper-input>
+            `
+          : ""}
       </div>
     `;
   }

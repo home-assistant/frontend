@@ -664,15 +664,35 @@
         "generic": {
           "name": "Name",
           "icon": "Icon",
-          "initial_value": "Initial value"
+          "initial_value": "Initial value at start",
+          "initial_value_explain": "The value the element will have when Home Assistant starts. When left empty, the value will be restored to it's previous value."
         },
         "input_datetime": {
           "has_time": "Time",
           "has_date": "Date"
         },
-        "input_numeric": {
-          "min": "Min",
-          "max": "Max"
+        "input_text": {
+          "min": "Minimum lenght",
+          "max": "Maximum lenght",
+          "mode": "Display mode",
+          "text": "Text",
+          "password": "Password",
+          "pattern": "Regex pattern for client-side validation"
+        },
+        "input_number": {
+          "min": "Minimum value",
+          "max": "Maximum value",
+          "mode": "Display mode",
+          "box": "Input field",
+          "slider": "Slider",
+          "step": "Step size of the slider",
+          "unit_of_measurement": "Unit of measurement"
+        },
+        "input_select": {
+          "options": "Options",
+          "add_option": "Add option",
+          "no_options": "There are no options yet.",
+          "add": "Add"
         }
       },
       "options_flow": {

@@ -118,6 +118,9 @@ export const haStyle = css`
   .layout.center-center {
     align-items: center;
   }
+  .layout.bottom {
+    align-items: flex-end;
+  }
   .layout.center-justified,
   .layout.center-center {
     justify-content: center;
