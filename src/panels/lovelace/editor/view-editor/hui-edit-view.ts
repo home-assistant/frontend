@@ -22,6 +22,7 @@ import { haStyleDialog } from "../../../../resources/styles";
 
 import "../../components/hui-entity-editor";
 import "./hui-view-editor";
+import "./hui-view-visibility-editor";
 import { HomeAssistant } from "../../../../types";
 import {
   LovelaceViewConfig,
@@ -125,6 +126,16 @@ export class HuiEditView extends LitElement {
           ></hui-entity-editor>
         `;
         break;
+      case "tab-visibility":
+        content = html`
+          <hui-view-visibility-editor
+            .isNew=${this.viewIndex === undefined}
+            .hass="${this.hass}"
+            .config="${this._config}"
+            @view-visibility-config-changed="${this._viewConfigChanged}"
+          ></hui-view-visibility-editor>
+        `;
+        break;
       case "tab-cards":
         content = html`
           Cards
@@ -150,6 +161,11 @@ export class HuiEditView extends LitElement {
           <paper-tab id="tab-badges"
             >${this.hass!.localize(
               "ui.panel.lovelace.editor.edit_view.tab_badges"
+            )}</paper-tab
+          >
+          <paper-tab id="tab-visibility"
+            >${this.hass!.localize(
+              "ui.panel.lovelace.editor.edit_view.tab_visibility"
             )}</paper-tab
           >
         </paper-tabs>
