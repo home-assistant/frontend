@@ -17,11 +17,12 @@ import {
 } from "../../../data/entity_registry";
 import { HomeAssistant } from "../../../types";
 import { PolymerChangedEvent } from "../../../polymer-types";
+// tslint:disable-next-line: no-duplicate-imports
 import { HaSwitch } from "../../../components/ha-switch";
 import { computeDomain } from "../../../common/entity/compute_domain";
 
-@customElement("ha-registry-id-enable")
-export class HaEntityRegIdEnable extends LitElement {
+@customElement("ha-registry-basic-editor")
+export class HaEntityRegistryBasicEditor extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public entry!: ExtEntityRegistryEntry;
   @property() private _origEntityId!: string;

@@ -6,7 +6,6 @@ import {
   TemplateResult,
   property,
   customElement,
-  PropertyValues,
 } from "lit-element";
 
 import "@polymer/paper-input/paper-input";
@@ -21,24 +20,21 @@ import { haStyle } from "../../../../resources/styles";
 @customElement("ha-input_boolean-form")
 class HaInputBooleanForm extends LitElement {
   @property() public hass!: HomeAssistant;
-  @property() public item?: InputBoolean;
+  @property() public new?: boolean;
+  private _item?: InputBoolean;
   @property() private _name!: string;
   @property() private _icon!: string;
-  @property() private _initial!: boolean;
+  @property() private _initial?: boolean;
 
-  protected updated(changedProperties: PropertyValues) {
-    super.updated(changedProperties);
-    if (!changedProperties.has("item")) {
-      return;
-    }
-    if (this.item) {
-      this._name = this.item.name || "";
-      this._icon = this.item.icon || "";
-      this._initial = this.item.initial || false;
+  set item(item: InputBoolean) {
+    this._item = item;
+    if (item) {
+      this._name = item.name || "";
+      this._icon = item.icon || "";
+      this._initial = item.initial;
     } else {
       this._name = "";
       this._icon = "";
-      this._initial = false;
     }
   }
 
@@ -54,9 +50,11 @@ class HaInputBooleanForm extends LitElement {
           .value=${this._name}
           .configValue=${"name"}
           @value-changed=${this._valueChanged}
-          .label="${this.hass!.localize("ui.panel.config.zone.detail.name")}"
+          .label=${this.hass!.localize(
+            "ui.panel.config.helpers.forms.input_boolean.name"
+          )}
           .errorMessage="${this.hass!.localize(
-            "ui.panel.config.zone.detail.required_error_msg"
+            "ui.panel.config.helpers.forms.required_error_msg"
           )}"
           .invalid=${nameInvalid}
         ></paper-input>
@@ -64,15 +62,23 @@ class HaInputBooleanForm extends LitElement {
           .value=${this._icon}
           .configValue=${"icon"}
           @value-changed=${this._valueChanged}
-          .label="${this.hass!.localize("ui.panel.config.zone.detail.icon")}"
+          .label=${this.hass!.localize(
+            "ui.panel.config.helpers.forms.input_boolean.icon"
+          )}
         ></ha-icon-input>
-        <div class="row layout horizontal justified">
-          Initial value:
-          <ha-switch
-            .checked=${this._initial}
-            @change=${this._initialChanged}
-          ></ha-switch>
-        </div>
+        ${this.hass.userData?.showAdvanced
+          ? html`
+              <div class="row layout horizontal justified">
+                ${this.hass!.localize(
+                  "ui.panel.config.helpers.forms.input_boolean.initial_value"
+                )}:
+                <ha-switch
+                  .checked=${this._initial}
+                  @change=${this._initialChanged}
+                ></ha-switch>
+              </div>
+            `
+          : ""}
       </div>
     `;
   }
@@ -80,15 +86,21 @@ class HaInputBooleanForm extends LitElement {
   private _initialChanged(ev) {
     ev.stopPropagation();
     fireEvent(this, "value-changed", {
-      value: { ...this.item, initial: ev.target.checked },
+      value: { ...this._item, initial: ev.target.checked },
     });
   }
 
   private _valueChanged(ev: CustomEvent) {
+    if (!this.new && !this._item) {
+      return;
+    }
     ev.stopPropagation();
     const configValue = (ev.target as any).configValue;
     const value = ev.detail.value;
-    const newValue = { ...this.item };
+    if (this[`_${configValue}`] === value) {
+      return;
+    }
+    const newValue = { ...this._item };
     if (!value) {
       delete newValue[configValue];
     } else {

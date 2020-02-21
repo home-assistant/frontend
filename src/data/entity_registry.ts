@@ -6,7 +6,7 @@ import { debounce } from "../common/util/debounce";
 export interface EntityRegistryEntry {
   entity_id: string;
   name: string;
-  icon: string;
+  icon?: string;
   platform: string;
   config_entry_id?: string;
   device_id?: string;
@@ -38,7 +38,7 @@ export const computeEntityRegistryName = (
   return state ? computeStateName(state) : null;
 };
 
-export const getEntityRegistryEntry = (
+export const getExtendedEntityRegistryEntry = (
   hass: HomeAssistant,
   entityId: string
 ): Promise<ExtEntityRegistryEntry> =>

@@ -222,7 +222,7 @@ class MoreInfoControls extends LocalizeMixin(EventsMixin(PolymerElement)) {
   }
 
   _computeConfig(hass) {
-    return isComponentLoaded(hass, "config");
+    return hass.user.is_admin && isComponentLoaded(hass, "config");
   }
 
   _computeEdit(hass, stateObj) {

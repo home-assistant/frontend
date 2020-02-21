@@ -59,7 +59,7 @@ export class HaConfigHelpers extends LitElement {
   @property() private _stateItems: HassEntity[] = [];
 
   private _columns = memoize(
-    (_narrow, _language): DataTableColumnContainer => {
+    (_language): DataTableColumnContainer => {
       return {
         icon: {
           title: "",
@@ -75,6 +75,13 @@ export class HaConfigHelpers extends LitElement {
           sortable: true,
           filterable: true,
           direction: "asc",
+          template: (name, item: any) =>
+            html`
+              ${name}
+              <div style="color: var(--secondary-text-color)">
+                ${item.entity_id}
+              </div>
+            `,
         },
         type: {
           title: this.hass.localize(
@@ -97,7 +104,8 @@ export class HaConfigHelpers extends LitElement {
       return {
         id: state.entity_id,
         icon: state.attributes.icon,
-        name: state.attributes.friendly_name || state.entity_id,
+        name: state.attributes.friendly_name || "",
+        entity_id: state.entity_id,
         editable: state.attributes.editable,
         type: computeStateDomain(state),
       };
@@ -118,7 +126,7 @@ export class HaConfigHelpers extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${configSections.automation}
-        .columns=${this._columns(this.narrow, this.hass.language)}
+        .columns=${this._columns(this.hass.language)}
         .data=${this._getItems(this._stateItems)}
         @row-click=${this._openEditDialog}
       >
@@ -160,7 +168,7 @@ export class HaConfigHelpers extends LitElement {
       return true;
     });
 
-    if (changed) {
+    if (changed || this._stateItems.length !== tempStates.length) {
       this._stateItems = tempStates;
     }
   }

@@ -6,46 +6,46 @@ import {
   LitElement,
   property,
   PropertyValues,
-  TemplateResult,
   query,
+  TemplateResult,
 } from "lit-element";
-import { ExtEntityRegistryEntry } from "../../../data/entity_registry";
-import { HomeAssistant } from "../../../types";
-import { isComponentLoaded } from "../../../common/config/is_component_loaded";
-import { showConfirmationDialog } from "../../../dialogs/generic/show-dialog-box";
-import { fireEvent } from "../../../common/dom/fire_event";
-import "../entities/entity-registry-id-enable";
-import "./forms/ha-input_boolean-form";
-import { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
-import { Helper } from "./ha-config-helpers";
-import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
+import { isComponentLoaded } from "../../../../../common/config/is_component_loaded";
+import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
+import { fireEvent } from "../../../../../common/dom/fire_event";
+import { HaPaperDialog } from "../../../../../components/dialog/ha-paper-dialog";
+import { ExtEntityRegistryEntry } from "../../../../../data/entity_registry";
 import {
+  deleteInputBoolean,
   fetchInputBoolean,
   updateInputBoolean,
-  deleteInputBoolean,
-} from "../../../data/input_boolean";
+} from "../../../../../data/input_boolean";
 import {
-  fetchInputText,
-  updateInputText,
-  deleteInputText,
-} from "../../../data/input_text";
-import {
-  fetchInputNumber,
-  updateInputNumber,
-  deleteInputNumber,
-} from "../../../data/input_number";
-import {
+  deleteInputDateTime,
   fetchInputDateTime,
   updateInputDateTime,
-  deleteInputDateTime,
-} from "../../../data/input_datetime";
+} from "../../../../../data/input_datetime";
 import {
+  deleteInputNumber,
+  fetchInputNumber,
+  updateInputNumber,
+} from "../../../../../data/input_number";
+import {
+  deleteInputSelect,
   fetchInputSelect,
   updateInputSelect,
-  deleteInputSelect,
-} from "../../../data/input_select";
+} from "../../../../../data/input_select";
+import {
+  deleteInputText,
+  fetchInputText,
+  updateInputText,
+} from "../../../../../data/input_text";
+import { showConfirmationDialog } from "../../../../../dialogs/generic/show-dialog-box";
+import { HomeAssistant } from "../../../../../types";
+import "../../../helpers/forms/ha-input_boolean-form";
+import { Helper } from "../../../helpers/ha-config-helpers";
+import "../../entity-registry-basic-editor";
 // tslint:disable-next-line: no-duplicate-imports
-import { HaEntityRegIdEnable } from "../entities/entity-registry-id-enable";
+import { HaEntityRegistryBasicEditor } from "../../entity-registry-basic-editor";
 
 const HELPERS = {
   input_boolean: {
@@ -75,21 +75,21 @@ const HELPERS = {
   },
 };
 
-@customElement("entity-platform-helper-tab")
+@customElement("entity-settings-helper-tab")
 export class EntityRegistrySettingsHelper extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public entry!: ExtEntityRegistryEntry;
   @property() public dialogElement!: HaPaperDialog;
-  @property() public platform!: string;
   @property() private _error?: string;
   @property() private _item?: Helper | null;
   @property() private _submitting?: boolean;
   @property() private _componentLoaded?: boolean;
-  @query("ha-registry-id-enable") private _registryEditor?: HaEntityRegIdEnable;
+  @query("ha-registry-basic-editor")
+  private _registryEditor?: HaEntityRegistryBasicEditor;
 
   protected firstUpdated(changedProperties: PropertyValues) {
     super.firstUpdated(changedProperties);
-    this._componentLoaded = isComponentLoaded(this.hass, this.platform);
+    this._componentLoaded = isComponentLoaded(this.hass, this.entry.platform);
   }
 
   protected updated(changedProperties: PropertyValues) {
@@ -108,9 +108,9 @@ export class EntityRegistrySettingsHelper extends LitElement {
     if (!this._componentLoaded) {
       return html`
         <paper-dialog-scrollable .dialogElement=${this.dialogElement}>
-          The ${this.platform} component is not loaded, please add it your
+          The ${this.entry.platform} component is not loaded, please add it your
           configuration. Either by adding 'default_config:' or
-          '${this.platform}:'.
+          '${this.entry.platform}:'.
         </paper-dialog-scrollable>
       `;
     }
@@ -131,16 +131,16 @@ export class EntityRegistrySettingsHelper extends LitElement {
           : ""}
         <div class="form">
           <div @value-changed=${this._valueChanged}>
-            ${dynamicElement(`ha-${this.platform}-form`, {
+            ${dynamicElement(`ha-${this.entry.platform}-form`, {
               hass: this.hass,
               item: this._item,
               entry: this.entry,
             })}
           </div>
-          <ha-registry-id-enable
+          <ha-registry-basic-editor
             .hass=${this.hass}
             .entry=${this.entry}
-          ></ha-registry-id-enable>
+          ></ha-registry-basic-editor>
         </div>
       </paper-dialog-scrollable>
       <div class="buttons">
@@ -167,7 +167,7 @@ export class EntityRegistrySettingsHelper extends LitElement {
   }
 
   private async _getItem() {
-    const items = await HELPERS[this.platform].fetch(this.hass!);
+    const items = await HELPERS[this.entry.platform].fetch(this.hass!);
     this._item = items.find((item) => item.id === this.entry.unique_id) || null;
   }
 
@@ -177,12 +177,13 @@ export class EntityRegistrySettingsHelper extends LitElement {
     }
     this._submitting = true;
     try {
-      await HELPERS[this.platform].update(
+      await HELPERS[this.entry.platform].update(
         this.hass!,
         this._item.id,
         this._item
       );
       await this._registryEditor?.updateEntry();
+      fireEvent(this, "close-dialog");
     } catch (err) {
       this._error = err.message || "Unknown error";
     } finally {
@@ -207,7 +208,7 @@ export class EntityRegistrySettingsHelper extends LitElement {
     this._submitting = true;
 
     try {
-      await HELPERS[this.platform].delete(this.hass!, this._item.id);
+      await HELPERS[this.entry.platform].delete(this.hass!, this._item.id);
       fireEvent(this, "close-dialog");
     } finally {
       this._submitting = false;

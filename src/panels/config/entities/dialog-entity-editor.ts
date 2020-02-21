@@ -13,7 +13,7 @@ import {
   TemplateResult,
 } from "lit-element";
 import { cache } from "lit-html/directives/cache";
-import { PLATFORMS_WITH_SETTINGS_TAB } from "../../../common/const";
+import { PLATFORMS_WITH_SETTINGS_TAB } from "./const";
 import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -24,7 +24,7 @@ import "../../../components/ha-related-items";
 import {
   EntityRegistryEntry,
   ExtEntityRegistryEntry,
-  getEntityRegistryEntry,
+  getExtendedEntityRegistryEntry,
 } from "../../../data/entity_registry";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
@@ -51,7 +51,7 @@ export class DialogEntityEditor extends LitElement {
     | null;
   @property() private _curTab?: string;
   @property() private _extraTabs: Tabs = {};
-  @property() private _settingsElementTag = "";
+  @property() private _settingsElementTag?: string;
   @query("ha-paper-dialog") private _dialog!: HaPaperDialog;
   private _curTabIndex = 0;
 
@@ -60,7 +60,7 @@ export class DialogEntityEditor extends LitElement {
   ): Promise<void> {
     this._params = params;
     this._entry = undefined;
-    this._settingsElementTag = "entity-registry-settings";
+    this._settingsElementTag = undefined;
     this._extraTabs = {};
     this._getEntityReg();
     await this.updateComplete;
@@ -131,14 +131,16 @@ export class DialogEntityEditor extends LitElement {
         ${cache(
           this._curTab === "tab-settings"
             ? entry
-              ? html`
-                  ${dynamicElement(this._settingsElementTag, {
-                    hass: this.hass,
-                    entry,
-                    entityId,
-                    dialogElement: this._dialog,
-                  })}
-                `
+              ? this._settingsElementTag
+                ? html`
+                    ${dynamicElement(this._settingsElementTag, {
+                      hass: this.hass,
+                      entry,
+                      entityId,
+                      dialogElement: this._dialog,
+                    })}
+                  `
+                : ""
               : html`
                   <paper-dialog-scrollable>
                     ${this.hass.localize(
@@ -156,16 +158,6 @@ export class DialogEntityEditor extends LitElement {
                   ></ha-related-items>
                 </paper-dialog-scrollable>
               `
-            : this._curTab &&
-              Object.keys(this._extraTabs).includes(this._curTab)
-            ? html`
-                ${dynamicElement(this._extraTabs[this._curTab].component, {
-                  hass: this.hass,
-                  entry,
-                  entityId,
-                  dialogElement: this._dialog,
-                })}
-              `
             : html``
         )}
       </ha-paper-dialog>
@@ -174,7 +166,7 @@ export class DialogEntityEditor extends LitElement {
 
   private async _getEntityReg() {
     try {
-      this._entry = await getEntityRegistryEntry(
+      this._entry = await getExtendedEntityRegistryEntry(
         this.hass,
         this._params!.entity_id
       );
@@ -201,22 +193,15 @@ export class DialogEntityEditor extends LitElement {
     if (!this._entry) {
       return;
     }
-    if (PLATFORMS_WITH_SETTINGS_TAB.includes(this._entry.platform)) {
-      await import(`./editor-tabs/entity-platform-tab-${this._entry.platform}`);
-      this._settingsElementTag = `entity-platform-tab-${this._entry.platform}`;
+    if (
+      !Object.keys(PLATFORMS_WITH_SETTINGS_TAB).includes(this._entry.platform)
+    ) {
+      this._settingsElementTag = "entity-registry-settings";
+      return;
     }
-  }
-
-  private async _registerTab(
-    key: string,
-    component: string,
-    translationKey: string
-  ): Promise<void> {
-    await import(`./editor-tabs/${component}`);
-    this._extraTabs = {
-      ...this._extraTabs,
-      [key]: { component, translationKey },
-    };
+    const tag = PLATFORMS_WITH_SETTINGS_TAB[this._entry.platform];
+    await import(`./editor-tabs/settings/${tag}`);
+    this._settingsElementTag = tag;
   }
 
   private _openMoreInfo(): void {

@@ -775,14 +775,22 @@
               "type": "Type",
               "editable": "Editable"
             },
-            "add_helper": "Add helper",
-            "not_editable": "Not editable",
-            "not_editable_text": "This entity can't be changed from the UI because it is defined in configuration.yaml."
+            "add_helper": "Add helper"
           },
           "dialog": {
             "create": "Create",
             "add_helper": "Add helper",
             "add_platform": "Add {platform}"
+          },
+          "forms": {
+            "not_editable": "Not editable",
+            "not_editable_text": "This entity can't be changed from the UI because it is defined in configuration.yaml.",
+            "required_error_msg": "This field is required",
+            "input_boolean": {
+              "name": "Name",
+              "icon": "Icon",
+              "initial_value": "Initail value"
+            }
           }
         },
         "core": {

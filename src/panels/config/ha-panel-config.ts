@@ -7,8 +7,8 @@ import { HomeAssistant, Route } from "../../types";
 import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
 import { listenMediaQuery } from "../../common/dom/media_query";
 import {
-  getOptimisticFrontendUserDataCollection,
   CoreFrontendUserData,
+  subscribeFrontendUserData,
 } from "../../data/frontend";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { PolymerElement } from "@polymer/polymer";
@@ -282,8 +282,6 @@ class HaPanelConfig extends HassRouterPage {
 
   @property() private _wideSidebar: boolean = false;
   @property() private _wide: boolean = false;
-  @property() private _coreUserData?: CoreFrontendUserData;
-  @property() private _showAdvanced = false;
   @property() private _cloudStatus?: CloudStatus;
 
   private _listeners: Array<() => void> = [];
@@ -298,17 +296,6 @@ class HaPanelConfig extends HassRouterPage {
     this._listeners.push(
       listenMediaQuery("(min-width: 1296px)", (matches) => {
         this._wideSidebar = matches;
-      })
-    );
-    this._listeners.push(
-      getOptimisticFrontendUserDataCollection(
-        this.hass.connection,
-        "core"
-      ).subscribe((coreUserData) => {
-        this._coreUserData = coreUserData || {};
-        this._showAdvanced = !!(
-          this._coreUserData && this._coreUserData.showAdvanced
-        );
       })
     );
   }
@@ -351,7 +338,7 @@ class HaPanelConfig extends HassRouterPage {
       (el as PolymerElement).setProperties({
         route: this.routeTail,
         hass: this.hass,
-        showAdvanced: this._showAdvanced,
+        showAdvanced: Boolean(this.hass.userData?.showAdvanced),
         isWide,
         narrow: this.narrow,
         cloudStatus: this._cloudStatus,
@@ -359,7 +346,7 @@ class HaPanelConfig extends HassRouterPage {
     } else {
       el.route = this.routeTail;
       el.hass = this.hass;
-      el.showAdvanced = this._showAdvanced;
+      el.showAdvanced = Boolean(this.hass.userData?.showAdvanced);
       el.isWide = isWide;
       el.narrow = this.narrow;
       el.cloudStatus = this._cloudStatus;

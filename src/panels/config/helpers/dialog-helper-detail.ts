@@ -17,8 +17,10 @@ import { createInputDateTime } from "../../../data/input_datetime";
 import { createInputSelect } from "../../../data/input_select";
 import { isComponentLoaded } from "../../../common/config/is_component_loaded";
 import { Helper } from "./ha-config-helpers";
-
+import "@polymer/paper-item/paper-icon-item";
 import "./forms/ha-input_boolean-form";
+import { domainIcon } from "../../../common/entity/domain_icon";
+import { classMap } from "lit-html/directives/class-map";
 
 const HELPERS = {
   input_boolean: createInputBoolean,
@@ -54,6 +56,7 @@ export class DialogHelperDetail extends LitElement {
       <ha-dialog
         .open=${this._opened}
         @closing=${this.closeDialog}
+        class=${classMap({ "button-left": !this._platform })}
         .heading=${this._platform
           ? this.hass.localize(
               "ui.panel.config.helpers.dialog.add_platform",
@@ -75,6 +78,7 @@ export class DialogHelperDetail extends LitElement {
                 ${dynamicElement(`ha-${this._platform}-form`, {
                   hass: this.hass,
                   item: this._item,
+                  new: true,
                 })}
               </div>
               <mwc-button
@@ -84,23 +88,37 @@ export class DialogHelperDetail extends LitElement {
               >
                 ${this.hass!.localize("ui.panel.config.helpers.dialog.create")}
               </mwc-button>
+              <mwc-button
+                slot="secondaryAction"
+                @click="${this._goBack}"
+                .disabled=${this._submitting}
+              >
+                Back
+              </mwc-button>
             `
           : html`
-              <div class="container">
-                ${Object.keys(HELPERS).map((platform: string) => {
-                  return html`
-                    <mwc-button
-                      .disabled=${!isComponentLoaded(this.hass, platform)}
-                      @click="${this._platformPicked}"
-                      .platform="${platform}"
-                    >
+              ${Object.keys(HELPERS).map((platform: string) => {
+                return html`
+                  <paper-icon-item
+                    .disabled=${!isComponentLoaded(this.hass, platform)}
+                    @click="${this._platformPicked}"
+                    .platform="${platform}"
+                  >
+                    <ha-icon
+                      slot="item-icon"
+                      .icon=${domainIcon(platform)}
+                    ></ha-icon>
+                    <span class="item-text">
                       ${this.hass.localize(
                         `ui.panel.config.helpers.types.${platform}`
                       ) || platform}
-                    </mwc-button>
-                  `;
-                })}
-              </div>
+                    </span>
+                  </paper-icon-item>
+                `;
+              })}
+              <mwc-button slot="primaryAction" @click="${this.closeDialog}">
+                ${this.hass!.localize("ui.common.cancel")}
+              </mwc-button>
             `}
       </ha-dialog>
     `;
@@ -130,11 +148,18 @@ export class DialogHelperDetail extends LitElement {
     this._platform = (ev.currentTarget! as any).platform;
   }
 
+  private _goBack() {
+    this._platform = undefined;
+  }
+
   static get styles(): CSSResult {
     return css`
       ha-dialog {
         --mdc-dialog-title-ink-color: var(--primary-text-color);
         --justify-action-buttons: space-between;
+      }
+      ha-dialog.button-left {
+        --justify-action-buttons: flex-start;
       }
       @media only screen and (min-width: 600px) {
         ha-dialog {
@@ -154,10 +179,8 @@ export class DialogHelperDetail extends LitElement {
       .error {
         color: var(--google-red-500);
       }
-      .container {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-        grid-gap: 8px 8px;
+      paper-icon-item {
+        cursor: pointer;
       }
     `;
   }
