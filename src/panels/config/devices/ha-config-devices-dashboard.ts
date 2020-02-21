@@ -6,8 +6,6 @@ import {
   TemplateResult,
   property,
   customElement,
-  CSSResult,
-  css,
 } from "lit-element";
 import { HomeAssistant, Route } from "../../../types";
 import {

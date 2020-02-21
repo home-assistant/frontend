@@ -6,10 +6,6 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { HomeAssistant, Route } from "../../types";
 import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
 import { listenMediaQuery } from "../../common/dom/media_query";
-import {
-  CoreFrontendUserData,
-  subscribeFrontendUserData,
-} from "../../data/frontend";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { PolymerElement } from "@polymer/polymer";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
