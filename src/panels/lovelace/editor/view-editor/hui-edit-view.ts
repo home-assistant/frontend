@@ -142,8 +142,16 @@ export class HuiEditView extends LitElement {
           .selected="${this._curTabIndex}"
           @selected-item-changed="${this._handleTabSelected}"
         >
-          <paper-tab id="tab-settings">Settings</paper-tab>
-          <paper-tab id="tab-badges">Badges</paper-tab>
+          <paper-tab id="tab-settings"
+            >${this.hass!.localize(
+              "ui.panel.lovelace.editor.edit_view.tab_settings"
+            )}</paper-tab
+          >
+          <paper-tab id="tab-badges"
+            >${this.hass!.localize(
+              "ui.panel.lovelace.editor.edit_view.tab_badges"
+            )}</paper-tab
+          >
         </paper-tabs>
         <paper-dialog-scrollable> ${content} </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
