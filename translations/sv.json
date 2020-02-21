@@ -1916,6 +1916,11 @@
                         "toggle": "Växla {name}",
                         "url": "Öppna fönster till {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant stötte på problem när din konfiguration laddades och körs nu i felsäkert läge. Ta en titt i felloggen för att se vad som gick fel.",
+                        "header": "Felsäkert läge aktiverat",
+                        "show_errors": "Visa fel"
+                    },
                     "shopping-list": {
                         "add_item": "Lägg till objekt",
                         "checked_items": "Markerade objekt",
