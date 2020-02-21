@@ -90,9 +90,9 @@ class HuiStateLabelElement extends LitElement implements LovelaceElement {
           hasAction(this._config.tap_action) ? "0" : undefined
         )}
       >
-        ${this._config.prefix}${attribute
-          ? attributeDisplay
-          : stateDisplay}${this._config.suffix}
+        ${this._config.prefix}${!attribute
+          ? stateDisplay
+          : attributeDisplay}${this._config.suffix}
       </div>
     `;
   }
