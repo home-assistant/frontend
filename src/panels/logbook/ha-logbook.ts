@@ -22,7 +22,6 @@ class HaLogbook extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public entries: LogbookEntry[] = [];
   @property({ attribute: "rtl", type: Boolean, reflect: true })
-  // @ts-ignore
   private _rtl = false;
 
   protected shouldUpdate(changedProps: PropertyValues) {
@@ -160,6 +159,7 @@ class HaLogbook extends LitElement {
         contain: strict;
         height: 100%;
         overflow: auto;
+        padding: 0 16px;
       }
 
       .uni-virtualizer-host > * {
