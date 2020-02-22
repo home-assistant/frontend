@@ -51,8 +51,8 @@ export const updateEntityRegistryEntry = (
   hass: HomeAssistant,
   entityId: string,
   updates: Partial<EntityRegistryEntryUpdateParams>
-): Promise<EntityRegistryEntry> =>
-  hass.callWS<EntityRegistryEntry>({
+): Promise<ExtEntityRegistryEntry> =>
+  hass.callWS({
     type: "config/entity_registry/update",
     entity_id: entityId,
     ...updates,
