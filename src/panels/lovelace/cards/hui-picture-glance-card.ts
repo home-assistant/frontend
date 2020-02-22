@@ -256,11 +256,17 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
             `
           : html`
               <div class="state">
-                ${computeStateDisplay(
-                  this.hass!.localize,
-                  stateObj,
-                  this.hass!.language
-                )}
+                ${entityConf.attribute
+                  ? html`
+                      ${entityConf.prefix}${stateObj.attributes[
+                        entityConf.attribute
+                      ]}${entityConf.suffix}
+                    `
+                  : computeStateDisplay(
+                      this.hass!.localize,
+                      stateObj,
+                      this.hass!.language
+                    )}
               </div>
             `}
       </div>

@@ -97,6 +97,9 @@ export interface ConfigEntity extends EntityConfig {
 
 export interface PictureGlanceEntityConfig extends ConfigEntity {
   show_state?: boolean;
+  attribute?: string;
+  prefix?: string;
+  suffix?: string;
 }
 
 export interface GlanceConfigEntity extends ConfigEntity {
