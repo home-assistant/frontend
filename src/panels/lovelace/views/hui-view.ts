@@ -33,7 +33,8 @@ import { createCardElement } from "../create-element/create-card-element";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
 
-let murriGrid: any;
+let muuri: any;
+let installResizeObserver: any;
 
 let options = {
   dragEnabled: true,
@@ -49,8 +50,6 @@ let options = {
   layoutEasing: "ease",
 };
 
-let editCodeLoaded = false;
-
 export class HUIView extends LitElement {
   @property() public hass?: HomeAssistant;
 
@@ -63,8 +62,8 @@ export class HUIView extends LitElement {
   @property() private _cards: Array<LovelaceCard | HuiErrorCard> = [];
 
   @property() private _badges: LovelaceBadge[] = [];
+  @property() private editCodeLoaded: boolean = false;
   private _grids: any[] = [];
-  // @ts-ignore
   private _resizeObserver?: ResizeObserver;
   private _debouncedResizeListener = debounce(
     () => {
@@ -248,14 +247,13 @@ export class HUIView extends LitElement {
     const hass = this.hass!;
     const lovelace = this.lovelace!;
 
-    if (lovelace.editMode && !editCodeLoaded) {
+    if (lovelace.editMode && !this.editCodeLoaded) {
       import(
         /* webpackChunkName: "hui-view-editable" */ "./hui-view-editable"
       ).then((editCode) => {
-        // @ts-ignore
-        murriGrid = editCode.Muuri;
-        editCodeLoaded = true;
-        this.requestUpdate();
+        muuri = editCode.Muuri;
+        installResizeObserver = editCode.install;
+        this.editCodeLoaded = true;
       });
     }
 
@@ -281,12 +279,19 @@ export class HUIView extends LitElement {
     }
 
     if (editModeChanged && !lovelace!.editMode) {
-      this._resizeObserver.disconnect();
+      this._grids.forEach((grid) => {
+        grid.destroy();
+      });
       this._grids = [];
+
+      if (!this._resizeObserver) {
+        return;
+      }
+      this._resizeObserver.disconnect();
     }
 
     if (
-      (configChanged && !lovelace.editMode) ||
+      configChanged ||
       editModeChanged ||
       changedProperties.has("columns") ||
       changedProperties.has("editCodeLoaded")
@@ -371,7 +376,7 @@ export class HUIView extends LitElement {
       columns.push(columnEl);
     }
 
-    if (this.lovelace!.editMode) {
+    if (this.lovelace!.editMode && this.editCodeLoaded) {
       this._attachObserver();
 
       options = {
@@ -385,7 +390,7 @@ export class HUIView extends LitElement {
 
       columns.forEach((columnEl) => {
         this._grids.push(
-          new murriGrid(columnEl, options) // The events here make sure the card doesnt grow to the size of the window
+          new muuri(columnEl, options) // The events here make sure the card doesnt grow to the size of the window
             .on("dragStart", (item) => {
               item.getElement().style.width = item.getWidth() + "px";
               item.getElement().style.height = item.getHeight() + "px";
@@ -419,7 +424,7 @@ export class HUIView extends LitElement {
       const itemContent = document.createElement("div");
       itemContent.classList.add("item-content");
 
-      if (!this.lovelace!.editMode) {
+      if (!this.lovelace!.editMode || !this.editCodeLoaded) {
         itemContent.appendChild(element);
         item.appendChild(itemContent);
         columns[cardIndex % this.columns!].appendChild(item);
@@ -434,11 +439,7 @@ export class HUIView extends LitElement {
         itemContent.appendChild(wrapper);
         item.cardConfig = cardConfig;
 
-        if (this._resizeObserver) {
-          this._resizeObserver.observe(item);
-        } else {
-          item.addEventListener("resize", this._debouncedResizeListener);
-        }
+        this._resizeObserver!.observe(item);
 
         item.appendChild(itemContent);
         this._grids[cardIndex % this.columns!].add(item);
@@ -518,13 +519,13 @@ export class HUIView extends LitElement {
     // Observe changes to card size and refreshes grids
     // Uses ResizeObserver in Chrome, otherwise window resize event
 
-    // @ts-ignore
-    if (typeof ResizeObserver === "function") {
-      // @ts-ignore
-      this._resizeObserver = new ResizeObserver(() =>
-        this._debouncedResizeListener()
-      );
+    if (typeof ResizeObserver !== "function") {
+      installResizeObserver();
     }
+
+    this._resizeObserver = new ResizeObserver(() =>
+      this._debouncedResizeListener()
+    );
   }
 }
 

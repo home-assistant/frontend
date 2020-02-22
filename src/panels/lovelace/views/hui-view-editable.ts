@@ -2,4 +2,6 @@
 import "../../../components/ha-fab";
 import "../components/hui-card-options";
 import Muuri from "muuri";
-export default Muuri;
+import { install } from "resize-observer";
+
+export { Muuri, install };
