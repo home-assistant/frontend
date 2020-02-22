@@ -22,6 +22,7 @@ class HaLogbook extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public entries: LogbookEntry[] = [];
   @property({ attribute: "rtl", type: Boolean, reflect: true })
+  // @ts-ignore
   private _rtl = false;
 
   protected shouldUpdate(changedProps: PropertyValues) {
