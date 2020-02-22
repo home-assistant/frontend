@@ -12,31 +12,36 @@ import {
 import "../components/hui-generic-entity-row";
 import "../components/hui-warning";
 
-import { LovelaceRow, EntityConfig } from "./types";
+import { LovelaceRow, WeatherRowConfig } from "./types";
 import { HomeAssistant } from "../../../types";
-import { HassEntity } from "home-assistant-js-websocket";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { classMap } from "lit-html/directives/class-map";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { ifDefined } from "lit-html/directives/if-defined";
 import { DOMAINS_HIDE_MORE_INFO } from "../../../common/const";
-import { EntitiesCardEntityConfig } from "../cards/types";
 import { computeDomain } from "../../../common/entity/compute_domain";
 import { computeStateName } from "../../../common/entity/compute_state_name";
+import { handleAction } from "../common/handle-action";
+import { ActionHandlerEvent } from "../../../data/lovelace";
+import { weatherIcons, cardinalDirections } from "../../../data/weather";
 
 @customElement("hui-weather-entity-row")
 class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
   @property() public hass?: HomeAssistant;
 
-  @property() private _config?: EntitiesCardEntityConfig;
+  @property() private _config?: WeatherRowConfig;
 
-  public setConfig(config: EntitiesCardEntityConfig): void {
+  public setConfig(config: WeatherRowConfig): void {
     if (!config || !config.entity) {
       throw new Error("Invalid Configuration: 'entity' required");
     }
 
-    this._config = config;
+    this._config = {
+      primary_attribute: "extrema",
+      secondary_attribute: "humidity",
+      ...config,
+    };
   }
 
   protected shouldUpdate(changedProps: PropertyValues): boolean {
@@ -62,63 +67,174 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
       `;
     }
 
+    const pointer =
+      (this._config.tap_action && this._config.tap_action.action !== "none") ||
+      (this._config.entity &&
+        !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this._config.entity)));
+
     return html`
-      <hui-generic-entity-row
-        .hass="${this.hass}"
-        .config="${this._config}"
-        .showSecondary=${false}
-        >${stateObj.attributes.temperature} ${this.getUnit("temperature")}
-        <div slot="secondary">
+      <state-badge
+        class=${classMap({
+          pointer,
+        })}
+        .hass=${this.hass}
+        .stateObj=${stateObj}
+        .overrideIcon=${weatherIcons[stateObj.state]}
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config!.hold_action),
+          hasDoubleClick: hasAction(this._config!.double_tap_action),
+        })}
+        tabindex=${ifDefined(pointer ? "0" : undefined)}
+      ></state-badge>
+      <div
+        class="info ${classMap({
+          pointer,
+        })}"
+        @action=${this._handleAction}
+        .actionHandler=${actionHandler({
+          hasHold: hasAction(this._config!.hold_action),
+          hasDoubleClick: hasAction(this._config!.double_tap_action),
+        })}
+      >
+        <div>
+          ${stateObj.attributes.temperature} ${this._getUnit("temperature")}
+          ${this._config.name || computeStateName(stateObj)}
+        </div>
+        <div class="secondary">
           ${this.hass.localize(`state.weather.${stateObj.state}`) ||
             stateObj.state}
         </div>
-        <div>test</div>
-      </hui-generic-entity-row>
+      </div>
+      <div class="info flex-end">
+        <div>
+          ${this._getAttribute(stateObj, this._config.primary_attribute!)}
+        </div>
+        <div>
+          ${this._getAttribute(stateObj, this._config.secondary_attribute!)}
+        </div>
+      </div>
     `;
   }
 
-  private getUnit(measure: string): string {
+  private _getAttribute(stateObj: any, attribute: string): TemplateResult {
+    const todayForecast = stateObj.attributes.forecast[0];
+
+    if (attribute === "extrema") {
+      return this._getExtrema(todayForecast);
+    }
+
+    const value = todayForecast[attribute]
+      ? todayForecast[attribute]
+      : stateObj.attributes[attribute];
+
+    if (!value) {
+      return html``;
+    }
+
+    if (attribute === "wind_bearing") {
+      return this._getWindBearing(value);
+    }
+
+    return html`
+      ${value} ${this._getUnit(attribute)}
+    `;
+  }
+
+  private _getExtrema(todayForecast): TemplateResult {
+    const low = todayForecast.templow;
+    const high = todayForecast.temperature;
+    const unit = this._getUnit("temperature");
+
+    return html`
+      ${low
+        ? html`
+            ${low} ${unit}
+          `
+        : ""}
+      ${low && high ? " / " : ""}
+      ${high
+        ? html`
+            ${high} ${unit}
+          `
+        : ""}
+    `;
+  }
+
+  private _windBearingToText(degree: string): string {
+    const degreenum = parseInt(degree, 10);
+    if (isFinite(degreenum)) {
+      // tslint:disable-next-line: no-bitwise
+      return cardinalDirections[(((degreenum + 11.25) / 22.5) | 0) % 16];
+    }
+    return degree;
+  }
+
+  private _getWindBearing(bearing: string): TemplateResult {
+    if (bearing != null) {
+      const cardinalDirection = this._windBearingToText(bearing);
+      return html`
+        (${this.hass!.localize(
+          `ui.card.weather.cardinal_direction.${cardinalDirection.toLowerCase()}`
+        ) || cardinalDirection})
+      `;
+    }
+    return html``;
+  }
+
+  private _getUnit(measure: string): string {
     const lengthUnit = this.hass!.config.unit_system.length || "";
     switch (measure) {
-      case "air_pressure":
+      case "pressure":
         return lengthUnit === "km" ? "hPa" : "inHg";
+      case "wind_speed":
+        return `${lengthUnit}/h`;
       case "length":
         return lengthUnit;
       case "precipitation":
         return lengthUnit === "km" ? "mm" : "in";
+      case "humidity":
+      case "precipitation_probability":
+        return "%";
       default:
         return this.hass!.config.unit_system[measure] || "";
     }
   }
 
+  private _handleAction(ev: ActionHandlerEvent) {
+    handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+
   static get styles(): CSSResult {
     return css`
-      /* :host {
+      :host {
         display: flex;
         align-items: center;
-      } */
-
-      .flex {
-        flex: 1;
-        margin-left: 16px;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        min-width: 0;
       }
+
+      .pointer {
+        cursor: pointer;
+      }
+
       .info {
         flex: 1 0 60px;
+        margin-left: 16px;
+        display: flex;
+        flex-flow: column;
+        justify-content: space-between;
+        min-height: 40px;
+        padding: 4px 0px;
       }
+
       .info,
       .info > * {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
       }
+
       .secondary {
-        display: block;
         color: var(--secondary-text-color);
-        margin-left: 0;
       }
 
       state-badge {
@@ -131,8 +247,8 @@ class HuiWeatherEntityRow extends LitElement implements LovelaceRow {
         border-radius: 100%;
       }
 
-      ha-icon {
-        color: var(--paper-item-icon-color);
+      .flex-end {
+        align-items: flex-end;
       }
     `;
   }

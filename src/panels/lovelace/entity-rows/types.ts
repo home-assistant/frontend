@@ -1,5 +1,6 @@
 import { HomeAssistant } from "../../../types";
 import { Condition } from "../common/validate-condition";
+import { EntitiesCardEntityConfig } from "../cards/types";
 
 export interface EntityConfig {
   entity: string;
@@ -58,4 +59,9 @@ export interface LovelaceRow extends HTMLElement {
 export interface ConditionalRowConfig extends EntityConfig {
   row: EntityConfig;
   conditions: Condition[];
+}
+
+export interface WeatherRowConfig extends EntitiesCardEntityConfig {
+  primary_attribute?: string;
+  secondary_attribute?: string;
 }

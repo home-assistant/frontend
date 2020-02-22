@@ -4,6 +4,7 @@ import "../entity-rows/hui-script-entity-row";
 import "../entity-rows/hui-sensor-entity-row";
 import "../entity-rows/hui-text-entity-row";
 import "../entity-rows/hui-toggle-entity-row";
+import "../entity-rows/hui-weather-entity-row";
 import "../special-rows/hui-call-service-row";
 import { EntityConfig } from "../entity-rows/types";
 import { createLovelaceElement } from "./create-element-base";
@@ -15,6 +16,7 @@ const ALWAYS_LOADED_TYPES = new Set([
   "sensor-entity",
   "text-entity",
   "toggle-entity",
+  "weather-entity",
   "call-service",
 ]);
 const LAZY_LOAD_TYPES = {
@@ -62,6 +64,7 @@ const DOMAIN_TO_ELEMENT_TYPE = {
   // water heater should get it's own row.
   water_heater: "climate",
   input_datetime: "input-datetime",
+  weather: "weather",
 };
 
 export const createRowElement = (config: EntityConfig) =>
