@@ -581,6 +581,7 @@
                 "entity": "Kapcsolódó entitások",
                 "group": "A következő csoportok része",
                 "integration": "Integráció",
+                "no_related_found": "Nem található kapcsolódó elem.",
                 "scene": "A következő jelenetek része",
                 "script": "A következő szkriptek része"
             },
@@ -630,6 +631,7 @@
                     "unavailable": "Ez az entitás jelenleg nem elérhető.",
                     "update": "FRISSÍTÉS"
                 },
+                "no_unique_id": "Ez az entitás nem rendelkezik egyedi azonosítóval, ezért a beállítások nem kezelhetők a felhasználói felületről.",
                 "related": "Kapcsolatok",
                 "settings": "Beállítások"
             },
@@ -1323,6 +1325,7 @@
                         "filter": {
                             "filter": "Szűrő",
                             "show_disabled": "Letiltott entitások megjelenítése",
+                            "show_readonly": "Csak olvasható entitások megjelenítése",
                             "show_unavailable": "Nem elérhető entitások megjelenítése"
                         },
                         "header": "Entitások",
@@ -1346,6 +1349,7 @@
                         "status": {
                             "disabled": "Letiltott",
                             "ok": "Ok",
+                            "readonly": "Csak olvasható",
                             "unavailable": "Nem elérhető"
                         },
                         "unavailable": "(nem elérhető)"
@@ -1702,6 +1706,9 @@
                         "update": "Frissítés"
                     },
                     "edit_home_zone": "Az otthona címét az általános konfigurációnál változtathatja meg.",
+                    "edit_home_zone_narrow": "A otthoni zóna sugara még nem szerkeszthető a frontendről. A hely az általános konfigurációtól módosítható.",
+                    "go_to_core_config": "Ugrás az általános konfigurációra?",
+                    "home_zone_core_config": "Az otthoni zóna helye szerkeszthető az általános konfigurációs lapon. A Főzóna sugara még nem szerkeszthető a frontendről. Szeretné az általános konfigurációt?",
                     "introduction": "A zónák lehetővé teszik a Föld bizonyos területeinek megadását. Ha egy személy egy zónán belül van, az állapota felveszi a zóna nevét. A zónák eseményindítóként vagy feltételként is használhatók az automatizálási beállításokon belül.",
                     "no_zones_created_yet": "Úgy tűnik, még nem hoztál létre zónákat."
                 },
@@ -1908,6 +1915,11 @@
                         "tap": "Koppintás:",
                         "toggle": "Váltás {name}",
                         "url": "Ablak megnyitása: {url_path}"
+                    },
+                    "safe-mode": {
+                        "description": "A Home Assistant a konfiguráció betöltése közben bajba került, és most csökkentett módban fut. Vessen egy pillantást a hibanaplóra, hogy lássa, mi romlott el.",
+                        "header": "Biztonsági mód aktiválva",
+                        "show_errors": "Hibák megjelenítése"
                     },
                     "shopping-list": {
                         "add_item": "Tétel hozzáadása",
