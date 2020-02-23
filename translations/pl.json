@@ -1515,7 +1515,7 @@
                     "section": {
                         "reloading": {
                             "automation": "Automatyzacje",
-                            "core": "Lokacje i dostosowywanie",
+                            "core": "Lokalizacja i dostosowywanie",
                             "group": "Grupy",
                             "heading": "Ponowne wczytanie konfiguracji",
                             "introduction": "Niektóre części konfiguracji można wczytać od nowa bez konieczności ponownego uruchamiania Home Assistant'a. Naciśnięcie poniższych przycisków wczyta ponownie daną część konfiguracji.",
@@ -1952,7 +1952,7 @@
                         },
                         "entities": {
                             "name": "Encje",
-                            "show_header_toggle": "Pokaż przełącznik w nagłówku?",
+                            "show_header_toggle": "Pokaż przełącznik w nagłówku",
                             "toggle": "Przełącz encje"
                         },
                         "entity-button": {

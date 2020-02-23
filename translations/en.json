@@ -2084,7 +2084,9 @@
                         "header": "View Configuration",
                         "header_name": "{name} View Configuration",
                         "move_left": "Move view left",
-                        "move_right": "Move view right"
+                        "move_right": "Move view right",
+                        "tab_badges": "Badges",
+                        "tab_settings": "Settings"
                     },
                     "header": "Edit UI",
                     "menu": {
