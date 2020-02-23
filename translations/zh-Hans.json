@@ -503,7 +503,7 @@
                 "currently": "当前",
                 "on_off": "开/关",
                 "operation": "操作",
-                "target_temperature": "设定温度"
+                "target_temperature": "目标温度"
             },
             "weather": {
                 "attributes": {
@@ -581,6 +581,7 @@
                 "entity": "相关实体",
                 "group": "以下群组的一部分",
                 "integration": "集成",
+                "no_related_found": "找不到相关项目。",
                 "scene": "以下场景的一部分",
                 "script": "以下脚本的一部分"
             },
@@ -604,7 +605,7 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "如果禁用，从 {integration} 新发现的实体将不会自动添加到 Home Assistant。",
                 "enable_new_entities_label": "启用新添加的实体。",
-                "title": "{integration}的系统选项",
+                "title": "{integration} 系统选项",
                 "update": "更新"
             },
             "confirmation": {
@@ -630,6 +631,7 @@
                     "unavailable": "该实体暂不可用。",
                     "update": "更新"
                 },
+                "no_unique_id": "该实体没有唯一的ID，因此无法由UI进行管理设置。",
                 "related": "关联",
                 "settings": "设置"
             },
@@ -666,7 +668,7 @@
                 },
                 "vacuum": {
                     "clean_spot": "清理污渍",
-                    "commands": "扫地机指令：",
+                    "commands": "吸尘器清扫指令：",
                     "fan_speed": "风扇转速",
                     "locate": "定位",
                     "pause": "暂停",
@@ -697,7 +699,7 @@
                 "found": "为您找到以下结果：",
                 "how_can_i_help": "请问需要什么帮助？",
                 "label": "输入问题，然后按回车",
-                "label_voice": "输入后按回车，或点击麦克风图标后讲话"
+                "label_voice": "输入后按「Enter」或点击麦克风图标后进行语音命令"
             },
             "zha_device_info": {
                 "buttons": {
@@ -712,7 +714,7 @@
                 "manuf": "制造商：{manufacturer}",
                 "no_area": "没有区域",
                 "power_source": "电源",
-                "quirk": "怪癖",
+                "quirk": "Quirk",
                 "services": {
                     "reconfigure": "这将重新配置 ZHA 设备（复原设备）。如果您的设备遇到问题，请使用此项。如果有问题的设备是由电池供电的，请确保在使用此服务时它处于唤醒状态并可以接受指令。",
                     "remove": "从 Zigbee 网络中删除设备。",
@@ -1107,7 +1109,7 @@
                         "email": "电子邮件",
                         "email_error_msg": "无效电子邮件",
                         "instructions": "输入您的电子邮件地址，我们将向您发送一个链接以重置密码。",
-                        "send_reset_email": "发送重置电子邮件",
+                        "send_reset_email": "发送重置邮件",
                         "subtitle": "忘记密码",
                         "title": "忘记密码"
                     },
@@ -1249,7 +1251,7 @@
                         },
                         "create": "通过设备创建自动化",
                         "no_automations": "没有自动化",
-                        "no_device_automations": "该设备没有可用的自动化。",
+                        "no_device_automations": "该设备没有任何自动化可使用。",
                         "triggers": {
                             "caption": "当以下事件发生时："
                         }
@@ -1270,7 +1272,7 @@
                     "details": "这是设备的所有详细信息。",
                     "device_not_found": "未找到设备。",
                     "entities": {
-                        "add_entities_lovelace": "添加设备的所有实体到 Lovelace",
+                        "add_entities_lovelace": "添加设备的所有实体到 Lovelace UI",
                         "entities": "实体",
                         "none": "这个设备没有实体"
                     },
@@ -1323,6 +1325,7 @@
                         "filter": {
                             "filter": "筛选",
                             "show_disabled": "显示已禁用的实体",
+                            "show_readonly": "显示只读实体",
                             "show_unavailable": "显示不可用的实体"
                         },
                         "header": "实体",
@@ -1338,6 +1341,7 @@
                         "introduction2": "使用本实体注册工具重写名称，修改实体 ID 或者从 Home Assistant 删除实体。注意，删除实体注册信息并不会删除实体本身。如果要删除实体，请点击下面的链接进入集成页面进行操作。",
                         "remove_selected": {
                             "button": "删除所选实体",
+                            "confirm_text": "仅当集成不再提供实体时才能进行删除。",
                             "confirm_title": "您要删除这 {number} 个实体吗？"
                         },
                         "selected": "选择了 {number} 项",
@@ -1345,6 +1349,7 @@
                         "status": {
                             "disabled": "已禁用",
                             "ok": "确定",
+                            "readonly": "只读",
                             "unavailable": "不可用"
                         },
                         "unavailable": "(不可用)"
@@ -1375,7 +1380,7 @@
                         "add_area": "新建区域",
                         "area_picker_label": "区域",
                         "close": "关闭",
-                        "created_config": "为{name}创建了配置。",
+                        "created_config": "新增 {name} 设置。",
                         "dismiss": "关闭对话框",
                         "error_saving_area": "保存区域时发生错误：{error}",
                         "external_step": {
@@ -1573,9 +1578,13 @@
                 "zha": {
                     "add_device_page": {
                         "discovery_text": "发现的设备将显示在此处。按照设备的说明进行操作，并将设备置于配对模式。",
-                        "header": "Zigbee家庭自动化 - 添加设备",
+                        "header": "Zigbee 家庭自动化 - 添加设备",
                         "search_again": "再次搜索",
                         "spinner": "正在寻找ZHA Zigbee设备......"
+                    },
+                    "add": {
+                        "caption": "添加设备",
+                        "description": "将设备添加到Zigbee网络"
                     },
                     "caption": "ZHA",
                     "cluster_attributes": {
@@ -1596,7 +1605,9 @@
                         "issue_zigbee_command": "发出Zigbee命令"
                     },
                     "clusters": {
-                        "help_cluster_dropdown": "选择一个集群以查看属性和命令。"
+                        "header": "集群",
+                        "help_cluster_dropdown": "选择一个集群以查看属性和命令。",
+                        "introduction": "集群是Zigbee功能的构建基础，它们将功能分成逻辑单元。 有客户端和服务器类型，由属性和命令组成。"
                     },
                     "common": {
                         "add_devices": "添加设备",
@@ -1611,17 +1622,49 @@
                         "device_name_placeholder": "用户指定的名称",
                         "update_name_button": "更新名称"
                     },
+                    "devices": {
+                        "header": "Zigbee 家庭自动化 - 设备"
+                    },
                     "group_binding": {
-                        "bind_button_help": "将选定的组绑定到所选的设备集群。",
-                        "bind_button_label": "绑定组",
+                        "bind_button_help": "将选定的群组绑定到所选的设备集群。",
+                        "bind_button_label": "绑定群组",
                         "cluster_selection_help": "选择要绑定到所选组的集群。",
                         "group_picker_help": "选择一个组来进行绑定。",
                         "group_picker_label": "可绑定的组",
-                        "header": "组绑定",
-                        "introduction": "绑定和取消绑定组。",
-                        "unbind_button_help": "从选定的设备集群中取消绑定选定的组。",
-                        "unbind_button_label": "取消绑定组"
+                        "header": "群组绑定",
+                        "introduction": "绑定和取消绑定群组。",
+                        "unbind_button_help": "从选定的设备集群中取消绑定选定的群组。",
+                        "unbind_button_label": "取消绑定群组"
                     },
+                    "groups": {
+                        "add_members": "添加成员",
+                        "adding_members": "添加成员中",
+                        "caption": "群组",
+                        "create": "创建群组",
+                        "create_group": "Zigbee 家庭自动化 - 新增群组",
+                        "create_group_details": "输入所需的详细信息以创建新的zigbee组",
+                        "creating_group": "创建群组中",
+                        "description": "创建和修改Zigbee组",
+                        "group_details": "以下是所选Zigbee组的所有详细信息。",
+                        "group_id": "组号",
+                        "group_info": "群组信息",
+                        "group_name_placeholder": "群组名",
+                        "group_not_found": "找不到群组！",
+                        "group-header": "Zigbee 家庭自动化 - 群组资讯",
+                        "groups": "组",
+                        "groups-header": "Zigbee 家庭自动化 - 群组管理",
+                        "header": "Zigbee 家庭自动化 - 群组管理",
+                        "introduction": "创建和修改zigbee组",
+                        "manage_groups": "管理Zigbee组",
+                        "members": "成员",
+                        "remove_groups": "删除群组",
+                        "remove_members": "删除成员",
+                        "removing_groups": "删除群组中",
+                        "removing_members": "删除成员中",
+                        "zha_zigbee_groups": "ZHA Zigbee组"
+                    },
+                    "header": "配置 Zigbee 家庭自动化",
+                    "introduction": "在这里可以配置ZHA组件。 目前尚未支持在UI中进行所有的配置，但我们正在努力啦。",
                     "network_management": {
                         "header": "网络管理",
                         "introduction": "影响整个网络的命令"
@@ -1637,7 +1680,8 @@
                         "reconfigure": "重新配置ZHA设备（唤醒设备）。如果您的设备遇到问题，请使用此项。如果有问题的设备是电池供电的，请确保在使用此服务时它处于唤醒状态并可以接受指令。",
                         "remove": "从 Zigbee 网络中删除设备。",
                         "updateDeviceName": "在设备注册表中为此设备设置自定义名称。"
-                    }
+                    },
+                    "title": "Zigbee 家庭自动化"
                 },
                 "zone": {
                     "add_zone": "添加地点",
@@ -1645,7 +1689,7 @@
                     "configured_in_yaml": "通过 configuration.yaml 配置的地点不能通过 UI 编辑。",
                     "confirm_delete": "您确定要删除此地点吗？",
                     "create_zone": "创建地点",
-                    "description": "管理要跟踪的人员所在的区域。",
+                    "description": "管理要跟踪人员的区域。",
                     "detail": {
                         "create": "创建",
                         "delete": "删除",
@@ -1661,7 +1705,10 @@
                         "required_error_msg": "此字段为必填字段",
                         "update": "更新"
                     },
-                    "edit_home_zone": "家所在的位置可以在通用配置中更改。",
+                    "edit_home_zone": "住址的半径尚无法由前端进行设定、于地图上拖拉标示以移动住址位置。",
+                    "edit_home_zone_narrow": "住址的半径尚无法由前端进行设定、但可以于一般设定中变更其位置。",
+                    "go_to_core_config": "转换至常规配置？",
+                    "home_zone_core_config": "住址的位置可以于一般设定页面中进行编辑、但半径尚无法编辑。是否要切换至一般设定？",
                     "introduction": "地点用于定义世界的某个地方。若某人位于一个地点，则其状态的名称就取自该地点。地点也可用作自动化配置中的触发条件和环境条件。",
                     "no_zones_created_yet": "看来您还没有建立地点。"
                 },
@@ -1694,7 +1741,7 @@
                         "false": "False",
                         "header": "节点配置选项",
                         "seconds": "秒",
-                        "set_config_parameter": "设置配置参数",
+                        "set_config_parameter": "设置参数",
                         "set_wakeup": "设置唤醒间隔",
                         "true": "True"
                     },
@@ -1723,7 +1770,7 @@
                 "external_panel": {
                     "complete_access": "它将有权访问 Home Assistant 中的所有数据。",
                     "hide_message": "查看有关 panel_custom 的文档以隐藏此消息",
-                    "question_trust": "您是否信任{link}处的外部面板{name}？"
+                    "question_trust": "您是否信任 {link} 处的外部面板 {name}？"
                 }
             },
             "developer-tools": {
@@ -1846,8 +1893,8 @@
             },
             "lovelace": {
                 "add_entities": {
-                    "generated_unsupported": "只有在自行编辑 Lovelace 时才能使用此功能。",
-                    "saving_failed": "保存 Lovelace 配置失败。",
+                    "generated_unsupported": "只有在自行编辑 Lovelace UI 时才能使用此功能。",
+                    "saving_failed": "保存 Lovelace UI 设置失败。",
                     "yaml_unsupported": "在 YAML 模式下使用 Lovelace 时不能使用此功能。"
                 },
                 "cards": {
@@ -1868,6 +1915,11 @@
                         "tap": "点击：",
                         "toggle": "切换{name}",
                         "url": "打开窗口前往 {url_path}"
+                    },
+                    "safe-mode": {
+                        "description": "Home Assistant 在加载配置时遇到问题，正以安全模式执行中。请查看错误日志，以找出问题。",
+                        "header": "安全模式已开启",
+                        "show_errors": "显示错误"
                     },
                     "shopping-list": {
                         "add_item": "新增项目",
@@ -1900,7 +1952,7 @@
                         },
                         "entities": {
                             "name": "实体",
-                            "show_header_toggle": "显示页眉切换？",
+                            "show_header_toggle": "显示名称切换？",
                             "toggle": "切换实体。"
                         },
                         "entity-button": {
@@ -2036,7 +2088,7 @@
                     },
                     "header": "编辑 UI",
                     "menu": {
-                        "open": "打开 Lovelace 菜单",
+                        "open": "打开 Lovelace UI 菜单",
                         "raw_editor": "原始配置编辑器"
                     },
                     "migrate": {
@@ -2046,11 +2098,11 @@
                         "para_no_id": "此元素没有 ID。请在 'ui-lovelace.yaml' 中为此元素添加 ID。"
                     },
                     "raw_editor": {
-                        "confirm_remove_config_text": "如果您删除了 Lovelace 配置，我们将通过您的区域和设备自动生成 Lovelace 视图。",
-                        "confirm_remove_config_title": "您确定要删除 Lovelace 配置吗？我们将通过您的区域和设备自动生成 Lovelace 视图。",
+                        "confirm_remove_config_text": "如果您删除了 Lovelace UI 设置的话，我们将通过您的区域和设备自动生成 Lovelace UI 面板。",
+                        "confirm_remove_config_title": "您确定要删除 Lovelace UI 设置吗？我们将通过您的区域和设备自动生成 Lovelace UI 面板。",
                         "confirm_unsaved_changes": "您有未保存的更改，确定要退出吗？",
                         "confirm_unsaved_comments": "您的配置包含注释，这些注释将不会保存。是否继续？",
-                        "error_invalid_config": "您的配置无效： {error}",
+                        "error_invalid_config": "您的配置无效：{error}",
                         "error_parse_yaml": "无法解析YAML：{error}",
                         "error_remove": "无法删除配置：{error}",
                         "error_save_yaml": "无法保存YAML：{error}",
@@ -2065,6 +2117,11 @@
                         "para": "默认情况下，Home Assistant 将维护您的用户界面，并在新的实体或 Lovelace 组件可用时更新它。如果您选择自行编辑，我们将不再自动为您进行更改。",
                         "para_sure": "您确定要自行编辑用户界面吗？",
                         "save": "自行编辑"
+                    },
+                    "suggest_card": {
+                        "add": "添加至 Lovelace UI",
+                        "create_own": "选择其他卡",
+                        "header": "我们为您提出了一条建议"
                     },
                     "view": {
                         "panel_mode": {

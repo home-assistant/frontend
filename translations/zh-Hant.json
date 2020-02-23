@@ -1046,7 +1046,7 @@
                         },
                         "integrations": "整合",
                         "integrations_introduction": "Home Assistant Cloud 雲服務整合可連線至其他雲服務、而不需將您的 Home Assistant 暴露在整個網際網路上。",
-                        "integrations_introduction2": "開啟網站 ",
+                        "integrations_introduction2": "開啟網站",
                         "integrations_link_all_features": " 所有可用功能",
                         "manage_account": "管理帳號",
                         "nabu_casa_account": "Nabu Casa 帳號",
@@ -1071,7 +1071,7 @@
                             "no_hooks_yet": "看起來您尚未建立 Webhook，可藉由設定 ",
                             "no_hooks_yet_link_automation": "Webhook 自動化",
                             "no_hooks_yet_link_integration": "Webhook 整合",
-                            "no_hooks_yet2": " 或新增一組 ",
+                            "no_hooks_yet2": "或新增一組",
                             "title": "Webhooks"
                         }
                     },

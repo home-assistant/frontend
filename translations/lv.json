@@ -50,7 +50,6 @@
         "sensor": "Sensors",
         "sun": "Saule",
         "switch": "Slēdzis",
-        "system_health": "Sistēmas Veselība",
         "updater": "Atjauninātājs",
         "vacuum": "Putekļsūcējs",
         "weblink": "Weblink",
@@ -116,7 +115,7 @@
             "triggered": "Trig"
         },
         "default": {
-            "entity_not_found": "Vienība Nav Atrasta",
+            "entity_not_found": "Vienība nav atrasta",
             "error": "Kļūda",
             "unavailable": "Nepie",
             "unknown": "Nez"
@@ -549,19 +548,27 @@
                 "future": "Pēc {time}",
                 "never": "Nekad",
                 "past": "{time} atpakaļ"
-            },
-            "service-picker": {
-                "service": "Pakalpojums"
             }
         },
         "dialogs": {
             "config_entry_system_options": {
-                "enable_new_entities_description": "Ja atspējots, jaunatklātās vienības priekš {integration} netiks automātiski pievienotas Home Assistant.",
+                "enable_new_entities_description": "Ja atspējots, jaunatklātās {integration} integrācijas vienības netiks automātiski pievienotas Home Assistant.",
                 "enable_new_entities_label": "Iespējot tikko pievienotās vienības.",
-                "title": "Sistēmas Opcijas priekš {integration}"
+                "title": "Sistēmas opcijas {integration} integrācijai",
+                "update": "Atjaunināt"
+            },
+            "entity_registry": {
+                "editor": {
+                    "name": "Nosaukuma pārlabošana",
+                    "note": "Ievērībai: pašlaik tas var nedarboties ar visām integrācijām.",
+                    "unavailable": "Šī vienība pašlaik nav pieejama."
+                }
             },
             "more_info_control": {
                 "dismiss": "Aizvērt dialogu",
+                "person": {
+                    "create_zone": "Izveidot zonu no pašreizējās atrašanās vietas"
+                },
                 "script": {
                     "last_action": "Pēdējā Darbība"
                 },
@@ -578,7 +585,7 @@
             "more_info_settings": {
                 "back": "Atgriezties",
                 "entity_id": "Vienības ID",
-                "name": "Piesķirt nosaukumu",
+                "name": "Nosaukuma pārlabošana",
                 "save": "Saglabāt"
             },
             "options_flow": {
@@ -642,21 +649,21 @@
                 "areas": {
                     "caption": "Apgabali",
                     "create_area": "IZVEIDOT APGABALU",
-                    "description": "Pārskats par visām vietām jūsu mājās.",
+                    "description": "Pārskats par visiem jūsu mājās apgabaliem.",
                     "editor": {
                         "create": "IZVEIDOT",
-                        "default_name": "Jauns Apgabals",
+                        "default_name": "Jauns apgabals",
                         "delete": "DZĒST",
                         "update": "ATJAUNINĀT"
                     },
-                    "no_areas": "Izskatās, ka jums vēl nav apgabalu!",
+                    "no_areas": "Izskatās, ka vēl neesat izveidojis nevienu apgabalu.",
                     "picker": {
                         "create_area": "IZVEIDOT APGABALU",
                         "header": "Apgabali",
                         "integrations_page": "Integrāciju lapa",
-                        "introduction": "Apgabali tiek izmantoti, lai organizētu ierīces atrašanās vietu. Šī informācija tiks izmantota visā Home Assistant, lai palīdzētu organizēt Jūsu saskarni, atļaujas un integrāciju ar citām sistēmām.",
-                        "introduction2": "Lai novietotu ierīces apgabalā, izmantojiet zemāk esošo saiti, lai pārietu uz integrācijas lapu un pēc tam noklikšķiniet uz konfigurētas integrācijas, lai iegūtu ierīces kartiņu.",
-                        "no_areas": "Izskatās, ka jums vēl nav apgabalu!"
+                        "introduction": "Apgabali tiek izmantoti, lai organizētu ierīces atrašanās vietu. Šī informācija tiks izmantota daudzviet Home Assistant, lai palīdzētu organizēt lietotāja saskarni, atļaujas un integrācijas ar citām sistēmām.",
+                        "introduction2": "Lai piesaistītu ierīces noteiktam apgabalam, izmantojiet zemāk esošo saiti, lai pārietu uz integrāciju lapu un tad noklikšķiniet uz konfigurētas integrācijas, lai nonāktu pie ierīču kartiņu saraksta.",
+                        "no_areas": "Izskatās, ka vēl neesat izveidojis nevienu apgabalu."
                     }
                 },
                 "automation": {
@@ -920,12 +927,16 @@
                 },
                 "customize": {
                     "attributes_not_set": "Šie atribūti netika iestatīti. Iestatiet tos, ja vēlaties.",
+                    "attributes_override": "Varat pārlabot pēc savas patikas.",
                     "caption": "Pielāgojumi",
                     "description": "Pielāgojiet jūsu iekārtas",
-                    "pick_attribute": "Izvēlieties atribūtu, kuru neievērot",
+                    "pick_attribute": "Izvēlieties atribūtu, kuru pārlabot",
                     "picker": {
                         "header": "Pielāgojumi",
-                        "introduction": "Korekcijas atribūti vienai vienībai. Pievienotās / labotās pielāgošanas stāsies spēkā nekavējoties. Noņemtie pielāgojumi stāsies spēkā, kad vienība tiks atjaunināta."
+                        "introduction": "Uzlabojiet atribūtus katrai vienībai. Pievienotie jeb mainīties pielāgojumi stāsies spēkā nekavējoties. Noņemtie pielāgojumi stāsies spēkā, kad vienība tiks atjaunināta."
+                    },
+                    "warning": {
+                        "not_applied": "Veiktās izmaiņas ir saglabātas, bet netiks piemērotas veicot konfigurācijas pārlādēšanu, ja vien tajā include."
                     }
                 },
                 "devices": {
@@ -952,20 +963,60 @@
                     "caption": "Vienības",
                     "description": "Pārskats par visām zināmajām vienībām.",
                     "editor": {
-                        "default_name": "Jauns Apgabals",
+                        "confirm_delete": "Vai tiešām vēlaties dzēst šo ierakstu?",
+                        "confirm_delete2": "Dzēšot ierakstu, Home Assistant vienība netiks noņemta. Lai to izdarītu, no Home Assistant jānoņem '{platform}' integrācija.",
+                        "default_name": "Jauns apgabals",
                         "delete": "DZĒST",
                         "enabled_cause": "Atspējots dēļ {cause}.",
                         "enabled_description": "Atspējotās vienības netiks pievienotas Home Assistant.",
                         "enabled_label": "Iespējot vienību",
-                        "note": "Piezīme: tas var vēl nedarboties ar visām integrācijām.",
+                        "entity_id": "Vienības ID",
+                        "name": "Nosaukuma pārlabošana",
+                        "note": "Ievērībai: pašlaik tas var nedarboties ar visām integrācijām.",
                         "unavailable": "Šī vienība pašlaik nav pieejama.",
                         "update": "ATJAUNINĀT"
                     },
                     "picker": {
+                        "disable_selected": {
+                            "button": "Atspējot atlasītās",
+                            "confirm_text": "Atspējotās vienības netiks pievienotas Home Assistant.",
+                            "confirm_title": "Vai vēlaties atspējot {number} vienības?"
+                        },
+                        "enable_selected": {
+                            "button": "Iespējot atlasītās",
+                            "confirm_text": "Tas atkārtoti padarīs tās pieejamas Home Assistant, ja tās šobrīd ir atspējotas.",
+                            "confirm_title": "Vai vēlaties iespējot {number} vienības?"
+                        },
+                        "filter": {
+                            "filter": "Filtrēt",
+                            "show_disabled": "Rādīt atspējotās vienības",
+                            "show_readonly": "Rādīt tikai lasāmās vienības",
+                            "show_unavailable": "Rādīt nepieejamās vienības"
+                        },
                         "header": "Vienības",
+                        "headers": {
+                            "enabled": "Iespējota",
+                            "entity_id": "Vienības ID",
+                            "integration": "Integrācija",
+                            "name": "Nosaukums",
+                            "status": "Statuss"
+                        },
                         "integrations_page": "Integrāciju lapa",
-                        "introduction": "Home Assistant uztur katras vienības reģistru, kuru var unikāli identificēt. Katrai no šīm vienībām tiks piešķirts vienības ID, kas tiks rezervēts tikai šai vienībai.",
-                        "introduction2": "Izmantojiet vienību reģistru, lai piešķirtu vārdu, mainītu vienību ID vai noņemtu ierakstu no Home Assistant. Ņemiet vērā: noņemot vienības reģistra ierakstu, vienība netiks noņemta. Lai to izdarītu, sekojiet zemāk esošajai saitei un noņemiet to no integrācijas lapas.",
+                        "introduction": "Home Assistant uztur visu vienību reģistru, kuras jebkad parādījušās un kuras var unikāli identificēt. Katrai no šīm vienībām piešķirts vienības ID, kas tiks rezervēts tikai šai vienībai.",
+                        "introduction2": "Izmantojiet vienību reģistru, lai pārlabotu nosaukumu, mainītu vienības ID vai noņemtu ierakstu no Home Assistant.",
+                        "remove_selected": {
+                            "button": "Noņemt atlasītās",
+                            "confirm_text": "Vienības var noņemt tikai tad, kad tās vairs nerada attiecīgā integrācija.",
+                            "confirm_title": "Vai vēlaties noņemt {number} vienības?"
+                        },
+                        "selected": "{numurs} atlasītas",
+                        "show_disabled": "Rādīt atspējotās vienības",
+                        "status": {
+                            "disabled": "Atspējota",
+                            "ok": "Ok",
+                            "readonly": "Tikai lasāma",
+                            "unavailable": "Nepieejama"
+                        },
                         "unavailable": "(nav pieejams)"
                     }
                 },
@@ -973,27 +1024,32 @@
                 "integrations": {
                     "caption": "Integrācijas",
                     "config_entry": {
+                        "area": "Apgabalā {area}",
+                        "delete_button": "Dzēst {integration}",
                         "delete_confirm": "Vai tiešām vēlaties dzēst šo integrāciju?",
                         "device_unavailable": "ierīce nav pieejama",
                         "entity_unavailable": "vienība nav pieejama",
                         "firmware": "Programmaparatūra: {version}",
                         "hub": "Savienots caur",
                         "manuf": "{manufacturer}",
-                        "no_area": "Nav Apgabala",
-                        "no_device": "Vienības, bez ierīcēm",
+                        "no_area": "Nav apgabala",
+                        "no_device": "Vienības bez ierīcēm",
                         "no_devices": "Šai integrācijai nav ierīču.",
                         "restart_confirm": "Restartēt Home Assistant, lai pabeigtu šīs integrācijas noņemšanu",
+                        "settings_button": "Rediģēt {integration} integrācijas iestatījumus",
+                        "system_options_button": "Sistēmas opcijas {integration} integrācijai",
                         "via": "Savienots ar"
                     },
                     "config_flow": {
                         "aborted": "Pārtraukts",
-                        "add_area": "Pievienot Apgabalu",
+                        "add_area": "Pievienot apgabalu",
                         "area_picker_label": "Apgabals",
                         "close": "Aizvērt",
-                        "created_config": "Tika izveidota konfigurācija {name}.",
+                        "created_config": "Tika izveidota {name} integrācijas konfigurācija.",
+                        "dismiss": "Aizvērt dialogu",
                         "error_saving_area": "Kļūda saglabājot apgabalu: {error}",
                         "external_step": {
-                            "description": "Šajā solī ir nepieciešams, lai jūs apmeklētu ārēju tīmekļa vietni, lai pabeigtu.",
+                            "description": "Šī soļa pabeigšanai ir nepieciešams apmeklēt ārēju tīmekļa vietni.",
                             "open_site": "Atvērt tīmekļa vietni"
                         },
                         "failed_create_area": "Neizdevās izveidot apgabalu.",
@@ -1003,35 +1059,54 @@
                         "submit": "Iesniegt"
                     },
                     "configure": "Konfigurēt",
-                    "configured": "Konfigurēts",
+                    "configured": "Nokonfigurētās",
                     "description": "Pārvaldīt un iestatīt integrācijas",
                     "details": "Integrācijas detaļas",
-                    "discovered": "Atklāts",
+                    "discovered": "Atklātās",
+                    "home_assistant_website": "Home Assistant tīmekļa vietne",
                     "ignore": {
-                        "confirm_delete_ignore": "Tas ļaus integrācijai atkal parādīties jūsu atklātajās integrācijās, kad tā tiks atklāta. Tam var būt nepieciešama restartēšana vai nepieciešams ilgāks laiks.",
+                        "confirm_delete_ignore": "Tas ļaus integrācijai atkal parādīties starp atklātajām integrācijām. Atklāšanai var būt nepieciešama restartēšana vai nepieciešams ilgāks laiks.",
                         "confirm_delete_ignore_title": "Pārtraukt ignorēt {name}?",
                         "confirm_ignore": "Vai tiešām nevēlaties iestatīt šo integrāciju? To varat atsaukt, augšējā labajā stūrī noklikšķinot uz “Rādīt ignorētās integrācijas” pārpildes izvēlnē.",
                         "confirm_ignore_title": "Ignorēt {name} atklāšanu?",
                         "hide_ignored": "Slēpt ignorētās integrācijas",
                         "ignore": "Ignorēt",
-                        "ignored": "Ignorēts",
+                        "ignored": "Ignorētās",
                         "show_ignored": "Rādīt ignorētās integrācijas",
-                        "stop_ignore": "Pārtraukt ignorēt"
+                        "stop_ignore": "Pārtraukt ignorēšanu"
                     },
                     "integration_not_found": "Integrācija nav atrasta.",
                     "new": "Izveidot jaunu integrāciju",
-                    "none": "Nekas vēl nav konfigurēts"
+                    "none": "Pagaidām nekas nav nokonfigurēts",
+                    "note_about_integrations": "Pagaidām ne visas integrācijas var nokonfigurēt, izmantojot lietotāja saskarni.",
+                    "note_about_website_reference": "Vairāk informācijas vietnē "
                 },
                 "introduction": "Šeit iespējams konfigurēt Jūsu komponentus un pašu Home Assistant. Pagaidām ne visu ir iespējams konfigurēt no lietotāja saskarnes, bet mēs strādājam pie tā.",
                 "person": {
+                    "add_person": "Pievienot personu",
                     "caption": "Personas",
+                    "confirm_delete": "Vai tiešām vēlaties dzēst šo personu?",
+                    "confirm_delete2": "Visas šai personai piederošās ierīces kļus par nepiesaistītām.",
+                    "create_person": "Izveidot personu",
                     "description": "Pārvaldīt personas, kuras izseko Home Assistant.",
                     "detail": {
+                        "create": "Izveidot",
+                        "delete": "Dzēst",
                         "device_tracker_intro": "Atlasiet ierīces, kas pieder šai personai.",
                         "device_tracker_pick": "Izvēlieties izsekojamo ierīci",
                         "device_tracker_picked": "Izsekot Ierīci",
-                        "name": "Nosaukums"
-                    }
+                        "link_integrations_page": "Integrāciju lapa",
+                        "link_presence_detection_integrations": "Klātbūtnes noteikšanas integrācijas",
+                        "linked_user": "Saistītais lietotājs",
+                        "name": "Vārds",
+                        "name_error_msg": "Nepieciešams vārds",
+                        "new_person": "Jauna persona",
+                        "no_device_tracker_available_intro": "Ja jums ir ierīces, kas norāda uz personas klātbūtni, jūs šeit varēsit tās piesaistīt personai. Pirmo ierīci varat pievienot, integrāciju lapā pievienojot klātbūtnes noteikšanas integrāciju.",
+                        "update": "Atjaunināt"
+                    },
+                    "introduction": "Šeit jūs varat definēt personas izmantošanai Home Assistant.",
+                    "no_persons_created_yet": "Izskatās, ka vēl neesat izveidojis nevienu personu.",
+                    "note_about_persons_configured_in_yaml": "Ievērībai: configuration.yaml konfigurētās personas nevar rediģēt, izmantojot lietotāja saskarni."
                 },
                 "scene": {
                     "activated": "Aktivizēta aina {name}.",
@@ -1079,20 +1154,29 @@
                     "description": "Veidojiet un rediģējiet skriptus",
                     "editor": {
                         "alias": "Nosaukums",
+                        "default_name": "Jauns skripts",
+                        "delete_confirm": "Vai tiešām vēlaties dzēst šo skriptu?",
                         "delete_script": "Dzēst skriptu",
+                        "header": "Skripts: {name}",
                         "introduction": "Izmantojiet skriptus, lai izpildītu darbību secību.",
                         "link_available_actions": "Uzzināt vairāk par pieejamām darbībām.",
+                        "load_error_not_editable": "Rediģējami ir tikai scripts.yaml esošie skripti.",
                         "sequence": "Secība",
                         "sequence_sentence": "Šī skripta darbību secība."
                     },
                     "picker": {
+                        "add_script": "Pievienot skriptu",
                         "edit_script": "Rediģēt skriptu",
-                        "trigger_script": "Izsaukšanas skripts"
+                        "header": "Skriptu redaktors",
+                        "introduction": "Skriptu redaktors ļauj jums izveidot un rediģēt skriptus. Lūdzu, izmantojiet zemāk esošo saiti, lai izlasītu instrukcijas, lai pārliecinātos, ka esat pareizi konfigurējis Home Assistant.",
+                        "learn_more": "Uzziniet vairāk par skriptiem",
+                        "no_scripts": "Rediģējami skripti nav atrasti",
+                        "trigger_script": "Izpildīt skriptu"
                     }
                 },
                 "server_control": {
-                    "caption": "Servera Pārvaldība",
-                    "description": "Restartēt un apturēt Home Assistant serveri",
+                    "caption": "Servera vadība",
+                    "description": "Home Assistant servera restartēšana un apturēšana",
                     "section": {
                         "reloading": {
                             "automation": "Pārlādēt automatizācijas",
@@ -1100,8 +1184,10 @@
                             "group": "Pārlādēt grupas",
                             "heading": "Konfigurācijas pārlādēšana",
                             "introduction": "Atsevišķas Home Assistant daļas var pārlādēt bez nepieciešamības restartēt. Veicot pārlādēšanu iepriekšējā konfigurācija tiks atiestatīta un tiks ielādēta jaunā.",
+                            "person": "Pārlādēt personas",
                             "scene": "Pārlādēt ainas",
-                            "script": "Pārlādēt skriptus"
+                            "script": "Pārlādēt skriptus",
+                            "zone": "Pārlādēt zonas"
                         },
                         "server_management": {
                             "confirm_restart": "Vai tiešām vēlaties restartēt Home Assistant?",
@@ -1132,13 +1218,25 @@
                     "description": "Pārvaldīt lietotājus",
                     "editor": {
                         "activate_user": "Aktivizēt lietotāju",
+                        "active": "Aktīvs",
                         "caption": "Skatīt lietotāju",
                         "change_password": "Mainīt paroli",
+                        "confirm_user_deletion": "Vai tiešām vēlaties dzēst {name}?",
                         "deactivate_user": "Deaktivizēt lietotāju",
                         "delete_user": "Dzēst lietotāju",
-                        "rename_user": "Pārdēvēt lietotāju"
+                        "enter_new_name": "Ievadiet jauno vārdu",
+                        "group": "Grupa",
+                        "group_update_failed": "Grupas atjaunināšana neizdevās:",
+                        "id": "ID",
+                        "owner": "Īpašnieks",
+                        "rename_user": "Pārdēvēt lietotāju",
+                        "system_generated": "Sistēmas ģenerēts",
+                        "system_generated_users_not_removable": "Nevar noņemt sistēmas ģenerētos lietotājus.",
+                        "unnamed_user": "Lietotājs bez vārda",
+                        "user_rename_failed": "Lietotāja pārdēvēšana neizdevās:"
                     },
                     "picker": {
+                        "system_generated": "Sistēmas ģenerēts",
                         "title": "Lietotāji"
                     }
                 },
@@ -1146,6 +1244,7 @@
                     "add_device_page": {
                         "discovery_text": "Šeit tiks parādītas atklātās ierīces. Izpildiet ierīces (-ču) instrukcijas un iestatiet ierīci (-es) pārī savienošanas režīmā.",
                         "header": "Zigbee Home Automation - Pievienot ierīces",
+                        "search_again": "Atkārtot meklēšanu",
                         "spinner": "Meklē ZHA Zigbee ierīces..."
                     },
                     "caption": "ZHA",
@@ -1160,6 +1259,35 @@
                         "remove": "Noņemt ierīci no Zigbee tīkla.",
                         "updateDeviceName": "Ierīču reģistrā iestatiet šai ierīcei pielāgotu nosaukumu."
                     }
+                },
+                "zone": {
+                    "add_zone": "Pievienot zonu",
+                    "caption": "Zonas",
+                    "configured_in_yaml": "configuration.yaml konfigurētās zonas nevar rediģēt, izmantojot lietotāja saskarni.",
+                    "confirm_delete": "Vai tiešām vēlaties dzēst šo zonu?",
+                    "create_zone": "Izveidot zonu",
+                    "description": "Pārvaldiet zonas, kurās vēlaties izsekot personām.",
+                    "detail": {
+                        "create": "Izveidot",
+                        "delete": "Dzēst",
+                        "icon": "Ikona",
+                        "icon_error_msg": "Ikonai jābūt formātā prefikss:nosaukums, piemēram: mdi:home",
+                        "latitude": "Platums",
+                        "longitude": "Garums",
+                        "name": "Nosaukums",
+                        "new_zone": "Jauna zona",
+                        "passive": "Pasīva",
+                        "passive_note": "Pasīvās zonas netiek rādītas lietotāja saskarnē un netiek izmantotas kā atrašanās vieta ierīču izsekošanai. Tas ir noderīgi, ja vēlaties tās izmantot tikai automatizācijai.",
+                        "radius": "Rādiuss",
+                        "required_error_msg": "Šis lauks ir obligāts",
+                        "update": "Atjaunināt"
+                    },
+                    "edit_home_zone": "Mājas zonas rādiusu pagaidām nevar rediģēt, izmantojot lietotāja saskarni. Velciet marķieri kartē, lai pārvietotu mājas zonu.",
+                    "edit_home_zone_narrow": "Mājas zonas rādiusu pagaidām nevar rediģēt, izmantojot lietotāja saskarni. Atrašanās vietu var mainīt no vispārējās konfigurācijas.",
+                    "go_to_core_config": "Doties uz vispārējo konfigurāciju?",
+                    "home_zone_core_config": "Jūsu mājas zonas atrašanās vietu var rediģēt no vispārējās konfigurācijas lapas. Mājas zonas rādiusu pagaidām nevar rediģēt, izmantojot lietotāja saskarni. Vai vēlaties pāriet uz vispārīgo konfigurāciju?",
+                    "introduction": "Zonas ļauj norādīt noteiktus reģionus uz zemes. Kad cilvēks atrodas zonā, vienības stāvoklim tiks izmantots zonas nosaukums. Zonas var izmantotas kā aktivators vai nosacījums automatizācijās.",
+                    "no_zones_created_yet": "Izskatās, ka vēl neesat izveidojis nevienu zonu."
                 },
                 "zwave": {
                     "caption": "Z-Wave",
@@ -1217,35 +1345,6 @@
                     "question_trust": "Vai Jūs uzticaties ārējam panelim {name} uz {link}?"
                 }
             },
-            "developer-tools": {
-                "tabs": {
-                    "events": {
-                        "title": "Notikumi"
-                    },
-                    "info": {
-                        "title": "Informācija"
-                    },
-                    "logs": {
-                        "title": "Žurnāli"
-                    },
-                    "mqtt": {
-                        "title": "MQTT"
-                    },
-                    "services": {
-                        "title": "Pakalpojumi"
-                    },
-                    "states": {
-                        "copied": "Kopēts starpliktuvē",
-                        "copy_entity_attribute": "Kopēt atribūtus",
-                        "copy_entity_id": "Kopēt ID",
-                        "copy_entity_state": "Kopēt stāvokli",
-                        "title": "Stāvokļi"
-                    },
-                    "templates": {
-                        "title": "Veidne"
-                    }
-                }
-            },
             "history": {
                 "period": "Periods",
                 "showing_entries": "Rāda ierakstus par"
@@ -1284,6 +1383,9 @@
                     "card": {
                         "entities": {
                             "toggle": "Pārslēgt vienības."
+                        },
+                        "map": {
+                            "default_zoom": "Noklusējuma mērogs"
                         }
                     },
                     "edit_card": {
@@ -1352,7 +1454,7 @@
                     "domain": "Domēns",
                     "entity": "Vienība",
                     "entity_id": "Vienības ID",
-                    "last_changed": "Pēdējo reizi Mainīts",
+                    "last_changed": "Pēdējo reizi mainīts",
                     "select_to_add": "Izvēlieties vienību, kuru vēlaties pievienot kartei, un pēc tam noklikšķiniet uz pogu pievienot karti.",
                     "title": "Neizmantotās vienības"
                 },
@@ -1538,6 +1640,11 @@
                 }
             },
             "profile": {
+                "advanced_mode": {
+                    "description": "Dod piekļuvi papildu funcionalitātei",
+                    "link_promo": "Uzziniet vairāk",
+                    "title": "Detalizētais režīms"
+                },
                 "change_password": {
                     "confirm_new_password": "Apstipriniet jauno paroli",
                     "current_password": "Pašreizējā parole",
@@ -1548,7 +1655,7 @@
                 },
                 "current_user": "Jūs šobrīd esat pieteicies kā {fullName}.",
                 "force_narrow": {
-                    "description": "Tas pēc noklusējuma slēps sānjoslu, līdzīgi kā mobilajās ierīcēs.",
+                    "description": "Sānjosla pēc noklusējuma tiks slēpta, līdzīgi kā mobilajās ierīcēs.",
                     "header": "Vienmēr slēpt sānjoslu"
                 },
                 "is_owner": "Jūs esat īpašnieks.",
@@ -1564,7 +1671,7 @@
                     "create_failed": "Neizdevās izveidot piekļuves pilnvaru.",
                     "created_at": "Izveidots {date}",
                     "delete_failed": "Neizdevās dzēst piekļuves pilnvaru.",
-                    "description": "Izveidojiet ilgtermiņa piekļuves pilnvaras, lai ļautu jūsu skriptiem mijiedarboties ar jūsu Home Assistant instanci. Katra pilnvara būs derīga 10 gadus pēc tās radīšanas. Pašlaik ir aktīvas sekojošas ilgstošas piekļuves pilvaras.",
+                    "description": "Izveidojiet ilgtermiņa piekļuves pilnvaras, lai ļautu jūsu skriptiem mijiedarboties ar jūsu Home Assistant instanci. Katra pilnvara būs derīga 10 gadus pēc tās izveidošanas. Pašlaik ir aktīvas sekojošas ilgtermiņa piekļuves pilvaras.",
                     "empty_state": "Jums vēl nav ilgtermiņa piekļuves pilnvaru.",
                     "header": "Ilgtermiņas piekļuves pilnvaras",
                     "last_used": "Pēdējoreiz izmantots {date} no {location}",
@@ -1589,7 +1696,7 @@
                 "push_notifications": {
                     "description": "Sūtīt paziņojumus uz šo ierīci.",
                     "error_load_platform": "Konfigurēt notify.html5.",
-                    "error_use_https": "Nepieciešama SSL iespējošana priekšpusei.",
+                    "error_use_https": "Nepieciešama SSL iespējošana priekšgalsistēmai.",
                     "header": "Pašpiegādes paziņojumi",
                     "link_promo": "Uzziniet vairāk",
                     "push_notifications": "Pašpiegādes paziņojumi"
@@ -1599,7 +1706,7 @@
                     "created_at": "Izveidots {date}",
                     "current_token_tooltip": "Nevar izdzēst pašreizējo atsvaidzināšanas pilnvaru",
                     "delete_failed": "Neizdevās dzēst atsvaidzināšanas pilnvaru.",
-                    "description": "Katra atsvaidzināšanas pilvara pārstāv pieteikšanās sesiju. Atsvaidzināšanas pilvaras tiks automātiski noņemtas, kad Jūs izrakstīsieties. Šāda atsvaidzināšanas pilvaras ir pašreiz aktīvas Jūsu kontā.",
+                    "description": "Katra atsvaidzināšanas pilvara apzīmē pieteikšanās sesiju. Atsvaidzināšanas pilvaras tiks automātiski noņemtas, kad Jūs izrakstīsieties. Jūsu kontam šobrīd aktīvas ir sekojošas atsvaidzināšanas pilvaras.",
                     "header": "Atsvaidzināšanas pilnvaras",
                     "last_used": "Pēdējoreiz izmantots {date} no {location}",
                     "not_used": "Nekad nav izmantots",
@@ -1610,6 +1717,10 @@
                     "error_no_theme": "Nav nevienas tēmas",
                     "header": "Tēma",
                     "link_promo": "Uzziniet par tēmām"
+                },
+                "vibrate": {
+                    "description": "Iespējot vai atspējot vibrāciju šajā ierīcē, kontrolējot ierīces.",
+                    "header": "Vibrācija"
                 }
             },
             "shopping-list": {
