@@ -37,13 +37,13 @@ export interface Options {
   itemPlaceholderClass?: string;
 }
 
-export type LayoutOpts = {
+export interface LayoutOpts {
   fillGaps?: boolean;
   horizontal?: boolean;
   alignRight?: boolean;
   alignBottom?: boolean;
   rounding?: boolean;
-};
+}
 export type LayoutFunction = (
   items: Item[],
   gridWidth: number,
@@ -58,11 +58,11 @@ export type LayoutFunction = (
 
 export type SortFunction = (item: Item, element: Element) => string | number;
 
-export type DragStartPredicateOpts = {
+export interface DragStartPredicateOpts {
   distance?: number;
   delay?: number;
   handle?: string | boolean;
-};
+}
 export type DragStartPredicateFunction = (
   item: Item,
   event: DraggerEvent
@@ -70,16 +70,16 @@ export type DragStartPredicateFunction = (
 
 export type DragSort = boolean | ((item: Item) => Grid[]);
 
-export type DragSortHeuristics = {
+export interface DragSortHeuristics {
   sortInterval?: number;
   minDragDistance?: number;
   minBounceBackAngle?: number;
-};
+}
 
-export type DragSortPredicateOpts = {
+export interface DragSortPredicateOpts {
   action?: "move" | "swap";
   threshold?: number;
-};
+}
 export type DragSortPredicateFunction = (
   item: Item,
   event: DraggerEvent
@@ -91,20 +91,20 @@ export type DragSortPredicateFunction = (
       action: string;
     };
 
-export type DragCssProps = {
+export interface DragCssProps {
   touchAction?: string;
   userSelect?: string;
   userDrag?: string;
   tapHighlightColor?: string;
   touchCallout?: string;
   contentZooming?: string;
-};
+}
 
-export type DragPlaceholder = {
+export interface DragPlaceholder {
   enabled: boolean;
   duration: number;
   easing: string;
   createElement: (item: Item) => Element;
   onCreate: (item: Item, element: Element) => any;
   onRemove: (item: Item, element: Element) => any;
-};
+}

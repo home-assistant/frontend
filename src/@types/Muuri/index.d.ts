@@ -1,5 +1,5 @@
 declare module "muuri" {
-  type MaybePlural<T> = Array<T> | T;
+  type MaybePlural<T> = T[] | T;
   type Item = import("./item").Item;
   type Options = import("./options").Options;
   type LayoutFunction = import("./options").LayoutFunction;
@@ -74,7 +74,7 @@ declare module "muuri" {
      * @memberof Grid.prototype
      * @returns {HTMLElement}
      */
-    getElement(): Element;
+    public getElement(): Element;
 
     /**
      * Get all items. Optionally you can provide specific targets (elements and
@@ -87,7 +87,7 @@ declare module "muuri" {
      * @param {GridMultiItemQuery} [targets]
      * @returns {Item[]}
      */
-    getItems(targets?: string[]): Item[];
+    public getItems(targets?: string[]): Item[];
 
     /**
      * Update the cached dimensions of the instance's items.
@@ -97,7 +97,7 @@ declare module "muuri" {
      * @param {GridMultiItemQuery} [items]
      * @returns {Grid}
      */
-    refreshItems(items?: MaybePlural<ItemSelector>): void;
+    public refreshItems(items?: MaybePlural<ItemSelector>): void;
 
     /**
      * Update the sort data of the instance's items.
@@ -107,7 +107,7 @@ declare module "muuri" {
      * @param {GridMultiItemQuery} [items]
      * @returns {Grid}
      */
-    refreshSortData(items?: MaybePlural<ItemSelector>): void;
+    public refreshSortData(items?: MaybePlural<ItemSelector>): void;
 
     /**
      * Synchronize the item elements to match the order of the items in the DOM.
@@ -120,7 +120,7 @@ declare module "muuri" {
      * @memberof Grid.prototype
      * @returns {Grid}
      */
-    synchronize(): void;
+    public synchronize(): void;
 
     /**
      * Calculate and apply item positions.
@@ -131,8 +131,8 @@ declare module "muuri" {
      * @param {LayoutCallback} [onFinish]
      * @returns {Grid}
      */
-    layout(callback: (items: Item[]) => any): void;
-    layout(instant?: boolean, callback?: (items: Item[]) => any): void;
+    public layout(callback: (items: Item[]) => any): void;
+    public layout(instant?: boolean, callback?: (items: Item[]) => any): void;
 
     /**
      * Add new items by providing the elements you wish to add to the instance and
@@ -156,13 +156,13 @@ declare module "muuri" {
      * @param {(Boolean|LayoutCallback|String)} [options.layout=true]
      * @returns {Item[]}
      */
-    add<T extends MaybePlural<Element>>(
+    public add<T extends MaybePlural<Element>>(
       elements: T,
       options?: {
         index?: number;
         layout?: boolean | string | LayoutFunction;
       }
-    ): T extends Array<Element> ? T : [T];
+    ): T extends Element[] ? T : [T];
 
     /**
      * Remove items from the instance.
@@ -175,7 +175,7 @@ declare module "muuri" {
      * @param {(Boolean|LayoutCallback|String)} [options.layout=true]
      * @returns {Item[]}
      */
-    remove(
+    public remove(
       items: MaybePlural<ItemSelector>,
       options?: {
         removeElements?: boolean;
@@ -195,7 +195,7 @@ declare module "muuri" {
      * @param {(Boolean|LayoutCallback|String)} [options.layout=true]
      * @returns {Grid}
      */
-    show(
+    public show(
       items: MaybePlural<ItemSelector>,
       options?: {
         instant?: boolean;
@@ -216,7 +216,7 @@ declare module "muuri" {
      * @param {(Boolean|LayoutCallback|String)} [options.layout=true]
      * @returns {Grid}
      */
-    hide(
+    public hide(
       items: MaybePlural<ItemSelector>,
       options?: {
         instant?: boolean;
@@ -244,7 +244,7 @@ declare module "muuri" {
      * @param {(Boolean|LayoutCallback|String)} [options.layout=true]
      * @returns {Grid}
      */
-    filter(
+    public filter(
       predicate: string | ((item: Item) => boolean),
       options?: {
         instant?: boolean;
@@ -271,7 +271,7 @@ declare module "muuri" {
      * @param {(Boolean|LayoutCallback|String)} [options.layout=true]
      * @returns {Grid}
      */
-    sort(
+    public sort(
       comparer: string | string[] | ((a: Item, b: Item) => number),
       options?: {
         descending?: boolean;
@@ -294,7 +294,7 @@ declare module "muuri" {
      * @param {(Boolean|LayoutCallback|String)} [options.layout=true]
      * @returns {Grid}
      */
-    move(
+    public move(
       item?: ItemSelector,
       position?: ItemSelector,
       options?: {
@@ -317,7 +317,7 @@ declare module "muuri" {
      * @param {(Boolean|LayoutCallback|String)} [options.layoutReceiver=true]
      * @returns {Grid}
      */
-    send(
+    public send(
       item: ItemSelector,
       grid: Muuri,
       position: ItemSelector,
@@ -336,7 +336,7 @@ declare module "muuri" {
      * @param {Boolean} [removeElements=false]
      * @returns {Grid}
      */
-    destroy(removeElements?: boolean): Muuri;
+    public destroy(removeElements?: boolean): Muuri;
 
     // Events
     /**
@@ -348,7 +348,7 @@ declare module "muuri" {
      * @param {Function} listener
      * @returns {Grid}
      */
-    on<T extends keyof EventListeners>(
+    public on<T extends keyof EventListeners>(
       event: T,
       listener: EventListeners[T]
     ): Muuri;
@@ -361,7 +361,7 @@ declare module "muuri" {
      * @param {Function} listener
      * @returns {Grid}
      */
-    off<T extends keyof EventListeners>(
+    public off<T extends keyof EventListeners>(
       event: T,
       listener: EventListeners[T]
     ): Muuri;

@@ -8,7 +8,7 @@ export class Item {
    * @memberof Item.prototype
    * @returns {Grid}
    */
-  getGrid(): Muuri;
+  public getGrid(): Muuri;
 
   /**
    * Get the instance element.
@@ -17,7 +17,7 @@ export class Item {
    * @memberof Item.prototype
    * @returns {HTMLElement}
    */
-  getElement(): Element;
+  public getElement(): Element;
 
   /**
    * Get instance element's cached width.
@@ -26,7 +26,7 @@ export class Item {
    * @memberof Item.prototype
    * @returns {Number}
    */
-  getWidth(): number;
+  public getWidth(): number;
 
   /**
    * Get instance element's cached height.
@@ -35,7 +35,7 @@ export class Item {
    * @memberof Item.prototype
    * @returns {Number}
    */
-  getHeight(): number;
+  public getHeight(): number;
 
   /**
    * Get instance element's cached margins.
@@ -46,7 +46,7 @@ export class Item {
    *   - The returned object contains left, right, top and bottom properties
    *     which indicate the item element's cached margins.
    */
-  getMargin(): {
+  public getMargin(): {
     left: number;
     right: number;
     top: number;
@@ -62,7 +62,7 @@ export class Item {
    *   - The returned object contains left and top properties which indicate the
    *     item element's cached position in the grid.
    */
-  getPosition(): {
+  public getPosition(): {
     left: number;
     top: number;
   };
@@ -74,7 +74,7 @@ export class Item {
    * @memberof Item.prototype
    * @returns {Boolean}
    */
-  isActive(): boolean;
+  public isActive(): boolean;
 
   /**
    * Is the item visible?
@@ -83,7 +83,7 @@ export class Item {
    * @memberof Item.prototype
    * @returns {Boolean}
    */
-  isVisible(): boolean;
+  public isVisible(): boolean;
 
   /**
    * Is the item being animated to visible?
@@ -92,7 +92,7 @@ export class Item {
    * @memberof Item.prototype
    * @returns {Boolean}
    */
-  isShowing(): boolean;
+  public isShowing(): boolean;
 
   /**
    * Is the item being animated to hidden?
@@ -101,7 +101,7 @@ export class Item {
    * @memberof Item.prototype
    * @returns {Boolean}
    */
-  isHiding(): boolean;
+  public isHiding(): boolean;
 
   /**
    * Is the item positioning?
@@ -110,7 +110,7 @@ export class Item {
    * @memberof Item.prototype
    * @returns {Boolean}
    */
-  isPositioning(): boolean;
+  public isPositioning(): boolean;
 
   /**
    * Is the item being dragged?
@@ -119,7 +119,7 @@ export class Item {
    * @memberof Item.prototype
    * @returns {Boolean}
    */
-  isDragging(): boolean;
+  public isDragging(): boolean;
 
   /**
    * Is the item being released?
@@ -128,7 +128,7 @@ export class Item {
    * @memberof Item.prototype
    * @returns {Boolean}
    */
-  isReleasing(): boolean;
+  public isReleasing(): boolean;
 
   /**
    * Is the item destroyed?
@@ -137,5 +137,5 @@ export class Item {
    * @memberof Item.prototype
    * @returns {Boolean}
    */
-  isDestroyed(): boolean;
+  public isDestroyed(): boolean;
 }
