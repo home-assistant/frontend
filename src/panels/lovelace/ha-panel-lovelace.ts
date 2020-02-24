@@ -24,6 +24,7 @@ import {
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { generateLovelaceConfigFromHass } from "./common/generate-lovelace-config";
 import { showToast } from "../../util/toast";
+import { loadLovelaceResources } from "./common/load-resources";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
@@ -32,6 +33,7 @@ interface LovelacePanelConfig {
 }
 
 let editorLoaded = false;
+let resourcesLoaded = false;
 
 class LovelacePanel extends LitElement {
   @property() public panel?: PanelInfo<LovelacePanelConfig>;
@@ -130,10 +132,29 @@ class LovelacePanel extends LitElement {
 
   public firstUpdated() {
     this._fetchConfig(false);
-    // we don't want to unsub as we want to stay informed of updates
-    subscribeLovelaceUpdates(this.hass!.connection, () =>
-      this._lovelaceChanged()
-    );
+    if (this.urlPath === null) {
+      // we don't want to unsub as we want to stay informed of updates
+      subscribeLovelaceUpdates(this.hass!.connection, this.urlPath, () =>
+        this._lovelaceChanged()
+      );
+    } else if (!resourcesLoaded) {
+      // We only load resources from default config.
+      resourcesLoaded = true;
+      const llWindow = window as WindowWithLovelaceProm;
+      // Load default LL config to load resources.
+      (
+        llWindow.llConfProm || fetchConfig(this.hass!.connection, null, false)
+      ).then(
+        (conf) => {
+          if (conf.resources) {
+            loadLovelaceResources(conf.resources, this.hass!.auth.data.hassUrl);
+          }
+        },
+        () => {
+          // do nothing on errors.
+        }
+      );
+    }
     // reload lovelace on reconnect so we are sure we have the latest config
     window.addEventListener("connection-status", (ev) => {
       if (ev.detail === "connected") {
@@ -214,6 +235,10 @@ class LovelacePanel extends LitElement {
     });
   }
 
+  public get urlPath() {
+    return this.panel!.url_path === "lovelace" ? null : this.panel!.url_path;
+  }
+
   private _forceFetchConfig() {
     this._fetchConfig(true);
   }
@@ -225,7 +250,7 @@ class LovelacePanel extends LitElement {
     const llWindow = window as WindowWithLovelaceProm;
 
     // On first load, we speed up loading page by having LL promise ready
-    if (llWindow.llConfProm) {
+    if (this.urlPath === null && llWindow.llConfProm) {
       confProm = llWindow.llConfProm;
       llWindow.llConfProm = undefined;
     } else {
@@ -236,7 +261,11 @@ class LovelacePanel extends LitElement {
         this._ignoreNextUpdateEvent = true;
       }
 
-      confProm = fetchConfig(this.hass!.connection, forceDiskRefresh);
+      confProm = fetchConfig(
+        this.hass!.connection,
+        this.urlPath,
+        forceDiskRefresh
+      );
     }
 
     try {
@@ -282,6 +311,7 @@ class LovelacePanel extends LitElement {
 
   private _setLovelaceConfig(config: LovelaceConfig, mode: Lovelace["mode"]) {
     config = this._checkLovelaceConfig(config);
+    const urlPath = this.urlPath;
     this.lovelace = {
       config,
       mode,
@@ -313,7 +343,7 @@ class LovelacePanel extends LitElement {
             mode: "storage",
           });
           this._ignoreNextUpdateEvent = true;
-          await saveConfig(this.hass!, newConfig);
+          await saveConfig(this.hass!, urlPath, newConfig);
         } catch (err) {
           // tslint:disable-next-line
           console.error(err);
@@ -335,7 +365,7 @@ class LovelacePanel extends LitElement {
             editMode: false,
           });
           this._ignoreNextUpdateEvent = true;
-          await deleteConfig(this.hass!);
+          await deleteConfig(this.hass!, urlPath);
         } catch (err) {
           // tslint:disable-next-line
           console.error(err);
@@ -348,6 +378,10 @@ class LovelacePanel extends LitElement {
         }
       },
     };
+    if (!resourcesLoaded && urlPath === null && config.resources) {
+      resourcesLoaded = true;
+      loadLovelaceResources(config.resources, this.hass!.auth.data.hassUrl);
+    }
   }
 
   private _updateLovelace(props: Partial<Lovelace>) {

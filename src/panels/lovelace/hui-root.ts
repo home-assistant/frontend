@@ -47,7 +47,6 @@ import { Lovelace } from "./types";
 import { afterNextRender } from "../../common/util/render-status";
 import { haStyle } from "../../resources/styles";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
-import { loadLovelaceResources } from "./common/load-resources";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
@@ -498,12 +497,6 @@ class HUIRoot extends LitElement {
         | undefined;
 
       if (!oldLovelace || oldLovelace.config !== this.lovelace!.config) {
-        if (this.lovelace!.config.resources) {
-          loadLovelaceResources(
-            this.lovelace!.config.resources,
-            this.hass!.auth.data.hassUrl
-          );
-        }
         // On config change, recreate the current view from scratch.
         force = true;
         // Recalculate to see if we need to adjust content area for tab bar

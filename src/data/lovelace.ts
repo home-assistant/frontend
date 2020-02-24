@@ -1,5 +1,9 @@
 import { HomeAssistant } from "../types";
-import { Connection, getCollection } from "home-assistant-js-websocket";
+import {
+  Connection,
+  getCollection,
+  HassEventBase,
+} from "home-assistant-js-websocket";
 import { HASSDomEvent } from "../common/dom/fire_event";
 
 export interface LovelaceConfig {
@@ -95,42 +99,68 @@ export type ActionConfig =
   | NoActionConfig
   | CustomActionConfig;
 
+type LovelaceUpdatedEvent = HassEventBase & {
+  event_type: "lovelace_updated";
+  data: {
+    url_path: string | null;
+    mode: "yaml" | "storage";
+  };
+};
+
 export const fetchConfig = (
   conn: Connection,
+  urlPath: string | null,
   force: boolean
 ): Promise<LovelaceConfig> =>
   conn.sendMessagePromise({
     type: "lovelace/config",
+    url_path: urlPath,
     force,
   });
-
 export const saveConfig = (
   hass: HomeAssistant,
+  urlPath: string | null,
   config: LovelaceConfig
 ): Promise<void> =>
   hass.callWS({
     type: "lovelace/config/save",
+    url_path: urlPath,
     config,
   });
 
-export const deleteConfig = (hass: HomeAssistant): Promise<void> =>
+export const deleteConfig = (
+  hass: HomeAssistant,
+  urlPath: string | null
+): Promise<void> =>
   hass.callWS({
     type: "lovelace/config/delete",
+    url_path: urlPath,
   });
 
 export const subscribeLovelaceUpdates = (
   conn: Connection,
+  urlPath: string | null,
   onChange: () => void
-) => conn.subscribeEvents(onChange, "lovelace_updated");
+) =>
+  conn.subscribeEvents<LovelaceUpdatedEvent>((ev) => {
+    if (ev.data.url_path === urlPath) {
+      onChange();
+    }
+  }, "lovelace_updated");
 
-export const getLovelaceCollection = (conn: Connection) =>
+export const getLovelaceCollection = (
+  conn: Connection,
+  urlPath: string | null = null
+) =>
   getCollection(
     conn,
-    "_lovelace",
-    (conn2) => fetchConfig(conn2, false),
+    `_lovelace_${urlPath ?? ""}`,
+    (conn2) => fetchConfig(conn2, urlPath, false),
     (_conn, store) =>
-      subscribeLovelaceUpdates(conn, () =>
-        fetchConfig(conn, false).then((config) => store.setState(config, true))
+      subscribeLovelaceUpdates(conn, urlPath, () =>
+        fetchConfig(conn, urlPath, false).then((config) =>
+          store.setState(config, true)
+        )
       )
   );
 

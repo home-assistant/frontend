@@ -90,7 +90,11 @@ window.hassConnection.then(({ conn }) => {
   subscribeUser(conn, noop);
 
   if (location.pathname === "/" || location.pathname.startsWith("/lovelace/")) {
-    (window as WindowWithLovelaceProm).llConfProm = fetchConfig(conn, false);
+    (window as WindowWithLovelaceProm).llConfProm = fetchConfig(
+      conn,
+      null,
+      false
+    );
   }
 });
 
