@@ -32,11 +32,12 @@ import { createBadgeElement } from "../create-element/create-badge-element";
 import { createCardElement } from "../create-element/create-card-element";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { Lovelace, LovelaceBadge, LovelaceCard } from "../types";
+import { Options } from "../../../@types/Muuri/options";
 
 let muuri: any;
 let installResizeObserver: any;
 
-let options = {
+let options: Options = {
   dragEnabled: true,
   dragStartPredicate: {
     // Doesn't start drag until these thresholds are met - Up for discussion if needed
@@ -45,7 +46,6 @@ let options = {
   },
   dragReleaseDuration: 400,
   dragReleaseEasing: "ease",
-  dragSortInterval: 0,
   layoutDuration: 400,
   layoutEasing: "ease",
 };
