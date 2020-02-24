@@ -581,6 +581,7 @@
                 "entity": "Entitats relacionades",
                 "group": "Part dels següents grups",
                 "integration": "Integració",
+                "no_related_found": "No s'han trobat elements relacionats.",
                 "scene": "Part de les següents escenes",
                 "script": "Part dels següents programes (scripts)"
             },
@@ -630,6 +631,7 @@
                     "unavailable": "Aquesta entitat no està disponible actualment.",
                     "update": "ACTUALITZA"
                 },
+                "no_unique_id": "Aquesta entitat no té un ID únic, per tant, no pot ser configurada des de la interfície d'usuari.",
                 "related": "Relacionades",
                 "settings": "Configuració"
             },
@@ -1323,6 +1325,7 @@
                         "filter": {
                             "filter": "Filtre",
                             "show_disabled": "Mostra entitats desactivades",
+                            "show_readonly": "Mostra entitats de només lectura",
                             "show_unavailable": "Mostra entitats no disponibles"
                         },
                         "header": "Registre d'entitats",
@@ -1346,6 +1349,7 @@
                         "status": {
                             "disabled": "Desactivada/es",
                             "ok": "D'acord",
+                            "readonly": "Només lectura",
                             "unavailable": "No disponible/s"
                         },
                         "unavailable": "(no disponible)"
@@ -1702,6 +1706,9 @@
                         "update": "Actualitza"
                     },
                     "edit_home_zone": "La ubicació de casa es pot canviar des de la configuració general.",
+                    "edit_home_zone_narrow": "El radi de la zona principal (casa) encara no es pot editar des del \"frontend\". Sí que pots canviar-ne la ubicació des de la configuració general.",
+                    "go_to_core_config": "Anar a la configuració general?",
+                    "home_zone_core_config": "La ubicació de la zona principal (casa) és pot canviar des de la pàgina de configuració general. El radi d'aquesta zona encara no es pot editar des d'aquí. Vols anar a la configuració general?",
                     "introduction": "Les zones et permeten definir certes regions del planeta. Quan una persona es trobi dins d’una zona, l’estat prendrà el nom d'aquesta zona. També es poden utilitzar com a disparadors o condicions durant la creació d'automatitzacions.",
                     "no_zones_created_yet": "Sembla que encara no has creat cap zona."
                 },
@@ -1909,6 +1916,11 @@
                         "toggle": "Commuta {name}",
                         "url": "Obre un finestra a {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant ha tingut algun problema en carregar la configuració i ara s'està executant en mode segur. Mira el registre d’errors per veure què ha anat malament.",
+                        "header": "Mode segur activat",
+                        "show_errors": "Mostra els errors"
+                    },
                     "shopping-list": {
                         "add_item": "Afegir element",
                         "checked_items": "Articles seleccionats",
@@ -2072,7 +2084,9 @@
                         "header": "Configuració de la visualització",
                         "header_name": "Configuració de la visualització {name}",
                         "move_left": "Desplaça la visualització cap a l'esquerra",
-                        "move_right": "Desplaça la visualització cap a la dreta"
+                        "move_right": "Desplaça la visualització cap a la dreta",
+                        "tab_badges": "Etiquetes",
+                        "tab_settings": "Configuració"
                     },
                     "header": "Editar la interfície d'usuari (UI)",
                     "menu": {

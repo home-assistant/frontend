@@ -581,6 +581,7 @@
                 "entity": "相關物件",
                 "group": "以下群組部分",
                 "integration": "整合",
+                "no_related_found": "找不到相關物件。",
                 "scene": "以下場景部分",
                 "script": "以下腳本部分"
             },
@@ -630,6 +631,7 @@
                     "unavailable": "該物件目前不可用。",
                     "update": "更新"
                 },
+                "no_unique_id": "此物件不包含唯一 ID、因此無法由 UI 進行管理設定。",
                 "related": "相關",
                 "settings": "設定"
             },
@@ -1044,7 +1046,7 @@
                         },
                         "integrations": "整合",
                         "integrations_introduction": "Home Assistant Cloud 雲服務整合可連線至其他雲服務、而不需將您的 Home Assistant 暴露在整個網際網路上。",
-                        "integrations_introduction2": "開啟網站 ",
+                        "integrations_introduction2": "開啟網站",
                         "integrations_link_all_features": " 所有可用功能",
                         "manage_account": "管理帳號",
                         "nabu_casa_account": "Nabu Casa 帳號",
@@ -1069,7 +1071,7 @@
                             "no_hooks_yet": "看起來您尚未建立 Webhook，可藉由設定 ",
                             "no_hooks_yet_link_automation": "Webhook 自動化",
                             "no_hooks_yet_link_integration": "Webhook 整合",
-                            "no_hooks_yet2": " 或新增一組 ",
+                            "no_hooks_yet2": "或新增一組",
                             "title": "Webhooks"
                         }
                     },
@@ -1323,6 +1325,7 @@
                         "filter": {
                             "filter": "過濾器",
                             "show_disabled": "顯示關閉物件",
+                            "show_readonly": "顯示唯讀物件",
                             "show_unavailable": "顯示無法使用物件"
                         },
                         "header": "物件",
@@ -1346,6 +1349,7 @@
                         "status": {
                             "disabled": "已關閉",
                             "ok": "確定",
+                            "readonly": "唯讀",
                             "unavailable": "不可用"
                         },
                         "unavailable": "（不可用）"
@@ -1701,7 +1705,10 @@
                         "required_error_msg": "必填欄位",
                         "update": "更新"
                     },
-                    "edit_home_zone": "家庭的所在位置可透過一般設定進行變更。",
+                    "edit_home_zone": "住家的半徑尚無法由前端進行設定、於地圖上拖拉標示以移動住家位置。",
+                    "edit_home_zone_narrow": "住家的半徑尚無法由前端進行設定、但可以於一般設定中變更其位置。",
+                    "go_to_core_config": "切換至一般設定？",
+                    "home_zone_core_config": "住家的位置可以於一般設定頁面中進行編輯、但半徑尚無法編輯。是否要切換至一般設定？",
                     "introduction": "區域允許您指定地球上的特定區域，當人員進入到此區域時、狀態會顯示為該區域名字。區域同時也能夠作為自動化的觸發器或條件設定。",
                     "no_zones_created_yet": "看起來您還沒有新增任何區域。"
                 },
@@ -1781,7 +1788,7 @@
                         "listening_to": "監聽：",
                         "notification_event_fired": "事件 {type} 已成功觸發！",
                         "start_listening": "開始監聽",
-                        "stop_listening": "調整監聽",
+                        "stop_listening": "停止監聽",
                         "subscribe_to": "訂閱事件",
                         "title": "事件",
                         "type": "事件類別"
@@ -1825,7 +1832,7 @@
                         "payload": "負載（允取模版）",
                         "publish": "發佈",
                         "start_listening": "開始監聽",
-                        "stop_listening": "調整監聽",
+                        "stop_listening": "停止監聽",
                         "subscribe_to": "訂閱主題",
                         "title": "MQTT",
                         "topic": "主題"
@@ -1908,6 +1915,11 @@
                         "tap": "點擊：",
                         "toggle": "切換 {name}",
                         "url": "開啟視窗至 {url_path}"
+                    },
+                    "safe-mode": {
+                        "description": "Home Assistant 於載入設定時發生問題、正以安全模式執行中。請參閱錯誤紀錄、以找出問題。",
+                        "header": "安全模式已開啟",
+                        "show_errors": "顯示錯誤"
                     },
                     "shopping-list": {
                         "add_item": "新增項目",
@@ -2072,7 +2084,9 @@
                         "header": "檢視設定",
                         "header_name": "{name} 檢視設定",
                         "move_left": "向左移動視圖",
-                        "move_right": "向右移動視圖"
+                        "move_right": "向右移動視圖",
+                        "tab_badges": "園標圖示",
+                        "tab_settings": "設定"
                     },
                     "header": "編輯 UI",
                     "menu": {

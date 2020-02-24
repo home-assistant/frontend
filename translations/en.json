@@ -1916,6 +1916,11 @@
                         "toggle": "Toggle {name}",
                         "url": "Open window to {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant ran into trouble while loading your configuration and is now running in safe mode. Take a look at the error log to see what went wrong.",
+                        "header": "Safe Mode Activated",
+                        "show_errors": "Show errors"
+                    },
                     "shopping-list": {
                         "add_item": "Add item",
                         "checked_items": "Checked items",
@@ -2079,7 +2084,9 @@
                         "header": "View Configuration",
                         "header_name": "{name} View Configuration",
                         "move_left": "Move view left",
-                        "move_right": "Move view right"
+                        "move_right": "Move view right",
+                        "tab_badges": "Badges",
+                        "tab_settings": "Settings"
                     },
                     "header": "Edit UI",
                     "menu": {

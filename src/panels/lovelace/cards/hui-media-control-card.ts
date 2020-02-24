@@ -26,6 +26,7 @@ import {
   SUPPORTS_PLAY,
   fetchMediaPlayerThumbnailWithCache,
   SUPPORT_STOP,
+  SUPPORT_SEEK,
 } from "../../../data/media-player";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { HomeAssistant, MediaEntity } from "../../../types";
@@ -118,7 +119,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               <paper-progress
                 .max="${stateObj.attributes.media_duration}"
                 .value="${stateObj.attributes.media_position}"
-                class="progress"
+                class="progress ${classMap({
+                  seek: supportsFeature(stateObj, SUPPORT_SEEK),
+                })}"
+                @click=${(e: MouseEvent) => this._handleSeek(e, stateObj)}
               ></paper-progress>
             `}
         <div class="controls">
@@ -209,10 +213,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
 
-    const oldImage = oldHass
-      ? oldHass.states[this._config.entity].attributes.entity_picture
-      : undefined;
-    const newImage = this.hass.states[this._config.entity].attributes
+    const oldImage =
+      oldHass?.states[this._config.entity]?.attributes.entity_picture;
+    const newImage = this.hass.states[this._config.entity]?.attributes
       .entity_picture;
 
     if (!newImage || newImage === oldImage) {
@@ -225,11 +228,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    fetchMediaPlayerThumbnailWithCache(this.hass, this._config.entity).then(
-      ({ content_type, content }) => {
+    fetchMediaPlayerThumbnailWithCache(this.hass, this._config.entity)
+      .then(({ content_type, content }) => {
         this._image = `data:${content_type};base64,${content}`;
-      }
-    );
+      })
+      .catch(() => {
+        this._image = undefined;
+      });
   }
 
   private _computeSecondaryTitle(stateObj: HassEntity): string {
@@ -270,6 +275,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   private _handleClick(e: MouseEvent): void {
     this.hass!.callService("media_player", (e.currentTarget! as any).action, {
       entity_id: this._config!.entity,
+    });
+  }
+
+  private _handleSeek(e: MouseEvent, stateObj: MediaEntity): void {
+    if (!supportsFeature(stateObj, SUPPORT_SEEK)) {
+      return;
+    }
+
+    const percent = e.offsetX / this.offsetWidth;
+    const position = (e.currentTarget! as any).max * percent;
+
+    this.hass!.callService("media_player", "media_seek", {
+      entity_id: this._config!.entity,
+      seek_position: position,
     });
   }
 
@@ -382,6 +401,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         margin-top: calc(-1 * var(--paper-progress-height, 4px));
         --paper-progress-active-color: var(--accent-color);
         --paper-progress-container-color: rgba(200, 200, 200, 0.5);
+      }
+
+      .seek:hover {
+        --paper-progress-height: 8px;
       }
     `;
   }

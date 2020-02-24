@@ -585,7 +585,7 @@
                     "last_action": "Posledná akcia"
                 },
                 "sun": {
-                    "elevation": "Nadmorská výška",
+                    "elevation": "Výška nad horizontom",
                     "rising": "Vychádzajúce",
                     "setting": "Zapadajúce"
                 },

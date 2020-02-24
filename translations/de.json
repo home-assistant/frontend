@@ -581,6 +581,7 @@
                 "entity": "Verwandte Entitäten",
                 "group": "Teil der folgenden Gruppen",
                 "integration": "Integration",
+                "no_related_found": "Es wurden keine verwandten Elemente gefunden.",
                 "scene": "Teil der folgenden Szenen",
                 "script": "Teil der folgenden Skripte"
             },
@@ -630,6 +631,7 @@
                     "unavailable": "Diese Entität ist derzeit nicht verfügbar.",
                     "update": "AKTUALISIEREN"
                 },
+                "no_unique_id": "Diese Entität hat keine eindeutige ID, daher können die Einstellungen nicht über die UI verwaltet werden.",
                 "related": "Verwandte",
                 "settings": "Einstellungen"
             },
@@ -1323,6 +1325,7 @@
                         "filter": {
                             "filter": "Filter",
                             "show_disabled": "Anzeigen deaktivierter Entitäten",
+                            "show_readonly": "Anzeigen schreibgeschützter Entitäten",
                             "show_unavailable": "Anzeigen nicht verfügbarer Entitäten"
                         },
                         "header": "Entitäten",
@@ -1346,6 +1349,7 @@
                         "status": {
                             "disabled": "Deaktiviert",
                             "ok": "Ok",
+                            "readonly": "Schreibgeschützt",
                             "unavailable": "Nicht verfügbar"
                         },
                         "unavailable": "(nicht verfügbar)"
@@ -1702,6 +1706,7 @@
                         "update": "Aktualisieren"
                     },
                     "edit_home_zone": "Der Standort Ihres Hauses kann in der allgemeinen Konfiguration geändert werden.",
+                    "go_to_core_config": "Zur allgemeinen Konfiguration gehen?",
                     "introduction": "Mit Zonen können Sie bestimmte Regionen auf der Erde angeben. Befindet sich eine Person in einer Zone, übernimmt der Zustand den Namen aus der Zone. Zonen können auch als Auslöser oder Bedingung in Automatisierungs-Setups verwendet werden.",
                     "no_zones_created_yet": "Es sieht so aus, als hätten Sie noch keine Zonen erstellt."
                 },
@@ -1909,6 +1914,10 @@
                         "toggle": "{name} umschalten",
                         "url": "Fenster zu {url_path} öffnen"
                     },
+                    "safe-mode": {
+                        "header": "Abgesicherter Modus aktiviert",
+                        "show_errors": "Fehler anzeigen"
+                    },
                     "shopping-list": {
                         "add_item": "Artikel hinzufügen",
                         "checked_items": "Markierte Artikel",
@@ -2072,7 +2081,8 @@
                         "header": "Konfiguration anzeigen",
                         "header_name": "{name} Konfiguration anzeigen",
                         "move_left": "Ansicht nach links verschieben",
-                        "move_right": "Ansicht nach rechts verschieben"
+                        "move_right": "Ansicht nach rechts verschieben",
+                        "tab_settings": "Einstellungen"
                     },
                     "header": "Benutzeroberfläche bearbeiten",
                     "menu": {

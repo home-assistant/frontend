@@ -581,6 +581,7 @@
                 "entity": "Entidades relacionadas",
                 "group": "Parte de los siguientes grupos",
                 "integration": "Integración",
+                "no_related_found": "No se encontraron elementos relacionados.",
                 "scene": "Parte de las siguientes escenas",
                 "script": "Parte de los siguientes scripts"
             },
@@ -630,6 +631,7 @@
                     "unavailable": "Esta entidad no está disponible actualmente.",
                     "update": "ACTUALIZAR"
                 },
+                "no_unique_id": "Esta entidad no tiene una ID única, por lo que su configuración no se puede administrar desde la IU.",
                 "related": "Relacionado",
                 "settings": "Configuración"
             },
@@ -1323,6 +1325,7 @@
                         "filter": {
                             "filter": "Filtrar",
                             "show_disabled": "Mostrar entidades deshabilitadas",
+                            "show_readonly": "Mostrar entidades de solo lectura",
                             "show_unavailable": "Mostrar entidades no disponibles"
                         },
                         "header": "Entidades",
@@ -1346,6 +1349,7 @@
                         "status": {
                             "disabled": "Deshabilitado",
                             "ok": "De acuerdo",
+                            "readonly": "Solo lectura",
                             "unavailable": "No disponible"
                         },
                         "unavailable": "(no disponible)"
@@ -1701,7 +1705,10 @@
                         "required_error_msg": "Este campo es obligatorio",
                         "update": "Actualizar"
                     },
-                    "edit_home_zone": "La ubicación de tu casa se puede cambiar en la configuración general.",
+                    "edit_home_zone": "El radio de la zona de tu casa aún no se puede editar desde la interfaz. Arrastra el marcador en el mapa para mover la zona de tu casa.",
+                    "edit_home_zone_narrow": "El radio de la zona de tu casa aún no se puede editar desde la interfaz. La ubicación se puede cambiar desde la configuración general.",
+                    "go_to_core_config": "¿Ir a la configuración general?",
+                    "home_zone_core_config": "La ubicación de la zona de tu casa se puede editar desde la página de configuración general. El radio de la zona de tu casa aún no se puede editar desde la interfaz. ¿Quieres ir a la configuración general?",
                     "introduction": "Las zonas permiten especificar determinadas regiones de la tierra. Cuando una persona está dentro de una zona, su estado tomará el nombre de la zona. Las zonas también se pueden utilizar como desencadenante o condición dentro de las configuraciones de automatización.",
                     "no_zones_created_yet": "Parece que aún no has creado ninguna zona."
                 },
@@ -1908,6 +1915,11 @@
                         "tap": "Toque:",
                         "toggle": "Alternar {name}",
                         "url": "Abrir ventana a {url_path}"
+                    },
+                    "safe-mode": {
+                        "description": "Home Assistant tuvo problemas al cargar tu configuración y ahora se está ejecutando en modo seguro. Echa un vistazo al registro de errores para ver qué salió mal.",
+                        "header": "Modo Seguro Activado",
+                        "show_errors": "Mostrar errores"
                     },
                     "shopping-list": {
                         "add_item": "Añadir artículo",

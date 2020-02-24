@@ -560,14 +560,14 @@
             "device-picker": {
                 "clear": "Wyczyść",
                 "device": "Urządzenie",
-                "show_devices": "Wyświetl urządzenia",
+                "show_devices": "Pokaż urządzenia",
                 "toggle": "Przełącz"
             },
             "entity": {
                 "entity-picker": {
                     "clear": "Wyczyść",
                     "entity": "Encja",
-                    "show_entities": "Wyświetl encje"
+                    "show_entities": "Pokaż encje"
                 }
             },
             "history_charts": {
@@ -581,6 +581,7 @@
                 "entity": "Powiązane encje",
                 "group": "Element następujących grup",
                 "integration": "Integracja",
+                "no_related_found": "Nie znaleziono powiązanych elementów.",
                 "scene": "Element następujących scen",
                 "script": "Element następujących skryptów"
             },
@@ -630,6 +631,7 @@
                     "unavailable": "Ta encja nie jest obecnie dostępna.",
                     "update": "AKTUALIZUJ"
                 },
+                "no_unique_id": "Ten encja nie ma unikalnego identyfikatora, dlatego z poziomu interfejsu użytkownika nie można zarządzać jej ustawieniami.",
                 "related": "Powiązane",
                 "settings": "Ustawienia"
             },
@@ -1323,6 +1325,7 @@
                         "filter": {
                             "filter": "Filtr",
                             "show_disabled": "Wyświetlaj wyłączone encje",
+                            "show_readonly": "Wyświetlaj encje tylko do odczytu",
                             "show_unavailable": "Wyświetlaj niedostępne encje"
                         },
                         "header": "Rejestr encji",
@@ -1346,6 +1349,7 @@
                         "status": {
                             "disabled": "Wyłączone",
                             "ok": "Ok",
+                            "readonly": "Tylko do odczytu",
                             "unavailable": "Niedostępne"
                         },
                         "unavailable": "(niedostępne)"
@@ -1511,7 +1515,7 @@
                     "section": {
                         "reloading": {
                             "automation": "Automatyzacje",
-                            "core": "Lokacje i dostosowywanie",
+                            "core": "Lokalizacja i dostosowywanie",
                             "group": "Grupy",
                             "heading": "Ponowne wczytanie konfiguracji",
                             "introduction": "Niektóre części konfiguracji można wczytać od nowa bez konieczności ponownego uruchamiania Home Assistant'a. Naciśnięcie poniższych przycisków wczyta ponownie daną część konfiguracji.",
@@ -1701,7 +1705,10 @@
                         "required_error_msg": "To pole jest wymagane",
                         "update": "Aktualizuj"
                     },
-                    "edit_home_zone": "Lokalizację domu można zmienić w konfiguracji ogólnej.",
+                    "edit_home_zone": "Lokalizację strefy domowej można zmienić w konfiguracji ogólnej.",
+                    "edit_home_zone_narrow": "Promienia strefy domowej nie można jeszcze edytować z poziomu interfejsu użytkownika. Lokalizację tej strefy można zmienić w konfiguracji ogólnej.",
+                    "go_to_core_config": "Czy chcesz przejść do konfiguracji ogólnej?",
+                    "home_zone_core_config": "Lokalizację strefy domowej można edytować w konfiguracji ogólnej. Promienia strefy domowej nie można jeszcze edytować z poziomu interfejsu użytkownika. Czy chcesz przejść do konfiguracji ogólnej?",
                     "introduction": "Strefy pozwalają określić regiony na ziemi. Gdy dana osoba znajduje się w strefie, jej encja pobierze stan z nazwy strefy. Strefy mogą być również używane jako wyzwalacz lub warunek w automatyzacjach.",
                     "no_zones_created_yet": "Wygląda na to, że nie utworzyłeś jeszcze żadnych stref."
                 },
@@ -1909,6 +1916,11 @@
                         "toggle": "Przełącz {name}",
                         "url": "Otwórz okno do {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Podczas ładowania konfiguracji Home Assistant napotkał problemy i działa teraz w trybie awaryjnym. Zajrzyj do loga, aby sprawdzić, co poszło nie tak.",
+                        "header": "Tryb awaryjny aktywny",
+                        "show_errors": "Pokaż błędy"
+                    },
                     "shopping-list": {
                         "add_item": "Dodaj pozycję",
                         "checked_items": "Pozycje zaznaczone",
@@ -1940,7 +1952,7 @@
                         },
                         "entities": {
                             "name": "Encje",
-                            "show_header_toggle": "Pokaż przełącznik w nagłówku?",
+                            "show_header_toggle": "Pokaż przełącznik w nagłówku",
                             "toggle": "Przełącz encje"
                         },
                         "entity-button": {
@@ -1973,9 +1985,9 @@
                             "minimum": "Minimum",
                             "name": "Nazwa",
                             "refresh_interval": "Częstotliwość odświeżania",
-                            "show_icon": "Pokaż ikonę?",
-                            "show_name": "Pokaż nazwę?",
-                            "show_state": "Pokaż stan?",
+                            "show_icon": "Wyświetlanie ikony",
+                            "show_name": "Wyświetlanie nazwy",
+                            "show_state": "Wyświetlanie stanu",
                             "tap_action": "Akcja dotknięcia",
                             "theme": "Motyw",
                             "title": "Tytuł",
@@ -1999,7 +2011,7 @@
                             "name": "Światło"
                         },
                         "map": {
-                            "dark_mode": "Tryb ciemny?",
+                            "dark_mode": "Tryb ciemny",
                             "default_zoom": "Domyślne powiększenie",
                             "geo_location_sources": "Źródła geolokalizacji",
                             "name": "Mapa",
@@ -2072,7 +2084,9 @@
                         "header": "Konfiguracja widoku",
                         "header_name": "Konfiguracja widoku {name}",
                         "move_left": "Przesuń widok w lewo",
-                        "move_right": "Przesuń widok w prawo"
+                        "move_right": "Przesuń widok w prawo",
+                        "tab_badges": "Odznaki",
+                        "tab_settings": "Ustawienia"
                     },
                     "header": "Edycja interfejsu użytkownika",
                     "menu": {
@@ -2363,7 +2377,7 @@
                     "learn_auth_requests": "Dowiedz się, jak tworzyć uwierzytelnione żądania.",
                     "not_used": "Nigdy nie był używany",
                     "prompt_copy_token": "Skopiuj token. Nie będzie on już ponownie wyświetlany.",
-                    "prompt_name": "Nazwa?"
+                    "prompt_name": "Nazwa"
                 },
                 "mfa_setup": {
                     "close": "Zamknij",
