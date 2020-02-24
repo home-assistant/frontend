@@ -1,6 +1,6 @@
 import "@polymer/paper-input/paper-textarea";
 
-import deepClone from "deep-clone-simple";
+import deepFreeze from "deep-freeze";
 
 import { createCardElement } from "../../create-element/create-card-element";
 import { HomeAssistant } from "../../../../types";
@@ -14,6 +14,7 @@ export class HuiCardPreview extends HTMLElement {
   private _hass?: HomeAssistant;
   private _element?: LovelaceCard;
   private _config?: LovelaceCardConfig;
+  private _error: boolean = false;
 
   constructor() {
     super();
@@ -37,12 +38,11 @@ export class HuiCardPreview extends HTMLElement {
   }
 
   set error(error: ConfigError) {
-    const configValue = createErrorCardConfig(
-      `${error.type}: ${error.message}`,
-      undefined
-    );
+    this._error = true;
 
-    this._createCard(configValue);
+    this._createCard(
+      createErrorCardConfig(`${error.type}: ${error.message}`, undefined)
+    );
   }
 
   set config(configValue: LovelaceCardConfig) {
@@ -66,13 +66,17 @@ export class HuiCardPreview extends HTMLElement {
       return;
     }
 
-    if (curConfig && configValue.type === curConfig.type) {
+    // in case of an error we always want to recreate the element
+    if (!this._error && curConfig && configValue.type === curConfig.type) {
       try {
-        this._element.setConfig(deepClone(configValue));
+        this._error = false;
+        this._element.setConfig(deepFreeze(configValue));
       } catch (err) {
+        this._error = true;
         this._createCard(createErrorCardConfig(err.message, configValue));
       }
     } else {
+      this._error = false;
       this._createCard(configValue);
     }
   }
@@ -80,6 +84,10 @@ export class HuiCardPreview extends HTMLElement {
   private _createCard(configValue: LovelaceCardConfig): void {
     this._cleanup();
     this._element = createCardElement(configValue);
+
+    if (this._element.tagName === "HUI-ERROR-CARD") {
+      this._error = true;
+    }
 
     if (this._hass) {
       this._element!.hass = this._hass;
