@@ -52,7 +52,7 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
 
         .filters {
           display: flex;
-          align-items: center;
+          align-items: flex-end;
         }
 
         :host([narrow]) .filters {
@@ -73,7 +73,10 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
           max-width: 100px;
           margin-right: 16px;
           --paper-input-container-label-floating: {
-            padding-bottom: 10px;
+            padding-bottom: 11px;
+          }
+          --paper-input-suffix: {
+            height: 24px;
           }
         }
 
@@ -92,6 +95,9 @@ class HaPanelLogbook extends LocalizeMixin(PolymerElement) {
           display: inline-block;
           flex-grow: 1;
           max-width: 400px;
+          --paper-input-suffix: {
+            height: 24px;
+          }
         }
 
         :host([narrow]) ha-entity-picker {
