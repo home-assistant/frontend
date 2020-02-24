@@ -5,6 +5,7 @@ import {
 } from "../../data/lovelace";
 import { Constructor, HomeAssistant } from "../../types";
 import { LovelaceHeaderFooterConfig } from "./header-footer/types";
+import { Item } from "../../@types/Muuri/item";
 
 declare global {
   // eslint-disable-next-line
@@ -56,4 +57,8 @@ export interface LovelaceCardEditor extends HTMLElement {
   hass?: HomeAssistant;
   lovelace?: LovelaceConfig;
   setConfig(config: LovelaceCardConfig): void;
+}
+
+export interface MuuriItem extends HTMLElement {
+  cardConfig?: LovelaceCardConfig;
 }

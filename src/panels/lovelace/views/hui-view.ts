@@ -19,7 +19,7 @@ import {
 } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { classMap } from "lit-html/directives/class-map";
-import { Lovelace, LovelaceCard, LovelaceBadge } from "../types";
+import { Lovelace, LovelaceCard, LovelaceBadge, MuuriItem } from "../types";
 import { createCardElement } from "../create-element/create-card-element";
 import { showEditCardDialog } from "../editor/card-editor/show-edit-card-dialog";
 import { HuiErrorCard } from "../cards/hui-error-card";
@@ -385,7 +385,7 @@ export class HUIView extends LitElement {
       const element = this.createCardElement(cardConfig);
       elements.push(element);
 
-      const item = document.createElement("div");
+      const item = document.createElement("div") as MuuriItem;
       item.classList.add("item");
 
       const itemContent = document.createElement("div");
