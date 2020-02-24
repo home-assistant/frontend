@@ -67,9 +67,10 @@ export class HUIView extends LitElement {
   private _resizeObserver?: ResizeObserver;
   private _debouncedResizeListener = debounce(
     () => {
-      if (!this._grids) {
-        return;
+      if (!this._grids.length) {
+        this._buildMuuriGrids();
       }
+
       this._grids.forEach((grid) => {
         grid.refreshItems().layout();
       });
@@ -217,7 +218,7 @@ export class HUIView extends LitElement {
           width: 100%;
           z-index: 1;
           box-sizing: border-box;
-          padding: 4px;
+          padding: 0 4px;
         }
 
         .item.muuri-item-dragging {
@@ -288,6 +289,10 @@ export class HUIView extends LitElement {
         return;
       }
       this._resizeObserver.disconnect();
+    }
+
+    if (this.lovelace!.editMode && this.editCodeLoaded) {
+      this._attachObserver();
     }
 
     if (
@@ -376,44 +381,6 @@ export class HUIView extends LitElement {
       columns.push(columnEl);
     }
 
-    if (this.lovelace!.editMode && this.editCodeLoaded) {
-      this._attachObserver();
-
-      options = {
-        ...options,
-        dragContainer: this.shadowRoot!.getElementById("columns")!, // Gives ability to drag outside of one grid
-        dragSort: () => {
-          // Determines which Grids to drag to
-          return this._grids;
-        },
-      };
-
-      columns.forEach((columnEl) => {
-        this._grids.push(
-          new muuri(columnEl, options) // The events here make sure the card doesnt grow to the size of the window
-            .on("dragStart", (item) => {
-              item.getElement().style.width = item.getWidth() + "px";
-              item.getElement().style.height = item.getHeight() + "px";
-            })
-            .on("dragReleaseEnd", (item) => {
-              item.getElement().style.width = "";
-              item.getElement().style.height = "";
-              this._storeLayout();
-            })
-            .on("beforeSend", (data) => {
-              data.item.getElement().style.width = data.item.getWidth() + "px";
-              data.item.getElement().style.height =
-                data.item.getHeight() + "px";
-            })
-            .on("beforeReceive", (data) => {
-              data.item.getElement().style.width = data.item.getWidth() + "px";
-              data.item.getElement().style.height =
-                data.item.getHeight() + "px";
-            })
-        );
-      });
-    }
-
     config.cards.forEach((cardConfig, cardIndex) => {
       const element = this.createCardElement(cardConfig);
       elements.push(element);
@@ -427,7 +394,6 @@ export class HUIView extends LitElement {
       if (!this.lovelace!.editMode || !this.editCodeLoaded) {
         itemContent.appendChild(element);
         item.appendChild(itemContent);
-        columns[cardIndex % this.columns!].appendChild(item);
       } else {
         const wrapper = document.createElement("hui-card-options");
         wrapper.hass = this.hass;
@@ -442,8 +408,9 @@ export class HUIView extends LitElement {
         this._resizeObserver!.observe(item);
 
         item.appendChild(itemContent);
-        this._grids[cardIndex % this.columns!].add(item);
       }
+
+      columns[cardIndex % this.columns!].appendChild(item);
     });
 
     this._cards = elements;
@@ -469,6 +436,46 @@ export class HUIView extends LitElement {
     this._badges = this._cards!.map((curBadgeEl) =>
       curBadgeEl === badgeElToReplace ? newBadgeEl : curBadgeEl
     );
+  }
+
+  private _buildMuuriGrids(): void {
+    options = {
+      ...options,
+      dragContainer: this.shadowRoot!.getElementById("columns")!, // Gives ability to drag outside of one grid
+      dragSort: () => {
+        // Determines which Grids to drag to
+        return this._grids;
+      },
+    };
+
+    const columns = this.shadowRoot!.querySelectorAll(".column");
+
+    columns.forEach((columnEl) => {
+      this._grids.push(
+        new muuri(columnEl, options) // The events here make sure the card doesnt grow to the size of the window
+          .on("dragStart", (item) => {
+            item.getElement().style.width = item.getWidth() + "px";
+            item.getElement().style.height = item.getHeight() + "px";
+          })
+          .on("dragReleaseEnd", (item) => {
+            item.getElement().style.width = "";
+            item.getElement().style.height = "";
+            this._storeLayout();
+
+            this._grids.forEach((grid) => {
+              grid.refreshItems().layout();
+            });
+          })
+          .on("beforeSend", (data) => {
+            data.item.getElement().style.width = data.item.getWidth() + "px";
+            data.item.getElement().style.height = data.item.getHeight() + "px";
+          })
+          .on("beforeReceive", (data) => {
+            data.item.getElement().style.width = data.item.getWidth() + "px";
+            data.item.getElement().style.height = data.item.getHeight() + "px";
+          })
+      );
+    });
   }
 
   private _storeLayout(): void {
