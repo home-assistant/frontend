@@ -273,7 +273,6 @@ export const generateDefaultViewConfig = (
         areaEntities.map((entity) => [entity.entity_id, entity]),
         {
           title: area.name,
-          show_header_toggle: true,
         }
       )
     );
