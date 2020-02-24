@@ -105,31 +105,26 @@ class HaInputNumberForm extends LitElement {
         ></paper-input>
         ${this.hass.userData?.showAdvanced
           ? html`
-              <ha-paper-dropdown-menu
-                label-float
-                dynamic-align
-                .label=${this.hass.localize(
+              <div class="layout horizontal center justified">
+                ${this.hass.localize(
                   "ui.dialogs.helper_settings.input_number.mode"
                 )}
-              >
-                <paper-listbox
-                  slot="dropdown-content"
-                  attr-for-selected="item-mode"
+                <paper-radio-group
                   .selected=${this._mode}
                   @selected-changed=${this._modeChanged}
                 >
-                  <paper-item item-mode="slider">
+                  <paper-radio-button name="slider">
                     ${this.hass.localize(
                       "ui.dialogs.helper_settings.input_number.slider"
                     )}
-                  </paper-item>
-                  <paper-item item-mode="box">
+                  </paper-radio-button>
+                  <paper-radio-button name="box">
                     ${this.hass.localize(
                       "ui.dialogs.helper_settings.input_number.box"
                     )}
-                  </paper-item>
-                </paper-listbox>
-              </ha-paper-dropdown-menu>
+                  </paper-radio-button>
+                </paper-radio-group>
+              </div>
               ${this._mode === "slider"
                 ? html`
                     <paper-input
@@ -203,9 +198,6 @@ class HaInputNumberForm extends LitElement {
       css`
         .form {
           color: var(--primary-text-color);
-        }
-        .row {
-          padding: 16px 0;
         }
         ha-paper-dropdown-menu {
           display: block;

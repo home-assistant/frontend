@@ -19,6 +19,7 @@ import { haStyle } from "../../../../resources/styles";
 import { InputSelect } from "../../../../data/input_select";
 // tslint:disable-next-line: no-duplicate-imports
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 
 @customElement("ha-input_select-form")
 class HaInputSelectForm extends LitElement {
@@ -79,7 +80,7 @@ class HaInputSelectForm extends LitElement {
         ${this._options.length
           ? this._options.map((option, index) => {
               return html`
-                <paper-item>
+                <paper-item class="option">
                   <paper-item-body> ${option} </paper-item-body>
                   <paper-icon-button
                     .index=${index}
@@ -106,6 +107,7 @@ class HaInputSelectForm extends LitElement {
             .label=${this.hass!.localize(
               "ui.dialogs.helper_settings.input_select.add_option"
             )}
+            @keydown=${this._handleKeyAdd}
           ></paper-input>
           <mwc-button @click=${this._addOption}
             >${this.hass!.localize(
@@ -151,6 +153,14 @@ class HaInputSelectForm extends LitElement {
     });
   }
 
+  private _handleKeyAdd(ev: KeyboardEvent) {
+    ev.stopPropagation();
+    if (ev.keyCode !== 13) {
+      return;
+    }
+    this._addOption();
+  }
+
   private _addOption() {
     const input = this._optionInput;
     if (!input || !input.value) {
@@ -162,7 +172,15 @@ class HaInputSelectForm extends LitElement {
     input.value = "";
   }
 
-  private _removeOption(ev: Event) {
+  private async _removeOption(ev: Event) {
+    if (
+      !(await showConfirmationDialog(this, {
+        title: "Delete this item?",
+        text: "Are you sure you want to delete this item?",
+      }))
+    ) {
+      return;
+    }
     const index = (ev.target as any).index;
     const options = [...this._options];
     options.splice(index, 1);
@@ -199,7 +217,7 @@ class HaInputSelectForm extends LitElement {
         .form {
           color: var(--primary-text-color);
         }
-        paper-item {
+        .option {
           border: 1px solid var(--divider-color);
           border-radius: 4px;
           margin-top: 4px;

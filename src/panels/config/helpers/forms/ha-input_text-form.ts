@@ -101,31 +101,26 @@ class HaInputTextForm extends LitElement {
                   "ui.dialogs.helper_settings.input_text.max"
                 )}
               ></paper-input>
-              <ha-paper-dropdown-menu
-                label-float
-                dynamic-align
-                .label=${this.hass.localize(
+              <div class="layout horizontal center justified">
+                ${this.hass.localize(
                   "ui.dialogs.helper_settings.input_text.mode"
                 )}
-              >
-                <paper-listbox
-                  slot="dropdown-content"
-                  attr-for-selected="item-mode"
+                <paper-radio-group
                   .selected=${this._mode}
                   @selected-changed=${this._modeChanged}
                 >
-                  <paper-item item-mode="text">
+                  <paper-radio-button name="text">
                     ${this.hass.localize(
                       "ui.dialogs.helper_settings.input_text.text"
                     )}
-                  </paper-item>
-                  <paper-item item-mode="password">
+                  </paper-radio-button>
+                  <paper-radio-button name="password">
                     ${this.hass.localize(
                       "ui.dialogs.helper_settings.input_text.password"
                     )}
-                  </paper-item>
-                </paper-listbox>
-              </ha-paper-dropdown-menu>
+                  </paper-radio-button>
+                </paper-radio-group>
+              </div>
               <paper-input
                 .value=${this._pattern}
                 .configValue=${"pattern"}
