@@ -2084,7 +2084,9 @@
                         "header": "Configuració de la visualització",
                         "header_name": "Configuració de la visualització {name}",
                         "move_left": "Desplaça la visualització cap a l'esquerra",
-                        "move_right": "Desplaça la visualització cap a la dreta"
+                        "move_right": "Desplaça la visualització cap a la dreta",
+                        "tab_badges": "Etiquetes",
+                        "tab_settings": "Configuració"
                     },
                     "header": "Editar la interfície d'usuari (UI)",
                     "menu": {
