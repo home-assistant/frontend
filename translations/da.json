@@ -2084,7 +2084,9 @@
                         "header": "Vis konfiguration",
                         "header_name": "{name}-visningskonfiguration",
                         "move_left": "Flyt visningen til venstre",
-                        "move_right": "Flyt visningen til højre"
+                        "move_right": "Flyt visningen til højre",
+                        "tab_badges": "Badges",
+                        "tab_settings": "Indstillinger"
                     },
                     "header": "Rediger brugerflade",
                     "menu": {
