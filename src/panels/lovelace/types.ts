@@ -5,7 +5,6 @@ import {
 } from "../../data/lovelace";
 import { Constructor, HomeAssistant } from "../../types";
 import { LovelaceHeaderFooterConfig } from "./header-footer/types";
-import { Item } from "../../@types/Muuri/item";
 
 declare global {
   // eslint-disable-next-line
