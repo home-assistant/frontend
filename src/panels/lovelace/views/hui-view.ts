@@ -393,7 +393,6 @@ export class HUIView extends LitElement {
 
       if (!this.lovelace!.editMode || !this.editCodeLoaded) {
         itemContent.appendChild(element);
-        item.appendChild(itemContent);
       } else {
         const wrapper = document.createElement("hui-card-options");
         wrapper.hass = this.hass;
@@ -406,10 +405,9 @@ export class HUIView extends LitElement {
         item.cardConfig = cardConfig;
 
         this._resizeObserver!.observe(item);
-
-        item.appendChild(itemContent);
       }
 
+      item.appendChild(itemContent);
       columns[cardIndex % this.columns!].appendChild(item);
     });
 
