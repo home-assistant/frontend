@@ -1,5 +1,5 @@
 import Item from "./item";
-import Muuri from ".";
+import Muuri from "muuri";
 
 // Type this!!!
 export type DraggerEvent = any;
