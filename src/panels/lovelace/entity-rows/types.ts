@@ -39,6 +39,7 @@ export interface CastConfig {
   icon: string;
   name: string;
   view: string | number;
+  dashboard?: string;
   // Hide the row if either unsupported browser or no API available.
   hide_if_unavailable: boolean;
 }

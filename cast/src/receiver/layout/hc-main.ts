@@ -34,6 +34,7 @@ export class HcMain extends HassElement {
   @property() private _error?: string;
 
   private _unsubLovelace?: UnsubscribeFunc;
+  private _urlPath?: string | null;
 
   public processIncomingMessage(msg: HassMessage) {
     if (msg.type === "connect") {
@@ -108,6 +109,7 @@ export class HcMain extends HassElement {
     if (this.hass) {
       status.hassUrl = this.hass.auth.data.hassUrl;
       status.lovelacePath = this._lovelacePath!;
+      status.urlPath = this._urlPath;
     }
 
     if (senderId) {
@@ -163,8 +165,12 @@ export class HcMain extends HassElement {
       this._error = "Cannot show Lovelace because we're not connected.";
       return;
     }
-    if (!this._unsubLovelace) {
-      const llColl = getLovelaceCollection(this.hass!.connection);
+    if (!this._unsubLovelace || this._urlPath !== msg.urlPath) {
+      this._urlPath = msg.urlPath;
+      if (this._unsubLovelace) {
+        this._unsubLovelace();
+      }
+      const llColl = getLovelaceCollection(this.hass!.connection, msg.urlPath);
       // We first do a single refresh because we need to check if there is LL
       // configuration.
       try {

@@ -24,7 +24,6 @@ import {
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { generateLovelaceConfigFromHass } from "./common/generate-lovelace-config";
 import { showToast } from "../../util/toast";
-import { loadLovelaceResources } from "./common/load-resources";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
@@ -33,7 +32,6 @@ interface LovelacePanelConfig {
 }
 
 let editorLoaded = false;
-let resourcesLoaded = false;
 
 class LovelacePanel extends LitElement {
   @property() public panel?: PanelInfo<LovelacePanelConfig>;
@@ -69,12 +67,12 @@ class LovelacePanel extends LitElement {
     if (state === "loaded") {
       return html`
         <hui-root
-          .hass="${this.hass}"
-          .lovelace="${this.lovelace}"
-          .route="${this.route}"
-          .columns="${this._columns}"
+          .hass=${this.hass}
+          .lovelace=${this.lovelace}
+          .route=${this.route}
+          .columns=${this._columns}
           .narrow=${this.narrow}
-          @config-refresh="${this._forceFetchConfig}"
+          @config-refresh=${this._forceFetchConfig}
         ></hui-root>
       `;
     }
@@ -136,23 +134,6 @@ class LovelacePanel extends LitElement {
       // we don't want to unsub as we want to stay informed of updates
       subscribeLovelaceUpdates(this.hass!.connection, this.urlPath, () =>
         this._lovelaceChanged()
-      );
-    } else if (!resourcesLoaded) {
-      // We only load resources from default config.
-      resourcesLoaded = true;
-      const llWindow = window as WindowWithLovelaceProm;
-      // Load default LL config to load resources.
-      (
-        llWindow.llConfProm || fetchConfig(this.hass!.connection, null, false)
-      ).then(
-        (conf) => {
-          if (conf.resources) {
-            loadLovelaceResources(conf.resources, this.hass!.auth.data.hassUrl);
-          }
-        },
-        () => {
-          // do nothing on errors.
-        }
       );
     }
     // reload lovelace on reconnect so we are sure we have the latest config
@@ -378,10 +359,6 @@ class LovelacePanel extends LitElement {
         }
       },
     };
-    if (!resourcesLoaded && urlPath === null && config.resources) {
-      resourcesLoaded = true;
-      loadLovelaceResources(config.resources, this.hass!.auth.data.hassUrl);
-    }
   }
 
   private _updateLovelace(props: Partial<Lovelace>) {
