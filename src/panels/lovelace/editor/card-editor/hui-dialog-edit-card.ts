@@ -8,6 +8,8 @@ import {
   property,
 } from "lit-element";
 
+import deepFreeze from "deep-freeze";
+
 import { HomeAssistant } from "../../../../types";
 import { HASSDomEvent } from "../../../../common/dom/fire_event";
 import {
@@ -55,6 +57,9 @@ export class HuiDialogEditCard extends LitElement {
     this._viewConfig = params.lovelaceConfig.views[view];
     this._cardConfig =
       card !== undefined ? this._viewConfig.cards![card] : undefined;
+    if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
+      this._cardConfig = deepFreeze(this._cardConfig);
+    }
   }
 
   private get _cardEditorEl(): HuiCardEditor | null {
@@ -248,7 +253,7 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private _handleCardPicked(ev) {
-    this._cardConfig = ev.detail.config;
+    this._cardConfig = deepFreeze(ev.detail.config);
     if (this._params!.entities && this._params!.entities.length > 0) {
       if (Object.keys(this._cardConfig!).includes("entities")) {
         this._cardConfig!.entities = this._params!.entities;
@@ -260,7 +265,7 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private _handleConfigChanged(ev) {
-    this._cardConfig = ev.detail.config;
+    this._cardConfig = deepFreeze(ev.detail.config);
     this._error = ev.detail.error;
   }
 
