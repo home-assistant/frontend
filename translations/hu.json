@@ -2084,7 +2084,9 @@
                         "header": "Nézet konfigurálása",
                         "header_name": "{name} Konfiguráció megtekintése",
                         "move_left": "Nézet mozgatása balra",
-                        "move_right": "Nézet mozgatása jobbra"
+                        "move_right": "Nézet mozgatása jobbra",
+                        "tab_badges": "Kitűzők",
+                        "tab_settings": "Beállítások"
                     },
                     "header": "Felhasználói felület szerkesztése",
                     "menu": {

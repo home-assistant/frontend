@@ -631,6 +631,7 @@
                     "unavailable": "Diese Entität ist derzeit nicht verfügbar.",
                     "update": "AKTUALISIEREN"
                 },
+                "no_unique_id": "Diese Entität hat keine eindeutige ID, daher können die Einstellungen nicht über die UI verwaltet werden.",
                 "related": "Verwandte",
                 "settings": "Einstellungen"
             },
@@ -1324,6 +1325,7 @@
                         "filter": {
                             "filter": "Filter",
                             "show_disabled": "Anzeigen deaktivierter Entitäten",
+                            "show_readonly": "Anzeigen schreibgeschützter Entitäten",
                             "show_unavailable": "Anzeigen nicht verfügbarer Entitäten"
                         },
                         "header": "Entitäten",
@@ -2079,7 +2081,8 @@
                         "header": "Konfiguration anzeigen",
                         "header_name": "{name} Konfiguration anzeigen",
                         "move_left": "Ansicht nach links verschieben",
-                        "move_right": "Ansicht nach rechts verschieben"
+                        "move_right": "Ansicht nach rechts verschieben",
+                        "tab_settings": "Einstellungen"
                     },
                     "header": "Benutzeroberfläche bearbeiten",
                     "menu": {
