@@ -1519,7 +1519,7 @@
                             "group": "Recharger les groupes",
                             "heading": "Rechargement de la configuration",
                             "introduction": "Certaines parties de Home Assistant peuvent être rechargées sans nécessiter de redémarrage. Le fait de cliquer sur recharger déchargera leur configuration actuelle et chargera la nouvelle.",
-                            "person": "Recharger des personnes",
+                            "person": "Recharger les personnes",
                             "scene": "Recharger les scènes",
                             "script": "Recharger les scripts",
                             "zone": "Recharger les zones"
@@ -1706,7 +1706,9 @@
                         "update": "Mettre à jour"
                     },
                     "edit_home_zone": "L'emplacement de votre maison peut être modifié dans la configuration générale.",
+                    "edit_home_zone_narrow": "Le rayon de la zone d'habitation ne peut pas encore être modifié depuis le frontend. L'emplacement peut être modifié par rapport à la configuration générale.",
                     "go_to_core_config": "Configuration générale",
+                    "home_zone_core_config": "L'emplacement de votre zone d'habitation est modifiable à partir de la page de configuration générale. Le rayon de la zone d'habitation ne peut pas encore être modifié depuis le frontend. Voulez-vous passer à la configuration générale ?",
                     "introduction": "Les zones vous permettent de spécifier certaines régions sur la terre. Lorsqu'une personne se trouve dans une zone, l'état prend le nom de la zone. Les zones peuvent également être utilisées comme déclencheur ou condition dans les configurations d'automation.",
                     "no_zones_created_yet": "Il semble que vous n'ayez pas encore créé de zones."
                 },
@@ -1914,6 +1916,11 @@
                         "toggle": "Permuter {name}",
                         "url": "Ouvrir la fenêtre vers {url_path}."
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant a rencontré des problèmes lors du chargement de votre configuration et fonctionne désormais en mode sans échec. Jetez un œil au journal des erreurs pour voir ce qui ne va pas.",
+                        "header": "Mode sans échec activé",
+                        "show_errors": "Afficher les erreurs"
+                    },
                     "shopping-list": {
                         "add_item": "Ajouter un élément",
                         "checked_items": "Éléments cochés",
@@ -2077,7 +2084,9 @@
                         "header": "Voir la configuration",
                         "header_name": "{name} Voir la configuration",
                         "move_left": "Déplacer la vue à gauche",
-                        "move_right": "Déplacer la vue à droite"
+                        "move_right": "Déplacer la vue à droite",
+                        "tab_badges": "Badges",
+                        "tab_settings": "Paramètres"
                     },
                     "header": "Modifier l'interface utilisateur",
                     "menu": {
