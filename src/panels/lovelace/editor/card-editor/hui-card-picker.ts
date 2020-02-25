@@ -7,6 +7,7 @@ import {
   customElement,
 } from "lit-element";
 import "@material/mwc-button";
+import { until } from "lit-html/directives/until";
 
 import "../../../../components/ha-card";
 
@@ -28,54 +29,54 @@ import {
 
 const cardConfigs: CardPickerConfig[] = [
   {
-    lovelaceConfig: { type: "alarm-panel" },
+    lovelaceCardConfig: { type: "alarm-panel" },
     includeDomains: ["alarm_control_panel"],
     name: "Alarm Panel",
   },
   {
-    lovelaceConfig: { type: "entities" },
+    lovelaceCardConfig: { type: "entities" },
     numberOfEntities: 3,
     name: "Entities",
   },
-  { lovelaceConfig: { type: "button" }, name: "Button" },
+  { lovelaceCardConfig: { type: "button" }, name: "Button" },
   {
-    lovelaceConfig: { type: "conditional" },
+    lovelaceCardConfig: { type: "conditional" },
     name: "Conditional",
     description: "Displays another card based on entity states.",
     noPreview: true,
   },
   {
-    lovelaceConfig: { type: "entity-filter" },
+    lovelaceCardConfig: { type: "entity-filter" },
     name: "Entity Filter",
     description:
       "This card allows you to define a list of entities that you want to track only when in a certain state.",
     noPreview: true,
   },
   {
-    lovelaceConfig: { type: "gauge" },
+    lovelaceCardConfig: { type: "gauge" },
     includeDomains: ["sensor"],
     name: "Gauge",
   },
   {
-    lovelaceConfig: { type: "glance" },
+    lovelaceCardConfig: { type: "glance" },
     numberOfEntities: 3,
     name: "Glance",
   },
   {
-    lovelaceConfig: { type: "history-graph" },
+    lovelaceCardConfig: { type: "history-graph" },
     includeDomains: ["sensor"],
     numberOfEntities: 2,
     name: "History Graph",
   },
   {
-    lovelaceConfig: { type: "horizontal-stack" },
+    lovelaceCardConfig: { type: "horizontal-stack" },
     name: "Horizontal Stack",
     description:
       "Horizontal stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column.",
     noPreview: true,
   },
   {
-    lovelaceConfig: {
+    lovelaceCardConfig: {
       type: "iframe",
       url: "https://www.home-assistant.io",
       aspect_ratio: "50%",
@@ -84,18 +85,18 @@ const cardConfigs: CardPickerConfig[] = [
     noEntity: true,
   },
   {
-    lovelaceConfig: { type: "light" },
+    lovelaceCardConfig: { type: "light" },
     includeDomains: ["light"],
     name: "Light",
   },
   {
-    lovelaceConfig: { type: "map", default_zoom: 6 },
+    lovelaceCardConfig: { type: "map", default_zoom: 6 },
     includeDomains: ["device_tracker"],
     name: "Map",
     numberOfEntities: 1,
   },
   {
-    lovelaceConfig: {
+    lovelaceCardConfig: {
       type: "markdown",
       content:
         "The **Markdown** card allows you to write any text. You can style it **bold**, *italicized*, ~strikethrough~ etc. You can do images, links, and more. For more information see the [Markdown Cheatsheet](https://commonmark.org/help).",
@@ -104,12 +105,12 @@ const cardConfigs: CardPickerConfig[] = [
     noEntity: true,
   },
   {
-    lovelaceConfig: { type: "media-control" },
+    lovelaceCardConfig: { type: "media-control" },
     includeDomains: ["media_player"],
     name: "Media Control",
   },
   {
-    lovelaceConfig: {
+    lovelaceCardConfig: {
       type: "picture",
       image:
         "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
@@ -118,7 +119,7 @@ const cardConfigs: CardPickerConfig[] = [
     noEntity: true,
   },
   {
-    lovelaceConfig: {
+    lovelaceCardConfig: {
       type: "picture-entity",
       image:
         "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
@@ -126,7 +127,7 @@ const cardConfigs: CardPickerConfig[] = [
     name: "Picture Entity",
   },
   {
-    lovelaceConfig: {
+    lovelaceCardConfig: {
       type: "picture-glance",
       image:
         "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
@@ -135,7 +136,7 @@ const cardConfigs: CardPickerConfig[] = [
     name: "Picture Glance",
   },
   {
-    lovelaceConfig: {
+    lovelaceCardConfig: {
       type: "plant-status",
     },
     includeDomains: ["plant"],
@@ -143,29 +144,29 @@ const cardConfigs: CardPickerConfig[] = [
     description: "A card for all the lovely botanists out there.",
   },
   {
-    lovelaceConfig: { type: "sensor", graph: "line" },
+    lovelaceCardConfig: { type: "sensor", graph: "line" },
     includeDomains: ["sensor"],
     name: "Sensor",
   },
   {
-    lovelaceConfig: { type: "shopping-list" },
+    lovelaceCardConfig: { type: "shopping-list" },
     name: "Shopping List",
     description:
       "The Shopping List Card allows you to add, edit, check-off, and clear items from your shopping list.",
     noPreview: true,
   },
   {
-    lovelaceConfig: { type: "thermostat" },
+    lovelaceCardConfig: { type: "thermostat" },
     includeDomains: ["climate"],
     name: "Thermostat",
   },
   {
-    lovelaceConfig: { type: "weather-forecast" },
+    lovelaceCardConfig: { type: "weather-forecast" },
     includeDomains: ["weather"],
     name: "Weather Forecast",
   },
   {
-    lovelaceConfig: { type: "vertical-stack" },
+    lovelaceCardConfig: { type: "vertical-stack" },
     name: "Vertical Stack",
     description:
       "Vertical stack allows you to group multiple cards so they always sit in the same column.",
@@ -177,6 +178,7 @@ const cardConfigs: CardPickerConfig[] = [
 export class HuiCardPicker extends LitElement {
   public hass?: HomeAssistant;
   public lovelace?: LovelaceConfig;
+  public entities?: string[];
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
 
   protected render(): TemplateResult {
@@ -186,36 +188,13 @@ export class HuiCardPicker extends LitElement {
         ${cardConfigs
           .filter((cardConfig) => !cardConfig.noPreview)
           .map((cardConfig: CardPickerConfig) => {
-            const lovelaceConfig = !cardConfig.noEntity
-              ? this._getCardConfig(cardConfig)
-              : cardConfig.lovelaceConfig;
-
-            if (!lovelaceConfig) {
-              cardConfig.noPreview = true;
-              return html``;
-            }
-
-            const element = createCardElement(lovelaceConfig);
-            element.hass = this.hass;
-
             return html`
-              <div class="card">
-                <ha-card .header=${cardConfig.name}>
-                  <div class="preview">
-                    <p class="preview-text">Preview:</p>
-                    ${element}
-                  </div>
-                  <div class="options">
-                    <div class="primary-actions">
-                      <mwc-button
-                        @click="${this._cardPicked}"
-                        .type="${cardConfig.lovelaceConfig.type}"
-                        >Select</mwc-button
-                      >
-                    </div>
-                  </div>
-                </ha-card>
-              </div>
+              ${until(
+                this._getCardElement(cardConfig),
+                html`
+                  <paper-spinner active alt="Loading"></paper-spinner>
+                `
+              )}
             `;
           })}
       </div>
@@ -232,7 +211,7 @@ export class HuiCardPicker extends LitElement {
                     <div class="primary-actions">
                       <mwc-button
                         @click="${this._cardPicked}"
-                        .type="${cardConfig.lovelaceConfig.type}"
+                        .config="${cardConfig.lovelaceCardConfig}"
                         >Select</mwc-button
                       >
                     </div>
@@ -339,28 +318,31 @@ export class HuiCardPicker extends LitElement {
   }
 
   private async _cardPicked(ev: Event): Promise<void> {
-    const type = (ev.currentTarget! as CardPickTarget).type;
-
-    const elClass = await getCardElementClass(type);
-    let config: LovelaceCardConfig = { type };
-
-    if (elClass && elClass.getStubConfig) {
-      const cardConfig = elClass.getStubConfig(this.hass!);
-      config = { ...config, ...cardConfig };
-    }
+    const config: LovelaceCardConfig = (ev.currentTarget! as CardPickTarget)
+      .config;
 
     fireEvent(this, "config-changed", { config });
   }
 
-  private _getCardConfig(
+  private async _getCardConfig(
     cardConfig: CardPickerConfig
-  ): LovelaceCardConfig | undefined {
+  ): Promise<LovelaceCardConfig | undefined> {
     if (!this.hass) {
       return undefined;
     }
 
-    let entityIds = computeUnusedEntities(this.hass, this.lovelace!);
+    const elClass = await getCardElementClass(
+      cardConfig.lovelaceCardConfig.type
+    );
+    let config: LovelaceCardConfig = cardConfig.lovelaceCardConfig;
 
+    if (elClass && elClass.getStubConfig) {
+      const stubConfig = elClass.getStubConfig(this.hass!);
+      config = { ...stubConfig, ...config };
+    }
+
+    let entityIds =
+      this.entities || computeUnusedEntities(this.hass!, this.lovelace!);
     if (cardConfig.includeDomains && cardConfig.includeDomains.length) {
       entityIds = entityIds.filter((eid) =>
         cardConfig.includeDomains!.includes(computeDomain(eid))
@@ -368,9 +350,9 @@ export class HuiCardPicker extends LitElement {
     }
 
     if (entityIds.length < (cardConfig.numberOfEntities || 1)) {
-      let usedEntityIds = Object.keys([
-        ...computeUsedEntities(this.lovelace),
-      ]).filter((eid) => !EXCLUDED_DOMAINS.includes(eid)[0]);
+      let usedEntityIds = [...computeUsedEntities(this.lovelace)].filter(
+        (eid) => !EXCLUDED_DOMAINS.includes(eid)[0]
+      );
 
       if (cardConfig.includeDomains && cardConfig.includeDomains.length) {
         usedEntityIds = usedEntityIds.filter((eid) =>
@@ -382,20 +364,61 @@ export class HuiCardPicker extends LitElement {
     }
 
     if (!entityIds.length) {
-      return undefined;
+      cardConfig.noPreview = true;
+      return config;
     }
 
     if (!cardConfig.numberOfEntities) {
-      return {
-        entity: entityIds[0],
-        ...cardConfig.lovelaceConfig,
-      };
+      return { ...config, entity: entityIds[0] };
     }
 
     return {
+      ...config,
       entities: entityIds.slice(0, cardConfig.numberOfEntities),
-      ...cardConfig.lovelaceConfig,
     };
+  }
+
+  private async _getCardElement(
+    cardConfig: CardPickerConfig
+  ): Promise<TemplateResult> {
+    const lovelaceCardConfig = !cardConfig.noEntity
+      ? await this._getCardConfig(cardConfig)
+      : cardConfig.lovelaceCardConfig;
+
+    if (!lovelaceCardConfig) {
+      return html``;
+    }
+
+    if (!lovelaceCardConfig || cardConfig.noPreview) {
+      cardConfig.lovelaceCardConfig = {
+        ...cardConfig.lovelaceCardConfig,
+        lovelaceCardConfig,
+      };
+      return html``;
+    }
+
+    const element = createCardElement(lovelaceCardConfig);
+    element.hass = this.hass;
+
+    return html`
+      <div class="card">
+        <ha-card .header=${cardConfig.name}>
+          <div class="preview">
+            <p class="preview-text">Preview:</p>
+            ${element}
+          </div>
+          <div class="options">
+            <div class="primary-actions">
+              <mwc-button
+                @click="${this._cardPicked}"
+                .config="${lovelaceCardConfig}"
+                >Select</mwc-button
+              >
+            </div>
+          </div>
+        </ha-card>
+      </div>
+    `;
   }
 }
 
