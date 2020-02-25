@@ -282,25 +282,25 @@ export class HuiCardPicker extends LitElement {
           }
         }
 
-        .card > ha-card {
+        ha-card {
           height: 100%;
           display: flex;
           flex-direction: column;
         }
 
-        .card > ha-card > :first-child {
+        ha-card > :first-child {
           pointer-events: none;
           margin: 0 20px 20px 20px;
         }
 
-        div.options {
+        .options {
           border-top: 1px solid #e8e8e8;
           padding: 5px 8px;
           display: flex;
           margin-top: 8px;
         }
 
-        div.options .primary-actions {
+        .options .primary-actions {
           flex: 1;
           margin: auto;
         }
