@@ -232,7 +232,6 @@ class LovelacePanel extends LitElement {
     let conf: LovelaceConfig;
     let confMode: Lovelace["mode"] = this.panel!.config.mode;
     let confProm: Promise<LovelaceConfig> | undefined;
-    let resourceProm: Promise<LovelaceResources> | undefined;
     const llWindow = window as WindowWithLovelaceProm;
 
     // On first load, we speed up loading page by having LL promise ready
@@ -242,8 +241,11 @@ class LovelacePanel extends LitElement {
     }
     if (!resourcesLoaded) {
       resourcesLoaded = true;
-      resourceProm =
-        llWindow.llConfProm || fetchResources(this.hass!.connection);
+      (
+        llWindow.llConfProm || fetchResources(this.hass!.connection)
+      ).then((resources) =>
+        loadLovelaceResources(resources, this.hass!.auth.data.hassUrl)
+      );
     }
 
     if (this.urlPath !== null || !confProm) {
@@ -280,11 +282,6 @@ class LovelacePanel extends LitElement {
           this._ignoreNextUpdateEvent = false;
         }, 2000);
       }
-    }
-
-    if (resourceProm) {
-      const resources = await resourceProm;
-      loadLovelaceResources(resources, this.hass!.auth.data.hassUrl);
     }
 
     this._state = "loaded";

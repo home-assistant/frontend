@@ -169,6 +169,7 @@ export class HcMain extends HassElement {
       return;
     }
     if (!resourcesLoaded) {
+      resourcesLoaded = true;
       loadLovelaceResources(
         await fetchResources(this.hass!.connection),
         this.hass!.auth.data.hassUrl

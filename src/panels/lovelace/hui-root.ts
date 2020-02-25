@@ -467,13 +467,10 @@ class HUIRoot extends LitElement {
     let force = false;
 
     if (changedProperties.has("route")) {
-      const views = this.config && this.config.views;
-      if (
-        this.route!.path === "" &&
-        this.route!.prefix === `${this.route?.prefix}` &&
-        views
-      ) {
-        navigate(this, `${this.route?.prefix}/${views[0].path || 0}`, true);
+      console.log(this.route);
+      const views = this.config.views;
+      if (this.route!.path === "" && views) {
+        navigate(this, `${this.route!.prefix}/${views[0].path || 0}`, true);
         newSelectView = 0;
       } else if (this._routeData!.view === "hass-unused-entities") {
         newSelectView = "hass-unused-entities";
