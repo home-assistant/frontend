@@ -244,7 +244,6 @@ export class HUIView extends LitElement {
       lovelaceConfig: this.lovelace!.config,
       saveConfig: this.lovelace!.saveConfig,
       path: [this.index!],
-      entities: computeUnusedEntities(this.hass!, this.lovelace!.config),
     });
   }
 

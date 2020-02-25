@@ -26,6 +26,8 @@ import {
   computeUsedEntities,
   EXCLUDED_DOMAINS,
 } from "../../common/compute-unused-entities";
+import { HuiErrorCard } from "../../cards/hui-error-card";
+import { LovelaceCard } from "../../types";
 
 const cardConfigs: CardPickerConfig[] = [
   {
@@ -178,14 +180,38 @@ const cardConfigs: CardPickerConfig[] = [
 export class HuiCardPicker extends LitElement {
   public hass?: HomeAssistant;
   public lovelace?: LovelaceConfig;
-  public entities?: string[];
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
+  private filteredCardConfigs?: CardPickerConfig[];
 
   protected render(): TemplateResult {
+    this.filteredCardConfigs = cardConfigs.map((cardConfig) => {
+      if (cardConfig.noPreview) {
+        return cardConfig;
+      }
+
+      const entityIds = this._getCardEntities(cardConfig);
+
+      if (!entityIds.length) {
+        cardConfig.noPreview = true;
+      } else if (!cardConfig.numberOfEntities) {
+        cardConfig.lovelaceCardConfig = {
+          ...cardConfig.lovelaceCardConfig!,
+          entity: entityIds[0],
+        };
+      } else {
+        cardConfig.lovelaceCardConfig = {
+          ...cardConfig.lovelaceCardConfig!,
+          entities: entityIds.slice(0, cardConfig.numberOfEntities),
+        };
+      }
+
+      return cardConfig;
+    });
+
     return html`
       <h2>Main</h2>
       <div class="cards-container">
-        ${cardConfigs
+        ${this.filteredCardConfigs
           .filter((cardConfig) => !cardConfig.noPreview)
           .map((cardConfig: CardPickerConfig) => {
             return html`
@@ -200,24 +226,16 @@ export class HuiCardPicker extends LitElement {
       </div>
       <h2>Other</h2>
       <div class="cards-container">
-        ${cardConfigs
+        ${this.filteredCardConfigs
           .filter((cardConfig) => cardConfig.noPreview === true)
           .map((cardConfig: CardPickerConfig) => {
             return html`
-              <div class="card">
-                <ha-card .header=${cardConfig.name}>
-                  <div>${cardConfig.description}</div>
-                  <div class="options">
-                    <div class="primary-actions">
-                      <mwc-button
-                        @click="${this._cardPicked}"
-                        .config="${cardConfig.lovelaceCardConfig}"
-                        >Select</mwc-button
-                      >
-                    </div>
-                  </div>
-                </ha-card>
-              </div>
+              ${until(
+                this._getCardElement(cardConfig),
+                html`
+                  <paper-spinner active alt="Loading"></paper-spinner>
+                `
+              )}
             `;
           })}
       </div>
@@ -317,7 +335,7 @@ export class HuiCardPicker extends LitElement {
     });
   }
 
-  private async _cardPicked(ev: Event): Promise<void> {
+  private _cardPicked(ev: Event): void {
     const config: LovelaceCardConfig = (ev.currentTarget! as CardPickTarget)
       .config;
 
@@ -341,8 +359,12 @@ export class HuiCardPicker extends LitElement {
       config = { ...stubConfig, ...config };
     }
 
-    let entityIds =
-      this.entities || computeUnusedEntities(this.hass!, this.lovelace!);
+    return config;
+  }
+
+  private _getCardEntities(cardConfig: CardPickerConfig): string[] {
+    let entityIds: string[] = computeUnusedEntities(this.hass!, this.lovelace!);
+
     if (cardConfig.includeDomains && cardConfig.includeDomains.length) {
       entityIds = entityIds.filter((eid) =>
         cardConfig.includeDomains!.includes(computeDomain(eid))
@@ -363,50 +385,36 @@ export class HuiCardPicker extends LitElement {
       entityIds = [...entityIds, ...usedEntityIds];
     }
 
-    if (!entityIds.length) {
-      cardConfig.noPreview = true;
-      return config;
-    }
-
-    if (!cardConfig.numberOfEntities) {
-      return { ...config, entity: entityIds[0] };
-    }
-
-    return {
-      ...config,
-      entities: entityIds.slice(0, cardConfig.numberOfEntities),
-    };
+    return entityIds;
   }
 
   private async _getCardElement(
     cardConfig: CardPickerConfig
   ): Promise<TemplateResult> {
+    let element: LovelaceCard | HuiErrorCard | undefined;
+
     const lovelaceCardConfig = !cardConfig.noEntity
       ? await this._getCardConfig(cardConfig)
       : cardConfig.lovelaceCardConfig;
 
-    if (!lovelaceCardConfig) {
-      return html``;
+    if (!cardConfig.noPreview) {
+      element = createCardElement(lovelaceCardConfig!);
+      element.hass = this.hass;
     }
-
-    if (!lovelaceCardConfig || cardConfig.noPreview) {
-      cardConfig.lovelaceCardConfig = {
-        ...cardConfig.lovelaceCardConfig,
-        lovelaceCardConfig,
-      };
-      return html``;
-    }
-
-    const element = createCardElement(lovelaceCardConfig);
-    element.hass = this.hass;
 
     return html`
       <div class="card">
         <ha-card .header=${cardConfig.name}>
-          <div class="preview">
-            <p class="preview-text">Preview:</p>
-            ${element}
-          </div>
+          ${!element
+            ? html`
+                <div>${cardConfig.description}</div>
+              `
+            : html`
+                <div class="preview">
+                  <p class="preview-text">Preview:</p>
+                  ${element}
+                </div>
+              `}
           <div class="options">
             <div class="primary-actions">
               <mwc-button
