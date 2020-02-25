@@ -2084,7 +2084,9 @@
                         "header": "구성 보기",
                         "header_name": "{name} 뷰 구성",
                         "move_left": "뷰를 왼쪽으로 이동",
-                        "move_right": "뷰를 오른쪽으로 이동"
+                        "move_right": "뷰를 오른쪽으로 이동",
+                        "tab_badges": "배지",
+                        "tab_settings": "설정"
                     },
                     "header": "UI 편집",
                     "menu": {

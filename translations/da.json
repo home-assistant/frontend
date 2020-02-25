@@ -1705,7 +1705,7 @@
                         "required_error_msg": "Dette felt er påkrævet",
                         "update": "Opdater"
                     },
-                    "edit_home_zone": "Lokaliteten af dit hjem kan ændres i den generelle konfiguration.",
+                    "edit_home_zone": "Radius af hjemzonen kan ikke redigeres fra brugerfladen endnu. Træk markøren på kortet for at flytte hjemmezonen.",
                     "edit_home_zone_narrow": "Radius af hjemmezonen kan ikke redigeres fra brugerfladen endnu. Lokaliteten kan ændres fra den generelle konfiguration.",
                     "go_to_core_config": "Gå til generel konfiguration?",
                     "home_zone_core_config": "Lokaliteten af din hjemmezone kan redigeres fra den generelle konfigurationsside. Radius af hjemmezonen kan ikke redigeres fra brugerfladen endnu. Vil du gå til den generelle konfiguration?",

@@ -2084,7 +2084,9 @@
                         "header": "Ver configuración",
                         "header_name": "{name} Ver configuración",
                         "move_left": "Mover vista a la izquierda",
-                        "move_right": "Mover vista a la derecha"
+                        "move_right": "Mover vista a la derecha",
+                        "tab_badges": "Insignias",
+                        "tab_settings": "Configuración"
                     },
                     "header": "Editar la interfaz de usuario",
                     "menu": {
