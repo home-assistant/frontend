@@ -95,6 +95,7 @@ export class HuiDialogEditCard extends LitElement {
             ? html`
                 <hui-card-picker
                   .hass="${this.hass}"
+                  .lovelace="${this._params.lovelaceConfig}"
                   @config-changed="${this._handleCardPicked}"
                 ></hui-card-picker>
               `
