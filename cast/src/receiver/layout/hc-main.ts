@@ -15,6 +15,7 @@ import {
 import {
   LovelaceConfig,
   getLovelaceCollection,
+  fetchResources,
 } from "../../../../src/data/lovelace";
 import "./hc-launch-screen";
 import { castContext } from "../cast_context";
@@ -22,6 +23,8 @@ import { CAST_NS } from "../../../../src/cast/const";
 import { ReceiverStatusMessage } from "../../../../src/cast/sender_messages";
 import { loadLovelaceResources } from "../../../../src/panels/lovelace/common/load-resources";
 import { isNavigationClick } from "../../../../src/common/dom/is-navigation-click";
+
+let resourcesLoaded = false;
 
 @customElement("hc-main")
 export class HcMain extends HassElement {
@@ -165,6 +168,12 @@ export class HcMain extends HassElement {
       this._error = "Cannot show Lovelace because we're not connected.";
       return;
     }
+    if (!resourcesLoaded) {
+      loadLovelaceResources(
+        await fetchResources(this.hass!.connection),
+        this.hass!.auth.data.hassUrl
+      );
+    }
     if (!this._unsubLovelace || this._urlPath !== msg.urlPath) {
       this._urlPath = msg.urlPath;
       if (this._unsubLovelace) {
@@ -200,12 +209,6 @@ export class HcMain extends HassElement {
   private _handleNewLovelaceConfig(lovelaceConfig: LovelaceConfig) {
     castContext.setApplicationState(lovelaceConfig.title!);
     this._lovelaceConfig = lovelaceConfig;
-    if (lovelaceConfig.resources) {
-      loadLovelaceResources(
-        lovelaceConfig.resources,
-        this.hass!.auth.data.hassUrl
-      );
-    }
   }
 
   private _handleShowDemo(_msg: ShowDemoMessage) {

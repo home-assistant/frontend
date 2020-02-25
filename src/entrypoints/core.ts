@@ -18,7 +18,6 @@ import { hassUrl } from "../data/auth";
 import {
   fetchResourcesAndConfig,
   WindowWithLovelaceProm,
-  fetchResources,
 } from "../data/lovelace";
 
 declare global {
