@@ -43,7 +43,11 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
   private _interval?: number;
 
   public getCardSize(): number {
-    return 4;
+    if (!this._config) {
+      return 0;
+    }
+    // +1 for the header
+    return (this._config.title ? 1 : 0) + this._config.entities.length * 2;
   }
 
   public setConfig(config: HistoryGraphCardConfig): void {
