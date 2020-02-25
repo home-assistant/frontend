@@ -22,6 +22,12 @@ export interface EmptyStateCardConfig extends LovelaceCardConfig {
   title?: string;
 }
 
+export interface EntityCardConfig extends LovelaceCardConfig {
+  attribute?: string;
+  default?: string;
+  unit?: string;
+}
+
 export interface EntitiesCardEntityConfig extends EntityConfig {
   type?: string;
   secondary_info?: "entity-id" | "last-changed";
