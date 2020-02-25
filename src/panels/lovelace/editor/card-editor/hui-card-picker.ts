@@ -241,15 +241,10 @@ export class HuiCardPicker extends LitElement {
       </div>
       <h2>Manual</h2>
       <div class="cards-container">
-        <div class="card">
+        <div class="card" @click="${this._manualPicked}">
           <ha-card .header=${"Manual"}>
             <div>
               Need to add a custom card or just want to manually write the yaml?
-            </div>
-            <div class="options">
-              <div class="primary-actions">
-                <mwc-button @click="${this._manualPicked}">Select</mwc-button>
-              </div>
             </div>
           </ha-card>
         </div>
@@ -287,12 +282,11 @@ export class HuiCardPicker extends LitElement {
           height: 100%;
           display: flex;
           flex-direction: column;
-          justify-content: space-between;
         }
 
         .card > ha-card > :first-child {
           pointer-events: none;
-          margin: 0 20px;
+          margin: 0 20px 20px 20px;
         }
 
         div.options {
@@ -349,10 +343,10 @@ export class HuiCardPicker extends LitElement {
       return undefined;
     }
 
+    let config: LovelaceCardConfig = cardConfig.lovelaceCardConfig;
     const elClass = await getCardElementClass(
       cardConfig.lovelaceCardConfig.type
     );
-    let config: LovelaceCardConfig = cardConfig.lovelaceCardConfig;
 
     if (elClass && elClass.getStubConfig) {
       const stubConfig = elClass.getStubConfig(this.hass!);
@@ -404,7 +398,11 @@ export class HuiCardPicker extends LitElement {
     }
 
     return html`
-      <div class="card">
+      <div
+        class="card"
+        @click="${this._cardPicked}"
+        .config="${lovelaceCardConfig}"
+      >
         <ha-card .header=${cardConfig.name}>
           ${!element
             ? html`
@@ -416,15 +414,6 @@ export class HuiCardPicker extends LitElement {
                   ${element}
                 </div>
               `}
-          <div class="options">
-            <div class="primary-actions">
-              <mwc-button
-                @click="${this._cardPicked}"
-                .config="${lovelaceCardConfig}"
-                >Select</mwc-button
-              >
-            </div>
-          </div>
         </ha-card>
       </div>
     `;
