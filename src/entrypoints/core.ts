@@ -16,7 +16,8 @@ import { subscribeUser } from "../data/ws-user";
 import { HomeAssistant } from "../types";
 import { hassUrl } from "../data/auth";
 import {
-  fetchResourcesAndConfig,
+  fetchConfig,
+  fetchResources,
   WindowWithLovelaceProm,
 } from "../data/lovelace";
 
@@ -92,10 +93,14 @@ window.hassConnection.then(({ conn }) => {
   subscribeThemes(conn, noop);
   subscribeUser(conn, noop);
 
-  (window as WindowWithLovelaceProm).llConfProm = fetchResourcesAndConfig(
-    conn,
-    location.pathname === "/" || location.pathname.startsWith("/lovelace/")
-  );
+  if (location.pathname === "/" || location.pathname.startsWith("/lovelace/")) {
+    (window as WindowWithLovelaceProm).llConfProm = fetchConfig(
+      conn,
+      null,
+      false
+    );
+    (window as WindowWithLovelaceProm).llResProm = fetchResources(conn);
+  }
 });
 
 window.addEventListener("error", (e) => {

@@ -17,11 +17,6 @@ export type LovelaceResources = Array<{
   url: string;
 }>;
 
-export interface LovelaceResourcesConfig {
-  resources: LovelaceResources;
-  config?: Promise<LovelaceConfig>;
-}
-
 export interface LovelaceViewConfig {
   index?: number;
   title?: string;
@@ -130,17 +125,6 @@ export const fetchConfig = (
     url_path: urlPath,
     force,
   });
-export const fetchResourcesAndConfig = async (
-  conn: Connection,
-  loadConfig: boolean,
-  urlPath: string | null = null,
-  force: boolean = false
-): Promise<LovelaceResourcesConfig> => {
-  // resources need to be fetched before the config, so the resources are removed from the config on migration
-  const resources = await fetchResources(conn);
-  const config = loadConfig ? fetchConfig(conn, urlPath, force) : undefined;
-  return { resources, config };
-};
 export const saveConfig = (
   hass: HomeAssistant,
   urlPath: string | null,
@@ -189,7 +173,8 @@ export const getLovelaceCollection = (
   );
 
 export interface WindowWithLovelaceProm extends Window {
-  llConfProm?: Promise<LovelaceResourcesConfig>;
+  llConfProm?: Promise<LovelaceConfig>;
+  llResProm?: Promise<LovelaceResources>;
 }
 
 export interface ActionHandlerOptions {
