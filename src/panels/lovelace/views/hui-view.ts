@@ -26,7 +26,6 @@ import { HuiErrorCard } from "../cards/hui-error-card";
 import { computeRTL } from "../../../common/util/compute_rtl";
 import { createBadgeElement } from "../create-element/create-badge-element";
 import { processConfigEntities } from "../common/process-config-entities";
-import { computeUnusedEntities } from "../common/compute-unused-entities";
 
 let editCodeLoaded = false;
 
