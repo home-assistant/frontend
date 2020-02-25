@@ -8,7 +8,6 @@ import {
   subscribeLovelaceUpdates,
   WindowWithLovelaceProm,
   deleteConfig,
-  LovelaceResources,
   fetchResources,
 } from "../../data/lovelace";
 import "../../layouts/hass-loading-screen";
