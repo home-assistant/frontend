@@ -183,7 +183,9 @@ export class HuiCardPicker extends LitElement {
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
   private filteredCardConfigs?: CardPickerConfig[];
 
-  protected render(): TemplateResult {
+  public connectedCallback(): void {
+    super.connectedCallback();
+
     this.filteredCardConfigs = cardConfigs.map((cardConfig) => {
       if (cardConfig.noPreview) {
         return cardConfig;
@@ -207,37 +209,39 @@ export class HuiCardPicker extends LitElement {
 
       return cardConfig;
     });
+  }
 
+  protected render(): TemplateResult {
     return html`
       <h2>Main</h2>
       <div class="cards-container">
-        ${this.filteredCardConfigs
-          .filter((cardConfig) => !cardConfig.noPreview)
-          .map((cardConfig: CardPickerConfig) => {
-            return html`
-              ${until(
-                this._getCardElement(cardConfig),
-                html`
-                  <paper-spinner active alt="Loading"></paper-spinner>
-                `
-              )}
-            `;
-          })}
+        ${this.filteredCardConfigs!.filter(
+          (cardConfig) => !cardConfig.noPreview
+        ).map((cardConfig: CardPickerConfig) => {
+          return html`
+            ${until(
+              this._getCardElement(cardConfig),
+              html`
+                <paper-spinner active alt="Loading"></paper-spinner>
+              `
+            )}
+          `;
+        })}
       </div>
       <h2>Other</h2>
       <div class="cards-container">
-        ${this.filteredCardConfigs
-          .filter((cardConfig) => cardConfig.noPreview === true)
-          .map((cardConfig: CardPickerConfig) => {
-            return html`
-              ${until(
-                this._getCardElement(cardConfig),
-                html`
-                  <paper-spinner active alt="Loading"></paper-spinner>
-                `
-              )}
-            `;
-          })}
+        ${this.filteredCardConfigs!.filter(
+          (cardConfig) => cardConfig.noPreview === true
+        ).map((cardConfig: CardPickerConfig) => {
+          return html`
+            ${until(
+              this._getCardElement(cardConfig),
+              html`
+                <paper-spinner active alt="Loading"></paper-spinner>
+              `
+            )}
+          `;
+        })}
       </div>
       <h2>Manual</h2>
       <div class="cards-container">
