@@ -21,6 +21,7 @@ export interface ConnectMessage extends BaseCastMessage {
 export interface ShowLovelaceViewMessage extends BaseCastMessage {
   type: "show_lovelace_view";
   viewPath: string | number | null;
+  urlPath: string | null;
 }
 
 export interface ShowDemoMessage extends BaseCastMessage {
@@ -43,11 +44,13 @@ export const castSendAuth = (cast: CastManager, auth: Auth) =>
 
 export const castSendShowLovelaceView = (
   cast: CastManager,
-  viewPath: ShowLovelaceViewMessage["viewPath"]
+  viewPath: ShowLovelaceViewMessage["viewPath"],
+  urlPath?: string | null
 ) =>
   cast.sendMessage({
     type: "show_lovelace_view",
     viewPath,
+    urlPath: urlPath || null,
   });
 
 export const castSendShowDemo = (cast: CastManager) =>

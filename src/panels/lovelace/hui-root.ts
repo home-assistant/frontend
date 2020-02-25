@@ -47,7 +47,6 @@ import { Lovelace } from "./types";
 import { afterNextRender } from "../../common/util/render-status";
 import { haStyle } from "../../resources/styles";
 import { computeRTLDirection } from "../../common/util/compute_rtl";
-import { loadLovelaceResources } from "./common/load-resources";
 import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-ha-voice-command-dialog";
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
@@ -468,13 +467,9 @@ class HUIRoot extends LitElement {
     let force = false;
 
     if (changedProperties.has("route")) {
-      const views = this.config && this.config.views;
-      if (
-        this.route!.path === "" &&
-        this.route!.prefix === "/lovelace" &&
-        views
-      ) {
-        navigate(this, `/lovelace/${views[0].path || 0}`, true);
+      const views = this.config.views;
+      if (this.route!.path === "" && views) {
+        navigate(this, `${this.route!.prefix}/${views[0].path || 0}`, true);
         newSelectView = 0;
       } else if (this._routeData!.view === "hass-unused-entities") {
         newSelectView = "hass-unused-entities";
@@ -498,12 +493,6 @@ class HUIRoot extends LitElement {
         | undefined;
 
       if (!oldLovelace || oldLovelace.config !== this.lovelace!.config) {
-        if (this.lovelace!.config.resources) {
-          loadLovelaceResources(
-            this.lovelace!.config.resources,
-            this.hass!.auth.data.hassUrl
-          );
-        }
         // On config change, recreate the current view from scratch.
         force = true;
         // Recalculate to see if we need to adjust content area for tab bar
@@ -517,7 +506,7 @@ class HUIRoot extends LitElement {
           this._routeData!.view === "hass-unused-entities"
         ) {
           const views = this.config && this.config.views;
-          navigate(this, `/lovelace/${views[0].path || 0}`);
+          navigate(this, `${this.route?.prefix}/${views[0].path || 0}`);
           newSelectView = 0;
         }
         // On edit mode change, recreate the current view from scratch
@@ -565,7 +554,7 @@ class HUIRoot extends LitElement {
   }
 
   private _handleUnusedEntities(): void {
-    navigate(this, `/lovelace/hass-unused-entities`);
+    navigate(this, `${this.route?.prefix}/hass-unused-entities`);
   }
 
   private _deselect(ev): void {
@@ -638,7 +627,7 @@ class HUIRoot extends LitElement {
 
     if (viewIndex !== this._curView) {
       const path = this.config.views[viewIndex].path || viewIndex;
-      navigate(this, `/lovelace/${path}`);
+      navigate(this, `${this.route?.prefix}/${path}`);
     }
     scrollToTarget(this, this._layout.header.scrollTarget);
   }

@@ -49,7 +49,8 @@ class HuiCastRow extends LitElement implements LovelaceRow {
     const active =
       this._castManager &&
       this._castManager.status &&
-      this._config.view === this._castManager.status.lovelacePath;
+      this._config.view === this._castManager.status.lovelacePath &&
+      this._config.dashboard === this._castManager.status.urlPath;
 
     return html`
       <ha-icon .icon="${this._config.icon}"></ha-icon>
@@ -122,7 +123,11 @@ class HuiCastRow extends LitElement implements LovelaceRow {
 
   private async _sendLovelace() {
     await ensureConnectedCastSession(this._castManager!, this.hass.auth);
-    castSendShowLovelaceView(this._castManager!, this._config!.view);
+    castSendShowLovelaceView(
+      this._castManager!,
+      this._config!.view,
+      this._config!.dashboard
+    );
   }
 
   static get styles(): CSSResult {
