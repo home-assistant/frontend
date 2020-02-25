@@ -261,8 +261,7 @@ export class HuiDialogEditCard extends LitElement {
       this._params!.entities.length > 0 &&
       ((Object.keys(config).includes("entities") &&
         config.entities.length === 0) ||
-        (Object.keys(config).includes("entity") &&
-          !config.entity))
+        (Object.keys(config).includes("entity") && !config.entity))
     ) {
       if (Object.keys(config).includes("entities")) {
         config.entities = this._params!.entities;
