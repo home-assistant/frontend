@@ -220,7 +220,7 @@ export class HuiCardPicker extends LitElement {
         ).map((cardConfig: CardPickerConfig) => {
           return html`
             ${until(
-              this._getCardElement(cardConfig),
+              this._renderCardElement(cardConfig),
               html`
                 <paper-spinner active alt="Loading"></paper-spinner>
               `
@@ -235,7 +235,7 @@ export class HuiCardPicker extends LitElement {
         ).map((cardConfig: CardPickerConfig) => {
           return html`
             ${until(
-              this._getCardElement(cardConfig),
+              this._renderCardElement(cardConfig),
               html`
                 <paper-spinner active alt="Loading"></paper-spinner>
               `
@@ -348,6 +348,11 @@ export class HuiCardPicker extends LitElement {
     }
 
     let config: LovelaceCardConfig = cardConfig.lovelaceCardConfig;
+
+    if (cardConfig.noEntity) {
+      return config;
+    }
+
     const elClass = await getCardElementClass(
       cardConfig.lovelaceCardConfig.type
     );
@@ -387,14 +392,12 @@ export class HuiCardPicker extends LitElement {
     return entityIds;
   }
 
-  private async _getCardElement(
+  private async _renderCardElement(
     cardConfig: CardPickerConfig
   ): Promise<TemplateResult> {
     let element: LovelaceCard | HuiErrorCard | undefined;
 
-    const lovelaceCardConfig = !cardConfig.noEntity
-      ? await this._getCardConfig(cardConfig)
-      : cardConfig.lovelaceCardConfig;
+    const lovelaceCardConfig = await this._getCardConfig(cardConfig);
 
     if (!cardConfig.noPreview) {
       element = createCardElement(lovelaceCardConfig!);
