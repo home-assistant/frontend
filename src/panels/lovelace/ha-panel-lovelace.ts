@@ -1,5 +1,5 @@
 import "@material/mwc-button";
-import * as deepFreeze from "deep-freeze";
+import deepFreeze from "deep-freeze";
 
 import {
   fetchConfig,
