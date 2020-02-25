@@ -11,23 +11,22 @@ import { until } from "lit-html/directives/until";
 
 import "../../../../components/ha-card";
 
-import { HomeAssistant } from "../../../../types";
-import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { CardPickTarget, CardPickerConfig } from "../types";
+import { HuiErrorCard } from "../../cards/hui-error-card";
+import { HomeAssistant } from "../../../../types";
+import { LovelaceCard } from "../../types";
+import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
+import { computeDomain } from "../../../../common/entity/compute_domain";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import {
   getCardElementClass,
   createCardElement,
 } from "../../create-element/create-card-element";
-import { computeDomain } from "../../../../common/entity/compute_domain";
-
 import {
   computeUnusedEntities,
   computeUsedEntities,
   EXCLUDED_DOMAINS,
 } from "../../common/compute-unused-entities";
-import { HuiErrorCard } from "../../cards/hui-error-card";
-import { LovelaceCard } from "../../types";
 
 const cardConfigs: CardPickerConfig[] = [
   {
@@ -180,6 +179,7 @@ const cardConfigs: CardPickerConfig[] = [
 export class HuiCardPicker extends LitElement {
   public hass?: HomeAssistant;
   public lovelace?: LovelaceConfig;
+  public entities?: string[];
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
   private filteredCardConfigs?: CardPickerConfig[];
 
@@ -363,7 +363,8 @@ export class HuiCardPicker extends LitElement {
   }
 
   private _getCardEntities(cardConfig: CardPickerConfig): string[] {
-    let entityIds: string[] = computeUnusedEntities(this.hass!, this.lovelace!);
+    let entityIds: string[] =
+      this.entities || computeUnusedEntities(this.hass!, this.lovelace!);
 
     if (cardConfig.includeDomains && cardConfig.includeDomains.length) {
       entityIds = entityIds.filter((eid) =>

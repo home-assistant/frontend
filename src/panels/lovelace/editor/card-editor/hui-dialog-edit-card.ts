@@ -251,7 +251,14 @@ export class HuiDialogEditCard extends LitElement {
 
   private _handleCardPicked(ev) {
     this._cardConfig = ev.detail.config;
-    if (this._params!.entities && this._params!.entities.length > 0) {
+    if (
+      this._params!.entities &&
+      this._params!.entities.length > 0 &&
+      ((Object.keys(this._cardConfig!).includes("entities") &&
+        this._cardConfig!.entities.length === 0) ||
+        (Object.keys(this._cardConfig!).includes("entity") &&
+          !this._cardConfig!.entity))
+    ) {
       if (Object.keys(this._cardConfig!).includes("entities")) {
         this._cardConfig!.entities = this._params!.entities;
       } else if (Object.keys(this._cardConfig!).includes("entity")) {
