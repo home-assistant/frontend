@@ -8,6 +8,8 @@ import {
   property,
 } from "lit-element";
 
+import deepFreeze from "deep-freeze";
+
 import { HomeAssistant } from "../../../../types";
 import { HASSDomEvent } from "../../../../common/dom/fire_event";
 import {
@@ -55,6 +57,9 @@ export class HuiDialogEditCard extends LitElement {
     this._viewConfig = params.lovelaceConfig.views[view];
     this._cardConfig =
       card !== undefined ? this._viewConfig.cards![card] : undefined;
+    if (this._cardConfig && !Object.isFrozen(this._cardConfig)) {
+      this._cardConfig = deepFreeze(this._cardConfig);
+    }
   }
 
   private get _cardEditorEl(): HuiCardEditor | null {
@@ -250,26 +255,27 @@ export class HuiDialogEditCard extends LitElement {
   }
 
   private _handleCardPicked(ev) {
-    this._cardConfig = ev.detail.config;
+    const config = ev.detail.config;
     if (
       this._params!.entities &&
       this._params!.entities.length > 0 &&
-      ((Object.keys(this._cardConfig!).includes("entities") &&
-        this._cardConfig!.entities.length === 0) ||
-        (Object.keys(this._cardConfig!).includes("entity") &&
-          !this._cardConfig!.entity))
+      ((Object.keys(config).includes("entities") &&
+        config.entities.length === 0) ||
+        (Object.keys(config).includes("entity") &&
+          !config.entity))
     ) {
-      if (Object.keys(this._cardConfig!).includes("entities")) {
-        this._cardConfig!.entities = this._params!.entities;
-      } else if (Object.keys(this._cardConfig!).includes("entity")) {
-        this._cardConfig!.entity = this._params!.entities[0];
+      if (Object.keys(config).includes("entities")) {
+        config.entities = this._params!.entities;
+      } else if (Object.keys(config).includes("entity")) {
+        config.entity = this._params!.entities[0];
       }
     }
+    this._cardConfig = deepFreeze(config);
     this._error = ev.detail.error;
   }
 
   private _handleConfigChanged(ev) {
-    this._cardConfig = ev.detail.config;
+    this._cardConfig = deepFreeze(ev.detail.config);
     this._error = ev.detail.error;
   }
 

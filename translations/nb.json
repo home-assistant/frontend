@@ -2084,7 +2084,9 @@
                         "header": "Vis konfigurasjon",
                         "header_name": "{name} Vis konfigurasjon",
                         "move_left": "Flytt visning til venstre",
-                        "move_right": "Flytt visning til høyre"
+                        "move_right": "Flytt visning til høyre",
+                        "tab_badges": "Merker",
+                        "tab_settings": "Innstillinger"
                     },
                     "header": "Rediger brukergrensesnitt",
                     "menu": {
