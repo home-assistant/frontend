@@ -187,7 +187,7 @@ export class HuiCardPicker extends LitElement {
     super.connectedCallback();
 
     this.filteredCardConfigs = cardConfigs.map((cardConfig) => {
-      if (cardConfig.noPreview) {
+      if (cardConfig.noPreview || cardConfig.noEntity) {
         return cardConfig;
       }
 
