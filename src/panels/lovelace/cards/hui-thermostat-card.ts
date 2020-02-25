@@ -43,6 +43,7 @@ const modeIcons: { [mode in HvacMode]: string } = {
   off: "hass:power",
   fan_only: "hass:fan",
   dry: "hass:water-percent",
+  moist: "hass:water-percent",
 };
 
 @customElement("hui-thermostat-card")
@@ -410,6 +411,7 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
         --off-color: #8a8a8a;
         --fan_only-color: #8a8a8a;
         --dry-color: #efbd07;
+        --moist-color: #2b9af9;
         --idle-color: #8a8a8a;
         --unknown-color: #bac;
       }
@@ -437,6 +439,9 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
       }
       .dry {
         --mode-color: var(--dry-color);
+      }
+      .moist {
+        --mode-color: var(--moist-color);
       }
       .idle {
         --mode-color: var(--idle-color);

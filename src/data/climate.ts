@@ -10,11 +10,12 @@ export type HvacMode =
   | "heat_cool"
   | "auto"
   | "dry"
+  | "moist"
   | "fan_only";
 
 export const CLIMATE_PRESET_NONE = "none";
 
-export type HvacAction = "off" | "heating" | "cooling" | "drying" | "idle";
+export type HvacAction = "off" | "heating" | "cooling" | "drying" | "moisting" | "idle";
 
 export type ClimateEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
@@ -58,8 +59,9 @@ const hvacModeOrdering: { [key in HvacMode]: number } = {
   heat: 3,
   cool: 4,
   dry: 5,
-  fan_only: 6,
-  off: 7,
+  moist: 6,
+  fan_only: 7,
+  off: 8,
 };
 
 export const compareClimateHvacModes = (mode1: HvacMode, mode2: HvacMode) =>
