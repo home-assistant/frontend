@@ -175,6 +175,17 @@ const cardConfigs: CardPickerConfig[] = [
   },
 ];
 
+const manualCardConfigs: CardPickerConfig[] = [
+  {
+    lovelaceCardConfig: { type: "" },
+    name: "Manual",
+    description:
+      "Need to add a custom card or just want to manually write the yaml?",
+    noEntity: true,
+    noPreview: true,
+  },
+];
+
 @customElement("hui-card-picker")
 export class HuiCardPicker extends LitElement {
   public hass?: HomeAssistant;
@@ -245,13 +256,16 @@ export class HuiCardPicker extends LitElement {
       </div>
       <h2>Manual</h2>
       <div class="cards-container">
-        <div class="card" @click="${this._manualPicked}">
-          <ha-card .header=${"Manual"}>
-            <div>
-              Need to add a custom card or just want to manually write the yaml?
-            </div>
-          </ha-card>
-        </div>
+        ${manualCardConfigs.map((cardConfig: CardPickerConfig) => {
+          return html`
+            ${until(
+              this._renderCardElement(cardConfig),
+              html`
+                <paper-spinner active alt="Loading"></paper-spinner>
+              `
+            )}
+          `;
+        })}
       </div>
     `;
   }
@@ -268,6 +282,7 @@ export class HuiCardPicker extends LitElement {
         .card {
           width: calc(33% - 8px);
           margin: 4px;
+          cursor: pointer;
         }
 
         @media all and (max-width: 780px), all and (max-height: 500px) {
@@ -305,11 +320,6 @@ export class HuiCardPicker extends LitElement {
           margin: auto;
         }
 
-        paper-icon-button {
-          color: var(--primary-text-color);
-          cursor: pointer;
-        }
-
         .preview-text {
           color: var(--disabled-text-color);
           font-size: 18px;
@@ -325,12 +335,6 @@ export class HuiCardPicker extends LitElement {
         }
       `,
     ];
-  }
-
-  private _manualPicked(): void {
-    fireEvent(this, "config-changed", {
-      config: { type: "" },
-    });
   }
 
   private _cardPicked(ev: Event): void {
