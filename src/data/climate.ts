@@ -15,7 +15,13 @@ export type HvacMode =
 
 export const CLIMATE_PRESET_NONE = "none";
 
-export type HvacAction = "off" | "heating" | "cooling" | "drying" | "moisting" | "idle";
+export type HvacAction =
+  | "off"
+  | "heating"
+  | "cooling"
+  | "drying"
+  | "moisting"
+  | "idle";
 
 export type ClimateEntity = HassEntityBase & {
   attributes: HassEntityAttributeBase & {
