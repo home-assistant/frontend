@@ -8,6 +8,8 @@ import {
   subscribeLovelaceUpdates,
   WindowWithLovelaceProm,
   deleteConfig,
+  LovelaceResources,
+  fetchResources,
 } from "../../data/lovelace";
 import "../../layouts/hass-loading-screen";
 import "../../layouts/hass-error-screen";
@@ -24,6 +26,7 @@ import {
 import { showSaveDialog } from "./editor/show-save-config-dialog";
 import { generateLovelaceConfigFromHass } from "./common/generate-lovelace-config";
 import { showToast } from "../../util/toast";
+import { loadLovelaceResources } from "./common/load-resources";
 
 (window as any).loadCardHelpers = () => import("./custom-card-helpers");
 
@@ -32,6 +35,7 @@ interface LovelacePanelConfig {
 }
 
 let editorLoaded = false;
+let resourcesLoaded = false;
 
 class LovelacePanel extends LitElement {
   @property() public panel?: PanelInfo<LovelacePanelConfig>;
@@ -227,16 +231,26 @@ class LovelacePanel extends LitElement {
   private async _fetchConfig(forceDiskRefresh: boolean) {
     let conf: LovelaceConfig;
     let confMode: Lovelace["mode"] = this.panel!.config.mode;
-    let confProm: Promise<LovelaceConfig>;
+    let confProm: Promise<LovelaceConfig> | undefined;
+    let resources: LovelaceResources | undefined;
     const llWindow = window as WindowWithLovelaceProm;
 
     // On first load, we speed up loading page by having LL promise ready
-    if (this.urlPath === null && llWindow.llConfProm) {
-      confProm = llWindow.llConfProm;
+    if (llWindow.llConfProm) {
+      resourcesLoaded = true;
+      const windowProm = await llWindow.llConfProm;
       llWindow.llConfProm = undefined;
-    } else {
+      resources = windowProm.resources;
+      confProm = windowProm.config;
+    } else if (!resourcesLoaded) {
+      // resources need to be loaded before config for the migration of the resources
+      resourcesLoaded = true;
+      resources = await fetchResources(this.hass!.connection);
+    }
+
+    if (this.urlPath !== null || !confProm) {
       // Refreshing a YAML config can trigger an update event. We will ignore
-      // all update events while fetching the config and for 2 seconds after the cnofig is back.
+      // all update events while fetching the config and for 2 seconds after the config is back.
       // We ignore because we already have the latest config.
       if (this.lovelace && this.lovelace.mode === "yaml") {
         this._ignoreNextUpdateEvent = true;
@@ -250,7 +264,7 @@ class LovelacePanel extends LitElement {
     }
 
     try {
-      conf = await confProm;
+      conf = await confProm!;
     } catch (err) {
       if (err.code !== "config_not_found") {
         // tslint:disable-next-line
@@ -272,6 +286,9 @@ class LovelacePanel extends LitElement {
 
     this._state = "loaded";
     this._setLovelaceConfig(conf, confMode);
+    if (resources) {
+      loadLovelaceResources(resources, this.hass!.auth.data.hassUrl);
+    }
   }
 
   private _checkLovelaceConfig(config: LovelaceConfig) {

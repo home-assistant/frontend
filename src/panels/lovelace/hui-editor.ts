@@ -37,7 +37,6 @@ import {
 const lovelaceStruct = struct.interface({
   title: "string?",
   views: ["object"],
-  resources: struct.optional(["object"]),
 });
 
 @customElement("hui-editor")
@@ -260,6 +259,14 @@ class LovelaceFullConfigEditor extends LitElement {
         ),
       });
       return;
+    }
+    // @ts-ignore
+    if (config.resources) {
+      showAlertDialog(this, {
+        text: this.hass.localize(
+          "ui.panel.lovelace.editor.raw_editor.resources_moved"
+        ),
+      });
     }
     try {
       await this.lovelace!.saveConfig(config);

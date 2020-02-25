@@ -10,7 +10,16 @@ export interface LovelaceConfig {
   title?: string;
   views: LovelaceViewConfig[];
   background?: string;
-  resources?: Array<{ type: "css" | "js" | "module" | "html"; url: string }>;
+}
+
+export type LovelaceResources = Array<{
+  type: "css" | "js" | "module" | "html";
+  url: string;
+}>;
+
+export interface LovelaceResourcesConfig {
+  resources: LovelaceResources;
+  config?: Promise<LovelaceConfig>;
 }
 
 export interface LovelaceViewConfig {
@@ -107,6 +116,10 @@ type LovelaceUpdatedEvent = HassEventBase & {
   };
 };
 
+export const fetchResources = (conn: Connection): Promise<LovelaceResources> =>
+  conn.sendMessagePromise({
+    type: "lovelace/resources",
+  });
 export const fetchConfig = (
   conn: Connection,
   urlPath: string | null,
@@ -117,6 +130,17 @@ export const fetchConfig = (
     url_path: urlPath,
     force,
   });
+export const fetchResourcesAndConfig = async (
+  conn: Connection,
+  loadConfig: boolean,
+  urlPath: string | null = null,
+  force: boolean = false
+): Promise<LovelaceResourcesConfig> => {
+  // resources need to be fetched before the config, so the resources are removed from the config on migration
+  const resources = await fetchResources(conn);
+  const config = loadConfig ? fetchConfig(conn, urlPath, force) : undefined;
+  return { resources, config };
+};
 export const saveConfig = (
   hass: HomeAssistant,
   urlPath: string | null,
@@ -165,7 +189,7 @@ export const getLovelaceCollection = (
   );
 
 export interface WindowWithLovelaceProm extends Window {
-  llConfProm?: Promise<LovelaceConfig>;
+  llConfProm?: Promise<LovelaceResourcesConfig>;
 }
 
 export interface ActionHandlerOptions {

@@ -51,7 +51,6 @@ import { showVoiceCommandDialog } from "../../dialogs/voice-command-dialog/show-
 import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { showAlertDialog } from "../../dialogs/generic/show-dialog-box";
 import memoizeOne from "memoize-one";
-import { loadLovelaceResources } from "./common/load-resources";
 
 class HUIRoot extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -498,12 +497,6 @@ class HUIRoot extends LitElement {
         | undefined;
 
       if (!oldLovelace || oldLovelace.config !== this.lovelace!.config) {
-        if (this.lovelace!.config.resources) {
-          loadLovelaceResources(
-            this.lovelace!.config.resources,
-            this.hass!.auth.data.hassUrl
-          );
-        }
         // On config change, recreate the current view from scratch.
         force = true;
         // Recalculate to see if we need to adjust content area for tab bar
