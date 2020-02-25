@@ -1759,7 +1759,8 @@
             "error_parse_yaml": "Unable to parse YAML: {error}",
             "error_invalid_config": "Your configuration is not valid: {error}",
             "error_save_yaml": "Unable to save YAML: {error}",
-            "error_remove": "Unable to remove configuration: {error}"
+            "error_remove": "Unable to remove configuration: {error}",
+            "resources_moved": "Resources should no longer be added to the Lovelace configuration but can be added in the Lovelace config panel."
           },
           "edit_lovelace": {
             "header": "Title of your Lovelace UI",
