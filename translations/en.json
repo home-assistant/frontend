@@ -85,7 +85,6 @@
             "hvac_action": {
                 "cooling": "Cooling",
                 "drying": "Drying",
-                "moisting": "Moisting",
                 "fan": "Fan",
                 "heating": "Heating",
                 "idle": "Idle",
@@ -243,7 +242,6 @@
             "auto": "Auto",
             "cool": "Cool",
             "dry": "Dry",
-            "moist": "Moist",
             "eco": "Eco",
             "electric": "Electric",
             "fan_only": "Fan only",
