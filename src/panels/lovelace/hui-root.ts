@@ -467,7 +467,6 @@ class HUIRoot extends LitElement {
     let force = false;
 
     if (changedProperties.has("route")) {
-      console.log(this.route);
       const views = this.config.views;
       if (this.route!.path === "" && views) {
         navigate(this, `${this.route!.prefix}/${views[0].path || 0}`, true);
