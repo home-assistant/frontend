@@ -120,38 +120,53 @@ export class HuiAlarmPanelCardEditor extends LitElement
   private _handleConfigChanged(ev)
   {
     ev.stopPropagation();
-    this._config!.cards[this._selectedCard] = ev.detail.config;
+    if(!this._config) {
+      return;
+    }
+    this._config.cards[this._selectedCard] = ev.detail.config;
     fireEvent(this, "config-changed", { config: this._config });
   }
 
   private _handleCardPicked(ev)
   {
     ev.stopPropagation();
+    if(!this._config) {
+      return;
+    }
     const config = ev.detail.config;
-    this._config!.cards.push(config);
+    this._config.cards.push(config);
     fireEvent(this, "config-changed", { config: this._config });
   }
 
   private _handleDeleteCard()
   {
-    this._config!.cards.splice(this._selectedCard, 1);
+    if(!this._config) {
+      return;
+    }
+    this._config.cards.splice(this._selectedCard, 1);
     this._selectedCard = Math.max(0, this._selectedCard - 1);
     fireEvent(this, "config-changed", { config: this._config });
   }
 
   private _handleMoveBefore()
   {
-    const tmp = this._config!.cards[this._selectedCard-1];
-    this._config!.cards[this._selectedCard-1] = this._config!.cards[this._selectedCard];
-    this._config!.cards[this._selectedCard] = tmp;
+    if(!this._config) {
+      return;
+    }
+    const tmp = this._config.cards[this._selectedCard-1];
+    this._config.cards[this._selectedCard-1] = this._config.cards[this._selectedCard];
+    this._config.cards[this._selectedCard] = tmp;
     this._selectedCard = this._selectedCard - 1;
     fireEvent(this, "config-changed", { config: this._config });
   }
   private _handleMoveAfter()
   {
-    const tmp = this._config!.cards[this._selectedCard+1];
-    this._config!.cards[this._selectedCard+1] = this._config!.cards[this._selectedCard];
-    this._config!.cards[this._selectedCard] = tmp;
+    if(!this._config) {
+      return;
+    }
+    const tmp = this._config.cards[this._selectedCard+1];
+    this._config.cards[this._selectedCard+1] = this._config.cards[this._selectedCard];
+    this._config.cards[this._selectedCard] = tmp;
     this._selectedCard = this._selectedCard + 1;
     fireEvent(this, "config-changed", { config: this._config });
   }
