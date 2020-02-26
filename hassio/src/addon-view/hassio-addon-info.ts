@@ -452,7 +452,7 @@ class HassioAddonInfo extends LitElement {
                     `
                   : ""}
                 <ha-progress-button
-                  .disabled=${!this.addon.available}
+                  .disabled=${!this.addon.available || this._installing}
                   .progress=${this._installing}
                   @click=${this._installClicked}
                 >

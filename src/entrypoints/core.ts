@@ -15,6 +15,7 @@ import { subscribeThemes } from "../data/ws-themes";
 import { subscribeUser } from "../data/ws-user";
 import { HomeAssistant } from "../types";
 import { hassUrl } from "../data/auth";
+import { subscribeFrontendUserData } from "../data/frontend";
 import {
   fetchConfig,
   fetchResources,
@@ -92,6 +93,7 @@ window.hassConnection.then(({ conn }) => {
   subscribePanels(conn, noop);
   subscribeThemes(conn, noop);
   subscribeUser(conn, noop);
+  subscribeFrontendUserData(conn, "core", noop);
 
   if (location.pathname === "/" || location.pathname.startsWith("/lovelace/")) {
     (window as WindowWithLovelaceProm).llConfProm = fetchConfig(
