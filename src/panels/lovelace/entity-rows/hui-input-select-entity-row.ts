@@ -20,7 +20,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import { HomeAssistant, InputSelectEntity } from "../../../types";
 import { LovelaceRow } from "./types";
-import { setInputSelectOption } from "../../../data/input-select";
+import { setInputSelectOption } from "../../../data/input_select";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { forwardHaptic } from "../../../data/haptics";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
