@@ -1916,6 +1916,11 @@
                         "toggle": "Commuta {name}",
                         "url": "Obre un finestra a {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant ha tingut algun problema en carregar la configuració i ara s'està executant en mode segur. Mira el registre d’errors per veure què ha anat malament.",
+                        "header": "Mode segur activat",
+                        "show_errors": "Mostra els errors"
+                    },
                     "shopping-list": {
                         "add_item": "Afegir element",
                         "checked_items": "Articles seleccionats",
@@ -2079,7 +2084,9 @@
                         "header": "Configuració de la visualització",
                         "header_name": "Configuració de la visualització {name}",
                         "move_left": "Desplaça la visualització cap a l'esquerra",
-                        "move_right": "Desplaça la visualització cap a la dreta"
+                        "move_right": "Desplaça la visualització cap a la dreta",
+                        "tab_badges": "Etiquetes",
+                        "tab_settings": "Configuració"
                     },
                     "header": "Editar la interfície d'usuari (UI)",
                     "menu": {

@@ -15,8 +15,12 @@ import { subscribeThemes } from "../data/ws-themes";
 import { subscribeUser } from "../data/ws-user";
 import { HomeAssistant } from "../types";
 import { hassUrl } from "../data/auth";
-import { fetchConfig, WindowWithLovelaceProm } from "../data/lovelace";
 import { subscribeFrontendUserData } from "../data/frontend";
+import {
+  fetchConfig,
+  fetchResources,
+  WindowWithLovelaceProm,
+} from "../data/lovelace";
 
 declare global {
   interface Window {
@@ -92,7 +96,12 @@ window.hassConnection.then(({ conn }) => {
   subscribeFrontendUserData(conn, "core", noop);
 
   if (location.pathname === "/" || location.pathname.startsWith("/lovelace/")) {
-    (window as WindowWithLovelaceProm).llConfProm = fetchConfig(conn, false);
+    (window as WindowWithLovelaceProm).llConfProm = fetchConfig(
+      conn,
+      null,
+      false
+    );
+    (window as WindowWithLovelaceProm).llResProm = fetchResources(conn);
   }
 });
 

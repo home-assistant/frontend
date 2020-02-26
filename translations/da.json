@@ -581,6 +581,7 @@
                 "entity": "Relaterede entiteter",
                 "group": "En del af følgende grupper",
                 "integration": "Integration",
+                "no_related_found": "Ingen relaterede elementer fundet.",
                 "scene": "En del af følgende scener",
                 "script": "En del af følgende scripts"
             },
@@ -630,6 +631,7 @@
                     "unavailable": "Denne entitet er ikke tilgængelig i øjeblikket.",
                     "update": "OPDATER"
                 },
+                "no_unique_id": "Denne entitet har ikke et unikt id. Derfor kan dens indstillinger ikke styres fra brugerfladen.",
                 "related": "Relaterede",
                 "settings": "Indstillinger"
             },
@@ -1323,6 +1325,7 @@
                         "filter": {
                             "filter": "Filtrer",
                             "show_disabled": "Vis deaktiverede entiteter",
+                            "show_readonly": "Vis skrivebeskyttede entiteter",
                             "show_unavailable": "Vis utilgængelige entiteter"
                         },
                         "header": "Entiteter",
@@ -1346,6 +1349,7 @@
                         "status": {
                             "disabled": "Deaktiveret",
                             "ok": "Ok",
+                            "readonly": "Skrivebeskyttet",
                             "unavailable": "Utilgængelig"
                         },
                         "unavailable": "(utilgængelig)"
@@ -1701,7 +1705,10 @@
                         "required_error_msg": "Dette felt er påkrævet",
                         "update": "Opdater"
                     },
-                    "edit_home_zone": "Lokaliteten af dit hjem kan ændres i den generelle konfiguration.",
+                    "edit_home_zone": "Radius af hjemzonen kan ikke redigeres fra brugerfladen endnu. Træk markøren på kortet for at flytte hjemmezonen.",
+                    "edit_home_zone_narrow": "Radius af hjemmezonen kan ikke redigeres fra brugerfladen endnu. Lokaliteten kan ændres fra den generelle konfiguration.",
+                    "go_to_core_config": "Gå til generel konfiguration?",
+                    "home_zone_core_config": "Lokaliteten af din hjemmezone kan redigeres fra den generelle konfigurationsside. Radius af hjemmezonen kan ikke redigeres fra brugerfladen endnu. Vil du gå til den generelle konfiguration?",
                     "introduction": "Zoner giver dig mulighed for at angive bestemte områder på jorden. Når en person er inden for en zone, vil tilstanden antage navnet fra zonen. Zoner kan også bruges som udløser eller tilstand inde i automatiseringsopsætninger.",
                     "no_zones_created_yet": "Det ser ud til, at du ikke har oprettet nogen zoner endnu."
                 },
@@ -1909,6 +1916,11 @@
                         "toggle": "Skift {name}",
                         "url": "Åbn vindue til {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant løb ind i problemer indlæsningen af din konfiguration, og kører nu i fejlsikret tilstand. Se på fejlloggen for at se, hvad der gik galt.",
+                        "header": "Safe mode aktiveret",
+                        "show_errors": "Vis fejlmeddelelser"
+                    },
                     "shopping-list": {
                         "add_item": "Tilføj element",
                         "checked_items": "Markerede elementer",
@@ -2072,7 +2084,9 @@
                         "header": "Vis konfiguration",
                         "header_name": "{name}-visningskonfiguration",
                         "move_left": "Flyt visningen til venstre",
-                        "move_right": "Flyt visningen til højre"
+                        "move_right": "Flyt visningen til højre",
+                        "tab_badges": "Badges",
+                        "tab_settings": "Indstillinger"
                     },
                     "header": "Rediger brugerflade",
                     "menu": {

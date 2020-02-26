@@ -1916,6 +1916,11 @@
                         "toggle": "Omschakelen {name}",
                         "url": "Open venster naar {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant heeft problemen ondervonden tijdens het laden van uw configuratie en werkt nu in de veilige modus. Bekijk het foutenlogboek om te zien wat er mis is gegaan.",
+                        "header": "Veilige modus geactiveerd",
+                        "show_errors": "Foutmeldingen weergeven"
+                    },
                     "shopping-list": {
                         "add_item": "Item toevoegen",
                         "checked_items": "Geselecteerde items",
@@ -2079,7 +2084,9 @@
                         "header": "Bekijk de configuratie",
                         "header_name": "{name} Bekijk de configuratie",
                         "move_left": "Verplaats weergave naar links",
-                        "move_right": "Verplaats weergave naar rechts"
+                        "move_right": "Verplaats weergave naar rechts",
+                        "tab_badges": "Badges",
+                        "tab_settings": "instellingen"
                     },
                     "header": "Bewerk UI",
                     "menu": {

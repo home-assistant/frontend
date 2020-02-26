@@ -1916,6 +1916,11 @@
                         "toggle": "Alternar {name}",
                         "url": "Abrir ventana a {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant tuvo problemas al cargar tu configuración y ahora se está ejecutando en modo seguro. Echa un vistazo al registro de errores para ver qué salió mal.",
+                        "header": "Modo Seguro Activado",
+                        "show_errors": "Mostrar errores"
+                    },
                     "shopping-list": {
                         "add_item": "Añadir artículo",
                         "checked_items": "Elementos marcados",
@@ -2079,7 +2084,9 @@
                         "header": "Ver configuración",
                         "header_name": "{name} Ver configuración",
                         "move_left": "Mover vista a la izquierda",
-                        "move_right": "Mover vista a la derecha"
+                        "move_right": "Mover vista a la derecha",
+                        "tab_badges": "Insignias",
+                        "tab_settings": "Configuración"
                     },
                     "header": "Editar la interfaz de usuario",
                     "menu": {

@@ -2084,7 +2084,9 @@
                         "header": "View Configuration",
                         "header_name": "{name} View Configuration",
                         "move_left": "Move view left",
-                        "move_right": "Move view right"
+                        "move_right": "Move view right",
+                        "tab_badges": "Badges",
+                        "tab_settings": "Settings"
                     },
                     "header": "Edit UI",
                     "menu": {
@@ -2107,6 +2109,7 @@
                         "error_remove": "Unable to remove configuration: {error}",
                         "error_save_yaml": "Unable to save YAML: {error}",
                         "header": "Edit Configuration",
+                        "resources_moved": "Resources should no longer be added to the Lovelace configuration but can be added in the Lovelace config panel.",
                         "save": "Save",
                         "saved": "Saved",
                         "unsaved_changes": "Unsaved changes"
