@@ -35,14 +35,10 @@ export class HuiViewVisibilityEditor extends LitElement {
 
   @property() public hass!: HomeAssistant;
   @property() public _config!: LovelaceViewConfig;
-  @property() private _users?: User[];
+  @property() private _users!: User[];
   @property() private _visible?: boolean | ShowViewConfig[];
 
-  private _sortedUsers = memoizeOne((users?: User[]) => {
-    if (!users) {
-      return [];
-    }
-
+  private _sortedUsers = memoizeOne((users: User[]) => {
     return users
       .filter((user) => !user.system_generated)
       .sort((a, b) => compare(a.name, b.name));
@@ -92,10 +88,6 @@ export class HuiViewVisibilityEditor extends LitElement {
   }
 
   private valChange(ev: Event): void {
-    if (this._users === undefined) {
-      return;
-    }
-
     const userId = (ev.currentTarget as any).userId;
     const checked = (ev.currentTarget as HaSwitch).checked;
 
