@@ -325,6 +325,7 @@ class LovelacePanel extends LitElement {
         }
         showSaveDialog(this, {
           lovelace: this.lovelace!,
+          mode: this.panel!.config.mode,
         });
       },
       saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {

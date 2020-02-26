@@ -1864,7 +1864,11 @@
             "header": "Take control of your Lovelace UI",
             "para": "By default Home Assistant will maintain your user interface, updating it when new entities or Lovelace UI components become available. If you take control we will no longer make changes automatically for you.",
             "para_sure": "Are you sure you want to take control of your user interface?",
+            "yaml_mode": "You are using YAML mode, that means you can not change your Lovelace config from the UI. If you want to change Lovelace from the UI, remove the 'mode: yaml' from your Lovelace configuration in 'configuration.yaml.'",
+            "yaml_control": "To take control in YAML mode, create a YAML file with the name you specified in your config for this dashboard, or the default 'ui-lovelace.yaml'.",
+            "yaml_config": "To help you start here is the current config of this dashboard:",
             "cancel": "Never mind",
+            "close": "Close",
             "save": "Take control"
           },
           "migrate": {
