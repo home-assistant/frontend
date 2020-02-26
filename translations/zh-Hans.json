@@ -699,7 +699,7 @@
                 "found": "为您找到以下结果：",
                 "how_can_i_help": "请问需要什么帮助？",
                 "label": "输入问题，然后按回车",
-                "label_voice": "输入后按「Enter」或点击麦克风图标后进行语音命令"
+                "label_voice": "输入后按回车，或点击麦克风图标后讲话"
             },
             "zha_device_info": {
                 "buttons": {
