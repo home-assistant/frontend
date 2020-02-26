@@ -1,7 +1,7 @@
 import { html, LitElement, TemplateResult, CSSResult, css } from "lit-element";
 
 import { createCardElement } from "../create-element/create-card-element";
-import { LovelaceCard } from "../types";
+import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { LovelaceCardConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 import { StackCardConfig } from "./types";
