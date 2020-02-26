@@ -52,7 +52,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
           <paper-input
             type="number"
             .label=${this.label}
-            .value=${this.data}
+            .value=${this._value}
             .required=${this.schema.required}
             .autoValidate=${this.schema.required}
             @value-changed=${this._valueChanged}
@@ -61,7 +61,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
   }
 
   private get _value() {
-    return this.data || 0;
+    return this.data || this.schema.default || 0;
   }
 
   private _valueChanged(ev: Event) {
