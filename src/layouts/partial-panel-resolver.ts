@@ -9,7 +9,7 @@ import {
 } from "./hass-router-page";
 import { removeInitSkeleton } from "../util/init-skeleton";
 
-const CACHE_COMPONENTS = ["lovelace", "states", "developer-tools"];
+const CACHE_PANELS = ["lovelace", "states", "developer-tools"];
 const COMPONENTS = {
   calendar: () =>
     import(
@@ -70,10 +70,10 @@ const COMPONENTS = {
 const getRoutes = (panels: Panels): RouterOptions => {
   const routes: RouterOptions["routes"] = {};
 
-  Object.values(panels).forEach((panel) => {
+  Object.entries(panels).forEach(([key, panel]) => {
     const data: RouteOptions = {
       tag: `ha-panel-${panel.component_name}`,
-      cache: CACHE_COMPONENTS.includes(panel.component_name),
+      cache: CACHE_PANELS.includes(key),
     };
     if (panel.component_name in COMPONENTS) {
       data.load = COMPONENTS[panel.component_name];
