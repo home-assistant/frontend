@@ -30,7 +30,11 @@ import {
   LovelaceBadgeConfig,
 } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import { EntitiesEditorEvent, ViewEditEvent } from "../types";
+import {
+  EntitiesEditorEvent,
+  ViewEditEvent,
+  ViewVisibilityChangeEvent,
+} from "../types";
 import { processEditorEntities } from "../process-editor-entities";
 import { navigate } from "../../../../common/navigate";
 import { Lovelace } from "../../types";
@@ -129,10 +133,9 @@ export class HuiEditView extends LitElement {
       case "tab-visibility":
         content = html`
           <hui-view-visibility-editor
-            .isNew=${this.viewIndex === undefined}
             .hass="${this.hass}"
             .config="${this._config}"
-            @view-visibility-config-changed="${this._viewConfigChanged}"
+            @view-visibility-changed="${this._viewVisibilityChanged}"
           ></hui-view-visibility-editor>
         `;
         break;
@@ -285,6 +288,12 @@ export class HuiEditView extends LitElement {
   private _viewConfigChanged(ev: ViewEditEvent): void {
     if (ev.detail && ev.detail.config) {
       this._config = ev.detail.config;
+    }
+  }
+
+  private _viewVisibilityChanged(ev: ViewVisibilityChangeEvent): void {
+    if (ev.detail && ev.detail.visible && this._config !== undefined) {
+      this._config.visible = ev.detail.visible;
     }
   }
 

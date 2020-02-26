@@ -4,96 +4,39 @@ import {
   TemplateResult,
   customElement,
   property,
-  CSSResult,
-  css,
+  PropertyValues,
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
 
-import { EditorTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { configElementStyle } from "../config-elements/config-elements-style";
 import { LovelaceViewConfig, ShowViewConfig } from "../../../../data/lovelace";
-import { slugify } from "../../../../common/string/slugify";
-
-import "../../components/hui-theme-select-editor";
-import "../../../../components/ha-switch";
 
 import { fetchUsers, User } from "../../../../data/user";
 import memoizeOne from "memoize-one";
 import { compare } from "../../../../common/string/compare";
+import { HaSwitch } from "../../../../components/ha-switch";
 
 declare global {
   interface HASSDomEvents {
-    "view-visibility-config-changed": {
-      config: LovelaceViewConfig;
+    "view-visibility-changed": {
+      visible: ShowViewConfig[];
     };
   }
 }
 
 @customElement("hui-view-visibility-editor")
 export class HuiViewVisibilityEditor extends LitElement {
-  get _path(): string {
-    if (!this._config) {
-      return "";
-    }
-    return this._config.path || "";
-  }
-
-  get _title(): string {
-    if (!this._config) {
-      return "";
-    }
-    return this._config.title || "";
-  }
-
-  get _icon(): string {
-    if (!this._config) {
-      return "";
-    }
-    return this._config.icon || "";
-  }
-
-  get _theme(): string {
-    if (!this._config) {
-      return "";
-    }
-    return this._config.theme || "Backend-selected";
-  }
-
-  get _panel(): boolean {
-    if (!this._config) {
-      return false;
-    }
-    return this._config.panel || false;
-  }
-
-  get _visible(): boolean | ShowViewConfig[] {
-    if (!this._config) {
-      return true;
-    }
-    return this._config.visible || true;
-  }
-
   set config(config: LovelaceViewConfig) {
     this._config = config;
-
-    console.log(this._config);
+    this._visible = this._config.visible;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      .panel {
-        color: var(--secondary-text-color);
-      }
-    `;
-  }
   @property() public hass!: HomeAssistant;
-  @property() public isNew!: boolean;
-  @property() private _config!: LovelaceViewConfig;
-  private _suggestedPath = false;
-
-  private _users: User[] = [];
+  @property() public _config!: LovelaceViewConfig;
+  @property() private _users?: User[];
+  @property() private _visible?: boolean | ShowViewConfig[];
 
   private _sortedUsers = memoizeOne((users?: User[]) => {
     if (!users) {
@@ -105,68 +48,90 @@ export class HuiViewVisibilityEditor extends LitElement {
       .sort((a, b) => compare(a.name, b.name));
   });
 
-  protected async _loadData() {
-    this._users = await fetchUsers(this.hass);
-    console.log(this._users);
+  protected firstUpdated(changedProps: PropertyValues) {
+    super.firstUpdated(changedProps);
+
+    fetchUsers(this.hass).then((users) => {
+      this._users = users;
+      // how can I resize and reposition dialog? Should I use `iron-resize` event?
+    });
   }
 
   protected render(): TemplateResult {
-    this._loadData();
     if (!this.hass || !this._users) {
       return html``;
     }
 
-    console.log(this._visible);
-
     return html`
       ${configElementStyle}
       <div class="card-config">
-        <span class="panel"
-          >Which users should see this view?
-          <p>Select which users should have access to this view</p></span
-        >
+        <span>Select which users should have access to this view</span>
 
         ${this._sortedUsers(this._users).map(
           (user) => html`
-            <ha-switch>${user.name}</ha-switch>
+            <ha-switch
+              .userId="${user.id}"
+              @change=${this.valChange}
+              .checked=${this.checkUser(user.id)}
+              >${user.name}</ha-switch
+            >
           `
         )}
       </div>
     `;
   }
 
-  private _valueChanged(ev: Event): void {
-    const target = ev.currentTarget! as EditorTarget;
-
-    if (this[`_${target.configValue}`] === target.value) {
-      return;
+  protected checkUser(userId: string): boolean {
+    if (this._visible === undefined) {
+      return true;
     }
-
-    let newConfig;
-
-    if (target.configValue) {
-      newConfig = {
-        ...this._config,
-        [target.configValue!]:
-          target.checked !== undefined ? target.checked : target.value,
-      };
+    if (typeof this._visible === "boolean") {
+      return this._visible as boolean;
     }
-
-    fireEvent(this, "view-visibility-config-changed", { config: newConfig });
+    return (this._visible as ShowViewConfig[]).some((u) => u.user === userId);
   }
 
-  private _handleTitleBlur(ev) {
-    if (
-      !this.isNew ||
-      this._suggestedPath ||
-      this._config.path ||
-      !ev.currentTarget.value
-    ) {
+  private valChange(ev: Event): void {
+    if (this._users === undefined) {
       return;
     }
 
-    const config = { ...this._config, path: slugify(ev.currentTarget.value) };
-    fireEvent(this, "view-visibility-config-changed", { config });
+    const userId = (ev.currentTarget as any).userId;
+    const checked = (ev.currentTarget as HaSwitch).checked;
+
+    if (this._visible === undefined) {
+      this._visible = true;
+    }
+
+    let newVisible: ShowViewConfig[] = [];
+
+    if (typeof this._visible === "boolean") {
+      const lastValue = this._visible as boolean;
+      if (lastValue === true) {
+        newVisible = this._users.map((u) => {
+          return {
+            user: u.id,
+          };
+        });
+      }
+    } else {
+      newVisible = [...this._visible];
+    }
+
+    if (checked === true) {
+      const newEntry: ShowViewConfig = {
+        user: userId,
+      };
+      newVisible = [...newVisible, newEntry];
+    } else {
+      newVisible = (newVisible as ShowViewConfig[]).filter(
+        (c) => c.user !== userId
+      );
+    }
+
+    this._visible = newVisible;
+
+    fireEvent(this, "view-visibility-changed", { visible: this._visible });
   }
 }
 
