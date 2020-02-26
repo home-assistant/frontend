@@ -396,6 +396,23 @@ export class HuiCardPicker extends LitElement {
     return entityIds;
   }
 
+  private _createCardElement(cardConfig: LovelaceCardConfig) {
+    const element = createCardElement(cardConfig) as LovelaceCard;
+    element.hass = this.hass;
+    element.addEventListener(
+      "ll-rebuild",
+      (ev) => {
+        ev.stopPropagation();
+        element.parentElement!.replaceChild(
+          this._createCardElement(cardConfig),
+          element
+        );
+      },
+      { once: true }
+    );
+    return element;
+  }
+
   private async _renderCardElement(
     cardConfig: CardPickerConfig
   ): Promise<TemplateResult> {
@@ -404,8 +421,7 @@ export class HuiCardPicker extends LitElement {
     const lovelaceCardConfig = await this._getCardConfig(cardConfig);
 
     if (!cardConfig.noPreview) {
-      element = createCardElement(lovelaceCardConfig!);
-      element.hass = this.hass;
+      element = this._createCardElement(lovelaceCardConfig!);
     }
 
     return html`
