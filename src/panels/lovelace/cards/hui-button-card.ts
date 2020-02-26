@@ -72,6 +72,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       double_tap_action: { action: "none" },
       show_icon: true,
       show_name: true,
+      state_color: true,
       ...config,
     };
 
