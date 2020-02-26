@@ -1,32 +1,33 @@
 import { fireEvent } from "../../../common/dom/fire_event";
 import { EntityRegistryEntry } from "../../../data/entity_registry";
-import { DialogEntityRegistryDetail } from "./dialog-entity-registry-detail";
+import { DialogEntityEditor } from "./dialog-entity-editor";
 
 export interface EntityRegistryDetailDialogParams {
   entry?: EntityRegistryEntry;
   entity_id: string;
+  tab?: string;
 }
 
-export const loadEntityRegistryDetailDialog = () =>
+export const loadEntityEditorDialog = () =>
   import(
-    /* webpackChunkName: "entity-registry-detail-dialog" */ "./dialog-entity-registry-detail"
+    /* webpackChunkName: "entity-editor-dialog" */ "./dialog-entity-editor"
   );
 
 const getDialog = () => {
   return document
     .querySelector("home-assistant")!
-    .shadowRoot!.querySelector("dialog-entity-registry-detail") as
-    | DialogEntityRegistryDetail
+    .shadowRoot!.querySelector("dialog-entity-editor") as
+    | DialogEntityEditor
     | undefined;
 };
 
-export const showEntityRegistryDetailDialog = (
+export const showEntityEditorDialog = (
   element: HTMLElement,
   entityDetailParams: EntityRegistryDetailDialogParams
-): (() => DialogEntityRegistryDetail | undefined) => {
+): (() => DialogEntityEditor | undefined) => {
   fireEvent(element, "show-dialog", {
-    dialogTag: "dialog-entity-registry-detail",
-    dialogImport: loadEntityRegistryDetailDialog,
+    dialogTag: "dialog-entity-editor",
+    dialogImport: loadEntityEditorDialog,
     dialogParams: entityDetailParams,
   });
   return getDialog;

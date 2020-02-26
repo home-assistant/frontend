@@ -39,11 +39,11 @@ import "../../../layouts/hass-loading-screen";
 import "../../../layouts/hass-tabs-subpage-data-table";
 import { SubscribeMixin } from "../../../mixins/subscribe-mixin";
 import { HomeAssistant, Route } from "../../../types";
-import { DialogEntityRegistryDetail } from "./dialog-entity-registry-detail";
+import { DialogEntityEditor } from "./dialog-entity-editor";
 import {
-  loadEntityRegistryDetailDialog,
-  showEntityRegistryDetailDialog,
-} from "./show-dialog-entity-registry-detail";
+  loadEntityEditorDialog,
+  showEntityEditorDialog,
+} from "./show-dialog-entity-editor";
 import { configSections } from "../ha-panel-config";
 import { classMap } from "lit-html/directives/class-map";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -75,7 +75,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @property() private _selectedEntities: string[] = [];
   @query("hass-tabs-subpage-data-table")
   private _dataTable!: HaTabsSubpageDataTable;
-  private getDialog?: () => DialogEntityRegistryDetail | undefined;
+  private getDialog?: () => DialogEntityEditor | undefined;
 
   private _columns = memoize(
     (narrow, _language): DataTableColumnContainer => {
@@ -387,33 +387,35 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .route=${this.route}
         .tabs=${configSections.integrations}
         .columns=${this._columns(this.narrow, this.hass.language)}
-          .data=${this._filteredEntities(
-            this._entities,
-            this.hass.states,
-            this._showDisabled,
-            this._showUnavailable,
-            this._showReadOnly
-          )}
-          .filter=${this._filter}
-          selectable
-          @selection-changed=${this._handleSelectionChanged}
-          @row-click=${this._openEditEntry}
-          id="entity_id"
+        .data=${this._filteredEntities(
+          this._entities,
+          this.hass.states,
+          this._showDisabled,
+          this._showUnavailable,
+          this._showReadOnly
+        )}
+        .filter=${this._filter}
+        selectable
+        @selection-changed=${this._handleSelectionChanged}
+        @row-click=${this._openEditEntry}
+        id="entity_id"
       >
-                <div class=${classMap({
-                  "search-toolbar": this.narrow,
-                  "table-header": !this.narrow,
-                })} slot="header">
-                  ${headerToolbar}
-                </div>
-        </ha-data-table>
+        <div
+          class=${classMap({
+            "search-toolbar": this.narrow,
+            "table-header": !this.narrow,
+          })}
+          slot="header"
+        >
+          ${headerToolbar}
+        </div>
       </hass-tabs-subpage-data-table>
     `;
   }
 
   protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
-    loadEntityRegistryDetailDialog();
+    loadEntityEditorDialog();
   }
 
   private _showDisabledChanged() {
@@ -524,7 +526,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     const entry = this._entities!.find(
       (entity) => entity.entity_id === entityId
     );
-    this.getDialog = showEntityRegistryDetailDialog(this, {
+    this.getDialog = showEntityEditorDialog(this, {
       entry,
       entity_id: entityId,
     });

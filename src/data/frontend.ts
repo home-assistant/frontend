@@ -59,3 +59,12 @@ export const getOptimisticFrontendUserDataCollection = <
     `_frontendUserData-${userDataKey}`,
     () => fetchFrontendUserData(conn, userDataKey)
   );
+
+export const subscribeFrontendUserData = <UserDataKey extends ValidUserDataKey>(
+  conn: Connection,
+  userDataKey: UserDataKey,
+  onChange: (state: FrontendUserData[UserDataKey] | null) => void
+) =>
+  getOptimisticFrontendUserDataCollection(conn, userDataKey).subscribe(
+    onChange
+  );

@@ -6,8 +6,6 @@ import {
   TemplateResult,
   property,
   customElement,
-  CSSResult,
-  css,
 } from "lit-element";
 import { HomeAssistant, Route } from "../../../types";
 import {
@@ -252,17 +250,6 @@ export class HaConfigDeviceDashboard extends LitElement {
   private _handleRowClicked(ev: CustomEvent) {
     const deviceId = (ev.detail as RowClickedEvent).id;
     navigate(this, `/config/devices/device/${deviceId}`);
-  }
-
-  static get styles(): CSSResult {
-    return css`
-      .content {
-        padding: 4px;
-      }
-      ha-devices-data-table {
-        width: 100%;
-      }
-    `;
   }
 }
 
