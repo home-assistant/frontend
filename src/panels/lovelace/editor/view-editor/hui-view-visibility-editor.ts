@@ -121,7 +121,10 @@ export class HuiViewVisibilityEditor extends LitElement {
       );
     }
 
-    this._visible = newVisible;
+    // this removes users that doesn't exists in system but had view permissions
+    this._visible = newVisible.filter((c) =>
+      this._users.some((u) => u.id === c.user)
+    );
 
     fireEvent(this, "view-visibility-changed", { visible: this._visible });
   }
