@@ -1706,7 +1706,9 @@
                         "update": "Aktualisieren"
                     },
                     "edit_home_zone": "Der Standort Ihres Hauses kann in der allgemeinen Konfiguration geändert werden.",
+                    "edit_home_zone_narrow": "Der Radius der Home-Zone kann vom Frontend aus noch nicht bearbeitet werden. Der Standort kann von der allgemeinen Konfiguration aus geändert werden.",
                     "go_to_core_config": "Zur allgemeinen Konfiguration gehen?",
+                    "home_zone_core_config": "Der Standort Ihrer Homezone kann auf der allgemeinen Konfigurationsseite bearbeitet werden. Der Radius der Homezone kann vom Frontend aus noch nicht bearbeitet werden. Wollen Sie zur allgemeinen Konfiguration gehen?",
                     "introduction": "Mit Zonen können Sie bestimmte Regionen auf der Erde angeben. Befindet sich eine Person in einer Zone, übernimmt der Zustand den Namen aus der Zone. Zonen können auch als Auslöser oder Bedingung in Automatisierungs-Setups verwendet werden.",
                     "no_zones_created_yet": "Es sieht so aus, als hätten Sie noch keine Zonen erstellt."
                 },
@@ -1915,6 +1917,7 @@
                         "url": "Fenster zu {url_path} öffnen"
                     },
                     "safe-mode": {
+                        "description": "Home Assistant hatte beim Laden Ihrer Konfiguration Probleme und wird jetzt im abgesicherten Modus ausgeführt. Sehen Sie sich das Fehlerprotokoll an, um zu sehen, was schiefgelaufen ist.",
                         "header": "Abgesicherter Modus aktiviert",
                         "show_errors": "Fehler anzeigen"
                     },
@@ -2082,6 +2085,7 @@
                         "header_name": "{name} Konfiguration anzeigen",
                         "move_left": "Ansicht nach links verschieben",
                         "move_right": "Ansicht nach rechts verschieben",
+                        "tab_badges": "Abzeichen",
                         "tab_settings": "Einstellungen"
                     },
                     "header": "Benutzeroberfläche bearbeiten",
