@@ -13,6 +13,17 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
     };
   }
 
+  public static async getConfigElement(): Promise<LovelaceCardEditor> {
+    await import(
+      /* webpackChunkName: "hui-stack-card-editor" */ "../editor/config-elements/hui-stack-card-editor"
+    );
+    return document.createElement("hui-stack-card-editor");
+  }
+
+  public static getStubConfig(): object {
+    return { cards: [] };
+  }
+
   set hass(hass: HomeAssistant) {
     this._hass = hass;
 
@@ -39,6 +50,7 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
       const element = this._createCardElement(card) as LovelaceCard;
       return element;
     });
+    this.requestUpdate();
   }
 
   protected render(): TemplateResult {
