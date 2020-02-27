@@ -1,4 +1,11 @@
-import { html, LitElement, TemplateResult, CSSResult, css } from "lit-element";
+import {
+  html,
+  LitElement,
+  TemplateResult,
+  CSSResult,
+  css,
+  property,
+} from "lit-element";
 
 import { createCardElement } from "../create-element/create-card-element";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
@@ -7,12 +14,6 @@ import { HomeAssistant } from "../../../types";
 import { StackCardConfig } from "./types";
 
 export abstract class HuiStackCard extends LitElement implements LovelaceCard {
-  static get properties() {
-    return {
-      _config: {},
-    };
-  }
-
   public static async getConfigElement(): Promise<LovelaceCardEditor> {
     await import(
       /* webpackChunkName: "hui-stack-card-editor" */ "../editor/config-elements/hui-stack-card-editor"
@@ -23,6 +24,10 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
   public static getStubConfig(): object {
     return { cards: [] };
   }
+
+  @property() protected _cards?: LovelaceCard[];
+  @property() private _config?: StackCardConfig;
+  private _hass?: HomeAssistant;
 
   set hass(hass: HomeAssistant) {
     this._hass = hass;
@@ -35,9 +40,6 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
       element.hass = this._hass;
     }
   }
-  protected _cards?: LovelaceCard[];
-  private _config?: StackCardConfig;
-  private _hass?: HomeAssistant;
 
   public abstract getCardSize(): number;
 
@@ -50,16 +52,14 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
       const element = this._createCardElement(card) as LovelaceCard;
       return element;
     });
-    this.requestUpdate();
   }
 
   protected render(): TemplateResult {
-    if (!this._config) {
+    if (!this._config || !this._cards) {
       return html``;
     }
 
     return html`
-      ${this.renderStyle()}
       ${this._config.title
         ? html`
             <div class="card-header">${this._config.title}</div>
@@ -69,9 +69,7 @@ export abstract class HuiStackCard extends LitElement implements LovelaceCard {
     `;
   }
 
-  protected abstract renderStyle(): TemplateResult;
-
-  static get styles(): CSSResult {
+  static get sharedStyles(): CSSResult {
     return css`
       .card-header {
         color: var(--ha-card-header-color, --primary-text-color);
