@@ -22,7 +22,7 @@ export interface PageNavigation {
   component?: string;
   name?: string;
   core?: boolean;
-  exportOnly?: boolean;
+  expertOnly?: boolean;
   icon?: string;
   info?: any;
 }
@@ -66,7 +66,7 @@ class HassTabsSubpage extends LitElement {
             (!page.component ||
               page.core ||
               isComponentLoaded(this.hass, page.component)) &&
-            (!page.exportOnly || this.showAdvanced)
+            (!page.expertOnly || this.showAdvanced)
               ? html`
                   <div
                     class="tab ${classMap({

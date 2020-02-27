@@ -12,10 +12,36 @@ export interface LovelaceConfig {
   background?: string;
 }
 
-export type LovelaceResources = Array<{
+export interface LovelaceResource {
+  id: string;
   type: "css" | "js" | "module" | "html";
   url: string;
-}>;
+}
+
+export interface LovelaceResourcesMutableParams {
+  res_type: "css" | "js" | "module" | "html";
+  url: string;
+}
+
+export interface LovelaceDashboard {
+  id: string;
+  url_path: string;
+  mode: "yaml" | "storage";
+  filename?: string;
+  require_admin: boolean;
+  sidebar?: { icon: string; title: string };
+}
+
+export interface LovelaceDashboardMutableParams {
+  require_admin: boolean;
+  sidebar: { icon: string; title: string } | null;
+}
+
+export interface LovelaceDashboardCreateParams
+  extends LovelaceDashboardMutableParams {
+  url_path: string;
+  mode: "yaml" | "storage";
+}
 
 export interface LovelaceViewConfig {
   index?: number;
@@ -111,10 +137,70 @@ type LovelaceUpdatedEvent = HassEventBase & {
   };
 };
 
-export const fetchResources = (conn: Connection): Promise<LovelaceResources> =>
+export const fetchResources = (conn: Connection): Promise<LovelaceResource[]> =>
   conn.sendMessagePromise({
     type: "lovelace/resources",
   });
+
+export const createResource = (
+  hass: HomeAssistant,
+  values: LovelaceResourcesMutableParams
+) =>
+  hass.callWS<LovelaceResource>({
+    type: "lovelace/resources/create",
+    ...values,
+  });
+
+export const updateResource = (
+  hass: HomeAssistant,
+  id: string,
+  updates: Partial<LovelaceResourcesMutableParams>
+) =>
+  hass.callWS<LovelaceResource>({
+    type: "lovelace/resources/update",
+    resource_id: id,
+    ...updates,
+  });
+
+export const deleteResource = (hass: HomeAssistant, id: string) =>
+  hass.callWS({
+    type: "lovelace/resources/delete",
+    resource_id: id,
+  });
+
+export const fetchDashboards = (
+  hass: HomeAssistant
+): Promise<LovelaceDashboard[]> =>
+  hass.callWS({
+    type: "lovelace/dashboards/list",
+  });
+
+export const createDashboard = (
+  hass: HomeAssistant,
+  values: LovelaceDashboardCreateParams
+) =>
+  hass.callWS<LovelaceDashboard>({
+    type: "lovelace/dashboards/create",
+    ...values,
+  });
+
+export const updateDashboard = (
+  hass: HomeAssistant,
+  id: string,
+  updates: Partial<LovelaceDashboardMutableParams>
+) =>
+  hass.callWS<LovelaceDashboard>({
+    type: "lovelace/dashboards/update",
+    dashboard_id: id,
+    ...updates,
+  });
+
+export const deleteDashboard = (hass: HomeAssistant, id: string) =>
+  hass.callWS({
+    type: "lovelace/dashboards/delete",
+    dashboard_id: id,
+  });
+
 export const fetchConfig = (
   conn: Connection,
   urlPath: string | null,
@@ -125,6 +211,7 @@ export const fetchConfig = (
     url_path: urlPath,
     force,
   });
+
 export const saveConfig = (
   hass: HomeAssistant,
   urlPath: string | null,
@@ -174,7 +261,7 @@ export const getLovelaceCollection = (
 
 export interface WindowWithLovelaceProm extends Window {
   llConfProm?: Promise<LovelaceConfig>;
-  llResProm?: Promise<LovelaceResources>;
+  llResProm?: Promise<LovelaceResource[]>;
 }
 
 export interface ActionHandlerOptions {
