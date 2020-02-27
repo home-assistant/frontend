@@ -1855,7 +1855,8 @@
               "description": "Horizontal stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
             },
             "iframe": {
-              "name": "iFrame"
+              "name": "Webpage",
+              "description": "Embed your favorite webpage right into Home Assistant"
             },
             "light": {
               "name": "Light"
