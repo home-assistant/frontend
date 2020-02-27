@@ -43,7 +43,7 @@ export class HuiStackCardEditor extends LitElement
       <div class="card-config">
         <div class="toolbar">
           <paper-tabs
-            selected="${selected}"
+            .selected=${selected}
             scrollable
             @iron-select=${this._handleSelectedCard}
           >
@@ -57,7 +57,7 @@ export class HuiStackCardEditor extends LitElement
           </paper-tabs>
           <paper-tabs
             id="add-card"
-            selected=${selected === numcards ? "0" : undefined}
+            .selected=${selected === numcards ? "0" : undefined}
             @iron-select=${this._handleSelectedCard}
           >
             <paper-tab>
