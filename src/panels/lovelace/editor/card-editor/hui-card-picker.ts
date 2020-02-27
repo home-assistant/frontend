@@ -6,8 +6,8 @@ import {
   CSSResult,
   customElement,
 } from "lit-element";
-import "@material/mwc-button";
 import { until } from "lit-html/directives/until";
+import { classMap } from "lit-html/directives/class-map";
 
 import { CardPickTarget } from "../types";
 import { HomeAssistant } from "../../../../types";
@@ -18,7 +18,6 @@ import {
   getCardElementClass,
   createCardElement,
 } from "../../create-element/create-card-element";
-import { classMap } from "lit-html/directives/class-map";
 
 const previewCards: string[] = [
   "alarm-panel",
@@ -27,7 +26,6 @@ const previewCards: string[] = [
   "gauge",
   "glance",
   "history-graph",
-  "iframe",
   "light",
   "map",
   "markdown",
@@ -46,6 +44,7 @@ const nonPreviewCards: string[] = [
   "conditional",
   "entity-filter",
   "horizontal-stack",
+  "iframe",
   "vertical-stack",
   "shopping-list",
 ];
@@ -58,11 +57,6 @@ export class HuiCardPicker extends LitElement {
 
   protected render(): TemplateResult {
     return html`
-      <h2>
-        ${this.hass!.localize(
-          `ui.panel.lovelace.editor.edit_card.preview_cards`
-        )}
-      </h2>
       <div class="cards-container">
         ${previewCards.map((type: string) => {
           return html`
@@ -74,11 +68,6 @@ export class HuiCardPicker extends LitElement {
             )}
           `;
         })}
-      </div>
-      <h2>
-        ${this.hass!.localize(`ui.panel.lovelace.editor.edit_card.other`)}
-      </h2>
-      <div class="cards-container">
         ${nonPreviewCards.map((type: string) => {
           return html`
             ${until(
@@ -90,9 +79,6 @@ export class HuiCardPicker extends LitElement {
           `;
         })}
       </div>
-      <h2>
-        ${this.hass!.localize(`ui.panel.lovelace.editor.edit_card.misc`)}
-      </h2>
       <div class="cards-container">
         <div
           class="card"
@@ -121,6 +107,7 @@ export class HuiCardPicker extends LitElement {
           display: grid;
           grid-gap: 8px 8px;
           grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+          margin-top: 20px;
         }
 
         .card {
@@ -228,8 +215,12 @@ export class HuiCardPicker extends LitElement {
 
     return html`
       <div class="card" @click="${this._cardPicked}" .config="${cardConfig}">
-        <div class="preview ${classMap({ description: !element })}">
-          ${!element
+        <div
+          class="preview ${classMap({
+            description: !element || element.tagName === "HUI-ERROR-CARD",
+          })}"
+        >
+          ${!element || element.tagName === "HUI-ERROR-CARD"
             ? html`
                 ${this.hass!.localize(
                   `ui.panel.lovelace.editor.card.${cardConfig.type}.description`

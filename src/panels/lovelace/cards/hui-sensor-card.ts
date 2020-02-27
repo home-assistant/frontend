@@ -28,6 +28,7 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { LovelaceConfig } from "../../../data/lovelace";
 import { findEntities } from "../common/find-entites";
+import { HassEntity } from "home-assistant-js-websocket/dist/types";
 
 const strokeWidth = 5;
 
@@ -182,11 +183,19 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
   ): object {
     const includeDomains = ["sensor"];
     const maxEntities = 1;
+    const entityFilter = (stateObj: HassEntity): boolean => {
+      return (
+        !isNaN(Number(stateObj.state)) &&
+        !!stateObj.attributes.unit_of_measurement
+      );
+    };
+
     const entities = findEntities(
       hass,
       lovelaceConfig,
       maxEntities,
-      includeDomains
+      includeDomains,
+      entityFilter
     );
 
     return { entity: entities[0] || "", graph: "line" };

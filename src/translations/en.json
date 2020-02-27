@@ -1782,7 +1782,6 @@
             "header": "Card Configuration",
             "pick_card": "Which card would you like to add?",
             "pick_card_view_title": "Which card would you like to add to your {name} view?",
-            "pick_card_preview": "Preview:",
             "toggle_editor": "Toggle Editor",
             "show_visual_editor": "Show Visual Editor",
             "show_code_editor": "Show Code Editor",
@@ -1790,10 +1789,7 @@
             "edit": "Edit",
             "delete": "Delete Card",
             "move": "Move to View",
-            "options": "More options",
-            "preview_cards": "Preview Cards",
-            "other": "Other",
-            "misc": "Misc"
+            "options": "More options"
           },
           "suggest_card": {
             "header": "We created a suggestion for you",

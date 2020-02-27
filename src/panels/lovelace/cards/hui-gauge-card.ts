@@ -24,6 +24,7 @@ import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { GaugeCardConfig } from "./types";
 import { LovelaceConfig } from "../../../data/lovelace";
 import { findEntities } from "../common/find-entites";
+import { HassEntity } from "home-assistant-js-websocket/dist/types";
 
 export const severityMap = {
   red: "var(--label-badge-red)",
@@ -47,11 +48,16 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
   ): object {
     const includeDomains = ["sensor"];
     const maxEntities = 1;
+    const entityFilter = (stateObj: HassEntity): boolean => {
+      return !isNaN(Number(stateObj.state));
+    };
+
     const entities = findEntities(
       hass,
       lovelaceConfig,
       maxEntities,
-      includeDomains
+      includeDomains,
+      entityFilter
     );
 
     return { entity: entities[0] || "" };

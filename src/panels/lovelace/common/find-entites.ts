@@ -6,13 +6,14 @@ import {
 import { HomeAssistant } from "../../../types";
 import { LovelaceConfig } from "../../../data/lovelace";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { HassEntity } from "home-assistant-js-websocket";
 
-// TODO: Filter Out non-numeric, etc based on card needs
 export const findEntities = (
   hass: HomeAssistant,
   lovelaceConfig: LovelaceConfig,
   maxEntities: number,
-  includeDomains?: string[]
+  includeDomains?: string[],
+  entityFilter?: (stateObj: HassEntity) => boolean
 ) => {
   let entityIds: string[];
 
@@ -21,6 +22,12 @@ export const findEntities = (
   if (includeDomains && includeDomains.length) {
     entityIds = entityIds.filter((eid) =>
       includeDomains!.includes(computeDomain(eid))
+    );
+  }
+
+  if (entityFilter) {
+    entityIds = entityIds.filter(
+      (eid) => hass.states[eid] && entityFilter(hass.states[eid])
     );
   }
 
@@ -34,6 +41,12 @@ export const findEntities = (
     if (includeDomains && includeDomains.length) {
       usedEntityIds = usedEntityIds.filter((eid) =>
         includeDomains!.includes(computeDomain(eid))
+      );
+    }
+
+    if (entityFilter) {
+      usedEntityIds = usedEntityIds.filter(
+        (eid) => hass.states[eid] && entityFilter(hass.states[eid])
       );
     }
 
