@@ -2081,8 +2081,8 @@
                         "add": "新增視圖",
                         "delete": "刪除視圖",
                         "edit": "編輯視圖",
-                        "header": "檢視設定",
-                        "header_name": "{name} 檢視設定",
+                        "header": "面板設定",
+                        "header_name": "{name}面板設定",
                         "move_left": "向左移動視圖",
                         "move_right": "向右移動視圖",
                         "tab_badges": "園標圖示",
@@ -2109,6 +2109,7 @@
                         "error_remove": "無法移除設定：{error}",
                         "error_save_yaml": "無法儲存 YAML：{error}",
                         "header": "編輯設定",
+                        "resources_moved": "無法再透過 Lovelace 設定新增資源，需透過 Lovelace 設定面板進行新增。",
                         "save": "儲存",
                         "saved": "已儲存",
                         "unsaved_changes": "未儲存的變更"

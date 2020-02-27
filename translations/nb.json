@@ -2109,6 +2109,7 @@
                         "error_remove": "Kan ikke fjerne konfigurasjonen: {error}",
                         "error_save_yaml": "Kan ikke lagre YAML: {error}",
                         "header": "Rediger konfigurasjon",
+                        "resources_moved": "Ressurser skal ikke lenger legges til Lovelace-konfigurasjonen, men kan legges til i Lovelace-konfigurasjonspanelet.",
                         "save": "Lagre",
                         "saved": "Lagret",
                         "unsaved_changes": "Ulagrede endringer"
