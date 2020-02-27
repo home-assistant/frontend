@@ -34,7 +34,7 @@ import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { MediaControlCardConfig } from "./types";
 import { UNAVAILABLE } from "../../../data/entity";
-import { LovelaceConfig, LovelaceCardConfig } from "../../../data/lovelace";
+import { LovelaceConfig } from "../../../data/lovelace";
 import { findEntities } from "../common/find-entites";
 
 @customElement("hui-media-control-card")
@@ -49,7 +49,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   public static getStubConfig(
     hass: HomeAssistant,
     lovelaceConfig: LovelaceConfig
-  ) {
+  ): object {
     const includeDomains = ["media_player"];
     const maxEntities = 1;
     const entities = findEntities(
