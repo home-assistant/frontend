@@ -42,7 +42,9 @@ export class HassioUpdate extends LitElement {
         !!value &&
         (value.last_version
           ? value.version !== value.last_version
-          : value.version !== value.version_latest)
+          : value.version_latest
+          ? value.version !== value.version_latest
+          : false)
       );
     }).length;
 
@@ -102,7 +104,7 @@ export class HassioUpdate extends LitElement {
     releaseNotesUrl: string,
     icon?: string
   ): TemplateResult {
-    if (lastVersion === curVersion) {
+    if (!lastVersion || lastVersion === curVersion) {
       return html``;
     }
     return html`
