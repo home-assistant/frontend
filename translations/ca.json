@@ -2109,6 +2109,7 @@
                         "error_remove": "No s'ha pogut eliminar la configuració: {error}",
                         "error_save_yaml": "No es pot desar YAML: {error}",
                         "header": "Edita la configuració",
+                        "resources_moved": "Els recursos ja no s'han d'afegir a la configuració de Lovelace, però es poden afegir al tauler de configuració de Lovelace.",
                         "save": "Desa",
                         "saved": "Desat",
                         "unsaved_changes": "Canvis sense desar"
