@@ -14,10 +14,8 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCard } from "../../types";
 import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
-import {
-  getCardElementClass,
-  createCardElement,
-} from "../../create-element/create-card-element";
+import { createCardElement } from "../../create-element/create-card-element";
+import { getCardStubConfig } from "../get-card-stub-config";
 
 const previewCards: string[] = [
   "alarm-panel",
@@ -63,7 +61,9 @@ export class HuiCardPicker extends LitElement {
             ${until(
               this._renderCardElement(type),
               html`
-                <paper-spinner active alt="Loading"></paper-spinner>
+                <div class="card spinner">
+                  <paper-spinner active alt="Loading"></paper-spinner>
+                </div>
               `
             )}
           `;
@@ -73,7 +73,9 @@ export class HuiCardPicker extends LitElement {
             ${until(
               this._renderCardElement(type, true),
               html`
-                <paper-spinner active alt="Loading"></paper-spinner>
+                <div class="card spinner">
+                  <paper-spinner active alt="Loading"></paper-spinner>
+                </div>
               `
             )}
           `;
@@ -157,6 +159,11 @@ export class HuiCardPicker extends LitElement {
         .description {
           text-align: center;
         }
+
+        .spinner {
+          align-items: center;
+          justify-content: center;
+        }
       `,
     ];
   }
@@ -166,22 +173,6 @@ export class HuiCardPicker extends LitElement {
       .config;
 
     fireEvent(this, "config-changed", { config });
-  }
-
-  private async _getCardConfig(type: string): Promise<LovelaceCardConfig> {
-    let cardConfig: LovelaceCardConfig = { type };
-
-    if (!this.hass || !this.lovelace) {
-      return cardConfig;
-    }
-    const elClass = await getCardElementClass(type);
-
-    if (elClass && elClass.getStubConfig) {
-      const classStubConfig = elClass.getStubConfig(this.hass, this.lovelace);
-      cardConfig = { ...cardConfig, ...classStubConfig };
-    }
-
-    return cardConfig;
   }
 
   private _createCardElement(cardConfig: LovelaceCardConfig) {
@@ -206,11 +197,14 @@ export class HuiCardPicker extends LitElement {
     noElement: boolean = false
   ): Promise<TemplateResult> {
     let element: LovelaceCard | undefined;
+    let cardConfig: LovelaceCardConfig = { type };
 
-    const cardConfig = await this._getCardConfig(type);
+    if (this.hass && this.lovelace) {
+      cardConfig = await getCardStubConfig(this.hass, this.lovelace, type);
 
-    if (!noElement) {
-      element = this._createCardElement(cardConfig);
+      if (!noElement) {
+        element = this._createCardElement(cardConfig);
+      }
     }
 
     return html`

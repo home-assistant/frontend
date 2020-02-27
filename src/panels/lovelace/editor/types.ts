@@ -46,7 +46,6 @@ export interface EditorTarget extends EventTarget {
 }
 
 export interface CardPickTarget extends EventTarget {
-  type: string;
   config: LovelaceCardConfig;
 }
 
