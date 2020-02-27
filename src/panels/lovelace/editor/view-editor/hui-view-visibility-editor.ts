@@ -5,6 +5,8 @@ import {
   customElement,
   property,
   PropertyValues,
+  CSSResult,
+  css,
 } from "lit-element";
 import "@polymer/paper-input/paper-input";
 
@@ -50,6 +52,7 @@ export class HuiViewVisibilityEditor extends LitElement {
     fetchUsers(this.hass).then((users) => {
       this._users = users;
       // how can I resize and reposition dialog? Should I use `iron-resize` event?
+      // fireEvent(this as HTMLElement, "iron-resize");
     });
   }
 
@@ -65,12 +68,15 @@ export class HuiViewVisibilityEditor extends LitElement {
 
         ${this._sortedUsers(this._users).map(
           (user) => html`
-            <ha-switch
-              .userId="${user.id}"
-              @change=${this.valChange}
-              .checked=${this.checkUser(user.id)}
-              >${user.name}</ha-switch
-            >
+            <div class="flex">
+              <div>${user.name}</div>
+              <ha-switch
+                .userId="${user.id}"
+                @change=${this.valChange}
+                .checked=${this.checkUser(user.id)}
+                >&nbsp;</ha-switch
+              >
+            </div>
           `
         )}
       </div>
@@ -127,6 +133,19 @@ export class HuiViewVisibilityEditor extends LitElement {
     );
 
     fireEvent(this, "view-visibility-changed", { visible: this._visible });
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      .flex {
+        flex: 1;
+        margin-left: 16px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        min-width: 0;
+      }
+    `;
   }
 }
 
