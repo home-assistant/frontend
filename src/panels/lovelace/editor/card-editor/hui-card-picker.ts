@@ -132,7 +132,10 @@ export class HuiCardPicker extends LitElement {
           padding: 12px 16px;
           display: block;
           text-align: center;
-          background: white;
+          background: var(
+            --ha-card-background,
+            var(--paper-card-background-color, white)
+          );
           border-radius: 0 0 4px 4px;
           border-top: 1px solid var(--divider-color);
         }
