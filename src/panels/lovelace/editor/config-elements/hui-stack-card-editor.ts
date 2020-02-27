@@ -22,7 +22,7 @@ const cardConfigStruct = struct({
 });
 
 @customElement("hui-stack-card-editor")
-export class HuiAlarmPanelCardEditor extends LitElement
+export class HuiStackCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
   @property() private _config?: StackCardConfig;
@@ -196,6 +196,6 @@ export class HuiAlarmPanelCardEditor extends LitElement
 
 declare global {
   interface HTMLElementTagNameMap {
-    "hui-stack-card-editor": HuiAlarmPanelCardEditor;
+    "hui-stack-card-editor": HuiStackCardEditor;
   }
 }
