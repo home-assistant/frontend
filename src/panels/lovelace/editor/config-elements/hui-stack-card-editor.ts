@@ -45,9 +45,9 @@ export class HuiAlarmPanelCardEditor extends LitElement
           <paper-tabs
             selected="${selected}"
             scrollable
-            @iron-select=${(ev) => (this._selectedCard = ev.target.selected)}
+            @iron-select=${this._handleSelectedCard}
           >
-            ${this._config.cards.map((_, i) => {
+            ${this._config.cards.map((_card, i) => {
               return html`
                 <paper-tab>
                   ${i + 1}
@@ -58,10 +58,9 @@ export class HuiAlarmPanelCardEditor extends LitElement
           <paper-tabs
             id="add-card"
             selected=${selected === numcards ? "0" : undefined}
+            @iron-select=${this._handleSelectedCard}
           >
-            <paper-tab
-              @click="${() => (this._selectedCard = numcards)}"
-            >
+            <paper-tab>
               <ha-icon icon="hass:plus"></ha-icon>
             </paper-tab>
           <paper-tabs>
@@ -73,17 +72,19 @@ export class HuiAlarmPanelCardEditor extends LitElement
               ? html`
                   <div id="card-options">
                     <paper-icon-button
+                      id="move-before"
                       title="Move card before"
                       icon="hass:arrow-left"
                       ?disabled=${selected === 0}
-                      @click=${this._handleMoveBefore}
+                      @click=${this._handleMove}
                     ></paper-icon-button>
 
                     <paper-icon-button
+                      id="move-after"
                       title="Move card after"
                       icon="hass:arrow-right"
                       ?disabled=${selected === numcards - 1}
-                      @click=${this._handleMoveAfter}
+                      @click=${this._handleMove}
                     ></paper-icon-button>
 
                     <paper-icon-button
@@ -108,6 +109,13 @@ export class HuiAlarmPanelCardEditor extends LitElement
         </div>
       </div>
     `;
+  }
+
+  private _handleSelectedCard(ev) {
+    this._selectedCard =
+      ev.target.id === "add-card"
+        ? this._config!.cards.length
+        : parseInt(ev.target.selected, 10);
   }
 
   private _handleConfigChanged(ev) {
@@ -138,29 +146,15 @@ export class HuiAlarmPanelCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _handleMoveBefore() {
+  private _handleMove(ev) {
     if (!this._config) {
       return;
     }
-    const tmp = this._config.cards[this._selectedCard - 1];
-    this._config.cards[this._selectedCard - 1] = this._config.cards[
-      this._selectedCard
-    ];
-    this._config.cards[this._selectedCard] = tmp;
-    this._selectedCard = this._selectedCard - 1;
-    fireEvent(this, "config-changed", { config: this._config });
-  }
-
-  private _handleMoveAfter() {
-    if (!this._config) {
-      return;
-    }
-    const tmp = this._config.cards[this._selectedCard + 1];
-    this._config.cards[this._selectedCard + 1] = this._config.cards[
-      this._selectedCard
-    ];
-    this._config.cards[this._selectedCard] = tmp;
-    this._selectedCard = this._selectedCard + 1;
+    const source = this._selectedCard;
+    const target = ev.target.id === "move-before" ? source - 1 : source + 1;
+    const card = this._config.cards.splice(this._selectedCard, 1)[0];
+    this._config.cards.splice(target, 0, card);
+    this._selectedCard = target;
     fireEvent(this, "config-changed", { config: this._config });
   }
 
