@@ -243,6 +243,7 @@ export interface ShoppingListCardConfig extends LovelaceCardConfig {
 
 export interface StackCardConfig extends LovelaceCardConfig {
   cards: LovelaceCardConfig[];
+  title?: string;
 }
 
 export interface ThermostatCardConfig extends LovelaceCardConfig {
