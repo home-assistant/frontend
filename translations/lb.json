@@ -631,6 +631,7 @@
                     "unavailable": "Dës Entitéit ass net erreechbar fir de Moment.",
                     "update": "AKTUALISEIEREN"
                 },
+                "no_unique_id": "Dës Entitéit huet keng eenzegaarteg ID, dofir kënnen hir Astellungen net am Benotzer Interface geréiert ginn.",
                 "related": "Relatioun",
                 "settings": "Astellungen"
             },
@@ -1324,6 +1325,7 @@
                         "filter": {
                             "filter": "Filter",
                             "show_disabled": "Deaktivéiert Entitéiten uweisen",
+                            "show_readonly": "Schreifgeséchert Entitéiten uweisen",
                             "show_unavailable": "Net ereechbar Entitéite uweisen"
                         },
                         "header": "Lëscht vun den Entitéiten",
@@ -1704,6 +1706,7 @@
                         "update": "Aktualiséieren"
                     },
                     "edit_home_zone": "De Standuert vun Ärem Doheem kann an der allgemenger Konfiguratioun geännert ginn.",
+                    "edit_home_zone_narrow": "De Radius vun der Home Zone kann nach net vum Frontend aus geännert ginn. De Standuert kann an der allgemenger Konfiguratioun geännert ginn.",
                     "go_to_core_config": "Zur genereller Konfiguratioun wiesselen?",
                     "home_zone_core_config": "De Standuert vun Ärer Heemzon kann vun der allgemenger Konfiguratiounssäit aus geännert ginn. De Radius vun der Home Zone kann nach net am Frontend geännert ginn. Wëllt Dir op d'allgemeng Konfiguratioun goen?",
                     "introduction": "Zonen erlaben Iech verschidde Regiounen op der Äerd ze spezifizéieren. Wann eng Persoun an enger Zone ass, hëlt de Status den Numm aus der Zone. Zonë kënnen och als Ausléiser oder als Konditioun an Automatisme benotzt ginn.",
@@ -2081,7 +2084,9 @@
                         "header": "Konfiguratioun kucken",
                         "header_name": "{name} Konfiguratioun kucken",
                         "move_left": "Usiicht no lenks réckelen",
-                        "move_right": "Usiicht no riets réckelen"
+                        "move_right": "Usiicht no riets réckelen",
+                        "tab_badges": "Badgen",
+                        "tab_settings": "Astellungen"
                     },
                     "header": "UI änneren",
                     "menu": {
@@ -2104,6 +2109,7 @@
                         "error_remove": "Kann Konfiguratioun net läschen: {error}",
                         "error_save_yaml": "Kann de YAML net späicheren: {error}",
                         "header": "Konfiguratioun änneren",
+                        "resources_moved": "Ressourcen sollen net méi an d'Lovelace Konfiguratioun bäigesat ginn, awer kënnen am Lovelace Konfiguratiouns Panel bäigefügt ginn.",
                         "save": "Späicheren",
                         "saved": "Gespäichert",
                         "unsaved_changes": "Net gespäicherten Ännerungen"
