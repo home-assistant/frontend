@@ -22,6 +22,8 @@ import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { PlantStatusCardConfig, PlantAttributeTarget } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { LovelaceConfig } from "../../../data/lovelace";
+import { findEntities } from "../common/find-entites";
 
 const SENSORS = {
   moisture: "hass:water",
@@ -40,8 +42,20 @@ class HuiPlantStatusCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-plant-status-card-editor");
   }
 
-  public static getStubConfig(): object {
-    return { entity: "" };
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig
+  ): object {
+    const includeDomains = ["plant"];
+    const maxEntities = 1;
+    const entities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      includeDomains
+    );
+
+    return { entity: entities[0] || "" };
   }
 
   @property() public hass?: HomeAssistant;

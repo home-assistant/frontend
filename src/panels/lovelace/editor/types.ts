@@ -66,13 +66,3 @@ export const entitiesConfigStruct = struct.union([
   },
   "entity-id",
 ]);
-
-export interface CardPickerConfig {
-  lovelaceCardConfig: LovelaceCardConfig;
-  name: string;
-  description?: string;
-  numberOfEntities?: number;
-  noEntity?: boolean;
-  noPreview?: boolean;
-  includeDomains?: string[];
-}

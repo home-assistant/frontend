@@ -15,9 +15,31 @@ import { HomeAssistant } from "../../../types";
 import { LovelaceElementConfig, LovelaceElement } from "../elements/types";
 import { PictureElementsCardConfig } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { LovelaceConfig } from "../../../data/lovelace";
+import { findEntities } from "../common/find-entites";
 
 @customElement("hui-picture-elements-card")
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig
+  ): object {
+    const maxEntities = 1;
+    const entities = findEntities(hass, lovelaceConfig, maxEntities);
+
+    return {
+      elements: [
+        {
+          type: "state-badge",
+          entity: entities[0] || "",
+          style: "position: absolute, transform: translate(-50%, -50%)",
+        },
+      ],
+      image:
+        "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
+    };
+  }
+
   @property() private _config?: PictureElementsCardConfig;
 
   private _hass?: HomeAssistant;

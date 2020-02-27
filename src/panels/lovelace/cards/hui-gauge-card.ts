@@ -22,6 +22,8 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { LovelaceCard, LovelaceCardEditor } from "../types";
 import { GaugeCardConfig } from "./types";
+import { LovelaceConfig } from "../../../data/lovelace";
+import { findEntities } from "../common/find-entites";
 
 export const severityMap = {
   red: "var(--label-badge-red)",
@@ -38,8 +40,21 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
     );
     return document.createElement("hui-gauge-card-editor");
   }
-  public static getStubConfig(): object {
-    return { entity: "" };
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig
+  ): object {
+    const includeDomains = ["sensor"];
+    const maxEntities = 1;
+    const entities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      includeDomains
+    );
+
+    return { entity: entities[0] || "" };
   }
 
   @property() public hass?: HomeAssistant;

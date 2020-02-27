@@ -24,6 +24,8 @@ import {
 import { AlarmPanelCardConfig } from "./types";
 import { PaperInputElement } from "@polymer/paper-input/paper-input";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
+import { findEntities } from "../common/find-entites";
+import { LovelaceConfig } from "../../../data/lovelace";
 
 const ICONS = {
   armed_away: "hass:shield-lock",
@@ -46,8 +48,23 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-alarm-panel-card-editor");
   }
 
-  public static getStubConfig() {
-    return { states: ["arm_home", "arm_away"], entity: "" };
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig
+  ) {
+    const includeDomains = ["alarm_control_panel"];
+    const maxEntities = 1;
+    const entities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      includeDomains
+    );
+
+    return {
+      states: ["arm_home", "arm_away"],
+      entity: entities[0] || "",
+    };
   }
 
   @property() public hass?: HomeAssistant;

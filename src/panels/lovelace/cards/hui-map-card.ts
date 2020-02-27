@@ -30,6 +30,8 @@ import { EntityConfig } from "../entity-rows/types";
 import { processConfigEntities } from "../common/process-config-entities";
 import { MapCardConfig } from "./types";
 import { classMap } from "lit-html/directives/class-map";
+import { LovelaceConfig } from "../../../data/lovelace";
+import { findEntities } from "../common/find-entites";
 
 @customElement("hui-map-card")
 class HuiMapCard extends LitElement implements LovelaceCard {
@@ -40,8 +42,20 @@ class HuiMapCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-map-card-editor");
   }
 
-  public static getStubConfig() {
-    return { entities: [] };
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig
+  ): object {
+    const includeDomains = ["device_tracker"];
+    const maxEntities = 2;
+    const entities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      includeDomains
+    );
+
+    return { entities };
   }
 
   @property() public hass?: HomeAssistant;

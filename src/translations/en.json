@@ -1782,6 +1782,7 @@
             "header": "Card Configuration",
             "pick_card": "Which card would you like to add?",
             "pick_card_view_title": "Which card would you like to add to your {name} view?",
+            "pick_card_preview": "Preview:",
             "toggle_editor": "Toggle Editor",
             "show_visual_editor": "Show Visual Editor",
             "show_code_editor": "Show Code Editor",
@@ -1789,7 +1790,10 @@
             "edit": "Edit",
             "delete": "Delete Card",
             "move": "Move to View",
-            "options": "More options"
+            "options": "More options",
+            "preview_cards": "Preview Cards",
+            "other": "Other",
+            "misc": "Misc"
           },
           "suggest_card": {
             "header": "We created a suggestion for you",
@@ -1815,7 +1819,8 @@
               "available_states": "Available States"
             },
             "conditional": {
-              "name": "Conditional"
+              "name": "Conditional",
+              "description": "Displays another card based on entity states."
             },
             "config": {
               "required": "Required",
@@ -1830,7 +1835,8 @@
               "name": "Button"
             },
             "entity-filter": {
-              "name": "Entity Filter"
+              "name": "Entity Filter",
+              "description": "This card allows you to define a list of entities that you want to track only when in a certain state."
             },
             "gauge": {
               "name": "Gauge",
@@ -1849,7 +1855,8 @@
               "name": "History Graph"
             },
             "horizontal-stack": {
-              "name": "Horizontal Stack"
+              "name": "Horizontal Stack",
+              "description": "Horizontal stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
             },
             "iframe": {
               "name": "iFrame"
@@ -1869,6 +1876,8 @@
               "icon_height": "Icon Height",
               "image": "Image Path",
               "maximum": "Maximum",
+              "manual": "Manual",
+              "manual_description": "Need to add a custom card or just want to manually write the yaml?",
               "minimum": "Minimum",
               "name": "Name",
               "refresh_interval": "Refresh Interval",
@@ -1908,7 +1917,8 @@
               "name": "Picture Glance"
             },
             "plant-status": {
-              "name": "Plant Status"
+              "name": "Plant Status",
+              "description": "A card for all the lovely botanists out there."
             },
             "sensor": {
               "name": "Sensor",
@@ -1917,13 +1927,15 @@
             },
             "shopping-list": {
               "name": "Shopping List",
+              "description": "The Shopping List Card allows you to add, edit, check-off, and clear items from your shopping list.",
               "integration_not_loaded": "This card requires the `shopping_list` integration to be set up."
             },
             "thermostat": {
               "name": "Thermostat"
             },
             "vertical-stack": {
-              "name": "Vertical Stack"
+              "name": "Vertical Stack",
+              "description": "Vertical stack allows you to group multiple cards so they always sit in the same column."
             },
             "weather-forecast": {
               "name": "Weather Forecast"

@@ -26,6 +26,8 @@ import { fetchRecent } from "../../../data/history";
 import { SensorCardConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { LovelaceConfig } from "../../../data/lovelace";
+import { findEntities } from "../common/find-entites";
 
 const strokeWidth = 5;
 
@@ -174,8 +176,20 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-sensor-card-editor");
   }
 
-  public static getStubConfig(): object {
-    return { entity: "" };
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig
+  ): object {
+    const includeDomains = ["sensor"];
+    const maxEntities = 1;
+    const entities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      includeDomains
+    );
+
+    return { entity: entities[0] || "", graph: "line" };
   }
 
   @property() public hass?: HomeAssistant;

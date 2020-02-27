@@ -30,9 +30,10 @@ import { ButtonCardConfig } from "./types";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { handleAction } from "../common/handle-action";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent, LovelaceConfig } from "../../../data/lovelace";
 import { computeActiveState } from "../../../common/entity/compute_active_state";
 import { iconColorCSS } from "../../../common/style/icon_color_css";
+import { findEntities } from "../common/find-entites";
 
 @customElement("hui-button-card")
 export class HuiButtonCard extends LitElement implements LovelaceCard {
@@ -43,13 +44,20 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-button-card-editor");
   }
 
-  public static getStubConfig(): object {
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig
+  ): object {
+    const maxEntities = 1;
+    const entities = findEntities(hass, lovelaceConfig, maxEntities);
+
     return {
       tap_action: { action: "toggle" },
       hold_action: { action: "more-info" },
       show_icon: true,
       show_name: true,
       state_color: true,
+      entity: entities[0] || "",
     };
   }
 
