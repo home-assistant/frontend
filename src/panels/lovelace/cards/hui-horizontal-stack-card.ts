@@ -1,4 +1,4 @@
-import { html, TemplateResult } from "lit-element";
+import { CSSResult, css } from "lit-element";
 
 import { computeCardSize } from "../common/compute-card-size";
 import { HuiStackCard } from "./hui-stack-card";
@@ -17,9 +17,10 @@ class HuiHorizontalStackCard extends HuiStackCard {
     return totalSize;
   }
 
-  protected renderStyle(): TemplateResult {
-    return html`
-      <style>
+  static get styles(): CSSResult[] {
+    return [
+      super.sharedStyles,
+      css`
         #root {
           display: flex;
         }
@@ -34,8 +35,8 @@ class HuiHorizontalStackCard extends HuiStackCard {
         #root > *:last-child {
           margin-right: 0;
         }
-      </style>
-    `;
+      `,
+    ];
   }
 }
 

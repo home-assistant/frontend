@@ -93,6 +93,10 @@ export class HuiCardOptions extends LitElement {
 
   static get styles(): CSSResult {
     return css`
+      :host(:hover) {
+        outline: 2px solid var(--primary-color);
+      }
+
       ha-card {
         border-top-right-radius: 0;
         border-top-left-radius: 0;
