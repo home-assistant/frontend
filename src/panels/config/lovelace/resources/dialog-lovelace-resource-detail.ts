@@ -104,19 +104,9 @@ export class DialogLovelaceResourceDetail extends LitElement {
                     "ui.panel.config.lovelace.resources.types.module"
                   )}
                 </paper-item>
-                <paper-item type="js">
-                  ${this.hass!.localize(
-                    "ui.panel.config.lovelace.resources.types.js"
-                  )}
-                </paper-item>
                 <paper-item type="css">
                   ${this.hass!.localize(
                     "ui.panel.config.lovelace.resources.types.css"
-                  )}
-                </paper-item>
-                <paper-item type="html">
-                  ${this.hass!.localize(
-                    "ui.panel.config.lovelace.resources.types.html"
                   )}
                 </paper-item>
               </paper-listbox>
