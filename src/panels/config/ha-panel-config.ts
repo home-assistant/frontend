@@ -75,6 +75,14 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       core: true,
     },
   ],
+  lovelace: [
+    {
+      component: "lovelace",
+      path: "/config/lovelace/dashboards",
+      translationKey: "ui.panel.config.lovelace.caption",
+      icon: "hass:view-dashboard",
+    },
+  ],
   persons: [
     {
       component: "person",
@@ -117,7 +125,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       translationKey: "ui.panel.config.customize.caption",
       icon: "hass:pencil",
       core: true,
-      exportOnly: true,
+      advancedOnly: true,
     },
   ],
   other: [
@@ -215,6 +223,13 @@ class HaPanelConfig extends HassRouterPage {
         load: () =>
           import(
             /* webpackChunkName: "panel-config-integrations" */ "./integrations/ha-config-integrations"
+          ),
+      },
+      lovelace: {
+        tag: "ha-config-lovelace",
+        load: () =>
+          import(
+            /* webpackChunkName: "panel-config-lovelace" */ "./lovelace/ha-config-lovelace"
           ),
       },
       person: {
