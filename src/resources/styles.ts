@@ -180,4 +180,27 @@ export const haStyleDialog = css`
       border-bottom-right-radius: 0px;
     }
   }
+
+  /* mwc-dialog (ha-dialog) styles */
+  ha-dialog {
+    --mdc-dialog-min-width: 400px;
+    --mdc-dialog-max-width: 600px;
+    --mdc-dialog-title-ink-color: var(--primary-text-color);
+    --justify-action-buttons: space-between;
+  }
+  /* make dialog fullscreen on small screens */
+  @media all and (max-width: 450px), all and (max-height: 500px) {
+    ha-dialog {
+      --mdc-dialog-min-width: 100vw;
+      --mdc-dialog-max-height: 100vh;
+      --mdc-dialog-shape-radius: 0px;
+      --vertial-align-dialog: flex-end;
+    }
+  }
+  mwc-button.warning {
+    --mdc-theme-primary: var(--google-red-500);
+  }
+  .error {
+    color: var(--google-red-500);
+  }
 `;

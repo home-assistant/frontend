@@ -1,13 +1,13 @@
 import { loadModule, loadCSS, loadJS } from "../../../common/dom/load_resource";
 
-import { LovelaceResources } from "../../../data/lovelace";
+import { LovelaceResource } from "../../../data/lovelace";
 
 // CSS and JS should only be imported once. Modules and HTML are safe.
 const CSS_CACHE = {};
 const JS_CACHE = {};
 
 export const loadLovelaceResources = (
-  resources: NonNullable<LovelaceResources>,
+  resources: NonNullable<LovelaceResource[]>,
   hassUrl: string
 ) =>
   resources.forEach((resource) => {

@@ -25,6 +25,7 @@ import "./forms/ha-input_select-form";
 import "./forms/ha-input_number-form";
 import { domainIcon } from "../../../common/entity/domain_icon";
 import { classMap } from "lit-html/directives/class-map";
+import { haStyleDialog } from "../../../resources/styles";
 
 const HELPERS = {
   input_boolean: createInputBoolean,
@@ -156,37 +157,18 @@ export class DialogHelperDetail extends LitElement {
     this._platform = undefined;
   }
 
-  static get styles(): CSSResult {
-    return css`
-      ha-dialog {
-        --mdc-dialog-title-ink-color: var(--primary-text-color);
-        --justify-action-buttons: space-between;
-      }
-      ha-dialog.button-left {
-        --justify-action-buttons: flex-start;
-      }
-      @media only screen and (min-width: 600px) {
-        ha-dialog {
-          --mdc-dialog-min-width: 600px;
+  static get styles(): CSSResult[] {
+    return [
+      haStyleDialog,
+      css`
+        ha-dialog.button-left {
+          --justify-action-buttons: flex-start;
         }
-      }
-
-      /* make dialog fullscreen on small screens */
-      @media all and (max-width: 450px), all and (max-height: 500px) {
-        ha-dialog {
-          --mdc-dialog-min-width: 100vw;
-          --mdc-dialog-max-height: 100vh;
-          --mdc-dialog-shape-radius: 0px;
-          --vertial-align-dialog: flex-end;
+        paper-icon-item {
+          cursor: pointer;
         }
-      }
-      .error {
-        color: var(--google-red-500);
-      }
-      paper-icon-item {
-        cursor: pointer;
-      }
-    `;
+      `,
+    ];
   }
 }
 
