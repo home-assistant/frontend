@@ -70,9 +70,7 @@ export class HaRelatedItems extends SubscribeMixin(LitElement) {
     }
     if (Object.keys(this._related).length === 0) {
       return html`
-        <p>
-          ${this.hass.localize("ui.components.related-items.no_related_found")}
-        </p>
+        ${this.hass.localize("ui.components.related-items.no_related_found")}
       `;
     }
     return html`

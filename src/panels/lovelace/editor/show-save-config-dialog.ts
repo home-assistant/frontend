@@ -13,6 +13,7 @@ const dialogTag = "hui-dialog-save-config";
 
 export interface SaveDialogParams {
   lovelace: Lovelace;
+  mode: "yaml" | "storage";
 }
 
 let registeredDialog = false;

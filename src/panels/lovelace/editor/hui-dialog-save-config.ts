@@ -6,9 +6,11 @@ import {
   CSSResult,
   customElement,
   property,
+  query,
 } from "lit-element";
 import "@polymer/paper-spinner/paper-spinner";
 import "../../../components/dialog/ha-paper-dialog";
+import "../../../components/ha-yaml-editor";
 // tslint:disable-next-line:no-duplicate-imports
 import { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
 import "@material/mwc-button";
@@ -16,6 +18,8 @@ import "@material/mwc-button";
 import { haStyleDialog } from "../../../resources/styles";
 import { HomeAssistant } from "../../../types";
 import { SaveDialogParams } from "./show-save-config-dialog";
+import { PolymerChangedEvent } from "../../../polymer-types";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("hui-dialog-save-config")
 export class HuiSaveConfig extends LitElement {
@@ -24,6 +28,7 @@ export class HuiSaveConfig extends LitElement {
   @property() private _params?: SaveDialogParams;
 
   @property() private _saving: boolean;
+  @query("ha-paper-dialog") private _dialog?: HaPaperDialog;
 
   public constructor() {
     super();
@@ -33,16 +38,19 @@ export class HuiSaveConfig extends LitElement {
   public async showDialog(params: SaveDialogParams): Promise<void> {
     this._params = params;
     await this.updateComplete;
-    this._dialog.open();
-  }
-
-  private get _dialog(): HaPaperDialog {
-    return this.shadowRoot!.querySelector("ha-paper-dialog")!;
+    this._dialog!.open();
   }
 
   protected render(): TemplateResult {
+    if (!this._params) {
+      return html``;
+    }
     return html`
-      <ha-paper-dialog with-backdrop>
+      <ha-paper-dialog
+        with-backdrop
+        opened
+        @opened-changed=${this._openedChanged}
+      >
         <h2>
           ${this.hass!.localize("ui.panel.lovelace.editor.save_config.header")}
         </h2>
@@ -50,34 +58,81 @@ export class HuiSaveConfig extends LitElement {
           <p>
             ${this.hass!.localize("ui.panel.lovelace.editor.save_config.para")}
           </p>
-          <p>
-            ${this.hass!.localize(
-              "ui.panel.lovelace.editor.save_config.para_sure"
-            )}
-          </p>
+          ${this._params.mode === "storage"
+            ? html`
+                <p>
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.editor.save_config.para_sure"
+                  )}
+                </p>
+              `
+            : html`
+                <p>
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.editor.save_config.yaml_mode"
+                  )}
+                </p>
+                <p>
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.editor.save_config.yaml_control"
+                  )}
+                </p>
+                <p>
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.editor.save_config.yaml_config"
+                  )}
+                </p>
+                <ha-yaml-editor
+                  .defaultValue=${this._params!.lovelace.config}
+                  @editor-refreshed=${this._editorRefreshed}
+                ></ha-yaml-editor>
+              `}
         </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">
-          <mwc-button @click="${this._closeDialog}"
-            >${this.hass!.localize(
-              "ui.panel.lovelace.editor.save_config.cancel"
-            )}</mwc-button
-          >
-          <mwc-button ?disabled="${this._saving}" @click="${this._saveConfig}">
-            <paper-spinner
-              ?active="${this._saving}"
-              alt="Saving"
-            ></paper-spinner>
-            ${this.hass!.localize(
-              "ui.panel.lovelace.editor.save_config.save"
-            )}</mwc-button
-          >
+          ${this._params.mode === "storage"
+            ? html`
+                <mwc-button @click="${this._closeDialog}"
+                  >${this.hass!.localize(
+                    "ui.panel.lovelace.editor.save_config.cancel"
+                  )}
+                </mwc-button>
+                <mwc-button
+                  ?disabled="${this._saving}"
+                  @click="${this._saveConfig}"
+                >
+                  <paper-spinner
+                    ?active="${this._saving}"
+                    alt="Saving"
+                  ></paper-spinner>
+                  ${this.hass!.localize(
+                    "ui.panel.lovelace.editor.save_config.save"
+                  )}
+                </mwc-button>
+              `
+            : html`
+                <mwc-button @click=${this._closeDialog}
+                  >${this.hass!.localize(
+                    "ui.panel.lovelace.editor.save_config.close"
+                  )}
+                </mwc-button>
+              `}
         </div>
       </ha-paper-dialog>
     `;
   }
 
   private _closeDialog(): void {
-    this._dialog.close();
+    this._dialog!.close();
+  }
+
+  private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
+    if (!ev.detail.value) {
+      this._params = undefined;
+    }
+  }
+
+  private _editorRefreshed() {
+    fireEvent(this._dialog! as HTMLElement, "iron-resize");
   }
 
   private async _saveConfig(): Promise<void> {

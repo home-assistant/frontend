@@ -10,6 +10,7 @@ import {
 } from "home-assistant-js-websocket";
 import { LocalizeFunc } from "./common/translations/localize";
 import { ExternalMessaging } from "./external_app/external_messaging";
+import { CoreFrontendUserData } from "./data/frontend";
 
 declare global {
   var __DEV__: boolean;
@@ -155,6 +156,7 @@ export interface HomeAssistant {
   dockedSidebar: "docked" | "always_hidden" | "auto";
   moreInfoEntityId: string | null;
   user?: CurrentUser;
+  userData?: CoreFrontendUserData | null;
   hassUrl(path?): string;
   callService(
     domain: string,

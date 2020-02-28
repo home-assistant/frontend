@@ -1916,6 +1916,11 @@
                         "toggle": "Växla {name}",
                         "url": "Öppna fönster till {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant stötte på problem när din konfiguration laddades och körs nu i felsäkert läge. Ta en titt i felloggen för att se vad som gick fel.",
+                        "header": "Felsäkert läge aktiverat",
+                        "show_errors": "Visa fel"
+                    },
                     "shopping-list": {
                         "add_item": "Lägg till objekt",
                         "checked_items": "Markerade objekt",
@@ -2079,16 +2084,18 @@
                         "header": "Visa konfiguration",
                         "header_name": "{name} Visa konfiguration",
                         "move_left": "Flytta vyn åt vänster",
-                        "move_right": "Flytta vyn åt höger"
+                        "move_right": "Flytta vyn åt höger",
+                        "tab_badges": "Märken",
+                        "tab_settings": "Inställningar"
                     },
                     "header": "Ändra användargränssnittet",
                     "menu": {
                         "open": "Öppna Lovelace-menyn",
-                        "raw_editor": "Rå konfigurationseditor"
+                        "raw_editor": "Rå konfigurationsredigerare"
                     },
                     "migrate": {
                         "header": "Ogiltig konfiguration",
-                        "migrate": "Migrera konfigurationen",
+                        "migrate": "Migrera konfiguration",
                         "para_migrate": "Home Assistant kan automatiskt lägga till ID till alla dina kort och vyer genom att du klickar på \"Migrera konfiguration\".",
                         "para_no_id": "Det här elementet har inget ID. Lägg till ett ID till det här elementet i \"ui-lovelace.yaml\"."
                     },
@@ -2101,7 +2108,7 @@
                         "error_parse_yaml": "Det går inte att analysera YAML: {error}",
                         "error_remove": "Det går inte att ta bort konfigurationen: {error}",
                         "error_save_yaml": "Det gick inte att spara YAML: {error}",
-                        "header": "Ändra konfigurationen",
+                        "header": "Redigera konfiguration",
                         "save": "Spara",
                         "saved": "Sparad",
                         "unsaved_changes": "Osparade ändringar"

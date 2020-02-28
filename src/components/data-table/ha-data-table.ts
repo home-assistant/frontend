@@ -571,6 +571,18 @@ export class HaDataTable extends BaseElement {
         width: 24px;
       }
 
+      .mdc-data-table__header-cell--icon {
+        text-align: center;
+      }
+
+      .mdc-data-table__cell--icon:first-child ha-icon {
+        margin-left: 8px;
+      }
+
+      .mdc-data-table__cell--icon:first-child state-badge {
+        margin-right: -8px;
+      }
+
       .mdc-data-table__header-cell {
         font-family: Roboto, sans-serif;
         -moz-osx-font-smoothing: grayscale;
@@ -598,10 +610,6 @@ export class HaDataTable extends BaseElement {
         text-align: left;
       }
 
-      .mdc-data-table__header-cell--icon {
-        text-align: center;
-      }
-
       /* custom from here */
 
       :host {
@@ -615,27 +623,39 @@ export class HaDataTable extends BaseElement {
       }
       .mdc-data-table__header-cell {
         overflow: hidden;
+        position: relative;
       }
+      .mdc-data-table__header-cell span {
+        position: relative;
+        left: 0px;
+      }
+
       .mdc-data-table__header-cell.sortable {
         cursor: pointer;
       }
-      .mdc-data-table__header-cell.not-sorted:not(.mdc-data-table__header-cell--numeric):not(.mdc-data-table__header-cell--icon)
-        span {
-        position: relative;
-        left: -24px;
-      }
-      .mdc-data-table__header-cell.not-sorted > * {
+      .mdc-data-table__header-cell > * {
         transition: left 0.2s ease 0s;
       }
+      .mdc-data-table__header-cell ha-icon {
+        top: 15px;
+        position: absolute;
+      }
       .mdc-data-table__header-cell.not-sorted ha-icon {
-        left: -36px;
+        left: -20px;
       }
-      .mdc-data-table__header-cell.not-sorted:not(.mdc-data-table__header-cell--numeric):not(.mdc-data-table__header-cell--icon):hover
+      .mdc-data-table__header-cell:not(.not-sorted) span,
+      .mdc-data-table__header-cell.not-sorted:hover span {
+        left: 24px;
+      }
+      .mdc-data-table__header-cell.mdc-data-table__header-cell--numeric:not(.not-sorted)
+        span,
+      .mdc-data-table__header-cell.mdc-data-table__header-cell--numeric.not-sorted:hover
         span {
-        left: 0px;
+        left: 12px;
       }
+      .mdc-data-table__header-cell:not(.not-sorted) ha-icon,
       .mdc-data-table__header-cell:hover.not-sorted ha-icon {
-        left: 0px;
+        left: 12px;
       }
       .table-header {
         border-bottom: 1px solid rgba(var(--rgb-primary-text-color), 0.12);

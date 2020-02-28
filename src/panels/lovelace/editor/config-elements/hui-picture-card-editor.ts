@@ -86,7 +86,7 @@ export class HuiPictureCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .config="${this._tap_action}"
             .actions="${actions}"
             .configValue="${"tap_action"}"
@@ -98,14 +98,14 @@ export class HuiPictureCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .config="${this._hold_action}"
             .actions="${actions}"
             .configValue="${"hold_action"}"
             @action-changed="${this._valueChanged}"
           ></hui-action-editor>
           <hui-theme-select-editor
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .value="${this._theme}"
             .configValue="${"theme"}"
             @theme-changed="${this._valueChanged}"
