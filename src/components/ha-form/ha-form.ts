@@ -95,7 +95,7 @@ export interface HaFormTimeData {
 
 export interface HaFormElement extends LitElement {
   schema: HaFormSchema;
-  data: HaFormDataContainer | HaFormData;
+  data?: HaFormDataContainer | HaFormData;
   label?: string;
   suffix?: string;
 }
