@@ -72,7 +72,7 @@ export class HuiShoppingListEditor extends LitElement
           @value-changed="${this._valueChanged}"
         ></paper-input>
         <hui-theme-select-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._theme}"
           .configValue="${"theme"}"
           @theme-changed="${this._valueChanged}"

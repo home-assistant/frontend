@@ -6,10 +6,6 @@ import { isComponentLoaded } from "../../common/config/is_component_loaded";
 import { HomeAssistant, Route } from "../../types";
 import { CloudStatus, fetchCloudStatus } from "../../data/cloud";
 import { listenMediaQuery } from "../../common/dom/media_query";
-import {
-  getOptimisticFrontendUserDataCollection,
-  CoreFrontendUserData,
-} from "../../data/frontend";
 import { HassRouterPage, RouterOptions } from "../../layouts/hass-router-page";
 import { PolymerElement } from "@polymer/polymer";
 import { PageNavigation } from "../../layouts/hass-tabs-subpage";
@@ -71,6 +67,21 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       translationKey: "ui.panel.config.script.caption",
       icon: "hass:script-text",
     },
+    {
+      component: "helpers",
+      path: "/config/helpers",
+      translationKey: "ui.panel.config.helpers.caption",
+      icon: "hass:tools",
+      core: true,
+    },
+  ],
+  lovelace: [
+    {
+      component: "lovelace",
+      path: "/config/lovelace/dashboards",
+      translationKey: "ui.panel.config.lovelace.caption",
+      icon: "hass:view-dashboard",
+    },
   ],
   persons: [
     {
@@ -114,7 +125,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       translationKey: "ui.panel.config.customize.caption",
       icon: "hass:pencil",
       core: true,
-      exportOnly: true,
+      advancedOnly: true,
     },
   ],
   other: [
@@ -214,6 +225,13 @@ class HaPanelConfig extends HassRouterPage {
             /* webpackChunkName: "panel-config-integrations" */ "./integrations/ha-config-integrations"
           ),
       },
+      lovelace: {
+        tag: "ha-config-lovelace",
+        load: () =>
+          import(
+            /* webpackChunkName: "panel-config-lovelace" */ "./lovelace/ha-config-lovelace"
+          ),
+      },
       person: {
         tag: "ha-config-person",
         load: () =>
@@ -233,6 +251,13 @@ class HaPanelConfig extends HassRouterPage {
         load: () =>
           import(
             /* webpackChunkName: "panel-config-scene" */ "./scene/ha-config-scene"
+          ),
+      },
+      helpers: {
+        tag: "ha-config-helpers",
+        load: () =>
+          import(
+            /* webpackChunkName: "panel-config-helpers" */ "./helpers/ha-config-helpers"
           ),
       },
       users: {
@@ -268,8 +293,6 @@ class HaPanelConfig extends HassRouterPage {
 
   @property() private _wideSidebar: boolean = false;
   @property() private _wide: boolean = false;
-  @property() private _coreUserData?: CoreFrontendUserData;
-  @property() private _showAdvanced = false;
   @property() private _cloudStatus?: CloudStatus;
 
   private _listeners: Array<() => void> = [];
@@ -284,17 +307,6 @@ class HaPanelConfig extends HassRouterPage {
     this._listeners.push(
       listenMediaQuery("(min-width: 1296px)", (matches) => {
         this._wideSidebar = matches;
-      })
-    );
-    this._listeners.push(
-      getOptimisticFrontendUserDataCollection(
-        this.hass.connection,
-        "core"
-      ).subscribe((coreUserData) => {
-        this._coreUserData = coreUserData || {};
-        this._showAdvanced = !!(
-          this._coreUserData && this._coreUserData.showAdvanced
-        );
       })
     );
   }
@@ -337,7 +349,7 @@ class HaPanelConfig extends HassRouterPage {
       (el as PolymerElement).setProperties({
         route: this.routeTail,
         hass: this.hass,
-        showAdvanced: this._showAdvanced,
+        showAdvanced: Boolean(this.hass.userData?.showAdvanced),
         isWide,
         narrow: this.narrow,
         cloudStatus: this._cloudStatus,
@@ -345,7 +357,7 @@ class HaPanelConfig extends HassRouterPage {
     } else {
       el.route = this.routeTail;
       el.hass = this.hass;
-      el.showAdvanced = this._showAdvanced;
+      el.showAdvanced = Boolean(this.hass.userData?.showAdvanced);
       el.isWide = isWide;
       el.narrow = this.narrow;
       el.cloudStatus = this._cloudStatus;

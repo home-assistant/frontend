@@ -522,6 +522,7 @@
         },
         "common": {
             "cancel": "Revocare",
+            "close": "Închide",
             "loading": "Se încarcă",
             "save": "Salvați",
             "successfully_saved": "Opțiunile salvate cu succes."
@@ -564,6 +565,7 @@
                 "entity": "Entități conexe",
                 "group": "Parte din următoarele grupuri",
                 "integration": "Integrare",
+                "no_related_found": "Nu s-au găsit elemente corelate.",
                 "scene": "Parte din următoarele scenarii",
                 "script": "Parte din următoarele scripturi"
             },
@@ -587,7 +589,8 @@
             "config_entry_system_options": {
                 "enable_new_entities_description": "Dacă sunt dezactivate, entitățile recent descoperite pentru {integration} nu vor fi adăugate automat la Home Assistant.",
                 "enable_new_entities_label": "Activează entitățile nou adăugate",
-                "title": "Opțiuni de sistem pentru {integration}"
+                "title": "Opțiuni de sistem pentru {integration}",
+                "update": "Actualizare"
             },
             "entity_registry": {
                 "control": "Control",
@@ -604,6 +607,7 @@
                     "unavailable": "Această entitate nu este disponibilă momentan.",
                     "update": "ACTUALIZARE"
                 },
+                "no_unique_id": "Această entitate nu are un ID unic, prin urmare, setările sale nu pot fi gestionate de la interfața cu utilizatorul.",
                 "related": "În legătură cu",
                 "settings": "Setări"
             },
@@ -613,11 +617,23 @@
                 "ok": "OK"
             },
             "more_info_control": {
+                "dismiss": "Se respinge dialogul",
                 "edit": "Editează entitatea",
+                "person": {
+                    "create_zone": "Creare zonă din locația curentă"
+                },
+                "restored": {
+                    "confirm_remove_text": "Sigur doriți să eliminați această entitate?",
+                    "confirm_remove_title": "Ștergeți entitatea?",
+                    "not_provided": "Această entitate este momentan indisponibilă și este orfană pentru o integrare sau dispozitiv eliminat, modificat sau disfuncțional.",
+                    "remove_action": "Eliminați entitatea",
+                    "remove_intro": "Dacă entitatea nu mai este utilizată, aveți posibilitatea să o curățați eliminând-o."
+                },
                 "script": {
                     "last_action": "Ultima acțiune",
                     "last_triggered": "Ultima declanșare"
                 },
+                "settings": "Setări ale entității",
                 "sun": {
                     "elevation": "Altitudine",
                     "rising": "Rasare",
@@ -627,14 +643,20 @@
                     "title": "Actualizați instrucțiunile"
                 },
                 "vacuum": {
+                    "clean_spot": "Loc curat",
+                    "commands": "Comenzi aspirator:",
+                    "fan_speed": "Viteza ventilatorului",
+                    "locate": "Localizaţi",
                     "pause": "Pauza",
                     "return_home": "Návrat domov",
                     "start": "Štart",
                     "start_pause": "Štart/Pouza",
+                    "status": "Stare",
                     "stop": "Stop"
                 }
             },
             "more_info_settings": {
+                "back": "Întoarce-te",
                 "entity_id": "ID-ul entității",
                 "name": "Nume suprascris",
                 "save": "Salvați"
@@ -683,6 +705,7 @@
         },
         "notification_drawer": {
             "click_to_configure": "Faceți clic pe buton pentru a configura {entity}",
+            "close": "Închide",
             "empty": "Nicio notificare",
             "title": "Notificări"
         },
@@ -823,6 +846,9 @@
                             "label": "Descriere",
                             "placeholder": "Descriere opțională"
                         },
+                        "edit_ui": "Editare cu interfața utilizator",
+                        "edit_yaml": "Editare ca YAML",
+                        "enable_disable": "Activare/Dezactivare automatizare",
                         "introduction": "Utilizați automatizări pentru a vă aduce casa în viață",
                         "load_error_not_editable": "Numai automatizările din automations.yaml pot fi editate.",
                         "load_error_unknown": "Eroare la încărcarea automatizării ({err_no}).",
@@ -925,6 +951,15 @@
                     }
                 },
                 "cloud": {
+                    "account": {
+                        "alexa": {
+                            "config_documentation": "Documentație de configurare"
+                        },
+                        "google": {
+                            "config_documentation": "Documentație de configurare",
+                            "sync_entities_404_message": "Sincronizarea entităților cu Google nu a reușit, cereți Google \"Hey Google, sync my devices\" să vă sincronizeze entitățile."
+                        }
+                    },
                     "caption": "Home Assistant Cloud",
                     "description_features": "Controlați-vă casa de la distanta, integrați-vă cu Alexa și Asistentul Google.",
                     "description_login": "Logat ca {email}",
@@ -1003,9 +1038,26 @@
                             "caption": "Fă ceva când ..."
                         }
                     },
+                    "automations": "Automatizări",
                     "cant_edit": "Poți edita numai elementele create în UI.",
                     "caption": "Dispozitive",
+                    "confirm_rename_entity_ids": "De asemenea, doriți să redenumiți ID-urile entității ale entităților dvs.?",
+                    "data_table": {
+                        "area": "Zonă",
+                        "battery": "Baterie",
+                        "device": "Dispozitiv",
+                        "integration": "Integrare",
+                        "manufacturer": "Producător",
+                        "model": "Model"
+                    },
                     "description": "Gestionați dispozitivele conectate",
+                    "details": "Iată toate detaliile dispozitivului.",
+                    "entities": {
+                        "add_entities_lovelace": "Adăugați la Lovelace",
+                        "entities": "Entități",
+                        "none": "Acest dispozitiv nu are entități"
+                    },
+                    "info": "Informații despre dispozitiv",
                     "name": "Nume",
                     "scene": {
                         "create": "Creează un scenariu cu dispozitivul",
@@ -1032,15 +1084,47 @@
                         "enabled_label": "Activează entitatea",
                         "entity_id": "ID-ul entității",
                         "name": "Suprascriere nume",
+                        "note": "Notă: este posibil să nu funcționeze încă cu toate integrările.",
                         "unavailable": "Această entitate nu este disponibilă momentan.",
                         "update": "ACTUALIZAȚI"
                     },
                     "picker": {
+                        "disable_selected": {
+                            "button": "Dezactivați selecția",
+                            "confirm_text": "Entitățile dezactivate nu vof fi adăugate in Home Assistant",
+                            "confirm_title": "Doriți să dezactivați {number} entități?"
+                        },
+                        "enable_selected": {
+                            "button": "Activați selectarea",
+                            "confirm_text": "Acest lucru le va face disponibile în Home Assistant din nou, dacă acestea sunt acum dezactivate.",
+                            "confirm_title": "Doriți să activați {number} entități?"
+                        },
+                        "filter": {
+                            "filter": "Filtru",
+                            "show_disabled": "Afișare entități dezactivate",
+                            "show_readonly": "Afișare entități doar în citire",
+                            "show_unavailable": "Afișare entități indisponibile"
+                        },
                         "header": "Entități",
+                        "headers": {
+                            "status": "Stare"
+                        },
                         "integrations_page": "Pagina de integrari",
                         "introduction": "Home Assistant păstrează un registru al fiecărei entități pe care a văzut-o vreodată, care poate fi identificată în mod unic. Fiecare dintre aceste entități va avea un ID de entitate atribuit care va fi rezervat doar pentru această entitate.",
                         "introduction2": "Utilizați registrul de entități pentru a înlocui numele, schimba identitatea entității sau a elimina înregistrarea din Home Assistant. Rețineți că eliminarea intrării din registrul entității nu va elimina entitatea. Pentru aceasta, urmați linkul de mai jos și eliminați-l din pagina de integrare.",
+                        "remove_selected": {
+                            "button": "Sterge selectia",
+                            "confirm_text": "Entitățile pot fi eliminate numai atunci când integrarea nu mai oferă entitățile.",
+                            "confirm_title": "Doriți să eliminați {number} entități?"
+                        },
+                        "selected": "{number} selectate",
                         "show_disabled": "Afișare entități dezactivate",
+                        "status": {
+                            "disabled": "Dezactivat",
+                            "ok": "In regula",
+                            "readonly": "Mod doar citire",
+                            "unavailable": "Indisponibil"
+                        },
                         "unavailable": "(indisponibil)"
                     }
                 },
@@ -1061,7 +1145,10 @@
                         "via": "Conectat prin"
                     },
                     "config_flow": {
+                        "aborted": "Anulat",
+                        "add_area": "Adăugare zonă",
                         "area_picker_label": "Zonă",
+                        "close": "Închide",
                         "created_config": "Configurare creată pentru {name}.",
                         "dismiss": "Ascunde dialogul",
                         "error_saving_area": "Imposibil de salvat zona: {error}",
@@ -1070,12 +1157,28 @@
                             "open_site": "Deschideți site-ul web"
                         },
                         "failed_create_area": "Nu a reușit să creeze zona.",
-                        "name_new_area": "Numele noii zone?"
+                        "finish": "Termina",
+                        "name_new_area": "Numele noii zone?",
+                        "not_all_required_fields": "Nu toate câmpurile obligatorii sunt completate.",
+                        "submit": "Trimite"
                     },
                     "configure": "Configurează",
                     "configured": "Configurat",
                     "description": "Gestionați și configurați integrările",
+                    "details": "Detalii integrare",
                     "discovered": "Descoperit",
+                    "ignore": {
+                        "confirm_delete_ignore": "Acest lucru va face ca integrarea să apară din nou în integrările descoperite atunci când este descoperită. Acest lucru ar putea necesita o repornire sau să dureze ceva timp.",
+                        "confirm_delete_ignore_title": "Încetați să ignorați {name} ?",
+                        "confirm_ignore": "Sunteți sigur că nu doriți să configurați această integrare? Puteți anula acest lucru făcând clic pe „Afișați integrări ignorate” din meniul de preaplin din partea dreaptă sus.",
+                        "confirm_ignore_title": "Ignorați descoperirea {name} ?",
+                        "hide_ignored": "Ascundeți integrările ignorate",
+                        "ignore": "Ignora",
+                        "ignored": "Ignorat",
+                        "show_ignored": "Afișați integrări ignorate",
+                        "stop_ignore": "Nu mai ignorați"
+                    },
+                    "integration_not_found": "Integrarea nu a fost găsită.",
                     "new": "Configurați o nouă integrare",
                     "none": "Nimic nu a fost configurat încă"
                 },
@@ -1099,6 +1202,9 @@
                         "devices": {
                             "header": "Dispozitive"
                         },
+                        "entities": {
+                            "introduction": "Entitățile care nu aparțin unui dispozitiv pot fi setate aici."
+                        },
                         "load_error_not_editable": "Numai scenele din scene.yaml sunt editabile.",
                         "name": "Nume",
                         "save": "Salvează",
@@ -1115,6 +1221,7 @@
                     "caption": "Scenariu",
                     "description": "Creați și editați scenarii",
                     "editor": {
+                        "alias": "Nume",
                         "delete_script": "Ștergere script",
                         "introduction": "Folosiți scripturi pentru a executa o secvență de acțiuni.",
                         "link_available_actions": "Aflați mai multe despre acțiunile disponibile.",
@@ -1134,8 +1241,8 @@
                             "automation": "Reîncarcă automatizările",
                             "core": "Reîncărcați locația și personalizările",
                             "group": "Reîncărcați grupurile",
-                            "heading": "Reîncărcarea configurației",
-                            "introduction": "Unele părți din Home Assistant se pot reîncărca fără a necesita o repornire. Apăsarea reîncărcării va dezactiva configurația actuală și va încărca noua configurație.",
+                            "heading": "Reîncărcarea configurației YAML",
+                            "introduction": "Unele părți din Home Assistant se pot reîncărca fără a necesita o repornire. Apăsarea reîncărcării va descărca configurația actuală și va încărca noua configurație.",
                             "person": "Reîncărcare persoane",
                             "scene": "Reîncărca scenarii",
                             "script": "Reîncărcați script-uri",
@@ -1216,16 +1323,40 @@
                         "unbind_button_label": "Deconectează grupul"
                     },
                     "groups": {
+                        "add_members": "Adăugați membri",
+                        "adding_members": "Adăugarea membrilor",
                         "caption": "Grupuri",
+                        "create": "Creare Grup",
+                        "create_group": "Zigbee Home Automation - Creare grup",
+                        "create_group_details": "Introduceți detaliile necesare pentru a crea un nou grup zigbee",
+                        "creating_group": "Crearea grupului",
                         "description": "Creează și modifică grupurile Zigbee",
+                        "group_details": "Iată toate detaliile pentru grupul Zigbee selectat.",
+                        "group_id": "ID de grup",
+                        "group_info": "Informații de grup",
+                        "group_name_placeholder": "Numele Grupului",
+                        "group_not_found": "Grupul nu a fost găsit!",
                         "group-header": "Zigbee Home Automation - Detalii despre grup",
-                        "groups-header": "Zigbee Home Automation - Managementul grupului"
+                        "groups": "Grupuri",
+                        "groups-header": "Zigbee Home Automation - Managementul grupului",
+                        "header": "Zigbee Home Automation - Managementul grupului",
+                        "introduction": "Crearea și modificarea grupurilor zigbee",
+                        "manage_groups": "Gestionați grupurile Zigbee",
+                        "members": "Membri",
+                        "remove_groups": "Eliminare grupuri",
+                        "remove_members": "Eliminați membrii",
+                        "removing_groups": "Eliminarea Grupuri",
+                        "removing_members": "Eliminarea Membrilor",
+                        "zha_zigbee_groups": "Grupuri ZHA Zigbee"
                     },
+                    "header": "Configurați automatizarea Zigbee Home",
+                    "introduction": "Aici este posibil să configurați componenta ZHA. Nu totul este posibil pentru a configura de la UI încă, dar lucrăm la ea.",
                     "services": {
                         "reconfigure": "Reconfigurați dispozitivul ZHA (dispozitiv de vindecare). Utilizați acest lucru dacă aveți probleme cu dispozitivul. Dacă dispozitivul în cauză este un dispozitiv alimentat cu baterii, asigurați-vă că este treaz și accepta comenzi atunci când utilizați acest serviciu.",
                         "remove": "Eliminați un dispozitiv din rețeaua Zigbee.",
                         "updateDeviceName": "Setați un nume personalizat pentru acest dispozitiv în registrul de dispozitive."
-                    }
+                    },
+                    "title": "Automatizare Zigbee Home"
                 },
                 "zone": {
                     "add_zone": "Adăugare zonă",
@@ -1249,7 +1380,10 @@
                         "required_error_msg": "Acest câmp este obligatoriu",
                         "update": "Actualizează"
                     },
-                    "edit_home_zone": "Locația casei tale poate fi modificată în configurarea generală.",
+                    "edit_home_zone": "Raza zonei Acasă nu poate fi încă editată din frontend. Trageți marcatorul pe hartă pentru a muta zona de origine.",
+                    "edit_home_zone_narrow": "Raza zonei Acasă nu poate fi editată încă de pe frontend. Locația poate fi modificată din configurația generală.",
+                    "go_to_core_config": "Mergeți la configurația generală?",
+                    "home_zone_core_config": "Locația zonei de domiciliu este editabilă din pagina de configurare generală. Raza zonei Acasă nu poate fi editată încă de pe frontend. Doriți să accesați configurația generală?",
                     "introduction": "Zonele vă permit să specificați anumite regiuni de pe pământ. Când o persoană se află într-o zonă, identificatorul va lua numele din zonă. Zonele pot fi de asemenea utilizate ca declanșator sau condiție în cadrul setărilor de automatizare.",
                     "no_zones_created_yet": "Se pare că nu ai creat încă nici o zonă."
                 },
@@ -1291,7 +1425,7 @@
                         "cancel_command": "Anulați comanda",
                         "heal_network": "Heal Network",
                         "remove_node": "Eliminare nod",
-                        "save_config": "Salvați Configurația",
+                        "save_config": "Salvați configurația",
                         "soft_reset": "Resetare soft",
                         "start_network": "Porniți rețeaua",
                         "stop_network": "Opriți rețeaua",
@@ -1360,6 +1494,10 @@
                     "states": {
                         "alert_entity_field": "Entitatea este un câmp obligatoriu",
                         "attributes": "Atribute",
+                        "copied": "Copiat în clipboard",
+                        "copy_entity_attribute": "Copiați atributele",
+                        "copy_entity_id": "Copiere ID",
+                        "copy_entity_state": "Copiați atributele",
                         "current_entities": "Entități actuale",
                         "description1": "Setați reprezentarea unui dispozitiv în cadrul Home Assistant.",
                         "description2": "Acesta nu va comunica cu dispozitivul actual.",
@@ -1394,6 +1532,11 @@
                 "showing_entries": "Arată intrări pentru"
             },
             "lovelace": {
+                "add_entities": {
+                    "generated_unsupported": "Puteți utiliza această funcție numai atunci când ați preluat controlul asupra UI Lovelace.",
+                    "saving_failed": "Salvarea configurației UI Lovelace a eșuat.",
+                    "yaml_unsupported": "Nu se poate utiliza această funcție atunci când utilizați Lovelace UI în modul YAML."
+                },
                 "cards": {
                     "empty_state": {
                         "go_to_integrations_page": "Du-te la pagina integrări.",
@@ -1411,6 +1554,11 @@
                         "tap": "Atingeți:",
                         "toggle": "Comutați {name}"
                     },
+                    "safe-mode": {
+                        "description": "Home Assistant a avut probleme în timpul încărcării configurației și rulează acum în modul de siguranță. Aruncati o privire la jurnalul de erori pentru a vedea ce a mers prost.",
+                        "header": "Mod de siguranță activat",
+                        "show_errors": "Arată erori"
+                    },
                     "shopping-list": {
                         "add_item": "Adaugare element",
                         "checked_items": "Elementele selectate",
@@ -1418,11 +1566,14 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Configurația Lovelace a fost actualizată, doriți să reîmprospătați?",
+                    "message": "Configurația Lovelace UI a fost actualizată, reîmprospătați pentru a vedea modificările?",
                     "refresh": "Reîmprospătare"
                 },
                 "editor": {
                     "card": {
+                        "button": {
+                            "name": "Buton"
+                        },
                         "entities": {
                             "toggle": "Schimbati entitatile"
                         },
@@ -1443,7 +1594,7 @@
                     },
                     "edit_lovelace": {
                         "edit_title": "Editează titlul",
-                        "explanation": "Acest titlu este arătat mai sus toate punctele de vedere în Lovelace.",
+                        "explanation": "Acest titlu este arătat mai sus de toate punctele de vedere în Lovelace.",
                         "header": "Titlul interfeței dvs. Lovelace"
                     },
                     "edit_view": {
@@ -1452,12 +1603,14 @@
                         "edit": "Editați vizualizarea",
                         "header": "Vizualizați configurația",
                         "move_left": "Mutare vizualizare la stânga",
-                        "move_right": "Mutare vizualizare dreapta"
+                        "move_right": "Mutare vizualizare dreapta",
+                        "tab_badges": "Insigne",
+                        "tab_settings": "Setări"
                     },
                     "header": "Editați interfața utilizator",
                     "menu": {
-                        "open": "Deschideti meniul Lovelace",
-                        "raw_editor": "Raw config editor"
+                        "open": "Deschideți meniul Lovelace UI",
+                        "raw_editor": "Editor de configurare brut"
                     },
                     "migrate": {
                         "header": "Configurație Incompatibilă",
@@ -1466,12 +1619,16 @@
                         "para_no_id": "Acest element nu are un ID. Adăugați un ID la acest element în \"ui-lovelace.yaml\"."
                     },
                     "raw_editor": {
+                        "confirm_remove_config_text": "Vom genera automat vizualizările UI Lovelace cu zonele și dispozitivele dvs., dacă eliminați configurația UI Lovelace.",
+                        "confirm_remove_config_title": "Sigur eliminați configurația Ui Lovelace? Vom genera automat vizualizările UI Lovelace cu zonele și dispozitivele dvs.",
                         "confirm_unsaved_changes": "Aveți modificări nesalvate, sunteți sigur că doriți să ieșiți?",
                         "confirm_unsaved_comments": "Configurația dvs. conține comentarii, acestea nu vor fi salvate. Doriți să continuați?",
                         "error_invalid_config": "Configurația dvs. nu este validă: {error}",
                         "error_parse_yaml": "Eroare de parsare YAML: {error}",
+                        "error_remove": "Imposibil de eliminat configurația: {error}",
                         "error_save_yaml": "Imposibil de salvat YAML: {error}",
                         "header": "Editați configurația",
+                        "resources_moved": "Resursele nu ar trebui să mai fie adăugate la configurația Lovelace, dar pot fi adăugate în panoul de configurare Lovelace.",
                         "save": "Salvați",
                         "saved": "Salvat",
                         "unsaved_changes": "Modificări nesalvate"
@@ -1479,19 +1636,25 @@
                     "save_config": {
                         "cancel": "Nu contează",
                         "header": "Preia controlul asupra interfața dvs. Lovelace",
-                        "para": "În mod implicit, Home Assistant va menține interfața dvs. de utilizator, actualizându-l atunci când entitățile noi sau componente Lovelace devin disponibile. Dacă preluați controlul, nu vom mai face automat modificări pentru dvs.",
+                        "para": "În mod implicit, Home Assistant va menține interfața dvs. de utilizator, actualizând-o atunci când entitățile noi sau componente Lovelace devin disponibile. Dacă preluați controlul, nu vom mai face automat modificări pentru dvs.",
                         "para_sure": "Sigur doriți să preluați controlul asupra interfeței dvs. de utilizator?",
                         "save": "Preia controlul"
+                    },
+                    "suggest_card": {
+                        "add": "Adăugați la Lovelace UI",
+                        "create_own": "Alege alt card",
+                        "header": "Am creat o sugestie pentru dumneavoastră"
                     }
                 },
                 "menu": {
                     "close": "Închide",
                     "configure_ui": "Configurați interfața utilizator",
+                    "exit_edit_mode": "Ieșiți din modul de modificare a interfeței de utilizator",
                     "help": "Ajutor",
                     "refresh": "Reîmprospătare",
                     "unused_entities": "Entități neutilizate"
                 },
-                "reload_lovelace": "Reîncarcă Lovelace",
+                "reload_lovelace": "Reîncarcă Lovelace UI",
                 "unused_entities": {
                     "available_entities": "Acestea sunt entitățile pe care le aveți disponibile, dar nu sunt încă în UI dvs. Lovelace.",
                     "domain": "Domeniu",
@@ -1577,7 +1740,7 @@
                                     "data": {
                                         "password": "Parola API"
                                     },
-                                    "description": "Introduceti parola API in http config:"
+                                    "description": "Vă rugăm să introduceți parola API în configurația http:"
                                 },
                                 "mfa": {
                                     "data": {
@@ -1684,6 +1847,7 @@
             },
             "profile": {
                 "advanced_mode": {
+                    "description": "Deblochează funcțiile avansate.",
                     "link_promo": "Află mai multe"
                 },
                 "change_password": {

@@ -2084,7 +2084,9 @@
                         "header": "Ver configuración",
                         "header_name": "{name} Ver configuración",
                         "move_left": "Mover vista a la izquierda",
-                        "move_right": "Mover vista a la derecha"
+                        "move_right": "Mover vista a la derecha",
+                        "tab_badges": "Insignias",
+                        "tab_settings": "Configuración"
                     },
                     "header": "Editar la interfaz de usuario",
                     "menu": {
@@ -2107,6 +2109,7 @@
                         "error_remove": "No se puede eliminar la configuración: {error}",
                         "error_save_yaml": "No se puede guardar YAML: {error}",
                         "header": "Editar configuración",
+                        "resources_moved": "Los recursos ya no se deben agregar a la configuración de Lovelace, sino que se pueden agregar en el panel de configuración de Lovelace.",
                         "save": "Guardar",
                         "saved": "Guardado",
                         "unsaved_changes": "Cambios no guardados"

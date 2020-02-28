@@ -64,13 +64,13 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
 
     return html`
       <hui-generic-entity-row
-        .hass="${this.hass}"
-        .config="${this._config}"
-        .showSecondary=${false}
+        .hass=${this.hass}
+        .config=${this._config}
+        .secondaryText=${this._computeMediaTitle(stateObj)}
       >
         ${OFF_STATES.includes(stateObj.state)
           ? html`
-              <div>
+              <div class="text-content">
                 ${this.hass!.localize(`state.media_player.${stateObj.state}`) ||
                   this.hass!.localize(`state.default.${stateObj.state}`) ||
                   stateObj.state}
@@ -96,7 +96,6 @@ class HuiMediaPlayerEntityRow extends LitElement implements LovelaceRow {
                     `
                   : ""}
               </div>
-              <div slot="secondary">${this._computeMediaTitle(stateObj)}</div>
             `}
       </hui-generic-entity-row>
     `;

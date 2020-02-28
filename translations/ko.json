@@ -581,6 +581,7 @@
                 "entity": "관련된 구성요소",
                 "group": "관련된 그룹",
                 "integration": "통합 구성요소",
+                "no_related_found": "관련 항목을 찾을 수 없습니다.",
                 "scene": "관련된 씬",
                 "script": "관련된 스크립트"
             },
@@ -630,6 +631,7 @@
                     "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
                     "update": "업데이트"
                 },
+                "no_unique_id": "이 구성요소는 고유한 ID 가 없으므로 설정을 UI에서 관리할 수 없습니다.",
                 "related": "관련 내용",
                 "settings": "설정"
             },
@@ -1323,6 +1325,7 @@
                         "filter": {
                             "filter": "필터",
                             "show_disabled": "비활성화 된 구성요소 표시",
+                            "show_readonly": "읽기 전용 구성요소 표시",
                             "show_unavailable": "사용할 수 없는 구성요소 표시"
                         },
                         "header": "구성요소",
@@ -1346,6 +1349,7 @@
                         "status": {
                             "disabled": "비활성화",
                             "ok": "확인",
+                            "readonly": "읽기 전용",
                             "unavailable": "사용불가"
                         },
                         "unavailable": "(사용불가)"
@@ -1690,7 +1694,7 @@
                         "create": "만들기",
                         "delete": "삭제",
                         "icon": "아이콘",
-                        "icon_error_msg": "아이콘은 접두사:아이콘이름 형식이어야 합니다, 예: mdi:home",
+                        "icon_error_msg": "아이콘은 접두사:아이콘이름 형식이어야 합니다. 예: mdi:home",
                         "latitude": "위도",
                         "longitude": "경도",
                         "name": "이름",
@@ -1701,7 +1705,10 @@
                         "required_error_msg": "이 입력란은 필수 요소입니다",
                         "update": "업데이트"
                     },
-                    "edit_home_zone": "집의 위치는 일반 설정에서 변경할 수 있습니다.",
+                    "edit_home_zone": "집 지역의 반경은 아직 프런트엔드에서 편집할 수 없습니다. 집 지역을 이동하려면 지도에서 마커를 끌어놓아 주세요.",
+                    "edit_home_zone_narrow": "집 지역의 반경은 아직 프런트엔드에서 편집할 수 없습니다. 위치는 일반 구성에서 변경할 수 있습니다.",
+                    "go_to_core_config": "일반 구성으로 이동하시겠습니까?",
+                    "home_zone_core_config": "집 지역의 위치는 일반 구성 페이지에서 편집할 수 있습니다. 집 지역의 반경은 아직 프런트엔드에서 편집할 수 없습니다. 일반 구성으로 이동하시겠습니까?",
                     "introduction": "지역을 사용하면 지구 상의 특정 지역을 지정할 수 있습니다. 구성원이 지역 내에 있으면 구성요소 상태에서 지역의 이름을 가져옵니다. 자동화 설정 내에서 지역을 트리거 또는 조건으로 사용할 수도 있습니다.",
                     "no_zones_created_yet": "아직 설정한 지역이 없는 것 같습니다."
                 },
@@ -1909,6 +1916,11 @@
                         "toggle": "{name} 토글",
                         "url": "{url_path} 창 열기"
                     },
+                    "safe-mode": {
+                        "description": "구성 내용을 읽어오는 중에 Home Assistant 에서 문제가 발생하여 안전 모드에서 실행 중입니다. 오류 로그를 참고하여 무엇이 잘못되었는지 확인해주세요.",
+                        "header": "안전 모드 활성화",
+                        "show_errors": "오류 표시"
+                    },
                     "shopping-list": {
                         "add_item": "항목 추가",
                         "checked_items": "선택한 항목",
@@ -2072,7 +2084,9 @@
                         "header": "구성 보기",
                         "header_name": "{name} 뷰 구성",
                         "move_left": "뷰를 왼쪽으로 이동",
-                        "move_right": "뷰를 오른쪽으로 이동"
+                        "move_right": "뷰를 오른쪽으로 이동",
+                        "tab_badges": "배지",
+                        "tab_settings": "설정"
                     },
                     "header": "UI 편집",
                     "menu": {

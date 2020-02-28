@@ -59,14 +59,14 @@ export class ZHADevicePage extends LitElement {
       >
         <zha-node
           .isWide="${this.isWide}"
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .device=${this.device}
         ></zha-node>
 
         ${this.device && this.device.device_type !== "Coordinator"
           ? html`
               <zha-clusters
-                .hass="${this.hass}"
+                .hass=${this.hass}
                 .isWide="${this.isWide}"
                 .selectedDevice="${this.device}"
                 @zha-cluster-selected="${this._onClusterSelected}"
@@ -75,14 +75,14 @@ export class ZHADevicePage extends LitElement {
                 ? html`
                     <zha-cluster-attributes
                       .isWide="${this.isWide}"
-                      .hass="${this.hass}"
+                      .hass=${this.hass}
                       .selectedNode="${this.device}"
                       .selectedCluster="${this._selectedCluster}"
                     ></zha-cluster-attributes>
 
                     <zha-cluster-commands
                       .isWide="${this.isWide}"
-                      .hass="${this.hass}"
+                      .hass=${this.hass}
                       .selectedNode="${this.device}"
                       .selectedCluster="${this._selectedCluster}"
                     ></zha-cluster-commands>
@@ -92,7 +92,7 @@ export class ZHADevicePage extends LitElement {
                 ? html`
                     <zha-device-binding-control
                       .isWide="${this.isWide}"
-                      .hass="${this.hass}"
+                      .hass=${this.hass}
                       .selectedDevice="${this.device}"
                       .bindableDevices="${this._bindableDevices}"
                     ></zha-device-binding-control>
@@ -103,7 +103,7 @@ export class ZHADevicePage extends LitElement {
                     <zha-group-binding-control
                       .isWide="${this.isWide}"
                       .narrow="${this.narrow}"
-                      .hass="${this.hass}"
+                      .hass=${this.hass}
                       .selectedDevice="${this.device}"
                       .groups="${this._groups}"
                     ></zha-group-binding-control>

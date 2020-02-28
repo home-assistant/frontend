@@ -626,6 +626,8 @@
                     "enabled_description": "關閉的物件將不會新增至 Home Assistant。",
                     "enabled_label": "啟用物件",
                     "entity_id": "物件 ID",
+                    "icon": "圖示覆寫",
+                    "icon_error": "圖示必須按照格式「prefix:iconname」設定，例如「mdi:home」",
                     "name": "名稱覆寫",
                     "note": "注意：可能無法適用所有整合。",
                     "unavailable": "該物件目前不可用。",
@@ -639,6 +641,44 @@
                 "cancel": "取消",
                 "default_confirmation_title": "確認？",
                 "ok": "好"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "圖示",
+                    "initial_value": "初始值",
+                    "initial_value_explain": "Home Assistant 啟動初始值。空白時、將會回覆至之前的數值。",
+                    "name": "名稱"
+                },
+                "input_datetime": {
+                    "has_date": "日期",
+                    "has_time": "時間"
+                },
+                "input_number": {
+                    "box": "輸入欄位",
+                    "max": "最大值",
+                    "min": "最小值",
+                    "mode": "顯示模式",
+                    "slider": "滑桿",
+                    "step": "滑桿刻度",
+                    "unit_of_measurement": "單位"
+                },
+                "input_select": {
+                    "add": "新增",
+                    "add_option": "新增選項",
+                    "no_options": "尚無選項。",
+                    "options": "選項"
+                },
+                "input_text": {
+                    "max": "最大長度",
+                    "min": "最小長度",
+                    "mode": "顯示模式",
+                    "password": "密碼",
+                    "pattern": "客戶端驗證模式",
+                    "text": "文字"
+                },
+                "not_editable": "不可編輯",
+                "not_editable_text": "由於 configuration.yaml 內已定義，物件編輯功能已關閉。",
+                "required_error_msg": "必填欄位"
             },
             "more_info_control": {
                 "dismiss": "忽略對話",
@@ -1046,7 +1086,7 @@
                         },
                         "integrations": "整合",
                         "integrations_introduction": "Home Assistant Cloud 雲服務整合可連線至其他雲服務、而不需將您的 Home Assistant 暴露在整個網際網路上。",
-                        "integrations_introduction2": "開啟網站 ",
+                        "integrations_introduction2": "開啟網站",
                         "integrations_link_all_features": " 所有可用功能",
                         "manage_account": "管理帳號",
                         "nabu_casa_account": "Nabu Casa 帳號",
@@ -1071,7 +1111,7 @@
                             "no_hooks_yet": "看起來您尚未建立 Webhook，可藉由設定 ",
                             "no_hooks_yet_link_automation": "Webhook 自動化",
                             "no_hooks_yet_link_integration": "Webhook 整合",
-                            "no_hooks_yet2": " 或新增一組 ",
+                            "no_hooks_yet2": "或新增一組",
                             "title": "Webhooks"
                         }
                     },
@@ -1356,6 +1396,30 @@
                     }
                 },
                 "header": "設定 Home Assistant",
+                "helpers": {
+                    "caption": "助手",
+                    "description": "可協助建立自動化的元素。",
+                    "dialog": {
+                        "add_helper": "新增助手",
+                        "add_platform": "新增 {platform}",
+                        "create": "新增"
+                    },
+                    "picker": {
+                        "add_helper": "新增助手",
+                        "headers": {
+                            "editable": "可編輯",
+                            "name": "名稱",
+                            "type": "類別"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "開關",
+                        "input_datetime": "日期及/或時間",
+                        "input_number": "數字",
+                        "input_select": "下拉選單",
+                        "input_text": "文字"
+                    }
+                },
                 "integrations": {
                     "caption": "整合",
                     "config_entry": {
@@ -2081,10 +2145,12 @@
                         "add": "新增視圖",
                         "delete": "刪除視圖",
                         "edit": "編輯視圖",
-                        "header": "檢視設定",
-                        "header_name": "{name} 檢視設定",
+                        "header": "面板設定",
+                        "header_name": "{name}面板設定",
                         "move_left": "向左移動視圖",
-                        "move_right": "向右移動視圖"
+                        "move_right": "向右移動視圖",
+                        "tab_badges": "園標圖示",
+                        "tab_settings": "設定"
                     },
                     "header": "編輯 UI",
                     "menu": {
@@ -2107,6 +2173,7 @@
                         "error_remove": "無法移除設定：{error}",
                         "error_save_yaml": "無法儲存 YAML：{error}",
                         "header": "編輯設定",
+                        "resources_moved": "無法再透過 Lovelace 設定新增資源，需透過 Lovelace 設定面板進行新增。",
                         "save": "儲存",
                         "saved": "已儲存",
                         "unsaved_changes": "未儲存的變更"

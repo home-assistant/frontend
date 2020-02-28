@@ -110,7 +110,7 @@ export class HuiEditView extends LitElement {
         content = html`
           <hui-view-editor
             .isNew=${this.viewIndex === undefined}
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .config="${this._config}"
             @view-config-changed="${this._viewConfigChanged}"
           ></hui-view-editor>
@@ -119,7 +119,7 @@ export class HuiEditView extends LitElement {
       case "tab-badges":
         content = html`
           <hui-entity-editor
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .entities="${this._badges}"
             @entities-changed="${this._badgesChanged}"
           ></hui-entity-editor>
@@ -142,8 +142,16 @@ export class HuiEditView extends LitElement {
           .selected="${this._curTabIndex}"
           @selected-item-changed="${this._handleTabSelected}"
         >
-          <paper-tab id="tab-settings">Settings</paper-tab>
-          <paper-tab id="tab-badges">Badges</paper-tab>
+          <paper-tab id="tab-settings"
+            >${this.hass!.localize(
+              "ui.panel.lovelace.editor.edit_view.tab_settings"
+            )}</paper-tab
+          >
+          <paper-tab id="tab-badges"
+            >${this.hass!.localize(
+              "ui.panel.lovelace.editor.edit_view.tab_badges"
+            )}</paper-tab
+          >
         </paper-tabs>
         <paper-dialog-scrollable> ${content} </paper-dialog-scrollable>
         <div class="paper-dialog-buttons">

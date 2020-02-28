@@ -20,7 +20,7 @@ import { computeStateName } from "../../../common/entity/compute_state_name";
 
 import { HomeAssistant, InputSelectEntity } from "../../../types";
 import { LovelaceRow } from "./types";
-import { setInputSelectOption } from "../../../data/input-select";
+import { setInputSelectOption } from "../../../data/input_select";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { forwardHaptic } from "../../../data/haptics";
 import { stopPropagation } from "../../../common/dom/stop_propagation";
@@ -32,6 +32,8 @@ import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
 import { ActionHandlerEvent } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
+import { UNAVAILABLE } from "../../../data/entity";
+import { fireEvent } from "../../../common/dom/fire_event";
 
 @customElement("hui-input-select-entity-row")
 class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
@@ -78,6 +80,14 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
         !DOMAINS_HIDE_MORE_INFO.includes(computeDomain(this._config.entity)));
 
     return html`
+      ${stateObj.state === UNAVAILABLE
+        ? html`
+            <hui-unavailable
+              .text=${this.hass.localize("state.default.unavailable")}
+              @click=${this._showMoreInfo}
+            ></hui-unavailable>
+          `
+        : ""}
       <state-badge
         .stateObj=${stateObj}
         .stateColor=${this._config.state_color}
@@ -100,11 +110,13 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
         @click=${stopPropagation}
       >
         <paper-listbox slot="dropdown-content">
-          ${stateObj.attributes.options.map(
-            (option) => html`
-              <paper-item>${option}</paper-item>
-            `
-          )}
+          ${stateObj.attributes.options
+            ? stateObj.attributes.options.map(
+                (option) => html`
+                  <paper-item>${option}</paper-item>
+                `
+              )
+            : ""}
         </paper-listbox>
       </ha-paper-dropdown-menu>
     `;
@@ -126,13 +138,19 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
     }
 
     // Update selected after rendering the items or else it won't work in Firefox
-    this.shadowRoot!.querySelector(
-      "paper-listbox"
-    )!.selected = stateObj.attributes.options.indexOf(stateObj.state);
+    if (stateObj.attributes.options) {
+      this.shadowRoot!.querySelector(
+        "paper-listbox"
+      )!.selected = stateObj.attributes.options.indexOf(stateObj.state);
+    }
   }
 
   private _handleAction(ev: ActionHandlerEvent) {
     handleAction(this, this.hass!, this._config!, ev.detail.action!);
+  }
+
+  private _showMoreInfo() {
+    fireEvent(this, "hass-more-info", { entityId: this._config!.entity });
   }
 
   static get styles(): CSSResult {
@@ -156,6 +174,9 @@ class HuiInputSelectEntityRow extends LitElement implements LovelaceRow {
         outline: none;
         background: var(--divider-color);
         border-radius: 100%;
+      }
+      hui-unavailable {
+        cursor: pointer;
       }
     `;
   }
