@@ -2084,7 +2084,9 @@
                         "header": "Configuració de la visualització",
                         "header_name": "Configuració de la visualització {name}",
                         "move_left": "Desplaça la visualització cap a l'esquerra",
-                        "move_right": "Desplaça la visualització cap a la dreta"
+                        "move_right": "Desplaça la visualització cap a la dreta",
+                        "tab_badges": "Etiquetes",
+                        "tab_settings": "Configuració"
                     },
                     "header": "Editar la interfície d'usuari (UI)",
                     "menu": {
@@ -2107,6 +2109,7 @@
                         "error_remove": "No s'ha pogut eliminar la configuració: {error}",
                         "error_save_yaml": "No es pot desar YAML: {error}",
                         "header": "Edita la configuració",
+                        "resources_moved": "Els recursos ja no s'han d'afegir a la configuració de Lovelace, però es poden afegir al tauler de configuració de Lovelace.",
                         "save": "Desa",
                         "saved": "Desat",
                         "unsaved_changes": "Canvis sense desar"

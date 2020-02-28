@@ -1515,7 +1515,7 @@
                     "section": {
                         "reloading": {
                             "automation": "Automatyzacje",
-                            "core": "Lokacje i dostosowywanie",
+                            "core": "Lokalizacja i dostosowywanie",
                             "group": "Grupy",
                             "heading": "Ponowne wczytanie konfiguracji",
                             "introduction": "Niektóre części konfiguracji można wczytać od nowa bez konieczności ponownego uruchamiania Home Assistant'a. Naciśnięcie poniższych przycisków wczyta ponownie daną część konfiguracji.",
@@ -1952,7 +1952,7 @@
                         },
                         "entities": {
                             "name": "Encje",
-                            "show_header_toggle": "Pokaż przełącznik w nagłówku?",
+                            "show_header_toggle": "Pokaż przełącznik w nagłówku",
                             "toggle": "Przełącz encje"
                         },
                         "entity-button": {
@@ -1985,9 +1985,9 @@
                             "minimum": "Minimum",
                             "name": "Nazwa",
                             "refresh_interval": "Częstotliwość odświeżania",
-                            "show_icon": "Pokaż ikonę?",
-                            "show_name": "Pokaż nazwę?",
-                            "show_state": "Pokaż stan?",
+                            "show_icon": "Wyświetlanie ikony",
+                            "show_name": "Wyświetlanie nazwy",
+                            "show_state": "Wyświetlanie stanu",
                             "tap_action": "Akcja dotknięcia",
                             "theme": "Motyw",
                             "title": "Tytuł",
@@ -2011,7 +2011,7 @@
                             "name": "Światło"
                         },
                         "map": {
-                            "dark_mode": "Tryb ciemny?",
+                            "dark_mode": "Tryb ciemny",
                             "default_zoom": "Domyślne powiększenie",
                             "geo_location_sources": "Źródła geolokalizacji",
                             "name": "Mapa",
@@ -2084,7 +2084,9 @@
                         "header": "Konfiguracja widoku",
                         "header_name": "Konfiguracja widoku {name}",
                         "move_left": "Przesuń widok w lewo",
-                        "move_right": "Przesuń widok w prawo"
+                        "move_right": "Przesuń widok w prawo",
+                        "tab_badges": "Odznaki",
+                        "tab_settings": "Ustawienia"
                     },
                     "header": "Edycja interfejsu użytkownika",
                     "menu": {
@@ -2375,7 +2377,7 @@
                     "learn_auth_requests": "Dowiedz się, jak tworzyć uwierzytelnione żądania.",
                     "not_used": "Nigdy nie był używany",
                     "prompt_copy_token": "Skopiuj token. Nie będzie on już ponownie wyświetlany.",
-                    "prompt_name": "Nazwa?"
+                    "prompt_name": "Nazwa"
                 },
                 "mfa_setup": {
                     "close": "Zamknij",

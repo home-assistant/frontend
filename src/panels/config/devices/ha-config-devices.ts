@@ -1,5 +1,3 @@
-import "@polymer/app-route/app-route";
-
 import "./ha-config-devices-dashboard";
 import "./ha-config-device-page";
 import { compare } from "../../../common/string/compare";

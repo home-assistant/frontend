@@ -56,7 +56,7 @@ class HuiInputDatetimeEntityRow extends LitElement implements LovelaceRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
+      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         ${stateObj.attributes.has_date
           ? html`
               <ha-date-input

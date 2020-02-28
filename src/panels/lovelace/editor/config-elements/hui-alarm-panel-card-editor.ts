@@ -75,7 +75,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
           )})"
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
           include-domains='["alarm_control_panel"]'
@@ -120,7 +120,7 @@ export class HuiAlarmPanelCardEditor extends LitElement
           </paper-listbox>
         </paper-dropdown-menu>
         <hui-theme-select-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._theme}"
           .configValue="${"theme"}"
           @theme-changed="${this._valueChanged}"

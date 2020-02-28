@@ -128,22 +128,27 @@ class HassioAddonAudio extends LitElement {
 
   private _setInputDevice(ev): void {
     const device = ev.detail.item.getAttribute("device");
-    this._selectedInput = device || null;
+    this._selectedInput = device;
   }
 
   private _setOutputDevice(ev): void {
     const device = ev.detail.item.getAttribute("device");
-    this._selectedOutput = device || null;
+    this._selectedOutput = device;
   }
 
   private async _addonChanged(): Promise<void> {
-    this._selectedInput = this.addon.audio_input;
-    this._selectedOutput = this.addon.audio_output;
+    this._selectedInput =
+      this.addon.audio_input === null ? "default" : this.addon.audio_input;
+    this._selectedOutput =
+      this.addon.audio_output === null ? "default" : this.addon.audio_output;
     if (this._outputDevices) {
       return;
     }
 
-    const noDevice: HassioHardwareAudioDevice = { device: null, name: "-" };
+    const noDevice: HassioHardwareAudioDevice = {
+      device: "default",
+      name: "Default",
+    };
 
     try {
       const { audio } = await fetchHassioHardwareAudio(this.hass);
@@ -168,8 +173,10 @@ class HassioAddonAudio extends LitElement {
   private async _saveSettings(): Promise<void> {
     this._error = undefined;
     const data: HassioAddonSetOptionParams = {
-      audio_input: this._selectedInput || null,
-      audio_output: this._selectedOutput || null,
+      audio_input:
+        this._selectedInput === "default" ? null : this._selectedInput,
+      audio_output:
+        this._selectedOutput === "default" ? null : this._selectedOutput,
     };
     try {
       await setHassioAddonOption(this.hass, this.addon.slug, data);

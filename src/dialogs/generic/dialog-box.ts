@@ -129,6 +129,10 @@ class DialogBox extends LitElement {
     return [
       haStyleDialog,
       css`
+        :host([inert]) {
+          pointer-events: initial !important;
+          cursor: initial !important;
+        }
         ha-paper-dialog {
           min-width: 400px;
           max-width: 500px;

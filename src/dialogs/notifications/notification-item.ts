@@ -36,13 +36,13 @@ export class HuiNotificationItem extends LitElement {
     return "entity_id" in this.notification
       ? html`
           <configurator-notification-item
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .notification="${this.notification}"
           ></configurator-notification-item>
         `
       : html`
           <persistent-notification-item
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .notification="${this.notification}"
           ></persistent-notification-item>
         `;
