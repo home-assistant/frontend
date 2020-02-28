@@ -626,6 +626,8 @@
                     "enabled_description": "關閉的物件將不會新增至 Home Assistant。",
                     "enabled_label": "啟用物件",
                     "entity_id": "物件 ID",
+                    "icon": "圖示覆寫",
+                    "icon_error": "圖示必須按照格式「prefix:iconname」設定，例如「mdi:home」",
                     "name": "名稱覆寫",
                     "note": "注意：可能無法適用所有整合。",
                     "unavailable": "該物件目前不可用。",
@@ -639,6 +641,44 @@
                 "cancel": "取消",
                 "default_confirmation_title": "確認？",
                 "ok": "好"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "圖示",
+                    "initial_value": "初始值",
+                    "initial_value_explain": "Home Assistant 啟動初始值。空白時、將會回覆至之前的數值。",
+                    "name": "名稱"
+                },
+                "input_datetime": {
+                    "has_date": "日期",
+                    "has_time": "時間"
+                },
+                "input_number": {
+                    "box": "輸入欄位",
+                    "max": "最大值",
+                    "min": "最小值",
+                    "mode": "顯示模式",
+                    "slider": "滑桿",
+                    "step": "滑桿刻度",
+                    "unit_of_measurement": "單位"
+                },
+                "input_select": {
+                    "add": "新增",
+                    "add_option": "新增選項",
+                    "no_options": "尚無選項。",
+                    "options": "選項"
+                },
+                "input_text": {
+                    "max": "最大長度",
+                    "min": "最小長度",
+                    "mode": "顯示模式",
+                    "password": "密碼",
+                    "pattern": "客戶端驗證模式",
+                    "text": "文字"
+                },
+                "not_editable": "不可編輯",
+                "not_editable_text": "由於 configuration.yaml 內已定義，物件編輯功能已關閉。",
+                "required_error_msg": "必填欄位"
             },
             "more_info_control": {
                 "dismiss": "忽略對話",
@@ -1356,6 +1396,30 @@
                     }
                 },
                 "header": "設定 Home Assistant",
+                "helpers": {
+                    "caption": "助手",
+                    "description": "可協助建立自動化的元素。",
+                    "dialog": {
+                        "add_helper": "新增助手",
+                        "add_platform": "新增 {platform}",
+                        "create": "新增"
+                    },
+                    "picker": {
+                        "add_helper": "新增助手",
+                        "headers": {
+                            "editable": "可編輯",
+                            "name": "名稱",
+                            "type": "類別"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "開關",
+                        "input_datetime": "日期及/或時間",
+                        "input_number": "數字",
+                        "input_select": "下拉選單",
+                        "input_text": "文字"
+                    }
+                },
                 "integrations": {
                     "caption": "整合",
                     "config_entry": {

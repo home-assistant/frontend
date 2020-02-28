@@ -1992,7 +1992,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "The Lovelace UI configuration was updated, refresh to see changes?",
+                    "message": "The Lovelace UI configuration for this dashboard was updated, refresh to see changes?",
                     "refresh": "Refresh"
                 },
                 "editor": {
