@@ -40,7 +40,6 @@ let installResizeObserver: any;
 let options: Options = {
   dragEnabled: true,
   dragStartPredicate: {
-    // Doesn't start drag until these thresholds are met - Up for discussion if needed
     distance: 10,
     delay: 100,
   },
@@ -439,9 +438,8 @@ export class HUIView extends LitElement {
   private _buildMuuriGrids(): void {
     options = {
       ...options,
-      dragContainer: this.shadowRoot!.getElementById("columns")!, // Gives ability to drag outside of one grid
+      dragContainer: this.shadowRoot!.getElementById("columns")!,
       dragSort: () => {
-        // Determines which Grids to drag to
         return this._grids;
       },
     };
@@ -450,7 +448,7 @@ export class HUIView extends LitElement {
 
     columns.forEach((columnEl) => {
       this._grids.push(
-        new muuri(columnEl, options) // The events here make sure the card doesnt grow to the size of the window
+        new muuri(columnEl, options)
           .on("dragStart", (item) => {
             item.getElement().style.width = item.getWidth() + "px";
             item.getElement().style.height = item.getHeight() + "px";
@@ -478,52 +476,46 @@ export class HUIView extends LitElement {
 
   private _storeLayout(): void {
     let maxItems = 0;
-    const layout: LovelaceCardConfig[] = [];
+    const cards: LovelaceCardConfig[] = [];
     const views: LovelaceViewConfig[] = [];
+    const lovelace = this.lovelace!;
 
-    // Find max items in a column
     this._grids.forEach((grid) => {
       maxItems =
         grid.getItems().length > maxItems ? grid.getItems().length : maxItems;
     });
 
-    // Go through each column getting the 1st element from each and then the second element from each and so on
     for (let i = 0; i < maxItems; i++) {
       this._grids.forEach((grid) => {
         if (!grid.getItems(i)[0]) {
           return;
         }
 
-        layout.push(grid.getItems(i)[0].getElement().cardConfig);
+        cards.push(grid.getItems(i)[0].getElement().cardConfig);
       });
     }
 
-    // Save Lovelace config - Yes I know - This isnt great
-    this.lovelace!.config.views.forEach((viewConf, index) => {
-      // Needs improvements to determine the view
-      if (index !== 0) {
-        views.push(this.lovelace!.config.views[index]);
+    lovelace.config.views.forEach((viewConf, index) => {
+      if (index !== this.index) {
+        views.push(lovelace.config.views[index]);
         return;
       }
 
       views.push({
         ...viewConf,
-        cards: layout,
+        cards,
       });
     });
 
-    this.lovelace!.config = {
-      ...this.lovelace!.config,
+    lovelace.config = {
+      ...lovelace.config,
       views,
     };
 
-    this.lovelace!.saveConfig(this.lovelace!.config);
+    this.lovelace!.saveConfig(lovelace.config);
   }
 
   private _attachObserver(): void {
-    // Observe changes to card size and refreshes grids
-    // Uses ResizeObserver in Chrome, otherwise window resize event
-
     if (typeof ResizeObserver !== "function") {
       installResizeObserver();
     }
