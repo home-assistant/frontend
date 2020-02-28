@@ -571,6 +571,18 @@ export class HaDataTable extends BaseElement {
         width: 24px;
       }
 
+      .mdc-data-table__header-cell--icon {
+        text-align: center;
+      }
+
+      .mdc-data-table__header-cell--icon:first-child {
+        padding-left: 24px;
+      }
+
+      .mdc-data-table__cell--icon:first-child {
+        padding-left: 24px;
+      }
+
       .mdc-data-table__header-cell {
         font-family: Roboto, sans-serif;
         -moz-osx-font-smoothing: grayscale;
@@ -596,10 +608,6 @@ export class HaDataTable extends BaseElement {
       .mdc-data-table__header-cell--numeric[dir="rtl"] {
         /* @noflip */
         text-align: left;
-      }
-
-      .mdc-data-table__header-cell--icon {
-        text-align: center;
       }
 
       /* custom from here */
