@@ -125,7 +125,7 @@ class LovelacePanel extends LitElement {
     if (state === "yaml-editor") {
       return html`
         <hui-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .lovelace="${this.lovelace}"
           .closeEditor="${this._closeEditor}"
         ></hui-editor>
