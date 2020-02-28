@@ -95,7 +95,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
           ),
           sortable: true,
           type: "icon",
-          filterable: true,
           template: (requireAdmin: boolean) =>
             requireAdmin
               ? html`
@@ -109,9 +108,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           title: this.hass.localize(
             "ui.panel.config.lovelace.dashboards.picker.headers.sidebar"
           ),
-          sortable: true,
           type: "icon",
-          filterable: true,
           template: (sidebar) =>
             sidebar
               ? html`
@@ -142,6 +139,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
   private _getItems = memoize((dashboards: LovelaceDashboard[]) => {
     return dashboards.map((dashboard) => {
       return {
+        filename: "",
         ...dashboard,
         icon: dashboard.sidebar?.icon,
         title: dashboard.sidebar?.title || dashboard.url_path,

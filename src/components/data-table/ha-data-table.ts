@@ -575,12 +575,12 @@ export class HaDataTable extends BaseElement {
         text-align: center;
       }
 
-      .mdc-data-table__header-cell--icon:first-child {
-        padding-left: 24px;
+      .mdc-data-table__cell--icon:first-child ha-icon {
+        margin-left: 8px;
       }
 
-      .mdc-data-table__cell--icon:first-child {
-        padding-left: 24px;
+      .mdc-data-table__cell--icon:first-child state-badge {
+        margin-right: -8px;
       }
 
       .mdc-data-table__header-cell {
