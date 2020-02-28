@@ -110,7 +110,7 @@ export class HuiButtonCardEditor extends LitElement
         )} (${this.hass.localize(
       "ui.panel.lovelace.editor.card.config.optional"
     )})"
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
           @change="${this._valueChanged}"
@@ -170,7 +170,7 @@ export class HuiButtonCardEditor extends LitElement
           ><div class="suffix" slot="suffix">px</div>
           </paper-input>
           <hui-theme-select-editor
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .value="${this._theme}"
             .configValue="${"theme"}"
             @theme-changed="${this._valueChanged}"
@@ -185,7 +185,7 @@ export class HuiButtonCardEditor extends LitElement
           )} (${this.hass.localize(
       "ui.panel.lovelace.editor.card.config.optional"
     )})"
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .config="${this._tap_action}"
             .actions="${actions}"
             .configValue="${"tap_action"}"
@@ -197,7 +197,7 @@ export class HuiButtonCardEditor extends LitElement
           )} (${this.hass.localize(
       "ui.panel.lovelace.editor.card.config.optional"
     )})"
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .config="${this._hold_action}"
             .actions="${actions}"
             .configValue="${"hold_action"}"

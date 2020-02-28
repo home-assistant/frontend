@@ -127,7 +127,7 @@ export class ZHAClusterCommands extends LitElement {
                 </div>
                 <div class="card-actions">
                   <ha-call-service-button
-                    .hass="${this.hass}"
+                    .hass=${this.hass}
                     domain="zha"
                     service="issue_zigbee_cluster_command"
                     .serviceData="${this._issueClusterCommandServiceData}"
@@ -139,7 +139,7 @@ export class ZHAClusterCommands extends LitElement {
                   ${this._showHelp
                     ? html`
                         <ha-service-description
-                          .hass="${this.hass}"
+                          .hass=${this.hass}
                           domain="zha"
                           service="issue_zigbee_cluster_command"
                           class="help-text2"

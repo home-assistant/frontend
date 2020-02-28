@@ -78,7 +78,7 @@ export class HuiDialogSuggestCard extends LitElement {
                   ${this._cardConfig.map(
                     (cardConfig) => html`
                       <hui-card-preview
-                        .hass="${this.hass}"
+                        .hass=${this.hass}
                         .config="${cardConfig}"
                       ></hui-card-preview>
                     `
