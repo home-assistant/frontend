@@ -29,6 +29,7 @@ import { toggleEntity } from "../common/entity/toggle-entity";
 import { LightCardConfig } from "./types";
 import { supportsFeature } from "../../../common/entity/supports-feature";
 import { SUPPORT_BRIGHTNESS } from "../../../data/light";
+import { UNAVAILABLE } from "../../../data/entity";
 
 @customElement("hui-light-card")
 export class HuiLightCard extends LitElement implements LovelaceCard {
@@ -84,10 +85,11 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
 
     return html`
       <ha-card>
-        ${stateObj.state === "unavailable"
+        ${stateObj.state === UNAVAILABLE
           ? html`
               <hui-unavailable
-                .text="${this.hass.localize("state.default.unavailable")}"
+                .text=${this.hass.localize("state.default.unavailable")}
+                @click=${this._handleMoreInfo}
               ></hui-unavailable>
             `
           : ""}
@@ -231,6 +233,10 @@ export class HuiLightCard extends LitElement implements LovelaceCard {
     return css`
       :host {
         display: block;
+      }
+
+      hui-unavailable {
+        cursor: pointer;
       }
 
       ha-card {
