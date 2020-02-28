@@ -101,7 +101,7 @@ export class HuiStackCardEditor extends LitElement
                 `
               : html`
                   <hui-card-picker
-                    .hass="${this.hass}"
+                    .hass=${this.hass}
                     @config-changed="${this._handleCardPicked}"
                   ></hui-card-picker>
                 `

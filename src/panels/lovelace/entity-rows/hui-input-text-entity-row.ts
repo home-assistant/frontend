@@ -53,7 +53,7 @@ class HuiInputTextEntityRow extends LitElement implements LovelaceRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
+      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
         <paper-input
           no-label-float
           .value="${stateObj.state}"

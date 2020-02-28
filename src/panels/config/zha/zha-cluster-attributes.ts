@@ -165,7 +165,7 @@ export class ZHAClusterAttributes extends LitElement {
             `
           : ""}
         <ha-call-service-button
-          .hass="${this.hass}"
+          .hass=${this.hass}
           domain="zha"
           service="set_zigbee_cluster_attribute"
           .serviceData="${this._setAttributeServiceData}"
@@ -177,7 +177,7 @@ export class ZHAClusterAttributes extends LitElement {
         ${this.showHelp
           ? html`
               <ha-service-description
-                .hass="${this.hass}"
+                .hass=${this.hass}
                 domain="zha"
                 service="set_zigbee_cluster_attribute"
                 class="help-text2"
