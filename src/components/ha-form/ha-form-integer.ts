@@ -29,8 +29,6 @@ export class HaFormInteger extends LitElement implements HaFormElement {
   @property() public data?: HaFormIntegerData;
   @property() public label?: string;
   @property() public suffix?: string;
-
-  @property() private _checked = false;
   @query("paper-input ha-paper-slider") private _input?: HTMLElement;
 
   public focus() {
@@ -45,11 +43,11 @@ export class HaFormInteger extends LitElement implements HaFormElement {
           <div>
             ${this.label}
             <div class="flex">
-              ${this.schema.optional
+              ${this.schema.optional && this.schema.default === undefined
                 ? html`
                     <ha-checkbox
                       @change=${this._handleCheckboxChange}
-                      .checked=${this._checked}
+                      .checked=${this.data !== undefined}
                     ></ha-checkbox>
                   `
                 : ""}
@@ -58,7 +56,7 @@ export class HaFormInteger extends LitElement implements HaFormElement {
                 .value=${this._value}
                 .min=${this.schema.valueMin}
                 .max=${this.schema.valueMax}
-                .disabled=${!this._checked}
+                .disabled=${this.data === undefined}
                 @value-changed=${this._valueChanged}
               ></ha-paper-slider>
             </div>
@@ -81,9 +79,9 @@ export class HaFormInteger extends LitElement implements HaFormElement {
   }
 
   private _handleCheckboxChange(ev: Event) {
-    this._checked = (ev.target as HaCheckbox).checked;
+    const checked = (ev.target as HaCheckbox).checked;
     fireEvent(this, "value-changed", {
-      value: this._checked ? this._value : undefined,
+      value: checked ? this._value : undefined,
     });
   }
 
