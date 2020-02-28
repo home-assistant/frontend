@@ -23,13 +23,24 @@ export interface LovelaceResourcesMutableParams {
   url: string;
 }
 
-export interface LovelaceDashboard {
+export type LovelaceDashboard =
+  | LovelaceYamlDashboard
+  | LovelaceStorageDashboard;
+
+interface LovelaceGenericDashboard {
   id: string;
   url_path: string;
-  mode: "yaml" | "storage";
-  filename?: string;
   require_admin: boolean;
   sidebar?: { icon: string; title: string };
+}
+
+export interface LovelaceYamlDashboard extends LovelaceGenericDashboard {
+  mode: "yaml";
+  filename: string;
+}
+
+export interface LovelaceStorageDashboard extends LovelaceGenericDashboard {
+  mode: "storage";
 }
 
 export interface LovelaceDashboardMutableParams {
@@ -40,7 +51,7 @@ export interface LovelaceDashboardMutableParams {
 export interface LovelaceDashboardCreateParams
   extends LovelaceDashboardMutableParams {
   url_path: string;
-  mode: "yaml" | "storage";
+  mode: "storage";
 }
 
 export interface LovelaceViewConfig {

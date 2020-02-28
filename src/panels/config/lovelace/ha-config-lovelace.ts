@@ -17,7 +17,7 @@ export const lovelaceTabs = [
     path: "/config/lovelace/resources",
     translationKey: "ui.panel.config.lovelace.resources.caption",
     icon: "hass:file-multiple",
-    expertOnly: true,
+    advancedOnly: true,
   },
 ];
 
@@ -26,7 +26,6 @@ class HaConfigLovelace extends HassRouterPage {
   @property() public hass!: HomeAssistant;
   @property() public narrow!: boolean;
   @property() public isWide!: boolean;
-  @property() public showAdvanced!: boolean;
 
   protected routerOptions: RouterOptions = {
     defaultPage: "dashboards",
@@ -53,7 +52,6 @@ class HaConfigLovelace extends HassRouterPage {
     pageEl.hass = this.hass;
     pageEl.narrow = this.narrow;
     pageEl.isWide = this.isWide;
-    pageEl.showAdvanced = this.showAdvanced;
     pageEl.route = this.routeTail;
   }
 }

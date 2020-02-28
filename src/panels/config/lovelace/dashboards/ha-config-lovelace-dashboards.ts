@@ -40,7 +40,6 @@ export class HaConfigLovelaceDashboards extends LitElement {
   @property() public isWide!: boolean;
   @property() public narrow!: boolean;
   @property() public route!: Route;
-  @property() public showAdvanced!: boolean;
   @property() private _dashboards: LovelaceDashboard[] = [];
 
   private _columns = memoize(
@@ -164,10 +163,9 @@ export class HaConfigLovelaceDashboards extends LitElement {
         back-path="/config"
         .route=${this.route}
         .tabs=${lovelaceTabs}
-        .showAdvanced=${this.showAdvanced}
         .columns=${this._columns(this.hass.language, this._dashboards)}
         .data=${this._getItems(this._dashboards)}
-        @row-click=${this._openDialog}
+        @row-click=${this._editDashboard}
       >
       </hass-tabs-subpage-data-table>
       <ha-fab
@@ -177,7 +175,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         title="${this.hass.localize(
           "ui.panel.config.lovelace.dashboards.picker.add_dashboard"
         )}"
-        @click=${this._openDialog}
+        @click=${this._addDashboard}
       ></ha-fab>
     `;
   }
@@ -197,10 +195,12 @@ export class HaConfigLovelaceDashboards extends LitElement {
     navigate(this, url);
   }
 
-  private async _openDialog(ev: CustomEvent): Promise<void> {
+  private _editDashboard(ev: CustomEvent) {
     const id = (ev.detail as RowClickedEvent).id;
-    const dashboard = this._dashboards.find((res) => res.id === id);
-    if (!dashboard || dashboard.mode === "yaml") {
+    const dashboard = id
+      ? this._dashboards.find((res) => res.id === id)
+      : undefined;
+    if (!dashboard) {
       showAlertDialog(this, {
         text: this.hass!.localize(
           "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
@@ -208,6 +208,14 @@ export class HaConfigLovelaceDashboards extends LitElement {
       });
       return;
     }
+    this._openDialog(dashboard);
+  }
+
+  private _addDashboard() {
+    this._openDialog();
+  }
+
+  private async _openDialog(dashboard?: LovelaceDashboard): Promise<void> {
     showDashboardDetailDialog(this, {
       dashboard,
       createDashboard: async (values: LovelaceDashboardCreateParams) => {

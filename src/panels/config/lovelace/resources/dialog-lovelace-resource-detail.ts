@@ -7,7 +7,6 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import "../../../../components/ha-dialog";
 import { HomeAssistant } from "../../../../types";
 import {
   LovelaceResource,
@@ -15,6 +14,8 @@ import {
 } from "../../../../data/lovelace";
 import { LovelaceResourceDetailsDialogParams } from "./show-dialog-lovelace-resource-detail";
 import { PolymerChangedEvent } from "../../../../polymer-types";
+import { createCloseHeading } from "../../../../components/ha-dialog";
+import { haStyleDialog } from "../../../../resources/styles";
 
 @customElement("dialog-lovelace-resource-detail")
 export class DialogLovelaceResourceDetail extends LitElement {
@@ -45,29 +46,20 @@ export class DialogLovelaceResourceDetail extends LitElement {
       return html``;
     }
     const urlInvalid = this._url.trim() === "";
-    // tslint:disable-next-line: prettier
-    const title = html`
-      ${this._params.resource
-        ? this._params.resource.url
-        : this.hass!.localize(
-            "ui.panel.config.lovelace.resources.detail.new_resource"
-          )}
-      <paper-icon-button
-        aria-label=${this.hass.localize(
-          "ui.panel.config.lovelace.resources.detail.dismiss"
-        )}
-        icon="hass:close"
-        dialogAction="close"
-        style="position: absolute; right: 16px; top: 12px;"
-      ></paper-icon-button>
-    `;
     return html`
       <ha-dialog
         open
-        @closing="${this._close}"
-        scrimClickAction=""
-        escapeKeyAction=""
-        .heading=${title}
+        @closing=${this._close}
+        scrimClickAction
+        escapeKeyAction
+        .heading=${createCloseHeading(
+          this.hass,
+          this._params.resource
+            ? this._params.resource.url
+            : this.hass!.localize(
+                "ui.panel.config.lovelace.resources.detail.new_resource"
+              )
+        )}
       >
         <div>
           ${this._error
@@ -185,7 +177,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
       }
       this._params = undefined;
     } catch (err) {
-      this._error = err ? err.message : "Unknown error";
+      this._error = err?.message || "Unknown error";
     } finally {
       this._submitting = false;
     }
@@ -195,7 +187,7 @@ export class DialogLovelaceResourceDetail extends LitElement {
     this._submitting = true;
     try {
       if (await this._params!.removeResource()) {
-        this._params = undefined;
+        this._close();
       }
     } finally {
       this._submitting = false;
@@ -208,32 +200,12 @@ export class DialogLovelaceResourceDetail extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
+      haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-min-width: 400px;
-          --mdc-dialog-max-width: 600px;
-          --mdc-dialog-title-ink-color: var(--primary-text-color);
-          --justify-action-buttons: space-between;
-        }
-        /* make dialog fullscreen on small screens */
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 100vw;
-            --mdc-dialog-max-height: 100vh;
-            --mdc-dialog-shape-radius: 0px;
-            --vertial-align-dialog: flex-end;
-          }
-        }
         .form {
           padding-bottom: 24px;
         }
-        mwc-button.warning {
-          --mdc-theme-primary: var(--error-color);
-        }
         .warning {
-          color: var(--error-color);
-        }
-        .error {
           color: var(--error-color);
         }
       `,

@@ -125,7 +125,7 @@ export const configSections: { [name: string]: PageNavigation[] } = {
       translationKey: "ui.panel.config.customize.caption",
       icon: "hass:pencil",
       core: true,
-      expertOnly: true,
+      advancedOnly: true,
     },
   ],
   other: [

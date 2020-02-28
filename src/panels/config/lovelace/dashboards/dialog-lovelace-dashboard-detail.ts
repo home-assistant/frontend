@@ -7,7 +7,6 @@ import {
   property,
   TemplateResult,
 } from "lit-element";
-import "../../../../components/ha-dialog";
 import "../../../../components/ha-icon-input";
 import { HomeAssistant } from "../../../../types";
 import {
@@ -18,13 +17,14 @@ import {
 import { LovelaceDashboardDetailsDialogParams } from "./show-dialog-lovelace-dashboard-detail";
 import { PolymerChangedEvent } from "../../../../polymer-types";
 import { HaSwitch } from "../../../../components/ha-switch";
+import { createCloseHeading } from "../../../../components/ha-dialog";
+import { haStyleDialog } from "../../../../resources/styles";
 
 @customElement("dialog-lovelace-dashboard-detail")
 export class DialogLovelaceDashboardDetail extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() private _params?: LovelaceDashboardDetailsDialogParams;
   @property() private _urlPath!: LovelaceDashboard["url_path"];
-  @property() private _confMode!: LovelaceDashboard["mode"];
   @property() private _showSidebar!: boolean;
   @property() private _sidebarIcon!: string;
   @property() private _sidebarTitle!: string;
@@ -40,14 +40,12 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     this._error = undefined;
     if (this._params.dashboard) {
       this._urlPath = this._params.dashboard.url_path || "";
-      this._confMode = this._params.dashboard.mode || "storage";
       this._showSidebar = !!this._params.dashboard.sidebar;
       this._sidebarIcon = this._params.dashboard.sidebar?.icon || "";
       this._sidebarTitle = this._params.dashboard.sidebar?.title || "";
       this._requireAdmin = this._params.dashboard.require_admin || false;
     } else {
       this._urlPath = "";
-      this._confMode = "storage";
       this._showSidebar = true;
       this._sidebarIcon = "";
       this._sidebarTitle = "";
@@ -61,32 +59,23 @@ export class DialogLovelaceDashboardDetail extends LitElement {
       return html``;
     }
     const urlInvalid = !/^[a-zA-Z0-9_-]+$/.test(this._urlPath);
-    // tslint:disable-next-line: prettier
-    const title = html`
-      ${this._params.dashboard
-        ? this._sidebarTitle ||
-          this.hass!.localize(
-            "ui.panel.config.lovelace.dashboards.detail.edit_dashboard"
-          )
-        : this.hass!.localize(
-            "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
-          )}
-      <paper-icon-button
-        aria-label=${this.hass.localize(
-          "ui.panel.config.lovelace.dashboards.detail.dismiss"
-        )}
-        icon="hass:close"
-        dialogAction="close"
-        style="position: absolute; right: 16px; top: 12px;"
-      ></paper-icon-button>
-    `;
     return html`
       <ha-dialog
         open
         @closing="${this._close}"
-        scrimClickAction=""
-        escapeKeyAction=""
-        .heading=${title}
+        scrimClickAction
+        escapeKeyAction
+        .heading=${createCloseHeading(
+          this.hass,
+          this._params.dashboard
+            ? this._sidebarTitle ||
+                this.hass!.localize(
+                  "ui.panel.config.lovelace.dashboards.detail.edit_dashboard"
+                )
+            : this.hass!.localize(
+                "ui.panel.config.lovelace.dashboards.detail.new_dashboard"
+              )
+        )}
       >
         <div>
           ${this._error
@@ -223,14 +212,14 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         await this._params!.updateDashboard(values);
       } else {
         (values as LovelaceDashboardCreateParams).url_path = this._urlPath.trim();
-        (values as LovelaceDashboardCreateParams).mode = this._confMode;
+        (values as LovelaceDashboardCreateParams).mode = "storage";
         await this._params!.createDashboard(
           values as LovelaceDashboardCreateParams
         );
       }
       this._params = undefined;
     } catch (err) {
-      this._error = err ? err.message : "Unknown error";
+      this._error = err?.message || "Unknown error";
     } finally {
       this._submitting = false;
     }
@@ -240,7 +229,7 @@ export class DialogLovelaceDashboardDetail extends LitElement {
     this._submitting = true;
     try {
       if (await this._params!.removeDashboard()) {
-        this._params = undefined;
+        this._close();
       }
     } finally {
       this._submitting = false;
@@ -253,30 +242,10 @@ export class DialogLovelaceDashboardDetail extends LitElement {
 
   static get styles(): CSSResult[] {
     return [
+      haStyleDialog,
       css`
-        ha-dialog {
-          --mdc-dialog-min-width: 400px;
-          --mdc-dialog-max-width: 600px;
-          --mdc-dialog-title-ink-color: var(--primary-text-color);
-          --justify-action-buttons: space-between;
-        }
-        /* make dialog fullscreen on small screens */
-        @media all and (max-width: 450px), all and (max-height: 500px) {
-          ha-dialog {
-            --mdc-dialog-min-width: 100vw;
-            --mdc-dialog-max-height: 100vh;
-            --mdc-dialog-shape-radius: 0px;
-            --vertial-align-dialog: flex-end;
-          }
-        }
         .form {
           padding-bottom: 24px;
-        }
-        mwc-button.warning {
-          --mdc-theme-primary: var(--google-red-500);
-        }
-        .error {
-          color: var(--google-red-500);
         }
         ha-switch {
           padding: 16px 0;

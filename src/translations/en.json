@@ -595,7 +595,8 @@
       "generic": {
         "cancel": "Cancel",
         "ok": "OK",
-        "default_confirmation_title": "Are you sure?"
+        "default_confirmation_title": "Are you sure?",
+        "close": "close"
       },
       "more_info_control": {
         "dismiss": "Dismiss dialog",
@@ -887,10 +888,10 @@
           "resources": {
             "caption": "Resources",
             "types": {
-              "js": "Javascript file",
-              "module": "Javascript Module",
               "css": "Stylesheet",
-              "html": "HTML (deprecated)"
+              "html": "HTML (deprecated)",
+              "js": "JavaScript File (deprecated)",
+              "module": "JavaScript Module"
             },
             "picker": {
               "headers": {
@@ -902,6 +903,7 @@
             "confirm_delete": "Are you sure you want to delete this resource?",
             "refresh_header": "Do you want to refresh?",
             "refresh_body": "You have to refresh the page to complete the removal, do you want to refresh now?",
+            "cant_edit_yaml": "You are using Lovelace in YAML mode, therefore you can not manage your resources through the UI. Manage them in configuration.yaml.",
             "detail": {
               "new_resource": "Add new resource",
               "dismiss": "Close",

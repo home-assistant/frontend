@@ -24,7 +24,6 @@ import { PageNavigation } from "./hass-tabs-subpage";
 export class HaTabsSubpageDataTable extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() public isWide!: boolean;
-  @property() public showAdvanced = false;
   @property({ type: Boolean, reflect: true }) public narrow!: boolean;
   /**
    * Object with the columns.
@@ -83,7 +82,6 @@ export class HaTabsSubpageDataTable extends LitElement {
         .backCallback=${this.backCallback}
         .route=${this.route}
         .tabs=${this.tabs}
-        .showAdvanced=${this.showAdvanced}
       >
         ${this.narrow
           ? html`

@@ -32,7 +32,10 @@ import {
 } from "../../../../data/lovelace";
 import { showResourceDetailDialog } from "./show-dialog-lovelace-resource-detail";
 import { compare } from "../../../../common/string/compare";
-import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
+import {
+  showConfirmationDialog,
+  showAlertDialog,
+} from "../../../../dialogs/generic/show-dialog-box";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { loadLovelaceResources } from "../../../lovelace/common/load-resources";
 
@@ -42,7 +45,6 @@ export class HaConfigLovelaceRescources extends LitElement {
   @property() public isWide!: boolean;
   @property() public narrow!: boolean;
   @property() public route!: Route;
-  @property() public showAdvanced!: boolean;
   @property() private _resources: LovelaceResource[] = [];
 
   private _columns = memoize(
@@ -89,8 +91,7 @@ export class HaConfigLovelaceRescources extends LitElement {
         .tabs=${lovelaceTabs}
         .columns=${this._columns(this.hass.language)}
         .data=${this._resources}
-        .showAdvanced=${this.showAdvanced}
-        @row-click=${this._openDialog}
+        @row-click=${this._editResource}
       >
       </hass-tabs-subpage-data-table>
       <ha-fab
@@ -100,7 +101,7 @@ export class HaConfigLovelaceRescources extends LitElement {
         title="${this.hass.localize(
           "ui.panel.config.lovelace.resources.picker.add_resource"
         )}"
-        @click=${this._openDialog}
+        @click=${this._addResource}
       ></ha-fab>
     `;
   }
@@ -114,9 +115,33 @@ export class HaConfigLovelaceRescources extends LitElement {
     this._resources = await fetchResources(this.hass.connection);
   }
 
-  private async _openDialog(ev: CustomEvent): Promise<void> {
+  private _editResource(ev: CustomEvent) {
+    if ((this.hass.panels.lovelace?.config as any)?.mode !== "storage") {
+      showAlertDialog(this, {
+        text: this.hass!.localize(
+          "ui.panel.config.lovelace.resources.cant_edit_yaml"
+        ),
+      });
+      return;
+    }
     const id = (ev.detail as RowClickedEvent).id;
     const resource = this._resources.find((res) => res.id === id);
+    this._openDialog(resource);
+  }
+
+  private _addResource() {
+    if ((this.hass.panels.lovelace?.config as any)?.mode !== "storage") {
+      showAlertDialog(this, {
+        text: this.hass!.localize(
+          "ui.panel.config.lovelace.resources.cant_edit_yaml"
+        ),
+      });
+      return;
+    }
+    this._openDialog();
+  }
+
+  private async _openDialog(resource?: LovelaceResource): Promise<void> {
     showResourceDetailDialog(this, {
       resource,
       createResource: async (values) => {
