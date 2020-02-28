@@ -147,7 +147,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._camera_image}"
           .configValue=${"camera_image"}
           @change="${this._valueChanged}"
@@ -193,7 +193,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.optional"
           )})"
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
           @change="${this._valueChanged}"
@@ -206,7 +206,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .config="${this._tap_action}"
             .actions="${actions}"
             .configValue="${"tap_action"}"
@@ -218,7 +218,7 @@ export class HuiPictureGlanceCardEditor extends LitElement
             )} (${this.hass.localize(
               "ui.panel.lovelace.editor.card.config.optional"
             )})"
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .config="${this._hold_action}"
             .actions="${actions}"
             .configValue="${"hold_action"}"
@@ -226,12 +226,12 @@ export class HuiPictureGlanceCardEditor extends LitElement
           ></hui-action-editor>
         </div>
         <hui-entity-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .entities="${this._configEntities}"
           @entities-changed="${this._valueChanged}"
         ></hui-entity-editor>
         <hui-theme-select-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._theme}"
           .configValue="${"theme"}"
           @theme-changed="${this._valueChanged}"

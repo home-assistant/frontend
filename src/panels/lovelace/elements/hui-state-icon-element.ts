@@ -60,7 +60,7 @@ export class HuiStateIconElement extends LitElement implements LovelaceElement {
 
     return html`
       <state-badge
-        .stateObj="${stateObj}"
+        .stateObj=${stateObj}
         .title="${computeTooltip(this.hass, this._config)}"
         @action=${this._handleAction}
         .actionHandler=${actionHandler({

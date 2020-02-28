@@ -43,7 +43,7 @@ export class HuiImageElement extends LitElement implements LovelaceElement {
 
     return html`
       <hui-image
-        .hass="${this.hass}"
+        .hass=${this.hass}
         .entity="${this._config.entity}"
         .image="${this._config.image}"
         .stateImage="${this._config.state_image}"

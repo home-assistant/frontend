@@ -110,7 +110,7 @@ export class HuiEditView extends LitElement {
         content = html`
           <hui-view-editor
             .isNew=${this.viewIndex === undefined}
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .config="${this._config}"
             @view-config-changed="${this._viewConfigChanged}"
           ></hui-view-editor>
@@ -119,7 +119,7 @@ export class HuiEditView extends LitElement {
       case "tab-badges":
         content = html`
           <hui-entity-editor
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .entities="${this._badges}"
             @entities-changed="${this._badgesChanged}"
           ></hui-entity-editor>

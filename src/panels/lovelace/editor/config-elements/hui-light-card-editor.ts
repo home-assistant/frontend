@@ -70,7 +70,7 @@ export class HuiLightCardEditor extends LitElement
           )} (${this.hass.localize(
             "ui.panel.lovelace.editor.card.config.required"
           )})"
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._entity}"
           .configValue=${"entity"}
           include-domains='["light"]'
@@ -103,7 +103,7 @@ export class HuiLightCardEditor extends LitElement
         </div>
 
         <hui-theme-select-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._theme}"
           .configValue="${"theme"}"
           @theme-changed="${this._valueChanged}"
