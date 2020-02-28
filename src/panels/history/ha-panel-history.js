@@ -41,7 +41,10 @@ class HaPanelHistory extends LocalizeMixin(PolymerElement) {
           margin-right: 16px;
           margin-top: 5px;
           --paper-input-container-label-floating: {
-            padding-bottom: 10px;
+            padding-bottom: 11px;
+          }
+          --paper-input-suffix: {
+            height: 24px;
           }
         }
 

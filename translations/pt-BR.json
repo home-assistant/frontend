@@ -1872,6 +1872,10 @@
                         "toggle": "Alternar {name}",
                         "url": "Abrir janela para {url_path}"
                     },
+                    "safe-mode": {
+                        "description": "O Home Assistant teve problemas ao carregar sua configuração e agora está sendo executado no modo de segurança. Dê uma olhada no log de erros para ver o que deu errado.",
+                        "show_errors": "Mostrar erros"
+                    },
                     "shopping-list": {
                         "add_item": "Adicionar item",
                         "checked_items": "Itens marcados",

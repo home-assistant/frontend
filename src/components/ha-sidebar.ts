@@ -46,7 +46,18 @@ const SORT_VALUE_URL_PATHS = {
   config: 11,
 };
 
-const panelSorter = (a, b) => {
+const panelSorter = (a: PanelInfo, b: PanelInfo) => {
+  // Put all the Lovelace at the top.
+  const aLovelace = a.component_name === "lovelace";
+  const bLovelace = b.component_name === "lovelace";
+
+  if (aLovelace && !bLovelace) {
+    return -1;
+  }
+  if (bLovelace) {
+    return 1;
+  }
+
   const aBuiltIn = a.url_path in SORT_VALUE_URL_PATHS;
   const bBuiltIn = b.url_path in SORT_VALUE_URL_PATHS;
 

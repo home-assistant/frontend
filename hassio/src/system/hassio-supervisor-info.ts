@@ -148,7 +148,7 @@ class HassioSupervisorInfo extends LitElement {
       !confirm(`WARNING:
 Beta releases are for testers and early adopters and can contain unstable code changes. Make sure you have backups of your data before you activate this feature.
 
-This inludes beta releases for:
+This includes beta releases for:
 - Home Assistant (Release Candidates)
 - Hass.io supervisor
 - Host system`)

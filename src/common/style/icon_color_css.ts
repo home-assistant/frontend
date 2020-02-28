@@ -29,6 +29,10 @@ export const iconColorCSS = css`
     color: var(--heat-color, #ff8100);
   }
 
+  ha-icon[data-domain="climate"][data-state="drying"] {
+    color: var(--dry-color, #efbd07);
+  }
+
   ha-icon[data-domain="alarm_control_panel"] {
     color: var(--alarm-color-armed, var(--label-badge-red));
   }

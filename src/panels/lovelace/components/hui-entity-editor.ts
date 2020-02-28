@@ -46,7 +46,7 @@ export class HuiEntityEditor extends LitElement {
           return html`
             <div class="entity">
               <ha-entity-picker
-                .hass="${this.hass}"
+                .hass=${this.hass}
                 .value="${entityConf.entity}"
                 .index="${index}"
                 @change="${this._valueChanged}"
@@ -70,7 +70,7 @@ export class HuiEntityEditor extends LitElement {
           `;
         })}
         <ha-entity-picker
-          .hass="${this.hass}"
+          .hass=${this.hass}
           @change="${this._addEntity}"
         ></ha-entity-picker>
       </div>
