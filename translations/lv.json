@@ -420,12 +420,21 @@
                 "away_mode": "Prombūtnes režīms",
                 "currently": "Pašlaik",
                 "fan_mode": "Ventilatora režīms",
+                "high": "augsts",
+                "low": "zems",
                 "on_off": "Ieslēgts / Izslēgts",
                 "operation": "Darbība",
                 "preset_mode": "Iestatījums",
                 "swing_mode": "Šūpošanas režīms",
                 "target_humidity": "Mērķa mitrums",
                 "target_temperature": "Mērķa temperatūra"
+            },
+            "counter": {
+                "actions": {
+                    "decrement": "samazināt",
+                    "increment": "palielināt",
+                    "reset": "atiestatīt"
+                }
             },
             "cover": {
                 "position": "Pozīcija",
@@ -525,17 +534,30 @@
             "yes": "Jā"
         },
         "components": {
+            "area-picker": {
+                "add_dialog": {
+                    "add": "Pievienot",
+                    "name": "Nosaukums"
+                },
+                "clear": "Notīrīt"
+            },
             "device-picker": {
+                "clear": "Notīrīt",
                 "device": "Ierīce"
             },
             "entity": {
                 "entity-picker": {
+                    "clear": "Notīrīt",
                     "entity": "Vienība"
                 }
             },
             "history_charts": {
                 "loading_history": "Vēsturiskie ieraksti par stāvokli tiek ielādēti.",
                 "no_history_found": "Vēsturiskie ieraksti par stāvokli netika atrasti."
+            },
+            "related-items": {
+                "device": "Ierīce",
+                "integration": "Integrācija"
             },
             "relative_time": {
                 "duration": {
@@ -557,12 +579,41 @@
                 "title": "Sistēmas opcijas {integration} integrācijai",
                 "update": "Atjaunināt"
             },
+            "confirmation": {
+                "cancel": "Atcelt",
+                "ok": "Labi"
+            },
             "entity_registry": {
                 "editor": {
+                    "delete": "DZĒST",
                     "name": "Nosaukuma pārlabošana",
                     "note": "Ievērībai: pašlaik tas var nedarboties ar visām integrācijām.",
                     "unavailable": "Šī vienība pašlaik nav pieejama."
-                }
+                },
+                "settings": "Iestatījumi"
+            },
+            "generic": {
+                "cancel": "Atcelt",
+                "ok": "Labi"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Ikona"
+                },
+                "input_datetime": {
+                    "has_time": "Laiks"
+                },
+                "input_select": {
+                    "add": "Pievienot",
+                    "add_option": "Pievienot iespēju",
+                    "options": "Iespējas"
+                },
+                "input_text": {
+                    "password": "Parole",
+                    "text": "Teksts"
+                },
+                "not_editable": "Nav labojams",
+                "required_error_msg": "Šis lauks ir obligāts"
             },
             "more_info_control": {
                 "dismiss": "Aizvērt dialogu",
@@ -580,6 +631,11 @@
                 },
                 "updater": {
                     "title": "Atjaunināt Instrukcijas"
+                },
+                "vacuum": {
+                    "commands": "Putekļsūcēja komandas:",
+                    "fan_speed": "Ventilatora ātrums",
+                    "status": "Statuss"
                 }
             },
             "more_info_settings": {
@@ -597,10 +653,16 @@
                 }
             },
             "voice_command": {
+                "how_can_i_help": "Kā es varu palīdzēt?",
                 "label": "Uzrakstiet jautājumu un nospiediet 'Enter'",
                 "label_voice": "Ievadiet tekstu un nospiediet 'Enter' vai pieskarieties mikrofonam, lai runātu"
             },
             "zha_device_info": {
+                "buttons": {
+                    "add": "Pievienot ierīces",
+                    "reconfigure": "Pārkonfigurēt ierīci",
+                    "remove": "Noņemt ierīci"
+                },
                 "manuf": "autors {manufacturer}",
                 "no_area": "Nav Apgabala",
                 "services": {
@@ -689,6 +751,9 @@
                                     "label": "Atlikt"
                                 },
                                 "device_id": {
+                                    "extra_fields": {
+                                        "code": "Kods"
+                                    },
                                     "label": "Ierīce"
                                 },
                                 "event": {
@@ -724,6 +789,11 @@
                             "type_select": "Nosacījuma tips",
                             "type": {
                                 "device": {
+                                    "extra_fields": {
+                                        "above": "Virs",
+                                        "below": "Zem",
+                                        "for": "Ilgums"
+                                    },
                                     "label": "Ierīce"
                                 },
                                 "numeric_state": {
@@ -763,6 +833,10 @@
                             "unsupported_condition": "Neatbalstīts nosacījums: {condition}"
                         },
                         "default_name": "Jauna automatizācija",
+                        "description": {
+                            "label": "Apraksts",
+                            "placeholder": "Neobligāts apraksts"
+                        },
                         "edit_ui": "Rediģēt, izmantojot UI",
                         "edit_yaml": "Rediģēt kā YAML",
                         "introduction": "Lietojiet automatizācijas, lai iedzīvinātu Jūsu mājās",
@@ -872,10 +946,31 @@
                     }
                 },
                 "cloud": {
+                    "account": {
+                        "alexa": {
+                            "title": "Alexa"
+                        },
+                        "webhooks": {
+                            "loading": "Ielādē..."
+                        }
+                    },
+                    "alexa": {
+                        "title": "Alexa"
+                    },
                     "caption": "Home Assistant Cloud",
                     "description_features": "Kontrolējiet prom no mājām, integrējieties ar Alexa un Google Assistant.",
                     "description_login": "Pieteikts kā {email}",
-                    "description_not_login": "Neesat pieteicies"
+                    "description_not_login": "Neesat pieteicies",
+                    "dialog_certificate": {
+                        "close": "Aizvērt"
+                    },
+                    "register": {
+                        "create_account": "Izveidot kontu",
+                        "email_address": "E-pasta adrese",
+                        "email_error_msg": "Nederīgs e-pasts",
+                        "link_privacy_policy": "Privātuma politika",
+                        "password": "Parole"
+                    }
                 },
                 "core": {
                     "caption": "Vispārīgi",
@@ -885,6 +980,7 @@
                             "core_config": {
                                 "edit_requires_storage": "Redaktors ir atspējots, jo konfigurācija ir definēta configuration.yaml.",
                                 "elevation": "Augstums",
+                                "elevation_feet": "pēdas",
                                 "elevation_meters": "metri",
                                 "imperial_example": "Fārenheita, mārciņas",
                                 "latitude": "Platums",
@@ -957,7 +1053,8 @@
                     "device_not_found": "Ierīce nav atrasta.",
                     "info": "Informācija par ierīci",
                     "unknown_error": "Nezināma kļūda",
-                    "unnamed_device": "Nenosaukta ierīce"
+                    "unnamed_device": "Nenosaukta ierīce",
+                    "update": "Atjaunināt"
                 },
                 "entities": {
                     "caption": "Vienības",
@@ -1021,6 +1118,19 @@
                     }
                 },
                 "header": "Home Assistant konfigurēšana",
+                "helpers": {
+                    "dialog": {
+                        "create": "Izveidot"
+                    },
+                    "picker": {
+                        "headers": {
+                            "type": "Veids"
+                        }
+                    },
+                    "types": {
+                        "input_text": "Teksts"
+                    }
+                },
                 "integrations": {
                     "caption": "Integrācijas",
                     "config_entry": {
@@ -1247,12 +1357,35 @@
                         "search_again": "Atkārtot meklēšanu",
                         "spinner": "Meklē ZHA Zigbee ierīces..."
                     },
+                    "add": {
+                        "caption": "Pievienot ierīces"
+                    },
                     "caption": "ZHA",
+                    "clusters": {
+                        "header": "Kopas"
+                    },
+                    "common": {
+                        "add_devices": "Pievienot ierīces",
+                        "clusters": "Kopas",
+                        "devices": "Ierīces",
+                        "value": "Vērtība"
+                    },
                     "description": "Zigbee Home Automation tīkla pārvaldība",
                     "device_card": {
                         "area_picker_label": "Apgabals",
                         "device_name_placeholder": "Lietotāja dots nosaukums",
                         "update_name_button": "Atjaunināt Nosaukumu"
+                    },
+                    "groups": {
+                        "caption": "Grupas",
+                        "group_id": "Grupas ID",
+                        "group_name_placeholder": "Grupas nosaukums"
+                    },
+                    "network_management": {
+                        "header": "Tīkla pārvaldība"
+                    },
+                    "node_management": {
+                        "header": "Ierīču pārvaldība"
                     },
                     "services": {
                         "reconfigure": "Pārkonfigurējiet ZHA ierīci (heal device). Izmantojiet to, ja rodas problēmas ar ierīci. Ja attiecīgā ierīce ir ar akumulatoru darbināma ierīce, lūdzu, pārliecinieties, ka tā ir nomodā un pieņem komandas, kad izmantojat šo pakalpojumu.",
@@ -1345,6 +1478,40 @@
                     "question_trust": "Vai Jūs uzticaties ārējam panelim {name} uz {link}?"
                 }
             },
+            "developer-tools": {
+                "tabs": {
+                    "events": {
+                        "title": "Notikumi"
+                    },
+                    "info": {
+                        "server": "serveris",
+                        "source": "Avots:",
+                        "title": "Informācija"
+                    },
+                    "logs": {
+                        "clear": "Notīrīt",
+                        "refresh": "Atsvaidzināt"
+                    },
+                    "mqtt": {
+                        "publish": "Publicēt",
+                        "title": "MQTT",
+                        "topic": "temats"
+                    },
+                    "services": {
+                        "column_description": "Apraksts",
+                        "column_example": "Piemērs",
+                        "column_parameter": "Parametrs"
+                    },
+                    "states": {
+                        "attributes": "Atribūti",
+                        "copied": "Kopēts starpliktuvē",
+                        "copy_entity_attribute": "Kopēt atribūtus",
+                        "copy_entity_id": "Kopēt ID",
+                        "copy_entity_state": "Kopēt stāvokli",
+                        "title": "Stāvokļi"
+                    }
+                }
+            },
             "history": {
                 "period": "Periods",
                 "showing_entries": "Rāda ierakstus par"
@@ -1369,6 +1536,9 @@
                         "tap": "Pieskarties:",
                         "toggle": "Pārslēgt {name}"
                     },
+                    "safe-mode": {
+                        "show_errors": "Rādīt kļūdas"
+                    },
                     "shopping-list": {
                         "add_item": "Pievienot vienumu",
                         "checked_items": "Atzīmētie vienumi",
@@ -1381,11 +1551,35 @@
                 },
                 "editor": {
                     "card": {
+                        "button": {
+                            "name": "Poga"
+                        },
                         "entities": {
                             "toggle": "Pārslēgt vienības."
                         },
+                        "generic": {
+                            "icon": "Ikona"
+                        },
+                        "iframe": {
+                            "name": "iFrame"
+                        },
+                        "light": {
+                            "name": "Gaisma"
+                        },
                         "map": {
-                            "default_zoom": "Noklusējuma mērogs"
+                            "default_zoom": "Noklusējuma mērogs",
+                            "name": "Karte",
+                            "source": "Avots"
+                        },
+                        "markdown": {
+                            "content": "Saturs",
+                            "name": "Markdown"
+                        },
+                        "picture": {
+                            "name": "Attēls"
+                        },
+                        "sensor": {
+                            "name": "Sensors"
                         }
                     },
                     "edit_card": {
@@ -1409,7 +1603,8 @@
                         "edit": "Rediģēt skatu",
                         "header": "Skatīt konfigurāciju",
                         "move_left": "Pārvietot skatu pa kreisi",
-                        "move_right": "Pārvietot skatu pa labi"
+                        "move_right": "Pārvietot skatu pa labi",
+                        "tab_settings": "Iestatījumi"
                     },
                     "header": "Rediģēt lietotāja saskarni",
                     "menu": {
