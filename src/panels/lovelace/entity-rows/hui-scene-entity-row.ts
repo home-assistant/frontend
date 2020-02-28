@@ -55,20 +55,11 @@ class HuiSceneEntityRow extends LitElement implements LovelaceRow {
     }
 
     return html`
-      <hui-generic-entity-row .hass="${this.hass}" .config="${this._config}">
-        ${stateObj.attributes.can_cancel
-          ? html`
-              <ha-entity-toggle
-                .hass="${this.hass}"
-                .stateObj="${stateObj}"
-              ></ha-entity-toggle>
-            `
-          : html`
-              <mwc-button @click="${this._callService}">
-                ${this._config.action_name ||
-                  this.hass!.localize("ui.card.scene.activate")}
-              </mwc-button>
-            `}
+      <hui-generic-entity-row .hass=${this.hass} .config=${this._config}>
+        <mwc-button @click="${this._callService}" class="text-content">
+          ${this._config.action_name ||
+            this.hass!.localize("ui.card.scene.activate")}
+        </mwc-button>
       </hui-generic-entity-row>
     `;
   }

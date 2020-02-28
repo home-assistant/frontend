@@ -81,7 +81,7 @@ export class HuiMarkdownCardEditor extends LitElement
           spellcheck="false"
         ></paper-textarea>
         <hui-theme-select-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .value="${this._theme}"
           .configValue="${"theme"}"
           @theme-changed="${this._valueChanged}"
