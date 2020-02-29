@@ -581,7 +581,7 @@
                 "entity": "相关实体",
                 "group": "以下群组的一部分",
                 "integration": "集成",
-                "no_related_found": "找不到相关项目。",
+                "no_related_found": "未找到相关项目。",
                 "scene": "以下场景的一部分",
                 "script": "以下脚本的一部分"
             },
@@ -626,12 +626,14 @@
                     "enabled_description": "已禁用的实体不再添加到 Home Assistant。",
                     "enabled_label": "启用实体",
                     "entity_id": "实体 ID",
+                    "icon": "图标覆盖",
+                    "icon_error": "图标的格式应为 prefix:iconname，例如：mdi:home",
                     "name": "覆盖名称",
                     "note": "注意：这可能不适用于所有集成。",
                     "unavailable": "该实体暂不可用。",
                     "update": "更新"
                 },
-                "no_unique_id": "该实体没有唯一的ID，因此无法由UI进行管理设置。",
+                "no_unique_id": "该实体没有唯一的 ID，因此无法由 UI 管理其设置。",
                 "related": "关联",
                 "settings": "设置"
             },
@@ -640,8 +642,46 @@
                 "default_confirmation_title": "您确定吗？",
                 "ok": "确定"
             },
+            "helper_settings": {
+                "generic": {
+                    "icon": "图标",
+                    "initial_value": "初始值",
+                    "initial_value_explain": "该元素在 Home Assistant 启动时具有的值。如果留空，则保留之前的值。",
+                    "name": "名称"
+                },
+                "input_datetime": {
+                    "has_date": "日期",
+                    "has_time": "时间"
+                },
+                "input_number": {
+                    "box": "输入框",
+                    "max": "最大值",
+                    "min": "最小值",
+                    "mode": "显示模式",
+                    "slider": "滑杆",
+                    "step": "滑杆步长",
+                    "unit_of_measurement": "单位"
+                },
+                "input_select": {
+                    "add": "添加",
+                    "add_option": "添加选项",
+                    "no_options": "目前没有选项。",
+                    "options": "选项"
+                },
+                "input_text": {
+                    "max": "最大长度",
+                    "min": "最小长度",
+                    "mode": "显示模式",
+                    "password": "密码",
+                    "pattern": "用于客户端验证的正则表达式模式",
+                    "text": "文本"
+                },
+                "not_editable": "不可编辑",
+                "not_editable_text": "该实体无法在 UI 中修改，因为它被定义于 configuration.yaml。",
+                "required_error_msg": "此字段为必填字段"
+            },
             "more_info_control": {
-                "dismiss": "关闭对话",
+                "dismiss": "关闭对话框",
                 "edit": "编辑实体",
                 "person": {
                     "create_zone": "从当前位置创建地点"
@@ -668,7 +708,7 @@
                 },
                 "vacuum": {
                     "clean_spot": "清理污渍",
-                    "commands": "吸尘器清扫指令：",
+                    "commands": "扫地机指令：",
                     "fan_speed": "风扇转速",
                     "locate": "定位",
                     "pause": "暂停",
@@ -761,7 +801,7 @@
                     "link_profile_page": "您的个人资料页面"
                 },
                 "areas": {
-                    "caption": "区域注册",
+                    "caption": "区域注册表",
                     "create_area": "创建区域",
                     "description": "您家中所有区域的概览。",
                     "editor": {
@@ -1172,7 +1212,7 @@
                 },
                 "core": {
                     "caption": "通用",
-                    "description": "检查你的配置文件及服务器控制",
+                    "description": "更改 Home Assistant 的通用配置",
                     "section": {
                         "core": {
                             "core_config": {
@@ -1191,7 +1231,7 @@
                                 "unit_system_imperial": "英制",
                                 "unit_system_metric": "公制"
                             },
-                            "header": "配置及服务器控制",
+                            "header": "通用配置",
                             "introduction": "更改配置的过程可能有些抓狂，我们懂的。这部分将帮助你减轻一些工作。"
                         },
                         "server_control": {
@@ -1212,7 +1252,7 @@
                             "validation": {
                                 "check_config": "检查配置",
                                 "heading": "配置检查",
-                                "introduction": "此处可以帮助你检验最新修改的配置文件有效性",
+                                "introduction": "此处可以帮助您检验最新修改的配置文件有效性",
                                 "invalid": "配置无效",
                                 "valid": "配置有效！"
                             }
@@ -1251,7 +1291,7 @@
                         },
                         "create": "通过设备创建自动化",
                         "no_automations": "没有自动化",
-                        "no_device_automations": "该设备没有任何自动化可使用。",
+                        "no_device_automations": "该设备没有可用的自动化。",
                         "triggers": {
                             "caption": "当以下事件发生时："
                         }
@@ -1295,7 +1335,7 @@
                     "update": "更新"
                 },
                 "entities": {
-                    "caption": "实体注册",
+                    "caption": "实体注册表",
                     "description": "所有已知实体的概览。",
                     "editor": {
                         "confirm_delete": "您确定要删除此条目吗？",
@@ -1356,6 +1396,25 @@
                     }
                 },
                 "header": "配置 Home Assistant",
+                "helpers": {
+                    "dialog": {
+                        "add_platform": "添加 {platform}"
+                    },
+                    "picker": {
+                        "headers": {
+                            "editable": "可编辑",
+                            "name": "名称",
+                            "type": "类型"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "开关",
+                        "input_datetime": "日期/时间",
+                        "input_number": "数值",
+                        "input_select": "下拉菜单",
+                        "input_text": "文本"
+                    }
+                },
                 "integrations": {
                     "caption": "集成",
                     "config_entry": {
@@ -1395,7 +1454,7 @@
                     },
                     "configure": "配置",
                     "configured": "已配置",
-                    "description": "管理连接的设备和服务",
+                    "description": "管理并设置集成",
                     "details": "集成详细信息",
                     "discovered": "已发现",
                     "home_assistant_website": "Home Assistant 网站",
@@ -1416,7 +1475,7 @@
                     "note_about_integrations": "并非所有集成都可以通过 UI 进行配置。",
                     "note_about_website_reference": "更多可用信息，尽在 "
                 },
-                "introduction": "你可以在此配置 Home Assistant 及组件。目前并非所有配置都能通过前端 UI 完成，但是我们在努力实现中。",
+                "introduction": "您可以在此配置 Home Assistant 及组件。目前并非所有配置都能通过前端 UI 完成，但是我们在努力实现中。",
                 "person": {
                     "add_person": "添加人员",
                     "caption": "人员",
@@ -1534,8 +1593,8 @@
                         },
                         "validation": {
                             "check_config": "检查配置",
-                            "heading": "配置有效性",
-                            "introduction": "此处可以帮助你检验最新修改的配置文件有效性",
+                            "heading": "配置检查",
+                            "introduction": "此处可以帮助您检验最新修改的配置文件有效性",
                             "invalid": "配置无效",
                             "valid": "配置有效！"
                         }
@@ -1706,9 +1765,9 @@
                         "update": "更新"
                     },
                     "edit_home_zone": "住址的半径目前不能在前端设定。请在地图上拖动标示以移动家的区域。",
-                    "edit_home_zone_narrow": "住址的半径尚无法由前端进行设定、但可以于一般设定中变更其位置。",
-                    "go_to_core_config": "转换至常规配置？",
-                    "home_zone_core_config": "住址的位置可以于一般设定页面中进行编辑、但半径尚无法编辑。是否要切换至一般设定？",
+                    "edit_home_zone_narrow": "住址区域的半径尚无法在前端设定，但可以在通用配置中更改其位置。",
+                    "go_to_core_config": "前往通用配置？",
+                    "home_zone_core_config": "家的位置可以在通用配置中进行编辑，但半径尚无法在前端设定。是否前往通用配置？",
                     "introduction": "地点用于定义世界的某个地方。若某人位于一个地点，则其状态的名称就取自该地点。地点也可用作自动化配置中的触发条件和环境条件。",
                     "no_zones_created_yet": "看来您还没有建立地点。"
                 },
@@ -1796,7 +1855,7 @@
                     "info": {
                         "built_using": "建于",
                         "custom_uis": "自定义用户界面：",
-                        "default_ui": "{action} {name}为此设备上的默认页面",
+                        "default_ui": "{action} {name} 为此设备上的默认页面",
                         "developed_by": "由一帮很 Awesome~~~ 的人开发。",
                         "frontend": "前端用户界面",
                         "frontend_version": "前端版本： {version} - {type}",
@@ -1829,7 +1888,7 @@
                         "description_publish": "发送一个数据包",
                         "listening_to": "监听",
                         "message_received": "{time} 收到关于 {topic} 的消息[ {id} ]",
-                        "payload": "有效负载（允许模板）",
+                        "payload": "负载参数（可使用模板）",
                         "publish": "发送",
                         "start_listening": "开始监听",
                         "stop_listening": "停止监听",
@@ -2084,7 +2143,9 @@
                         "header": "查看配置",
                         "header_name": "{name}查看配置",
                         "move_left": "向左移动视图",
-                        "move_right": "向右移动视图"
+                        "move_right": "向右移动视图",
+                        "tab_badges": "徽章",
+                        "tab_settings": "设置"
                     },
                     "header": "编辑 UI",
                     "menu": {
@@ -2103,9 +2164,9 @@
                         "confirm_unsaved_changes": "您有未保存的更改，确定要退出吗？",
                         "confirm_unsaved_comments": "您的配置包含注释，这些注释将不会保存。是否继续？",
                         "error_invalid_config": "您的配置无效：{error}",
-                        "error_parse_yaml": "无法解析YAML：{error}",
+                        "error_parse_yaml": "无法解析 YAML：{error}",
                         "error_remove": "无法删除配置：{error}",
-                        "error_save_yaml": "无法保存YAML：{error}",
+                        "error_save_yaml": "无法保存 YAML：{error}",
                         "header": "编辑配置",
                         "save": "保存",
                         "saved": "已保存",
@@ -2140,7 +2201,7 @@
                 },
                 "reload_lovelace": "重新加载 Lovelace",
                 "unused_entities": {
-                    "available_entities": "这些是您可用的实体，但尚未在Lovelace UI中显示。",
+                    "available_entities": "这些是您可用的实体，但尚未在 Lovelace UI 中显示。",
                     "domain": "域",
                     "entity": "实体",
                     "entity_id": "实体 ID",
@@ -2310,7 +2371,7 @@
                     "intro": "{name}，您好！欢迎来到 Home Assistant。您想怎样命名您的家呢？",
                     "intro_location": "我们想知道您住在哪里。这将用于显示资讯以及设置基于太阳的自动化。此数据永远不会在您的网络以外共享。",
                     "intro_location_detect": "我们可以通过向外部服务发出一个一次性请求来帮助您填写此信息。",
-                    "location_name_default": "家"
+                    "location_name_default": "我的家"
                 },
                 "integration": {
                     "finish": "完成",
@@ -2416,8 +2477,8 @@
                     "link_promo": "了解主题"
                 },
                 "vibrate": {
-                    "description": "控制设备时，在此设备上启用或禁用抖动。",
-                    "header": "抖动"
+                    "description": "控制设备时，在此设备上启用或禁用振动。",
+                    "header": "振动"
                 }
             },
             "shopping-list": {
