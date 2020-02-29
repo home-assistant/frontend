@@ -113,13 +113,13 @@ export class HuiEntityCardEditor extends LitElement
             .configValue="${"attribute"}"
             @value-changed="${this._valueChanged}"
           ></paper-input>
+          <hui-theme-select-editor
+            .hass="${this.hass}"
+            .value="${this._theme}"
+            .configValue="${"theme"}"
+            @theme-changed="${this._valueChanged}"
+          ></hui-theme-select-editor>
         </div>
-        <hui-theme-select-editor
-          .hass="${this.hass}"
-          .value="${this._theme}"
-          .configValue="${"theme"}"
-          @theme-changed="${this._valueChanged}"
-        ></hui-theme-select-editor>
       </div>
     `;
   }
