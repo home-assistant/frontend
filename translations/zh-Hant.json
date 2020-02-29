@@ -1992,7 +1992,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace UI 設定已更新，是否要更新頁面？",
+                    "message": "此 Lovelace UI 設定已更新，是否要更新頁面檢視變更？",
                     "refresh": "更新"
                 },
                 "editor": {

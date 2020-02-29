@@ -626,6 +626,7 @@
                     "enabled_description": "Deaktivéiert Entitéiten ginn net am Home Assistant bäigesat.",
                     "enabled_label": "Entitéit aktivéieren",
                     "entity_id": "ID vun der Entitéit",
+                    "icon": "Ikon iwwerschreiwen",
                     "name": "Numm iwwerschreiwen",
                     "note": "Nott: dëst funktionéiert villäicht nach net mat all Integratioun.",
                     "unavailable": "Dës Entitéit ass net erreechbar fir de Moment.",
@@ -639,6 +640,38 @@
                 "cancel": "Ofbriechen",
                 "default_confirmation_title": "Sécher?",
                 "ok": "OK"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Ikon",
+                    "initial_value": "Initial Wäert beim start",
+                    "name": "Numm"
+                },
+                "input_datetime": {
+                    "has_date": "Datum",
+                    "has_time": "Zäit"
+                },
+                "input_number": {
+                    "max": "Maximale Wäert",
+                    "min": "Minimale Wäert",
+                    "mode": "Affichage Modus",
+                    "unit_of_measurement": "Moosseenheet"
+                },
+                "input_select": {
+                    "add": "Dobäisetzen",
+                    "add_option": "Optioun dobäisetzen",
+                    "no_options": "Et gi nach keng Optiounen.",
+                    "options": "Optiounen"
+                },
+                "input_text": {
+                    "max": "Maximal Längt",
+                    "min": "Minimal Längt",
+                    "mode": "Affichage Modus",
+                    "password": "Passwuert",
+                    "text": "Text"
+                },
+                "not_editable": "Net Editéierbar",
+                "required_error_msg": "Dëst Feld ass erfuerderlech"
             },
             "more_info_control": {
                 "dismiss": "Dialog ofbriechen",
@@ -1356,6 +1389,30 @@
                     }
                 },
                 "header": "Home Assistant astellen",
+                "helpers": {
+                    "caption": "Helper",
+                    "description": "Elementer déi et erlaaben Automatismen z'erstellen.",
+                    "dialog": {
+                        "add_helper": "Helper bäifügen",
+                        "add_platform": "{platform} bäifügen",
+                        "create": "Erstellen"
+                    },
+                    "picker": {
+                        "add_helper": "Helper bäifügen",
+                        "headers": {
+                            "editable": "Editéierbar",
+                            "name": "Numm",
+                            "type": "Typ"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "Ëmschalten",
+                        "input_datetime": "Datum an/oder Zäit",
+                        "input_number": "Nummer",
+                        "input_select": "Auswiellëscht",
+                        "input_text": "Text"
+                    }
+                },
                 "integrations": {
                     "caption": "Integratiounen",
                     "config_entry": {
@@ -1801,7 +1858,7 @@
                         "frontend": "frontend-ui",
                         "frontend_version": "Frontend Versioun: {version} - {type}",
                         "home_assistant_logo": "Home Assistant logo",
-                        "icons_by": "Ikoner vun",
+                        "icons_by": "Ikonen vun",
                         "license": "Verëffentlecht ënnert der Apache 2.0 Lizenz",
                         "lovelace_ui": "Zum Lovelace Benotzer Interface wiesselen",
                         "path_configuration": "Pad zur configuration.yaml: {path}",
@@ -1978,14 +2035,14 @@
                             "entity": "Entitéit",
                             "hold_action": "Aktioun beim unhalen",
                             "hours_to_show": "Stonnen uweisen",
-                            "icon": "Ikone",
-                            "icon_height": "Héicht vun der Ikone",
+                            "icon": "Ikon",
+                            "icon_height": "Héicht vun der Ikon",
                             "image": "Wee zum Bild",
                             "maximum": "Maximum",
                             "minimum": "Minimum",
                             "name": "Numm",
                             "refresh_interval": "Aktualiséierungs Intervall",
-                            "show_icon": "Ikone uweisen?",
+                            "show_icon": "Ikon uweisen?",
                             "show_name": "Numm uweisen?",
                             "show_state": "Zoustand uweisen?",
                             "tap_action": "Aktioun beim tippen",
