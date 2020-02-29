@@ -2053,7 +2053,6 @@
               "attribute": "Attribute",
               "camera_image": "Camera Entity",
               "camera_view": "Camera View",
-              "default": "default",
               "entities": "Entities",
               "entity": "Entity",
               "hold_action": "Hold Action",

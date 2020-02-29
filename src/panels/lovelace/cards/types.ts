@@ -24,8 +24,6 @@ export interface EmptyStateCardConfig extends LovelaceCardConfig {
 
 export interface EntityCardConfig extends LovelaceCardConfig {
   attribute?: string;
-  default?: string;
-  unit?: string;
 }
 
 export interface EntitiesCardEntityConfig extends EntityConfig {

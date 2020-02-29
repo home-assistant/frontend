@@ -8,7 +8,6 @@ import {
   css,
   CSSResult,
 } from "lit-element";
-import "@polymer/paper-spinner/paper-spinner";
 
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { computeStateName } from "../../../common/entity/compute_state_name";
@@ -25,7 +24,6 @@ import { EntityCardConfig } from "./types";
 import { hasConfigOrEntityChanged } from "../common/has-changed";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { isValidEntityId } from "../../../common/entity/valid_entity_id";
-import { computeStateValue } from "../../../common/entity/compute_state_value";
 
 @customElement("hui-entity-card")
 class HuiEntityCard extends LitElement implements LovelaceCard {
@@ -76,8 +74,7 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
 
     if (
       this._config.attribute &&
-      !stateObj.attributes[this._config.attribute] &&
-      !this._config.default
+      !stateObj.attributes[this._config.attribute]
     ) {
       return html`
         <hui-warning
@@ -89,10 +86,6 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
         >
       `;
     }
-
-    const attributeValue = this._config.attribute
-      ? stateObj.attributes[this._config.attribute] || this._config.default
-      : this._config.default;
 
     return html`
       <ha-card
@@ -113,16 +106,11 @@ class HuiEntityCard extends LitElement implements LovelaceCard {
         <div class="flex info">
           <span id="value"
             >${this._config.attribute
-              ? attributeValue
-              : computeStateValue(
-                  this.hass!.localize,
-                  stateObj,
-                  this.hass!.language
-                )}</span
+              ? stateObj.attributes[this._config.attribute]
+              : stateObj.state}</span
           >
           <span id="measurement"
-            >${this._config.unit ||
-              stateObj.attributes.unit_of_measurement}</span
+            >${stateObj.attributes.unit_of_measurement}</span
           >
         </div>
       </ha-card>
