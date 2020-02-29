@@ -179,7 +179,9 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
   ): object {
     const includeDomains = ["sensor"];
     const maxEntities = 1;
@@ -190,15 +192,17 @@ class HuiSensorCard extends LitElement implements LovelaceCard {
       );
     };
 
-    const entities = findEntities(
+    const foundEntities = findEntities(
       hass,
       lovelaceConfig,
       maxEntities,
+      entities,
+      entitiesFill,
       includeDomains,
       entityFilter
     );
 
-    return { entity: entities[0] || "", graph: "line" };
+    return { entity: foundEntities[0] || "", graph: "line" };
   }
 
   @property() public hass?: HomeAssistant;

@@ -58,18 +58,22 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
   ): object {
     const includeDomains = ["climate"];
     const maxEntities = 1;
-    const entities = findEntities(
+    const foundEntities = findEntities(
       hass,
       lovelaceConfig,
       maxEntities,
+      entities,
+      entitiesFill,
       includeDomains
     );
 
-    return { entity: entities[0] || "" };
+    return { entity: foundEntities[0] || "" };
   }
 
   @property() public hass?: HomeAssistant;

@@ -46,10 +46,18 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
   ): object {
     const maxEntities = 1;
-    const entities = findEntities(hass, lovelaceConfig, maxEntities);
+    const foundEntities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      entities,
+      entitiesFill
+    );
 
     return {
       tap_action: { action: "toggle" },
@@ -57,7 +65,7 @@ export class HuiButtonCard extends LitElement implements LovelaceCard {
       show_icon: true,
       show_name: true,
       state_color: true,
-      entity: entities[0] || "",
+      entity: foundEntities[0] || "",
     };
   }
 

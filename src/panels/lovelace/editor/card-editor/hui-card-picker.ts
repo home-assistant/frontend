@@ -5,6 +5,7 @@ import {
   TemplateResult,
   CSSResult,
   customElement,
+  property,
 } from "lit-element";
 import { until } from "lit-html/directives/until";
 import { classMap } from "lit-html/directives/class-map";
@@ -16,6 +17,10 @@ import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { fireEvent } from "../../../../common/dom/fire_event";
 import { createCardElement } from "../../create-element/create-card-element";
 import { getCardStubConfig } from "../get-card-stub-config";
+import {
+  computeUnusedEntities,
+  computeUsedEntities,
+} from "../../common/compute-unused-entities";
 
 const previewCards: string[] = [
   "alarm-panel",
@@ -49,11 +54,25 @@ const nonPreviewCards: string[] = [
 
 @customElement("hui-card-picker")
 export class HuiCardPicker extends LitElement {
-  public hass?: HomeAssistant;
+  @property() public hass?: HomeAssistant;
   public lovelace?: LovelaceConfig;
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
+  private _unusedEntities?: string[];
+  private _usedEntities?: string[];
+  private _rendered: boolean = false;
 
   protected render(): TemplateResult {
+    if (
+      !this.hass ||
+      !this.lovelace ||
+      !this._unusedEntities ||
+      !this._usedEntities
+    ) {
+      return html``;
+    }
+
+    this._rendered = true;
+
     return html`
       <div class="cards-container">
         ${previewCards.map((type: string) => {
@@ -100,6 +119,20 @@ export class HuiCardPicker extends LitElement {
         </div>
       </div>
     `;
+  }
+
+  protected shouldUpdate(): boolean {
+    return !this._rendered;
+  }
+
+  protected firstUpdated(): void {
+    if (!this.hass || !this.lovelace) {
+      return;
+    }
+
+    this._unusedEntities = computeUnusedEntities(this.hass, this.lovelace);
+    this._usedEntities = [...computeUsedEntities(this.lovelace)];
+    this.requestUpdate();
   }
 
   static get styles(): CSSResult[] {
@@ -203,7 +236,13 @@ export class HuiCardPicker extends LitElement {
     let cardConfig: LovelaceCardConfig = { type };
 
     if (this.hass && this.lovelace) {
-      cardConfig = await getCardStubConfig(this.hass, this.lovelace, type);
+      cardConfig = await getCardStubConfig(
+        this.hass,
+        this.lovelace,
+        type,
+        this._unusedEntities,
+        this._usedEntities
+      );
 
       if (!noElement) {
         element = this._createCardElement(cardConfig);

@@ -44,18 +44,22 @@ export class HuiGlanceCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
   ): object {
     const includeDomains = ["sensor"];
     const maxEntities = 3;
-    const entities = findEntities(
+    const foundEntities = findEntities(
       hass,
       lovelaceConfig,
       maxEntities,
+      entities,
+      entitiesFill,
       includeDomains
     );
 
-    return { entities };
+    return { entities: foundEntities };
   }
 
   @property() public hass?: HomeAssistant;

@@ -50,20 +50,24 @@ class HuiAlarmPanelCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
   ) {
     const includeDomains = ["alarm_control_panel"];
     const maxEntities = 1;
-    const entities = findEntities(
+    const foundEntities = findEntities(
       hass,
       lovelaceConfig,
       maxEntities,
+      entities,
+      entitiesFill,
       includeDomains
     );
 
     return {
       states: ["arm_home", "arm_away"],
-      entity: entities[0] || "",
+      entity: foundEntities[0] || "",
     };
   }
 

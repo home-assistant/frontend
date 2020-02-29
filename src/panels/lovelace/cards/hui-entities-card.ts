@@ -41,12 +41,20 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
   ) {
     const maxEntities = 3;
-    const entities = findEntities(hass, lovelaceConfig, maxEntities);
+    const foundEntities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      entities,
+      entitiesFill
+    );
 
-    return { entities };
+    return { entities: foundEntities };
   }
 
   @property() private _config?: EntitiesCardConfig;

@@ -12,12 +12,17 @@ export const findEntities = (
   hass: HomeAssistant,
   lovelaceConfig: LovelaceConfig,
   maxEntities: number,
+  entities?: string[],
+  entitiesFill?: string[],
   includeDomains?: string[],
   entityFilter?: (stateObj: HassEntity) => boolean
 ) => {
   let entityIds: string[];
 
-  entityIds = computeUnusedEntities(hass, lovelaceConfig);
+  entityIds =
+    entities && entities.length
+      ? entities
+      : computeUnusedEntities(hass, lovelaceConfig);
 
   if (includeDomains && includeDomains.length) {
     entityIds = entityIds.filter((eid) =>
@@ -32,25 +37,24 @@ export const findEntities = (
   }
 
   if (entityIds.length < (maxEntities || 1)) {
-    let usedEntityIds = [...computeUsedEntities(lovelaceConfig)];
-
-    usedEntityIds = usedEntityIds.filter(
-      (eid) => !EXCLUDED_DOMAINS.includes(eid)[0]
-    );
+    let fillEntityIds =
+      entitiesFill && entitiesFill.length
+        ? entitiesFill
+        : [...computeUsedEntities(lovelaceConfig)];
 
     if (includeDomains && includeDomains.length) {
-      usedEntityIds = usedEntityIds.filter((eid) =>
+      fillEntityIds = fillEntityIds.filter((eid) =>
         includeDomains!.includes(computeDomain(eid))
       );
     }
 
     if (entityFilter) {
-      usedEntityIds = usedEntityIds.filter(
+      fillEntityIds = fillEntityIds.filter(
         (eid) => hass.states[eid] && entityFilter(hass.states[eid])
       );
     }
 
-    entityIds = [...entityIds, ...usedEntityIds];
+    entityIds = [...entityIds, ...fillEntityIds];
   }
 
   return entityIds.slice(0, maxEntities);

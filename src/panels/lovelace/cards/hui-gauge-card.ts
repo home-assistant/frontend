@@ -44,7 +44,9 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
   ): object {
     const includeDomains = ["sensor"];
     const maxEntities = 1;
@@ -52,15 +54,17 @@ class HuiGaugeCard extends LitElement implements LovelaceCard {
       return !isNaN(Number(stateObj.state));
     };
 
-    const entities = findEntities(
+    const foundEntities = findEntities(
       hass,
       lovelaceConfig,
       maxEntities,
+      entities,
+      entitiesFill,
       includeDomains,
       entityFilter
     );
 
-    return { entity: entities[0] || "" };
+    return { entity: foundEntities[0] || "" };
   }
 
   @property() public hass?: HomeAssistant;

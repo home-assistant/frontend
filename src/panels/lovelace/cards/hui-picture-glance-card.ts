@@ -46,15 +46,23 @@ class HuiPictureGlanceCard extends LitElement implements LovelaceCard {
 
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
   ): object {
     const maxEntities = 2;
-    const entities = findEntities(hass, lovelaceConfig, maxEntities);
+    const foundEntities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      entities,
+      entitiesFill
+    );
 
     return {
       image:
         "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
-      entities,
+      entities: foundEntities,
     };
   }
 

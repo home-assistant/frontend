@@ -22,16 +22,24 @@ import { findEntities } from "../common/find-entites";
 class HuiPictureElementsCard extends LitElement implements LovelaceCard {
   public static getStubConfig(
     hass: HomeAssistant,
-    lovelaceConfig: LovelaceConfig
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
   ): object {
     const maxEntities = 1;
-    const entities = findEntities(hass, lovelaceConfig, maxEntities);
+    const foundEntities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      entities,
+      entitiesFill
+    );
 
     return {
       elements: [
         {
           type: "state-badge",
-          entity: entities[0] || "",
+          entity: foundEntities[0] || "",
           style: "position: absolute, transform: translate(-50%, -50%)",
         },
       ],
