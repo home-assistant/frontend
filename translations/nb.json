@@ -1416,7 +1416,7 @@
                         "input_boolean": "Veksle",
                         "input_datetime": "Dato og/eller klokkeslett",
                         "input_number": "Nummer",
-                        "input_select": "Fall ned",
+                        "input_select": "Dropdown",
                         "input_text": "Tekst"
                     }
                 },
@@ -1992,7 +1992,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace UI-konfigurasjonen ble oppdatert. Oppdater for å se endringer?",
+                    "message": "Lovelace UI-konfigurasjonen ble oppdatert. refresh for å se endringer?",
                     "refresh": "Oppdater"
                 },
                 "editor": {

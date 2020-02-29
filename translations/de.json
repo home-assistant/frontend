@@ -640,6 +640,39 @@
                 "default_confirmation_title": "Sind Sie sicher?",
                 "ok": "OK"
             },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Symbol",
+                    "initial_value": "Anfangswert beim Start",
+                    "name": "Name"
+                },
+                "input_datetime": {
+                    "has_date": "Datum",
+                    "has_time": "Zeit"
+                },
+                "input_number": {
+                    "max": "Maximaler Wert",
+                    "min": "Minimaler Wert",
+                    "mode": "Anzeigemodus",
+                    "slider": "Schieberegler",
+                    "unit_of_measurement": "Maßeinheit"
+                },
+                "input_select": {
+                    "add": "Hinzufügen",
+                    "add_option": "Option hinzufügen",
+                    "no_options": "Es gibt noch keine Optionen.",
+                    "options": "Optionen"
+                },
+                "input_text": {
+                    "max": "Maximale Länge",
+                    "min": "Minimale Länge",
+                    "mode": "Anzeigemodus",
+                    "password": "Passwort",
+                    "text": "Text"
+                },
+                "not_editable": "Nicht bearbeitbar",
+                "required_error_msg": "Dieses Feld ist erforderlich"
+            },
             "more_info_control": {
                 "dismiss": "Dialog ausblenden",
                 "edit": "Entität bearbeiten",
@@ -1356,6 +1389,28 @@
                     }
                 },
                 "header": "Home Assistant konfigurieren",
+                "helpers": {
+                    "caption": "Helfer",
+                    "dialog": {
+                        "add_helper": "Helfer hinzufügen",
+                        "add_platform": "{platform} hinzufügen",
+                        "create": "Erstellen"
+                    },
+                    "picker": {
+                        "add_helper": "Helfer hinzufügen",
+                        "headers": {
+                            "editable": "Editierbar",
+                            "name": "Name",
+                            "type": "Typ"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "Umschalten",
+                        "input_datetime": "Datum und/oder Uhrzeit",
+                        "input_number": "Nummer",
+                        "input_text": "Text"
+                    }
+                },
                 "integrations": {
                     "caption": "Integrationen",
                     "config_entry": {
