@@ -66,7 +66,15 @@ export const fetchDeviceTriggerCapabilities = (
     trigger,
   });
 
-const whitelist = ["above", "below", "brightness", "code", "for"];
+const whitelist = [
+  "above",
+  "below",
+  "brightness",
+  "code",
+  "for",
+  "position",
+  "set_brightness",
+];
 
 export const deviceAutomationsEqual = (
   a: DeviceAutomation,
