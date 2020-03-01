@@ -2116,6 +2116,7 @@
                     },
                     "save_config": {
                         "cancel": "M'ho he repensat",
+                        "close": "Tanca",
                         "header": "Pren el control de la interfície d'usuari Lovelace",
                         "para": "De manera predeterminada, Home Assistant mantindrà al dia la teva interfície d'usuari, actualitzant-la quan hi hagi noves entitats o nous components de Lovelace disponibles. Si prens el control, ja no es faran aquests canvis automàticament.",
                         "para_sure": "Estàs segur que vols prendre el control de la interfície d'usuari?",
