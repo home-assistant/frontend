@@ -639,6 +639,7 @@
             },
             "generic": {
                 "cancel": "取消",
+                "close": "關閉",
                 "default_confirmation_title": "確認？",
                 "ok": "好"
             },
@@ -1481,6 +1482,76 @@
                     "note_about_website_reference": "更多資訊請參閱"
                 },
                 "introduction": "此處為 Home Assistant 和元件相關配置區，目前尚未支援透過 UI 進行所有設定，我們正在努力改進中。",
+                "lovelace": {
+                    "caption": "Lovelace 主面板",
+                    "dashboards": {
+                        "cant_edit_yaml": "於 YAML 中定義的主面板無法藉由 UI 編輯，請於 Configuration.yaml 進行更改。",
+                        "caption": "主面板",
+                        "conf_mode": {
+                            "storage": "UI 已控制",
+                            "yaml": "YAML 檔案"
+                        },
+                        "confirm_delete": "確定要刪除此主面板？",
+                        "detail": {
+                            "create": "新增",
+                            "delete": "刪除",
+                            "dismiss": "關閉",
+                            "edit_dashboard": "編輯主面板",
+                            "icon": "側邊欄圖示",
+                            "new_dashboard": "新增主面板",
+                            "require_admin": "僅限管理員",
+                            "show_sidebar": "於側邊列顯示",
+                            "title": "側邊欄標題",
+                            "update": "更新",
+                            "url": "網址",
+                            "url_error_msg": "網址不能包含空格或特殊字元，除了 _ 及 -。"
+                        },
+                        "picker": {
+                            "add_dashboard": "新增主面板",
+                            "headers": {
+                                "conf_mode": "設定模式",
+                                "filename": "檔名",
+                                "require_admin": "僅限管理員",
+                                "sidebar": "於側邊列顯示",
+                                "title": "標題"
+                            },
+                            "open": "開啟主面板"
+                        }
+                    },
+                    "description": "設定 Lovelace 主面板",
+                    "resources": {
+                        "cant_edit_yaml": "正使用 YAML 模式、因此無法藉由 UI 變更 Lovelace 設定。請於「configuration.yaml」進行管理。",
+                        "caption": "資源",
+                        "confirm_delete": "確定要刪除此資源？",
+                        "detail": {
+                            "create": "新增",
+                            "delete": "刪除",
+                            "dismiss": "關閉",
+                            "new_resource": "新增資源",
+                            "type": "資源類型",
+                            "update": "更新",
+                            "url": "網址",
+                            "url_error_msg": "網址為必填欄位",
+                            "warning_header": "請特別注意！",
+                            "warning_text": "新增資源具有風險性、請確認資源來源安全性。惡意的資源可能嚴重損害您的系統。"
+                        },
+                        "picker": {
+                            "add_resource": "新增資源",
+                            "headers": {
+                                "type": "類別",
+                                "url": "網址"
+                            }
+                        },
+                        "refresh_body": "必須更新頁面以完成移除、要立即更新？",
+                        "refresh_header": "是否要更新？",
+                        "types": {
+                            "css": "Stylesheet",
+                            "html": "HTML（已棄用）",
+                            "js": "JavaScript 檔案（已棄用）",
+                            "module": "JavaScript 模組"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "新增人員",
                     "caption": "人員",
@@ -1992,7 +2063,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "此 Lovelace UI 設定已更新，是否要更新頁面檢視變更？",
+                    "message": "此主面板 Lovelace UI 設定已更新，是否要更新頁面檢視變更？",
                     "refresh": "更新"
                 },
                 "editor": {
@@ -2180,10 +2251,14 @@
                     },
                     "save_config": {
                         "cancel": "我再想想",
+                        "close": "關閉",
                         "header": "自行編輯 Lovelace UI",
                         "para": "Home Assistant 於預設下，將維護您的使用者介面、於新物件或 Lovelace UI 元件可使用時進行更新。假如選擇自行編輯，系統將不再為您自動進行變更。",
                         "para_sure": "確定要自行編輯使用者介面？",
-                        "save": "自行編輯"
+                        "save": "自行編輯",
+                        "yaml_config": "目前此主面板設定：",
+                        "yaml_control": "欲使用 YAML 進行控制、新增一個與此主面板相同名稱的 YAML 檔案、或者預設為「ui-lovelace.yaml」。",
+                        "yaml_mode": "正使用 YAML 模式、表示您無法藉由 UI 變更 Lovelace 設定。假如您想由 UI 中進行變更、請於「configuration.yaml」檔案中移除「mode: yaml」參數。"
                     },
                     "suggest_card": {
                         "add": "新增至 Lovelace UI",
