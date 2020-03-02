@@ -996,7 +996,7 @@
                                 "group": "Refresh grupuri",
                                 "heading": "Refresh configurații",
                                 "introduction": "Unele părți din Home Assistant se pot reîncărca fără a necesita o repornire. Apăsarea reîncărcării va descărca configurația actuală și va încărca noua configurație.",
-                                "script": "Refresh scenarii"
+                                "script": "Reîncărcați script-uri"
                             },
                             "server_management": {
                                 "heading": "Server de gestionare",
@@ -1183,6 +1183,74 @@
                     "none": "Nimic nu a fost configurat încă"
                 },
                 "introduction": "Aici este posibil să vă configurați componentele și Home Assistant. Nu este posibilă configurarea de la UI, dar lucrăm la asta.",
+                "lovelace": {
+                    "dashboards": {
+                        "cant_edit_yaml": "Tablourile de bord definite în YAML nu pot fi editate din UI. Schimbați-le în configuration.yaml.",
+                        "caption": "Tablouri de bord",
+                        "conf_mode": {
+                            "storage": "UI controlat",
+                            "yaml": "Fișier YAML"
+                        },
+                        "confirm_delete": "Sigur doriți să ștergeți acest tablou de bord?",
+                        "detail": {
+                            "create": "Creează",
+                            "delete": "Șterge",
+                            "dismiss": "Închide",
+                            "edit_dashboard": "Editează tabloul de bord",
+                            "icon": "Pictograma barei laterale",
+                            "new_dashboard": "Adăugați un nou tablou de bord",
+                            "require_admin": "Doar administrator",
+                            "show_sidebar": "Afișați în bara laterală",
+                            "title": "Titlul barei laterale",
+                            "update": "Actualizare",
+                            "url": "Url",
+                            "url_error_msg": "URL-ul nu poate conține spații sau caractere speciale, cu excepția lui _ și -"
+                        },
+                        "picker": {
+                            "add_dashboard": "Adăugați tablou de bord",
+                            "headers": {
+                                "conf_mode": "Metoda de configurare",
+                                "filename": "Nume de fișier",
+                                "require_admin": "Doar administrator",
+                                "sidebar": "Afișați în bara laterală",
+                                "title": "Titlu"
+                            },
+                            "open": "Deschide tabloul de bord"
+                        }
+                    },
+                    "resources": {
+                        "cant_edit_yaml": "Utilizați Lovelace în modul YAML, prin urmare nu vă puteți gestiona resursele prin intermediul UI. Gestionează-le în configuration.yaml.",
+                        "caption": "Resurse",
+                        "confirm_delete": "Sigur doriți să ștergeți această resursă?",
+                        "detail": {
+                            "create": "Creează",
+                            "delete": "Șterge",
+                            "dismiss": "Închide",
+                            "new_resource": "Adăugați o nouă resursă",
+                            "type": "Tip de resursă",
+                            "update": "Actualizare",
+                            "url": "Url",
+                            "url_error_msg": "Url este un câmp obligatoriu",
+                            "warning_header": "Fii precaut!",
+                            "warning_text": "Adăugarea resurselor poate fi periculoasă, asigurați-vă că cunoașteți sursa resursei și aveți încredere în ele. Resursele necorespunzătoare v-ar putea dăuna grav sistemului."
+                        },
+                        "picker": {
+                            "add_resource": "Adăugați resursă",
+                            "headers": {
+                                "type": "Tip",
+                                "url": "Url"
+                            }
+                        },
+                        "refresh_body": "Trebuie să reîmprospătați pagina pentru a finaliza eliminarea, doriți să reîmprospătați acum?",
+                        "refresh_header": "Vrei să reîmprospătezi?",
+                        "types": {
+                            "css": "Stylesheet",
+                            "html": "HTML (învechit)",
+                            "js": "Fișier JavaScript (învechit)",
+                            "module": "Modul JavaScript"
+                        }
+                    }
+                },
                 "person": {
                     "caption": "Persoane",
                     "description": "Gestionează persoanele pe care Home Assistant le urmărește.",
@@ -1219,7 +1287,7 @@
                 },
                 "script": {
                     "caption": "Scenariu",
-                    "description": "Creați și editați scenarii",
+                    "description": "Creați și editați scripturi",
                     "editor": {
                         "alias": "Nume",
                         "delete_script": "Ștergere script",
@@ -1244,7 +1312,7 @@
                             "heading": "Reîncărcarea configurației YAML",
                             "introduction": "Unele părți din Home Assistant se pot reîncărca fără a necesita o repornire. Apăsarea reîncărcării va descărca configurația actuală și va încărca noua configurație.",
                             "person": "Reîncărcare persoane",
-                            "scene": "Reîncărca scenarii",
+                            "scene": "Reîncărcați scenarii",
                             "script": "Reîncărcați script-uri",
                             "zone": "Reîncărcare zone"
                         },
@@ -1635,10 +1703,14 @@
                     },
                     "save_config": {
                         "cancel": "Nu contează",
+                        "close": "Închide",
                         "header": "Preia controlul asupra interfața dvs. Lovelace",
                         "para": "În mod implicit, Home Assistant va menține interfața dvs. de utilizator, actualizând-o atunci când entitățile noi sau componente Lovelace devin disponibile. Dacă preluați controlul, nu vom mai face automat modificări pentru dvs.",
                         "para_sure": "Sigur doriți să preluați controlul asupra interfeței dvs. de utilizator?",
-                        "save": "Preia controlul"
+                        "save": "Preia controlul",
+                        "yaml_config": "Pentru a vă ajuta să începeți aici este configurarea curentă a acestui tablou de bord:",
+                        "yaml_control": "Pentru a prelua controlul în modul YAML, creați un fișier YAML cu numele pe care l-ați specificat în configurația dvs. pentru acest tablou de bord sau implicit „ui-lovelace.yaml”.",
+                        "yaml_mode": "Utilizați modul YAML, ceea ce înseamnă că nu puteți modifica configurația Lovelace din UI. Dacă doriți să schimbați Lovelace din interfața de utilizator, eliminați „modul: yaml” din configurația dvs. Lovelace din „configuration.yaml”."
                     },
                     "suggest_card": {
                         "add": "Adăugați la Lovelace UI",

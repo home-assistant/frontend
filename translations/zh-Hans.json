@@ -1499,7 +1499,7 @@
                             "title": "侧边栏标题",
                             "update": "更新",
                             "url": "网址",
-                            "url_error_msg": "网址中不可包含除 - 和 _ 以外的特殊字符及空格"
+                            "url_error_msg": "网址不可包含除 - 和 _ 以外的特殊字符及空格"
                         },
                         "picker": {
                             "add_dashboard": "添加仪表盘",
