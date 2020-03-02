@@ -27,10 +27,7 @@ import {
 } from "../../../../data/lovelace";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
 import { compare } from "../../../../common/string/compare";
-import {
-  showConfirmationDialog,
-  showAlertDialog,
-} from "../../../../dialogs/generic/show-dialog-box";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { navigate } from "../../../../common/navigate";
 
