@@ -1417,6 +1417,48 @@
                     "note_about_website_reference": "N'hi ha més disponibles al "
                 },
                 "introduction": "Aquí pots configurar Home Assistant i els seus components. Encara no és possible configurar-ho tot des de la interfície d'usuari, però hi estem treballant.",
+                "lovelace": {
+                    "dashboards": {
+                        "detail": {
+                            "create": "Crea",
+                            "delete": "Suprimeix",
+                            "require_admin": "Només administrador",
+                            "update": "Actualitza",
+                            "url": "URL"
+                        }
+                    },
+                    "resources": {
+                        "caption": "Recursos",
+                        "confirm_delete": "Estàs segur que vols eliminar aquest recurs?",
+                        "detail": {
+                            "create": "Crea",
+                            "delete": "Suprimeix",
+                            "dismiss": "Tanca",
+                            "new_resource": "Afegeix nou recurs",
+                            "type": "Tipus de recurs",
+                            "update": "Actualitza",
+                            "url": "URL",
+                            "url_error_msg": "L'URL és un camp obligatori",
+                            "warning_header": "Ves amb compte!",
+                            "warning_text": "Afegir recursos pot ser perillós, assegura't de conèixer i confiar en el seu origen. Els recursos fraudulents poden perjudicar greument el teu sistema."
+                        },
+                        "picker": {
+                            "add_resource": "Afegeix recurs",
+                            "headers": {
+                                "type": "Tipus",
+                                "url": "URL"
+                            }
+                        },
+                        "refresh_body": "Has d’actualitzar la pàgina per completar l’eliminació. Vols actualitzar-la ara?",
+                        "refresh_header": "Vols actualitzar?",
+                        "types": {
+                            "css": "Fitxer d’estils",
+                            "html": "HTML (obsolet)",
+                            "js": "Fitxer JavaScript (obsolet)",
+                            "module": "Mòdul JavaScript"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Afegeix persona",
                     "caption": "Persones",
