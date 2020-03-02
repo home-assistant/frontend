@@ -531,6 +531,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         padding-top: 0;
       }
 
+      .media-info {
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
       .title {
         font-size: 1.2em;
         margin: 0px 0 4px;
