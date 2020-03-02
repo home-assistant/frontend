@@ -12,6 +12,7 @@ const rename = require("gulp-rename");
 const transform = require("gulp-json-transform");
 const { mapFiles } = require("../util");
 const env = require("../env");
+const paths = require("../paths");
 
 const inDir = "translations";
 const workDir = "build-translations";
@@ -144,7 +145,7 @@ gulp.task(
   "create-test-translation",
   gulp.series("create-test-metadata", function createTestTranslation() {
     return gulp
-      .src("src/translations/en.json")
+      .src(path.join(paths.translations_src, "en.json"))
       .pipe(
         transform(function(data, file) {
           return recursiveEmpty(data);
@@ -166,7 +167,7 @@ gulp.task(
  */
 gulp.task("build-master-translation", function() {
   return gulp
-    .src("src/translations/en.json")
+    .src(path.join(paths.translations_src, "en.json"))
     .pipe(
       transform(function(data, file) {
         return lokaliseTransform(data, data, file);
@@ -341,7 +342,7 @@ gulp.task(
       return gulp
         .src(
           [
-            "src/translations/translationMetadata.json",
+            path.join(paths.translations_src, "translationMetadata.json"),
             workDir + "/testMetadata.json",
             workDir + "/translationFingerprints.json",
           ],
