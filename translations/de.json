@@ -626,6 +626,8 @@
                     "enabled_description": "Deaktivierte Entitäten werden nicht zu Home Assistant hinzugefügt.",
                     "enabled_label": "Entität aktivieren",
                     "entity_id": "Entitäts-ID",
+                    "icon": "Symbol Überschreiben",
+                    "icon_error": "Symbole sollten das Format 'Präfix:iconname' haben, z. B. 'mdi:home'",
                     "name": "Namen überschreiben",
                     "note": "Hinweis: Dies funktioniert möglicherweise noch nicht bei allen Integrationen.",
                     "unavailable": "Diese Entität ist derzeit nicht verfügbar.",
@@ -637,6 +639,7 @@
             },
             "generic": {
                 "cancel": "Abbrechen",
+                "close": "schließen",
                 "default_confirmation_title": "Sind Sie sicher?",
                 "ok": "OK"
             },
@@ -651,10 +654,12 @@
                     "has_time": "Zeit"
                 },
                 "input_number": {
+                    "box": "Eingabefeld",
                     "max": "Maximaler Wert",
                     "min": "Minimaler Wert",
                     "mode": "Anzeigemodus",
                     "slider": "Schieberegler",
+                    "step": "Schrittweite des Schiebereglers",
                     "unit_of_measurement": "Maßeinheit"
                 },
                 "input_select": {
@@ -1391,6 +1396,7 @@
                 "header": "Home Assistant konfigurieren",
                 "helpers": {
                     "caption": "Helfer",
+                    "description": "Elemente, die beim Aufbau von Automatisierungen helfen können.",
                     "dialog": {
                         "add_helper": "Helfer hinzufügen",
                         "add_platform": "{platform} hinzufügen",
@@ -1408,6 +1414,7 @@
                         "input_boolean": "Umschalten",
                         "input_datetime": "Datum und/oder Uhrzeit",
                         "input_number": "Nummer",
+                        "input_select": "Dropdown",
                         "input_text": "Text"
                     }
                 },
@@ -1472,6 +1479,71 @@
                     "note_about_website_reference": "Weitere Informationen finden Sie auf der "
                 },
                 "introduction": "Hier ist es möglich, deine Komponenten und Home Assistant zu konfigurieren. Noch ist nicht alles über die GUI einstellbar, aber wir arbeiten daran.",
+                "lovelace": {
+                    "caption": "Lovelace Dashboards",
+                    "dashboards": {
+                        "caption": "Dashboards",
+                        "conf_mode": {
+                            "storage": "UI gesteuert",
+                            "yaml": "YAML-Datei"
+                        },
+                        "confirm_delete": "Sind Sie sicher, dass Sie dieses Dashboard löschen möchten?",
+                        "detail": {
+                            "create": "Erstellen",
+                            "delete": "Löschen",
+                            "dismiss": "Schließen",
+                            "edit_dashboard": "Dashboard bearbeiten",
+                            "icon": "Seitenleistensymbol",
+                            "new_dashboard": "Neues Dashboard hinzufügen",
+                            "require_admin": "Nur Admin",
+                            "show_sidebar": "In der Seitenleiste anzeigen",
+                            "title": "Titel der Seitenleiste",
+                            "update": "Aktualisieren",
+                            "url": "Url"
+                        },
+                        "picker": {
+                            "add_dashboard": "Dashboard hinzufügen",
+                            "headers": {
+                                "conf_mode": "Konfigurationsmethode",
+                                "filename": "Dateiname",
+                                "require_admin": "Nur für Administratoren",
+                                "sidebar": "In der Seitenleiste anzeigen",
+                                "title": "Titel"
+                            },
+                            "open": "Dashboard öffnen"
+                        }
+                    },
+                    "description": "Konfigurieren Sie Ihre Lovelace-Dashboards",
+                    "resources": {
+                        "caption": "Ressourcen",
+                        "confirm_delete": "Sind Sie sicher, dass Sie diese Ressource löschen möchten?",
+                        "detail": {
+                            "create": "Erstellen",
+                            "delete": "Löschen",
+                            "dismiss": "Schließen",
+                            "new_resource": "Neue Ressource hinzufügen",
+                            "type": "Ressource-Typ",
+                            "update": "Aktualisieren",
+                            "url": "Url",
+                            "url_error_msg": "URL ist ein Pflichtfeld",
+                            "warning_header": "Seien Sie vorsichtig!"
+                        },
+                        "picker": {
+                            "add_resource": "Ressource hinzufügen",
+                            "headers": {
+                                "type": "Typ",
+                                "url": "Url"
+                            }
+                        },
+                        "refresh_header": "Möchten Sie aktualisieren?",
+                        "types": {
+                            "css": "Stylesheet",
+                            "html": "HTML (veraltet)",
+                            "js": "JavaScript-Datei (veraltet)",
+                            "module": "JavaScript-Modul"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Person hinzufügen",
                     "caption": "Personen",
@@ -2171,10 +2243,12 @@
                     },
                     "save_config": {
                         "cancel": "Abbrechen",
+                        "close": "Schließen",
                         "header": "Lovelace Userinterface selbst verwalten",
                         "para": "Standardmäßig verwaltet Home Assistant Ihre Benutzeroberfläche und aktualisiert sie, sobald neue Entitäten oder Lovelace-Komponenten verfügbar sind. Wenn Sie die Verwaltung selbst übernehmen wollen, nehmen wir für Sie keine Änderungen mehr vor.",
                         "para_sure": "Sind Sie sicher, dass Sie die Benutzeroberfläche selbst verwalten möchten?",
-                        "save": "Kontrolle übernehmen"
+                        "save": "Kontrolle übernehmen",
+                        "yaml_config": "Um Ihnen den Einstieg zu erleichtern, finden Sie hier die aktuelle Konfiguration dieses Dashboards:"
                     },
                     "suggest_card": {
                         "add": "Zu Lovelace hinzufügen",

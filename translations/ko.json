@@ -626,6 +626,8 @@
                     "enabled_description": "비활성화 된 구성요소는 Home Assistant 에 추가되지 않습니다.",
                     "enabled_label": "구성요소 활성화",
                     "entity_id": "구성요소 ID",
+                    "icon": "아이콘 재정의(Override)",
+                    "icon_error": "아이콘을 지정할 때 'mdi:home'과 같이 '접두사:아이콘' 형식이어야 합니다.",
                     "name": "대체 이름",
                     "note": "참고: 아직 모든 통합 구성요소에 적용되지 않을 수 있습니다.",
                     "unavailable": "이 구성요소는 현재 사용할 수 없습니다.",
@@ -637,8 +639,47 @@
             },
             "generic": {
                 "cancel": "취소",
+                "close": "닫기",
                 "default_confirmation_title": "다시 한번 확인해주세요",
                 "ok": "확인"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "아이콘",
+                    "initial_value": "시작 시 초기값",
+                    "initial_value_explain": "Home Assistant가 켜질 때 요소가 가지는 초기값입니다. 비워두면 요소의 원래 값으로 복원됩니다.",
+                    "name": "이름"
+                },
+                "input_datetime": {
+                    "has_date": "날짜",
+                    "has_time": "시간"
+                },
+                "input_number": {
+                    "box": "입력란",
+                    "max": "최대값",
+                    "min": "최소값",
+                    "mode": "디스플레이 모드",
+                    "slider": "슬라이더",
+                    "step": "슬라이더의 간격 크기",
+                    "unit_of_measurement": "단위"
+                },
+                "input_select": {
+                    "add": "추가",
+                    "add_option": "옵션 추가",
+                    "no_options": "아직 옵션이 없습니다.",
+                    "options": "옵션"
+                },
+                "input_text": {
+                    "max": "최대 길이",
+                    "min": "최대 길이",
+                    "mode": "디스플레이 모드",
+                    "password": "비밀번호",
+                    "pattern": "클라이언트 측 검증을 위한 정규표현식(Regex)",
+                    "text": "텍스트"
+                },
+                "not_editable": "수정 불가능",
+                "not_editable_text": "이 구성요소는 configuration.yaml에서 정의되었기 때문에 UI에서 수정할 수 없습니다.",
+                "required_error_msg": "이 입력란은 필수 요소입니다"
             },
             "more_info_control": {
                 "dismiss": "대화창 닫기",
@@ -1356,6 +1397,30 @@
                     }
                 },
                 "header": "Home Assistant 설정",
+                "helpers": {
+                    "caption": "도우미",
+                    "description": "자동화를 구축하는 데 도움이 되는 요소입니다.",
+                    "dialog": {
+                        "add_helper": "도우미 추가",
+                        "add_platform": "{platform} 추가...",
+                        "create": "만들기"
+                    },
+                    "picker": {
+                        "add_helper": "도우미 추가",
+                        "headers": {
+                            "editable": "수정 가능",
+                            "name": "이름",
+                            "type": "종류"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "토글",
+                        "input_datetime": "날짜 또는 시간",
+                        "input_number": "수",
+                        "input_select": "드롭다운",
+                        "input_text": "텍스트"
+                    }
+                },
                 "integrations": {
                     "caption": "통합 구성요소",
                     "config_entry": {
@@ -1417,6 +1482,76 @@
                     "note_about_website_reference": "더 많은 구성요소는 다음에서 살펴 봐주세요. "
                 },
                 "introduction": "여기에서 구성요소와  Home Assistant 를 설정 할 수 있습니다. 아직 여기서 모두 설정 할 수는 없지만, 모든 내용을 설정 할 수 있도록 작업 중입니다.",
+                "lovelace": {
+                    "caption": "Lovelace 대시보드",
+                    "dashboards": {
+                        "cant_edit_yaml": "YAML에 정의된 대시보드는 UI에서 편집할 수 없습니다. configuration.yaml 파일에서 수정하십시오.",
+                        "caption": "대시보드",
+                        "conf_mode": {
+                            "storage": "UI 제어",
+                            "yaml": "YAML 파일"
+                        },
+                        "confirm_delete": "이 대시보드를 삭제하시겠습니까?",
+                        "detail": {
+                            "create": "만들기",
+                            "delete": "삭제",
+                            "dismiss": "닫기",
+                            "edit_dashboard": "대시보드 편집",
+                            "icon": "사이드바 아이콘",
+                            "new_dashboard": "새로운 대시보드 추가...",
+                            "require_admin": "관리자 전용",
+                            "show_sidebar": "사이드바에서 표시",
+                            "title": "사이드바 제목",
+                            "update": "업데이트",
+                            "url": "URL",
+                            "url_error_msg": "URL은 _와 -를 제외한 공백이나 특수 문자를 포함할 수 없습니다."
+                        },
+                        "picker": {
+                            "add_dashboard": "대시보드 추가",
+                            "headers": {
+                                "conf_mode": "구성 방법",
+                                "filename": "파일 이름",
+                                "require_admin": "관리자 전용",
+                                "sidebar": "사이드바에서 표시",
+                                "title": "제목"
+                            },
+                            "open": "대시보드 열기"
+                        }
+                    },
+                    "description": "Lovelace 대시보드 구성",
+                    "resources": {
+                        "cant_edit_yaml": "당신은 Lovelace를 YAML 모드로 사용 중이므로 리소스들을 UI에서 관리할 수 없습니다. configuration.yaml에서 관리하십시오.",
+                        "caption": "리소스",
+                        "confirm_delete": "이 리소스롤 삭제하시겠습니까?",
+                        "detail": {
+                            "create": "만들기",
+                            "delete": "삭제",
+                            "dismiss": "닫기",
+                            "new_resource": "새로운 리소스 추가...",
+                            "type": "리소스 유형",
+                            "update": "업데이트",
+                            "url": "URL",
+                            "url_error_msg": "URL은 필수 입력 입니다",
+                            "warning_header": "주의하세요!",
+                            "warning_text": "리소스를 추가하는 것은 위험할 수 있으므로 신뢰할 수 있는 출처인지 확인하시기 바랍니다. 부적합한 리소스는 시스템에 심각한 손상을 가할 수 있습니다."
+                        },
+                        "picker": {
+                            "add_resource": "새로운 리소스 추가...",
+                            "headers": {
+                                "type": "종류",
+                                "url": "URL"
+                            }
+                        },
+                        "refresh_body": "삭제를 완료하려면 페이지를 새로 고쳐야야합니다. 지금 새로 고치시겠습니까?",
+                        "refresh_header": "새로고침을 하시겠습니까?",
+                        "types": {
+                            "css": "스타일시트",
+                            "html": "HTML (권장하지 않음)",
+                            "js": "자바스크립트 파일 (권장하지 않음)",
+                            "module": "자바스크립트 모듈"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "구성원 추가하기",
                     "caption": "구성원",
@@ -2109,16 +2244,21 @@
                         "error_remove": "구성을 제거할 수 없습니다: {error}",
                         "error_save_yaml": "YAML 을 저장할 수 없습니다: {error}",
                         "header": "구성 코드 편집",
+                        "resources_moved": "리소스는 더이상 Lovelace 구성에 추가하지 말아야 하지만 Lovelace 구성 패널에서 추가할 수 있습니다.",
                         "save": "저장하기",
                         "saved": "저장되었습니다",
                         "unsaved_changes": "저장되지 않은 변경사항"
                     },
                     "save_config": {
                         "cancel": "아닙니다",
+                        "close": "닫기",
                         "header": "Lovelace UI 직접 관리하기",
                         "para": "기본적으로 Home Assistant 는 사용자 인터페이스를 유지 관리하고, 사용할 수 있는 새로운 구성요소 또는 Lovelace 구성요소가 있을 때 업데이트를 합니다. 사용자가 직접 관리하는 경우 Home Assistant 는 더 이상 자동으로 변경하지 않습니다.",
                         "para_sure": "사용자 인터페이스를 직접 관리하시겠습니까?",
-                        "save": "직접 관리할게요"
+                        "save": "직접 관리할게요",
+                        "yaml_config": "대시보드의 현재 설정은 다음과 같습니다.",
+                        "yaml_control": "YAML 모드로 제어하려면 대시보드의 구성에서 지정한 이름 또는 'ui-lovelace.yaml'(기본값)으로 YAML 파일을 만드십시오.",
+                        "yaml_mode": "YAML 모드를 사용 중이므로 UI에서 Lovelace 구성을 변경할 수 없습니다. UI에서 Lovelace를 변경하려면 'configuration.yaml'의 Lovelace 구성에서 'mode : yaml'을 제거하십시오."
                     },
                     "suggest_card": {
                         "add": "Lovelace UI 에 추가",
