@@ -133,7 +133,7 @@ export class HuiImage extends LitElement {
         ${this.cameraImage && this.cameraView === "live"
           ? html`
               <ha-camera-stream
-                .hass="${this.hass}"
+                .hass=${this.hass}
                 .stateObj="${cameraObj}"
               ></ha-camera-stream>
             `

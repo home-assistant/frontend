@@ -92,7 +92,7 @@ class LovelaceFullConfigEditor extends LitElement {
             mode="yaml"
             autofocus
             .rtl=${computeRTL(this.hass)}
-            .hass="${this.hass}"
+            .hass=${this.hass}
             @value-changed="${this._yamlChanged}"
             @editor-save="${this._handleSave}"
           >

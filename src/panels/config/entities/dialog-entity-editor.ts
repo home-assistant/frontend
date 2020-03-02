@@ -13,25 +13,45 @@ import {
   TemplateResult,
 } from "lit-element";
 import { cache } from "lit-html/directives/cache";
+import { PLATFORMS_WITH_SETTINGS_TAB } from "./const";
+import { dynamicElement } from "../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../common/dom/fire_event";
 import { computeStateName } from "../../../common/entity/compute_state_name";
 import "../../../components/dialog/ha-paper-dialog";
 // tslint:disable-next-line: no-duplicate-imports
 import { HaPaperDialog } from "../../../components/dialog/ha-paper-dialog";
 import "../../../components/ha-related-items";
-import "../../../dialogs/more-info/controls/more-info-content";
+import {
+  EntityRegistryEntry,
+  ExtEntityRegistryEntry,
+  getExtendedEntityRegistryEntry,
+} from "../../../data/entity_registry";
 import { PolymerChangedEvent } from "../../../polymer-types";
 import { haStyleDialog } from "../../../resources/styles";
-import "../../../state-summary/state-card-content";
 import { HomeAssistant } from "../../../types";
 import "./entity-registry-settings";
-import { EntityRegistryDetailDialogParams } from "./show-dialog-entity-registry-detail";
+import { EntityRegistryDetailDialogParams } from "./show-dialog-entity-editor";
 
-@customElement("dialog-entity-registry-detail")
-export class DialogEntityRegistryDetail extends LitElement {
+interface Tabs {
+  [key: string]: Tab;
+}
+
+interface Tab {
+  component: string;
+  translationKey: string;
+}
+
+@customElement("dialog-entity-editor")
+export class DialogEntityEditor extends LitElement {
   @property() public hass!: HomeAssistant;
   @property() private _params?: EntityRegistryDetailDialogParams;
+  @property() private _entry?:
+    | EntityRegistryEntry
+    | ExtEntityRegistryEntry
+    | null;
   @property() private _curTab?: string;
+  @property() private _extraTabs: Tabs = {};
+  @property() private _settingsElementTag?: string;
   @query("ha-paper-dialog") private _dialog!: HaPaperDialog;
   private _curTabIndex = 0;
 
@@ -39,6 +59,10 @@ export class DialogEntityRegistryDetail extends LitElement {
     params: EntityRegistryDetailDialogParams
   ): Promise<void> {
     this._params = params;
+    this._entry = undefined;
+    this._settingsElementTag = undefined;
+    this._extraTabs = {};
+    this._getEntityReg();
     await this.updateComplete;
   }
 
@@ -47,11 +71,11 @@ export class DialogEntityRegistryDetail extends LitElement {
   }
 
   protected render(): TemplateResult {
-    if (!this._params) {
+    if (!this._params || this._entry === undefined) {
       return html``;
     }
-    const entry = this._params.entry;
     const entityId = this._params.entity_id;
+    const entry = this._entry;
     const stateObj: HassEntity | undefined = this.hass.states[entityId];
 
     return html`
@@ -59,6 +83,7 @@ export class DialogEntityRegistryDetail extends LitElement {
         with-backdrop
         opened
         @opened-changed=${this._openedChanged}
+        @close-dialog=${this.closeDialog}
       >
         <app-toolbar>
           <paper-icon-button
@@ -92,6 +117,13 @@ export class DialogEntityRegistryDetail extends LitElement {
           <paper-tab id="tab-settings">
             ${this.hass.localize("ui.dialogs.entity_registry.settings")}
           </paper-tab>
+          ${Object.entries(this._extraTabs).map(
+            ([key, tab]) => html`
+              <paper-tab id=${key}>
+                ${this.hass.localize(tab.translationKey) || key}
+              </paper-tab>
+            `
+          )}
           <paper-tab id="tab-related">
             ${this.hass.localize("ui.dialogs.entity_registry.related")}
           </paper-tab>
@@ -99,14 +131,16 @@ export class DialogEntityRegistryDetail extends LitElement {
         ${cache(
           this._curTab === "tab-settings"
             ? entry
-              ? html`
-                  <entity-registry-settings
-                    .hass=${this.hass}
-                    .entry=${entry}
-                    .dialogElement=${this._dialog}
-                    @close-dialog=${this._closeDialog}
-                  ></entity-registry-settings>
-                `
+              ? this._settingsElementTag
+                ? html`
+                    ${dynamicElement(this._settingsElementTag, {
+                      hass: this.hass,
+                      entry,
+                      entityId,
+                      dialogElement: this._dialog,
+                    })}
+                  `
+                : ""
               : html`
                   <paper-dialog-scrollable>
                     ${this.hass.localize(
@@ -121,7 +155,6 @@ export class DialogEntityRegistryDetail extends LitElement {
                     .hass=${this.hass}
                     .itemId=${entityId}
                     itemType="entity"
-                    @close-dialog=${this._closeDialog}
                   ></ha-related-items>
                 </paper-dialog-scrollable>
               `
@@ -129,6 +162,18 @@ export class DialogEntityRegistryDetail extends LitElement {
         )}
       </ha-paper-dialog>
     `;
+  }
+
+  private async _getEntityReg() {
+    try {
+      this._entry = await getExtendedEntityRegistryEntry(
+        this.hass,
+        this._params!.entity_id
+      );
+      this._loadPlatformSettingTabs();
+    } catch {
+      this._entry = null;
+    }
   }
 
   private _handleTabSelected(ev: CustomEvent): void {
@@ -144,15 +189,26 @@ export class DialogEntityRegistryDetail extends LitElement {
     fireEvent(this._dialog as HTMLElement, "iron-resize");
   }
 
+  private async _loadPlatformSettingTabs(): Promise<void> {
+    if (!this._entry) {
+      return;
+    }
+    if (
+      !Object.keys(PLATFORMS_WITH_SETTINGS_TAB).includes(this._entry.platform)
+    ) {
+      this._settingsElementTag = "entity-registry-settings";
+      return;
+    }
+    const tag = PLATFORMS_WITH_SETTINGS_TAB[this._entry.platform];
+    await import(`./editor-tabs/settings/${tag}`);
+    this._settingsElementTag = tag;
+  }
+
   private _openMoreInfo(): void {
     fireEvent(this, "hass-more-info", {
       entityId: this._params!.entity_id,
     });
-    this._params = undefined;
-  }
-
-  private _closeDialog(): void {
-    this._params = undefined;
+    this.closeDialog();
   }
 
   private _openedChanged(ev: PolymerChangedEvent<boolean>): void {
@@ -250,6 +306,6 @@ export class DialogEntityRegistryDetail extends LitElement {
 
 declare global {
   interface HTMLElementTagNameMap {
-    "dialog-entity-registry-detail": DialogEntityRegistryDetail;
+    "dialog-entity-editor": DialogEntityEditor;
   }
 }

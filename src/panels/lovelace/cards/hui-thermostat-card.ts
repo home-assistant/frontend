@@ -36,6 +36,7 @@ import { HassEntity } from "home-assistant-js-websocket";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { LovelaceConfig } from "../../../data/lovelace";
 import { findEntities } from "../common/find-entites";
+import { UNAVAILABLE } from "../../../data/entity";
 
 const modeIcons: { [mode in HvacMode]: string } = {
   auto: "hass:calendar-repeat",
@@ -226,10 +227,11 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
           [mode]: true,
         })}
       >
-        ${stateObj.state === "unavailable"
+        ${stateObj.state === UNAVAILABLE
           ? html`
               <hui-unavailable
                 .text="${this.hass.localize("state.default.unavailable")}"
+                @click=${this._handleMoreInfo}
               ></hui-unavailable>
             `
           : ""}
@@ -412,6 +414,10 @@ export class HuiThermostatCard extends LitElement implements LovelaceCard {
     return css`
       :host {
         display: block;
+      }
+
+      hui-unavailable {
+        cursor: pointer;
       }
 
       ha-card {

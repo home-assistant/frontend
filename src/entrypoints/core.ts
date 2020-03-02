@@ -10,11 +10,13 @@ import {
 } from "home-assistant-js-websocket";
 
 import { loadTokens, saveTokens } from "../common/auth/token_storage";
+import { isExternal } from "../data/external";
 import { subscribePanels } from "../data/ws-panels";
 import { subscribeThemes } from "../data/ws-themes";
 import { subscribeUser } from "../data/ws-user";
 import { HomeAssistant } from "../types";
 import { hassUrl } from "../data/auth";
+import { subscribeFrontendUserData } from "../data/frontend";
 import {
   fetchConfig,
   fetchResources,
@@ -26,11 +28,6 @@ declare global {
     hassConnection: Promise<{ auth: Auth; conn: Connection }>;
   }
 }
-
-const isExternal =
-  window.externalApp ||
-  window.webkit?.messageHandlers?.getExternalAuth ||
-  location.search.includes("external_auth=1");
 
 const authProm = isExternal
   ? () =>
@@ -92,6 +89,7 @@ window.hassConnection.then(({ conn }) => {
   subscribePanels(conn, noop);
   subscribeThemes(conn, noop);
   subscribeUser(conn, noop);
+  subscribeFrontendUserData(conn, "core", noop);
 
   if (location.pathname === "/" || location.pathname.startsWith("/lovelace/")) {
     (window as WindowWithLovelaceProm).llConfProm = fetchConfig(

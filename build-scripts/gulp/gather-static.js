@@ -65,6 +65,12 @@ function copyMapPanel(staticDir) {
   );
 }
 
+gulp.task("copy-translations", (done) => {
+  const staticDir = paths.static;
+  copyTranslations(staticDir);
+  done();
+});
+
 gulp.task("copy-static", (done) => {
   const staticDir = paths.static;
   const staticPath = genStaticPath(paths.static);

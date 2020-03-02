@@ -109,7 +109,7 @@ export class HuiHistoryGraphCardEditor extends LitElement
           ></paper-input>
         </div>
         <hui-entity-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .entities="${this._configEntities}"
           @entities-changed="${this._valueChanged}"
         ></hui-entity-editor>

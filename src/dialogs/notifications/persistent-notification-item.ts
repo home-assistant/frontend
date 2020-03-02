@@ -39,7 +39,7 @@ export class HuiPersistentNotificationItem extends LitElement {
         <div class="time">
           <span>
             <ha-relative-time
-              .hass="${this.hass}"
+              .hass=${this.hass}
               .datetime="${this.notification.created_at}"
             ></ha-relative-time>
             <paper-tooltip

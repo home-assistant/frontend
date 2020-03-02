@@ -206,6 +206,10 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
         overflow: hidden;
       }
 
+      #states > div {
+        position: relative;
+      }
+
       .icon {
         padding: 0px 18px 0px 8px;
       }

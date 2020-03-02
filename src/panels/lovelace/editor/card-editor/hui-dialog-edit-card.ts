@@ -99,8 +99,8 @@ export class HuiDialogEditCard extends LitElement {
           ${this._cardConfig === undefined
             ? html`
                 <hui-card-picker
-                  .hass="${this.hass}"
                   .lovelace="${this._params.lovelaceConfig}"
+                  .hass=${this.hass}
                   @config-changed="${this._handleCardPicked}"
                 ></hui-card-picker>
               `
@@ -108,14 +108,14 @@ export class HuiDialogEditCard extends LitElement {
                 <div class="content">
                   <div class="element-editor">
                     <hui-card-editor
-                      .hass="${this.hass}"
+                      .hass=${this.hass}
                       .value="${this._cardConfig}"
                       @config-changed="${this._handleConfigChanged}"
                     ></hui-card-editor>
                   </div>
                   <div class="element-preview">
                     <hui-card-preview
-                      .hass="${this.hass}"
+                      .hass=${this.hass}
                       .config="${this._cardConfig}"
                       class=${this._error ? "blur" : ""}
                     ></hui-card-preview>

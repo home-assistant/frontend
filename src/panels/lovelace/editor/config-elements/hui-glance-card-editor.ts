@@ -99,7 +99,7 @@ export class HuiGlanceCardEditor extends LitElement
         ></paper-input>
         <div class="side-by-side">
           <hui-theme-select-editor
-            .hass="${this.hass}"
+            .hass=${this.hass}
             .value="${this._theme}"
             .configValue="${"theme"}"
             @theme-changed="${this._valueChanged}"
@@ -144,7 +144,7 @@ export class HuiGlanceCardEditor extends LitElement
         </div>
       </div>
       <hui-entity-editor
-        .hass="${this.hass}"
+        .hass=${this.hass}
         .entities="${this._configEntities}"
         @entities-changed="${this._valueChanged}"
       ></hui-entity-editor>

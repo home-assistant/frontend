@@ -640,6 +640,23 @@
                 "default_confirmation_title": "Êtes-vous sûr ?",
                 "ok": "OK"
             },
+            "helper_settings": {
+                "input_datetime": {
+                    "has_date": "Date"
+                },
+                "input_select": {
+                    "add": "Ajouter",
+                    "add_option": "Ajouter une option",
+                    "options": "Options"
+                },
+                "input_text": {
+                    "max": "Longueur maximale",
+                    "min": "Longueur minimum",
+                    "mode": "Mode d'affichage",
+                    "password": "Mot de passe",
+                    "text": "Texte"
+                }
+            },
             "more_info_control": {
                 "dismiss": "Fermer la fenêtre de dialogue",
                 "edit": "Modifier l'entité",
@@ -1356,6 +1373,25 @@
                     }
                 },
                 "header": "Configurer Home Assistant",
+                "helpers": {
+                    "caption": "Aides",
+                    "dialog": {
+                        "add_helper": "Ajouter une aide",
+                        "create": "Créer"
+                    },
+                    "picker": {
+                        "add_helper": "Ajouter une aide",
+                        "headers": {
+                            "editable": "Modifiable",
+                            "name": "Nom",
+                            "type": "Type"
+                        }
+                    },
+                    "types": {
+                        "input_number": "Nombre",
+                        "input_text": "Texte"
+                    }
+                },
                 "integrations": {
                     "caption": "Intégrations",
                     "config_entry": {

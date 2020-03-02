@@ -58,13 +58,42 @@ class LovelacePanel extends LitElement {
 
   private _ignoreNextUpdateEvent = false;
   private _fetchConfigOnConnect = false;
+  private _unsubUpdates?;
 
   constructor() {
     super();
     this._closeEditor = this._closeEditor.bind(this);
   }
 
-  public render(): TemplateResult | void {
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (
+      this.lovelace &&
+      this.hass &&
+      this.lovelace.language !== this.hass.language
+    ) {
+      // language has been changed, rebuild UI
+      this._setLovelaceConfig(this.lovelace.config, this.lovelace.mode);
+    } else if (this.lovelace && this.lovelace.mode === "generated") {
+      // When lovelace is generated, we re-generate each time a user goes
+      // to the states panel to make sure new entities are shown.
+      this._state = "loading";
+      this._regenerateConfig();
+    } else if (this._fetchConfigOnConnect) {
+      // Config was changed when we were not at the lovelace panel
+      this._fetchConfig(false);
+    }
+  }
+
+  public disconnectedCallback(): void {
+    super.disconnectedCallback();
+    // On the main dashboard we want to stay subscribed as that one is cached.
+    if (this.urlPath !== null && this._unsubUpdates) {
+      this._unsubUpdates();
+    }
+  }
+
+  protected render(): TemplateResult | void {
     const state = this._state!;
 
     if (state === "loaded") {
@@ -96,7 +125,7 @@ class LovelacePanel extends LitElement {
     if (state === "yaml-editor") {
       return html`
         <hui-editor
-          .hass="${this.hass}"
+          .hass=${this.hass}
           .lovelace="${this.lovelace}"
           .closeEditor="${this._closeEditor}"
         ></hui-editor>
@@ -112,7 +141,7 @@ class LovelacePanel extends LitElement {
     `;
   }
 
-  public updated(changedProps: PropertyValues): void {
+  protected updated(changedProps: PropertyValues): void {
     super.updated(changedProps);
 
     if (changedProps.has("narrow")) {
@@ -131,13 +160,10 @@ class LovelacePanel extends LitElement {
     }
   }
 
-  public firstUpdated() {
+  protected firstUpdated() {
     this._fetchConfig(false);
-    if (this.urlPath === null) {
-      // we don't want to unsub as we want to stay informed of updates
-      subscribeLovelaceUpdates(this.hass!.connection, this.urlPath, () =>
-        this._lovelaceChanged()
-      );
+    if (!this._unsubUpdates) {
+      this._subscribeUpdates();
     }
     // reload lovelace on reconnect so we are sure we have the latest config
     window.addEventListener("connection-status", (ev) => {
@@ -154,30 +180,18 @@ class LovelacePanel extends LitElement {
     this._updateColumns();
   }
 
-  public connectedCallback(): void {
-    super.connectedCallback();
-    if (
-      this.lovelace &&
-      this.hass &&
-      this.lovelace.language !== this.hass.language
-    ) {
-      // language has been changed, rebuild UI
-      this._setLovelaceConfig(this.lovelace.config, this.lovelace.mode);
-    } else if (this.lovelace && this.lovelace.mode === "generated") {
-      // When lovelace is generated, we re-generate each time a user goes
-      // to the states panel to make sure new entities are shown.
-      this._state = "loading";
-      this._regenerateConfig();
-    } else if (this._fetchConfigOnConnect) {
-      // Config was changed when we were not at the lovelace panel
-      this._fetchConfig(false);
-    }
-  }
-
   private async _regenerateConfig() {
     const conf = await generateLovelaceConfigFromHass(this.hass!);
     this._setLovelaceConfig(conf, "generated");
     this._state = "loaded";
+  }
+
+  private async _subscribeUpdates() {
+    this._unsubUpdates = await subscribeLovelaceUpdates(
+      this.hass!.connection,
+      this.urlPath,
+      () => this._lovelaceChanged()
+    );
   }
 
   private _closeEditor() {
@@ -203,7 +217,7 @@ class LovelacePanel extends LitElement {
       return;
     }
     if (!this.isConnected) {
-      // We can't fire events from an element that is connected
+      // We can't fire events from an element that is not connected
       // Make sure we fetch the config as soon as the user goes back to Lovelace
       this._fetchConfigOnConnect = true;
       return;
@@ -325,6 +339,7 @@ class LovelacePanel extends LitElement {
         }
         showSaveDialog(this, {
           lovelace: this.lovelace!,
+          mode: this.panel!.config.mode,
         });
       },
       saveConfig: async (newConfig: LovelaceConfig): Promise<void> => {

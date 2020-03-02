@@ -299,7 +299,7 @@ class ZHADeviceCard extends LitElement {
                     : ""}
 
                   <ha-call-service-button
-                    .hass="${this.hass}"
+                    .hass=${this.hass}
                     domain="zha"
                     service="remove"
                     .confirmation=${this.hass!.localize(
@@ -331,7 +331,7 @@ class ZHADeviceCard extends LitElement {
                         ${this.showHelp
                           ? html`
                               <ha-service-description
-                                .hass="${this.hass}"
+                                .hass=${this.hass}
                                 domain="zha"
                                 service="permit"
                                 class="help-text2"

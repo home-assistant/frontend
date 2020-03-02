@@ -626,6 +626,8 @@
                     "enabled_description": "Deaktiverte entiteter vil ikke bli lagt til i Home Assistant.",
                     "enabled_label": "Aktiver entitet",
                     "entity_id": "Entitets-ID",
+                    "icon": "Overstyring av ikon",
+                    "icon_error": "Ikoner bør være i formatet 'prefix:iconname', f.eks .",
                     "name": "Overstyr Navn",
                     "note": "Merk: dette fungerer kanskje ikke ennå med alle integrasjoner.",
                     "unavailable": "Denne entiteten er ikke tilgjengelig for øyeblikket.",
@@ -639,6 +641,44 @@
                 "cancel": "Avbryt",
                 "default_confirmation_title": "Er du sikker?",
                 "ok": "OK"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Ikon",
+                    "initial_value": "Startverdi ved start",
+                    "initial_value_explain": "Verdien elementet vil ha når Home Assistant starter. Når den er tom, gjenopprettes verdien til den forrige verdien.",
+                    "name": "Navn"
+                },
+                "input_datetime": {
+                    "has_date": "Dato",
+                    "has_time": "Tid"
+                },
+                "input_number": {
+                    "box": "Inntastingsfelt",
+                    "max": "Maksimal verdi",
+                    "min": "Minimum verdi",
+                    "mode": "Visningsmodus",
+                    "slider": "Glidebryter",
+                    "step": "Trinnstørrelse på glidebryteren",
+                    "unit_of_measurement": "Måleenhet"
+                },
+                "input_select": {
+                    "add": "Legg til",
+                    "add_option": "Legg til alternativ",
+                    "no_options": "Det er ingen alternativer ennå.",
+                    "options": "Alternativer"
+                },
+                "input_text": {
+                    "max": "Maksimal lengde",
+                    "min": "Minimum lengde",
+                    "mode": "Visningsmodus",
+                    "password": "Passord",
+                    "pattern": "Regex-mønster for validering på klientsiden",
+                    "text": "Tekst"
+                },
+                "not_editable": "Kan ikke redigeres",
+                "not_editable_text": "Denne enheten kan ikke endres fra brukergrensesnittet fordi den er definert i configuration.yaml.",
+                "required_error_msg": "Dette feltet er påkrevd"
             },
             "more_info_control": {
                 "dismiss": "Avvis dialogboksen",
@@ -1356,6 +1396,30 @@
                     }
                 },
                 "header": "Konfigurer Home Assistant",
+                "helpers": {
+                    "caption": "Hjelpere",
+                    "description": "Elementer som kan bidra til å bygge automatiseringer.",
+                    "dialog": {
+                        "add_helper": "Legg hjelper",
+                        "add_platform": "Legg til {platform}",
+                        "create": "Opprett"
+                    },
+                    "picker": {
+                        "add_helper": "Legg hjelper",
+                        "headers": {
+                            "editable": "Redigerbare",
+                            "name": "Navn",
+                            "type": "Type"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "Veksle",
+                        "input_datetime": "Dato og/eller klokkeslett",
+                        "input_number": "Nummer",
+                        "input_select": "Dropdown",
+                        "input_text": "Tekst"
+                    }
+                },
                 "integrations": {
                     "caption": "Integrasjoner",
                     "config_entry": {
@@ -1928,7 +1992,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "Lovelace UI-konfigurasjonen ble oppdatert. Oppdater for å se endringer?",
+                    "message": "Lovelace UI-konfigurasjonen ble oppdatert. refresh for å se endringer?",
                     "refresh": "Oppdater"
                 },
                 "editor": {
@@ -2109,6 +2173,7 @@
                         "error_remove": "Kan ikke fjerne konfigurasjonen: {error}",
                         "error_save_yaml": "Kan ikke lagre YAML: {error}",
                         "header": "Rediger konfigurasjon",
+                        "resources_moved": "Ressurser skal ikke lenger legges til Lovelace-konfigurasjonen, men kan legges til i Lovelace-konfigurasjonspanelet.",
                         "save": "Lagre",
                         "saved": "Lagret",
                         "unsaved_changes": "Ulagrede endringer"

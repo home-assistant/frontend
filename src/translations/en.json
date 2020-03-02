@@ -595,7 +595,8 @@
       "generic": {
         "cancel": "Cancel",
         "ok": "OK",
-        "default_confirmation_title": "Are you sure?"
+        "default_confirmation_title": "Are you sure?",
+        "close": "close"
       },
       "more_info_control": {
         "dismiss": "Dismiss dialog",
@@ -644,6 +645,8 @@
         "no_unique_id": "This entity does not have a unique ID, therefore it's settings can not be managed from the UI.",
         "editor": {
           "name": "Name Override",
+          "icon": "Icon Override",
+          "icon_error": "Icons should be in the format 'prefix:iconname', e.g. 'mdi:home'",
           "entity_id": "Entity ID",
           "unavailable": "This entity is not currently available.",
           "enabled_label": "Enable entity",
@@ -653,6 +656,44 @@
           "confirm_delete": "Are you sure you want to delete this entry?",
           "update": "UPDATE",
           "note": "Note: this might not work yet with all integrations."
+        }
+      },
+      "helper_settings": {
+        "not_editable": "Not editable",
+        "not_editable_text": "This entity can't be changed from the UI because it is defined in configuration.yaml.",
+        "required_error_msg": "This field is required",
+        "generic": {
+          "name": "Name",
+          "icon": "Icon",
+          "initial_value": "Initial value at start",
+          "initial_value_explain": "The value the element will have when Home Assistant starts. When left empty, the value will be restored to it's previous value."
+        },
+        "input_datetime": {
+          "has_time": "Time",
+          "has_date": "Date"
+        },
+        "input_text": {
+          "min": "Minimum lenght",
+          "max": "Maximum lenght",
+          "mode": "Display mode",
+          "text": "Text",
+          "password": "Password",
+          "pattern": "Regex pattern for client-side validation"
+        },
+        "input_number": {
+          "min": "Minimum value",
+          "max": "Maximum value",
+          "mode": "Display mode",
+          "box": "Input field",
+          "slider": "Slider",
+          "step": "Step size of the slider",
+          "unit_of_measurement": "Unit of measurement"
+        },
+        "input_select": {
+          "options": "Options",
+          "add_option": "Add option",
+          "no_options": "There are no options yet.",
+          "add": "Add"
         }
       },
       "options_flow": {
@@ -757,6 +798,30 @@
             "create": "CREATE"
           }
         },
+        "helpers": {
+          "caption": "Helpers",
+          "description": "Elements that can help build automations.",
+          "types": {
+            "input_text": "Text",
+            "input_number": "Number",
+            "input_select": "Dropdown",
+            "input_boolean": "Toggle",
+            "input_datetime": "Date and/or time"
+          },
+          "picker": {
+            "headers": {
+              "name": "Name",
+              "type": "Type",
+              "editable": "Editable"
+            },
+            "add_helper": "Add helper"
+          },
+          "dialog": {
+            "create": "Create",
+            "add_helper": "Add helper",
+            "add_platform": "Add {platform}"
+          }
+        },
         "core": {
           "caption": "General",
           "description": "Change your general Home Assistant configuration",
@@ -780,6 +845,76 @@
                 "metric_example": "Celsius, kilograms",
                 "save_button": "Save"
               }
+            }
+          }
+        },
+        "lovelace": {
+          "caption": "Lovelace Dashboards",
+          "description": "Configure your Lovelace Dashboards",
+          "dashboards": {
+            "caption": "Dashboards",
+            "conf_mode": {
+              "yaml": "YAML file",
+              "storage": "UI controlled"
+            },
+            "picker": {
+              "headers": {
+                "title": "Title",
+                "conf_mode": "Configuration method",
+                "require_admin": "Admin only",
+                "sidebar": "Show in sidebar",
+                "filename": "Filename"
+              },
+              "open": "Open dashboard",
+              "add_dashboard": "Add dashboard"
+            },
+            "confirm_delete": "Are you sure you want to delete this dashboard?",
+            "cant_edit_yaml": "Dashboards defined in YAML can not be edited from the UI. Change them in configuration.yaml.",
+            "detail": {
+              "edit_dashboard": "Edit dashboard",
+              "new_dashboard": "Add new dashboard",
+              "dismiss": "Close",
+              "show_sidebar": "Show in sidebar",
+              "icon": "Sidebar icon",
+              "title": "Sidebar title",
+              "url": "Url",
+              "url_error_msg": "The url can not contain spaces or special characters, except for _ and -",
+              "require_admin": "Admin only",
+              "delete": "Delete",
+              "update": "Update",
+              "create": "Create"
+            }
+          },
+          "resources": {
+            "caption": "Resources",
+            "types": {
+              "css": "Stylesheet",
+              "html": "HTML (deprecated)",
+              "js": "JavaScript File (deprecated)",
+              "module": "JavaScript Module"
+            },
+            "picker": {
+              "headers": {
+                "url": "Url",
+                "type": "Type"
+              },
+              "add_resource": "Add resource"
+            },
+            "confirm_delete": "Are you sure you want to delete this resource?",
+            "refresh_header": "Do you want to refresh?",
+            "refresh_body": "You have to refresh the page to complete the removal, do you want to refresh now?",
+            "cant_edit_yaml": "You are using Lovelace in YAML mode, therefore you can not manage your resources through the UI. Manage them in configuration.yaml.",
+            "detail": {
+              "new_resource": "Add new resource",
+              "dismiss": "Close",
+              "warning_header": "Be cautious!",
+              "warning_text": "Adding resources can be dangerous, make sure you know the source of the resource and trust them. Bad resources could seriously harm your system.",
+              "url": "Url",
+              "url_error_msg": "Url is a required field",
+              "type": "Resource type",
+              "delete": "Delete",
+              "update": "Update",
+              "create": "Create"
             }
           }
         },
@@ -1800,7 +1935,11 @@
             "header": "Take control of your Lovelace UI",
             "para": "By default Home Assistant will maintain your user interface, updating it when new entities or Lovelace UI components become available. If you take control we will no longer make changes automatically for you.",
             "para_sure": "Are you sure you want to take control of your user interface?",
+            "yaml_mode": "You are using YAML mode, that means you can not change your Lovelace config from the UI. If you want to change Lovelace from the UI, remove the 'mode: yaml' from your Lovelace configuration in 'configuration.yaml.'",
+            "yaml_control": "To take control in YAML mode, create a YAML file with the name you specified in your config for this dashboard, or the default 'ui-lovelace.yaml'.",
+            "yaml_config": "To help you start here is the current config of this dashboard:",
             "cancel": "Never mind",
+            "close": "Close",
             "save": "Take control"
           },
           "migrate": {
@@ -1950,7 +2089,7 @@
           "entity_non_numeric": "Entity is non-numeric: {entity}"
         },
         "changed_toast": {
-          "message": "The Lovelace UI configuration was updated, refresh to see changes?",
+          "message": "The Lovelace UI configuration for this dashboard was updated, refresh to see changes?",
           "refresh": "Refresh"
         },
         "reload_lovelace": "Reload UI"
