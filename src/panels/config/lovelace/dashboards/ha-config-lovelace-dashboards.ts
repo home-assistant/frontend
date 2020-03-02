@@ -164,6 +164,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         .columns=${this._columns(this.hass.language, this._dashboards)}
         .data=${this._getItems(this._dashboards)}
         @row-click=${this._editDashboard}
+        id="url_path"
       >
       </hass-tabs-subpage-data-table>
       <ha-fab
@@ -194,18 +195,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
   }
 
   private _editDashboard(ev: CustomEvent) {
-    const id = (ev.detail as RowClickedEvent).id;
-    const dashboard = id
-      ? this._dashboards.find((res) => res.id === id)
-      : undefined;
-    if (!dashboard) {
-      showAlertDialog(this, {
-        text: this.hass!.localize(
-          "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
-        ),
-      });
-      return;
-    }
+    const urlPath = (ev.detail as RowClickedEvent).id;
+    const dashboard = this._dashboards.find((res) => res.url_path === urlPath);
     this._openDialog(dashboard);
   }
 
