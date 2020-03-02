@@ -95,7 +95,7 @@ export interface Panels {
 export interface Translation {
   nativeName: string;
   isRTL: boolean;
-  fingerprints: { [fragment: string]: string };
+  hash: string;
 }
 
 export interface TranslationMetadata {
