@@ -75,7 +75,7 @@ export class SystemLogCard extends LitElement {
                                     this.hass!.localize,
                                     integrations[idx]!
                                   )
-                                : item.source}
+                                : item.source[0]}
                               (${item.level})
                               ${item.count > 1
                                 ? html`

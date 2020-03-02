@@ -54,7 +54,8 @@ class DialogSystemLogDetail extends LitElement {
         </h2>
         <paper-dialog-scrollable>
           <p>
-            Logger: ${item.name}
+            Logger: ${item.name}<br />
+            Source: ${item.source.join(":")}
             ${integration
               ? html`
                   <br />
