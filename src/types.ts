@@ -207,6 +207,7 @@ export type MediaEntity = HassEntityBase & {
     media_duration: number;
     media_position: number;
     media_title: string;
+    icon?: string;
   };
 };
 
