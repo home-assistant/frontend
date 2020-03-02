@@ -139,12 +139,21 @@ export class DialogLovelaceDashboardDetail extends LitElement {
               <mwc-button
                 slot="secondaryAction"
                 class="warning"
-                @click="${this._deleteDashboard}"
+                @click=${this._deleteDashboard}
                 .disabled=${this._submitting}
               >
                 ${this.hass!.localize(
                   "ui.panel.config.lovelace.dashboards.detail.delete"
                 )}
+              </mwc-button>
+              <mwc-button slot="secondaryAction" @click=${this._toggleDefault}>
+                ${this._params.dashboard.url_path === localStorage.defaultPage
+                  ? this.hass!.localize(
+                      "ui.panel.config.lovelace.dashboards.detail.remove_default"
+                    )
+                  : this.hass!.localize(
+                      "ui.panel.config.lovelace.dashboards.detail.set_default"
+                    )}
               </mwc-button>
             `
           : html``}
@@ -197,6 +206,19 @@ export class DialogLovelaceDashboardDetail extends LitElement {
 
   private _requireAdminChanged(ev: Event) {
     this._requireAdmin = (ev.target as HaSwitch).checked;
+  }
+
+  private _toggleDefault() {
+    const urlPath = this._params?.dashboard?.url_path;
+    if (!urlPath) {
+      return;
+    }
+    if (urlPath === localStorage.defaultPage) {
+      delete localStorage.defaultPage;
+    } else {
+      localStorage.defaultPage = urlPath;
+    }
+    location.reload();
   }
 
   private async _updateDashboard() {
