@@ -49,8 +49,6 @@ export class HuiHistoryGraphCard extends LitElement implements LovelaceCard {
       includeDomains
     );
 
-    console.log("stub config for history", entities);
-
     return { entities: foundEntities };
   }
 
