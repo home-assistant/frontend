@@ -1,6 +1,5 @@
 import {
   computeUnusedEntities,
-  EXCLUDED_DOMAINS,
   computeUsedEntities,
 } from "./compute-unused-entities";
 import { HomeAssistant } from "../../../types";
