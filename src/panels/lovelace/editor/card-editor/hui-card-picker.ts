@@ -6,6 +6,7 @@ import {
   CSSResult,
   customElement,
   property,
+  PropertyValues,
 } from "lit-element";
 import { until } from "lit-html/directives/until";
 import { classMap } from "lit-html/directives/class-map";
@@ -59,7 +60,6 @@ export class HuiCardPicker extends LitElement {
   public cardPicked?: (cardConf: LovelaceCardConfig) => void;
   private _unusedEntities?: string[];
   private _usedEntities?: string[];
-  private _rendered: boolean = false;
 
   protected render(): TemplateResult {
     if (
@@ -70,8 +70,6 @@ export class HuiCardPicker extends LitElement {
     ) {
       return html``;
     }
-
-    this._rendered = true;
 
     return html`
       <div class="cards-container">
@@ -121,8 +119,17 @@ export class HuiCardPicker extends LitElement {
     `;
   }
 
-  protected shouldUpdate(): boolean {
-    return !this._rendered;
+  protected shouldUpdate(changedProps: PropertyValues): boolean {
+    const oldHass = changedProps.get("hass") as HomeAssistant | undefined;
+    if (!oldHass) {
+      return true;
+    }
+
+    if (oldHass.language !== this.hass!.language) {
+      return true;
+    }
+
+    return false;
   }
 
   protected firstUpdated(): void {
