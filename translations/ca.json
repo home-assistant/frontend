@@ -626,6 +626,7 @@
                     "enabled_description": "Les entitats desactivades no s’afegiran a Home Assistant.",
                     "enabled_label": "Activa l’entitat",
                     "entity_id": "ID de l'entitat",
+                    "icon_error": "Els icones han de tenir el format 'prefix:nom_icona', per exemple: 'mdi:home'",
                     "name": "Substitució de Nom",
                     "note": "Nota: podria no funcionar amb alguna de les integracions.",
                     "unavailable": "Aquesta entitat no està disponible actualment.",
@@ -637,8 +638,36 @@
             },
             "generic": {
                 "cancel": "Cancel·la",
+                "close": "tanca",
                 "default_confirmation_title": "Estàs segur?",
                 "ok": "OK"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Icona",
+                    "initial_value": "Valor inicial",
+                    "name": "Nom"
+                },
+                "input_datetime": {
+                    "has_date": "Data",
+                    "has_time": "Hora"
+                },
+                "input_number": {
+                    "max": "Valor màxim",
+                    "min": "Valor mínim"
+                },
+                "input_select": {
+                    "add": "Afegeix",
+                    "options": "Opcions"
+                },
+                "input_text": {
+                    "max": "Longitud màxima",
+                    "min": "Longitud mínima",
+                    "password": "Contrasenya",
+                    "text": "Text"
+                },
+                "not_editable": "No editable",
+                "required_error_msg": "Aquest camp és obligatori"
             },
             "more_info_control": {
                 "dismiss": "Desestimar el diàleg",
@@ -1356,6 +1385,24 @@
                     }
                 },
                 "header": "Configuració de Home Assistant",
+                "helpers": {
+                    "dialog": {
+                        "create": "Crea"
+                    },
+                    "picker": {
+                        "headers": {
+                            "name": "Nom",
+                            "type": "Tipus"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "Commuta",
+                        "input_datetime": "Data i/o hora",
+                        "input_number": "Número",
+                        "input_select": "Desplegable",
+                        "input_text": "Text"
+                    }
+                },
                 "integrations": {
                     "caption": "Integracions",
                     "config_entry": {
@@ -1418,16 +1465,42 @@
                 },
                 "introduction": "Aquí pots configurar Home Assistant i els seus components. Encara no és possible configurar-ho tot des de la interfície d'usuari, però hi estem treballant.",
                 "lovelace": {
+                    "caption": "Panells Lovelace",
                     "dashboards": {
+                        "caption": "Panells",
+                        "conf_mode": {
+                            "storage": "Controlat per la UI",
+                            "yaml": "Fitxer YAML"
+                        },
+                        "confirm_delete": "Estàs segur que vols eliminar aquest panell?",
                         "detail": {
                             "create": "Crea",
                             "delete": "Suprimeix",
+                            "dismiss": "Tanca",
+                            "edit_dashboard": "Edita el panell",
+                            "icon": "Icona de la barra lateral",
+                            "new_dashboard": "Afegeix un nou panell",
                             "require_admin": "Només administrador",
+                            "show_sidebar": "Mostra a la barra lateral",
+                            "title": "Títol de la barra lateral",
                             "update": "Actualitza",
                             "url": "URL"
+                        },
+                        "picker": {
+                            "add_dashboard": "Afegeix panell",
+                            "headers": {
+                                "conf_mode": "Mètode de configuració",
+                                "filename": "Nom de l'arxiu",
+                                "require_admin": "Només administrador",
+                                "sidebar": "Mostra a la barra lateral",
+                                "title": "Títol"
+                            },
+                            "open": "Obre panell"
                         }
                     },
+                    "description": "Configura els teus panells Lovelace",
                     "resources": {
+                        "cant_edit_yaml": "Estàs utilitzant el mode YAML per tant no pots gestionar els recursos des de la interfície d'usuari. Els pots gestionar dins el fitxer 'configuration.yaml'.",
                         "caption": "Recursos",
                         "confirm_delete": "Estàs segur que vols eliminar aquest recurs?",
                         "detail": {
@@ -2162,7 +2235,10 @@
                         "header": "Pren el control de la interfície d'usuari Lovelace",
                         "para": "De manera predeterminada, Home Assistant mantindrà al dia la teva interfície d'usuari, actualitzant-la quan hi hagi noves entitats o nous components de Lovelace disponibles. Si prens el control, ja no es faran aquests canvis automàticament.",
                         "para_sure": "Estàs segur que vols prendre el control de la interfície d'usuari?",
-                        "save": "Prendre el control"
+                        "save": "Prendre el control",
+                        "yaml_config": "Per ajudar a familiaritzar-te, aquí tens la configuració actual del teu panell Lovelace:",
+                        "yaml_control": "Per configurar el panell en mode YAML, crea un fitxer YAML amb el nom que hagis establert a la configuració del panell, o bé el nom per defecte 'ui-lovelace.yaml'.",
+                        "yaml_mode": "Estàs utilitzant el mode YAML per tant no pots editar el panell Lovelace des de la interfície d'usuari. Si vols poder editar-lo des de la UI, elimina la línia 'mode: yaml' del fitxer 'configuration.yaml' en l'apartat de configuració de Lovelace."
                     },
                     "suggest_card": {
                         "add": "Afegeix a la UI Lovelace",
