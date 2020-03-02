@@ -438,6 +438,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   static get styles(): CSSResult {
     return css`
+      ha-card {
+        overflow: hidden;
+      }
+
       .background {
         display: flex;
         min-height: 120px;
