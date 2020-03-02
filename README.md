@@ -1,4 +1,4 @@
-# Home Assistant Polymer [![Build Status](https://travis-ci.org/home-assistant/home-assistant-polymer.svg?branch=master)](https://travis-ci.org/home-assistant/home-assistant-polymer)
+# Home Assistant Frontend
 
 This is the repository for the official [Home Assistant](https://home-assistant.io) frontend.
 
