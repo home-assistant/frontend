@@ -22,7 +22,7 @@ import { haStyleDialog } from "../../../../resources/styles";
 
 @customElement("dialog-lovelace-dashboard-detail")
 export class DialogLovelaceDashboardDetail extends LitElement {
-  @property() public hass: HomeAssistant;
+  @property() public hass!: HomeAssistant;
   @property() private _params?: LovelaceDashboardDetailsDialogParams;
   @property() private _urlPath!: LovelaceDashboard["url_path"];
   @property() private _showSidebar!: boolean;
