@@ -1954,7 +1954,7 @@
             "alarm-panel": {
               "name": "Alarm Panel",
               "available_states": "Available States",
-              "description": "The Alarm Panel card allows you to Arm and Disarm your Alarm Control Panel integrations."
+              "description": "The Alarm Panel card allows you to Arm and Disarm your alarm control panel integrations."
             },
             "conditional": {
               "name": "Conditional",
@@ -2003,7 +2003,7 @@
             },
             "iframe": {
               "name": "Webpage",
-              "description": "The Webpage card allows you to embed your favorite webpage right into Home Assistant"
+              "description": "The Webpage card allows you to embed your favorite webpage right into Home Assistant."
             },
             "light": {
               "name": "Light",
@@ -2050,7 +2050,7 @@
             },
             "media-control": {
               "name": "Media Control",
-              "description": "The Media Control card is used to display Media Player entities on an interface with easy to use controls."
+              "description": "The Media Control card is used to display media player entities on an interface with easy to use controls."
             },
             "picture": {
               "name": "Picture",
@@ -2062,7 +2062,7 @@
             },
             "picture-entity": {
               "name": "Picture Entity",
-              "description": "The Picture Entity card displays an entity in the form of an image. Instead of images from URL, it can also show the picture of Camera entities."
+              "description": "The Picture Entity card displays an entity in the form of an image. Instead of images from URL, it can also show the picture of camera entities."
             },
             "picture-glance": {
               "name": "Picture Glance",
@@ -2085,7 +2085,7 @@
             },
             "thermostat": {
               "name": "Thermostat",
-              "description": "The Thermostat card gives control of your Climate entity. Allowing you to change the temperature and mode of the entity"
+              "description": "The Thermostat card gives control of your climate entity. Allowing you to change the temperature and mode of the entity."
             },
             "vertical-stack": {
               "name": "Vertical Stack",
