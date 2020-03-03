@@ -18,10 +18,9 @@ export const findEntities = (
 ) => {
   let entityIds: string[];
 
-  entityIds =
-    entities && entities.length
-      ? entities
-      : computeUnusedEntities(hass, lovelaceConfig);
+  entityIds = !entities?.length
+    ? computeUnusedEntities(hass, lovelaceConfig)
+    : entities;
 
   if (includeDomains && includeDomains.length) {
     entityIds = entityIds.filter((eid) =>
