@@ -59,10 +59,16 @@ class DialogSystemLogDetail extends LitElement {
               ? html`
                   <br />
                   Integration: ${domainToName(this.hass.localize, integration)}
-                  (<a href=${integrationDocsUrl(integration)} target="_blank"
+                  (<a
+                    href=${integrationDocsUrl(integration)}
+                    target="_blank"
+                    rel="noreferrer"
                     >documentation</a
                   >,
-                  <a href=${integrationIssuesUrl(integration)} target="_blank"
+                  <a
+                    href=${integrationIssuesUrl(integration)}
+                    target="_blank"
+                    rel="noreferrer"
                     >issues</a
                   >)
                 `
