@@ -24,6 +24,8 @@ import { fireEvent } from "../../../common/dom/fire_event";
 import { toggleAttribute } from "../../../common/dom/toggle_attribute";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { actionHandler } from "../common/directives/action-handler-directive";
+import { LovelaceConfig } from "../../../data/lovelace";
+import { findEntities } from "../common/find-entites";
 
 const cardinalDirections = [
   "N",
@@ -71,8 +73,25 @@ class HuiWeatherForecastCard extends LitElement implements LovelaceCard {
     );
     return document.createElement("hui-weather-forecast-card-editor");
   }
-  public static getStubConfig(): object {
-    return { entity: "" };
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
+  ): object {
+    const includeDomains = ["weather"];
+    const maxEntities = 1;
+    const foundEntities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      entities,
+      entitiesFill,
+      includeDomains
+    );
+
+    return { entity: foundEntities[0] || "" };
   }
 
   @property() public hass?: HomeAssistant;
