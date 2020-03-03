@@ -1991,7 +1991,7 @@
             "glance": {
               "name": "Glance",
               "columns": "Columns",
-              "description": "The Glance card is very compact. Very useful to group multiple sensors for a quick and easy overview."
+              "description": "The Glance card is useful to group multiple sensors in a compact overview."
             },
             "history-graph": {
               "name": "History Graph",
