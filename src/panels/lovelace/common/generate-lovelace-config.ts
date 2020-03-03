@@ -205,7 +205,6 @@ export const computeCards = (
   }
 
   if (entities.length > 0) {
-    console.log(entityCardOptions.title, entities);
     cards.unshift({
       type: "entities",
       entities,
