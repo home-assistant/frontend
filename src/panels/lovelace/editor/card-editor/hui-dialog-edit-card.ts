@@ -99,6 +99,7 @@ export class HuiDialogEditCard extends LitElement {
           ${this._cardConfig === undefined
             ? html`
                 <hui-card-picker
+                  .lovelace="${this._params.lovelaceConfig}"
                   .hass=${this.hass}
                   @config-changed="${this._handleCardPicked}"
                 ></hui-card-picker>
@@ -254,7 +255,7 @@ export class HuiDialogEditCard extends LitElement {
 
   private _handleCardPicked(ev) {
     const config = ev.detail.config;
-    if (this._params!.entities && this._params!.entities.length > 0) {
+    if (this._params!.entities && this._params!.entities.length) {
       if (Object.keys(config).includes("entities")) {
         config.entities = this._params!.entities;
       } else if (Object.keys(config).includes("entity")) {
