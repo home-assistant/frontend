@@ -76,13 +76,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   @property() private backgroundColor?: string;
   @property() private _narrow: boolean = false;
   @property() private _veryNarrow: boolean = false;
-  @property() private _veryVeryNarrow: boolean = false;
+  @property() private _cardWidth: number = 0;
   private _resizeObserver?: ResizeObserver;
   private _debouncedResizeListener = debounce(
     () => {
-      this._narrow = this.offsetWidth < 475 ? true : false;
-      this._veryNarrow = this.offsetWidth < 400 ? true : false;
-      this._veryVeryNarrow = this.offsetWidth < 350 ? true : false;
+      this._narrow = this.offsetWidth < 380 ? true : false;
+      this._veryNarrow = this.offsetWidth < 325 ? true : false;
+      this._cardWidth = this.offsetHeight;
     },
     100,
     false
@@ -125,28 +125,36 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         <div
           class="background ${classMap({
             "no-image": !this._image,
-            "very-narrow": this._veryNarrow,
           })}"
         >
           <div
             class="color-block"
             style="background-color: ${this.backgroundColor}"
           ></div>
-          <div
-            class="color-gradient"
-            style="background-image: linear-gradient(to right, ${this
-              .backgroundColor}, transparent);"
-          ></div>
+          ${!this._image
+            ? ""
+            : html`
+                <div
+                  class="color-gradient"
+                  style="background-image: linear-gradient(to right, ${this
+                    .backgroundColor}, transparent);width: ${this
+                    ._cardWidth}px;"
+                ></div>
+              `}
           <div
             class="image"
-            style="background-image: url(${this.hass.hassUrl(picture)})"
+            style="background-image: url(${this.hass.hassUrl(
+              picture
+            )}); padding-left: ${!this._image
+              ? "50%"
+              : `${this._cardWidth}px`};"
           ></div>
         </div>
         <div
           class="player ${classMap({
             "no-image": !this._image,
+            narrow: this._narrow,
             "very-narrow": this._veryNarrow,
-            "very-very-narrow": this._veryVeryNarrow,
           })}"
           style="color: ${this.foregroundColor}"
         >
@@ -171,7 +179,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               ></paper-icon-button>
             </div>
           </div>
-          <div class="title-controls">
+          <div
+            class="title-controls"
+            style="padding-right: ${this._cardWidth - 16}px"
+          >
             <div class="media-info">
               <div class="title">
                 ${stateObj.attributes.media_title ||
@@ -181,7 +192,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
               </div>
               ${this._computeSecondaryTitle(stateObj)}
             </div>
-            ${this._veryVeryNarrow
+            ${this._veryNarrow
               ? ""
               : html`
                   <div class="controls">
@@ -444,15 +455,17 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       .background {
         display: flex;
-        min-height: 120px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
       }
 
       .color-block {
         background-color: var(--primary-color);
         transition: background-color 0.8s;
-        padding: 16px;
-        box-sizing: border-box;
-        width: 60%;
+        width: 100%;
       }
 
       .color-gradient {
@@ -462,16 +475,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
           var(--primary-color),
           transparent
         );
-        left: 60%;
         height: 100%;
-        width: 40%;
+        right: 0;
       }
 
       .image {
         display: block;
-        width: 40%;
-        transition: all 0.5;
-        padding-bottom: 40%;
+        width: 0;
         background-color: var(--primary-color);
         background-position: center;
         background-size: cover;
@@ -480,22 +490,14 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       }
 
       .player {
-        position: absolute;
-        top: 0;
-        left: 0;
+        position: relative;
         padding: 16px;
-        height: 100%;
-        width: 100%;
-        box-sizing: border-box;
         color: var(--text-primary-color);
+        transition: all 0.8s;
       }
 
       .icon {
         width: 18px;
-      }
-
-      .title-controls {
-        width: 60%;
       }
 
       .controls {
@@ -503,8 +505,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         display: flex;
         justify-content: flex-start;
         align-items: center;
-        transition: opacity 0.8s;
-        opacity: 1;
+        transition: all 0.8s;
       }
 
       .controls > div {
@@ -515,10 +516,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       .controls paper-icon-button {
         width: 44px;
         height: 44px;
-      }
-
-      paper-icon-button {
-        opacity: var(--dark-primary-opacity);
       }
 
       .playPauseButton {
@@ -556,6 +553,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         border-radius: calc(var(--paper-progress-height, 4px) / 2);
         --paper-progress-active-color: var(--accent-color);
         --paper-progress-container-color: rgba(200, 200, 200, 0.5);
+        transition: all 0.8s;
       }
 
       .no-image .image {
@@ -581,47 +579,26 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         padding: 0;
       }
 
-      .very-narrow .title-controls {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 70%;
+      .narrow.player {
+        padding-bottom: 4px;
       }
 
-      .very-narrow .media-info {
-        width: 50%;
+      .narrow .controls {
+        padding-bottom: 0;
       }
 
-      .very-narrow .controls {
-        padding: 0;
-      }
-
-      .very-narrow paper-icon-button {
+      .narrow paper-icon-button {
         width: 40px;
         height: 40px;
       }
 
-      .very-narrow .playPauseButton {
+      .narrow .playPauseButton {
         width: 50px !important;
         height: 50px !important;
       }
 
-      .very-narrow .color-block {
-        width: 70%;
-      }
-
-      .very-narrow .color-gradient {
-        width: 30%;
-        left: 70%;
-      }
-
-      .very-narrow .image {
-        width: 30%;
-        padding-bottom: 30%;
-      }
-
-      .very-very-narrow .media-info {
-        width: 100%;
+      .very-narrow.player {
+        padding-bottom: 16px;
       }
     `;
   }
