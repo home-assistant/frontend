@@ -9,6 +9,7 @@ import {
   css,
 } from "lit-element";
 import memoize from "memoize-one";
+import "@polymer/paper-tooltip/paper-tooltip";
 import {
   DataTableColumnContainer,
   RowClickedEvent,
@@ -59,10 +60,24 @@ export class HaConfigLovelaceDashboards extends LitElement {
           sortable: true,
           filterable: true,
           direction: "asc",
-          template: (title, dashboard: any) =>
-            narrow
+          template: (title, dashboard: any) => {
+            const titleTemplate = html`
+              ${title}
+              ${dashboard.default
+                ? html`
+                    <ha-icon
+                      style="padding-left: 10px;"
+                      icon="hass:check-circle-outline"
+                    ></ha-icon>
+                    <paper-tooltip>
+                      This is the default dashdoard.
+                    </paper-tooltip>
+                  `
+                : ""}
+            `;
+            return narrow
               ? html`
-                  ${title}
+                  ${titleTemplate}
                   <div class="secondary">
                     ${this.hass.localize(
                       `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
@@ -73,9 +88,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
                       : ""}
                   </div>
                 `
-              : html`
-                  ${title}
-                `,
+              : titleTemplate;
+          },
         },
       };
 
@@ -162,14 +176,30 @@ export class HaConfigLovelaceDashboards extends LitElement {
   );
 
   private _getItems = memoize((dashboards: LovelaceDashboard[]) => {
-    return dashboards.map((dashboard) => {
-      return {
-        filename: "",
-        ...dashboard,
-        icon: dashboard.sidebar?.icon,
-        title: dashboard.sidebar?.title || dashboard.url_path,
-      };
-    });
+    const defaultMode = (this.hass.panels?.lovelace?.config as any)?.mode;
+    const isDefault =
+      !localStorage.defaultPage || localStorage.defaultPage === "lovelace";
+    return [
+      {
+        icon: "hass:apps",
+        title: this.hass.localize("panel.states"),
+        default: isDefault,
+        sidebar: isDefault,
+        require_admin: false,
+        url_path: "lovelace",
+        mode: defaultMode,
+        filename: defaultMode === "yaml" ? "ui-lovelace.yaml" : "",
+      },
+      ...dashboards.map((dashboard) => {
+        return {
+          filename: "",
+          ...dashboard,
+          icon: dashboard.sidebar?.icon,
+          title: dashboard.sidebar?.title || dashboard.url_path,
+          default: localStorage.defaultPage === dashboard.url_path,
+        };
+      }),
+    ];
   });
 
   protected render(): TemplateResult {
@@ -226,16 +256,20 @@ export class HaConfigLovelaceDashboards extends LitElement {
   private _editDashboard(ev: CustomEvent) {
     const urlPath = (ev.detail as RowClickedEvent).id;
     const dashboard = this._dashboards.find((res) => res.url_path === urlPath);
-    this._openDialog(dashboard);
+    this._openDialog(dashboard, urlPath);
   }
 
   private _addDashboard() {
     this._openDialog();
   }
 
-  private async _openDialog(dashboard?: LovelaceDashboard): Promise<void> {
+  private async _openDialog(
+    dashboard?: LovelaceDashboard,
+    urlPath?: string
+  ): Promise<void> {
     showDashboardDetailDialog(this, {
       dashboard,
+      urlPath,
       createDashboard: async (values: LovelaceDashboardCreateParams) => {
         const created = await createDashboard(this.hass!, values);
         this._dashboards = this._dashboards!.concat(
