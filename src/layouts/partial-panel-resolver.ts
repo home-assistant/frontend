@@ -9,7 +9,7 @@ import {
 } from "./hass-router-page";
 import { removeInitSkeleton } from "../util/init-skeleton";
 
-const CACHE_URL_PATHS = ["lovelace", "states", "developer-tools"];
+const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
 const COMPONENTS = {
   calendar: () =>
     import(
@@ -31,10 +31,6 @@ const COMPONENTS = {
     import(
       /* webpackChunkName: "panel-lovelace" */ "../panels/lovelace/ha-panel-lovelace"
     ),
-  states: () =>
-    import(
-      /* webpackChunkName: "panel-states" */ "../panels/states/ha-panel-states"
-    ),
   history: () =>
     import(
       /* webpackChunkName: "panel-history" */ "../panels/history/ha-panel-history"
@@ -42,10 +38,6 @@ const COMPONENTS = {
   iframe: () =>
     import(
       /* webpackChunkName: "panel-iframe" */ "../panels/iframe/ha-panel-iframe"
-    ),
-  kiosk: () =>
-    import(
-      /* webpackChunkName: "panel-kiosk" */ "../panels/kiosk/ha-panel-kiosk"
     ),
   logbook: () =>
     import(
