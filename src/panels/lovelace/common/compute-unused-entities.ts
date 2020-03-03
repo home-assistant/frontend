@@ -1,7 +1,7 @@
 import { LovelaceConfig, ActionConfig } from "../../../data/lovelace";
 import { HomeAssistant } from "../../../types";
 
-const EXCLUDED_DOMAINS = ["zone", "persistent_notification"];
+export const EXCLUDED_DOMAINS = ["zone", "persistent_notification"];
 
 const addFromAction = (entities: Set<string>, actionConfig: ActionConfig) => {
   if (
@@ -61,7 +61,7 @@ const addEntities = (entities: Set<string>, obj) => {
   }
 };
 
-const computeUsedEntities = (config) => {
+export const computeUsedEntities = (config) => {
   const entities = new Set<string>();
   config.views.forEach((view) => addEntities(entities, view));
   return entities;
