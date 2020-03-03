@@ -1,6 +1,7 @@
 import { HomeAssistant } from "../types";
 
 import { timeCachePromiseFunc } from "../common/util/time-cache-function-promise";
+import { HassEntity } from "home-assistant-js-websocket";
 
 export const SUPPORT_PAUSE = 1;
 export const SUPPORT_SEEK = 2;
@@ -44,4 +45,13 @@ export const fetchMediaPlayerThumbnail = (
     type: "media_player_thumbnail",
     entity_id: entityId,
   });
+};
+
+export const getCurrentProgress = (stateObj: HassEntity): number => {
+  let progress = stateObj.attributes.media_position;
+  progress +=
+    (Date.now() -
+      new Date(stateObj.attributes.media_position_updated_at).getTime()) /
+    1000.0;
+  return progress;
 };
