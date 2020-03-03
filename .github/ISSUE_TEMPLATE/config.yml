@@ -1,7 +1,7 @@
 blank_issues_enabled: false
 contact_links:
   - name: Report a bug that is NOT related to the UI, Frontend or Lovelace
-    url: https://github.com/home-assistant/home-assistant/issues
+    url: https://github.com/home-assistant/core/issues
     about: This is the issue tracker for our frontend. Please report other issues with the backend repository.
   - name: Report incorrect or missing information on our website
     url: https://github.com/home-assistant/home-assistant.io/issues
