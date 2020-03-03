@@ -11,17 +11,13 @@
     "src/panels/dev-template/ha-panel-dev-template.js",
     "src/panels/history/ha-panel-history.js",
     "src/panels/iframe/ha-panel-iframe.js",
-    "src/panels/kiosk/ha-panel-kiosk.js",
     "src/panels/logbook/ha-panel-logbook.js",
     "src/panels/map/ha-panel-map.js",
     "src/panels/shopping-list/ha-panel-shopping-list.js",
     "src/panels/mailbox/ha-panel-mailbox.js",
     "hassio/src/entrypoint.js"
   ],
-  "sources": [
-    "src/**/*",
-    "!src/translations/*"
-  ],
+  "sources": ["src/**/*", "!src/translations/*"],
   "lint": {
     "rules": ["polymer-3"],
     "ignoreWarnings": ["could-not-resolve-reference", "could-not-load"],
