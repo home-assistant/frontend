@@ -2054,7 +2054,7 @@
             },
             "picture": {
               "name": "Picture",
-              "description": "The Picture Card allows you to set an image to use for navigation to various paths in your interface or to call a service."
+              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to call a service."
             },
             "picture-elements": {
               "name": "Picture Elements",
@@ -2080,7 +2080,7 @@
             },
             "shopping-list": {
               "name": "Shopping List",
-              "description": "The Shopping List Card allows you to add, edit, check-off, and clear items from your shopping list.",
+              "description": "The Shopping List card allows you to add, edit, check-off, and clear items from your shopping list.",
               "integration_not_loaded": "This card requires the `shopping_list` integration to be set up."
             },
             "thermostat": {
