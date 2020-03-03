@@ -79,6 +79,7 @@ const panelSorter = (a: PanelInfo, b: PanelInfo) => {
   }
   return 0;
 };
+const DEFAULT_PAGE = localStorage.defaultPage || DEFAULT_PANEL;
 
 const computePanels = (hass: HomeAssistant): [PanelInfo[], PanelInfo[]] => {
   const panels = hass.panels;
@@ -90,7 +91,7 @@ const computePanels = (hass: HomeAssistant): [PanelInfo[], PanelInfo[]] => {
   const afterSpacer: PanelInfo[] = [];
 
   Object.values(panels).forEach((panel) => {
-    if (!panel.title) {
+    if (!panel.title || panel.url_path === DEFAULT_PAGE) {
       return;
     }
     (SHOW_AFTER_SPACER.includes(panel.url_path)
@@ -114,8 +115,7 @@ class HaSidebar extends LitElement {
 
   @property({ type: Boolean }) public alwaysExpand = false;
   @property({ type: Boolean, reflect: true }) public expanded = false;
-  @property() public _defaultPage?: string =
-    localStorage.defaultPage || DEFAULT_PANEL;
+
   @property() private _externalConfig?: ExternalConfig;
   @property() private _notifications?: PersistentNotification[];
   // property used only in css
@@ -144,6 +144,9 @@ class HaSidebar extends LitElement {
       }
     }
 
+    const defaultPanel =
+      this.hass.panels[DEFAULT_PAGE] || this.hass.panels[DEFAULT_PANEL];
+
     return html`
       <div class="menu">
         ${!this.narrow
@@ -168,9 +171,9 @@ class HaSidebar extends LitElement {
         @keydown=${this._listboxKeydown}
       >
         ${this._renderPanel(
-          this._defaultPage,
-          "hass:apps",
-          hass.localize("panel.states")
+          defaultPanel.url_path,
+          defaultPanel.icon || "hass:apps",
+          defaultPanel.title || hass.localize("panel.states")
         )}
         ${beforeSpacer.map((panel) =>
           this._renderPanel(
