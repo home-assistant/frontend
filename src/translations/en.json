@@ -2093,13 +2093,13 @@
             },
             "weather-forecast": {
               "name": "Weather Forecast",
-              "description": "This card allows you to define a list of entities that you want to track only when in a certain state."
+              "description": "The weather forecast is a card to display the weather. Very useful to include on interfaces that people display on the wall."
             }
           },
           "view": {
             "panel_mode": {
               "title": "Panel Mode?",
-              "description": "The weather forecast is a card to display the weather. Very useful to include on interfaces that people display on the wall."
+              "description": "This renders the first card at full width; other cards in this view will not be rendered."
             }
           }
         },
