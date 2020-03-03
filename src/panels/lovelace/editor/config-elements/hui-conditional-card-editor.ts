@@ -81,7 +81,7 @@ export class HuiConditionalCardEditor extends LitElement
                   `
                 : html`
                     <hui-card-picker
-                      .hass="${this.hass}"
+                      .hass=${this.hass}
                       @config-changed="${this._handleCardChanged}"
                     ></hui-card-picker>
                   `}
@@ -154,11 +154,11 @@ export class HuiConditionalCardEditor extends LitElement
     `;
   }
 
-  private _selectTab(ev) {
-    this._cardTab = parseInt(ev.target.selected, 10) === 1;
+  private _selectTab(ev: Event): void {
+    this._cardTab = parseInt((ev.target! as any).selected!, 10) === 1;
   }
 
-  private _handleCardChanged(ev) {
+  private _handleCardChanged(ev: CustomEvent): void {
     ev.stopPropagation();
     if (!this._config) {
       return;
@@ -166,7 +166,7 @@ export class HuiConditionalCardEditor extends LitElement
     this._config.card = ev.detail.config;
     fireEvent(this, "config-changed", { config: this._config });
   }
-  private _handleReplaceCard() {
+  private _handleReplaceCard(): void {
     if (!this._config) {
       return;
     }
@@ -174,8 +174,8 @@ export class HuiConditionalCardEditor extends LitElement
     fireEvent(this, "config-changed", { config: this._config });
   }
 
-  private _addCondition(ev) {
-    const target = ev.target;
+  private _addCondition(ev: Event): void {
+    const target = ev.target! as any;
     if (target.value === "" || !this._config) {
       return;
     }
@@ -186,9 +186,9 @@ export class HuiConditionalCardEditor extends LitElement
     target.value = "";
     fireEvent(this, "config-changed", { config: this._config });
   }
-  private _changeCondition(ev) {
-    const target = ev.target;
-    if (!this._config) {
+  private _changeCondition(ev: Event): void {
+    const target = ev.target as any;
+    if (!this._config || !target) {
       return;
     }
     if (target.configValue === "entity" && target.value === "") {
