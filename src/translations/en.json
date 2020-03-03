@@ -1953,11 +1953,12 @@
           "card": {
             "alarm-panel": {
               "name": "Alarm Panel",
-              "available_states": "Available States"
+              "available_states": "Available States",
+              "description": "The Alarm Panel card allows you to Arm and Disarm your alarm control panel integrations."
             },
             "conditional": {
               "name": "Conditional",
-              "description": "Displays another card based on entity states."
+              "description": "The Conditional card displays another card based on entity states."
             },
             "config": {
               "required": "Required",
@@ -1966,14 +1967,16 @@
             "entities": {
               "name": "Entities",
               "show_header_toggle": "Show Header Toggle?",
-              "toggle": "Toggle entities."
+              "toggle": "Toggle entities.",
+              "description": "The Entities card is the most common type of card. It groups items together into lists."
             },
             "button": {
-              "name": "Button"
+              "name": "Button",
+              "description": "The Button card allows you to add buttons to perform tasks."
             },
             "entity-filter": {
               "name": "Entity Filter",
-              "description": "This card allows you to define a list of entities that you want to track only when in a certain state."
+              "description": "The Entity Filter card allows you to define a list of entities that you want to track only when in a certain state."
             },
             "gauge": {
               "name": "Gauge",
@@ -1982,25 +1985,29 @@
                 "green": "Green",
                 "red": "Red",
                 "yellow": "Yellow"
-              }
+              },
+              "description": "The Gauge card is a basic card that allows visually seeing sensor data."
             },
             "glance": {
               "name": "Glance",
-              "columns": "Columns"
+              "columns": "Columns",
+              "description": "The Glance card is useful to group multiple sensors in a compact overview."
             },
             "history-graph": {
-              "name": "History Graph"
+              "name": "History Graph",
+              "description": "The History Graph card allows you to display a graph for each of the entities listed."
             },
             "horizontal-stack": {
               "name": "Horizontal Stack",
-              "description": "Horizontal stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
+              "description": "The Horizontal Stack card allows you to stack together multiple cards, so they always sit next to each other in the space of one column."
             },
             "iframe": {
               "name": "Webpage",
-              "description": "Embed your favorite webpage right into Home Assistant"
+              "description": "The Webpage card allows you to embed your favorite webpage right into Home Assistant."
             },
             "light": {
-              "name": "Light"
+              "name": "Light",
+              "description": "The Light card allows you to change the brightness of the light."
             },
             "generic": {
               "aspect_ratio": "Aspect Ratio",
@@ -2033,50 +2040,60 @@
               "geo_location_sources": "Geolocation Sources",
               "dark_mode": "Dark Mode?",
               "default_zoom": "Default Zoom",
-              "source": "Source"
+              "source": "Source",
+              "description": "The Map card that allows you to display entities on a map."
             },
             "markdown": {
               "name": "Markdown",
-              "content": "Content"
+              "content": "Content",
+              "description": "The Markdown card is used to render Markdown."
             },
             "media-control": {
-              "name": "Media Control"
+              "name": "Media Control",
+              "description": "The Media Control card is used to display media player entities on an interface with easy to use controls."
             },
             "picture": {
-              "name": "Picture"
+              "name": "Picture",
+              "description": "The Picture card allows you to set an image to use for navigation to various paths in your interface or to call a service."
             },
             "picture-elements": {
-              "name": "Picture Elements"
+              "name": "Picture Elements",
+              "description": "The Picture Elements card is one of the most versatile types of cards. The cards allow you to position icons or text and even services! On an image based on coordinates."
             },
             "picture-entity": {
-              "name": "Picture Entity"
+              "name": "Picture Entity",
+              "description": "The Picture Entity card displays an entity in the form of an image. Instead of images from URL, it can also show the picture of camera entities."
             },
             "picture-glance": {
-              "name": "Picture Glance"
+              "name": "Picture Glance",
+              "description": "The Picture Glance card shows an image and corresponding entity states as an icon. The entities on the right side allow toggle actions, others show the more information dialog."
             },
             "plant-status": {
               "name": "Plant Status",
-              "description": "A card for all the lovely botanists out there."
+              "description": "The Plant Status card is for all the lovely botanists out there."
             },
             "sensor": {
               "name": "Sensor",
               "graph_detail": "Graph Detail",
-              "graph_type": "Graph Type"
+              "graph_type": "Graph Type",
+              "description": "The Sensor card gives you a quick overview of your sensors state with an optional graph to visualize change over time."
             },
             "shopping-list": {
               "name": "Shopping List",
-              "description": "The Shopping List Card allows you to add, edit, check-off, and clear items from your shopping list.",
+              "description": "The Shopping List card allows you to add, edit, check-off, and clear items from your shopping list.",
               "integration_not_loaded": "This card requires the `shopping_list` integration to be set up."
             },
             "thermostat": {
-              "name": "Thermostat"
+              "name": "Thermostat",
+              "description": "The Thermostat card gives control of your climate entity. Allowing you to change the temperature and mode of the entity."
             },
             "vertical-stack": {
               "name": "Vertical Stack",
-              "description": "Vertical stack allows you to group multiple cards so they always sit in the same column."
+              "description": "The Vertical Stack card allows you to group multiple cards so they always sit in the same column."
             },
             "weather-forecast": {
-              "name": "Weather Forecast"
+              "name": "Weather Forecast",
+              "description": "The Weather Forecast card displays the weather. Very useful to include on interfaces that people display on the wall."
             }
           },
           "view": {
