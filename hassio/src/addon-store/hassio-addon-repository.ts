@@ -57,7 +57,9 @@ class HassioAddonRepositoryEl extends LitElement {
         </h1>
         <p class="description">
           Maintained by ${repo.maintainer}<br />
-          <a class="repo" href=${repo.url} target="_blank">${repo.url}</a>
+          <a class="repo" href=${repo.url} target="_blank" rel="noreferrer">
+            ${repo.url}
+          </a>
         </p>
         <div class="card-group">
           ${addons.map(

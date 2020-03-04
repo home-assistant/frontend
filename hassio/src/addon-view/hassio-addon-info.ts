@@ -185,14 +185,19 @@ class HassioAddonInfo extends LitElement {
           <div class="description light-color">
             ${this.addon.description}.<br />
             Visit
-            <a href="${this.addon.url}" target="_blank">
+            <a href="${this.addon.url}" target="_blank" rel="noreferrer">
               ${this.addon.name} page</a
             >
             for details.
           </div>
           ${this.addon.logo
             ? html`
-                <a href="${this.addon.url}" target="_blank" class="logo">
+                <a
+                  href="${this.addon.url}"
+                  target="_blank"
+                  class="logo"
+                  rel="noreferrer"
+                >
                   <img src="/api/hassio/addons/${this.addon.slug}/logo" />
                 </a>
               `
@@ -428,6 +433,7 @@ class HassioAddonInfo extends LitElement {
                         tabindex="-1"
                         target="_blank"
                         class="right"
+                        rel="noopener"
                       >
                         <mwc-button>
                           Open web UI

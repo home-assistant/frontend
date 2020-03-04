@@ -30,6 +30,7 @@ class HaPushNotificationsRow extends LocalizeMixin(PolymerElement) {
           <a
             href="https://www.home-assistant.io/integrations/html5"
             target="_blank"
+            rel="noreferrer"
             >[[localize('ui.panel.profile.push_notifications.link_promo')]]</a
           >
         </span>

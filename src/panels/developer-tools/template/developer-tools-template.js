@@ -68,6 +68,7 @@ class HaPanelDevTemplate extends LocalizeMixin(PolymerElement) {
               <a
                 href="http://jinja.pocoo.org/docs/dev/templates/"
                 target="_blank"
+                rel="noreferrer"
                 >[[localize('ui.panel.developer-tools.tabs.templates.jinja_documentation')]]</a
               >
             </li>
@@ -75,6 +76,7 @@ class HaPanelDevTemplate extends LocalizeMixin(PolymerElement) {
               <a
                 href="https://home-assistant.io/docs/configuration/templating/"
                 target="_blank"
+                rel="noreferrer"
                 >[[localize('ui.panel.developer-tools.tabs.templates.template_extensions')]]</a
               >
             </li>

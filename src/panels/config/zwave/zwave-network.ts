@@ -71,6 +71,7 @@ export class ZwaveNetwork extends LitElement {
             <a
               href="https://www.home-assistant.io/docs/z-wave/control-panel/"
               target="_blank"
+              rel="noreferrer"
             >
               ${this.hass!.localize("ui.panel.config.zwave.learn_more")}
             </a>
