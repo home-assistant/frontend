@@ -128,6 +128,7 @@ class DialogPersonDetail extends LitElement {
                       <a
                         href="https://www.home-assistant.io/integrations/#presence-detection"
                         target="_blank"
+                        rel="noreferrer"
                         >${this.hass!.localize(
                           "ui.panel.config.person.detail.link_presence_detection_integrations"
                         )}</a

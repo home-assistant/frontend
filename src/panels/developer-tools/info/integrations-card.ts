@@ -32,12 +32,20 @@ class IntegrationsCard extends LitElement {
                 <tr>
                   <td>${domain}</td>
                   <td>
-                    <a href=${integrationDocsUrl(domain)} target="_blank">
+                    <a
+                      href=${integrationDocsUrl(domain)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       Documentation
                     </a>
                   </td>
                   <td>
-                    <a href=${integrationIssuesUrl(domain)} target="_blank">
+                    <a
+                      href=${integrationIssuesUrl(domain)}
+                      target="_blank"
+                      rel="noreferrer"
+                    >
                       Issues
                     </a>
                   </td>
