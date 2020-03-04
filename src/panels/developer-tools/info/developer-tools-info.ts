@@ -27,7 +27,7 @@ class HaPanelDevInfo extends LitElement {
     return html`
       <div class="about">
         <p class="version">
-          <a href="https://www.home-assistant.io" target="_blank"
+          <a href="https://www.home-assistant.io" target="_blank" rel="noreferrer"
             ><img
               src="/static/icons/favicon-192x192.png"
               height="192"
@@ -48,7 +48,7 @@ class HaPanelDevInfo extends LitElement {
         <p class="develop">
           <a
             href="https://www.home-assistant.io/developers/credits/"
-            target="_blank"
+            target="_blank" rel="noreferrer"
           >
             ${this.hass.localize(
               "ui.panel.developer-tools.tabs.info.developed_by"
@@ -62,7 +62,7 @@ class HaPanelDevInfo extends LitElement {
           ${this.hass.localize("ui.panel.developer-tools.tabs.info.source")}
           <a
             href="https://github.com/home-assistant/home-assistant"
-            target="_blank"
+            target="_blank" rel="noreferrer"
             >${this.hass.localize(
               "ui.panel.developer-tools.tabs.info.server"
             )}</a
@@ -70,7 +70,7 @@ class HaPanelDevInfo extends LitElement {
           &mdash;
           <a
             href="https://github.com/home-assistant/home-assistant-polymer"
-            target="_blank"
+            target="_blank" rel="noreferrer"
             >${this.hass.localize(
               "ui.panel.developer-tools.tabs.info.frontend"
             )}</a
@@ -80,14 +80,14 @@ class HaPanelDevInfo extends LitElement {
           ${this.hass.localize(
             "ui.panel.developer-tools.tabs.info.built_using"
           )}
-          <a href="https://www.python.org">Python 3</a>,
-          <a href="https://www.polymer-project.org" target="_blank">Polymer</a>,
+          <a href="https://www.python.org" target="_blank" rel="noreferrer">Python 3</a>,
+          <a href="https://www.polymer-project.org" target="_blank" rel="noreferrer">Polymer</a>,
           ${this.hass.localize("ui.panel.developer-tools.tabs.info.icons_by")}
-          <a href="https://www.google.com/design/icons/" target="_blank"
+          <a href="https://www.google.com/design/icons/" target="_blank" rel="noreferrer"
             >Google</a
           >
           and
-          <a href="https://MaterialDesignIcons.com" target="_blank"
+          <a href="https://MaterialDesignIcons.com" target="_blank" rel="noreferrer"
             >MaterialDesignIcons.com</a
           >.
         </p>

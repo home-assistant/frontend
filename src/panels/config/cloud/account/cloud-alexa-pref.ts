@@ -49,6 +49,7 @@ export class CloudAlexaPref extends LitElement {
               <a
                 href="https://skills-store.amazon.com/deeplink/dp/B0772J1QKB?deviceType=app"
                 target="_blank"
+                rel="noreferrer"
               >
                 ${this.hass!.localize(
                   "ui.panel.config.cloud.account.alexa.enable_ha_skill"
@@ -59,6 +60,7 @@ export class CloudAlexaPref extends LitElement {
               <a
                 href="https://www.nabucasa.com/config/amazon_alexa/"
                 target="_blank"
+                rel="noreferrer"
               >
                 ${this.hass!.localize(
                   "ui.panel.config.cloud.account.alexa.config_documentation"

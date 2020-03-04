@@ -39,6 +39,7 @@ class HaLongLivedTokens extends LocalizeMixin(EventsMixin(PolymerElement)) {
             <a
               href="https://developers.home-assistant.io/docs/en/auth_api.html#making-authenticated-requests"
               target="_blank"
+              rel="noreferrer"
             >
               [[localize('ui.panel.profile.long_lived_access_tokens.learn_auth_requests')]]
             </a>

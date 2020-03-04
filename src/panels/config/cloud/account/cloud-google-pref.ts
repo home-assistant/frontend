@@ -55,6 +55,7 @@ export class CloudGooglePref extends LitElement {
               <a
                 href="https://assistant.google.com/services/a/uid/00000091fd5fb875?hl=en-US"
                 target="_blank"
+                rel="noreferrer"
               >
                 ${this.hass!.localize(
                   "ui.panel.config.cloud.account.google.enable_ha_skill"
@@ -65,6 +66,7 @@ export class CloudGooglePref extends LitElement {
               <a
                 href="https://www.nabucasa.com/config/google_assistant/"
                 target="_blank"
+                rel="noreferrer"
               >
                 ${this.hass!.localize(
                   "ui.panel.config.cloud.account.google.config_documentation"

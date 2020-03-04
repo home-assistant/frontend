@@ -123,7 +123,7 @@ export class HassioUpdate extends LitElement {
           </div>
         </div>
         <div class="card-actions">
-          <a href="${releaseNotesUrl}" target="_blank">
+          <a href="${releaseNotesUrl}" target="_blank" rel="noreferrer">
             <mwc-button>Release notes</mwc-button>
           </a>
           <ha-call-api-button

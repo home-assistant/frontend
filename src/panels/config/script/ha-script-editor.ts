@@ -122,6 +122,7 @@ export class HaScriptEditor extends LitElement {
                       <a
                         href="https://home-assistant.io/docs/scripts/"
                         target="_blank"
+                        rel="noreferrer"
                       >
                         ${this.hass.localize(
                           "ui.panel.config.script.editor.link_available_actions"
