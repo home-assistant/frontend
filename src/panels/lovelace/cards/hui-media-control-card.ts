@@ -169,7 +169,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
             class="title-controls"
             style="padding-right: ${OFF_STATES.includes(stateObj.state)
               ? 0
-              : this._cardHeight - 16}px"
+              : this._cardHeight - 40}px"
           >
             <div class="media-info">
               <div class="title">
@@ -538,12 +538,15 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         align-items: center;
       }
 
-      .icon-name :first-child {
-        padding-right: 4px;
+      .icon-name ha-icon {
+        padding-right: 8px;
       }
 
-      .more-info {
-        padding-top: 0;
+      paper-icon-button.more-info {
+        padding: 0;
+        width: 24px !important;
+        margin-right: -8px;
+        margin-top: -8px;
       }
 
       .media-info {
@@ -576,6 +579,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         padding-bottom: 0;
       }
 
+      .no-image .controls {
+        padding: 0;
+      }
+
       .off .title-controls {
         display: flex;
         justify-content: space-between;
@@ -583,8 +590,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         width: 100%;
       }
 
-      .no-image .controls {
-        padding: 0;
+      .off.background {
+        filter: grayscale(1);
+      }
+
+      .off .media-info {
+        padding-bottom: 4px;
+        display: none;
+      }
+
+      .off .controls paper-icon-button {
+        padding-left: 0;
+        margin-left: -8px;
+        width: 55px;
+        height: 55px;
       }
 
       .narrow .controls,
@@ -614,14 +633,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       .off.player.no-progress,
       .narrow.player:not(.very-narrow) {
         padding-bottom: 8px;
-      }
-
-      .off.background {
-        filter: grayscale(1);
-      }
-
-      .off .media-info {
-        padding-bottom: 4px;
       }
     `;
   }
