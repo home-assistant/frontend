@@ -12,6 +12,7 @@ import { classMap } from "lit-html/directives/class-map";
 import { styleMap } from "lit-html/directives/style-map";
 import { HassEntity } from "home-assistant-js-websocket";
 import * as Vibrant from "node-vibrant";
+import { Palette } from "node-vibrant/lib/color";
 import "@polymer/paper-icon-button/paper-icon-button";
 
 import "../../../components/ha-card";
@@ -40,9 +41,15 @@ import { MediaControlCardConfig } from "./types";
 import { UNAVAILABLE } from "../../../data/entity";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { contrast } from "../common/color/contrast";
-import { styleMap } from "lit-html/directives/style-map";
 import { LovelaceConfig } from "../../../data/lovelace";
 import { findEntities } from "../common/find-entites";
+
+function getContrastRatio(
+  rgb1: [number, number, number],
+  rgb2: [number, number, number]
+): number {
+  return Math.round((contrast(rgb1, rgb2) + Number.EPSILON) * 100) / 100;
+}
 
 @customElement("hui-media-control-card")
 export class HuiMediaControlCard extends LitElement implements LovelaceCard {
@@ -75,12 +82,13 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   @property() public hass?: HomeAssistant;
   @property() private _config?: MediaControlCardConfig;
-  @property() private _image?: string;
   @property() private _foregroundColor?: string;
   @property() private _backgroundColor?: string;
   @property() private _narrow: boolean = false;
   @property() private _veryNarrow: boolean = false;
   @property() private _cardHeight: number = 0;
+  @property() private _progressValue?: number;
+  private _progressInterval?: number;
   private _resizeObserver?: ResizeObserver;
   private _debouncedResizeListener = debounce(
     () => {
@@ -88,7 +96,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       this._veryNarrow = this.offsetWidth < 300;
       this._cardHeight = this.offsetHeight;
     },
-    100,
+    250,
     false
   );
 
@@ -126,7 +134,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     const imageStyle = {
       "background-image": `url(${this.hass.hassUrl(picture)})`,
-      width: `${!this._image ? "50%" : `${this._cardHeight}px`}`,
+      width: `${this._image ? `${this._cardHeight}px` : "50%"}`,
     };
 
     const gradientStyle = {
@@ -271,15 +279,12 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                   </div>
                 `}
           </div>
-          ${OFF_STATES.includes(stateObj.state) ||
-          !stateObj.attributes.media_duration ||
-          !stateObj.attributes.media_position ||
-          this._narrow
+          ${!this._showProgressBar
             ? ""
             : html`
                 <paper-progress
                   .max="${stateObj.attributes.media_duration}"
-                  .value="${getCurrentProgress(stateObj)}"
+                  .value="${this._progressValue}"
                   class="progress"
                   style="--paper-progress-active-color: ${this
                     ._foregroundColor || "var(--accent-color)"}"
@@ -319,27 +324,50 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       applyThemesOnElement(this, this.hass.themes, this._config.theme);
     }
 
+    if (!this._progressInterval && this._showProgressBar) {
+      this._progressInterval = window.setInterval(() => {
+        this._getProgressValue();
+      }, 1000);
+    }
+
     const oldImage =
       oldHass?.states[this._config.entity]?.attributes.entity_picture_local ||
       oldHass?.states[this._config.entity]?.attributes.entity_picture;
-    const newImage =
-      this.hass.states[this._config.entity]?.attributes.entity_picture_local ||
-      this.hass.states[this._config.entity]?.attributes.entity_picture;
 
-    if (!newImage) {
-      this._image = newImage;
+    if (!this._image) {
       this._foregroundColor = undefined;
       this._backgroundColor = undefined;
       return;
     }
 
-    if (newImage === oldImage) {
-      this._image = newImage;
+    if (this._image !== oldImage) {
+      this._setColors();
       return;
     }
+  }
 
-    this._image = newImage;
-    this._setColors();
+  private get _image() {
+    if (!this.hass || !this._config) {
+      return undefined;
+    }
+
+    return (
+      this.hass.states[this._config.entity]?.attributes.entity_picture_local ||
+      this.hass.states[this._config.entity]?.attributes.entity_picture
+    );
+  }
+
+  private get _showProgressBar() {
+    if (!this.hass || !this._config) {
+      return false;
+    }
+
+    return (
+      !OFF_STATES.includes(this.hass.states[this._config.entity].state) &&
+      this.hass.states[this._config.entity].attributes.media_duration &&
+      this.hass.states[this._config.entity].attributes.media_position &&
+      !this._narrow
+    );
   }
 
   private _attachObserver(): void {
@@ -427,7 +455,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     Vibrant.from(image)
       .quality(1)
       .getPalette()
-      .then((palette) => {
+      .then((palette: Palette) => {
         if (!palette.DarkMuted) {
           this._foregroundColor = undefined;
           this._backgroundColor = undefined;
@@ -438,7 +466,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
         if (
           !palette.Vibrant ||
-          this._getContrastRatio(
+          getContrastRatio(
             palette.Vibrant.getRgb(),
             palette.DarkMuted.getRgb()
           ) < CONTRAST_RATIO
@@ -449,19 +477,24 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
         this._foregroundColor = palette.Vibrant.getHex();
       })
-      .catch((err) => {
+      .catch((err: any) => {
         // tslint:disable-next-line:no-console
-        console.log("Error getting Image Colors", err);
+        console.error("Error getting Image Colors", err);
         this._foregroundColor = undefined;
         this._backgroundColor = undefined;
       });
   }
 
-  private _getContrastRatio(
-    rgb1: [number, number, number],
-    rgb2: [number, number, number]
-  ): number {
-    return Math.round((contrast(rgb1, rgb2) + Number.EPSILON) * 100) / 100;
+  private _getProgressValue(): void {
+    if (!this._showProgressBar) {
+      this._progressInterval = undefined;
+      this._progressValue = undefined;
+      return;
+    }
+
+    this._progressValue = getCurrentProgress(
+      this.hass!.states[this._config!.entity]
+    );
   }
 
   static get styles(): CSSResult {
@@ -495,18 +528,18 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         );
         height: 100%;
         right: 0;
+        transition: width 0.8s;
       }
 
       .image {
         display: block;
-        width: 0;
         background-color: var(--primary-color);
         background-position: center;
         background-size: cover;
         background-repeat: no-repeat;
-        transition-property: background-image, background-color, background-size;
+        transition-property: background-image, background-color, background-size,
+          width;
         transition-duration: 0.8s;
-        transition: width 0.8s linear;
         position: absolute;
         right: 0;
         height: 100%;
@@ -563,17 +596,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         padding-right: 8px;
       }
 
-      paper-icon-button.more-info {
-        padding: 0;
-        width: 24px !important;
-        margin-right: -8px;
-        margin-top: -8px;
+      .more-info {
+        position: absolute;
+        top: 8px;
+        right: 0px;
       }
 
       .media-info {
         text-overflow: ellipsis;
         white-space: nowrap;
         overflow: hidden;
+      }
+
+      .title-controls {
+        padding-top: 16px;
       }
 
       .title {
@@ -621,8 +657,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       }
 
       .off .controls paper-icon-button {
-        padding-left: 0;
-        margin-left: -8px;
+        margin-left: -16px;
         width: 55px;
         height: 55px;
       }
@@ -651,9 +686,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       }
 
       .off.player,
-      .off.player.no-progress,
       .narrow.player:not(.very-narrow) {
-        padding-bottom: 8px;
+        padding-bottom: 8px !important;
       }
     `;
   }
