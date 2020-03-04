@@ -1,6 +1,5 @@
 import { property, customElement, PropertyValues } from "lit-element";
 import { PolymerElement } from "@polymer/polymer";
-import equal from "fast-deep-equal";
 
 import { HomeAssistant, Panels } from "../types";
 import {
@@ -9,6 +8,7 @@ import {
   RouteOptions,
 } from "./hass-router-page";
 import { removeInitSkeleton } from "../util/init-skeleton";
+import { equal } from "../common/util/deep-equal";
 
 const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
 const COMPONENTS = {

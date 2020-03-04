@@ -81,7 +81,6 @@
     "deep-clone-simple": "^1.1.1",
     "deep-freeze": "^0.0.1",
     "es6-object-assign": "^1.1.0",
-    "fast-deep-equal": "^3.1.1",
     "fecha": "^3.0.2",
     "fuse.js": "^3.4.4",
     "google-timezones-json": "^1.0.2",
