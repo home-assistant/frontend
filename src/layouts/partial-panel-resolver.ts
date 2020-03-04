@@ -1,5 +1,6 @@
 import { property, customElement, PropertyValues } from "lit-element";
 import { PolymerElement } from "@polymer/polymer";
+import equal from "fast-deep-equal";
 
 import { HomeAssistant, Panels } from "../types";
 import {
@@ -80,7 +81,7 @@ const getRoutes = (panels: Panels): RouterOptions => {
 
 @customElement("partial-panel-resolver")
 class PartialPanelResolver extends HassRouterPage {
-  @property() public hass?: HomeAssistant;
+  @property() public hass!: HomeAssistant;
   @property() public narrow?: boolean;
 
   protected updated(changedProps: PropertyValues) {
@@ -92,11 +93,8 @@ class PartialPanelResolver extends HassRouterPage {
 
     const oldHass = changedProps.get("hass") as this["hass"];
 
-    if (
-      this.hass!.panels &&
-      (!oldHass || oldHass.panels !== this.hass!.panels)
-    ) {
-      this._updateRoutes();
+    if (this.hass.panels && (!oldHass || oldHass.panels !== this.hass.panels)) {
+      this._updateRoutes(oldHass?.panels);
     }
   }
 
@@ -109,7 +107,7 @@ class PartialPanelResolver extends HassRouterPage {
   }
 
   protected updatePageEl(el) {
-    const hass = this.hass!;
+    const hass = this.hass;
 
     if ("setProperties" in el) {
       // As long as we have Polymer panels
@@ -127,11 +125,17 @@ class PartialPanelResolver extends HassRouterPage {
     }
   }
 
-  private async _updateRoutes() {
-    this.routerOptions = getRoutes(this.hass!.panels);
-    await this.rebuild();
-    await this.pageRendered;
-    removeInitSkeleton();
+  private async _updateRoutes(oldPanels?: HomeAssistant["panels"]) {
+    this.routerOptions = getRoutes(this.hass.panels);
+
+    if (
+      !oldPanels ||
+      !equal(oldPanels[this._currentPage], this.hass.panels[this._currentPage])
+    ) {
+      await this.rebuild();
+      await this.pageRendered;
+      removeInitSkeleton();
+    }
   }
 }
 
