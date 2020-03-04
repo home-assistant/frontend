@@ -108,6 +108,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         type: "icon",
         sortable: true,
         filterable: true,
+        width: "55px",
         template: (_status, entity: any) =>
           entity.unavailable || entity.disabled_by || entity.readonly
             ? html`

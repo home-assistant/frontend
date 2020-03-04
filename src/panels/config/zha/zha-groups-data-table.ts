@@ -9,6 +9,8 @@ import {
   TemplateResult,
   property,
   customElement,
+  CSSResult,
+  css,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 // tslint:disable-next-line
@@ -52,6 +54,7 @@ export class ZHAGroupsDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
+              grows: true,
               template: (name) => html`
                 <div @click=${this._handleRowClicked} style="cursor: pointer;">
                   ${name}
@@ -65,6 +68,7 @@ export class ZHAGroupsDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
+              grows: true,
               template: (name) => html`
                 <div @click=${this._handleRowClicked} style="cursor: pointer;">
                   ${name}
@@ -73,6 +77,8 @@ export class ZHAGroupsDataTable extends LitElement {
             },
             group_id: {
               title: this.hass.localize("ui.panel.config.zha.groups.group_id"),
+              type: "numeric",
+              width: "15%",
               template: (groupId: number) => {
                 return html`
                   ${formatAsPaddedHex(groupId)}
@@ -82,6 +88,8 @@ export class ZHAGroupsDataTable extends LitElement {
             },
             members: {
               title: this.hass.localize("ui.panel.config.zha.groups.members"),
+              type: "numeric",
+              width: "15%",
               template: (members: ZHADevice[]) => {
                 return html`
                   ${members.length}
@@ -107,6 +115,14 @@ export class ZHAGroupsDataTable extends LitElement {
       .closest("tr")!
       .getAttribute("data-row-id")!;
     navigate(this, `/config/zha/group/${groupId}`);
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      ha-data-table {
+        height: 600px;
+      }
+    `;
   }
 }
 

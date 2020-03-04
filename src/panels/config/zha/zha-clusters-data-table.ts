@@ -9,6 +9,8 @@ import {
   TemplateResult,
   property,
   customElement,
+  CSSResult,
+  css,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 // tslint:disable-next-line
@@ -49,6 +51,7 @@ export class ZHAClustersDataTable extends LitElement {
               title: "Name",
               sortable: true,
               direction: "asc",
+              grows: true,
             },
           }
         : {
@@ -56,6 +59,7 @@ export class ZHAClustersDataTable extends LitElement {
               title: "Name",
               sortable: true,
               direction: "asc",
+              grows: true,
             },
             id: {
               title: "ID",
@@ -65,10 +69,12 @@ export class ZHAClustersDataTable extends LitElement {
                 `;
               },
               sortable: true,
+              width: "15%",
             },
             endpoint_id: {
               title: "Endpoint ID",
               sortable: true,
+              width: "15%",
             },
           }
   );
@@ -81,6 +87,14 @@ export class ZHAClustersDataTable extends LitElement {
         .id=${"cluster_id"}
         selectable
       ></ha-data-table>
+    `;
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      ha-data-table {
+        height: 600px;
+      }
     `;
   }
 }

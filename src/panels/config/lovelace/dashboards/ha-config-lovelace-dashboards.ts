@@ -61,6 +61,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           sortable: true,
           filterable: true,
           direction: "asc",
+          grows: true,
           template: (title, dashboard: any) => {
             const titleTemplate = html`
               ${title}
@@ -101,6 +102,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           ),
           sortable: true,
           filterable: true,
+          width: "15%",
           template: (mode) =>
             html`
               ${this.hass.localize(
@@ -123,6 +125,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
           ),
           sortable: true,
           type: "icon",
+          width: "100px",
           template: (requireAdmin: boolean) =>
             requireAdmin
               ? html`
@@ -137,6 +140,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
             "ui.panel.config.lovelace.dashboards.picker.headers.sidebar"
           ),
           type: "icon",
+          width: "100px",
           template: (sidebar) =>
             sidebar
               ? html`
@@ -151,6 +155,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       columns.url_path = {
         title: "",
         filterable: true,
+        width: "75px",
         template: (urlPath) =>
           narrow
             ? html`

@@ -811,6 +811,7 @@
           "picker": {
             "headers": {
               "name": "Name",
+              "entity_id": "Entity ID",
               "type": "Type",
               "editable": "Editable"
             },

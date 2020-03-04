@@ -63,6 +63,7 @@ class ZHAConfigDashboard extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
+              grows: true,
             },
           }
         : {
@@ -71,16 +72,19 @@ class ZHAConfigDashboard extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
+              grows: true,
             },
             nwk: {
               title: "Nwk",
               sortable: true,
               filterable: true,
+              width: "15%",
             },
             ieee: {
               title: "IEEE",
               sortable: true,
               filterable: true,
+              width: "25%",
             },
           }
   );
@@ -162,6 +166,9 @@ class ZHAConfigDashboard extends LitElement {
         a {
           text-decoration: none;
           color: var(--primary-text-color);
+        }
+        ha-data-table {
+          height: 600px;
         }
       `,
     ];

@@ -9,6 +9,8 @@ import {
   TemplateResult,
   property,
   customElement,
+  CSSResult,
+  css,
 } from "lit-element";
 import { HomeAssistant } from "../../../types";
 // tslint:disable-next-line
@@ -53,6 +55,7 @@ export class ZHADevicesDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
+              grows: true,
               template: (name) => html`
                 <div @click=${this._handleClicked} style="cursor: pointer;">
                   ${name}
@@ -66,6 +69,7 @@ export class ZHADevicesDataTable extends LitElement {
               sortable: true,
               filterable: true,
               direction: "asc",
+              grows: true,
               template: (name) => html`
                 <div @click=${this._handleClicked} style="cursor: pointer;">
                   ${name}
@@ -76,11 +80,13 @@ export class ZHADevicesDataTable extends LitElement {
               title: "Manufacturer",
               sortable: true,
               filterable: true,
+              width: "20%",
             },
             model: {
               title: "Model",
               sortable: true,
               filterable: true,
+              width: "20%",
             },
           }
   );
@@ -100,6 +106,14 @@ export class ZHADevicesDataTable extends LitElement {
       .closest("tr")!
       .getAttribute("data-row-id")!;
     showZHADeviceInfoDialog(this, { ieee });
+  }
+
+  static get styles(): CSSResult {
+    return css`
+      ha-data-table {
+        height: 600px;
+      }
+    `;
   }
 }
 
