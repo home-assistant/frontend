@@ -75,14 +75,14 @@ export class HuiConditionalCardEditor extends LitElement
                     </div>
                     <hui-card-editor
                       .hass=${this.hass}
-                      .value="${this._config.card}"
-                      @config-changed="${this._handleCardChanged}"
+                      .value=${this._config.card}
+                      @config-changed=${this._handleCardChanged}
                     ></hui-card-editor>
                   `
                 : html`
                     <hui-card-picker
                       .hass=${this.hass}
-                      @config-changed="${this._handleCardChanged}"
+                      @config-changed=${this._handleCardChanged}
                     ></hui-card-picker>
                   `}
             </div>

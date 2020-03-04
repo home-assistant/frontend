@@ -1970,7 +1970,7 @@
               "state_equal": "State is equal to",
               "state_not_equal": "State is not equal to",
               "current_state": "current",
-              "condition_explanation": "The card will be shown when ALL condition below are fulfilled.",
+              "condition_explanation": "The card will be shown when ALL conditions below are fulfilled.",
               "change_type": "Change type"
             },
             "config": {
