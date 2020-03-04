@@ -78,7 +78,7 @@ export class DialogManageCloudhook extends LitElement {
         </div>
 
         <div class="paper-dialog-buttons">
-          <a href="${docsUrl}" target="_blank">
+          <a href="${docsUrl}" target="_blank" rel="noreferrer">
             <mwc-button
               >${this.hass!.localize(
                 "ui.panel.config.cloud.dialog_cloudhook.view_documentation"

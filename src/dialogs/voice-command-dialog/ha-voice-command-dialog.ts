@@ -113,6 +113,7 @@ export class HaVoiceCommandDialog extends LitElement {
                     class="button"
                     href="${this._agentInfo.onboarding.url}"
                     target="_blank"
+                    rel="noreferrer"
                     ><mwc-button unelevated>Yes!</mwc-button></a
                   >
                   <mwc-button outlined>No</mwc-button>
@@ -185,6 +186,7 @@ export class HaVoiceCommandDialog extends LitElement {
                   href=${this._agentInfo.attribution.url}
                   class="attribution"
                   target="_blank"
+                  rel="noreferrer"
                   >${this._agentInfo.attribution.name}</a
                 >
               `
