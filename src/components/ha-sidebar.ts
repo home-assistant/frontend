@@ -172,7 +172,7 @@ class HaSidebar extends LitElement {
       >
         ${this._renderPanel(
           defaultPanel.url_path,
-          defaultPanel.icon || "hass:apps",
+          defaultPanel.icon || "hass:view-dashboard",
           defaultPanel.title || hass.localize("panel.states")
         )}
         ${beforeSpacer.map((panel) =>
