@@ -10,7 +10,6 @@ import {
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
 import { HassEntity } from "home-assistant-js-websocket";
-import { install } from "resize-observer";
 import * as Vibrant from "node-vibrant";
 import "@polymer/paper-icon-button/paper-icon-button";
 
@@ -24,11 +23,9 @@ import {
   OFF_STATES,
   SUPPORT_PAUSE,
   SUPPORT_TURN_ON,
-  SUPPORT_TURN_OFF,
   SUPPORT_PREVIOUS_TRACK,
   SUPPORT_NEXT_TRACK,
   SUPPORTS_PLAY,
-  fetchMediaPlayerThumbnailWithCache,
   SUPPORT_STOP,
   SUPPORT_SEEK,
   CONTRAST_RATIO,
@@ -42,6 +39,7 @@ import { MediaControlCardConfig } from "./types";
 import { UNAVAILABLE } from "../../../data/entity";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { contrast } from "../common/color/contrast";
+import { styleMap } from "lit-html/directives/style-map";
 
 @customElement("hui-media-control-card")
 export class HuiMediaControlCard extends LitElement implements LovelaceCard {
@@ -67,8 +65,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
   private _resizeObserver?: ResizeObserver;
   private _debouncedResizeListener = debounce(
     () => {
-      this._narrow = this.offsetWidth < 380;
-      this._veryNarrow = this.offsetWidth < 325;
+      this._narrow = this.offsetWidth < 350;
+      this._veryNarrow = this.offsetWidth < 300;
       this._cardHeight = this.offsetHeight;
     },
     100,
@@ -107,49 +105,57 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     const picture = this._image || "../static/images/card_media_player_bg.png";
 
+    const imageStyle = {
+      "background-image": `url(${this.hass.hassUrl(picture)})`,
+      width: `${!this._image ? "50%" : `${this._cardHeight}px`}`,
+    };
+
+    const gradientStyle = {
+      "background-image": `linear-gradient(to right, ${this._backgroundColor}, transparent)`,
+      width: `${this._cardHeight}px`,
+    };
+
     return html`
       <ha-card>
         <div
           class="background ${classMap({
             "no-image": !this._image,
+            off: OFF_STATES.includes(stateObj.state),
           })}"
         >
           <div
             class="color-block"
             style="background-color: ${this._backgroundColor}"
           ></div>
+          <div class="image" style=${styleMap(imageStyle)}></div>
           ${!this._image
             ? ""
             : html`
                 <div
                   class="color-gradient"
-                  style="background-image: linear-gradient(to right, ${this
-                    ._backgroundColor}, transparent);width: ${this
-                    ._cardHeight}px;"
+                  style=${styleMap(gradientStyle)}
                 ></div>
               `}
-          <div
-            class="image"
-            style="background-image: url(${this.hass.hassUrl(
-              picture
-            )}); padding-left: ${!this._image
-              ? "50%"
-              : `${this._cardHeight}px`};"
-          ></div>
         </div>
         <div
           class="player ${classMap({
             "no-image": !this._image,
             narrow: this._narrow,
             "very-narrow": this._veryNarrow,
+            off: OFF_STATES.includes(stateObj.state),
+            "no-progress":
+              !stateObj.attributes.media_duration ||
+              !stateObj.attributes.media_position,
           })}"
           style="color: ${this._foregroundColor}"
         >
           <div class="top-info">
-            <div>
+            <div class="icon-name">
               <ha-icon class="icon" .icon="${stateIcon(stateObj)}"></ha-icon>
-              ${this._config!.name ||
-                computeStateName(this.hass!.states[this._config!.entity])}
+              <div>
+                ${this._config!.name ||
+                  computeStateName(this.hass!.states[this._config!.entity])}
+              </div>
             </div>
             <div>
               <paper-icon-button
@@ -161,27 +167,34 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
           </div>
           <div
             class="title-controls"
-            style="padding-right: ${this._cardHeight - 16}px"
+            style="padding-right: ${OFF_STATES.includes(stateObj.state)
+              ? 0
+              : this._cardHeight - 16}px"
           >
             <div class="media-info">
               <div class="title">
-                ${stateObj.attributes.media_title ||
-                  this.hass.localize(`state.media_player.${stateObj.state}`) ||
-                  this.hass.localize(`state.default.${stateObj.state}`) ||
-                  stateObj.state}
+                ${OFF_STATES.includes(stateObj.state)
+                  ? this.hass.localize(
+                      `state.media_player.${stateObj.state}`
+                    ) ||
+                    this.hass.localize(`state.default.${stateObj.state}`) ||
+                    stateObj.state
+                  : stateObj.attributes.media_title ||
+                    this._computeSecondaryTitle(stateObj)}
               </div>
-              ${this._computeSecondaryTitle(stateObj)}
+              ${!stateObj.attributes.media_title &&
+              !OFF_STATES.includes(stateObj.state)
+                ? ""
+                : this._computeSecondaryTitle(stateObj)}
             </div>
-            ${this._veryNarrow
+            ${this._veryNarrow && !OFF_STATES.includes(stateObj.state)
               ? ""
               : html`
                   <div class="controls">
                     <div>
                       ${(stateObj.state === "off" &&
                         !supportsFeature(stateObj, SUPPORT_TURN_ON)) ||
-                      (stateObj.state === "on" &&
-                        !supportsFeature(stateObj, SUPPORT_TURN_OFF)) ||
-                      this._veryNarrow
+                      !OFF_STATES.includes(stateObj.state)
                         ? ""
                         : html`
                             <paper-icon-button
@@ -248,11 +261,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
                 <paper-progress
                   .max="${stateObj.attributes.media_duration}"
                   .value="${getCurrentProgress(stateObj)}"
-                  class="progress ${classMap({
-                    seek: supportsFeature(stateObj, SUPPORT_SEEK),
-                  })}"
+                  class="progress"
                   style="--paper-progress-active-color: ${this
-                    ._foregroundColor};"
+                    ._foregroundColor || "var(--accent-color)"}"
                   @click=${(e: MouseEvent) => this._handleSeek(e, stateObj)}
                 ></paper-progress>
               `}
@@ -308,22 +319,15 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
     this._image = newImage;
     this._setColors();
-
-    // fetchMediaPlayerThumbnailWithCache(this.hass, this._config.entity)
-    //   .then(({ content_type, content }) => {
-    //     this._image = `data:${content_type};base64,${content}`;
-    //     this._setColors();
-    //   })
-    //   .catch(() => {
-    //     this._image = undefined;
-    //     this._foregroundColor = undefined;
-    //     this._backgroundColor = undefined;
-    //   });
   }
 
   private _attachObserver(): void {
     if (typeof ResizeObserver !== "function") {
-      install();
+      import("resize-observer").then((modules) => {
+        modules.install();
+        this._attachObserver();
+      });
+      return;
     }
 
     this._resizeObserver = new ResizeObserver(() =>
@@ -379,7 +383,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       return;
     }
 
-    const percent = e.offsetX / this.offsetWidth;
+    const progressWidth = (this.shadowRoot!.querySelector(
+      "paper-progress"
+    ) as HTMLElement).offsetWidth;
+
+    const percent = e.offsetX / progressWidth;
     const position = (e.currentTarget! as any).max * percent;
 
     this.hass!.callService("media_player", "media_seek", {
@@ -394,12 +402,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
 
     const image: string | HTMLImageElement = this._image;
-
-    // if (this._image.substring(0, 1) !== "/") {
-    //   const imgTag = new Image();
-    //   imgTag.src = this._image;
-    //   image = imgTag;
-    // }
 
     Vibrant.from(image)
       .quality(1)
@@ -454,6 +456,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         left: 0;
         height: 100%;
         width: 100%;
+        transition: filter 0.8s;
       }
 
       .color-block {
@@ -480,14 +483,20 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         background-position: center;
         background-size: cover;
         background-repeat: no-repeat;
-        transition: all 0.8s;
+        transition-property: background-image, background-color, background-size;
+        transition-duration: 0.8s;
+        transition: width 0.8s linear;
+        position: absolute;
+        right: 0;
+        height: 100%;
       }
 
       .player {
         position: relative;
         padding: 16px;
         color: var(--text-primary-color);
-        transition: all 0.8s;
+        transition-property: color, padding;
+        transition-duration: 0.4s;
       }
 
       .icon {
@@ -499,7 +508,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         display: flex;
         justify-content: flex-start;
         align-items: center;
-        transition: all 0.8s;
+        transition: padding, color;
+        transition-duration: 0.4s;
       }
 
       .controls > div {
@@ -520,6 +530,16 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       .top-info {
         display: flex;
         justify-content: space-between;
+      }
+
+      .icon-name {
+        display: flex;
+        height: fit-content;
+        align-items: center;
+      }
+
+      .icon-name :first-child {
+        padding-right: 4px;
       }
 
       .more-info {
@@ -545,9 +565,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         height: var(--paper-progress-height, 4px);
         margin-top: 4px;
         border-radius: calc(var(--paper-progress-height, 4px) / 2);
-        --paper-progress-active-color: var(--accent-color);
         --paper-progress-container-color: rgba(200, 200, 200, 0.5);
-        transition: all 0.8s;
       }
 
       .no-image .image {
@@ -558,14 +576,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         padding-bottom: 0;
       }
 
-      .no-image .color-gradient {
-        display: none;
-      }
-
-      .no-image .title-controls {
+      .off .title-controls {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-end;
         width: 100%;
       }
 
@@ -573,11 +587,8 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         padding: 0;
       }
 
-      .narrow.player {
-        padding-bottom: 4px;
-      }
-
-      .narrow .controls {
+      .narrow .controls,
+      .no-progress .controls {
         padding-bottom: 0;
       }
 
@@ -593,6 +604,24 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
       .very-narrow.player {
         padding-bottom: 16px;
+      }
+
+      .no-progress.player {
+        padding-bottom: 0px;
+      }
+
+      .off.player,
+      .off.player.no-progress,
+      .narrow.player:not(.very-narrow) {
+        padding-bottom: 8px;
+      }
+
+      .off.background {
+        filter: grayscale(1);
+      }
+
+      .off .media-info {
+        padding-bottom: 4px;
       }
     `;
   }
