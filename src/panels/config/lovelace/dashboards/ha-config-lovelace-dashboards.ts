@@ -181,7 +181,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       !localStorage.defaultPage || localStorage.defaultPage === "lovelace";
     return [
       {
-        icon: "hass:apps",
+        icon: "hass:view-dashboard",
         title: this.hass.localize("panel.states"),
         default: isDefault,
         sidebar: isDefault,
