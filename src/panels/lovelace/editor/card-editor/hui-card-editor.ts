@@ -12,7 +12,7 @@ import { safeDump, safeLoad } from "js-yaml";
 
 import "@material/mwc-button";
 import { HomeAssistant } from "../../../../types";
-import { LovelaceCardConfig } from "../../../../data/lovelace";
+import { LovelaceCardConfig, LovelaceConfig } from "../../../../data/lovelace";
 import { LovelaceCardEditor } from "../../types";
 import { computeRTL } from "../../../../common/util/compute_rtl";
 
@@ -45,6 +45,7 @@ export interface UIConfigChangedEvent extends Event {
 @customElement("hui-card-editor")
 export class HuiCardEditor extends LitElement {
   @property() public hass!: HomeAssistant;
+  @property() public lovelace?: LovelaceConfig;
 
   @property() private _yaml?: string;
   @property() private _config?: LovelaceCardConfig;
@@ -239,6 +240,7 @@ export class HuiCardEditor extends LitElement {
 
       // Perform final setup
       this._configElement!.hass = this.hass;
+      this._configElement!.lovelace = this.lovelace;
       this._configElement!.addEventListener("config-changed", (ev) =>
         this._handleUIConfigChanged(ev as UIConfigChangedEvent)
       );
