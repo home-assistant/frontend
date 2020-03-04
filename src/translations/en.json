@@ -377,7 +377,7 @@
   },
   "ui": {
     "auth_store": {
-      "ask": "Do you want this login session to persist?",
+      "ask": "Do you want to stay logged in?",
       "decline": "No",
       "confirm": "Yes"
     },
