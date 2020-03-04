@@ -9,6 +9,7 @@ import {
   CSSResult,
 } from "lit-element";
 import { classMap } from "lit-html/directives/class-map";
+import { styleMap } from "lit-html/directives/style-map";
 import { HassEntity } from "home-assistant-js-websocket";
 import * as Vibrant from "node-vibrant";
 import "@polymer/paper-icon-button/paper-icon-button";
@@ -39,7 +40,6 @@ import { MediaControlCardConfig } from "./types";
 import { UNAVAILABLE } from "../../../data/entity";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { contrast } from "../common/color/contrast";
-import { styleMap } from "lit-html/directives/style-map";
 
 @customElement("hui-media-control-card")
 export class HuiMediaControlCard extends LitElement implements LovelaceCard {
@@ -301,9 +301,11 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
 
     const oldImage =
+      oldHass?.states[this._config.entity]?.attributes.entity_picture_local ||
       oldHass?.states[this._config.entity]?.attributes.entity_picture;
-    const newImage = this.hass.states[this._config.entity]?.attributes
-      .entity_picture;
+    const newImage =
+      this.hass.states[this._config.entity]?.attributes.entity_picture_local ||
+      this.hass.states[this._config.entity]?.attributes.entity_picture;
 
     if (!newImage) {
       this._image = newImage;

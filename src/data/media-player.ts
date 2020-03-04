@@ -25,28 +25,6 @@ export interface MediaPlayerThumbnail {
   content: string;
 }
 
-export const fetchMediaPlayerThumbnailWithCache = (
-  hass: HomeAssistant,
-  entityId: string
-) =>
-  timeCachePromiseFunc(
-    "_media_playerTmb",
-    9000,
-    fetchMediaPlayerThumbnail,
-    hass,
-    entityId
-  );
-
-export const fetchMediaPlayerThumbnail = (
-  hass: HomeAssistant,
-  entityId: string
-) => {
-  return hass.callWS<MediaPlayerThumbnail>({
-    type: "media_player_thumbnail",
-    entity_id: entityId,
-  });
-};
-
 export const getCurrentProgress = (stateObj: HassEntity): number => {
   let progress = stateObj.attributes.media_position;
   progress +=
