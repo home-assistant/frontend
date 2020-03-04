@@ -14,6 +14,7 @@ import { HomeAssistant } from "../../../../types";
 import { LovelaceCardEditor } from "../../types";
 import { StackCardConfig } from "../../cards/types";
 import { fireEvent } from "../../../../common/dom/fire_event";
+import { LovelaceConfig } from "../../../../data/lovelace";
 
 import "../../../../components/entity/ha-entity-picker";
 import "../../../../components/ha-switch";
@@ -33,6 +34,7 @@ const cardConfigStruct = struct({
 export class HuiConditionalCardEditor extends LitElement
   implements LovelaceCardEditor {
   @property() public hass?: HomeAssistant;
+  @property() public lovelace?: LovelaceConfig;
   @property() private _config?: StackCardConfig;
   @property() private _cardTab: boolean = false;
 
@@ -82,6 +84,7 @@ export class HuiConditionalCardEditor extends LitElement
                 : html`
                     <hui-card-picker
                       .hass=${this.hass}
+                      .lovelace=${this.lovelace}
                       @config-changed=${this._handleCardChanged}
                     ></hui-card-picker>
                   `}
