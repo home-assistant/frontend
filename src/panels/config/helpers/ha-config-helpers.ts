@@ -58,7 +58,7 @@ export class HaConfigHelpers extends LitElement {
           template: (name, item: any) =>
             html`
               ${name}
-              <div style="color: var(--secondary-text-color)">
+              <div class="secondary">
                 ${item.entity_id}
               </div>
             `,
