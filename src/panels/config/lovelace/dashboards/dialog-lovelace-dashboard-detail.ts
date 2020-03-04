@@ -78,85 +78,106 @@ export class DialogLovelaceDashboardDetail extends LitElement {
         )}
       >
         <div>
-          ${this._error
-            ? html`
-                <div class="error">${this._error}</div>
-              `
-            : ""}
-          <div class="form">
-            <ha-switch
-              .checked=${this._showSidebar}
-              @change=${this._showSidebarChanged}
-              >${this.hass!.localize(
-                "ui.panel.config.lovelace.dashboards.detail.show_sidebar"
-              )}</ha-switch
-            >
-            ${this._showSidebar
-              ? html`
-                  <ha-icon-input
-                    .value=${this._sidebarIcon}
-                    @value-changed=${this._sidebarIconChanged}
-                    .label=${this.hass!.localize(
-                      "ui.panel.config.lovelace.dashboards.detail.icon"
-                    )}
-                  ></ha-icon-input>
-                  <paper-input
-                    .value=${this._sidebarTitle}
-                    @value-changed=${this._sidebarTitleChanged}
-                    .label=${this.hass!.localize(
-                      "ui.panel.config.lovelace.dashboards.detail.title"
-                    )}
-                    @blur=${this._fillUrlPath}
-                  ></paper-input>
-                `
-              : ""}
-            ${!this._params.dashboard
-              ? html`
-                  <paper-input
-                    .value=${this._urlPath}
-                    @value-changed=${this._urlChanged}
-                    .label=${this.hass!.localize(
-                      "ui.panel.config.lovelace.dashboards.detail.url"
-                    )}
-                    .errorMessage=${this.hass!.localize(
-                      "ui.panel.config.lovelace.dashboards.detail.url_error_msg"
-                    )}
-                    .invalid=${urlInvalid}
-                  ></paper-input>
-                `
-              : ""}
-            <ha-switch
-              .checked=${this._requireAdmin}
-              @change=${this._requireAdminChanged}
-              >${this.hass!.localize(
-                "ui.panel.config.lovelace.dashboards.detail.require_admin"
-              )}</ha-switch
-            >
-          </div>
+          ${this._params.dashboard && !this._params.dashboard.id
+            ? this.hass!.localize(
+                "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
+              )
+            : html`
+                ${this._error
+                  ? html`
+                      <div class="error">${this._error}</div>
+                    `
+                  : ""}
+                <div class="form">
+                  <ha-switch
+                    .checked=${this._showSidebar}
+                    @change=${this._showSidebarChanged}
+                    >${this.hass!.localize(
+                      "ui.panel.config.lovelace.dashboards.detail.show_sidebar"
+                    )}</ha-switch
+                  >
+                  ${this._showSidebar
+                    ? html`
+                        <ha-icon-input
+                          .value=${this._sidebarIcon}
+                          @value-changed=${this._sidebarIconChanged}
+                          .label=${this.hass!.localize(
+                            "ui.panel.config.lovelace.dashboards.detail.icon"
+                          )}
+                        ></ha-icon-input>
+                        <paper-input
+                          .value=${this._sidebarTitle}
+                          @value-changed=${this._sidebarTitleChanged}
+                          .label=${this.hass!.localize(
+                            "ui.panel.config.lovelace.dashboards.detail.title"
+                          )}
+                          @blur=${this._fillUrlPath}
+                        ></paper-input>
+                      `
+                    : ""}
+                  ${!this._params.dashboard
+                    ? html`
+                        <paper-input
+                          .value=${this._urlPath}
+                          @value-changed=${this._urlChanged}
+                          .label=${this.hass!.localize(
+                            "ui.panel.config.lovelace.dashboards.detail.url"
+                          )}
+                          .errorMessage=${this.hass!.localize(
+                            "ui.panel.config.lovelace.dashboards.detail.url_error_msg"
+                          )}
+                          .invalid=${urlInvalid}
+                        ></paper-input>
+                      `
+                    : ""}
+                  <ha-switch
+                    .checked=${this._requireAdmin}
+                    @change=${this._requireAdminChanged}
+                    >${this.hass!.localize(
+                      "ui.panel.config.lovelace.dashboards.detail.require_admin"
+                    )}</ha-switch
+                  >
+                </div>
+              `}
         </div>
         ${this._params.dashboard
           ? html`
-              <mwc-button
-                slot="secondaryAction"
-                class="warning"
-                @click="${this._deleteDashboard}"
-                .disabled=${this._submitting}
-              >
-                ${this.hass!.localize(
-                  "ui.panel.config.lovelace.dashboards.detail.delete"
-                )}
+              ${this._params.dashboard.id
+                ? html`
+                    <mwc-button
+                      slot="secondaryAction"
+                      class="warning"
+                      @click=${this._deleteDashboard}
+                      .disabled=${this._submitting}
+                    >
+                      ${this.hass!.localize(
+                        "ui.panel.config.lovelace.dashboards.detail.delete"
+                      )}
+                    </mwc-button>
+                  `
+                : ""}
+              <mwc-button slot="secondaryAction" @click=${this._toggleDefault}>
+                ${this._params.dashboard.url_path === localStorage.defaultPage
+                  ? this.hass!.localize(
+                      "ui.panel.config.lovelace.dashboards.detail.remove_default"
+                    )
+                  : this.hass!.localize(
+                      "ui.panel.config.lovelace.dashboards.detail.set_default"
+                    )}
               </mwc-button>
             `
-          : html``}
+          : ""}
         <mwc-button
           slot="primaryAction"
           @click="${this._updateDashboard}"
           .disabled=${urlInvalid || this._submitting}
         >
           ${this._params.dashboard
-            ? this.hass!.localize(
-                "ui.panel.config.lovelace.dashboards.detail.update"
-              )
+            ? this._params.dashboard.id
+              ? this.hass!.localize(
+                  "ui.panel.config.lovelace.dashboards.detail.update"
+                )
+              : this.hass!.localize("ui.common.close")
             : this.hass!.localize(
                 "ui.panel.config.lovelace.dashboards.detail.create"
               )}
@@ -197,6 +218,19 @@ export class DialogLovelaceDashboardDetail extends LitElement {
 
   private _requireAdminChanged(ev: Event) {
     this._requireAdmin = (ev.target as HaSwitch).checked;
+  }
+
+  private _toggleDefault() {
+    const urlPath = this._params?.dashboard?.url_path;
+    if (!urlPath) {
+      return;
+    }
+    if (urlPath === localStorage.defaultPage) {
+      delete localStorage.defaultPage;
+    } else {
+      localStorage.defaultPage = urlPath;
+    }
+    location.reload();
   }
 
   private async _updateDashboard() {

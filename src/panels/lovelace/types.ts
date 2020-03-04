@@ -38,7 +38,12 @@ export interface LovelaceCard extends HTMLElement {
 }
 
 export interface LovelaceCardConstructor extends Constructor<LovelaceCard> {
-  getStubConfig?: (hass: HomeAssistant) => LovelaceCardConfig;
+  getStubConfig?: (
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
+  ) => LovelaceCardConfig;
   getConfigElement?: () => LovelaceCardEditor;
 }
 

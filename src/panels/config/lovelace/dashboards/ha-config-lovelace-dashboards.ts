@@ -27,10 +27,7 @@ import {
 } from "../../../../data/lovelace";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
 import { compare } from "../../../../common/string/compare";
-import {
-  showConfirmationDialog,
-  showAlertDialog,
-} from "../../../../dialogs/generic/show-dialog-box";
+import { showConfirmationDialog } from "../../../../dialogs/generic/show-dialog-box";
 import { lovelaceTabs } from "../ha-config-lovelace";
 import { navigate } from "../../../../common/navigate";
 
@@ -164,6 +161,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
         .columns=${this._columns(this.hass.language, this._dashboards)}
         .data=${this._getItems(this._dashboards)}
         @row-click=${this._editDashboard}
+        id="url_path"
       >
       </hass-tabs-subpage-data-table>
       <ha-fab
@@ -194,18 +192,8 @@ export class HaConfigLovelaceDashboards extends LitElement {
   }
 
   private _editDashboard(ev: CustomEvent) {
-    const id = (ev.detail as RowClickedEvent).id;
-    const dashboard = id
-      ? this._dashboards.find((res) => res.id === id)
-      : undefined;
-    if (!dashboard) {
-      showAlertDialog(this, {
-        text: this.hass!.localize(
-          "ui.panel.config.lovelace.dashboards.cant_edit_yaml"
-        ),
-      });
-      return;
-    }
+    const urlPath = (ev.detail as RowClickedEvent).id;
+    const dashboard = this._dashboards.find((res) => res.url_path === urlPath);
     this._openDialog(dashboard);
   }
 

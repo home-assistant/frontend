@@ -15,13 +15,6 @@ export const demoPanels: Panels = {
     config: null,
     url_path: "dev-state",
   },
-  states: {
-    component_name: "states",
-    icon: null,
-    title: null,
-    config: null,
-    url_path: "states",
-  },
   "dev-event": {
     component_name: "dev-event",
     icon: null,
@@ -42,13 +35,6 @@ export const demoPanels: Panels = {
     title: null,
     config: null,
     url_path: "profile",
-  },
-  kiosk: {
-    component_name: "kiosk",
-    icon: null,
-    title: null,
-    config: null,
-    url_path: "kiosk",
   },
   "dev-info": {
     component_name: "dev-info",

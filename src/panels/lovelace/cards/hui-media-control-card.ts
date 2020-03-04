@@ -40,6 +40,9 @@ import { MediaControlCardConfig } from "./types";
 import { UNAVAILABLE } from "../../../data/entity";
 import { stateIcon } from "../../../common/entity/state_icon";
 import { contrast } from "../common/color/contrast";
+import { styleMap } from "lit-html/directives/style-map";
+import { LovelaceConfig } from "../../../data/lovelace";
+import { findEntities } from "../common/find-entites";
 
 @customElement("hui-media-control-card")
 export class HuiMediaControlCard extends LitElement implements LovelaceCard {
@@ -50,8 +53,24 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-media-control-card-editor");
   }
 
-  public static getStubConfig(): object {
-    return { entity: "" };
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
+  ): object {
+    const includeDomains = ["media_player"];
+    const maxEntities = 1;
+    const foundEntities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      entities,
+      entitiesFill,
+      includeDomains
+    );
+
+    return { entity: foundEntities[0] || "" };
   }
 
   @property() public hass?: HomeAssistant;

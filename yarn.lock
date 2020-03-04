@@ -4102,7 +4102,7 @@ binary-extensions@^1.0.0:
   resolved "https://registry.yarnpkg.com/binary-extensions/-/binary-extensions-1.13.1.tgz#598afe54755b2868a5330d2aff9d4ebb53209b65"
   integrity sha512-Un7MIEDdUC5gNpcGDV97op1Ywk748MpHcFTHoYs6qnj1Z3j7I53VG3nwZhKzoBZmbdRNnb6WRdFlwl7tSDuZGw==
 
-bl@^1.0.0:
+bl@^1.0.0, bl@^1.2.1:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/bl/-/bl-1.2.2.tgz#a160911717103c07410cef63ef51b397c025af9c"
   integrity sha512-e8tQYnZodmebYDWGH7KMRvtzKXaJHx3BbilrgZCfvyLUYdKpK1t5PSPmpkny/SgiTSCnjfLW7v5rlONXVFkQEA==
@@ -6113,11 +6113,6 @@ es6-object-assign@^1.1.0:
   resolved "https://registry.yarnpkg.com/es6-object-assign/-/es6-object-assign-1.1.0.tgz#c2c3582656247c39ea107cb1e6652b6f9f24523c"
   integrity sha1-wsNYJlYkfDnqEHyx5mUrb58kUjw=
 
-es6-promise@^2.1.1:
-  version "2.3.0"
-  resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-2.3.0.tgz#96edb9f2fdb01995822b263dd8aadab6748181bc"
-  integrity sha1-lu258v2wGZWCKyY92KratnSBgbw=
-
 es6-promise@^4.0.3, es6-promise@^4.0.5:
   version "4.2.6"
   resolved "https://registry.yarnpkg.com/es6-promise/-/es6-promise-4.2.6.tgz#b685edd8258886365ea62b57d30de28fadcd974f"
@@ -7441,22 +7436,6 @@ gulp-foreach@^0.1.0:
     gulp-util "~2.2.14"
     through2 "~0.6.3"
 
-gulp-hash-filename@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/gulp-hash-filename/-/gulp-hash-filename-2.0.1.tgz#c30656261a9b622d636766e48b8297125b4ddde8"
-  integrity sha512-pMg5owb8Dt0wqjgPx/TFbU3c5ckD16rrgo0BTm9PQ3pVC1Zsgw7AYx1+DP2t31JoUTeN1/dPuXNWnCNvN/wj7A==
-
-gulp-hash@^4.2.2:
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/gulp-hash/-/gulp-hash-4.2.2.tgz#2cf4ad081ef7a65393a51e3df58f514f388f4523"
-  integrity sha512-uWCjiy7ZXCPu4aaTM454+ImCnrR+07MKdwpunDZU0I7oUd5+SfyDxxhYzgpzSRVSlCFWfBBqNY9vAL3m3F+3uw==
-  dependencies:
-    es6-promise "^2.1.1"
-    lodash.assign "^2.4.1"
-    lodash.template "^2.4.1"
-    through2 "^2.0.0"
-    vinyl "^2.1.0"
-
 gulp-if@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/gulp-if/-/gulp-if-2.0.2.tgz#a497b7e7573005041caa2bc8b7dda3c80444d629"
@@ -7514,10 +7493,10 @@ gulp-merge-json@^1.3.1:
     through "^2.3.8"
     vinyl "^2.1.0"
 
-gulp-rename@^1.4.0:
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/gulp-rename/-/gulp-rename-1.4.0.tgz#de1c718e7c4095ae861f7296ef4f3248648240bd"
-  integrity sha512-swzbIGb/arEoFK89tPY58vg3Ok1bw+d35PfUNwWqdo7KM4jkmuGA78JiDNqR+JeZFaeeHnRg9N7aihX3YPmsyg==
+gulp-rename@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/gulp-rename/-/gulp-rename-2.0.0.tgz#9bbc3962b0c0f52fc67cd5eaff6c223ec5b9cf6c"
+  integrity sha512-97Vba4KBzbYmR5VBs9mWmK+HwIf5mj+/zioxfZhOKeXtx5ZjBk57KFlePf5nxq9QsTtFl0ejnHE3zTC9MHXqyQ==
 
 gulp-sourcemaps@1.6.0:
   version "1.6.0"
@@ -9048,55 +9027,6 @@ locate-path@^3.0.0:
     p-locate "^3.0.0"
     path-exists "^3.0.0"
 
-lodash._basebind@~2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/lodash._basebind/-/lodash._basebind-2.4.1.tgz#e940b9ebdd27c327e0a8dab1b55916c5341e9575"
-  integrity sha1-6UC5690nwyfgqNqxtVkWxTQelXU=
-  dependencies:
-    lodash._basecreate "~2.4.1"
-    lodash._setbinddata "~2.4.1"
-    lodash._slice "~2.4.1"
-    lodash.isobject "~2.4.1"
-
-lodash._basecreate@~2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/lodash._basecreate/-/lodash._basecreate-2.4.1.tgz#f8e6f5b578a9e34e541179b56b8eeebf4a287e08"
-  integrity sha1-+Ob1tXip405UEXm1a47uv0oofgg=
-  dependencies:
-    lodash._isnative "~2.4.1"
-    lodash.isobject "~2.4.1"
-    lodash.noop "~2.4.1"
-
-lodash._basecreatecallback@~2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/lodash._basecreatecallback/-/lodash._basecreatecallback-2.4.1.tgz#7d0b267649cb29e7a139d0103b7c11fae84e4851"
-  integrity sha1-fQsmdknLKeehOdAQO3wR+uhOSFE=
-  dependencies:
-    lodash._setbinddata "~2.4.1"
-    lodash.bind "~2.4.1"
-    lodash.identity "~2.4.1"
-    lodash.support "~2.4.1"
-
-lodash._basecreatewrapper@~2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/lodash._basecreatewrapper/-/lodash._basecreatewrapper-2.4.1.tgz#4d31f2e7de7e134fbf2803762b8150b32519666f"
-  integrity sha1-TTHy595+E0+/KAN2K4FQsyUZZm8=
-  dependencies:
-    lodash._basecreate "~2.4.1"
-    lodash._setbinddata "~2.4.1"
-    lodash._slice "~2.4.1"
-    lodash.isobject "~2.4.1"
-
-lodash._createwrapper@~2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/lodash._createwrapper/-/lodash._createwrapper-2.4.1.tgz#51d6957973da4ed556e37290d8c1a18c53de1607"
-  integrity sha1-UdaVeXPaTtVW43KQ2MGhjFPeFgc=
-  dependencies:
-    lodash._basebind "~2.4.1"
-    lodash._basecreatewrapper "~2.4.1"
-    lodash._slice "~2.4.1"
-    lodash.isfunction "~2.4.1"
-
 lodash._escapehtmlchar@~2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/lodash._escapehtmlchar/-/lodash._escapehtmlchar-2.4.1.tgz#df67c3bb6b7e8e1e831ab48bfa0795b92afe899d"
@@ -9142,42 +9072,12 @@ lodash._reunescapedhtml@~2.4.1:
     lodash._htmlescapes "~2.4.1"
     lodash.keys "~2.4.1"
 
-lodash._setbinddata@~2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/lodash._setbinddata/-/lodash._setbinddata-2.4.1.tgz#f7c200cd1b92ef236b399eecf73c648d17aa94d2"
-  integrity sha1-98IAzRuS7yNrOZ7s9zxkjReqlNI=
-  dependencies:
-    lodash._isnative "~2.4.1"
-    lodash.noop "~2.4.1"
-
 lodash._shimkeys@~2.4.1:
   version "2.4.1"
   resolved "https://registry.yarnpkg.com/lodash._shimkeys/-/lodash._shimkeys-2.4.1.tgz#6e9cc9666ff081f0b5a6c978b83e242e6949d203"
   integrity sha1-bpzJZm/wgfC1psl4uD4kLmlJ0gM=
   dependencies:
     lodash._objecttypes "~2.4.1"
-
-lodash._slice@~2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/lodash._slice/-/lodash._slice-2.4.1.tgz#745cf41a53597b18f688898544405efa2b06d90f"
-  integrity sha1-dFz0GlNZexj2iImFREBe+isG2Q8=
-
-lodash.assign@^2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/lodash.assign/-/lodash.assign-2.4.1.tgz#84c39596dd71181a97b0652913a7c9675e49b1aa"
-  integrity sha1-hMOVlt1xGBqXsGUpE6fJZ15Jsao=
-  dependencies:
-    lodash._basecreatecallback "~2.4.1"
-    lodash._objecttypes "~2.4.1"
-    lodash.keys "~2.4.1"
-
-lodash.bind@~2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/lodash.bind/-/lodash.bind-2.4.1.tgz#5d19fa005c8c4d236faf4742c7b7a1fcabe29267"
-  integrity sha1-XRn6AFyMTSNvr0dCx7eh/Kvikmc=
-  dependencies:
-    lodash._createwrapper "~2.4.1"
-    lodash._slice "~2.4.1"
 
 lodash.camelcase@^4.3.0:
   version "4.3.0"
@@ -9206,20 +9106,10 @@ lodash.escape@~2.4.1:
     lodash._reunescapedhtml "~2.4.1"
     lodash.keys "~2.4.1"
 
-lodash.identity@~2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/lodash.identity/-/lodash.identity-2.4.1.tgz#6694cffa65fef931f7c31ce86c74597cf560f4f1"
-  integrity sha1-ZpTP+mX++TH3wxzobHRZfPVg9PE=
-
 lodash.isequal@^4.0.0:
   version "4.5.0"
   resolved "https://registry.yarnpkg.com/lodash.isequal/-/lodash.isequal-4.5.0.tgz#415c4478f2bcc30120c22ce10ed3226f7d3e18e0"
   integrity sha1-QVxEePK8wwEgwizhDtMib30+GOA=
-
-lodash.isfunction@~2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/lodash.isfunction/-/lodash.isfunction-2.4.1.tgz#2cfd575c73e498ab57e319b77fa02adef13a94d1"
-  integrity sha1-LP1XXHPkmKtX4xm3f6Aq3vE6lNE=
 
 lodash.isobject@~2.4.1:
   version "2.4.1"
@@ -9247,11 +9137,6 @@ lodash.mergewith@^4.6.1:
   resolved "https://registry.yarnpkg.com/lodash.mergewith/-/lodash.mergewith-4.6.2.tgz#617121f89ac55f59047c7aec1ccd6654c6590f55"
   integrity sha512-GK3g5RPZWTRSeLSpgP8Xhra+pnjBC56q9FZYe1d5RN3TJ35dbkGy3YqBSMbyCrlbi+CM9Z3Jk5yTL7RCsqboyQ==
 
-lodash.noop@~2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/lodash.noop/-/lodash.noop-2.4.1.tgz#4fb54f816652e5ae10e8f72f717a388c7326538a"
-  integrity sha1-T7VPgWZS5a4Q6PcvcXo4jHMmU4o=
-
 lodash.padend@^4.6.1:
   version "4.6.1"
   resolved "https://registry.yarnpkg.com/lodash.padend/-/lodash.padend-4.6.1.tgz#53ccba047d06e158d311f45da625f4e49e6f166e"
@@ -9266,13 +9151,6 @@ lodash.sortby@^4.7.0:
   version "4.7.0"
   resolved "https://registry.yarnpkg.com/lodash.sortby/-/lodash.sortby-4.7.0.tgz#edd14c824e2cc9c1e0b0a1b42bb5210516a42438"
   integrity sha1-7dFMgk4sycHgsKG0K7UhBRakJDg=
-
-lodash.support@~2.4.1:
-  version "2.4.1"
-  resolved "https://registry.yarnpkg.com/lodash.support/-/lodash.support-2.4.1.tgz#320e0b67031673c28d7a2bb5d9e0331a45240515"
-  integrity sha1-Mg4LZwMWc8KNeiu12eAzGkUkBRU=
-  dependencies:
-    lodash._isnative "~2.4.1"
 
 lodash.template@^2.4.1:
   version "2.4.1"
@@ -13914,6 +13792,14 @@ verror@1.10.0:
     core-util-is "1.0.2"
     extsprintf "^1.2.0"
 
+vinyl-buffer@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/vinyl-buffer/-/vinyl-buffer-1.0.1.tgz#96c1a3479b8c5392542c612029013b5b27f88bbf"
+  integrity sha1-lsGjR5uMU5JULGEgKQE7Wyf4i78=
+  dependencies:
+    bl "^1.2.1"
+    through2 "^2.0.3"
+
 vinyl-fs@^2.4.4:
   version "2.4.4"
   resolved "https://registry.yarnpkg.com/vinyl-fs/-/vinyl-fs-2.4.4.tgz#be6ff3270cb55dfd7d3063640de81f25d7532239"
@@ -13959,6 +13845,14 @@ vinyl-fs@^3.0.0:
     value-or-function "^3.0.0"
     vinyl "^2.0.0"
     vinyl-sourcemap "^1.1.0"
+
+vinyl-source-stream@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/vinyl-source-stream/-/vinyl-source-stream-2.0.0.tgz#f38a5afb9dd1e93b65d550469ac6182ac4f54b8e"
+  integrity sha1-84pa+53R6Ttl1VBGmsYYKsT1S44=
+  dependencies:
+    through2 "^2.0.3"
+    vinyl "^2.1.0"
 
 vinyl-sourcemap@^1.1.0:
   version "1.1.0"
