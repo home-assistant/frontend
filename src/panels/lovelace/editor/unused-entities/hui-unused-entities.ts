@@ -139,24 +139,28 @@ export class HuiUnusedEntities extends LitElement {
     }
 
     return html`
-      <ha-card
-        header="${this.hass.localize(
-          "ui.panel.lovelace.unused_entities.title"
-        )}"
-      >
-        <div class="card-content">
-          ${this.hass.localize(
-            "ui.panel.lovelace.unused_entities.available_entities"
-          )}
-          ${this.lovelace.mode === "storage"
-            ? html`
-                <br />${this.hass.localize(
-                  "ui.panel.lovelace.unused_entities.select_to_add"
+      ${!this.narrow
+        ? html`
+            <ha-card
+              header="${this.hass.localize(
+                "ui.panel.lovelace.unused_entities.title"
+              )}"
+            >
+              <div class="card-content">
+                ${this.hass.localize(
+                  "ui.panel.lovelace.unused_entities.available_entities"
                 )}
-              `
-            : ""}
-        </div>
-      </ha-card>
+                ${this.lovelace.mode === "storage"
+                  ? html`
+                      <br />${this.hass.localize(
+                        "ui.panel.lovelace.unused_entities.select_to_add"
+                      )}
+                    `
+                  : ""}
+              </div>
+            </ha-card>
+          `
+        : ""}
       <ha-data-table
         .columns=${this._columns(this.narrow!)}
         .data=${this._unusedEntities.map((entity) => {
@@ -233,6 +237,7 @@ export class HuiUnusedEntities extends LitElement {
       ha-data-table {
         --data-table-border-width: 0;
         flex-grow: 1;
+        margin-top: -20px;
       }
       ha-fab {
         position: absolute;
