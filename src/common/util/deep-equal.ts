@@ -1,5 +1,5 @@
 // from https://github.com/epoberezkin/fast-deep-equal
-export const equal = (a, b): boolean => {
+export const equal = (a: any, b: any): boolean => {
   if (a === b) {
     return true;
   }
@@ -9,9 +9,8 @@ export const equal = (a, b): boolean => {
       return false;
     }
 
-    let length;
-    let i;
-    let keys;
+    let i: number | [any, any];
+    let length: number;
     if (Array.isArray(a)) {
       length = a.length;
       if (length !== b.length) {
@@ -79,12 +78,12 @@ export const equal = (a, b): boolean => {
       return a.toString() === b.toString();
     }
 
+    let keys: string[];
     keys = Object.keys(a);
     length = keys.length;
     if (length !== Object.keys(b).length) {
       return false;
     }
-
     for (i = length; i-- !== 0; ) {
       if (!Object.prototype.hasOwnProperty.call(b, keys[i])) {
         return false;
