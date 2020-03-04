@@ -27,6 +27,8 @@ import { createHeaderFooterElement } from "../create-element/create-header-foote
 import { LovelaceHeaderFooterConfig } from "../header-footer/types";
 import { DOMAINS_TOGGLE } from "../../../common/const";
 import { computeDomain } from "../../../common/entity/compute_domain";
+import { LovelaceConfig } from "../../../data/lovelace";
+import { findEntities } from "../common/find-entites";
 
 @customElement("hui-entities-card")
 class HuiEntitiesCard extends LitElement implements LovelaceCard {
@@ -37,8 +39,22 @@ class HuiEntitiesCard extends LitElement implements LovelaceCard {
     return document.createElement("hui-entities-card-editor");
   }
 
-  public static getStubConfig(): object {
-    return { entities: [] };
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
+  ) {
+    const maxEntities = 3;
+    const foundEntities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      entities,
+      entitiesFill
+    );
+
+    return { entities: foundEntities };
   }
 
   @property() private _config?: EntitiesCardConfig;

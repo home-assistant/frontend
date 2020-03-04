@@ -54,7 +54,8 @@ class DialogSystemLogDetail extends LitElement {
         </h2>
         <paper-dialog-scrollable>
           <p>
-            Logger: ${item.name}
+            Logger: ${item.name}<br />
+            Source: ${item.source.join(":")}
             ${integration
               ? html`
                   <br />
@@ -81,11 +82,18 @@ class DialogSystemLogDetail extends LitElement {
             Last logged:
             ${formatSystemLogTime(item.timestamp, this.hass!.language)}
           </p>
-          ${item.message
+          ${item.message.length > 1
             ? html`
-                <pre>${item.message}</pre>
+                <ul>
+                  ${item.message.map(
+                    (msg) =>
+                      html`
+                        <li>${msg}</li>
+                      `
+                  )}
+                </ul>
               `
-            : html``}
+            : item.message[0]}
           ${item.exception
             ? html`
                 <pre>${item.exception}</pre>

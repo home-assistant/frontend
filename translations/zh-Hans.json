@@ -364,13 +364,13 @@
         },
         "weather": {
             "clear-night": "夜间晴朗",
-            "cloudy": "多云",
+            "cloudy": "阴",
             "exceptional": "特殊",
             "fog": "雾",
             "hail": "冰雹",
             "lightning": "雷电",
             "lightning-rainy": "雷阵雨",
-            "partlycloudy": "局部多云",
+            "partlycloudy": "多云",
             "pouring": "暴雨",
             "rainy": "雨",
             "snowy": "雪",
@@ -639,6 +639,7 @@
             },
             "generic": {
                 "cancel": "取消",
+                "close": "关闭",
                 "default_confirmation_title": "您确定吗？",
                 "ok": "确定"
             },
@@ -1476,6 +1477,76 @@
                     "note_about_website_reference": "更多可用信息，尽在 "
                 },
                 "introduction": "您可以在此配置 Home Assistant 及组件。目前并非所有配置都能通过前端 UI 完成，但是我们在努力实现中。",
+                "lovelace": {
+                    "caption": "Lovelace 仪表盘",
+                    "dashboards": {
+                        "cant_edit_yaml": "定义于 YAML 中的仪表盘不能从 UI 修改。请在 configuration.yaml 中修改它们。",
+                        "caption": "仪表盘",
+                        "conf_mode": {
+                            "storage": "UI 控制",
+                            "yaml": "YAML 文件"
+                        },
+                        "confirm_delete": "您确定要删除此仪表盘吗？",
+                        "detail": {
+                            "create": "创建",
+                            "delete": "删除",
+                            "dismiss": "关闭",
+                            "edit_dashboard": "编辑仪表盘",
+                            "icon": "侧边栏图标",
+                            "new_dashboard": "添加新仪表盘",
+                            "require_admin": "仅限管理员",
+                            "show_sidebar": "在侧边栏显示",
+                            "title": "侧边栏标题",
+                            "update": "更新",
+                            "url": "网址",
+                            "url_error_msg": "网址不可包含除 - 和 _ 以外的特殊字符及空格"
+                        },
+                        "picker": {
+                            "add_dashboard": "添加仪表盘",
+                            "headers": {
+                                "conf_mode": "配置方式",
+                                "filename": "文件名",
+                                "require_admin": "仅限管理员",
+                                "sidebar": "在侧边栏显示",
+                                "title": "标题"
+                            },
+                            "open": "打开仪表盘"
+                        }
+                    },
+                    "description": "配置 Lovelace 仪表盘",
+                    "resources": {
+                        "cant_edit_yaml": "您正在 YAML 模式下使用 Lovelace，因此无法通过 UI 管理资源。请在 configuration.yaml 中管理它们。",
+                        "caption": "资源",
+                        "confirm_delete": "您确定要删除此资源吗？",
+                        "detail": {
+                            "create": "创建",
+                            "delete": "删除",
+                            "dismiss": "关闭",
+                            "new_resource": "添加新资源",
+                            "type": "资源类型",
+                            "update": "更新",
+                            "url": "网址",
+                            "url_error_msg": "网址为必填项",
+                            "warning_header": "注意！",
+                            "warning_text": "添加资源可能带来危险。请确保您知道资源的来源并信任它们。恶意资源会严重损害您的系统。"
+                        },
+                        "picker": {
+                            "add_resource": "添加资源",
+                            "headers": {
+                                "type": "类型",
+                                "url": "网址"
+                            }
+                        },
+                        "refresh_body": "您必须刷新页面才能完成删除，是否要立即刷新？",
+                        "refresh_header": "要刷新吗？",
+                        "types": {
+                            "css": "样式表",
+                            "html": "HTML（已过时）",
+                            "js": "JavaScript文件（已过时）",
+                            "module": "JavaScript 模块"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "添加人员",
                     "caption": "人员",
@@ -2174,10 +2245,14 @@
                     },
                     "save_config": {
                         "cancel": "算了吧",
+                        "close": "关闭",
                         "header": "自行编辑您的 Lovelace UI",
                         "para": "默认情况下，Home Assistant 将维护您的用户界面，并在新的实体或 Lovelace 组件可用时更新它。如果您选择自行编辑，我们将不再自动为您进行更改。",
                         "para_sure": "您确定要自行编辑用户界面吗？",
-                        "save": "自行编辑"
+                        "save": "自行编辑",
+                        "yaml_config": "为方便您开始，以下是此仪表盘的当前配置：",
+                        "yaml_control": "要以 YAML 模式下自行编辑，请创建 YAML 文件并命名为在配置中为此仪表盘指定的名称，或使用默认的 'ui-lovelace.yaml'。",
+                        "yaml_mode": "您正在使用 YAML 模式，因此无法从 UI 更改 Lovelace 配置。如果要从 UI 更改 Lovelace，请从 'configuration.yaml' 中的 Lovelace 配置中删除 'mode:yaml'。"
                     },
                     "suggest_card": {
                         "add": "添加至 Lovelace UI",

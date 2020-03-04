@@ -27,8 +27,9 @@ import { PictureEntityCardConfig } from "./types";
 import { applyThemesOnElement } from "../../../common/dom/apply_themes_on_element";
 import { actionHandler } from "../common/directives/action-handler-directive";
 import { hasAction } from "../common/has-action";
-import { ActionHandlerEvent } from "../../../data/lovelace";
+import { ActionHandlerEvent, LovelaceConfig } from "../../../data/lovelace";
 import { handleAction } from "../common/handle-action";
+import { findEntities } from "../common/find-entites";
 
 @customElement("hui-picture-entity-card")
 class HuiPictureEntityCard extends LitElement implements LovelaceCard {
@@ -38,9 +39,24 @@ class HuiPictureEntityCard extends LitElement implements LovelaceCard {
     );
     return document.createElement("hui-picture-entity-card-editor");
   }
-  public static getStubConfig(): object {
+
+  public static getStubConfig(
+    hass: HomeAssistant,
+    lovelaceConfig: LovelaceConfig,
+    entities?: string[],
+    entitiesFill?: string[]
+  ): object {
+    const maxEntities = 1;
+    const foundEntities = findEntities(
+      hass,
+      lovelaceConfig,
+      maxEntities,
+      entities,
+      entitiesFill
+    );
+
     return {
-      entity: "",
+      entity: foundEntities[0] || "",
       image:
         "https://www.home-assistant.io/images/merchandise/shirt-frontpage.png",
     };

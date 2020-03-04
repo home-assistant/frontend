@@ -15,7 +15,6 @@ import "./integrations-card";
 
 const JS_TYPE = __BUILD__;
 const JS_VERSION = __VERSION__;
-const OPT_IN_PANEL = "states";
 
 class HaPanelDevInfo extends LitElement {
   @property() public hass!: HomeAssistant;
@@ -24,28 +23,6 @@ class HaPanelDevInfo extends LitElement {
     const hass = this.hass;
     const customUiList: Array<{ name: string; url: string; version: string }> =
       (window as any).CUSTOM_UI_LIST || [];
-
-    const nonDefaultLink =
-      localStorage.defaultPage === OPT_IN_PANEL && OPT_IN_PANEL === "states"
-        ? "/lovelace"
-        : "/states";
-
-    const nonDefaultLinkText =
-      localStorage.defaultPage === OPT_IN_PANEL && OPT_IN_PANEL === "states"
-        ? this.hass.localize("ui.panel.developer-tools.tabs.info.lovelace_ui")
-        : `${this.hass.localize(
-            "ui.panel.developer-tools.tabs.info.states_ui"
-          )} (DEPRECATED)`;
-
-    const defaultPageText = `${this.hass.localize(
-      "ui.panel.developer-tools.tabs.info.default_ui",
-      "action",
-      localStorage.defaultPage === OPT_IN_PANEL
-        ? this.hass.localize("ui.panel.developer-tools.tabs.info.remove")
-        : this.hass.localize("ui.panel.developer-tools.tabs.info.set"),
-      "name",
-      `${OPT_IN_PANEL} (DEPRECATED)`
-    )}`;
 
     return html`
       <div class="about">
@@ -142,11 +119,6 @@ class HaPanelDevInfo extends LitElement {
               : ""
           }
         </p>
-        <p>
-          <a href="${nonDefaultLink}">${nonDefaultLinkText}</a><br />
-          <a href="#" @click="${this._toggleDefaultPage}">${defaultPageText}</a
-          ><br />
-        </p>
       </div>
       <div class="content">
         <system-health-card .hass=${this.hass}></system-health-card>
@@ -165,15 +137,6 @@ class HaPanelDevInfo extends LitElement {
         this.requestUpdate();
       }
     }, 1000);
-  }
-
-  protected _toggleDefaultPage(): void {
-    if (localStorage.defaultPage === OPT_IN_PANEL) {
-      delete localStorage.defaultPage;
-    } else {
-      localStorage.defaultPage = OPT_IN_PANEL;
-    }
-    this.requestUpdate();
   }
 
   static get styles(): CSSResult[] {
