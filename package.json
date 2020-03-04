@@ -19,8 +19,6 @@
   "license": "Apache-2.0",
   "dependencies": {
     "@material/chips": "^5.0.0",
-    "@material/data-table": "^5.0.0",
-    "@material/mwc-base": "^0.13.0",
     "@material/mwc-button": "^0.13.0",
     "@material/mwc-checkbox": "^0.13.0",
     "@material/mwc-dialog": "^0.13.0",
