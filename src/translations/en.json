@@ -1488,6 +1488,7 @@
               "show_readonly": "Show read-only entities"
             },
             "status": {
+              "restored": "Restored",
               "unavailable": "Unavailable",
               "disabled": "Disabled",
               "readonly": "Read-only",
@@ -1513,7 +1514,9 @@
             "remove_selected": {
               "button": "Remove selected",
               "confirm_title": "Do you want to remove {number} entities?",
-              "confirm_text": "Entities can only be removed when the integration is no longer providing the entities."
+              "confirm_partly_title": "Only {number} selected entities can be removed.",
+              "confirm_text": "You should remove them from your Lovelace config and automations if they contain these entities.",
+              "confirm_partly_text": "You can only remove {removable} of the selected {selected} entities. Entities can only be removed when the integration is no longer providing the entities. Sometimes you have to restart Home Assistant before you can remove the entities of a removed integration. Are you sure you want to remove the removable entities?"
             }
           }
         },

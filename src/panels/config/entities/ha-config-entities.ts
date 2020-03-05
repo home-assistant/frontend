@@ -3,7 +3,7 @@ import "@polymer/paper-dropdown-menu/paper-dropdown-menu";
 import "@polymer/paper-item/paper-icon-item";
 import "@polymer/paper-listbox/paper-listbox";
 import "@polymer/paper-tooltip/paper-tooltip";
-import { UnsubscribeFunc, HassEntities } from "home-assistant-js-websocket";
+import { UnsubscribeFunc } from "home-assistant-js-websocket";
 import {
   css,
   CSSResult,
@@ -58,6 +58,7 @@ export interface StateEntity extends EntityRegistryEntry {
 export interface EntityRow extends StateEntity {
   icon: string;
   unavailable: boolean;
+  restored: boolean;
   status: string;
 }
 
@@ -68,6 +69,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   @property() public narrow!: boolean;
   @property() public route!: Route;
   @property() private _entities?: EntityRegistryEntry[];
+  @property() private _stateEntities: StateEntity[] = [];
   @property() private _showDisabled = false;
   @property() private _showUnavailable = true;
   @property() private _showReadOnly = true;
@@ -115,14 +117,20 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
                     style=${styleMap({
                       color: entity.unavailable ? "var(--google-red-500)" : "",
                     })}
-                    .icon=${entity.unavailable
+                    .icon=${entity.restored
+                      ? "hass:restore-alert"
+                      : entity.unavailable
                       ? "hass:alert-circle"
                       : entity.disabled_by
                       ? "hass:cancel"
                       : "hass:pencil-off"}
                   ></ha-icon>
                   <paper-tooltip position="left">
-                    ${entity.unavailable
+                    ${entity.restored
+                      ? this.hass.localize(
+                          "ui.panel.config.entities.picker.status.restored"
+                        )
+                      : entity.unavailable
                       ? this.hass.localize(
                           "ui.panel.config.entities.picker.status.unavailable"
                         )
@@ -177,40 +185,23 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   private _filteredEntities = memoize(
     (
       entities: EntityRegistryEntry[],
-      states: HassEntities,
+      stateEntities: StateEntity[],
       showDisabled: boolean,
       showUnavailable: boolean,
       showReadOnly: boolean
     ): EntityRow[] => {
-      const stateEntities: StateEntity[] = [];
-      if (showReadOnly) {
-        const regEntityIds = new Set(
-          entities.map((entity) => entity.entity_id)
-        );
-        for (const entityId of Object.keys(states)) {
-          if (regEntityIds.has(entityId)) {
-            continue;
-          }
-          stateEntities.push({
-            name: computeStateName(states[entityId]),
-            entity_id: entityId,
-            platform: computeDomain(entityId),
-            disabled_by: null,
-            readonly: true,
-            selectable: false,
-          });
-        }
-      }
-
       if (!showDisabled) {
         entities = entities.filter((entity) => !Boolean(entity.disabled_by));
       }
 
       const result: EntityRow[] = [];
 
-      for (const entry of entities.concat(stateEntities)) {
-        const state = states[entry.entity_id];
-        const unavailable = state?.state === "unavailable";
+      for (const entry of showReadOnly
+        ? entities.concat(stateEntities)
+        : entities) {
+        const entity = this.hass.states[entry.entity_id];
+        const unavailable = entity?.state === "unavailable";
+        const restored = entity?.attributes.restored;
 
         if (!showUnavailable && unavailable) {
           continue;
@@ -218,14 +209,19 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
 
         result.push({
           ...entry,
-          icon: state
-            ? stateIcon(state)
+          icon: entity
+            ? stateIcon(entity)
             : domainIcon(computeDomain(entry.entity_id)),
           name:
             computeEntityRegistryName(this.hass!, entry) ||
             this.hass.localize("state.default.unavailable"),
           unavailable,
-          status: unavailable
+          restored,
+          status: restored
+            ? this.hass.localize(
+                "ui.panel.config.entities.picker.status.restored"
+              )
+            : unavailable
             ? this.hass.localize(
                 "ui.panel.config.entities.picker.status.unavailable"
               )
@@ -389,7 +385,7 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
         .columns=${this._columns(this.narrow, this.hass.language)}
         .data=${this._filteredEntities(
           this._entities,
-          this.hass.states,
+          this._stateEntities,
           this._showDisabled,
           this._showUnavailable,
           this._showReadOnly
@@ -416,6 +412,43 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
   protected firstUpdated(changedProps): void {
     super.firstUpdated(changedProps);
     loadEntityEditorDialog();
+  }
+
+  protected updated(changedProps): void {
+    super.updated(changedProps);
+    const oldHass = changedProps.get("hass");
+    let changed = false;
+    if (!this.hass || !this._entities) {
+      return;
+    }
+    if (changedProps.has("hass") || changedProps.has("_entities")) {
+      const stateEntities: StateEntity[] = [];
+      const regEntityIds = new Set(
+        this._entities.map((entity) => entity.entity_id)
+      );
+      for (const entityId of Object.keys(this.hass.states)) {
+        if (regEntityIds.has(entityId)) {
+          continue;
+        }
+        if (
+          !oldHass ||
+          this.hass.states[entityId] !== oldHass.states[entityId]
+        ) {
+          changed = true;
+        }
+        stateEntities.push({
+          name: computeStateName(this.hass.states[entityId]),
+          entity_id: entityId,
+          platform: computeDomain(entityId),
+          disabled_by: null,
+          readonly: true,
+          selectable: false,
+        });
+      }
+      if (changed) {
+        this._stateEntities = stateEntities;
+      }
+    }
   }
 
   private _showDisabledChanged() {
@@ -499,13 +532,26 @@ export class HaConfigEntities extends SubscribeMixin(LitElement) {
     });
     showConfirmationDialog(this, {
       title: this.hass.localize(
-        "ui.panel.config.entities.picker.remove_selected.confirm_title",
+        `ui.panel.config.entities.picker.remove_selected.confirm_${
+          removeableEntities.length !== this._selectedEntities.length
+            ? "partly_"
+            : ""
+        }title`,
         "number",
         removeableEntities.length
       ),
-      text: this.hass.localize(
-        "ui.panel.config.entities.picker.remove_selected.confirm_text"
-      ),
+      text:
+        removeableEntities.length === this._selectedEntities.length
+          ? this.hass.localize(
+              "ui.panel.config.entities.picker.remove_selected.confirm_text"
+            )
+          : this.hass.localize(
+              "ui.panel.config.entities.picker.remove_selected.confirm_partly_text",
+              "removable",
+              removeableEntities.length,
+              "selected",
+              this._selectedEntities.length
+            ),
       confirmText: this.hass.localize("ui.common.yes"),
       dismissText: this.hass.localize("ui.common.no"),
       confirm: () => {
