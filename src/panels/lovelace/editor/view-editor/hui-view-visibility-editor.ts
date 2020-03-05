@@ -32,7 +32,11 @@ declare global {
 export class HuiViewVisibilityEditor extends LitElement {
   set config(config: LovelaceViewConfig) {
     this._config = config;
-    this._visible = this._config.visible || true;
+    if (this._config.visible === undefined) {
+      this._config.visible = true;
+    } else {
+      this._visible = this._config.visible;
+    }
   }
 
   @property() public hass!: HomeAssistant;
@@ -107,8 +111,6 @@ export class HuiViewVisibilityEditor extends LitElement {
           };
         });
       }
-    } else {
-      newVisible = [...this._visible];
     }
 
     if (checked === true) {
