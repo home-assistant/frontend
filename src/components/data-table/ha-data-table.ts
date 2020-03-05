@@ -449,7 +449,7 @@ export class HaDataTable extends BaseElement {
 
   private async _calcScrollHeight() {
     await this.updateComplete;
-    this._scroller.style.maxHeight = `calc(100% - ${this._header.clientHeight}px)`;
+    this._scroller.style.height = `calc(100% - ${this._header.clientHeight}px)`;
   }
 
   static get styles(): CSSResult {
@@ -669,6 +669,9 @@ export class HaDataTable extends BaseElement {
       }
       slot[name="header"] {
         display: block;
+      }
+      .secondary {
+        color: var(--secondary-text-color);
       }
     `;
   }

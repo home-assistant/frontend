@@ -7,6 +7,7 @@ import {
 
 export interface LovelaceDashboardDetailsDialogParams {
   dashboard?: LovelaceDashboard;
+  urlPath?: string;
   createDashboard: (values: LovelaceDashboardCreateParams) => Promise<unknown>;
   updateDashboard: (
     updates: Partial<LovelaceDashboardMutableParams>
