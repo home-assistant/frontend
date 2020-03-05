@@ -1,6 +1,6 @@
 import { classMap } from "lit-html/directives/class-map";
 import { html, customElement } from "lit-element";
-import { ripple } from "@material/mwc-ripple/ripple-directive.js";
+import { ripple } from "@material/mwc-ripple/ripple-directive";
 
 import "@material/mwc-fab";
 import { Constructor } from "../types";
