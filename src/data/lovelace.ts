@@ -16,6 +16,10 @@ export interface LovelaceConfig {
   background?: string;
 }
 
+export interface LegacyLovelaceConfig extends LovelaceConfig {
+  resources?: LovelaceResource[];
+}
+
 export interface LovelaceResource {
   id: string;
   type: "css" | "js" | "module" | "html";
@@ -273,6 +277,34 @@ export const getLovelaceCollection = (
     (_conn, store) =>
       subscribeLovelaceUpdates(conn, urlPath, () =>
         fetchConfig(conn, urlPath, false).then((config) =>
+          store.setState(config, true)
+        )
+      )
+  );
+
+// Legacy functions to support cast for Home Assistion < 0.107
+const fetchLegacyConfig = (
+  conn: Connection,
+  force: boolean
+): Promise<LovelaceConfig> =>
+  conn.sendMessagePromise({
+    type: "lovelace/config",
+    force,
+  });
+
+const subscribeLegacyLovelaceUpdates = (
+  conn: Connection,
+  onChange: () => void
+) => conn.subscribeEvents(onChange, "lovelace_updated");
+
+export const getLegacyLovelaceCollection = (conn: Connection) =>
+  getCollection(
+    conn,
+    "_lovelace",
+    (conn2) => fetchLegacyConfig(conn2, false),
+    (_conn, store) =>
+      subscribeLegacyLovelaceUpdates(conn, () =>
+        fetchLegacyConfig(conn, false).then((config) =>
           store.setState(config, true)
         )
       )
