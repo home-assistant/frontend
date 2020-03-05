@@ -114,6 +114,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
 
   public disconnectedCallback(): void {
     if (this._progressInterval) {
+      clearInterval(this._progressInterval);
       this._progressInterval = undefined;
     }
   }
@@ -343,6 +344,7 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       this._progressInterval &&
       (!this._showProgressBar || stateObj.state !== "playing")
     ) {
+      clearInterval(this._progressInterval);
       this._progressInterval = undefined;
     }
 
