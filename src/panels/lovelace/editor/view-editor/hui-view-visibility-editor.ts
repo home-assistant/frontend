@@ -32,13 +32,13 @@ declare global {
 export class HuiViewVisibilityEditor extends LitElement {
   set config(config: LovelaceViewConfig) {
     this._config = config;
-    this._visible = this._config.visible;
+    this._visible = this._config.visible || true;
   }
 
   @property() public hass!: HomeAssistant;
   @property() public _config!: LovelaceViewConfig;
   @property() private _users!: User[];
-  @property() private _visible?: boolean | ShowViewConfig[];
+  @property() private _visible!: boolean | ShowViewConfig[];
 
   private _sortedUsers = memoizeOne((users: User[]) => {
     return users
@@ -51,8 +51,7 @@ export class HuiViewVisibilityEditor extends LitElement {
 
     fetchUsers(this.hass).then((users) => {
       this._users = users;
-      // how can I resize and reposition dialog? Should I use `iron-resize` event?
-      // fireEvent(this as HTMLElement, "iron-resize");
+      fireEvent(this, "iron-resize");
     });
   }
 
@@ -97,15 +96,11 @@ export class HuiViewVisibilityEditor extends LitElement {
     const userId = (ev.currentTarget as any).userId;
     const checked = (ev.currentTarget as HaSwitch).checked;
 
-    if (this._visible === undefined) {
-      this._visible = true;
-    }
-
     let newVisible: ShowViewConfig[] = [];
 
     if (typeof this._visible === "boolean") {
       const lastValue = this._visible as boolean;
-      if (lastValue === true) {
+      if (lastValue) {
         newVisible = this._users.map((u) => {
           return {
             user: u.id,

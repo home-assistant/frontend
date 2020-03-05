@@ -29,7 +29,7 @@ import {
   LovelaceCardConfig,
   LovelaceBadgeConfig,
 } from "../../../../data/lovelace";
-import { fireEvent } from "../../../../common/dom/fire_event";
+import { fireEvent, HASSDomEvent } from "../../../../common/dom/fire_event";
 import {
   EntitiesEditorEvent,
   ViewEditEvent,
@@ -291,8 +291,10 @@ export class HuiEditView extends LitElement {
     }
   }
 
-  private _viewVisibilityChanged(ev: ViewVisibilityChangeEvent): void {
-    if (ev.detail && ev.detail.visible && this._config !== undefined) {
+  private _viewVisibilityChanged(
+    ev: HASSDomEvent<ViewVisibilityChangeEvent>
+  ): void {
+    if (ev.detail.visible && this._config) {
       this._config.visible = ev.detail.visible;
     }
   }

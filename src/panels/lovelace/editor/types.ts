@@ -20,10 +20,8 @@ export interface ViewEditEvent extends Event {
   };
 }
 
-export interface ViewVisibilityChangeEvent extends Event {
-  detail: {
-    visible: ShowViewConfig[];
-  };
+export interface ViewVisibilityChangeEvent {
+  visible: ShowViewConfig[];
 }
 
 export interface ConfigValue {
