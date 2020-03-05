@@ -1,6 +1,3 @@
-import { HomeAssistant } from "../types";
-
-import { timeCachePromiseFunc } from "../common/util/time-cache-function-promise";
 import { HassEntity } from "home-assistant-js-websocket";
 
 export const SUPPORT_PAUSE = 1;
