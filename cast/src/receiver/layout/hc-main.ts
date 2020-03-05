@@ -199,7 +199,7 @@ export class HcMain extends HassElement {
     }
     if (!resourcesLoaded) {
       resourcesLoaded = true;
-      const resources = atLeastVersion(this.hass, 0, 107)
+      const resources = atLeastVersion(this.hass.config.version, 0, 107)
         ? await fetchResources(this.hass!.connection)
         : (this._lovelaceConfig as LegacyLovelaceConfig).resources;
       if (resources) {
