@@ -94,7 +94,9 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     () => {
       this._narrow = this.offsetWidth < 350;
       this._veryNarrow = this.offsetWidth < 300;
-      this._cardHeight = this.offsetHeight;
+      if (this._image) {
+        this._cardHeight = this.offsetHeight;
+      }
     },
     250,
     false
@@ -110,6 +112,30 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
     }
 
     this._config = { theme: "default", ...config };
+  }
+
+  public connectedCallback(): void {
+    super.connectedCallback();
+    if (!this.hass || !this._config) {
+      return undefined;
+    }
+
+    const stateObj = this.hass.states[this._config.entity] as MediaEntity;
+
+    if (!stateObj) {
+      return undefined;
+    }
+
+    if (
+      !this._progressInterval &&
+      this._showProgressBar &&
+      stateObj.state === "playing"
+    ) {
+      this._progressInterval = window.setInterval(
+        () => this.requestUpdate(),
+        1000
+      );
+    }
   }
 
   public disconnectedCallback(): void {
@@ -137,11 +163,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
       `;
     }
 
-    const picture = this._image || "../static/images/card_media_player_bg.png";
-
     const imageStyle = {
-      "background-image": `url(${this.hass.hassUrl(picture)})`,
-      width: `${this._image ? `${this._cardHeight}px` : "50%"}`,
+      "background-image": `url(${this.hass.hassUrl(this._image)})`,
+      width: `${this._cardHeight}px`,
+      "background-color": `${this._backgroundColor}`,
     };
 
     const gradientStyle = {
@@ -159,6 +184,10 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         >
           <div
             class="color-block"
+            style="background-color: ${this._backgroundColor}"
+          ></div>
+          <div
+            class="no-img"
             style="background-color: ${this._backgroundColor}"
           ></div>
           <div class="image" style=${styleMap(imageStyle)}></div>
@@ -515,21 +544,45 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         );
         height: 100%;
         right: 0;
-        transition: width 0.8s;
+        opacity: 1;
+        transition: width 0.8s, opacity 0.8s linear 0.8s;
       }
 
       .image {
-        display: block;
         background-color: var(--primary-color);
         background-position: center;
         background-size: cover;
         background-repeat: no-repeat;
-        transition-property: background-image, background-color, background-size,
-          width;
-        transition-duration: 0.8s;
         position: absolute;
         right: 0;
         height: 100%;
+        opacity: 1;
+        transition: width 0.8s, background-image 0.8s, background-color 0.8s,
+          background-size 0.8s, opacity 0.8s linear 0.8s;
+      }
+
+      .no-img {
+        background-color: var(--primary-color);
+        background-size: initial;
+        background-repeat: no-repeat;
+        background-position: center center;
+        padding-bottom: 0;
+        position: absolute;
+        right: 0;
+        height: 100%;
+        background-image: url("../static/images/card_media_player_bg.png");
+        width: 50%;
+        transition: opacity 0.8s, background-color 0.8s;
+      }
+
+      .off .image,
+      .off .color-gradient {
+        opacity: 0;
+        transition: opacity 0s;
+      }
+
+      .background:not(.off) .no-img {
+        opacity: 0;
       }
 
       .player {
@@ -613,14 +666,6 @@ export class HuiMediaControlCard extends LitElement implements LovelaceCard {
         margin-top: 4px;
         border-radius: calc(var(--paper-progress-height, 4px) / 2);
         --paper-progress-container-color: rgba(200, 200, 200, 0.5);
-      }
-
-      .no-image .image {
-        background-color: var(--primary-color);
-        background-size: initial;
-        background-repeat: no-repeat;
-        background-position: center center;
-        padding-bottom: 0;
       }
 
       .no-image .controls {
