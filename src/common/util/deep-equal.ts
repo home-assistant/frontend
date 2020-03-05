@@ -1,5 +1,6 @@
-// from https://github.com/epoberezkin/fast-deep-equal
-export const equal = (a: any, b: any): boolean => {
+// From https://github.com/epoberezkin/fast-deep-equal
+// MIT License - Copyright (c) 2017 Evgeny Poberezkin
+export const deepEqual = (a: any, b: any): boolean => {
   if (a === b) {
     return true;
   }
@@ -17,7 +18,7 @@ export const equal = (a: any, b: any): boolean => {
         return false;
       }
       for (i = length; i-- !== 0; ) {
-        if (!equal(a[i], b[i])) {
+        if (!deepEqual(a[i], b[i])) {
           return false;
         }
       }
@@ -34,7 +35,7 @@ export const equal = (a: any, b: any): boolean => {
         }
       }
       for (i of a.entries()) {
-        if (!equal(i[1], b.get(i[0]))) {
+        if (!deepEqual(i[1], b.get(i[0]))) {
           return false;
         }
       }
@@ -93,7 +94,7 @@ export const equal = (a: any, b: any): boolean => {
     for (i = length; i-- !== 0; ) {
       const key = keys[i];
 
-      if (!equal(a[key], b[key])) {
+      if (!deepEqual(a[key], b[key])) {
         return false;
       }
     }

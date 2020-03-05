@@ -8,7 +8,7 @@ import {
   RouteOptions,
 } from "./hass-router-page";
 import { removeInitSkeleton } from "../util/init-skeleton";
-import { equal } from "../common/util/deep-equal";
+import { deepEqual } from "../common/util/deep-equal";
 
 const CACHE_URL_PATHS = ["lovelace", "developer-tools"];
 const COMPONENTS = {
@@ -130,7 +130,10 @@ class PartialPanelResolver extends HassRouterPage {
 
     if (
       !oldPanels ||
-      !equal(oldPanels[this._currentPage], this.hass.panels[this._currentPage])
+      !deepEqual(
+        oldPanels[this._currentPage],
+        this.hass.panels[this._currentPage]
+      )
     ) {
       await this.rebuild();
       await this.pageRendered;
