@@ -15,6 +15,7 @@ import { navigate } from "../../../src/common/navigate";
 import { hassioStyle } from "../resources/hassio-style";
 import { haStyle } from "../../../src/resources/styles";
 import "../components/hassio-card-content";
+import { atLeastVersion } from "../../../src/common/config/version";
 
 @customElement("hassio-addons")
 class HassioAddons extends LitElement {
@@ -22,9 +23,6 @@ class HassioAddons extends LitElement {
   @property() public addons?: HassioAddonInfo[];
 
   protected render(): TemplateResult {
-    const [major, minor] = this.hass.config.version.split(".", 2);
-    const ha105pluss =
-      Number(major) > 0 || (major === "0" && Number(minor) >= 105);
     return html`
       <div class="content">
         <h1>Add-ons</h1>
@@ -68,7 +66,11 @@ class HassioAddons extends LitElement {
                             : addon.installed && addon.state === "started"
                             ? "running"
                             : "stopped"}
-                          .iconImage=${ha105pluss && addon.icon
+                          .iconImage=${atLeastVersion(
+                            this.hass.config.version,
+                            0,
+                            105
+                          ) && addon.icon
                             ? `/api/hassio/addons/${addon.slug}/icon`
                             : undefined}
                         ></hassio-card-content>
