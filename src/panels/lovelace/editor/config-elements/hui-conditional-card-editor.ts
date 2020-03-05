@@ -207,7 +207,7 @@ export class HuiConditionalCardEditor extends LitElement
           condition.state = target.value;
         }
       } else if (target.configValue === "invert") {
-        if (parseInt(target.selected, 10) === 1) {
+        if (target.selected === 1) {
           if (condition.state) {
             condition.state_not = condition.state;
             delete condition.state;
