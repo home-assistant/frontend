@@ -32,6 +32,7 @@ import { classMap } from "lit-html/directives/class-map";
 // tslint:disable-next-line: no-duplicate-imports
 import { PaperIconItemElement } from "@polymer/paper-item/paper-icon-item";
 import { computeRTL } from "../common/util/compute_rtl";
+import { compare } from "../common/string/compare";
 
 const SHOW_AFTER_SPACER = ["config", "developer-tools", "hassio"];
 
@@ -51,6 +52,9 @@ const panelSorter = (a: PanelInfo, b: PanelInfo) => {
   const aLovelace = a.component_name === "lovelace";
   const bLovelace = b.component_name === "lovelace";
 
+  if (aLovelace && bLovelace) {
+    return compare(a.title!, b.title!);
+  }
   if (aLovelace && !bLovelace) {
     return -1;
   }
@@ -71,13 +75,7 @@ const panelSorter = (a: PanelInfo, b: PanelInfo) => {
     return 1;
   }
   // both not built in, sort by title
-  if (a.title! < b.title!) {
-    return -1;
-  }
-  if (a.title! > b.title!) {
-    return 1;
-  }
-  return 0;
+  return compare(a.title!, b.title!);
 };
 const DEFAULT_PAGE = localStorage.defaultPage || DEFAULT_PANEL;
 
