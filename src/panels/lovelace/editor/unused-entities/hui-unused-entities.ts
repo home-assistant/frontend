@@ -215,6 +215,7 @@ export class HuiUnusedEntities extends LitElement {
       :host {
         background: var(--lovelace-background);
         padding: 16px;
+        box-sizing: border-box;
       }
       ha-fab {
         position: sticky;

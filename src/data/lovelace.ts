@@ -6,6 +6,10 @@ import {
 } from "home-assistant-js-websocket";
 import { HASSDomEvent } from "../common/dom/fire_event";
 
+export interface LovelacePanelConfig {
+  mode: "yaml" | "storage";
+}
+
 export interface LovelaceConfig {
   title?: string;
   views: LovelaceViewConfig[];
@@ -31,7 +35,9 @@ interface LovelaceGenericDashboard {
   id: string;
   url_path: string;
   require_admin: boolean;
-  sidebar?: { icon: string; title: string };
+  show_in_sidebar: boolean;
+  icon?: string;
+  title: string;
 }
 
 export interface LovelaceYamlDashboard extends LovelaceGenericDashboard {
@@ -45,7 +51,9 @@ export interface LovelaceStorageDashboard extends LovelaceGenericDashboard {
 
 export interface LovelaceDashboardMutableParams {
   require_admin: boolean;
-  sidebar: { icon: string; title: string } | null;
+  show_in_sidebar: boolean;
+  icon?: string;
+  title: string;
 }
 
 export interface LovelaceDashboardCreateParams
