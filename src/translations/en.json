@@ -861,15 +861,17 @@
               "headers": {
                 "title": "Title",
                 "conf_mode": "Configuration method",
+                "default": "Default",
                 "require_admin": "Admin only",
                 "sidebar": "Show in sidebar",
                 "filename": "Filename"
               },
-              "open": "Open dashboard",
+              "open": "Open",
               "add_dashboard": "Add dashboard"
             },
             "confirm_delete": "Are you sure you want to delete this dashboard?",
             "cant_edit_yaml": "Dashboards defined in YAML can not be edited from the UI. Change them in configuration.yaml.",
+            "cant_edit_default": "The standard Lovelace dashboard can not be edited from the UI. You can hide it by setting another dashboard as default.",
             "detail": {
               "edit_dashboard": "Edit dashboard",
               "new_dashboard": "Add new dashboard",
@@ -877,6 +879,7 @@
               "show_sidebar": "Show in sidebar",
               "icon": "Sidebar icon",
               "title": "Sidebar title",
+              "title_required": "Title is required.",
               "url": "Url",
               "url_error_msg": "The url can not contain spaces or special characters, except for _ and -",
               "require_admin": "Admin only",
