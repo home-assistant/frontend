@@ -36,6 +36,7 @@ import { haStyle } from "../../../src/resources/styles";
 import { HomeAssistant } from "../../../src/types";
 import { navigate } from "../../../src/common/navigate";
 import { showHassioMarkdownDialog } from "../dialogs/markdown/show-dialog-hassio-markdown";
+import { atLeastVersion } from "../../../src/common/config/version";
 
 const PERMIS_DESC = {
   rating: {
@@ -659,18 +660,16 @@ class HassioAddonInfo extends LitElement {
   }
 
   private get _computeCannotIngressSidebar(): boolean {
-    return !this.addon.ingress || !this._computeHA92plus;
+    return (
+      !this.addon.ingress ||
+      !atLeastVersion(this.hass.connection.haVersion, 0, 92)
+    );
   }
 
   private get _computeUsesProtectedOptions(): boolean {
     return (
       this.addon.docker_api || this.addon.full_access || this.addon.host_pid
     );
-  }
-
-  private get _computeHA92plus(): boolean {
-    const [major, minor] = this.hass.config.version.split(".", 2);
-    return Number(major) > 0 || (major === "0" && Number(minor) >= 92);
   }
 
   private async _startOnBootToggled(): Promise<void> {

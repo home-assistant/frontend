@@ -16,6 +16,8 @@ import {
   LovelaceConfig,
   getLovelaceCollection,
   fetchResources,
+  LegacyLovelaceConfig,
+  getLegacyLovelaceCollection,
 } from "../../../../src/data/lovelace";
 import "./hc-launch-screen";
 import { castContext } from "../cast_context";
@@ -23,6 +25,7 @@ import { CAST_NS } from "../../../../src/cast/const";
 import { ReceiverStatusMessage } from "../../../../src/cast/sender_messages";
 import { loadLovelaceResources } from "../../../../src/panels/lovelace/common/load-resources";
 import { isNavigationClick } from "../../../../src/common/dom/is-navigation-click";
+import { atLeastVersion } from "../../../../src/common/config/version";
 
 let resourcesLoaded = false;
 
@@ -168,19 +171,14 @@ export class HcMain extends HassElement {
       this._error = "Cannot show Lovelace because we're not connected.";
       return;
     }
-    if (!resourcesLoaded) {
-      resourcesLoaded = true;
-      loadLovelaceResources(
-        await fetchResources(this.hass!.connection),
-        this.hass!.auth.data.hassUrl
-      );
-    }
     if (!this._unsubLovelace || this._urlPath !== msg.urlPath) {
       this._urlPath = msg.urlPath;
       if (this._unsubLovelace) {
         this._unsubLovelace();
       }
-      const llColl = getLovelaceCollection(this.hass!.connection, msg.urlPath);
+      const llColl = atLeastVersion(this.hass.connection.haVersion, 0, 107)
+        ? getLovelaceCollection(this.hass!.connection, msg.urlPath)
+        : getLegacyLovelaceCollection(this.hass!.connection);
       // We first do a single refresh because we need to check if there is LL
       // configuration.
       try {
@@ -197,6 +195,15 @@ export class HcMain extends HassElement {
         this._handleNewLovelaceConfig(
           await generateLovelaceConfigFromHass(this.hass!)
         );
+      }
+    }
+    if (!resourcesLoaded) {
+      resourcesLoaded = true;
+      const resources = atLeastVersion(this.hass.connection.haVersion, 0, 107)
+        ? await fetchResources(this.hass!.connection)
+        : (this._lovelaceConfig as LegacyLovelaceConfig).resources;
+      if (resources) {
+        loadLovelaceResources(resources, this.hass!.auth.data.hassUrl);
       }
     }
     this._showDemo = false;
