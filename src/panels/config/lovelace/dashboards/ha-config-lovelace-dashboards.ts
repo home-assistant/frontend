@@ -25,6 +25,7 @@ import {
   updateDashboard,
   deleteDashboard,
   LovelaceDashboardCreateParams,
+  LovelacePanelConfig,
 } from "../../../../data/lovelace";
 import { showDashboardDetailDialog } from "./show-dialog-lovelace-dashboard-detail";
 import { compare } from "../../../../common/string/compare";
@@ -81,7 +82,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
                   <div class="secondary">
                     ${this.hass.localize(
                       `ui.panel.config.lovelace.dashboards.conf_mode.${dashboard.mode}`
-                    ) || dashboard.mode}${dashboard.filename
+                    )}${dashboard.filename
                       ? html`
                           - ${dashboard.filename}
                         `
@@ -131,7 +132,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
                   -
                 `,
         };
-        columns.sidebar = {
+        columns.show_in_sidebar = {
           title: this.hass.localize(
             "ui.panel.config.lovelace.dashboards.picker.headers.sidebar"
           ),
@@ -147,36 +148,34 @@ export class HaConfigLovelaceDashboards extends LitElement {
         };
       }
 
-      const columns2: DataTableColumnContainer = {
-        url_path: {
-          title: "",
-          type: "icon",
-          filterable: true,
-          template: (urlPath) =>
-            narrow
-              ? html`
-                  <paper-icon-button
-                    icon="hass:open-in-new"
-                    .urlPath=${urlPath}
-                    @click=${this._navigate}
-                  ></paper-icon-button>
-                `
-              : html`
-                  <mwc-button .urlPath=${urlPath} @click=${this._navigate}
-                    >${this.hass.localize(
-                      "ui.panel.config.lovelace.dashboards.picker.open"
-                    )}</mwc-button
-                  >
-                `,
-        },
+      columns.url_path = {
+        title: "",
+        filterable: true,
+        template: (urlPath) =>
+          narrow
+            ? html`
+                <paper-icon-button
+                  icon="hass:open-in-new"
+                  .urlPath=${urlPath}
+                  @click=${this._navigate}
+                ></paper-icon-button>
+              `
+            : html`
+                <mwc-button .urlPath=${urlPath} @click=${this._navigate}
+                  >${this.hass.localize(
+                    "ui.panel.config.lovelace.dashboards.picker.open"
+                  )}</mwc-button
+                >
+              `,
       };
 
-      return { ...columns, ...columns2 };
+      return columns;
     }
   );
 
   private _getItems = memoize((dashboards: LovelaceDashboard[]) => {
-    const defaultMode = (this.hass.panels?.lovelace?.config as any)?.mode;
+    const defaultMode = (this.hass.panels?.lovelace
+      ?.config as LovelacePanelConfig).mode;
     const isDefault =
       !localStorage.defaultPage || localStorage.defaultPage === "lovelace";
     return [
@@ -192,10 +191,7 @@ export class HaConfigLovelaceDashboards extends LitElement {
       },
       ...dashboards.map((dashboard) => {
         return {
-          filename: "",
           ...dashboard,
-          icon: dashboard.sidebar?.icon,
-          title: dashboard.sidebar?.title || dashboard.url_path,
           default: localStorage.defaultPage === dashboard.url_path,
         };
       }),
