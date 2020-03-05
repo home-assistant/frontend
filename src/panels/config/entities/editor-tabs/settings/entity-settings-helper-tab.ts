@@ -13,7 +13,10 @@ import { isComponentLoaded } from "../../../../../common/config/is_component_loa
 import { dynamicElement } from "../../../../../common/dom/dynamic-element-directive";
 import { fireEvent } from "../../../../../common/dom/fire_event";
 import { HaPaperDialog } from "../../../../../components/dialog/ha-paper-dialog";
-import { ExtEntityRegistryEntry } from "../../../../../data/entity_registry";
+import {
+  ExtEntityRegistryEntry,
+  removeEntityRegistryEntry,
+} from "../../../../../data/entity_registry";
 import {
   deleteInputBoolean,
   fetchInputBoolean,
@@ -109,23 +112,7 @@ export class EntityRegistrySettingsHelper extends LitElement {
     if (this._item === undefined) {
       return html``;
     }
-    if (!this._componentLoaded) {
-      return html`
-        <paper-dialog-scrollable .dialogElement=${this.dialogElement}>
-          The ${this.entry.platform} component is not loaded, please add it your
-          configuration. Either by adding 'default_config:' or
-          '${this.entry.platform}:'.
-        </paper-dialog-scrollable>
-      `;
-    }
-    if (this._item === null) {
-      return html`
-        <paper-dialog-scrollable .dialogElement=${this.dialogElement}>
-          This entity can not be edited from the UI. Only entities setup from
-          the UI are editable.
-        </paper-dialog-scrollable>
-      `;
-    }
+    const stateObj = this.hass.states[this.entry.entity_id];
     return html`
       <paper-dialog-scrollable .dialogElement=${this.dialogElement}>
         ${this._error
@@ -134,13 +121,23 @@ export class EntityRegistrySettingsHelper extends LitElement {
             `
           : ""}
         <div class="form">
-          <div @value-changed=${this._valueChanged}>
-            ${dynamicElement(`ha-${this.entry.platform}-form`, {
-              hass: this.hass,
-              item: this._item,
-              entry: this.entry,
-            })}
-          </div>
+          ${!this._componentLoaded
+            ? this.hass.localize(
+                "ui.dialogs.helper_settings.platform_not_loaded",
+                "platform",
+                this.entry.platform
+              )
+            : this._item === null
+            ? this.hass.localize("ui.dialogs.helper_settings.yaml_not_editable")
+            : html`
+                <div @value-changed=${this._valueChanged}>
+                  ${dynamicElement(`ha-${this.entry.platform}-form`, {
+                    hass: this.hass,
+                    item: this._item,
+                    entry: this.entry,
+                  })}
+                </div>
+              `}
           <ha-registry-basic-editor
             .hass=${this.hass}
             .entry=${this.entry}
@@ -151,13 +148,14 @@ export class EntityRegistrySettingsHelper extends LitElement {
         <mwc-button
           class="warning"
           @click=${this._confirmDeleteItem}
-          .disabled=${this._submitting}
+          .disabled=${this._submitting ||
+            (!this._item && !stateObj?.attributes.restored)}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.delete")}
         </mwc-button>
         <mwc-button
           @click=${this._updateItem}
-          .disabled=${this._submitting || !this._item.name}
+          .disabled=${this._submitting || (this._item && !this._item.name)}
         >
           ${this.hass.localize("ui.dialogs.entity_registry.editor.update")}
         </mwc-button>
@@ -178,16 +176,15 @@ export class EntityRegistrySettingsHelper extends LitElement {
   }
 
   private async _updateItem(): Promise<void> {
-    if (!this._item) {
-      return;
-    }
     this._submitting = true;
     try {
-      await HELPERS[this.entry.platform].update(
-        this.hass!,
-        this._item.id,
-        this._item
-      );
+      if (this._componentLoaded && this._item) {
+        await HELPERS[this.entry.platform].update(
+          this.hass!,
+          this._item.id,
+          this._item
+        );
+      }
       await this._registryEditor?.updateEntry();
       fireEvent(this, "close-dialog");
     } catch (err) {
@@ -198,9 +195,6 @@ export class EntityRegistrySettingsHelper extends LitElement {
   }
 
   private async _confirmDeleteItem(): Promise<void> {
-    if (!this._item) {
-      return;
-    }
     if (
       !(await showConfirmationDialog(this, {
         text: this.hass.localize(
@@ -214,7 +208,15 @@ export class EntityRegistrySettingsHelper extends LitElement {
     this._submitting = true;
 
     try {
-      await HELPERS[this.entry.platform].delete(this.hass!, this._item.id);
+      if (this._componentLoaded && this._item) {
+        await HELPERS[this.entry.platform].delete(this.hass!, this._item.id);
+      } else {
+        const stateObj = this.hass.states[this.entry.entity_id];
+        if (!stateObj?.attributes.restored) {
+          return;
+        }
+        await removeEntityRegistryEntry(this.hass!, this.entry.entity_id);
+      }
       fireEvent(this, "close-dialog");
     } finally {
       this._submitting = false;
