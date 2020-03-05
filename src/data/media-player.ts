@@ -30,3 +30,32 @@ export const getCurrentProgress = (stateObj: HassEntity): number => {
     1000.0;
   return progress;
 };
+
+export const computeSecondaryTitle = (stateObj: HassEntity): string => {
+  let secondaryTitle: string;
+
+  switch (stateObj.attributes.media_content_type) {
+    case "music":
+      secondaryTitle = stateObj.attributes.media_artist;
+      break;
+    case "playlist":
+      secondaryTitle = stateObj.attributes.media_playlist;
+      break;
+    case "tvshow":
+      secondaryTitle = stateObj.attributes.media_series_title;
+      if (stateObj.attributes.media_season) {
+        secondaryTitle += " S" + stateObj.attributes.media_season;
+
+        if (stateObj.attributes.media_episode) {
+          secondaryTitle += "E" + stateObj.attributes.media_episode;
+        }
+      }
+      break;
+    default:
+      secondaryTitle = stateObj.attributes.app_name
+        ? stateObj.attributes.app_name
+        : "";
+  }
+
+  return secondaryTitle;
+};
