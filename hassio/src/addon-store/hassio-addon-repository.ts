@@ -93,7 +93,7 @@ class HassioAddonRepositoryEl extends LitElement {
                       ? "not_available"
                       : ""}
                     .iconImage=${atLeastVersion(
-                      this.hass.config.version,
+                      this.hass.connection.haVersion,
                       0,
                       105
                     ) && addon.icon

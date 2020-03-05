@@ -176,7 +176,7 @@ export class HcMain extends HassElement {
       if (this._unsubLovelace) {
         this._unsubLovelace();
       }
-      const llColl = atLeastVersion(this.hass.config.version, 0, 107)
+      const llColl = atLeastVersion(this.hass.connection.haVersion, 0, 107)
         ? getLovelaceCollection(this.hass!.connection, msg.urlPath)
         : getLegacyLovelaceCollection(this.hass!.connection);
       // We first do a single refresh because we need to check if there is LL
@@ -199,7 +199,7 @@ export class HcMain extends HassElement {
     }
     if (!resourcesLoaded) {
       resourcesLoaded = true;
-      const resources = atLeastVersion(this.hass.config.version, 0, 107)
+      const resources = atLeastVersion(this.hass.connection.haVersion, 0, 107)
         ? await fetchResources(this.hass!.connection)
         : (this._lovelaceConfig as LegacyLovelaceConfig).resources;
       if (resources) {

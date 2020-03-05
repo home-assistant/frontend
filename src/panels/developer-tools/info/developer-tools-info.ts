@@ -36,7 +36,7 @@ class HaPanelDevInfo extends LitElement {
               )}"
           /></a>
           <br />
-          <h2>Home Assistant ${hass.config.version}</h2>
+          <h2>Home Assistant ${hass.connection.haVersion}</h2>
         </p>
         <p>
           ${this.hass.localize(

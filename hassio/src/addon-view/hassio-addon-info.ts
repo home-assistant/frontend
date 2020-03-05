@@ -661,7 +661,8 @@ class HassioAddonInfo extends LitElement {
 
   private get _computeCannotIngressSidebar(): boolean {
     return (
-      !this.addon.ingress || !atLeastVersion(this.hass.config.version, 0, 92)
+      !this.addon.ingress ||
+      !atLeastVersion(this.hass.connection.haVersion, 0, 92)
     );
   }
 

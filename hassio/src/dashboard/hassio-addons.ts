@@ -67,7 +67,7 @@ class HassioAddons extends LitElement {
                             ? "running"
                             : "stopped"}
                           .iconImage=${atLeastVersion(
-                            this.hass.config.version,
+                            this.hass.connection.haVersion,
                             0,
                             105
                           ) && addon.icon
