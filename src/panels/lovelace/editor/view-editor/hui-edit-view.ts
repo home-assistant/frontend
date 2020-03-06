@@ -188,7 +188,7 @@ export class HuiEditView extends LitElement {
         deleteView(this.lovelace!.config, this.viewIndex!)
       );
       this._closeDialog();
-      navigate(this, `/lovelace/0`);
+      navigate(this, `/${window.location.pathname.split("/")[1]}`);
     } catch (err) {
       showAlertDialog(this, {
         text: `Deleting failed: ${err.message}`,
