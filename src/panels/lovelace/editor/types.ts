@@ -2,6 +2,7 @@ import {
   LovelaceCardConfig,
   LovelaceViewConfig,
   ActionConfig,
+  ShowViewConfig,
 } from "../../../data/lovelace";
 import { EntityConfig } from "../entity-rows/types";
 import { InputType } from "zlib";
@@ -17,6 +18,10 @@ export interface ViewEditEvent extends Event {
   detail: {
     config: LovelaceViewConfig;
   };
+}
+
+export interface ViewVisibilityChangeEvent {
+  visible: ShowViewConfig[];
 }
 
 export interface ConfigValue {
