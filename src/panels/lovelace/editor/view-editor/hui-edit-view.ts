@@ -207,7 +207,7 @@ export class HuiEditView extends LitElement {
         deleteView(this.lovelace!.config, this.viewIndex!)
       );
       this._closeDialog();
-      navigate(this, `/lovelace/0`);
+      navigate(this, `/${window.location.pathname.split("/")[1]}`);
     } catch (err) {
       showAlertDialog(this, {
         text: `Deleting failed: ${err.message}`,
@@ -216,15 +216,21 @@ export class HuiEditView extends LitElement {
   }
 
   private _deleteConfirm(): void {
-    if (this._cards && this._cards.length > 0) {
-      showAlertDialog(this, {
-        text: this.hass!.localize("ui.panel.lovelace.views.existing_cards"),
-      });
-      return;
-    }
-
     showConfirmationDialog(this, {
-      text: this.hass!.localize("ui.panel.lovelace.views.confirm_delete"),
+      title: this.hass!.localize(
+        `ui.panel.lovelace.views.confirm_delete${
+          this._cards?.length ? `_existing_cards` : ""
+        }`
+      ),
+      text: this.hass!.localize(
+        `ui.panel.lovelace.views.confirm_delete${
+          this._cards?.length ? `_existing_cards` : ""
+        }_text`,
+        "name",
+        this._config?.title || "Unnamed view",
+        "number",
+        this._cards?.length || 0
+      ),
       confirm: () => this._delete(),
     });
   }
