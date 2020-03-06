@@ -2087,7 +2087,7 @@
                         },
                         "entities": {
                             "name": "物件",
-                            "show_header_toggle": "顯示名稱切換？",
+                            "show_header_toggle": "於頁首顯示開關？",
                             "toggle": "切換物件。"
                         },
                         "entity-button": {

@@ -626,6 +626,8 @@
                     "enabled_description": "Las entidades deshabilitadas no se agregarán a Home Assistant.",
                     "enabled_label": "Activar entidad",
                     "entity_id": "ID de la entidad",
+                    "icon": "Reemplazar Icono",
+                    "icon_error": "Los iconos deben tener el formato 'prefijo:nombreicono', por ejemplo, 'mdi:home'",
                     "name": "Cambio de nombre",
                     "note": "Nota: puede que esto no funcione todavía con todas las integraciones",
                     "unavailable": "Esta entidad no está disponible actualmente.",
@@ -637,8 +639,47 @@
             },
             "generic": {
                 "cancel": "Cancelar",
+                "close": "cerrar",
                 "default_confirmation_title": "¿Estás seguro?",
                 "ok": "Aceptar"
+            },
+            "helper_settings": {
+                "generic": {
+                    "icon": "Icono",
+                    "initial_value": "Valor inicial en el arranque",
+                    "initial_value_explain": "El valor que tendrá el elemento cuando se inicie Home Assistant. Cuando se deja vacío, el valor se recuperará de su valor anterior.",
+                    "name": "Nombre"
+                },
+                "input_datetime": {
+                    "has_date": "Fecha",
+                    "has_time": "Hora"
+                },
+                "input_number": {
+                    "box": "Campo de entrada",
+                    "max": "Valor máximo",
+                    "min": "Valor mínimo",
+                    "mode": "Modo de visualización",
+                    "slider": "Control deslizante",
+                    "step": "Tamaño del paso del control deslizante",
+                    "unit_of_measurement": "Unidad de medida"
+                },
+                "input_select": {
+                    "add": "Añadir",
+                    "add_option": "Añadir opción",
+                    "no_options": "No hay opciones todavía.",
+                    "options": "Opciones"
+                },
+                "input_text": {
+                    "max": "Longitud máxima",
+                    "min": "Longitud mínima",
+                    "mode": "Modo de visualización",
+                    "password": "Contraseña",
+                    "pattern": "Patrón Regex para la validación del lado del cliente",
+                    "text": "Texto"
+                },
+                "not_editable": "No editable",
+                "not_editable_text": "Esta entidad no se puede cambiar desde la interfaz de usuario porque está definida en configuration.yaml.",
+                "required_error_msg": "Este campo es obligatorio"
             },
             "more_info_control": {
                 "dismiss": "Descartar diálogo",
@@ -1356,6 +1397,30 @@
                     }
                 },
                 "header": "Configurar Home Assistant",
+                "helpers": {
+                    "caption": "Ayudantes",
+                    "description": "Elementos que pueden ayudar a construir automatizaciones.",
+                    "dialog": {
+                        "add_helper": "Añadir ayudante",
+                        "add_platform": "Añadir {platform}",
+                        "create": "Crear"
+                    },
+                    "picker": {
+                        "add_helper": "Añadir ayudante",
+                        "headers": {
+                            "editable": "Editable",
+                            "name": "Nombre",
+                            "type": "Tipo"
+                        }
+                    },
+                    "types": {
+                        "input_boolean": "Alternar",
+                        "input_datetime": "Fecha y/o hora",
+                        "input_number": "Número",
+                        "input_select": "Desplegable",
+                        "input_text": "Texto"
+                    }
+                },
                 "integrations": {
                     "caption": "Integraciones",
                     "config_entry": {
@@ -1417,6 +1482,76 @@
                     "note_about_website_reference": "Más están disponibles en el"
                 },
                 "introduction": "Aquí puedes configurar tus componentes y Home Assistant. Aún no es posible configurar todo desde la interfaz de usuario, pero estamos trabajando en ello.",
+                "lovelace": {
+                    "caption": "Paneles de Control Lovelace",
+                    "dashboards": {
+                        "cant_edit_yaml": "Los paneles de control definidos en YAML no se pueden editar desde la interfaz de usuario. Cámbialos en configuration.yaml.",
+                        "caption": "Paneles de control",
+                        "conf_mode": {
+                            "storage": "Controlado por la interfaz de usuario",
+                            "yaml": "Archivo YAML"
+                        },
+                        "confirm_delete": "¿Estás seguro de que quieres eliminar este panel de control?",
+                        "detail": {
+                            "create": "Crear",
+                            "delete": "Eliminar",
+                            "dismiss": "Cerrar",
+                            "edit_dashboard": "Editar panel de control",
+                            "icon": "Icono de la barra lateral",
+                            "new_dashboard": "Añadir nuevo panel de control",
+                            "require_admin": "Solo administrador",
+                            "show_sidebar": "Mostrar en la barra lateral",
+                            "title": "Título de la barra lateral",
+                            "update": "Actualizar",
+                            "url": "Url",
+                            "url_error_msg": "La url no puede contener espacios o caracteres especiales, excepto _ y -"
+                        },
+                        "picker": {
+                            "add_dashboard": "Añadir panel de control",
+                            "headers": {
+                                "conf_mode": "Método de configuración",
+                                "filename": "Nombre de archivo",
+                                "require_admin": "Solo administrador",
+                                "sidebar": "Mostrar en la barra lateral",
+                                "title": "Título"
+                            },
+                            "open": "Abrir panel de control"
+                        }
+                    },
+                    "description": "Configura tus Paneles de Control Lovelace",
+                    "resources": {
+                        "cant_edit_yaml": "Está utilizando Lovelace en modo YAML, por lo tanto, no puedes administrar tus recursos a través de la interfaz de usuario. Adminístralos en configuration.yaml.",
+                        "caption": "Recursos",
+                        "confirm_delete": "¿Estás seguro de que quieres eliminar este recurso?",
+                        "detail": {
+                            "create": "Crear",
+                            "delete": "Eliminar",
+                            "dismiss": "Cerrar",
+                            "new_resource": "Añadir nuevo recurso",
+                            "type": "Tipo de recurso",
+                            "update": "Actualizar",
+                            "url": "Url",
+                            "url_error_msg": "Url es un campo obligatorio",
+                            "warning_header": "¡Ten cuidado!",
+                            "warning_text": "Añadir recursos puede ser peligroso, asegúrate de conocer el origen del recurso y que confías en ellos. Malos recursos  pueden dañar seriamente tu sistema."
+                        },
+                        "picker": {
+                            "add_resource": "Añadir recurso",
+                            "headers": {
+                                "type": "Tipo",
+                                "url": "Url"
+                            }
+                        },
+                        "refresh_body": "Tienes que actualizar la página para completar la eliminación, ¿deseas actualizar ahora?",
+                        "refresh_header": "¿Quieres actualizar?",
+                        "types": {
+                            "css": "Hoja de estilo",
+                            "html": "HTML (obsoleto)",
+                            "js": "Archivo JavaScript (obsoleto)",
+                            "module": "Módulo JavaScript"
+                        }
+                    }
+                },
                 "person": {
                     "add_person": "Añadir persona",
                     "caption": "Personas",
@@ -1928,7 +2063,7 @@
                     }
                 },
                 "changed_toast": {
-                    "message": "La configuración de la IU Lovelace se actualizó, ¿te gustaría volver a cargarla?",
+                    "message": "La configuración de la IU Lovelace para este panel de control se ha actualizado, ¿quieres recargar para ver los cambios?",
                     "refresh": "Actualizar"
                 },
                 "editor": {
@@ -2116,10 +2251,14 @@
                     },
                     "save_config": {
                         "cancel": "No importa",
+                        "close": "Cerrar",
                         "header": "Tomar el control de la interfaz de usuario Lovelace",
                         "para": "Por defecto Home Assistant se encargará de tu interfaz de usuario, actualizándola cuando haya nuevas entidades o componentes Lovelace disponibles. Si asumes el control, ya no haremos más cambios automáticamente por ti.",
                         "para_sure": "¿Estás seguro de que quieres tomar el control de tu interfaz de usuario?",
-                        "save": "Tomar el control"
+                        "save": "Tomar el control",
+                        "yaml_config": "Para ayudarte a empezar aquí está la configuración actual de este panel:",
+                        "yaml_control": "Para tomar el control en modo YAML, crea un archivo YAML con el nombre que especificaste en la configuración para este panel de control, o el valor predeterminado 'ui-lovelace.yaml'.",
+                        "yaml_mode": "Está utilizando el modo YAML, lo que significa que no puedes cambiar la configuración de Lovelace desde la interfaz de usuario. Si deseas cambiar Lovelace desde la interfaz de usuario, quita el 'mode: yaml' de la configuración de Lovelace en 'configuration.yaml.'"
                     },
                     "suggest_card": {
                         "add": "Añadir a la IU Lovelace",
