@@ -101,9 +101,9 @@ export class ZHADevicesDataTable extends LitElement {
   }
 
   private async _handleClicked(ev: CustomEvent) {
-    const ieee = (ev.target as HTMLElement)
-      .closest("tr")!
-      .getAttribute("data-row-id")!;
+    const ieee = ((ev.target as HTMLElement).closest(
+      ".mdc-data-table__row"
+    ) as any).rowId;
     showZHADeviceInfoDialog(this, { ieee });
   }
 }
