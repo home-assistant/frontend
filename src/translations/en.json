@@ -1919,7 +1919,8 @@
             "move_left": "Move view left",
             "move_right": "Move view right",
             "tab_settings": "Settings",
-            "tab_badges": "Badges"
+            "tab_badges": "Badges",
+            "tab_visibility": "Visibility"
           },
           "edit_card": {
             "header": "Card Configuration",
